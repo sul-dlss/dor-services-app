@@ -31,7 +31,7 @@ module Cocina
     # @param [Dor::Abstract] item the Fedora object to convert to a cocina object
     def initialize(item, notifier: nil)
       @item = item
-      @notifier = notifier
+      @notifier = notifier || FromFedora::DataErrorNotifier.new(druid: item.pid)
     end
 
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]

@@ -45,7 +45,8 @@ RSpec.shared_examples 'Agreement Object Identification Fedora Cocina mapping' do
                     descMetadata: Dor::DescMetadataDS.from_xml(mods_xml),
                     embargoMetadata: Dor::EmbargoMetadataDS.new,
                     contentMetadata: Dor::ContentMetadataDS.new,
-                    rightsMetadata: Dor::RightsMetadataDS.new)
+                    rightsMetadata: Dor::RightsMetadataDS.new,
+                    geoMetadata: Dor::GeoMetadataDS.new)
   end
   let(:mapped_cocina_props) { Cocina::FromFedora::DRO.props(fedora_agreement_mock) }
   let(:normalized_orig_identity_xml) do
@@ -129,7 +130,8 @@ RSpec.shared_examples 'Agreement Object Identification Fedora Cocina mapping' do
                       descMetadata: Dor::DescMetadataDS.from_xml(mods_xml),
                       embargoMetadata: Dor::EmbargoMetadataDS.new,
                       contentMetadata: Dor::ContentMetadataDS.new,
-                      rightsMetadata: Dor::RightsMetadataDS.new)
+                      rightsMetadata: Dor::RightsMetadataDS.new,
+                      geoMetadata: Dor::GeoMetadataDS.new)
     end
     let(:roundtrip_cocina_props) { Cocina::FromFedora::DRO.props(roundtrip_fedora_agreement_mock) }
 
@@ -160,7 +162,8 @@ RSpec.shared_examples 'Agreement Object Identification Fedora Cocina mapping' do
                       descMetadata: Dor::DescMetadataDS.from_xml(mods_xml),
                       embargoMetadata: Dor::EmbargoMetadataDS.new,
                       contentMetadata: Dor::ContentMetadataDS.new,
-                      rightsMetadata: Dor::RightsMetadataDS.new)
+                      rightsMetadata: Dor::RightsMetadataDS.new,
+                      geoMetadata: Dor::GeoMetadataDS.new)
     end
     let(:roundtrip_cocina_props) { Cocina::FromFedora::DRO.props(normalized_orig_fedora_agreement_mock) }
 

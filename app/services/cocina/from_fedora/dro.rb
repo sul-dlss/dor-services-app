@@ -53,6 +53,7 @@ module Cocina
       # rubocop:disable Metrics/AbcSize
       def props
         type = DRO.dro_type(fedora_item)
+        check_geo(type)
         {
           externalIdentifier: fedora_item.pid,
           type: type,
@@ -69,7 +70,7 @@ module Cocina
                                                       druid: fedora_item.pid,
                                                       notifier: notifier)
           props[:description] = description unless description.nil?
-          props[:geographic] = { iso19139: fedora_item.geoMetadata.content } if type == Cocina::Models::Vocab.geo
+          props[:geographic] = { iso19139: fedora_item.geoMetadata.content } if geo_metadata?
           identification = FromFedora::Identification.props(fedora_item)
           props[:identification] = identification unless identification.empty?
         end
@@ -79,6 +80,17 @@ module Cocina
       private
 
       attr_reader :fedora_item, :notifier
+
+      def check_geo(type)
+        return unless type != Cocina::Models::Vocab.geo && geo_metadata?
+
+        notifier.warn('Non-geo object has geo metadata')
+      end
+
+      def geo_metadata?
+        # ETDs don't have geoMetadata datastream
+        fedora_item.respond_to?(:geoMetadata) && fedora_item.geoMetadata.content
+      end
     end
   end
 end

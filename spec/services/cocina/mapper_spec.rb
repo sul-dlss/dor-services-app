@@ -141,6 +141,19 @@ RSpec.describe Cocina::Mapper do
         expect(cocina_model).to be_kind_of Cocina::Models::DRO
         expect(cocina_model.geographic.iso19139).to be_equivalent_to iso19139
       end
+
+      context 'when item is not geo' do
+        let(:content_type) { 'file' }
+
+        before do
+          allow(Honeybadger).to receive(:notify)
+        end
+
+        it 'builds and notifies' do
+          expect(cocina_model.geographic.iso19139).to be_equivalent_to iso19139
+          expect(Honeybadger).to have_received(:notify).with('[DATA WARNING] Non-geo object has geo metadata', { tags: 'data_warning', context: { druid: 'druid:mx000xm0000' } })
+        end
+      end
     end
 
     context 'when item has identityMetadata objectLabel' do
