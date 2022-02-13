@@ -317,6 +317,37 @@ RSpec.describe Cocina::ObjectCreator do
     end
   end
 
+  context 'when postgres create is enabled' do
+    let(:params) do
+      {
+        'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
+        'label' => 'label value',
+        'access' => {},
+        'version' => 1,
+        'structural' => {},
+        'administrative' => {
+          'hasAdminPolicy' => apo
+        },
+        'identification' => {
+          'sourceId' => 'donot:care'
+        }
+      }
+    end
+
+    let(:cocina_object_store) { instance_double(CocinaObjectStore, cocina_to_ar_save: nil) }
+
+    before do
+      allow(Settings.enabled_features.postgres).to receive(:create).and_return(true)
+      allow(CocinaObjectStore).to receive(:new).and_return(cocina_object_store)
+    end
+
+    it 'saves to postgres' do
+      result
+
+      expect(cocina_object_store).to have_received(:cocina_to_ar_save).with(instance_of(Cocina::Models::DRO))
+    end
+  end
+
   context 'when Cocina::Models::RequestCollection is received' do
     let(:request) { Cocina::Models.build_request(params) }
 

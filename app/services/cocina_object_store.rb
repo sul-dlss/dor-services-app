@@ -50,6 +50,10 @@ class CocinaObjectStore
   def save(cocina_object)
     (updated_cocina_object, created_at, modified_at) = cocina_to_fedora_save(cocina_object)
 
+    # Only want to update if already exists in PG (i.e., added by create or migration).
+    # This will make sure gets correct create/update dates.
+    cocina_to_ar_save(updated_cocina_object) if Settings.enabled_features.postgres.update && ar_exists?(cocina_object.externalIdentifier)
+
     # Broadcast this update action to a topic
     Notifications::ObjectUpdated.publish(model: updated_cocina_object, created_at: created_at, modified_at: modified_at) if Settings.rabbitmq.enabled
     updated_cocina_object
@@ -78,7 +82,28 @@ class CocinaObjectStore
     cocina_object = CocinaObjectStore.find(druid)
     fedora_destroy(druid)
 
+    ar_destroy(druid) if Settings.enabled_features.postgres.destroy && ar_exists?(druid)
+
     Notifications::ObjectDeleted.publish(model: cocina_object, deleted_at: Time.zone.now) if Settings.rabbitmq.enabled
+  end
+
+  # This is only public for ObjectCreator use.
+  # Persist a Cocina object with ActiveRecord.
+  # @param [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy] cocina_object
+  # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
+  def cocina_to_ar_save(cocina_object)
+    model_clazz = case cocina_object
+                  when Cocina::Models::AdminPolicy
+                    AdminPolicy
+                  when Cocina::Models::DRO
+                    Dro
+                  when Cocina::Models::Collection
+                    Collection
+                  else
+                    raise CocinaObjectStoreError, "unsupported type #{cocina_object&.type}"
+                  end
+    model_clazz.upsert_cocina(cocina_object)
+    cocina_object
   end
 
   private
@@ -129,24 +154,6 @@ class CocinaObjectStore
     raise CocinaObjectNotFoundError unless ar_cocina_object
 
     ar_cocina_object
-  end
-
-  # Persist a Cocina object with ActiveRecord.
-  # @param [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy] cocina_object
-  # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
-  def cocina_to_ar_save(cocina_object)
-    model_clazz = case cocina_object
-                  when Cocina::Models::AdminPolicy
-                    AdminPolicy
-                  when Cocina::Models::DRO
-                    Dro
-                  when Cocina::Models::Collection
-                    Collection
-                  else
-                    raise CocinaObjectStoreError, "unsupported type #{cocina_object&.type}"
-                  end
-    model_clazz.upsert_cocina(cocina_object)
-    cocina_object
   end
 
   def ar_destroy(druid)
