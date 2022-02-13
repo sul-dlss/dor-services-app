@@ -25,6 +25,12 @@ module Cocina
         new(mods_ng_xml: mods_ng_xml, druid: druid).normalize_purl
       end
 
+      # @param [Nokogiri::Document] mods_ng_xml MODS to be normalized
+      # @return [Nokogiri::Document] normalized MODS
+      def self.normalize_identifier_type(mods_ng_xml:)
+        new(mods_ng_xml: mods_ng_xml, druid: nil).normalize_identifier_type
+      end
+
       def initialize(mods_ng_xml:, druid:, label: nil)
         @ng_xml = mods_ng_xml.dup
         @ng_xml.encoding = 'UTF-8' if @ng_xml.respond_to?(:encoding=) # sometimes it's a String (?)
@@ -47,7 +53,7 @@ module Cocina
         normalize_xml_space
         normalize_language_term_type
         normalize_access_condition
-        normalize_identifier_type
+        normalize_identifier_type_attr
         normalize_location_physical_location
         normalize_purl_location
         normalize_empty_notes
@@ -66,6 +72,11 @@ module Cocina
 
       def normalize_purl
         normalize_purl_location
+        ng_xml
+      end
+
+      def normalize_identifier_type
+        normalize_identifier_type_attr
         ng_xml
       end
 
@@ -270,7 +281,7 @@ module Cocina
         end
       end
 
-      def normalize_identifier_type
+      def normalize_identifier_type_attr
         ng_xml.root.xpath('//mods:identifier[@type]', mods: MODS_NS).each do |node|
           node['type'] = normalized_identifier_type_for(node['type'])
         end

@@ -193,8 +193,13 @@ def validate_druid(druid, loader, no_content: false, no_desc: false, create: fal
 
   fedora_obj.contentMetadata.content = empty_content_metadata(fedora_obj, druid, create) if no_content && fedora_obj.datastreams.include?('contentMetadata')
 
-  if no_desc && fedora_obj.datastreams.include?('descMetadata')
-    fedora_obj.descMetadata.content = fedora_obj.label == 'Hydrus' ? hydrus_desc_metadata : empty_desc_metadata
+  if fedora_obj.datastreams.include?('descMetadata')
+    fedora_obj.descMetadata.content = if no_desc
+                                        fedora_obj.label == 'Hydrus' ? hydrus_desc_metadata : empty_desc_metadata
+                                      else
+                                        # Identifier types have to be normalized before mapping
+                                        Cocina::Normalizers::ModsNormalizer.normalize_identifier_type(mods_ng_xml: ng_xml_for(fedora_obj.descMetadata.content)).to_xml
+                                      end
   end
 
   # defaultObjectRights has to be normalized before mapping
