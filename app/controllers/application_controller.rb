@@ -16,7 +16,7 @@ class ApplicationController < ActionController::API
     json_api_error(status: :unprocessable_entity,
                    title: 'Unexpected Cocina::Mapper.build error',
                    message: e.cause,
-                   meta: { backtrace: e.cause.backtrace })
+                   meta: { backtrace: e.cause&.backtrace })
   end
 
   before_action :check_auth_token
