@@ -4,7 +4,8 @@ require 'rails_helper'
 
 RSpec.describe DatastreamExtractor do
   let(:workspace) { instance_double(DruidTools::Druid, path: 'foo') }
-  let(:item) { instance_double(Dor::Item, pid: '123') }
+  let(:druid) { 'druid:nc893zj8956' }
+  let(:item) { instance_double(Dor::Item, pid: druid) }
   let(:instance) { described_class.new(item: item, workspace: workspace) }
 
   describe '.extract_datastreams' do
@@ -69,6 +70,32 @@ RSpec.describe DatastreamExtractor do
       end
 
       it { is_expected.to eq '<workflows />' }
+    end
+
+    context 'when datastream is versionMetadata' do
+      let(:ds_name) { :versionMetadata }
+
+      let(:expected_xml) do
+        <<~XML
+          <?xml version="1.0" encoding="UTF-8"?>
+            <versionMetadata objectId="druid:nc893zj8956">
+              <version versionId="1" tag="1.0.0">
+                <description>
+                  Initial version
+                </description>
+              </version>
+              <version versionId="2"/>
+            </versionMetadata>
+        XML
+      end
+
+      before do
+        allow(VersionMigrationService).to receive(:migrate)
+        ObjectVersion.create(druid: druid, version: 1, tag: '1.0.0', description: 'Initial version')
+        ObjectVersion.create(druid: druid, version: 2)
+      end
+
+      it { is_expected.to be_equivalent_to expected_xml }
     end
 
     context 'when datastream is empty or missing' do
