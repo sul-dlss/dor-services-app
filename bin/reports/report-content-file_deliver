@@ -4,8 +4,6 @@
 require_relative '../../config/environment'
 require_relative '../../lib/report'
 
-def has_file_deliver?(ng_xml)
+Report.new(name: 'content-file-deliver', dsid: 'contentMetadata').run do |ng_xml|
   ng_xml.root.xpath('//file/@deliver').present?
 end
-
-Report.new(name: 'content-file-deliver', dsid: 'contentMetadata', report_func: method(:has_file_deliver?)).run

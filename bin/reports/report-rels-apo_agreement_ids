@@ -4,15 +4,13 @@
 require_relative '../../config/environment'
 require_relative '../../lib/report'
 
-RDF_NS = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
-HYDRA_NS = 'http://projecthydra.org/ns/relations#'
-FEDORA_NS = 'info:fedora/fedora-system:def/model#'
+Report.new(name: 'rels_apo_without_agreement_ids', dsid: 'RELS-EXT').run do |ng_xml|
+  rdf_ns = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  hydra_ns = 'http://projecthydra.org/ns/relations#'
+  fedora_ns = 'info:fedora/fedora-system:def/model#'
 
-def check(ng_xml)
   ng_xml.root.xpath(
     '//fedora:hasModel[@rdf:resource="info:fedora/afmodel:Hydrus_AdminPolicyObject" ' \
-    'or @rdf:resource="info:fedora/afmodel:Dor_AdminPolicyObject"] and not(//hydra:referencesAgreement)', hydra: HYDRA_NS, fedora: FEDORA_NS, rdf: RDF_NS
+    'or @rdf:resource="info:fedora/afmodel:Dor_AdminPolicyObject"] and not(//hydra:referencesAgreement)', hydra: hydra_ns, fedora: fedora_ns, rdf: rdf_ns
   )
 end
-
-Report.new(name: 'rels_apo_without_agreement_ids', dsid: 'RELS-EXT', report_func: method(:check)).run

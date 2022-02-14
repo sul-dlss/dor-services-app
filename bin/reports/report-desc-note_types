@@ -4,8 +4,6 @@
 require_relative '../../config/environment'
 require_relative '../../lib/unique_report'
 
-def note_types(ng_xml)
+UniqueReport.new(name: 'desc-note_types', dsid: 'descMetadata').run do |ng_xml|
   ng_xml.root.xpath('//mods:note/@type', mods: MODS_NS).map(&:content)
 end
-
-UniqueReport.new(name: 'desc-note_types', dsid: 'descMetadata', report_func: method(:note_types)).run
