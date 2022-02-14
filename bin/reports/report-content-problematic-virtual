@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+Report.new(name: 'content-problematic-virtual', dsid: 'contentMetadata').run do |ng_xml|
+  ng_xml.root.xpath('//resource[./externalFile and not(@type="image")]').present?
+end
