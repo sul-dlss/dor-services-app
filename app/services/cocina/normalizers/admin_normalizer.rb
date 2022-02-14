@@ -19,6 +19,10 @@ module Cocina
 
       def normalize
         remove_desc_metadata_format_mods
+        remove_desc_metadata_source
+        remove_relationships
+        remove_assembly_node
+        remove_accessioning_node
         remove_empty_registration_and_dissemination
         remove_empty_dissemination_workflow
         remove_object_id_attr
@@ -32,6 +36,24 @@ module Cocina
       # removes nodes like this: <descMetadata><format>MODS</format><descMetadata>
       def remove_desc_metadata_format_mods
         ng_xml.xpath('/administrativeMetadata/descMetadata/format[text()="MODS"]').each { |node| node.parent.remove }
+      end
+
+      # removes nodes like this: <descMetadata><source>whatevs</source><descMetadata>
+      def remove_desc_metadata_source
+        ng_xml.xpath('/administrativeMetadata/descMetadata/source').each { |node| node.parent.remove }
+      end
+
+      # we get this info from RELS-EXT
+      def remove_relationships
+        ng_xml.xpath('/administrativeMetadata/relationships').each(&:remove)
+      end
+
+      def remove_assembly_node
+        ng_xml.xpath('/administrativeMetadata/assembly').each(&:remove)
+      end
+
+      def remove_accessioning_node
+        ng_xml.xpath('/administrativeMetadata/accessioning').each(&:remove)
       end
 
       # removes empty nodes like this: <registration/> or <dissemination/> or <dissemination><workflow id="" /></dissemination>

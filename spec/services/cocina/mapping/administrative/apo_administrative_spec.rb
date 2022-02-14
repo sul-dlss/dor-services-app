@@ -716,4 +716,222 @@ RSpec.describe 'APO administrative mappings' do
       end
     end
   end
+
+  context 'with objectId, descMetadata and relationships' do
+    # ff628mq8354
+    it_behaves_like 'valid APO mappings' do
+      let(:admin_metadata_xml) do
+        <<~XML
+          <administrativeMetadata objectId="druid:ff628mq8354">
+            <descMetadata>
+              <source>Symphony</source>
+            </descMetadata>
+            <relationships xmlns:fedora-rel="info:fedora/fedora-system:def/relations-external#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+              <fedora-rel:isMemberOf rdf:resource="info:fedora/druid:rt210jg0056"/>
+              <fedora-rel:isMemberOfCollection rdf:resource="info:fedora/druid:rt210jg0056"/>
+            </relationships>
+            <registration>
+              <workflow id="registrationWF"/>
+              <collection id="druid:rt210jg0056"/>
+            </registration>
+            <descMetadata>
+              <format>MODS</format>
+            </descMetadata>
+          </administrativeMetadata>
+        XML
+      end
+      let(:roundtrip_admin_metadata_xml) do
+        <<~XML
+          <administrativeMetadata>
+            <registration>
+              <workflow id="registrationWF"/>
+              <collection id="druid:rt210jg0056"/>
+            </registration>
+          </administrativeMetadata>
+        XML
+      end
+      let(:default_object_rights_xml) do
+        <<~XML
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <none/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <none/>
+              </machine>
+            </access>
+            <use>
+              <license>https://creativecommons.org/licenses/by-nc/3.0/legalcode</license>
+              <human type="useAndReproduction">Use at will.</human>
+            </use>
+          </rightsMetadata>
+        XML
+      end
+      let(:role_metadata_xml) do
+        <<~XML
+          <roleMetadata>
+            <role type="dor-apo-manager">
+              <group>
+                <identifier type="workgroup">sdr:developer</identifier>
+              </group>
+              <group>
+                <identifier type="workgroup">sdr:psm-staff</identifier>
+              </group>
+            </role>
+          </roleMetadata>
+        XML
+      end
+      let(:agreement_druid) { 'druid:dd327qr3670' }
+      let(:cocina) do
+        {
+          defaultAccess: {
+            access: 'dark',
+            download: 'none',
+            license: 'https://creativecommons.org/licenses/by-nc/3.0/legalcode',
+            useAndReproductionStatement: 'Use at will.'
+          },
+          registrationWorkflow: [
+            'registrationWF'
+          ],
+          collectionsForRegistration: [
+            'druid:rt210jg0056'
+          ],
+          hasAdminPolicy: ur_apo_druid,
+          hasAgreement: agreement_druid,
+          roles: [
+            {
+              name: 'dor-apo-manager',
+              members: [
+                {
+                  type: 'workgroup',
+                  identifier: 'sdr:developer'
+                },
+                {
+                  type: 'workgroup',
+                  identifier: 'sdr:psm-staff'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  context 'with assembly and accessioning, objectId and relationships' do
+    # cb081vd1895
+    it_behaves_like 'valid APO mappings' do
+      let(:admin_metadata_xml) do
+        <<~XML
+          <administrativeMetadata objectId="druid:cb081vd1895">
+            <descMetadata>
+              <format>MODS</format>
+            </descMetadata>
+            <relationships xmlns:fedora-rel="info:fedora/fedora-system:def/relations-external#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+              <fedora-rel:isMemberOf rdf:resource="info:fedora/druid:kh020kr4702"/>
+              <fedora-rel:isMemberOfCollection rdf:resource="info:fedora/druid:kh020kr4702"/>
+            </relationships>
+            <registration>
+              <workflow id="registrationWF"/>
+            </registration>
+            <assembly>
+              <workflow id="assemblyWF"/>
+            </assembly>
+            <accessioning>
+              <workflow id="accessionWF"/>
+            </accessioning>
+          </administrativeMetadata>
+        XML
+      end
+      let(:roundtrip_admin_metadata_xml) do
+        <<~XML
+          <administrativeMetadata>
+            <registration>
+              <workflow id="registrationWF"/>
+            </registration>
+          </administrativeMetadata>
+        XML
+      end
+      let(:default_object_rights_xml) do
+        <<~XML
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <none/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <none/>
+              </machine>
+            </access>
+            <use>
+              <license>https://creativecommons.org/licenses/by-nc/3.0/legalcode</license>
+            </use>
+          </rightsMetadata>
+        XML
+      end
+      let(:role_metadata_xml) do
+        <<~XML
+          <roleMetadata objectId="druid:cb081vd1895">
+            <role type="dor-apo-manager">
+              <group>
+                <identifier type="workgroup">sdr:developer</identifier>
+              </group>
+              <group>
+                <identifier type="workgroup">sdr:metadata-staff</identifier>
+              </group>
+            </role>
+          </roleMetadata>
+        XML
+      end
+      let(:roundtrip_role_metadata_xml) do
+        <<~XML
+          <roleMetadata>
+            <role type="dor-apo-manager">
+              <group>
+                <identifier type="workgroup">sdr:developer</identifier>
+              </group>
+              <group>
+                <identifier type="workgroup">sdr:metadata-staff</identifier>
+              </group>
+            </role>
+          </roleMetadata>
+        XML
+      end
+      let(:agreement_druid) { 'druid:dd327qr3670' }
+      let(:cocina) do
+        {
+          defaultAccess: {
+            access: 'dark',
+            download: 'none',
+            license: 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
+          },
+          registrationWorkflow: [
+            'registrationWF'
+          ],
+          hasAdminPolicy: ur_apo_druid,
+          hasAgreement: agreement_druid,
+          roles: [
+            {
+              name: 'dor-apo-manager',
+              members: [
+                {
+                  type: 'workgroup',
+                  identifier: 'sdr:developer'
+                },
+                {
+                  type: 'workgroup',
+                  identifier: 'sdr:metadata-staff'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
 end
