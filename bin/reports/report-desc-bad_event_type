@@ -5,5 +5,5 @@ require_relative '../../config/environment'
 require_relative '../../lib/report'
 
 Report.new(name: 'desc-bad_event_type', dsid: 'descMetadata').run do |ng_xml|
-  ng_xml.root.xpath('mods:originInfo[@eventType = "Production" or @eventType = "publisher"]', mods: MODS_NS).present?
+  ng_xml.xpath('mods:originInfo[@eventType = "Production" or @eventType = "publisher"]', mods: MODS_NS).present?
 end

@@ -6,6 +6,6 @@ require_relative '../../lib/report'
 
 # Records where <otherId> has name="dissertationid" and also <sourceId> has source that's not "dissertation"
 Report.new(name: 'no-sourceid-dissid', dsid: 'identityMetadata').run do |ng_xml|
-  ng_xml.root.xpath('//otherId[@name="dissertationid"]').present? &&
-    ng_xml.root.xpath('//sourceId[@source!="dissertation"]').present?
+  ng_xml.xpath('//otherId[@name="dissertationid"]').present? &&
+    ng_xml.xpath('//sourceId[@source!="dissertation"]').present?
 end

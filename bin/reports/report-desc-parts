@@ -5,5 +5,5 @@ require_relative '../../config/environment'
 require_relative '../../lib/report'
 
 Report.new(name: 'desc-parts', dsid: 'descMetadata').run do |ng_xml|
-  ng_xml.root.xpath('//mods:part', mods: MODS_NS).present?
+  ng_xml.xpath('//mods:part', mods: MODS_NS).present?
 end

@@ -7,5 +7,5 @@ require_relative '../../lib/report'
 Report.new(name: 'identity-other_ids', dsid: 'identityMetadata').run do |ng_xml|
   known_other_ids = %w[catkey barcode uuid shelfseq callseq label dissertationid previous_catkey symphony mdtoolkit].freeze
 
-  ng_xml.root.xpath('//otherId/@name').map(&:content).reject { |name| known_other_ids.include?(name) }.join(', ').presence
+  ng_xml.xpath('//otherId/@name').map(&:content).reject { |name| known_other_ids.include?(name) }.join(', ').presence
 end

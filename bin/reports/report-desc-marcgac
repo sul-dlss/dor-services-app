@@ -13,11 +13,11 @@ Report.new(name: 'desc-marcgac', dsid: 'descMetadata').run do |ng_xml|
   bad_marcgac = []
 
   # The target mods is subject/geographicCode with authority="marcgac" on either element.
-  ng_xml.root.xpath('//mods:subject/mods:geographicCode[@authority="marcgac"]', mods: MODS_NS).map do |geo_node|
+  ng_xml.xpath('//mods:subject/mods:geographicCode[@authority="marcgac"]', mods: MODS_NS).map do |geo_node|
     code = code_for(geo_node)
     bad_marcgac << code unless Marc::Vocab::GeographicArea.fetch(code, nil)
   end
-  ng_xml.root.xpath('//mods:subject[@authority="marcgac"]/mods:geographicCode', mods: MODS_NS).map do |geo_node|
+  ng_xml.xpath('//mods:subject[@authority="marcgac"]/mods:geographicCode', mods: MODS_NS).map do |geo_node|
     code = code_for(geo_node)
     bad_marcgac << code unless Marc::Vocab::GeographicArea.fetch(code, nil)
   end

@@ -6,6 +6,6 @@ require_relative '../../lib/report'
 
 # Records where <language> includes multiple instances of <languageTerm type="text"> or <languageTerm type="code"> (more than one code or term within same language element).
 Report.new(name: 'desc-multi_langterms', dsid: 'descMetadata').run do |ng_xml|
-  ng_xml.root.xpath('//mods:language[count(mods:languageTerm[@type="text"]) > 1]', mods: MODS_NS).present? ||
-    ng_xml.root.xpath('//mods:language[count(mods:languageTerm[@type="code"]) > 1]', mods: MODS_NS).present?
+  ng_xml.xpath('//mods:language[count(mods:languageTerm[@type="text"]) > 1]', mods: MODS_NS).present? ||
+    ng_xml.xpath('//mods:language[count(mods:languageTerm[@type="code"]) > 1]', mods: MODS_NS).present?
 end
