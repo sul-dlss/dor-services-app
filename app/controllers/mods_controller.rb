@@ -15,9 +15,13 @@ class ModsController < ApplicationController
                                                      content: request.body.read,
                                                      event_factory: EventFactory)
 
+    # Mapping before save to guard against invalid cocina objects.
+    cocina_object = Cocina::Mapper.build(@item)
+
     @item.save!
+
     if Settings.rabbitmq.enabled
-      Notifications::ObjectUpdated.publish(model: Cocina::Mapper.build(@item),
+      Notifications::ObjectUpdated.publish(model: cocina_object,
                                            created_at: @item.create_date,
                                            modified_at: @item.modified_date)
     end

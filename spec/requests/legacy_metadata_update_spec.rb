@@ -206,4 +206,19 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
       expect(item).not_to have_received(:save!)
     end
   end
+
+  context 'when invalid cocina' do
+    before do
+      allow(Cocina::Mapper).to receive(:build).and_raise(Cocina::Mapper::UnexpectedBuildError, ' #/components/schemas/DRO missing required parameters')
+    end
+
+    it 'returns error' do
+      patch "/v1/objects/#{item.pid}/metadata/legacy",
+            params: data,
+            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to match(/Unexpected Cocina::Mapper.build error/)
+      expect(item).not_to have_received(:save!)
+    end
+  end
 end
