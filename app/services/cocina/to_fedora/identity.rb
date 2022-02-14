@@ -12,8 +12,8 @@ module Cocina
       # @param [Dor::Item,Dor::Collection,Dor::Etd,Dor::AdminPolicyObject] fedora_object
       # @param [String] label the label for the cocina object.
       # @param [boolean] overwrite the objectLabel if it already exists
-      def self.apply_label(fedora_object, label:, overwrite: false)
-        new(fedora_object).apply_label(label, overwrite: overwrite)
+      def self.apply_label(fedora_object, label:)
+        new(fedora_object).apply_label(label)
       end
 
       # @param [Dor::Item,Dor::Collection,Dor::Etd,Dor::AdminPolicyObject] fedora_object
@@ -38,10 +38,13 @@ module Cocina
         fedora_object.objectType = fedora_object.object_type # This comes from the class definition in dor-services
       end
 
-      def apply_label(label, overwrite: false)
-        return unless fedora_object.objectLabel.empty? || overwrite
-
+      def apply_label(label)
         fedora_object.objectLabel = label
+        fedora_object.label = truncate_label(label) # Truncating is required by Fedora 3
+      end
+
+      def truncate_label(label)
+        label.length > 254 ? label[0, 254] : label
       end
 
       def apply_release_tags(release_tags)
