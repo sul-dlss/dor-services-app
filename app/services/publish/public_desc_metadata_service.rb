@@ -60,33 +60,46 @@ module Publish
     # expand constituent relations into relatedItem references -- see JUMBO-18
     # @return [Void]
     def add_constituent_relations!
-      object.relationships(:is_constituent_of).each do |parent|
-        # fetch the parent object to get title
-        druid = parent.gsub(%r{^info:fedora/}, '')
-        parent_item = Dor.find(druid)
-
+      find_virtual_object.each do |solr_doc|
         # create the MODS relation
         relatedItem = doc.create_element('relatedItem', xmlns: MODS_NS)
         relatedItem['type'] = 'host'
         relatedItem['displayLabel'] = 'Appears in'
 
-        # load the title from the parent's DC.title
+        # load the title from the virtual object's DC.title
         titleInfo = doc.create_element('titleInfo', xmlns: MODS_NS)
         title = doc.create_element('title', xmlns: MODS_NS)
-        title.content = parent_item.full_title
+        title.content = solr_doc.fetch(:title)
         titleInfo << title
         relatedItem << titleInfo
 
-        # point to the PURL for the parent
+        # point to the PURL for the virtual object
         location = doc.create_element('location', xmlns: MODS_NS)
         url = doc.create_element('url', xmlns: MODS_NS)
-        url.content = "http://#{Settings.stacks.document_cache_host}/#{druid.split(':').last}"
+        url.content = purl_url(solr_doc.fetch(:id))
         location << url
         relatedItem << location
 
         # finish up by adding relation to public MODS
         doc.root << relatedItem
       end
+    end
+
+    # @return[Array<Dor::Item>]
+    def find_virtual_object
+      query = "has_constituents_ssim:#{object.id.sub(':', '\:')}"
+      response = solr_conn.get('select', params: { q: query, fl: 'id sw_display_title_tesim' })
+      response.fetch('response').fetch('docs').map do |row|
+        { id: row.fetch('id'), title: row.fetch('sw_display_title_tesim').first }
+      end
+    end
+
+    def solr_conn
+      ActiveFedora::SolrService.instance.conn
+    end
+
+    def purl_url(druid)
+      "https://#{Settings.stacks.document_cache_host}/#{druid.delete_prefix('druid:')}"
     end
 
     # Adds to desc metadata a relatedItem with information about the collection this object belongs to.
@@ -130,7 +143,7 @@ module Publish
       #   </location>
       loc_node = doc.create_element('location', xmlns: MODS_NS)
       url_node = doc.create_element('url', xmlns: MODS_NS)
-      url_node.content = "https://#{Settings.stacks.document_cache_host}/#{collection_druid.split(':').last}"
+      url_node.content = purl_url(collection_druid)
       loc_node << url_node
 
       type_node = doc.create_element('typeOfResource', xmlns: MODS_NS)

@@ -6,6 +6,13 @@ RSpec.describe Publish::PublicDescMetadataService do
   subject(:service) { described_class.new(obj) }
 
   let(:obj) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
+  let(:solr_response) { { 'response' => { 'docs' => virtual_object_solr_docs } } }
+  let(:virtual_object_solr_docs) { [] }
+  let(:solr_client) { instance_double(RSolr::Client, get: solr_response) }
+
+  before do
+    allow(ActiveFedora::SolrService.instance).to receive(:conn).and_return(solr_client)
+  end
 
   describe '#ng_xml' do
     subject(:doc) { service.ng_xml }
@@ -56,12 +63,7 @@ RSpec.describe Publish::PublicDescMetadataService do
         EOXML
       end
 
-      before do
-        ActiveFedora::RelsExtDatastream.from_xml(relationships, obj.rels_ext)
-
-        # load up constituent parent items from fixture data
-        expect(Dor).to receive(:find).with('druid:hj097bm8879').and_return(instantiate_fixture('druid:hj097bm8879', Dor::Item))
-      end
+      let(:virtual_object_solr_docs) { [{ 'id' => 'druid:hj097bm8879', 'sw_display_title_tesim' => ["Carey's American Atlas: Containing Twenty Maps"] }] }
 
       it 'writes the relationships into MODS' do
         # test that we have 2 expansions
@@ -71,7 +73,12 @@ RSpec.describe Publish::PublicDescMetadataService do
         xpath_expr = '//mods:mods/mods:relatedItem[@type="host" and @displayLabel="Appears in"]/mods:titleInfo/mods:title'
         expect(doc.xpath(xpath_expr, 'mods' => 'http://www.loc.gov/mods/v3').first.text.strip).to start_with("Carey's American Atlas: Containing Twenty Maps")
         xpath_expr = '//mods:mods/mods:relatedItem[@type="host" and @displayLabel="Appears in"]/mods:location/mods:url'
-        expect(doc.xpath(xpath_expr, 'mods' => 'http://www.loc.gov/mods/v3').first.text.strip).to match(%r{^http://purl.*\.stanford\.edu/hj097bm8879$})
+        expect(doc.xpath(xpath_expr, 'mods' => 'http://www.loc.gov/mods/v3').first.text.strip).to match(%r{^https://purl.*\.stanford\.edu/hj097bm8879$})
+        expect(solr_client).to have_received(:get)
+          .with('select', params: {
+                  q: 'has_constituents_ssim:druid\:bc123df4567',
+                  fl: 'id sw_display_title_tesim'
+                })
       end
     end
   end
@@ -113,9 +120,7 @@ RSpec.describe Publish::PublicDescMetadataService do
     let(:collection) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
 
     before do
-      allow(obj).to receive(:relationships).with(:is_member_of).and_return(['info:fedora/druid:zb871zd0767'])
       allow(obj).to receive(:relationships).with(:is_member_of_collection).and_return(['info:fedora/druid:zb871zd0767'])
-      allow(obj).to receive(:relationships).with(:is_constituent_of).and_return([])
       allow(Settings.stacks).to receive(:document_cache_host).and_return('purl.stanford.edu')
 
       obj.rightsMetadata.content = rights_xml
@@ -200,7 +205,7 @@ RSpec.describe Publish::PublicDescMetadataService do
 
     let(:mods) { read_fixture('mods_default_ns.xml') }
     let(:obj) do
-      b = Dor::Item.new
+      b = Dor::Item.new(pid: 'druid:bc123df4567')
       b.descMetadata.content = mods
       b.identityMetadata.content = identity_metadata
       b
@@ -252,7 +257,7 @@ RSpec.describe Publish::PublicDescMetadataService do
     let(:license_node) { public_mods.xpath('//mods:accessCondition[@type="license"]').first }
     let(:mods) { read_fixture('ex2_related_mods.xml') }
     let(:obj) do
-      b = Dor::Item.new
+      b = Dor::Item.new(pid: 'druid:bc123df4567')
       b.descMetadata.content = mods
       b.rightsMetadata.content = rights_xml
       b
@@ -425,9 +430,7 @@ RSpec.describe Publish::PublicDescMetadataService do
     let(:collection) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
 
     before do
-      allow(obj).to receive(:relationships).with(:is_member_of).and_return(['info:fedora/druid:zb871zd0767'])
       allow(obj).to receive(:relationships).with(:is_member_of_collection).and_return(['info:fedora/druid:zb871zd0767'])
-      allow(obj).to receive(:relationships).with(:is_constituent_of).and_return([])
       allow(Settings.stacks).to receive(:document_cache_host).and_return('purl.stanford.edu')
 
       allow(Dor).to receive(:find) do |pid|
@@ -477,9 +480,7 @@ RSpec.describe Publish::PublicDescMetadataService do
 
       context 'if there is no collection relationship' do
         before do
-          allow(obj).to receive(:relationships).with(:is_member_of).and_return([])
           allow(obj).to receive(:relationships).with(:is_member_of_collection).and_return([])
-          allow(obj).to receive(:relationships).with(:is_constituent_of).and_return([])
         end
 
         it 'does not touch an existing relatedItem if there is no collection relationship' do
@@ -493,9 +494,7 @@ RSpec.describe Publish::PublicDescMetadataService do
 
       context 'if the referenced collection does not exist' do
         before do
-          allow(obj).to receive(:relationships).with(:is_member_of).and_return([non_existent_druid])
           allow(obj).to receive(:relationships).with(:is_member_of_collection).and_return([non_existent_druid])
-          allow(obj).to receive(:relationships).with(:is_constituent_of).and_return([])
         end
 
         let(:non_existent_druid) { 'druid:doesnotexist' }
