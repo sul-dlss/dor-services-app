@@ -69,8 +69,9 @@ RSpec.shared_examples 'valid APO mappings' do
         roundtrip_fedora_apo.administrativeMetadata.to_xml
       end
 
-      it 'roundtrips to original administrativeMetadata.xml' do
-        expect(actual_admin_metadata_xml).to be_equivalent_to(admin_metadata_xml)
+      it 'roundtrips to expected roundtrip administrativeMetadata.xml' do
+        expected = defined?(roundtrip_admin_metadata_xml) ? roundtrip_admin_metadata_xml : admin_metadata_xml
+        expect(actual_admin_metadata_xml).to be_equivalent_to(expected)
       end
 
       it 'roundtrips to normalized original administrativeMetadata.xml' do
@@ -425,7 +426,7 @@ RSpec.describe 'APO administrative mappings' do
     end
   end
 
-  describe 'no collections, has license, roles with type person' do
+  context 'when no collections, has license, roles with type person' do
     # based on kt538yv1733 combined with default_obj_rights and roles from qv549bf9093
     it_behaves_like 'valid APO mappings' do
       let(:admin_metadata_xml) do
@@ -550,7 +551,7 @@ RSpec.describe 'APO administrative mappings' do
     end
   end
 
-  describe 'no collections, has license, roles with type sunetid' do
+  context 'when no collections, has license, roles with type sunetid' do
     # based on kt538yv1733 combined with default_obj_rights and roles from qv549bf9093
     it_behaves_like 'valid APO mappings' do
       let(:admin_metadata_xml) do

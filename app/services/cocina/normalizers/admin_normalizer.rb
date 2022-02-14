@@ -18,10 +18,10 @@ module Cocina
       end
 
       def normalize
-        normalize_desc_metadata_nodes
-        normalize_empty_registration_and_dissemination
-        normalize_empty_dissemination_workflow
-        normalize_object_id
+        remove_desc_metadata_format_mods
+        remove_empty_registration_and_dissemination
+        remove_empty_dissemination_workflow
+        remove_object_id_attr
         regenerate_ng_xml(ng_xml.to_xml)
       end
 
@@ -29,26 +29,26 @@ module Cocina
 
       attr_reader :ng_xml
 
-      def normalize_desc_metadata_nodes
-        # removes any nodes like this: <descMetadata><format>MODS</format><descMetadata>
-        ng_xml.root.xpath('//descMetadata/format[text()="MODS"]').each { |node| node.parent.remove }
+      # removes nodes like this: <descMetadata><format>MODS</format><descMetadata>
+      def remove_desc_metadata_format_mods
+        ng_xml.xpath('/administrativeMetadata/descMetadata/format[text()="MODS"]').each { |node| node.parent.remove }
       end
 
-      def normalize_empty_registration_and_dissemination
-        # removes any empty nodes like this: <registration/> or <dissemination/> or <dissemination><workflow id="" /></dissemination>
-        ng_xml.root.xpath('//registration[not(node())]').each(&:remove)
-        ng_xml.root.xpath('//dissemination[not(node())]').each(&:remove)
-        ng_xml.root.xpath('//dissemination/workflow[@id=""]').each { |node| node.parent.remove }
+      # removes empty nodes like this: <registration/> or <dissemination/> or <dissemination><workflow id="" /></dissemination>
+      def remove_empty_registration_and_dissemination
+        ng_xml.xpath('/administrativeMetadata/registration[not(node())]').each(&:remove)
+        ng_xml.xpath('/administrativeMetadata/dissemination[not(node())]').each(&:remove)
+        ng_xml.xpath('/administrativeMetadata/dissemination/workflow[@id=""]').each { |node| node.parent.remove }
       end
 
-      def normalize_empty_dissemination_workflow
-        # remove dissemination workflow node with empty id attribute and then remove dissemination node
-        ng_xml.root.xpath('//dissemination/workflow[@id=""]').each(&:remove)
-        ng_xml.root.xpath('//dissemination[not(*)]').each(&:remove)
+      # remove dissemination workflow node with empty id attribute and then remove dissemination node
+      def remove_empty_dissemination_workflow
+        ng_xml.xpath('/administrativeMetadata/dissemination/workflow[@id=""]').each(&:remove)
+        ng_xml.xpath('/administrativeMetadata/dissemination[not(*)]').each(&:remove)
       end
 
-      def normalize_object_id
-        ng_xml.root.xpath('/administrativeMetadata[@objectId]').each do |node|
+      def remove_object_id_attr
+        ng_xml.xpath('/administrativeMetadata[@objectId]').each do |node|
           node.delete('objectId')
         end
       end
