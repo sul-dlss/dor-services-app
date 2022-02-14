@@ -5,5 +5,5 @@ require_relative '../../config/environment'
 require_relative '../../lib/report'
 
 Report.new(name: 'desc-metadata_toolkit', dsid: 'descMetadata').run do |ng_xml|
-  ng_xml.root.xpath('//mods:recordContentSource[contains(text(), "Metadata ToolKit")]', mods: MODS_NS).present?
+  ng_xml.xpath('//mods:recordContentSource[contains(text(), "Metadata ToolKit")]', mods: MODS_NS).present?
 end

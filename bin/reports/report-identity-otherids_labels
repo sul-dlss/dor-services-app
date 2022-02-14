@@ -5,5 +5,5 @@ require_relative '../../config/environment'
 require_relative '../../lib/report'
 
 Report.new(name: 'identity-otherids_labels', dsid: 'identityMetadata').run do |ng_xml|
-  ng_xml.root.xpath('//otherId[@name="label"]').map(&:content).join(', ').presence
+  ng_xml.xpath('//otherId[@name="label"]').map(&:content).join(', ').presence
 end
