@@ -89,7 +89,6 @@ module Cocina
         Cocina::ToFedora::AdministrativeMetadata.write(fedora_apo.administrativeMetadata, cocina_admin_policy.administrative)
         Cocina::ToFedora::Roles.write(fedora_apo, Array(cocina_admin_policy.administrative.roles))
         Cocina::ToFedora::Identity.initialize_identity(fedora_apo)
-        Cocina::ToFedora::Identity.apply_label(fedora_apo, label: cocina_admin_policy.label)
       end
     end
 
@@ -107,8 +106,7 @@ module Cocina
                 admin_policy_object_id: cocina_item.administrative.hasAdminPolicy,
                 source_id: cocina_item.identification.sourceId,
                 collection_ids: Array.wrap(cocina_item.structural&.isMemberOf).compact,
-                catkey: catkey_for(cocina_item),
-                label: truncate_label(cocina_item.label)).tap do |fedora_item|
+                catkey: catkey_for(cocina_item)).tap do |fedora_item|
         add_description(fedora_item, cocina_item, trial: trial)
 
         unless trial
@@ -122,7 +120,6 @@ module Cocina
                                                                                                   cocina_object_store: cocina_object_store)
         identity = Cocina::ToFedora::Identity.new(fedora_item)
         identity.initialize_identity
-        identity.apply_label(cocina_item.label)
         identity.apply_release_tags(cocina_item.administrative&.releaseTags)
         identity.apply_doi(Doi.for(druid: pid)) if assign_doi
         identity.apply_doi(cocina_item.identification.doi) if trial && cocina_item.identification&.doi
@@ -143,15 +140,13 @@ module Cocina
       Dor::Collection.new(pid: pid,
                           admin_policy_object_id: cocina_collection.administrative.hasAdminPolicy,
                           source_id: cocina_collection.identification&.sourceId,
-                          catkey: catkey_for(cocina_collection),
-                          label: truncate_label(cocina_collection.label)).tap do |fedora_collection|
+                          catkey: catkey_for(cocina_collection)).tap do |fedora_collection|
         add_description(fedora_collection, cocina_collection, trial: trial)
         add_collection_tags(pid, cocina_collection) unless trial
         cocina_collection = default_access_for(cocina_collection) unless trial
         Cocina::ToFedora::CollectionAccess.apply(fedora_collection, cocina_collection.access) if cocina_collection.access
         Cocina::ToFedora::Identity.initialize_identity(fedora_collection)
         Cocina::ToFedora::Identity.apply_catalog_links(fedora_collection, catalog_links: cocina_collection.identification&.catalogLinks)
-        Cocina::ToFedora::Identity.apply_label(fedora_collection, label: cocina_collection.label)
         Cocina::ToFedora::Identity.apply_release_tags(fedora_collection, release_tags: cocina_collection.administrative&.releaseTags)
       end
     end
@@ -164,21 +159,20 @@ module Cocina
     # @param [Cocina:Models::Request[DOR|Collection|xxx]] cocina_object
     # @raises SymphonyReader::ResponseError if symphony connection failed
     def add_description(fedora_object, cocina_object, trial:)
-      # Hydrus doesn't set description. See https://github.com/sul-dlss/hydrus/issues/421
-      return if cocina_object.label == 'Hydrus'
-
       # Synch from symphony if a catkey is present
       if fedora_object.catkey && !trial
         RefreshMetadataAction.run(identifiers: ["catkey:#{fedora_object.catkey}"], fedora_object: fedora_object)
         label = MetadataService.label_from_mods(fedora_object.descMetadata.ng_xml)
-        fedora_object.label = truncate_label(label)
         fedora_object.objectLabel = label
+        Cocina::ToFedora::Identity.apply_label(fedora_object, label: label)
       elsif cocina_object.description
         description = AddPurlToDescription.call(cocina_object.description, fedora_object.pid)
         fedora_object.descMetadata.content = Cocina::ToFedora::Descriptive.transform(description, fedora_object.pid).to_xml
         fedora_object.descMetadata.content_will_change!
+        Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label)
       else
         fedora_object.descMetadata.mods_title = cocina_object.label
+        Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label)
       end
     end
 
@@ -211,10 +205,6 @@ module Cocina
                          (cocina_object.access || Cocina::Models::DROAccess).new(default_access.to_h)
                        end
       cocina_object.new(access: updated_access)
-    end
-
-    def truncate_label(label)
-      label.length > 254 ? label[0, 254] : label
     end
 
     def validate(cocina_object)

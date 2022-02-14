@@ -65,8 +65,7 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
     cocina_dro = Cocina::Models::DRO.new(mapped_cocina_props)
     fedora_item = Dor::Item.new(pid: cocina_dro.externalIdentifier,
                                 source_id: cocina_dro.identification.sourceId,
-                                catkey: Cocina::ObjectCreator.new.send(:catkey_for, cocina_dro),
-                                label: Cocina::ObjectCreator.new.send(:truncate_label, cocina_dro.label))
+                                catkey: Cocina::ObjectCreator.new.send(:catkey_for, cocina_dro))
     Cocina::ToFedora::Identity.initialize_identity(fedora_item)
     Cocina::ToFedora::Identity.apply_label(fedora_item, label: cocina_dro.label)
     Cocina::ToFedora::Identity.apply_release_tags(fedora_item, release_tags: cocina_dro.administrative.releaseTags)

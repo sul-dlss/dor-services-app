@@ -72,7 +72,6 @@ RSpec.describe Cocina::ObjectUpdater do
 
         it 'updates label' do
           update
-          expect(item).to have_received(:label=).with('new label')
           expect(Cocina::ToFedora::Identity).to have_received(:apply_label)
         end
       end
@@ -411,13 +410,11 @@ RSpec.describe Cocina::ObjectUpdater do
       end
 
       before do
-        allow(item).to receive(:label=)
         allow(Cocina::ToFedora::Identity).to receive(:apply_label)
       end
 
       it 'updates label' do
         update
-        expect(item).to have_received(:label=).with('new label')
         expect(Cocina::ToFedora::Identity).to have_received(:apply_label)
       end
     end
@@ -822,7 +819,6 @@ RSpec.describe Cocina::ObjectUpdater do
     let(:trial) { true }
 
     before do
-      allow(item).to receive(:label=)
       allow(item).to receive(:admin_policy_object_id=)
       allow(item).to receive(:source_id=)
       allow(item).to receive(:catkey=)
@@ -851,7 +847,6 @@ RSpec.describe Cocina::ObjectUpdater do
       expect(event_factory).not_to have_received(:create)
       expect(AdministrativeTags).not_to have_received(:create)
 
-      expect(item).to have_received(:label=)
       expect(item).to have_received(:admin_policy_object_id=)
       expect(item).to have_received(:source_id=)
       expect(item).to have_received(:catkey=)

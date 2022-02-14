@@ -60,8 +60,7 @@ RSpec.shared_examples 'Collection Identification Fedora Cocina mapping' do
     Dor::Collection.new(pid: mapped_cocina_collection.externalIdentifier,
                         admin_policy_object_id: mapped_cocina_collection.administrative.hasAdminPolicy,
                         source_id: mapped_cocina_collection.identification&.sourceId,
-                        catkey: Cocina::ObjectCreator.new.send(:catkey_for, mapped_cocina_collection),
-                        label: Cocina::ObjectCreator.new.send(:truncate_label, mapped_cocina_collection.label))
+                        catkey: Cocina::ObjectCreator.new.send(:catkey_for, mapped_cocina_collection))
   end
   let(:mapped_roundtrip_identity_xml) do
     Cocina::ToFedora::Identity.initialize_identity(mapped_fedora_collection)

@@ -80,14 +80,10 @@ module Cocina
       @orig_cocina_object ||= Mapper.build(fedora_object, notifier: notifier)
     end
 
-    # rubocop:disable Metrics/AbcSize
     # rubocop:disable Style/GuardClause
     def update_apo
       # fedora_object.source_id = cocina_object.identification.sourceId
-      if has_changed?(:label)
-        Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label, overwrite: true)
-        fedora_object.label = truncate_label(cocina_object.label)
-      end
+      Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label) if has_changed?(:label)
 
       if has_changed?(:administrative)
         fedora_object.admin_policy_object_id = cocina_object.administrative.hasAdminPolicy
@@ -98,14 +94,10 @@ module Cocina
         Cocina::ToFedora::Roles.write(fedora_object, Array(cocina_object.administrative.roles))
       end
     end
-    # rubocop:enable Metrics/AbcSize
     # rubocop:enable Style/GuardClause
 
     def update_collection
-      if has_changed?(:label)
-        fedora_object.label = truncate_label(cocina_object.label) if has_changed?(:label)
-        Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label, overwrite: true)
-      end
+      Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label) if has_changed?(:label)
 
       if has_changed?(:administrative)
         Cocina::ToFedora::Identity.apply_release_tags(fedora_object, release_tags: cocina_object.administrative&.releaseTags)
@@ -125,10 +117,7 @@ module Cocina
       fedora_object.admin_policy_object_id = cocina_object.administrative.hasAdminPolicy if has_changed?(:administrative)
       fedora_object.collection_ids = Array.wrap(cocina_object.structural&.isMemberOf).compact if has_changed?(:structural)
 
-      if has_changed?(:label)
-        fedora_object.label = truncate_label(cocina_object.label)
-        Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label, overwrite: true)
-      end
+      Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label) if has_changed?(:label)
 
       identity_updater = Cocina::ToFedora::Identity.new(fedora_object)
       if has_changed?(:identification)
@@ -238,11 +227,6 @@ module Cocina
       AdministrativeTags.for(pid: pid).select do |tag|
         tag.start_with?(prefix) && tag.count(':') == prefix_count
       end
-    end
-
-    # TODO: duplicate from ObjectCreator
-    def truncate_label(label)
-      label.length > 254 ? label[0, 254] : label
     end
 
     def update_version
