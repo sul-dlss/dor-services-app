@@ -997,32 +997,6 @@ RSpec.describe 'Update object' do
       end
     end
 
-    let(:default_object_rights_expected) do
-      <<~XML
-        <?xml version="1.0" encoding="UTF-8"?>
-
-        <rightsMetadata>
-           <access type="discover">
-              <machine>
-                 <world/>
-              </machine>
-           </access>
-           <access type="read">
-              <machine>
-                 <location>ars</location>
-              </machine>
-           </access>
-           <use>
-              <license>http://opendatacommons.org/licenses/by/1.0/</license>
-              <human type="useAndReproduction">Whatever makes you happy</human>
-           </use>
-           <copyright>
-              <human>My copyright statement</human>
-           </copyright>
-        </rightsMetadata>
-      XML
-    end
-
     let(:expected) do
       Cocina::Models::AdminPolicy.new(type: Cocina::Models::Vocab.admin_policy,
                                       label: 'This is my label',
@@ -1032,7 +1006,6 @@ RSpec.describe 'Update object' do
                                         purl: 'https://purl.stanford.edu/gg777gg7777'
                                       },
                                       administrative: {
-                                        defaultObjectRights: default_object_rights_expected,
                                         defaultAccess: default_access_expected,
                                         hasAdminPolicy: 'druid:dd999df4567',
                                         hasAgreement: 'druid:bc123df4567',
@@ -1054,7 +1027,6 @@ RSpec.describe 'Update object' do
                                       externalIdentifier: druid)
     end
 
-    let(:default_object_rights) { Dor::DefaultObjectRightsDS.new.content }
     let(:default_access) do
       {
         access: 'location-based',
@@ -1075,7 +1047,6 @@ RSpec.describe 'Update object' do
           "type":"http://cocina.sul.stanford.edu/models/admin_policy.jsonld",
           "label":"This is my label","version":1,
           "administrative":{
-            "defaultObjectRights":#{default_object_rights.to_json},
             "disseminationWorkflow":"assemblyWF",
             "registrationWorkflow":["goobiWF","registrationWF"],
             "collectionsForRegistration":["druid:gg888df4567","druid:bb888gg4444"],
@@ -1121,25 +1092,6 @@ RSpec.describe 'Update object' do
       end
 
       let(:default_access_expected) { default_access.compact }
-
-      let(:default_object_rights_expected) do
-        <<~XML
-          <?xml version="1.0" encoding="UTF-8"?>
-
-          <rightsMetadata>
-             <access type="discover">
-                <machine>
-                   <world/>
-                </machine>
-             </access>
-             <access type="read">
-                <machine>
-                   <world/>
-                </machine>
-             </access>
-          </rightsMetadata>
-        XML
-      end
 
       before do
         # This stubs out Solr:

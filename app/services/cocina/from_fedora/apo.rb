@@ -40,7 +40,6 @@ module Cocina
           registration_workflows = fedora_apo.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/registration/workflow/@id').map(&:value)
           registration_collections = fedora_apo.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/registration/collection/@id').map(&:value)
           dissemination_workflow = fedora_apo.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/dissemination/workflow/@id').text
-          admin[:defaultObjectRights] = fedora_apo.defaultObjectRights.content # Deprecated. Use defaultAccess instead
           admin[:defaultAccess] = APOAccess.props(fedora_apo.defaultObjectRights)
           admin[:disseminationWorkflow] = dissemination_workflow if dissemination_workflow.present?
           admin[:registrationWorkflow] = registration_workflows if registration_workflows.present?

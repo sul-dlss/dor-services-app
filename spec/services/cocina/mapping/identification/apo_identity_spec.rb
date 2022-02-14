@@ -197,7 +197,6 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
             hasAdminPolicy: admin_policy_id,
             hasAgreement: agreement_object_id,
             defaultAccess: default_access_props,
-            defaultObjectRights: default_object_rights_xml,
             roles: []
           },
           description: description_props
@@ -249,7 +248,6 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
             hasAdminPolicy: admin_policy_id,
             hasAgreement: agreement_object_id,
             defaultAccess: default_access_props,
-            defaultObjectRights: default_object_rights_xml,
             roles: []
           },
           description: description_props
@@ -303,7 +301,6 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
             hasAdminPolicy: admin_policy_id,
             hasAgreement: agreement_object_id,
             defaultAccess: default_access_props,
-            defaultObjectRights: default_object_rights_xml,
             roles: []
           },
           description: description_props
@@ -350,7 +347,6 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
             hasAdminPolicy: admin_policy_id,
             hasAgreement: agreement_object_id,
             defaultAccess: default_access_props,
-            defaultObjectRights: default_object_rights_xml,
             roles: []
           },
           description: description_props
