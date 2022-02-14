@@ -3,10 +3,6 @@
 # Deeply compares two objects, ignoring array order.
 # Based on https://github.com/amogil/rspec-deep-ignore-order-matcher/blob/master/lib/rspec_deep_ignore_order_matcher.rb
 class DeepEqual
-  # TODO: Remove the XML-related bits of the class once we've moved away from defaultObjectRights:
-  #       https://github.com/sul-dlss/dor-services-app/issues/3241
-  XML_KEYS = [:defaultObjectRights].freeze
-
   def self.match?(actual, expected)
     new(actual, expected).match?
   end
@@ -24,10 +20,9 @@ class DeepEqual
 
   attr_reader :actual, :expected
 
-  def objects_match?(actual_obj, expected_obj, xml: false)
+  def objects_match?(actual_obj, expected_obj)
     return arrays_match?(actual_obj, expected_obj) if expected_obj.is_a?(Array) && actual_obj.is_a?(Array)
     return hashes_match?(actual_obj, expected_obj) if expected_obj.is_a?(Hash) && actual_obj.is_a?(Hash)
-    return EquivalentXml.equivalent?(actual_obj, expected_obj) if xml
 
     expected_obj == actual_obj
   end
@@ -47,7 +42,7 @@ class DeepEqual
     return false unless actual_hash.keys.sort == expected_hash.keys.sort
 
     actual_hash.each do |key, value|
-      return false unless objects_match?(value, expected_hash[key], xml: XML_KEYS.include?(key))
+      return false unless objects_match?(value, expected_hash[key])
     end
 
     true

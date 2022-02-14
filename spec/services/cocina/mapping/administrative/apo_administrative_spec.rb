@@ -218,7 +218,6 @@ RSpec.describe 'APO administrative mappings' do
       let(:agreement_druid) { 'druid:yr951qr4199' }
       let(:cocina) do
         {
-          defaultObjectRights: default_object_rights_xml,
           defaultAccess: {
             access: 'world',
             download: 'world',
@@ -302,7 +301,6 @@ RSpec.describe 'APO administrative mappings' do
       let(:agreement_druid) { 'druid:wn586st0695' }
       let(:cocina) do
         {
-          defaultObjectRights: default_object_rights_xml,
           defaultAccess: {
             access: 'world',
             download: 'world'
@@ -393,7 +391,6 @@ RSpec.describe 'APO administrative mappings' do
       let(:agreement_druid) { 'druid:zh747vq3919' }
       let(:cocina) do
         {
-          defaultObjectRights: default_object_rights_xml,
           defaultAccess: {
             access: 'world',
             download: 'none',
@@ -518,7 +515,6 @@ RSpec.describe 'APO administrative mappings' do
       let(:agreement_druid) { 'druid:xf765cv5573' }
       let(:cocina) do
         {
-          defaultObjectRights: default_object_rights_xml,
           defaultAccess: {
             access: 'world',
             download: 'none',
@@ -667,7 +663,6 @@ RSpec.describe 'APO administrative mappings' do
       let(:agreement_druid) { 'druid:xf765cv5573' }
       let(:cocina) do
         {
-          defaultObjectRights: default_object_rights_xml,
           defaultAccess: {
             access: 'world',
             download: 'none',
