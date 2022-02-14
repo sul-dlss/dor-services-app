@@ -61,6 +61,7 @@ class DatastreamExtractor
   def datastream_content(ds_name, required)
     ds = (ds_name == :relationshipMetadata ? 'RELS-EXT' : ds_name.to_s)
     return workflow_xml if ds_name == :workflows
+    return version_xml if ds_name == :versionMetadata
     return item.datastreams[ds].content if item.datastreams.key?(ds) && !item.datastreams[ds].new?
 
     raise "required datastream #{ds_name} for #{item.pid} not found in DOR" if required
@@ -69,5 +70,22 @@ class DatastreamExtractor
   # Get the workflow xml representation from the workflow service
   def workflow_xml
     WorkflowClientFactory.build.all_workflows_xml(item.pid)
+  end
+
+  def version_xml
+    # This can be removed after migration.
+    VersionMigrationService.migrate(item)
+
+    object_versions = ObjectVersion.where(druid: item.pid).order(:version)
+
+    Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
+      xml.versionMetadata({ objectId: item.pid }) do
+        object_versions.each do |object_version|
+          xml.version({ versionId: object_version.version, tag: object_version.tag }.compact) do
+            xml.description(object_version.description) if object_version.description
+          end
+        end
+      end
+    end.to_xml
   end
 end
