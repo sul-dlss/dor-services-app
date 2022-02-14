@@ -11,33 +11,23 @@ MODS_NS = Cocina::FromFedora::Descriptive::DESC_METADATA_NS
 class Report
   Result = Struct.new(:druid, :apo, :catkey, :result)
 
-  def initialize(name:, dsid:, report_func:)
+  def initialize(name:, dsid:)
     @name = name
     @dsid = dsid
     @options = build_options
-    @report_func = report_func
   end
 
   def run
-    results = run_report
-    write_report(results)
-  end
-
-  private
-
-  attr_reader :name, :options, :dsid, :report_func
-
-  def run_report
-    Parallel.map(druids, progress: 'Testing') do |druid|
+    results = Parallel.map(druids, progress: 'Testing') do |druid|
       cache_result = cache.datastream(druid, dsid)
       next if cache_result.failure?
 
       ng_xml = Nokogiri::XML(cache_result.value!)
 
-      report_result = report_func.call(ng_xml)
-      if !report_result
-        nil
-      elsif options[:fast]
+      report_result = yield ng_xml
+      next unless report_result
+
+      if options[:fast]
         Result.new(druid, nil, nil, report_result)
       else
         begin
@@ -47,13 +37,19 @@ class Report
           Result.new(druid, nil, nil, report_result)
         end
       end
-    end.compact
+    end
+
+    write_report(results)
   end
+
+  private
+
+  attr_reader :name, :options, :dsid
 
   def write_report(results)
     CSV.open("#{name}.csv", 'w') do |writer|
       writer << %w[druid apo catkey message]
-      results.each do |result|
+      results.compact.each do |result|
         writer << [result.druid,
                    result.apo,
                    result.catkey,

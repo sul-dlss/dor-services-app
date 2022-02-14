@@ -4,7 +4,7 @@
 require_relative '../../config/environment'
 require_relative '../../lib/report'
 
-def different_places?(ng_xml)
+Report.new(name: 'desc-different_places', dsid: 'descMetadata').run do |ng_xml|
   # any place which has a placeTerm type=code and placeTerm type=text where authority is present and authorityURI or valueURI contains id.loc.gov/authorities
   ng_xml.root.xpath('//mods:place[count(mods:placeTerm) = 2]', mods: MODS_NS).each do |place_node|
     code_place_term = place_node.xpath('//mods:placeTerm[@type="code"]', mods: MODS_NS).first
@@ -18,5 +18,3 @@ def different_places?(ng_xml)
   end
   false
 end
-
-Report.new(name: 'desc-different_places', dsid: 'descMetadata', report_func: method(:different_places?)).run

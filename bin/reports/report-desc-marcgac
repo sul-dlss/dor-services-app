@@ -4,7 +4,12 @@
 require_relative '../../config/environment'
 require_relative '../../lib/report'
 
-def bad_marcgac?(ng_xml)
+Report.new(name: 'desc-marcgac', dsid: 'descMetadata').run do |ng_xml|
+  def code_for(geo_node)
+    # This matches the actual normalization in cocina mapping and indexing.
+    geo_node.text.sub(/-+$/, '').gsub(/[^\w-]/, '')
+  end
+
   bad_marcgac = []
 
   # The target mods is subject/geographicCode with authority="marcgac" on either element.
@@ -18,10 +23,3 @@ def bad_marcgac?(ng_xml)
   end
   bad_marcgac.present? ? bad_marcgac.join(', ') : nil
 end
-
-def code_for(geo_node)
-  # This matches the actual normalization in cocina mapping and indexing.
-  geo_node.text.sub(/-+$/, '').gsub(/[^\w-]/, '')
-end
-
-Report.new(name: 'desc-marcgac', dsid: 'descMetadata', report_func: method(:bad_marcgac?)).run

@@ -8,9 +8,6 @@ require_relative '../../lib/report'
 #   a) titleInfo has the attribute type="translated" and
 #   b) titleInfo has the attribute "transliteration" with any value.
 # Include titleInfo at any level of the hierarchy (inside subject and relatedItem for example).
-
-def translated_title(ng_xml)
+Report.new(name: 'desc-titles-translated', dsid: 'descMetadata').run do |ng_xml|
   ng_xml.root.xpath('mods:titleInfo[@type="translated"]|mods:titleInfo[@transliteration]', mods: MODS_NS).any?
 end
-
-Report.new(name: 'desc-titles-translated', dsid: 'descMetadata', report_func: method(:translated_title)).run

@@ -8,36 +8,32 @@ MODS_NS = Cocina::FromFedora::Descriptive::DESC_METADATA_NS
 
 # Report generator that returns a list of unique values using Fedora objects stored in cache.
 class UniqueReport
-  def initialize(name:, dsid:, report_func:)
+  def initialize(name:, dsid:)
     @name = name
     @dsid = dsid
     @options = build_options
-    @report_func = report_func
   end
 
   def run
-    results = run_report
-    write_report(results)
-  end
-
-  private
-
-  attr_reader :name, :options, :dsid, :report_func
-
-  def run_report
-    Parallel.map(druids, progress: 'Testing') do |druid|
+    results = Parallel.map(druids, progress: 'Testing') do |druid|
       cache_result = cache.datastream(druid, dsid)
       next if cache_result.failure?
 
       ng_xml = Nokogiri::XML(cache_result.value!)
 
-      report_func.call(ng_xml)
-    end.compact.flatten.uniq.sort
+      yield ng_xml
+    end
+
+    write_report(results)
   end
+
+  private
+
+  attr_reader :name, :options, :dsid
 
   def write_report(results)
     CSV.open("#{name}.csv", 'w') do |writer|
-      results.each do |result|
+      results.compact.flatten.uniq.sort.each do |result|
         writer << [result]
       end
     end

@@ -4,8 +4,6 @@
 require_relative '../../config/environment'
 require_relative '../../lib/report'
 
-def missing_size?(ng_xml)
+Report.new(name: 'content-missing_size', dsid: 'contentMetadata').run do |ng_xml|
   ng_xml.root.xpath('//file[not(@size)]').present?
 end
-
-Report.new(name: 'content-missing_size', dsid: 'contentMetadata', report_func: method(:missing_size?)).run
