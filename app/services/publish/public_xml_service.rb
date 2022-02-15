@@ -80,6 +80,8 @@ module Publish
 
     SYMPHONY = 'symphony'
 
+    # catkeys are used by PURL
+    # objectType is used by purl-fetcher
     def public_identity_metadata
       catkeys = Array(public_cocina.identification&.catalogLinks).filter_map { |link| link.catalogRecordId if link.catalog == SYMPHONY }
       nodes = catkeys.map { |catkey| "  <otherId name=\"catkey\">#{catkey}</otherId>" }
@@ -87,6 +89,7 @@ module Publish
       Nokogiri::XML(
         <<~XML
           <identityMetadata>
+            <objectType>#{public_cocina.collection? ? 'collection' : 'item'}</objectType>
           #{nodes.join("\n")}
           </identityMetadata>
         XML

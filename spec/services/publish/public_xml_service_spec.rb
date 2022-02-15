@@ -218,7 +218,12 @@ RSpec.describe Publish::PublicXmlService do
       end
 
       it 'has identityMetadata with catkeys' do
-        expected = '<identityMetadata><otherId name="catkey">129483625</otherId></identityMetadata>'
+        expected = <<~XML
+          <identityMetadata>
+            <objectType>item</objectType>
+            <otherId name="catkey">129483625</otherId>
+          </identityMetadata>
+        XML
         expect(ng_xml.at_xpath('/publicObject/identityMetadata').to_xml).to be_equivalent_to expected
       end
 
