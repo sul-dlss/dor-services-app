@@ -75,24 +75,11 @@ RSpec.describe DatastreamExtractor do
     context 'when datastream is versionMetadata' do
       let(:ds_name) { :versionMetadata }
 
-      let(:expected_xml) do
-        <<~XML
-          <?xml version="1.0" encoding="UTF-8"?>
-            <versionMetadata objectId="druid:nc893zj8956">
-              <version versionId="1" tag="1.0.0">
-                <description>
-                  Initial version
-                </description>
-              </version>
-              <version versionId="2"/>
-            </versionMetadata>
-        XML
-      end
+      let(:expected_xml) { '<versionMetadata />' }
 
       before do
         allow(VersionMigrationService).to receive(:migrate)
-        ObjectVersion.create(druid: druid, version: 1, tag: '1.0.0', description: 'Initial version')
-        ObjectVersion.create(druid: druid, version: 2)
+        allow(ObjectVersion).to receive(:version_xml).and_return(expected_xml)
       end
 
       it { is_expected.to be_equivalent_to expected_xml }

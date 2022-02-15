@@ -81,4 +81,20 @@ class ObjectVersion < ApplicationRecord
   def self.current_version(druid)
     ObjectVersion.where(druid: druid).order(version: :desc).first
   end
+
+  # @param [String] druid
+  # @return [String] xml representation of version metadata
+  def self.version_xml(druid)
+    object_versions = ObjectVersion.where(druid: druid).order(:version)
+
+    Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
+      xml.versionMetadata({ objectId: druid }) do
+        object_versions.each do |object_version|
+          xml.version({ versionId: object_version.version, tag: object_version.tag }.compact) do
+            xml.description(object_version.description) if object_version.description
+          end
+        end
+      end
+    end.to_xml
+  end
 end

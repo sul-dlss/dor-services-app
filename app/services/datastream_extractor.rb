@@ -76,16 +76,6 @@ class DatastreamExtractor
     # This can be removed after migration.
     VersionMigrationService.migrate(item)
 
-    object_versions = ObjectVersion.where(druid: item.pid).order(:version)
-
-    Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
-      xml.versionMetadata({ objectId: item.pid }) do
-        object_versions.each do |object_version|
-          xml.version({ versionId: object_version.version, tag: object_version.tag }.compact) do
-            xml.description(object_version.description) if object_version.description
-          end
-        end
-      end
-    end.to_xml
+    ObjectVersion.version_xml(item.pid)
   end
 end
