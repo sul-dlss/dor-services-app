@@ -9,6 +9,10 @@ enabled_features:
     refresh: true
   create_ur_admin_policy: false
   datacite_update: false
+  postgres:
+    update: false
+    create: false
+    destroy: false
 
 # Ur Admin Policy
 ur_admin_policy:

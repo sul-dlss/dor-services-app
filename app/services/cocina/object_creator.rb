@@ -4,7 +4,7 @@ module Cocina
   # Given a Cocina model, create an ActiveFedora model.
   class ObjectCreator
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def self.create(cocina_object, event_factory: EventFactory, persister: ActiveFedoraPersister, assign_doi: false, cocina_object_store: CocinaObjectStore)
+    def self.create(cocina_object, event_factory: EventFactory, persister: ActiveFedoraPersister, assign_doi: false, cocina_object_store: CocinaObjectStore.new)
       _fedora_object, cocina_object = new(cocina_object_store: cocina_object_store).create(cocina_object, event_factory: event_factory, persister: persister, assign_doi: assign_doi)
       cocina_object
     end
@@ -13,7 +13,7 @@ module Cocina
       new(cocina_object_store: cocina_object_store).create(cocina_object, event_factory: nil, persister: nil, trial: true, notifier: notifier)
     end
 
-    def initialize(cocina_object_store: CocinaObjectStore)
+    def initialize(cocina_object_store: CocinaObjectStore.new)
       @cocina_object_store = cocina_object_store
     end
 
@@ -27,6 +27,9 @@ module Cocina
 
       fedora_object = create_from_model(cocina_object, trial: trial, assign_doi: assign_doi)
 
+      # This will rebuild the cocina model from fedora, which shows we are only returning persisted data
+      roundtrip_cocina_object = Mapper.build(fedora_object, notifier: notifier)
+
       unless trial
         persister.store(fedora_object)
 
@@ -38,10 +41,9 @@ module Cocina
 
         # This creates version 1.0.0 (Initial Version)
         ObjectVersion.increment_version(fedora_object.pid)
-      end
 
-      # This will rebuild the cocina model from fedora, which shows we are only returning persisted data
-      roundtrip_cocina_object = Mapper.build(fedora_object, notifier: notifier)
+        cocina_object_store.cocina_to_ar_save(roundtrip_cocina_object) if Settings.enabled_features.postgres.create
+      end
 
       [fedora_object, roundtrip_cocina_object]
     end

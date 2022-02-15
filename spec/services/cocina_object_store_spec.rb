@@ -91,6 +91,28 @@ RSpec.describe CocinaObjectStore do
           expect { described_class.save(cocina_object) }.to raise_error(CocinaObjectStore::CocinaObjectNotFoundError)
         end
       end
+
+      context 'when postgres update is enabled' do
+        let(:cocina_object_store) { described_class.new }
+        let(:updated_cocina_object) { instance_double(Cocina::Models::DRO) }
+
+        before do
+          allow(Settings.enabled_features.postgres).to receive(:update).and_return(true)
+          allow(described_class).to receive(:new).and_return(cocina_object_store)
+          allow(Dor).to receive(:find).and_return(item)
+          allow(Cocina::ObjectUpdater).to receive(:run).and_return(updated_cocina_object)
+          allow(cocina_object_store).to receive(:cocina_to_ar_save)
+          allow(cocina_object_store).to receive(:ar_exists?).and_return(true)
+        end
+
+        it 'maps and saves to Fedora' do
+          expect(described_class.save(cocina_object)).to be updated_cocina_object
+          expect(Dor).to have_received(:find).with(druid)
+          expect(Cocina::ObjectUpdater).to have_received(:run).with(item, cocina_object)
+          expect(cocina_object_store).to have_received(:cocina_to_ar_save).with(updated_cocina_object)
+          expect(cocina_object_store).to have_received(:ar_exists?).with(druid)
+        end
+      end
     end
 
     describe '#destroy' do
@@ -119,6 +141,27 @@ RSpec.describe CocinaObjectStore do
 
         it 'raises' do
           expect { described_class.destroy(druid) }.to raise_error(CocinaObjectStore::CocinaObjectNotFoundError)
+        end
+      end
+
+      context 'when postgres destroy is enabled' do
+        let(:fedora_object) { instance_double(Dor::Item, destroy: nil) }
+
+        let(:cocina_object_store) { described_class.new }
+
+        before do
+          allow(Settings.enabled_features.postgres).to receive(:destroy).and_return(true)
+          allow(Dor).to receive(:find).and_return(fedora_object)
+          allow(described_class).to receive(:find).and_return(cocina_object)
+          allow(described_class).to receive(:new).and_return(cocina_object_store)
+          allow(cocina_object_store).to receive(:ar_exists?).and_return(true)
+          allow(cocina_object_store).to receive(:ar_destroy)
+        end
+
+        it 'destroys Fedora object and ActiveRecord object' do
+          described_class.destroy(druid)
+          expect(fedora_object).to have_received(:destroy)
+          expect(cocina_object_store).to have_received(:ar_destroy).with(druid)
         end
       end
     end
