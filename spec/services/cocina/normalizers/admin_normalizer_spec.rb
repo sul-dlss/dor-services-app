@@ -179,7 +179,7 @@ RSpec.describe Cocina::Normalizers::AdminNormalizer do
       XML
     end
 
-    it 'removes unncessary empty registration and dissemination nodes' do
+    it 'removes content free registration and dissemination nodes' do
       expect(normalized_ng_xml).to be_equivalent_to(
         <<~XML
           <administrativeMetadata>
@@ -191,26 +191,6 @@ RSpec.describe Cocina::Normalizers::AdminNormalizer do
               <workflow id="someNotEmptyValue"/>
             </dissemination>
           </administrativeMetadata>
-        XML
-      )
-    end
-  end
-
-  describe '#remove_empty_dissemination_workflow' do
-    let(:original_xml) do
-      <<~XML
-        <administrativeMetadata>
-          <dissemination>
-            <workflow id=""/>
-          </dissemination>
-        </administrativeMetadata>
-      XML
-    end
-
-    it 'removes dissemination nodes' do
-      expect(normalized_ng_xml).to be_equivalent_to(
-        <<~XML
-          <administrativeMetadata/>
         XML
       )
     end

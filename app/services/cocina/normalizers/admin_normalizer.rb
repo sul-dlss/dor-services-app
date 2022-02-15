@@ -24,7 +24,6 @@ module Cocina
         remove_assembly_node
         remove_accessioning_node
         remove_empty_registration_and_dissemination
-        remove_empty_dissemination_workflow
         remove_object_id_attr
         regenerate_ng_xml(ng_xml.to_xml)
       end
@@ -33,12 +32,12 @@ module Cocina
 
       attr_reader :ng_xml
 
-      # removes nodes like this: <descMetadata><format>MODS</format><descMetadata>
+      # removes <descMetadata><format>MODS</format><descMetadata>
       def remove_desc_metadata_format_mods
         ng_xml.xpath('/administrativeMetadata/descMetadata/format[text()="MODS"]').each { |node| node.parent.remove }
       end
 
-      # removes nodes like this: <descMetadata><source>whatevs</source><descMetadata>
+      # removes <descMetadata><source>whatevs</source><descMetadata>
       def remove_desc_metadata_source
         ng_xml.xpath('/administrativeMetadata/descMetadata/source').each { |node| node.parent.remove }
       end
@@ -56,23 +55,18 @@ module Cocina
         ng_xml.xpath('/administrativeMetadata/accessioning').each(&:remove)
       end
 
-      # removes empty nodes like this: <registration/> or <dissemination/> or <dissemination><workflow id="" /></dissemination>
+      # removes:
+      #   <registration/>
+      #   <dissemination/>
+      #   <dissemination><workflow id="" /></dissemination>
       def remove_empty_registration_and_dissemination
         ng_xml.xpath('/administrativeMetadata/registration[not(node())]').each(&:remove)
-        ng_xml.xpath('/administrativeMetadata/dissemination[not(node())]').each(&:remove)
         ng_xml.xpath('/administrativeMetadata/dissemination/workflow[@id=""]').each { |node| node.parent.remove }
-      end
-
-      # remove dissemination workflow node with empty id attribute and then remove dissemination node
-      def remove_empty_dissemination_workflow
-        ng_xml.xpath('/administrativeMetadata/dissemination/workflow[@id=""]').each(&:remove)
-        ng_xml.xpath('/administrativeMetadata/dissemination[not(*)]').each(&:remove)
+        ng_xml.xpath('/administrativeMetadata/dissemination[not(node())]').each(&:remove)
       end
 
       def remove_object_id_attr
-        ng_xml.xpath('/administrativeMetadata[@objectId]').each do |node|
-          node.delete('objectId')
-        end
+        ng_xml.xpath('/administrativeMetadata/@objectId').each(&:remove)
       end
     end
   end
