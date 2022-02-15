@@ -129,7 +129,9 @@ RSpec.describe 'Display metadata' do
       expect(response.body).to be_equivalent_to <<~XML
         <?xml version="1.0" encoding="UTF-8"?>
         <publicObject id="druid:mk420bs7601" published="#{now.utc.xmlschema}" publishVersion="dor-services/#{Dor::VERSION}">
-          <identityMetadata/>
+          <identityMetadata>
+            <objectType>item</objectType>
+          </identityMetadata>
           <rightsMetadata>
             <access type="discover">
               <machine>
