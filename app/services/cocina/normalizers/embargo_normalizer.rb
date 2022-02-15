@@ -27,6 +27,7 @@ module Cocina
       def normalize
         return ng_xml.to_xml if normalize_released?
 
+        normalize_missing_discover
         normalize_twentypct
         normalize_empty
 
@@ -69,6 +70,19 @@ module Cocina
 
         ng_xml.root.remove
         true
+      end
+
+      def normalize_missing_discover
+        release_access_nodes = ng_xml.xpath('//releaseAccess[access[@type="read"]/machine/world][not(access[@type="discover"]/machine/world)]')
+
+        release_access_nodes.each do |release_access_node|
+          access_node = Nokogiri::XML::Node.new('access', ng_xml)
+          access_node[:type] = 'discover'
+          machine_node = Nokogiri::XML::Node.new('machine', ng_xml)
+          machine_node << Nokogiri::XML::Node.new('world', ng_xml)
+          access_node << machine_node
+          release_access_node << access_node
+        end
       end
     end
   end

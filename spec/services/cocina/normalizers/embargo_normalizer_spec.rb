@@ -201,4 +201,46 @@ RSpec.describe Cocina::Normalizers::EmbargoNormalizer do
       )
     end
   end
+
+  context 'when missing access type=discover' do
+    # From druid:bm722zk9642
+    let(:original_xml) do
+      <<~XML
+        <embargoMetadata>
+          <status>embargoed</status>
+          <releaseDate>2022-06-08T07:00:00Z</releaseDate>
+          <releaseAccess>
+            <access type="read">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+          </releaseAccess>
+        </embargoMetadata>
+      XML
+    end
+
+    it 'adds missing access' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+            <embargoMetadata>
+            <status>embargoed</status>
+            <releaseDate>2022-06-08T07:00:00Z</releaseDate>
+            <releaseAccess>
+              <access type="read">
+                <machine>
+                  <world/>
+                </machine>
+              </access>
+              <access type="discover">
+                <machine>
+                  <world/>
+                </machine>
+              </access>
+            </releaseAccess>
+          </embargoMetadata>#{'        '}
+        XML
+      )
+    end
+  end
 end
