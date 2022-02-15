@@ -24,6 +24,7 @@ module Cocina
         remove_assembly_node
         remove_accessioning_node
         remove_empty_registration_and_dissemination
+        remove_registration_collection_default_attr
         remove_object_id_attr
         regenerate_ng_xml(ng_xml.to_xml)
       end
@@ -63,6 +64,10 @@ module Cocina
         ng_xml.xpath('/administrativeMetadata/registration[not(node())]').each(&:remove)
         ng_xml.xpath('/administrativeMetadata/dissemination/workflow[@id=""]').each { |node| node.parent.remove }
         ng_xml.xpath('/administrativeMetadata/dissemination[not(node())]').each(&:remove)
+      end
+
+      def remove_registration_collection_default_attr
+        ng_xml.xpath('/administrativeMetadata/registration/collection/@default').each(&:remove)
       end
 
       def remove_object_id_attr

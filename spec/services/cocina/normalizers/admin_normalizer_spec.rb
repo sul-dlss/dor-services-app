@@ -196,6 +196,33 @@ RSpec.describe Cocina::Normalizers::AdminNormalizer do
     end
   end
 
+  describe '#remove_registration_collection_default_attr' do
+    #  adapted from bj961cc4982
+    let(:original_xml) do
+      <<~XML
+        <administrativeMetadata>
+          <registration>
+            <collection default="yes" id="druid:md481fb4654"/>
+            <workflow id="registrationWF"/>
+          </registration>
+        </administrativeMetadata>
+      XML
+    end
+
+    it 'removes default attribute from registration collection element' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <administrativeMetadata>
+            <registration>
+              <collection id="druid:md481fb4654"/>
+              <workflow id="registrationWF"/>
+            </registration>
+          </administrativeMetadata>
+        XML
+      )
+    end
+  end
+
   describe '#remove_object_id_attr' do
     let(:original_xml) do
       <<~XML
