@@ -5,5 +5,5 @@ require_relative '../../config/environment'
 require_relative '../../lib/report'
 
 Report.new(name: 'content-missing_mimeType', dsid: 'contentMetadata').run do |ng_xml|
-  ng_xml.xpath('//file[not(@mimetype)]').present?
+  ng_xml.xpath('/contentMetadata/resource/file[not(@mimetype)]').present?
 end

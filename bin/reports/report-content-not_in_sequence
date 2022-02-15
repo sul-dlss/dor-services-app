@@ -5,7 +5,7 @@ require_relative '../../config/environment'
 require_relative '../../lib/report'
 
 Report.new(name: 'content-not_in_sequence', dsid: 'contentMetadata').run do |ng_xml|
-  resource_nodes = ng_xml.xpath('//resource[@sequence]').to_a
+  resource_nodes = ng_xml.xpath('/contentMetadata/resource[@sequence]').to_a
   sorted_resource_nodes = resource_nodes.sort_by { |resource_node| resource_node[:sequence].to_i }
   resource_nodes != sorted_resource_nodes
 end
