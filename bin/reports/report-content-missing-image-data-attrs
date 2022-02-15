@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+Report.new(name: 'content-missing-image-data-attrs', dsid: 'contentMetadata').run do |ng_xml|
+  mimetype_jp2 = '@mimetype="image/jp2"'
+  # width or height attribute is missing or has empty value
+  height_or_width_blank = 'not(@width) or @width="" or not(@height) or @height=""'
+
+  ng_xml.xpath("/contentMetadata/resource/file[#{mimetype_jp2}]/imageData[#{height_or_width_blank}]").present?
+end
