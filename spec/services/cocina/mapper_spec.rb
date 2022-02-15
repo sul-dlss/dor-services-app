@@ -333,4 +333,40 @@ RSpec.describe Cocina::Mapper do
       expect(cocina_model.administrative.releaseTags.size).to eq 13
     end
   end
+
+  context 'when object is a Dor::Item with a blank catkey' do
+    let(:fedora_object) do
+      Dor::Item.new(
+        pid: 'druid:mk141nq2629',
+        label: 'test object',
+        admin_policy_object_id: 'druid:sc012gz0974'
+      )
+    end
+    let(:identity_metadata_xml) do
+      <<~XML
+        <?xml version="1.0"?>
+        <identityMetadata>
+          <sourceId source="sul">M0811_b1-3_t01-21</sourceId>
+          <objectId>druid:mk141nq2629</objectId>
+          <objectCreator>DOR</objectCreator>
+          <objectLabel>Oral history interview by Albert Camarillo : videotape, 1995</objectLabel>
+          <objectType>item</objectType>
+          <otherId name="uuid">81f35d2e-7b4d-11e9-88b8-005056a7edb9</otherId>
+          <otherId name="catkey"/>
+          <otherId name="previous_catkey">4084149</otherId>
+          </identityMetadata>
+      XML
+    end
+
+    before do
+      fedora_object.descMetadata.title_info.main_title = 'Hello'
+      allow(fedora_object).to receive(:identityMetadata).and_return(Dor::IdentityMetadataDS.from_xml(identity_metadata_xml))
+    end
+
+    it 'ignores the blank catkey' do
+      expect(cocina_model).to be_kind_of Cocina::Models::DRO
+      expect(cocina_model.identification.catalogLinks.size).to eq 1
+      expect(cocina_model.identification.catalogLinks.first.catalogRecordId).to eq '4084149'
+    end
+  end
 end
