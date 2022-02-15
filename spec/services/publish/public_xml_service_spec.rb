@@ -254,13 +254,6 @@ RSpec.describe Publish::PublicXmlService do
         expect(ng_xml.at_xpath('/publicObject/rdf:RDF/rdf:Description/hydra:isGovernedBy', ns)).not_to be
       end
 
-      it 'clones of the content of the other datastreams, keeping the originals in tact' do
-        expect(item.datastreams['identityMetadata'].ng_xml.at_xpath('/identityMetadata')).to be
-        expect(item.datastreams['contentMetadata'].ng_xml.at_xpath('/contentMetadata')).to be
-        expect(item.datastreams['rightsMetadata'].ng_xml.at_xpath('/rightsMetadata')).to be
-        expect(item.datastreams['RELS-EXT'].content).to be_equivalent_to rels
-      end
-
       context 'when no thumb is present' do
         let(:cocina_object) do
           Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
