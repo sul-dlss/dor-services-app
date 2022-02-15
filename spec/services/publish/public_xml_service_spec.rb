@@ -3,8 +3,14 @@
 require 'rails_helper'
 
 RSpec.describe Publish::PublicXmlService do
-  subject(:service) { described_class.new(item, released_for: release_tags, thumbnail_service: thumbnail_service) }
+  subject(:service) do
+    described_class.new(item,
+                        public_cocina: public_cocina,
+                        released_for: release_tags,
+                        thumbnail_service: thumbnail_service)
+  end
 
+  let(:public_cocina) { Publish::PublicCocinaService.create(cocina_object) }
   let(:release_tags) { {} }
 
   let(:druid) { 'druid:bc123df4567' }
@@ -179,7 +185,12 @@ RSpec.describe Publish::PublicXmlService do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: {
+                                  catalogLinks: [
+                                    { catalog: 'previous symphony', catalogRecordId: '9001001001' },
+                                    { catalog: 'symphony', catalogRecordId: '129483625' }
+                                  ]
+                                },
                                 access: {},
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
                                 structural: structural)
@@ -206,8 +217,9 @@ RSpec.describe Publish::PublicXmlService do
         expect(ng_xml.at_xpath('/publicObject/@publishVersion').value).to eq("dor-services/#{Dor::VERSION}")
       end
 
-      it 'identityMetadata' do
-        expect(ng_xml.at_xpath('/publicObject/identityMetadata')).to be
+      it 'has identityMetadata with catkeys' do
+        expected = '<identityMetadata><otherId name="catkey">129483625</otherId></identityMetadata>'
+        expect(ng_xml.at_xpath('/publicObject/identityMetadata').to_xml).to be_equivalent_to expected
       end
 
       it 'no contentMetadata element' do

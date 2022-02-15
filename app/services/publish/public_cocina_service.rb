@@ -17,8 +17,6 @@ module Publish
     def build
       return cocina unless cocina.dro?
 
-      build_structural
-
       cocina.new(structural: build_structural,
                  administrative: build_administrative)
     end
@@ -33,6 +31,8 @@ module Publish
     end
 
     def build_structural
+      return unless cocina.structural
+
       file_sets = Array(cocina.structural.contains)
       new_file_sets = file_sets.filter_map do |fs|
         files = fs.structural.contains.select { |file| file.administrative.publish }

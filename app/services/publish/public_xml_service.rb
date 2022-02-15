@@ -6,9 +6,12 @@ module Publish
     attr_reader :object
 
     # @param [Dor::Item] object
+    # @param [Cocina::Models::DRO, Cocina::Models::Collection] public_cocina a cocina object stripped of non-public data
     # @param [Hash{String => Boolean}] released_for keys are Project name strings, values are boolean
-    def initialize(object, released_for:, thumbnail_service:)
+    # @param [ThumbnailService] thumbnail_service
+    def initialize(object, public_cocina:, released_for:, thumbnail_service:)
       @object = object
+      @public_cocina = public_cocina
       @released_for = released_for
       @thumbnail_service = thumbnail_service
     end
@@ -43,7 +46,7 @@ module Publish
 
     private
 
-    attr_reader :released_for
+    attr_reader :released_for, :public_cocina
 
     # Generate XML structure for inclusion to Purl. This data is read by purl-fetcher.
     # @return [String] The XML release node as a string, with ReleaseDigest as the root document
@@ -75,12 +78,19 @@ module Publish
       object.embargoMetadata.release_date.first.to_datetime.utc.iso8601
     end
 
+    SYMPHONY = 'symphony'
+
     def public_identity_metadata
-      @public_identity_metadata ||= begin
-        im = object.datastreams['identityMetadata'].ng_xml.clone
-        im.search('//release').each(&:remove) # remove any <release> tags from public xml which have full history
-        im
-      end
+      catkeys = Array(public_cocina.identification&.catalogLinks).filter_map { |link| link.catalogRecordId if link.catalog == SYMPHONY }
+      nodes = catkeys.map { |catkey| "  <otherId name=\"catkey\">#{catkey}</otherId>" }
+
+      Nokogiri::XML(
+        <<~XML
+          <identityMetadata>
+          #{nodes.join("\n")}
+          </identityMetadata>
+        XML
+      )
     end
 
     # @return [Nokogiri::XML::Document] sanitized for public consumption

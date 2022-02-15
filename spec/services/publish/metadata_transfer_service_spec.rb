@@ -170,7 +170,7 @@ RSpec.describe Publish::MetadataTransferService do
         it 'identityMetadta, contentMetadata, rightsMetadata, generated dublin core, and public xml' do
           item.rightsMetadata.content = "<rightsMetadata><access type='discover'><machine><world/></machine></access></rightsMetadata>"
           service.publish
-          expect(Publish::PublicXmlService).to have_received(:new).with(item, released_for: release_tags, thumbnail_service: thumbnail_service)
+          expect(Publish::PublicXmlService).to have_received(:new).with(item, public_cocina: Cocina::Models::DRO, released_for: release_tags, thumbnail_service: thumbnail_service)
           expect(Publish::PublicDescMetadataService).to have_received(:new).with(item)
         end
 
