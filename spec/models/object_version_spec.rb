@@ -178,4 +178,29 @@ RSpec.describe ObjectVersion, type: :model do
       end
     end
   end
+
+  describe '#version_xml' do
+    let(:expected_xml) do
+      <<~XML
+        <?xml version="1.0" encoding="UTF-8"?>
+          <versionMetadata objectId="#{druid}">
+            <version versionId="1" tag="1.0.0">
+              <description>
+                Initial version
+              </description>
+            </version>
+            <version versionId="2"/>
+          </versionMetadata>
+      XML
+    end
+
+    before do
+      described_class.create(druid: druid, version: 1, tag: '1.0.0', description: 'Initial version')
+      described_class.create(druid: druid, version: 2)
+    end
+
+    it 'returns xml' do
+      expect(described_class.version_xml(druid)).to be_equivalent_to(expected_xml)
+    end
+  end
 end
