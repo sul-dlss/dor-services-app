@@ -6,6 +6,7 @@ module Cocina
     # when round-tripping.
     class ContentMetadataNormalizer
       include Cocina::Normalizers::Base
+      FILE_DIRECTIVES = %i[publish preserve shelve].freeze
 
       # @param [String] druid
       # @param [Nokogiri::Document] content_ng_xml content metadata XML to be normalized
@@ -47,6 +48,7 @@ module Cocina
         normalize_empty_xml
         normalize_content_file_type
         normalize_image_data
+        normalize_blank_file_directives
 
         regenerate_ng_xml(ng_xml.to_s)
       end
@@ -160,6 +162,12 @@ module Cocina
             attr_node.parent << label_node
           end
           attr_node.remove
+        end
+      end
+
+      def normalize_blank_file_directives
+        FILE_DIRECTIVES.each do |directive|
+          ng_xml.root.xpath("//file[@#{directive} = '']").each { |file| file[directive] = 'no' }
         end
       end
 

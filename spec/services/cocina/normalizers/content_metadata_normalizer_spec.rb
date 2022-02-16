@@ -42,6 +42,41 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     end
   end
 
+  context 'when normalizing blank file directives' do
+    # adapted from ft113wv9260 and ns538tk9778
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata type="file" objectId="druid:ft113wv9260">
+          <resource id="ft113wv9260_1" type="file" objectId="druid:ft113wv9260">
+            <file mimetype="image/tiff" preserve="" format="" size="456" shelve="" publish="no" id="ft113wv9260_00_0001.tif">
+              <imageData width="4865" height="4933"/>
+            </file>
+            <file mimetype="image/tiff" preserve="yes" format="" size="123" shelve="yes" publish="" id="ft113wv9260_00_0002.tif">
+              <imageData width="4865" height="4933"/>
+          </file>
+        </contentMetadata>
+      XML
+    end
+
+    let(:expected_xml) do
+      <<~XML
+        <contentMetadata type="file" objectId="druid:ft113wv9260">
+          <resource type="file">
+            <file mimetype="image/tiff" preserve="no" size="456" shelve="no" publish="no" id="ft113wv9260_00_0001.tif">
+              <imageData width="4865" height="4933"/>
+            </file>
+            <file mimetype="image/tiff" preserve="yes" size="123" shelve="yes" publish="no" id="ft113wv9260_00_0002.tif">
+              <imageData width="4865" height="4933"/>
+          </file>
+        </contentMetadata>
+      XML
+    end
+
+    it 'normalizes blank file directive attributes to no' do
+      expect(normalized_ng_xml).to be_equivalent_to(expected_xml)
+    end
+  end
+
   context 'when normalizing labels' do
     # adapted from dm559qb5551 and fm402pc0937
     let(:original_xml) do
