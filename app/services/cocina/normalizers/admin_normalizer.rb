@@ -26,6 +26,7 @@ module Cocina
         remove_empty_registration_and_dissemination
         remove_registration_collection_default_attr
         remove_object_id_attr
+        remove_contacts
         regenerate_ng_xml(ng_xml.to_xml)
       end
 
@@ -72,6 +73,10 @@ module Cocina
 
       def remove_object_id_attr
         ng_xml.xpath('/administrativeMetadata/@objectId').each(&:remove)
+      end
+
+      def remove_contacts
+        ng_xml.xpath('/administrativeMetadata/contact').each(&:remove)
       end
     end
   end

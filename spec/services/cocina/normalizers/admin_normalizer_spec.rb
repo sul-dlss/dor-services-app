@@ -246,4 +246,39 @@ RSpec.describe Cocina::Normalizers::AdminNormalizer do
       )
     end
   end
+
+  describe '#remove_contacts' do
+    #  adapted from bm077td6448
+    let(:original_xml) do
+      <<~XML
+        <administrativeMetadata>
+          <contact type="user">
+            <id type="sunetid">awesomeguitardude</id>
+            <name>Eddie Van Halen</name>
+            <email>evanhalen@stanford.edu</email>
+            <organization>Stanford University Libraries</organization>
+          </contact>
+          <registration>
+            <collection default="yes" id="druid:dx969tv9730"/>
+            <workflow id="registrationWF"/>
+            <collection id="druid:pr871vx0830"/>
+          </registration>
+         </administrativeMetadata>
+      XML
+    end
+
+    it 'removes contact nodes' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <administrativeMetadata>
+            <registration>
+              <collection id="druid:dx969tv9730"/>
+              <workflow id="registrationWF"/>
+              <collection id="druid:pr871vx0830"/>
+            </registration>
+          </administrativeMetadata>
+        XML
+      )
+    end
+  end
 end
