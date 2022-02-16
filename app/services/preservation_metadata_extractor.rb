@@ -3,36 +3,35 @@
 # This writes the object metadata files to the workspace metadata directory
 class PreservationMetadataExtractor
   # @param [Dor::Item] item The representation of the digital object
+  # @param [Cocina::DRO, Cocina::AdminPolicy, Cocina::Collection] cocina_object The representation of the digital object
   # @param [DruidTools::Druid] workspace The representation of the item's work area
   # @return [Pathname] Pull all the datastreams specified in the configuration file
   #   into the workspace's metadata directory, overwriting existing file if present
-  def self.extract(item:, workspace:)
-    new(item: item, workspace: workspace).extract_datastreams
+  def self.extract(item:, cocina_object:, workspace:)
+    new(item: item, workspace: workspace, cocina_object: cocina_object).extract
   end
 
   # @param [Dor::Item] item The representation of the digital object
+  # @param [Cocina::DRO, Cocina::AdminPolicy, Cocina::Collection] cocina_object The representation of the digital object
   # @param [DruidTools::Druid] workspace The representation of the item's work area
   # @param [Hash<Symbol,Bool>] datastream_config the list of datastreams to export and whether they are required or not.
-  def initialize(item:, workspace:, datastream_config: DEFAULT_DATASTREAM_CONFIG)
+  def initialize(item:, cocina_object:, workspace:, datastream_config: DEFAULT_DATASTREAM_CONFIG)
     @item = item
+    @cocina_object = cocina_object
     @datastream_config = datastream_config
     @metadata_dir = Pathname.new(workspace.path('metadata', true))
   end
 
-  # @return [Pathname] Pull all the datastreams specified in the configuration file
-  #   into the workspace's metadata directory, overwriting existing file if present
-  def extract_datastreams
-    datastream_config.each do |ds_name, required|
-      metadata_file = metadata_dir.join("#{ds_name}.xml")
-      metadata_string = datastream_content(ds_name, required)
-      metadata_file.open('w') { |f| f << metadata_string } if metadata_string
-    end
+  # @return [Pathname] metadata directory
+  def extract
+    extract_datastreams
+    extract_cocina
     metadata_dir
   end
 
   private
 
-  attr_reader :metadata_dir, :item, :datastream_config
+  attr_reader :metadata_dir, :item, :datastream_config, :cocina_object
 
   # Which datastreams to export and whether they are required or not
   DEFAULT_DATASTREAM_CONFIG =
@@ -53,6 +52,16 @@ class PreservationMetadataExtractor
       workflows: false,
       geoMetadata: false
     }.freeze
+
+  # Pull all the datastreams specified in the configuration file
+  #   into the workspace's metadata directory, overwriting existing file if present
+  def extract_datastreams
+    datastream_config.each do |ds_name, required|
+      metadata_file = metadata_dir.join("#{ds_name}.xml")
+      metadata_string = datastream_content(ds_name, required)
+      metadata_file.open('w') { |f| f << metadata_string } if metadata_string
+    end
+  end
 
   # @param [Symbol] ds_name The name of the desired Fedora datastream
   # @param [Boolean] required is the datastream required
@@ -77,5 +86,12 @@ class PreservationMetadataExtractor
     VersionMigrationService.migrate(item)
 
     ObjectVersion.version_xml(item.pid)
+  end
+
+  def extract_cocina
+    metadata_file = metadata_dir.join('cocina.json')
+    metadata_file.open('w') do |f|
+      f << JSON.pretty_generate(cocina_object.to_h)
+    end
   end
 end
