@@ -303,6 +303,7 @@ RSpec.describe Cocina::Mapper do
           <objectLabel>Stanford University map collection, 1853-1997</objectLabel>
           <objectType>collection</objectType>
           <otherId name="catkey">4366577</otherId>
+          <otherId name="previous_catkey">12345 </otherId>
           <otherId name="uuid">3a69d380-d615-11e3-96be-0050569b3c3c</otherId>
           <tag>Remediated By : 5.8.2</tag>
           <release to="Searchworks" what="self" when="2016-11-16T22:45:36Z" who="blalbrit">true</release>
@@ -331,6 +332,12 @@ RSpec.describe Cocina::Mapper do
       expect(cocina_model).to be_kind_of Cocina::Models::Collection
       expect(cocina_model.administrative.hasAdminPolicy).to eq 'druid:sc012gz0974'
       expect(cocina_model.administrative.releaseTags.size).to eq 13
+    end
+
+    it 'maps both the current and previous catkeys and strips extra spaces' do
+      expect(cocina_model.identification.catalogLinks.size).to eq 2
+      expect(cocina_model.identification.catalogLinks[0].catalogRecordId).to eq '4366577'
+      expect(cocina_model.identification.catalogLinks[1].catalogRecordId).to eq '12345'
     end
   end
 

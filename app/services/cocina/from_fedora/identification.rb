@@ -58,7 +58,7 @@ module Cocina
         results = []
         fedora_object.identityMetadata.ng_xml.xpath('//otherId[@name="catkey" or @name="previous_catkey"]').each do |clink|
           catalog = clink['name'] == 'catkey' ? 'symphony' : 'previous symphony'
-          results << { catalog: catalog, catalogRecordId: clink.text } if clink.text.present?
+          results << { catalog: catalog, catalogRecordId: clink.text.strip } if clink.text.present?
         end
         results.uniq { |clink| "#{clink[:catalog]}::#{clink[:catalogRecordId]}" }.presence
       end
