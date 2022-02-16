@@ -12,8 +12,8 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
         <contentMetadata objectId="druid:bk689jd2364" type="file">
           <resource id="bk689jd2364_1" sequence="1" type="file">
             <file id="Decision.Record_6-30-03_signed.pdf" preserve="yes" publish="yes" shelve="yes" mimetype="application/pdf" size="102937">
-              <checksum type="MD5">50d5fc2730503a98bc2dda643064ae5b</checksum>
-              <checksum type="SHA1">df31b2f415d8e0806fa283db4e2c7fda690d1b02</checksum>
+              <checksum type="md5">50d5fc2730503a98bc2dda643064ae5b</checksum>
+              <checksum type="sha1">df31b2f415d8e0806fa283db4e2c7fda690d1b02</checksum>
             </file>
           </resource>
         </contentMetadata>
@@ -39,6 +39,38 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
 
     it 'removes the ids from roundtripped' do
       expect(normalized_roundtripped_ng_xml).to be_equivalent_to(expected_xml)
+    end
+  end
+
+  context 'when normalizing checksums' do
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata objectId="druid:bk689jd2364" type="file">
+          <resource sequence="1" type="file">
+            <file id="Decision.Record_6-30-03_signed.pdf" preserve="yes" publish="yes" shelve="yes" mimetype="application/pdf" size="102937">
+              <checksum type="MD5">50d5fc2730503a98bc2dda643064ae5b</checksum>
+              <checksum type="SHA1">df31b2f415d8e0806fa283db4e2c7fda690d1b02</checksum>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    let(:expected_xml) do
+      <<~XML
+        <contentMetadata objectId="druid:bk689jd2364" type="file">
+          <resource type="file">
+            <file id="Decision.Record_6-30-03_signed.pdf" preserve="yes" publish="yes" shelve="yes" mimetype="application/pdf" size="102937">
+              <checksum type="md5">50d5fc2730503a98bc2dda643064ae5b</checksum>
+              <checksum type="sha1">df31b2f415d8e0806fa283db4e2c7fda690d1b02</checksum>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    it 'normalizes the checksum type to be lowercase' do
+      expect(normalized_ng_xml).to be_equivalent_to(expected_xml)
     end
   end
 

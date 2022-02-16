@@ -53,11 +53,11 @@ module Cocina
         regenerate_ng_xml(ng_xml.to_s)
       end
 
+      # resource ids and sequence numbers are regenerated so they must be normalized out of the roundtrip comparison
       def normalize_roundtrip
         remove_resource_id
         remove_external_resource_id
         remove_sequence
-        normalize_checksum
 
         regenerate_ng_xml(ng_xml.to_s)
       end
