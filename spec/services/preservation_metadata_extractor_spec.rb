@@ -6,10 +6,21 @@ RSpec.describe PreservationMetadataExtractor do
   let(:workspace) { instance_double(DruidTools::Druid, path: 'foo') }
   let(:druid) { 'druid:nc893zj8956' }
   let(:item) { instance_double(Dor::Item, pid: druid) }
-  let(:instance) { described_class.new(item: item, workspace: workspace) }
+  let(:instance) { described_class.new(item: item, workspace: workspace, cocina_object: cocina_object) }
+  let(:cocina_object) do
+    Cocina::Models::DRO.new({
+                              cocinaVersion: '0.0.1',
+                              externalIdentifier: druid,
+                              type: Cocina::Models::Vocab.book,
+                              label: 'Test DRO',
+                              version: 1,
+                              access: { access: 'world', download: 'world' },
+                              administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
+                            })
+  end
 
-  describe '.extract_datastreams' do
-    subject(:extract_datastreams) { instance.extract_datastreams }
+  describe '.extract' do
+    subject(:extract) { instance.extract }
 
     let(:metadata_dir) { instance_double(Pathname) }
     let(:metadata_file) { instance_double(Pathname, exist?: false) }
@@ -18,13 +29,14 @@ RSpec.describe PreservationMetadataExtractor do
     before do
       allow(workspace).to receive(:path).with('metadata', true).and_return('metadata_dir')
       expect(Pathname).to receive(:new).with('metadata_dir').and_return(metadata_dir)
-      expect(metadata_dir).to receive(:join).at_least(5).times.and_return(metadata_file)
-      expect(metadata_file).to receive(:open).at_least(5).times
+      expect(metadata_dir).to receive(:join).at_least(6).times.and_return(metadata_file)
+      expect(metadata_file).to receive(:open).at_least(6).times
       allow(instance).to receive(:datastream_content).and_return(metadata_string)
+      allow(instance).to receive(:extract_cocina)
     end
 
-    it 'extracts the datastreams' do
-      extract_datastreams
+    it 'extracts the metadata' do
+      extract
       expect(instance).to have_received(:datastream_content).with(:administrativeMetadata, false)
       expect(instance).to have_received(:datastream_content).with(:contentMetadata, false)
       expect(instance).to have_received(:datastream_content).with(:defaultObjectRights, false)
@@ -40,6 +52,7 @@ RSpec.describe PreservationMetadataExtractor do
       expect(instance).to have_received(:datastream_content).with(:rightsMetadata, false)
       expect(instance).to have_received(:datastream_content).with(:versionMetadata, true)
       expect(instance).to have_received(:datastream_content).with(:workflows, false)
+      expect(instance).to have_received(:extract_cocina)
     end
   end
 
@@ -104,5 +117,27 @@ RSpec.describe PreservationMetadataExtractor do
         end
       end
     end
+  end
+
+  describe '#extract_cocina' do
+    let(:metadata_dir) { instance_double(Pathname) }
+    let(:metadata_file) { instance_double(Pathname, exist?: false) }
+    let(:file) { instance_double(File, :<< => nil) }
+    # let(:metadata_string) { '<metadata/>' }
+
+    before do
+      allow(workspace).to receive(:path).with('metadata', true).and_return('metadata_dir')
+      expect(Pathname).to receive(:new).with('metadata_dir').and_return(metadata_dir)
+      allow(metadata_dir).to receive(:join).and_return(metadata_file)
+      allow(metadata_file).to receive(:open).and_yield(file)
+    end
+
+    # rubocop:disable Layout/LineLength
+    it 'serializes json' do
+      instance.send(:extract_cocina)
+      expect(metadata_dir).to have_received(:join).with('cocina.json')
+      expect(file).to have_received(:<<).with("{\n  \"cocinaVersion\": \"0.0.1\",\n  \"type\": \"http://cocina.sul.stanford.edu/models/book.jsonld\",\n  \"externalIdentifier\": \"druid:nc893zj8956\",\n  \"label\": \"Test DRO\",\n  \"version\": 1,\n  \"access\": {\n    \"access\": \"world\",\n    \"download\": \"world\"\n  },\n  \"administrative\": {\n    \"hasAdminPolicy\": \"druid:hy787xj5878\",\n    \"releaseTags\": [\n\n    ]\n  }\n}")
+    end
+    # rubocop:enable Layout/LineLength
   end
 end

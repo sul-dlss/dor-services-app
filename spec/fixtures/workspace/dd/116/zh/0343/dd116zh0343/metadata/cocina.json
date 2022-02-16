@@ -1,0 +1,17 @@
+{
+  "cocinaVersion": "0.0.1",
+  "type": "http://cocina.sul.stanford.edu/models/book.jsonld",
+  "externalIdentifier": "druid:dd116zh0343",
+  "label": "Test DRO",
+  "version": 1,
+  "access": {
+    "access": "world",
+    "download": "world"
+  },
+  "administrative": {
+    "hasAdminPolicy": "druid:hy787xj5878",
+    "releaseTags": [
+
+    ]
+  }
+}

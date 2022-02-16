@@ -38,11 +38,13 @@ RSpec.describe SdrIngestService do
   describe '.transfer' do
     let(:druid) { 'druid:dd116zh0343' }
     let(:dor_item) { instance_double(Dor::Item, pid: druid) }
+    let(:cocina_object) { instance_double(Cocina::Models::DRO) }
     let(:metadata_dir) { fixtures.join('workspace/dd/116/zh/0343/dd116zh0343/metadata') }
 
     before do
       allow(Preservation::Client.objects).to receive(:signature_catalog).and_return(fixture_sig_cat_obj)
-      expect(PreservationMetadataExtractor).to receive(:extract).with(item: dor_item, workspace: an_instance_of(DruidTools::Druid)).and_return(metadata_dir)
+      allow(Cocina::Mapper).to receive(:build).and_return(cocina_object)
+      expect(PreservationMetadataExtractor).to receive(:extract).with(item: dor_item, workspace: an_instance_of(DruidTools::Druid), cocina_object: cocina_object).and_return(metadata_dir)
     end
 
     specify 'with content changes' do
@@ -62,6 +64,7 @@ RSpec.describe SdrIngestService do
                                  'export/dd116zh0343/data/content/folder3PaSd/storyDm.txt',
                                  'export/dd116zh0343/data/content/folder3PaSd/storyFa.txt',
                                  'export/dd116zh0343/data/metadata',
+                                 'export/dd116zh0343/data/metadata/cocina.json',
                                  'export/dd116zh0343/data/metadata/contentMetadata.xml',
                                  'export/dd116zh0343/data/metadata/tech-generated.xml',
                                  'export/dd116zh0343/data/metadata/technicalMetadata-bad.xml',
@@ -90,6 +93,7 @@ RSpec.describe SdrIngestService do
                                  'export/dd116zh0343/bagit.txt',
                                  'export/dd116zh0343/data',
                                  'export/dd116zh0343/data/metadata',
+                                 'export/dd116zh0343/data/metadata/cocina.json',
                                  'export/dd116zh0343/data/metadata/contentMetadata.xml',
                                  'export/dd116zh0343/data/metadata/tech-generated.xml',
                                  'export/dd116zh0343/data/metadata/technicalMetadata-bad.xml',

@@ -10,12 +10,13 @@ class SdrIngestService
   # @param [Dor::Item] dor_item The representation of the digital object
   # @return [void] Create the Moab/bag manifests for new version, export data to BagIt bag, kick off the SDR preservation workflow
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
+  # rubocop:disable Metrics/AbcSize
   def self.transfer(dor_item)
     druid = dor_item.pid
     workspace = DruidTools::Druid.new(druid, Settings.sdr.local_workspace_root)
     signature_catalog = signature_catalog_from_preservation(druid)
     new_version_id = signature_catalog.version_id + 1
-    metadata_dir = PreservationMetadataExtractor.extract(item: dor_item, workspace: workspace)
+    metadata_dir = PreservationMetadataExtractor.extract(item: dor_item, workspace: workspace, cocina_object: Cocina::Mapper.build(dor_item))
     verify_version_metadata(metadata_dir, new_version_id)
     version_inventory = Preserve::FileInventoryBuilder.build(metadata_dir: metadata_dir,
                                                              druid: druid,
@@ -40,6 +41,7 @@ class SdrIngestService
     bagger.create_tagfiles
     Preserve::BagVerifier.verify(directory: bag_dir)
   end
+  # rubocop:enable Metrics/AbcSize
 
   # NOTE: the following methods should probably all be private
 
