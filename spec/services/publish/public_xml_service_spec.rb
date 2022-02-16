@@ -60,25 +60,6 @@ RSpec.describe Publish::PublicXmlService do
 
     let(:ng_xml) { Nokogiri::XML(xml) }
 
-    let(:rights) do
-      <<~XML
-        <rightsMetadata objectId="druid:bc123df4567">
-          <copyright>
-            <human>(c) Copyright 2010 by Sebastian Jeremias Osterfeld</human>
-          </copyright>
-          <access type="read">
-            <machine>
-              <group>stanford:stanford</group>
-            </machine>
-          </access>
-          <use>
-            <machine type="creativeCommons">by-sa</machine>
-            <human type="creativeCommons">CC Attribution Share Alike license</human>
-          </use>
-        </rightsMetadata>
-      XML
-    end
-
     before do
       mods = <<-EOXML
         <mods:mods xmlns:mods="http://www.loc.gov/mods/v3"
@@ -126,8 +107,10 @@ RSpec.describe Publish::PublicXmlService do
                                 description: description,
                                 identification: {},
                                 access: {
+                                  access: 'world',
+                                  download: 'world',
                                   embargo: {
-                                    releaseDate: DateTime.parse('2050-05-31')
+                                    releaseDate: '2021-10-08T00:00:00Z'
                                   }
                                 },
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
@@ -138,7 +121,7 @@ RSpec.describe Publish::PublicXmlService do
       end
 
       it 'adds embargo to the rights' do
-        expect(result).to eq '2050-05-31T00:00:00Z'
+        expect(result).to eq '2021-10-08T00:00:00Z'
       end
     end
 

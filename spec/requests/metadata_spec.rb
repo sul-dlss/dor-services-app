@@ -154,10 +154,7 @@ RSpec.describe 'Display metadata' do
             </access>
             <use>
               <human type="useAndReproduction"/>
-              <human type="creativeCommons"/>
-              <machine type="creativeCommons" uri=""/>
-              <human type="openDataCommons"/>
-              <machine type="openDataCommons" uri=""/>
+              <license />
             </use>
             <copyright>
               <human/>
