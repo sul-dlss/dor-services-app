@@ -12,8 +12,8 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
         <contentMetadata objectId="druid:bk689jd2364" type="file">
           <resource id="bk689jd2364_1" sequence="1" type="file">
             <file id="Decision.Record_6-30-03_signed.pdf" preserve="yes" publish="yes" shelve="yes" mimetype="application/pdf" size="102937">
-              <checksum type="MD5">50d5fc2730503a98bc2dda643064ae5b</checksum>
-              <checksum type="SHA1">df31b2f415d8e0806fa283db4e2c7fda690d1b02</checksum>
+              <checksum type="md5">50d5fc2730503a98bc2dda643064ae5b</checksum>
+              <checksum type="sha1">df31b2f415d8e0806fa283db4e2c7fda690d1b02</checksum>
             </file>
           </resource>
         </contentMetadata>
@@ -39,6 +39,38 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
 
     it 'removes the ids from roundtripped' do
       expect(normalized_roundtripped_ng_xml).to be_equivalent_to(expected_xml)
+    end
+  end
+
+  context 'when checksum type is uppercase' do
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata objectId="druid:bk689jd2364" type="file">
+          <resource sequence="1" type="file">
+            <file id="Decision.Record_6-30-03_signed.pdf" preserve="yes" publish="yes" shelve="yes" mimetype="application/pdf" size="102937">
+              <checksum type="MD5">50d5fc2730503a98bc2dda643064ae5b</checksum>
+              <checksum type="SHA1">df31b2f415d8e0806fa283db4e2c7fda690d1b02</checksum>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    let(:expected_xml) do
+      <<~XML
+        <contentMetadata objectId="druid:bk689jd2364" type="file">
+          <resource type="file">
+            <file id="Decision.Record_6-30-03_signed.pdf" preserve="yes" publish="yes" shelve="yes" mimetype="application/pdf" size="102937">
+              <checksum type="md5">50d5fc2730503a98bc2dda643064ae5b</checksum>
+              <checksum type="sha1">df31b2f415d8e0806fa283db4e2c7fda690d1b02</checksum>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    it 'normalizes the checksum type to be lowercase' do
+      expect(normalized_ng_xml).to be_equivalent_to(expected_xml)
     end
   end
 
@@ -593,7 +625,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     # Adapted from bb157dt2402
     let(:original_xml) do
       <<~XML
-        <contentMetadata type="file" stacks="/web-archiving-stacks/data/collections/mm553tf6423" id="druid:bb035tg0974">
+        <contentMetadata type="file" id="druid:bb035tg0974">
           <resource type="file">
             <file dataType="ARC" publish="no" shelve="yes" preserve="yes" id="CDL-20140924032424-00000-grebe.ucop.edu-00525747.arc.gz" size="14679718" mimetype="application/octet-stream">
               <checksum type="MD5">4cd0b913acd68cec050ab48b8f38c648</checksum>
@@ -770,7 +802,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     end
   end
 
-  context 'when normalizing contentMetadata files with provider_checksum' do
+  context 'when normalizing files with provider_checksum' do
     let(:original_xml) do
       <<~XML
         <contentMetadata objectId="druid:bw260mc4853" type="image">
