@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-# This writes the contents of datastreams to the workspace metadata directory
-class DatastreamExtractor
+# This writes the object metadata files to the workspace metadata directory
+class PreservationMetadataExtractor
   # @param [Dor::Item] item The representation of the digital object
   # @param [DruidTools::Druid] workspace The representation of the item's work area
   # @return [Pathname] Pull all the datastreams specified in the configuration file
   #   into the workspace's metadata directory, overwriting existing file if present
-  def self.extract_datastreams(item:, workspace:)
+  def self.extract(item:, workspace:)
     new(item: item, workspace: workspace).extract_datastreams
   end
 

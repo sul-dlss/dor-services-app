@@ -42,7 +42,7 @@ RSpec.describe SdrIngestService do
 
     before do
       allow(Preservation::Client.objects).to receive(:signature_catalog).and_return(fixture_sig_cat_obj)
-      expect(DatastreamExtractor).to receive(:extract_datastreams).with(item: dor_item, workspace: an_instance_of(DruidTools::Druid)).and_return(metadata_dir)
+      expect(PreservationMetadataExtractor).to receive(:extract).with(item: dor_item, workspace: an_instance_of(DruidTools::Druid)).and_return(metadata_dir)
     end
 
     specify 'with content changes' do
