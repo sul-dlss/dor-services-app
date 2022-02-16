@@ -42,7 +42,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     end
   end
 
-  context 'when normalizing checksums' do
+  context 'when checksum type is uppercase' do
     let(:original_xml) do
       <<~XML
         <contentMetadata objectId="druid:bk689jd2364" type="file">
@@ -625,7 +625,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     # Adapted from bb157dt2402
     let(:original_xml) do
       <<~XML
-        <contentMetadata type="file" stacks="/web-archiving-stacks/data/collections/mm553tf6423" id="druid:bb035tg0974">
+        <contentMetadata type="file" id="druid:bb035tg0974">
           <resource type="file">
             <file dataType="ARC" publish="no" shelve="yes" preserve="yes" id="CDL-20140924032424-00000-grebe.ucop.edu-00525747.arc.gz" size="14679718" mimetype="application/octet-stream">
               <checksum type="MD5">4cd0b913acd68cec050ab48b8f38c648</checksum>
@@ -802,7 +802,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     end
   end
 
-  context 'when normalizing contentMetadata files with provider_checksum' do
+  context 'when normalizing files with provider_checksum' do
     let(:original_xml) do
       <<~XML
         <contentMetadata objectId="druid:bw260mc4853" type="image">

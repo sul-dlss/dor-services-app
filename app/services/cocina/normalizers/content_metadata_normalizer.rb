@@ -2,8 +2,9 @@
 
 module Cocina
   module Normalizers
-    # Normalizes a Fedora object content metadata datastream, accounting for differences between Fedora rights and cocina rights that are valid but different
-    # when round-tripping.
+    # Normalizes a Fedora object content metadata datastream, accounting for differences
+    #   between Fedora contentMetadata and cocina structural that are valid but different
+    #   when round-tripping.
     class ContentMetadataNormalizer
       include Cocina::Normalizers::Base
       FILE_DIRECTIVES = %i[publish preserve shelve].freeze
@@ -15,6 +16,7 @@ module Cocina
         new(content_ng_xml: content_ng_xml).normalize(druid: druid)
       end
 
+      # resource ids and sequence numbers are regenerated so they must be normalized out of the roundtrip comparison
       # @param [Nokogiri::Document] content_ng_xml roundtripped content metadata XML to be normalized
       # @return [Nokogiri::Document] normalized content metadata xml
       def self.normalize_roundtrip(content_ng_xml:)
@@ -27,26 +29,26 @@ module Cocina
       end
 
       def normalize(druid:)
-        remove_resource_id
-        remove_resource_objectid
-        remove_resource_data
+        remove_resource_id_attribute
+        remove_resource_objectid_attribute
+        remove_resource_data_attribute
         remove_external_resource_id
-        remove_sequence
+        remove_resource_sequence_attribute
         remove_location
-        remove_format_and_data_type
+        remove_file_format_and_data_type_attributes
         remove_geodata
-        remove_id
-        remove_stacks
+        remove_id_attribute
+        remove_stacks_attribute
         remove_empty_labels
         remove_provider_checksum
-        normalize_object_id(druid)
+        remove_meaningless_attr_elements
+        normalize_object_id_attribute(druid)
         normalize_reading_order(druid)
-        normalize_label_attr
-        normalize_attr
-        normalize_publish
-        normalize_checksum
+        normalize_attr_label
+        normalize_file_deliver_attribute
+        downcase_checksum_type
         normalize_empty_xml
-        normalize_content_file_type
+        missing_type_attribute_assigned_file
         normalize_image_data
         normalize_blank_file_directives
 
@@ -55,9 +57,9 @@ module Cocina
 
       # resource ids and sequence numbers are regenerated so they must be normalized out of the roundtrip comparison
       def normalize_roundtrip
-        remove_resource_id
+        remove_resource_id_attribute
         remove_external_resource_id
-        remove_sequence
+        remove_resource_sequence_attribute
 
         regenerate_ng_xml(ng_xml.to_s)
       end
@@ -66,41 +68,41 @@ module Cocina
 
       attr_reader :ng_xml, :druid
 
-      def remove_resource_id
-        ng_xml.root.xpath('//resource[@id]').each { |resource_node| resource_node.delete('id') }
+      def remove_resource_id_attribute
+        ng_xml.xpath('//resource/@id').each(&:remove)
       end
 
-      def remove_resource_objectid
-        ng_xml.root.xpath('//resource[@objectId]').each { |resource_node| resource_node.delete('objectId') }
+      def remove_resource_objectid_attribute
+        ng_xml.xpath('//resource/@objectId').each(&:remove)
       end
 
-      def remove_resource_data
-        ng_xml.root.xpath('//resource[@data]').each { |resource_node| resource_node.delete('data') }
+      def remove_resource_data_attribute
+        ng_xml.xpath('//resource/@data').each(&:remove)
       end
 
       def remove_empty_labels
-        ng_xml.root.xpath('//label[not(text())][not(@*)]').each(&:remove)
+        ng_xml.xpath('//label[not(text())][not(@*)]').each(&:remove)
       end
 
-      def remove_sequence
-        # Some original content metadata does not have sequence for all resource nodes.
-        # However, sequence is assigned to all resource nodes when mapping to fedora.
-        ng_xml.root.xpath('//resource[@sequence]').each { |resource_node| resource_node.delete('sequence') }
+      # Some original content metadata does not have sequence for all resource nodes.
+      # However, sequence is assigned to all resource nodes when mapping from cocina to fedora.
+      def remove_resource_sequence_attribute
+        ng_xml.xpath('//resource[@sequence]').each { |resource_node| resource_node.delete('sequence') }
       end
 
       def remove_location
-        ng_xml.root.xpath('//location[@type="url"]').each(&:remove)
+        ng_xml.xpath('//location[@type="url"]').each(&:remove)
       end
 
+      # remove empty width and height attributes from imageData, e.g. <imageData width="" height=""/>
+      # then remove any totally empty imageData nodes, e.g. <imageData/>
       def normalize_image_data
-        # remove empty width and heigh attributes from imageData, e.g. <imageData width="" height=""/>
-        # then remove any totally empty imageData nodes, e.g. <imageData/>
-        ng_xml.root.xpath('//imageData[@height=""]').each { |node| node.remove_attribute('height') }
-        ng_xml.root.xpath('//imageData[@width=""]').each { |node| node.remove_attribute('width') }
-        ng_xml.root.xpath('//imageData[not(text())][not(@*)]').each(&:remove)
+        ng_xml.xpath('//imageData[@height=""]').each { |node| node.remove_attribute('height') }
+        ng_xml.xpath('//imageData[@width=""]').each { |node| node.remove_attribute('width') }
+        ng_xml.xpath('//imageData[not(text())][not(@*)]').each(&:remove)
       end
 
-      def normalize_object_id(druid)
+      def normalize_object_id_attribute(druid)
         object_id = ng_xml.root['objectId']
 
         if object_id
@@ -112,34 +114,31 @@ module Cocina
         end
       end
 
-      def remove_format_and_data_type
-        ng_xml.root.xpath('//file[@format]').each { |file_node| file_node.delete('format') }
-        ng_xml.root.xpath('//file[@dataType]').each { |file_node| file_node.delete('dataType') }
+      def remove_file_format_and_data_type_attributes
+        ng_xml.xpath('//file/@format').each(&:remove)
+        ng_xml.xpath('//file/@dataType').each(&:remove)
       end
 
+      # the geoData information is in descMetadata
       def remove_geodata
-        ng_xml.root.xpath('//geoData').each(&:remove)
+        ng_xml.xpath('//geoData').each(&:remove)
       end
 
-      def remove_id
-        return if ng_xml.root['id'].blank?
-
-        ng_xml.root.delete('id')
+      def remove_id_attribute
+        ng_xml.xpath('/contentMetadata/@id').each(&:remove)
       end
 
-      def remove_stacks
-        return if ng_xml.root['stacks'].blank?
-
-        ng_xml.root.delete('stacks')
+      def remove_stacks_attribute
+        ng_xml.xpath('/contentMetadata/@stacks').each(&:remove)
       end
 
       def remove_provider_checksum
-        ng_xml.root.xpath('//resource/file/provider_checksum').each(&:remove)
+        ng_xml.xpath('//resource/file/provider_checksum').each(&:remove)
       end
 
       def normalize_reading_order(druid)
         return if ng_xml.root['type'] != 'book'
-        return if ng_xml.root.xpath('//bookData[@readingOrder]').present?
+        return if ng_xml.xpath('//bookData[@readingOrder]').present?
 
         reading_direction = Cocina::FromFedora::ViewingDirectionHelper.viewing_direction(druid: druid, content_ng_xml: ng_xml)
         fedora_reading_direction = case reading_direction
@@ -154,8 +153,8 @@ module Cocina
         ng_xml.root << book_data_node
       end
 
-      def normalize_label_attr
-        ng_xml.root.xpath('//attr[@type="label"] | //attr[@name="label"]').each do |attr_node|
+      def normalize_attr_label
+        ng_xml.xpath('//attr[@type="label"] | //attr[@name="label"]').each do |attr_node|
           if attr_node.content.present? # don't create new blank labels
             label_node = Nokogiri::XML::Node.new('label', ng_xml)
             label_node.content = attr_node.content
@@ -165,43 +164,42 @@ module Cocina
         end
       end
 
+      # publish, shelve, preserve
       def normalize_blank_file_directives
         FILE_DIRECTIVES.each do |directive|
-          ng_xml.root.xpath("//file[@#{directive} = '']").each { |file| file[directive] = 'no' }
+          ng_xml.xpath("//file[@#{directive} = '']").each { |file| file[directive] = 'no' }
         end
       end
 
-      def normalize_attr
-        ng_xml.root.xpath('//attr[@name="mergedFromResource" or @name="mergedFromPid" or @name="representation"]').each(&:remove)
+      def remove_meaningless_attr_elements
+        ng_xml.xpath('//attr[@name="mergedFromResource" or @name="mergedFromPid" or @name="representation"]').each(&:remove)
       end
 
-      def normalize_publish
-        ng_xml.root.xpath('//file').each do |file|
+      def normalize_file_deliver_attribute
+        ng_xml.xpath('//file').each do |file|
           file['publish'] ||= file['deliver']
           file.delete('deliver')
         end
       end
 
-      def normalize_checksum
-        ng_xml.root.xpath('//file/checksum').each do |checksum|
-          checksum['type'] = checksum['type'].downcase if checksum['type']
-        end
+      def downcase_checksum_type
+        ng_xml.xpath('//file/checksum/@type').each { |checksum_type| checksum_type.value = checksum_type.value.downcase }
       end
 
+      # some objects have <xml> instead of <contentMetadata>, e.g. normalize <xml type="file"/> --> <contentMetadata type="file"/>
       def normalize_empty_xml
-        # some objects have <xml> instead of <contentMetadata>, e.g. normalize <xml type="file"/> --> <contentMetadata type="file"/>
-        ng_xml.root.xpath('//xml[not(text())]').each { |node| node.name = 'contentMetadata' }
+        ng_xml.xpath('//xml[not(text())]').each { |node| node.name = 'contentMetadata' }
       end
 
-      def normalize_content_file_type
-        # set the type attribute on the contentMetadata node when it's missing
-        ng_xml.root.xpath('//contentMetadata[not(@type)]').each do |node|
+      # set the type attribute on the contentMetadata node when it's missing
+      def missing_type_attribute_assigned_file
+        ng_xml.xpath('//contentMetadata[not(@type)]').each do |node|
           node['type'] = 'file'
         end
       end
 
       def remove_external_resource_id
-        ng_xml.root.xpath('//externalFile[@resourceId]').each { |external_file_node| external_file_node.delete('resourceId') }
+        ng_xml.xpath('//externalFile/@resourceId').each(&:remove)
       end
     end
   end
