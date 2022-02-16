@@ -51,6 +51,7 @@ module Cocina
         normalize_empty_xml
         missing_type_attribute_assigned_file
         normalize_image_data
+        remove_duplicate_image_data
         normalize_blank_file_directives
         normalize_relationship
 
@@ -102,6 +103,19 @@ module Cocina
         ng_xml.xpath('//imageData[@height=""]').each { |node| node.remove_attribute('height') }
         ng_xml.xpath('//imageData[@width=""]').each { |node| node.remove_attribute('width') }
         ng_xml.xpath('//imageData[not(text())][not(@*)]').each(&:remove)
+      end
+
+      def remove_duplicate_image_data
+        ng_xml.xpath('//file[imageData]').each do |file_node|
+          image_data_nodeset = file_node.xpath('./imageData')
+          next if image_data_nodeset.size == 1
+
+          first = image_data_nodeset.first
+          image_data_nodeset[1..].each do |image_data_node|
+            image_data_node.remove if image_data_node['height'] == first['height'] &&
+                                      image_data_node['width'] == first['width']
+          end
+        end
       end
 
       def normalize_object_id_attribute(druid)

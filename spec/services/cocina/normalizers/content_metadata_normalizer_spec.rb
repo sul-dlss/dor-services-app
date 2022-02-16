@@ -898,4 +898,62 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       )
     end
   end
+
+  context 'when normalizing duplicate imageData elements' do
+    # Adapted from cc455gp8541
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata objectId="cc455gp8541" type="image">
+          <resource sequence="1" type="image">
+            <label>Image 1</label>
+            <file id="foo.tif" preserve="yes" publish="no" shelve="no" mimetype="image/tiff" size="10968346">
+              <checksum type="md5">f4f8a5f330348fc14bb87c4efcfa7bbd</checksum>
+              <checksum type="sha1">4d2fe2a791482e17312c902f8d002fcafffa34b6</checksum>
+              <imageData width="4044" height="2699"/>
+              <imageData width="4044" height="2698"/>
+            </file>
+            <file id="foo.jp2" mimetype="image/jp2" size="2058305" preserve="no" publish="no" shelve="no">
+              <checksum type="md5">d6d1e501e3f89c57495847ba56e70380</checksum>
+              <checksum type="sha1">4684f55625a077ff5c4a95f55c5c0ef2aa2a0884</checksum>
+              <imageData width="4044" height="2698"/>
+              <imageData width="4044" height="2698"/>
+            </file>
+            <file id="bar.jp2" mimetype="image/jp2" size="2058305" preserve="no" publish="no" shelve="no">
+              <checksum type="md5">d6d1e501e3f89c57495847ba56e70380</checksum>
+              <checksum type="sha1">4684f55625a077ff5c4a95f55c5c0ef2aa2a0884</checksum>
+              <imageData width="4044" height="2698"/>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    it 'removes the exactly duplicate <imageData> elements' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <contentMetadata objectId="druid:cc455gp8541" type="image">
+            <resource type="image">
+              <label>Image 1</label>
+              <file id="foo.tif" preserve="yes" publish="no" shelve="no" mimetype="image/tiff" size="10968346">
+                <checksum type="md5">f4f8a5f330348fc14bb87c4efcfa7bbd</checksum>
+                <checksum type="sha1">4d2fe2a791482e17312c902f8d002fcafffa34b6</checksum>
+                <imageData width="4044" height="2699"/>
+                <imageData width="4044" height="2698"/>
+              </file>
+              <file id="foo.jp2" mimetype="image/jp2" size="2058305" preserve="no" publish="no" shelve="no">
+                <checksum type="md5">d6d1e501e3f89c57495847ba56e70380</checksum>
+                <checksum type="sha1">4684f55625a077ff5c4a95f55c5c0ef2aa2a0884</checksum>
+                <imageData width="4044" height="2698"/>
+              </file>
+              <file id="bar.jp2" mimetype="image/jp2" size="2058305" preserve="no" publish="no" shelve="no">
+                <checksum type="md5">d6d1e501e3f89c57495847ba56e70380</checksum>
+                <checksum type="sha1">4684f55625a077ff5c4a95f55c5c0ef2aa2a0884</checksum>
+                <imageData width="4044" height="2698"/>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      )
+    end
+  end
 end
