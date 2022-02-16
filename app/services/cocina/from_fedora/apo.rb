@@ -20,7 +20,7 @@ module Cocina
         {
           externalIdentifier: fedora_apo.pid,
           type: Cocina::Models::Vocab.admin_policy,
-          label: fedora_apo.objectLabel.first || fedora_apo.label,
+          label: Label.for(fedora_apo),
           version: fedora_apo.current_version.to_i,
           administrative: build_apo_administrative
         }.tap do |props|
