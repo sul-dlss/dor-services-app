@@ -37,18 +37,17 @@ RSpec.describe SdrIngestService do
 
   describe '.transfer' do
     let(:druid) { 'druid:dd116zh0343' }
-    let(:dor_item) { instance_double(Dor::Item, pid: druid) }
-    let(:cocina_object) { instance_double(Cocina::Models::DRO) }
+    let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid) }
     let(:metadata_dir) { fixtures.join('workspace/dd/116/zh/0343/dd116zh0343/metadata') }
 
     before do
       allow(Preservation::Client.objects).to receive(:signature_catalog).and_return(fixture_sig_cat_obj)
       allow(Cocina::Mapper).to receive(:build).and_return(cocina_object)
-      expect(PreservationMetadataExtractor).to receive(:extract).with(item: dor_item, workspace: an_instance_of(DruidTools::Druid), cocina_object: cocina_object).and_return(metadata_dir)
+      expect(PreservationMetadataExtractor).to receive(:extract).with(workspace: an_instance_of(DruidTools::Druid), cocina_object: cocina_object).and_return(metadata_dir)
     end
 
     specify 'with content changes' do
-      described_class.transfer(dor_item)
+      described_class.transfer(cocina_object)
       files = []
       fixtures.join('export/dd116zh0343').find { |f| files << f.relative_path_from(fixtures).to_s }
       expect(files.sort).to eq([
@@ -84,7 +83,7 @@ RSpec.describe SdrIngestService do
     specify 'with no change in content' do
       v1_content_metadata = fixtures.join('sdr_repo/dd116zh0343/v0001/data/metadata/contentMetadata.xml')
       allow_any_instance_of(Preserve::FileInventoryBuilder).to receive(:content_metadata).and_return(v1_content_metadata.read)
-      described_class.transfer(dor_item)
+      described_class.transfer(cocina_object)
       files = []
       fixtures.join('export/dd116zh0343').find { |f| files << f.relative_path_from(fixtures).to_s }
       expect(files.sort).to eq([
@@ -113,7 +112,6 @@ RSpec.describe SdrIngestService do
 
   describe '.signature_catalog_from_preservation' do
     let(:druid) { 'druid:dd116zh0343' }
-    let(:dor_item) { instance_double(Dor::Item, pid: druid) }
 
     context 'when signature_catalog exists in preservation' do
       before do
@@ -121,9 +119,9 @@ RSpec.describe SdrIngestService do
       end
 
       it 'retrieves it as a Moab::SignatureCatalog object' do
-        sig_cat = described_class.signature_catalog_from_preservation(dor_item.pid)
+        sig_cat = described_class.signature_catalog_from_preservation(druid)
         expect(sig_cat).to be_an_instance_of(Moab::SignatureCatalog)
-        expect(sig_cat.digital_object_id).to eq dor_item.pid
+        expect(sig_cat.digital_object_id).to eq druid
         expect(sig_cat.version_id).to eq 1
         expect(sig_cat.entries.size).to eq 19
       end
@@ -135,9 +133,9 @@ RSpec.describe SdrIngestService do
       end
 
       it 'returns a Moab::SignatureCatalog object for version 0' do
-        sig_cat = described_class.signature_catalog_from_preservation(dor_item.pid)
+        sig_cat = described_class.signature_catalog_from_preservation(druid)
         expect(sig_cat).to be_an_instance_of(Moab::SignatureCatalog)
-        expect(sig_cat.digital_object_id).to eq dor_item.pid
+        expect(sig_cat.digital_object_id).to eq druid
         expect(sig_cat.version_id).to eq 0
         expect(sig_cat.entries).to eq []
       end

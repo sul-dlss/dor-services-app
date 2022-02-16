@@ -18,12 +18,11 @@ class PreserveJob < ApplicationJob
   # @param [BackgroundJobResult] background_job_result identifier of a background job result to store status info
   def perform(druid:, background_job_result:)
     background_job_result.processing!
-
-    item = Dor.find(druid)
-    SdrIngestService.transfer(item) # This might raise a StandardError which will be handled by the retry above.
+    cocina_object = CocinaObjectStore.find(druid)
+    SdrIngestService.transfer(cocina_object) # This might raise a StandardError which will be handled by the retry above.
 
     StartPreservationWorkflowJob.perform_later(druid: druid,
-                                               version: item.current_version,
+                                               version: cocina_object.version,
                                                background_job_result: background_job_result)
   end
 end
