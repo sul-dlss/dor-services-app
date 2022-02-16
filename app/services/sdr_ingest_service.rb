@@ -7,16 +7,15 @@ require 'moab/stanford'
 # NOTE:  this class makes use of data structures from moab-versioning gem,
 #  but it does NOT access any preservation storage roots directly
 class SdrIngestService
-  # @param [Dor::Item] dor_item The representation of the digital object
+  # @param [Cocina::Models::DRO, Cocina::Models::Collection] cocina_object The representation of the digital object
   # @return [void] Create the Moab/bag manifests for new version, export data to BagIt bag, kick off the SDR preservation workflow
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  # rubocop:disable Metrics/AbcSize
-  def self.transfer(dor_item)
-    druid = dor_item.pid
+  def self.transfer(cocina_object)
+    druid = cocina_object.externalIdentifier
     workspace = DruidTools::Druid.new(druid, Settings.sdr.local_workspace_root)
     signature_catalog = signature_catalog_from_preservation(druid)
     new_version_id = signature_catalog.version_id + 1
-    metadata_dir = PreservationMetadataExtractor.extract(item: dor_item, workspace: workspace, cocina_object: Cocina::Mapper.build(dor_item))
+    metadata_dir = PreservationMetadataExtractor.extract(workspace: workspace, cocina_object: cocina_object)
     verify_version_metadata(metadata_dir, new_version_id)
     version_inventory = Preserve::FileInventoryBuilder.build(metadata_dir: metadata_dir,
                                                              druid: druid,
@@ -41,8 +40,6 @@ class SdrIngestService
     bagger.create_tagfiles
     Preserve::BagVerifier.verify(directory: bag_dir)
   end
-  # rubocop:enable Metrics/AbcSize
-
   # NOTE: the following methods should probably all be private
 
   # @param [String] druid The object identifier

@@ -7,10 +7,10 @@ RSpec.describe PreserveJob, type: :job do
 
   let(:druid) { 'druid:mk420bs7601' }
   let(:result) { create(:background_job_result) }
-  let(:item) { instance_double(Dor::Item, current_version: '7') }
+  let(:cocina) { instance_double(Cocina::Models::DRO, version: 7) }
 
   before do
-    allow(Dor).to receive(:find).with(druid).and_return(item)
+    allow(CocinaObjectStore).to receive(:find).with(druid).and_return(cocina)
     allow(result).to receive(:processing!)
     allow(Honeybadger).to receive(:notify)
     allow(Honeybadger).to receive(:context)
@@ -30,7 +30,7 @@ RSpec.describe PreserveJob, type: :job do
     end
 
     it 'invokes the SdrIngestService' do
-      expect(SdrIngestService).to have_received(:transfer).with(item).once
+      expect(SdrIngestService).to have_received(:transfer).with(cocina).once
     end
 
     it 'marks the job as complete' do
@@ -51,7 +51,7 @@ RSpec.describe PreserveJob, type: :job do
         described_class.perform_now(druid: druid, background_job_result: result)
       end
       expect(result).to have_received(:processing!).once
-      expect(SdrIngestService).to have_received(:transfer).with(item).exactly(5).times
+      expect(SdrIngestService).to have_received(:transfer).with(cocina).exactly(5).times
       expect(LogFailureJob).to have_received(:perform_later)
         .with(druid: druid,
               background_job_result: result,

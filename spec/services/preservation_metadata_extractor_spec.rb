@@ -6,7 +6,7 @@ RSpec.describe PreservationMetadataExtractor do
   let(:workspace) { instance_double(DruidTools::Druid, path: 'foo') }
   let(:druid) { 'druid:nc893zj8956' }
   let(:item) { instance_double(Dor::Item, pid: druid) }
-  let(:instance) { described_class.new(item: item, workspace: workspace, cocina_object: cocina_object) }
+  let(:instance) { described_class.new(workspace: workspace, cocina_object: cocina_object) }
   let(:cocina_object) do
     Cocina::Models::DRO.new({
                               cocinaVersion: '0.0.1',
@@ -17,6 +17,10 @@ RSpec.describe PreservationMetadataExtractor do
                               access: { access: 'world', download: 'world' },
                               administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
                             })
+  end
+
+  before do
+    allow(Dor).to receive(:find).and_return(item)
   end
 
   describe '.extract' do
@@ -37,27 +41,27 @@ RSpec.describe PreservationMetadataExtractor do
 
     it 'extracts the metadata' do
       extract
-      expect(instance).to have_received(:datastream_content).with(:administrativeMetadata, false)
-      expect(instance).to have_received(:datastream_content).with(:contentMetadata, false)
-      expect(instance).to have_received(:datastream_content).with(:defaultObjectRights, false)
-      expect(instance).to have_received(:datastream_content).with(:descMetadata, true).once
-      expect(instance).to have_received(:datastream_content).with(:events, false)
-      expect(instance).to have_received(:datastream_content).with(:geoMetadata, false)
-      expect(instance).to have_received(:datastream_content).with(:embargoMetadata, false)
-      expect(instance).to have_received(:datastream_content).with(:identityMetadata, true)
-      expect(instance).to have_received(:datastream_content).with(:provenanceMetadata, false)
-      expect(instance).to have_received(:datastream_content).with(:relationshipMetadata, true)
-      expect(instance).to have_received(:datastream_content).with(:roleMetadata, false)
-      expect(instance).to have_received(:datastream_content).with(:sourceMetadata, false)
-      expect(instance).to have_received(:datastream_content).with(:rightsMetadata, false)
-      expect(instance).to have_received(:datastream_content).with(:versionMetadata, true)
-      expect(instance).to have_received(:datastream_content).with(:workflows, false)
+      expect(instance).to have_received(:datastream_content).with(item, :administrativeMetadata, false)
+      expect(instance).to have_received(:datastream_content).with(item, :contentMetadata, false)
+      expect(instance).to have_received(:datastream_content).with(item, :defaultObjectRights, false)
+      expect(instance).to have_received(:datastream_content).with(item, :descMetadata, true).once
+      expect(instance).to have_received(:datastream_content).with(item, :events, false)
+      expect(instance).to have_received(:datastream_content).with(item, :geoMetadata, false)
+      expect(instance).to have_received(:datastream_content).with(item, :embargoMetadata, false)
+      expect(instance).to have_received(:datastream_content).with(item, :identityMetadata, true)
+      expect(instance).to have_received(:datastream_content).with(item, :provenanceMetadata, false)
+      expect(instance).to have_received(:datastream_content).with(item, :relationshipMetadata, true)
+      expect(instance).to have_received(:datastream_content).with(item, :roleMetadata, false)
+      expect(instance).to have_received(:datastream_content).with(item, :sourceMetadata, false)
+      expect(instance).to have_received(:datastream_content).with(item, :rightsMetadata, false)
+      expect(instance).to have_received(:datastream_content).with(item, :versionMetadata, true)
+      expect(instance).to have_received(:datastream_content).with(item, :workflows, false)
       expect(instance).to have_received(:extract_cocina)
     end
   end
 
   describe '#datastream_content' do
-    subject(:datastream_content) { instance.send(:datastream_content, ds_name, required) }
+    subject(:datastream_content) { instance.send(:datastream_content, item, ds_name, required) }
 
     let(:ds_name) { :myMetadata }
     let(:datastream) { instance_double(Dor::ContentMetadataDS) }
