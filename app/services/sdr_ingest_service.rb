@@ -15,7 +15,7 @@ class SdrIngestService
     workspace = DruidTools::Druid.new(druid, Settings.sdr.local_workspace_root)
     signature_catalog = signature_catalog_from_preservation(druid)
     new_version_id = signature_catalog.version_id + 1
-    metadata_dir = DatastreamExtractor.extract_datastreams(item: dor_item, workspace: workspace)
+    metadata_dir = PreservationMetadataExtractor.extract(item: dor_item, workspace: workspace)
     verify_version_metadata(metadata_dir, new_version_id)
     version_inventory = Preserve::FileInventoryBuilder.build(metadata_dir: metadata_dir,
                                                              druid: druid,

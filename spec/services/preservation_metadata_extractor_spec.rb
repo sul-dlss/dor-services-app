@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe DatastreamExtractor do
+RSpec.describe PreservationMetadataExtractor do
   let(:workspace) { instance_double(DruidTools::Druid, path: 'foo') }
   let(:druid) { 'druid:nc893zj8956' }
   let(:item) { instance_double(Dor::Item, pid: druid) }
