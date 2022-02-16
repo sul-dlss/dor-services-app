@@ -54,8 +54,10 @@ module Cocina
       # @return [Array<Hash>] the list of name and members
       def build_roles
         # rubocop:disable Rails/DynamicFindBy  false positive
-        fedora_apo.roleMetadata.find_by_xpath('/roleMetadata/role').map do |role|
-          { name: role['type'], members: workgroup_members(role) + person_members(role) + sunetid_members(role) }
+        fedora_apo.roleMetadata.find_by_xpath('/roleMetadata/role').filter_map do |role|
+          members = workgroup_members(role) + person_members(role) + sunetid_members(role)
+
+          members.present? ? { name: role['type'], members: members } : nil
         end
         # rubocop:enable Rails/DynamicFindBy
       end

@@ -934,4 +934,97 @@ RSpec.describe 'APO administrative mappings' do
       end
     end
   end
+
+  context 'with empty roles' do
+    # adapted from bb868fg4897
+    # The empty roles should be ignored in mapping and removed in normalization.
+    it_behaves_like 'valid APO mappings' do
+      let(:admin_metadata_xml) do
+        <<~XML
+          <administrativeMetadata>
+            <registration>
+              <workflow id="goobiWF"/>
+              <workflow id="registrationWF"/>
+              <collection id="druid:ny719df8518"/>
+            </registration>
+          </administrativeMetadata>
+        XML
+      end
+      let(:default_object_rights_xml) do
+        <<~XML
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <use>
+              <human type="useAndReproduction">Blah blah</human>
+            </use>
+          </rightsMetadata>
+        XML
+      end
+      let(:role_metadata_xml) do
+        <<~XML
+          <roleMetadata>
+            <role type="dor-apo-manager">
+              <group>
+                <identifier type="workgroup">sdr:developer</identifier>
+              </group>
+            </role>
+            <role type="hydrus-collection-item-depositor"/>
+            <role type="hydrus-item-depositor">
+
+            </role>
+          </roleMetadata>
+        XML
+      end
+      let(:roundtrip_role_metadata_xml) do
+        <<~XML
+          <roleMetadata>
+            <role type="dor-apo-manager">
+              <group>
+                <identifier type="workgroup">sdr:developer</identifier>
+              </group>
+            </role>
+          </roleMetadata>
+        XML
+      end
+      let(:agreement_druid) { 'druid:yr951qr4199' }
+      let(:cocina) do
+        {
+          defaultAccess: {
+            access: 'world',
+            download: 'world',
+            useAndReproductionStatement: 'Blah blah'
+          },
+          registrationWorkflow: [
+            'goobiWF',
+            'registrationWF'
+          ],
+          collectionsForRegistration: [
+            'druid:ny719df8518'
+          ],
+          hasAdminPolicy: ur_apo_druid,
+          hasAgreement: agreement_druid,
+          roles: [
+            {
+              name: 'dor-apo-manager',
+              members: [
+                {
+                  type: 'workgroup',
+                  identifier: 'sdr:developer'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
 end

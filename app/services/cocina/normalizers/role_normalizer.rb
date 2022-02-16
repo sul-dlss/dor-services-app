@@ -19,6 +19,7 @@ module Cocina
 
       def normalize
         normalize_empty_name_nodes
+        normalize_empty_role_nodes
         normalize_identitifer_nodes
         normalize_object_id
         normalize_group_without_role
@@ -31,6 +32,10 @@ module Cocina
 
       def normalize_empty_name_nodes
         ng_xml.xpath('//name[not(text())][not(@*)]').each(&:remove)
+      end
+
+      def normalize_empty_role_nodes
+        ng_xml.xpath('//role[not(*)]').each(&:remove)
       end
 
       def normalize_identitifer_nodes
