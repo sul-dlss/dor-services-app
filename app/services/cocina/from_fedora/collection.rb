@@ -20,7 +20,7 @@ module Cocina
         {
           externalIdentifier: fedora_collection.pid,
           type: Cocina::Models::Vocab.collection,
-          label: fedora_collection.objectLabel.first || fedora_collection.label,
+          label: Label.for(fedora_collection),
           version: fedora_collection.current_version.to_i,
           administrative: FromFedora::Administrative.props(fedora_collection),
           access: CollectionAccess.props(fedora_collection.rightsMetadata)

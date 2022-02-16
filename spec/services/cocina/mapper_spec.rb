@@ -10,7 +10,6 @@ RSpec.describe Cocina::Mapper do
       Dor::Item.new(pid: 'druid:mx000xm0000',
                     source_id: source_id,
                     label: 'test object', # used for TitleBuilderStrategy
-                    objectLabel: 'object label', # checked first for cocina label prop, Om makes it an array
                     admin_policy_object_id: 'druid:sc012gz0974')
     end
 
@@ -23,9 +22,9 @@ RSpec.describe Cocina::Mapper do
       allow(fedora_object).to receive(:collection_ids).and_return([])
       fedora_object.identityMetadata.agreementId = [agreement]
       fedora_object.identityMetadata.barcode = '36105036289127'
-      fedora_object.identityMetadata.objectLabel = 'object label'
       fedora_object.descMetadata.title_info.main_title = 'Hello'
       fedora_object.contentMetadata.contentType = [content_type]
+      allow(Cocina::FromFedora::Label).to receive(:for).and_return('object label')
 
       create(:administrative_tag, druid: fedora_object.pid, tag_label: create(:tag_label, tag: 'Project : Google Books'))
       create(:administrative_tag, druid: fedora_object.pid, tag_label: create(:tag_label, tag: type))
@@ -33,6 +32,11 @@ RSpec.describe Cocina::Mapper do
 
     it 'maps barcode' do
       expect(cocina_model.identification.barcode).to eq('36105036289127')
+    end
+
+    it 'maps label' do
+      expect(cocina_model.label).to eq('object label')
+      expect(Cocina::FromFedora::Label).to have_received(:for).with(fedora_object)
     end
 
     context 'when item has a manuscript tag' do
@@ -140,16 +144,6 @@ RSpec.describe Cocina::Mapper do
       it 'builds the object with a geographic schema' do
         expect(cocina_model).to be_kind_of Cocina::Models::DRO
         expect(cocina_model.geographic.iso19139).to be_equivalent_to iso19139
-      end
-    end
-
-    context 'when item has identityMetadata objectLabel' do
-      before do
-        fedora_object.identityMetadata.objectLabel = 'Use me'
-      end
-
-      it 'prefers objectLabel' do
-        expect(cocina_model.label).to eq('Use me')
       end
     end
 
@@ -326,6 +320,7 @@ RSpec.describe Cocina::Mapper do
     before do
       fedora_object.descMetadata.title_info.main_title = 'Hello'
       allow(fedora_object).to receive(:identityMetadata).and_return(Dor::IdentityMetadataDS.from_xml(identity_metadata_xml))
+      allow(Cocina::FromFedora::Label).to receive(:for).and_return('object label')
     end
 
     it 'builds the cocina collection with releaseTags' do
@@ -338,6 +333,11 @@ RSpec.describe Cocina::Mapper do
       expect(cocina_model.identification.catalogLinks.size).to eq 2
       expect(cocina_model.identification.catalogLinks[0].catalogRecordId).to eq '4366577'
       expect(cocina_model.identification.catalogLinks[1].catalogRecordId).to eq '12345'
+    end
+
+    it 'maps label' do
+      expect(cocina_model.label).to eq('object label')
+      expect(Cocina::FromFedora::Label).to have_received(:for).with(fedora_object)
     end
   end
 

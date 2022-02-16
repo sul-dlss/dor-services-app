@@ -674,6 +674,23 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
         )
       end
     end
+
+    context 'when there are linefeeds in objectLabel' do
+      let(:original_xml) do
+        <<~XML
+          <identityMetadata>
+            <objectId>druid:pk391vm0849</objectId>
+            <objectLabel>Clark's ranch : from homestead to big tree station, 1856-1879&#xD; &#xD; Responsibility:  Gary D. Lowe and John Carpenter. &#xD; Publication: Livermore, California : Gary D. Lowe, 2014.&#xD; Physical description: 107 pages : illustrations ; 23 cm</objectLabel>
+          </identityMetadata>
+        XML
+      end
+
+      it 'removes the linefeeds' do
+        text = normalized_ng_xml.xpath('//objectLabel').first.content
+        expect(text).not_to match(/\r/)
+        expect(text).not_to match(/&#xD;/)
+      end
+    end
   end
 
   describe '#remove_otherid_dissertationid_if_dupe' do

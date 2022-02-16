@@ -56,8 +56,7 @@ module Cocina
         {
           externalIdentifier: fedora_item.pid,
           type: type,
-          # Label may have been truncated, so prefer objectLabel.
-          label: fedora_item.objectLabel.first || fedora_item.label,
+          label: Label.for(fedora_item),
           version: fedora_item.current_version.to_i,
           administrative: FromFedora::Administrative.props(fedora_item),
           access: DROAccess.props(fedora_item.rightsMetadata, fedora_item.embargoMetadata),
