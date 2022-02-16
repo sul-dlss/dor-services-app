@@ -67,7 +67,14 @@ module Cocina
       end
 
       def remove_duplicate_source_id
-        ng_xml.xpath('//sourceId[@source="sul"][position()>1]').each(&:remove)
+        nodes = []
+        ng_xml.xpath('//sourceId').each do |node|
+          nodes.each do |node1|
+            node.remove if EquivalentXml.equivalent?(node1, node)
+            next
+          end
+          nodes << node
+        end
       end
 
       # we don't care about uuids
