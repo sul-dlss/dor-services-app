@@ -43,6 +43,7 @@ module Cocina
         add_missing_sourceid_from_otherid_dissertationid
         normalize_source_id_whitespace
         normalize_label_whitespace
+        remove_duplicate_source_id
 
         regenerate_ng_xml(ng_xml.to_xml)
       end
@@ -62,6 +63,17 @@ module Cocina
         ng_xml.root.xpath('//sourceId').each do |source_node|
           source_node['source'] = source_node['source']&.strip
           source_node.content = source_node.content&.strip
+        end
+      end
+
+      def remove_duplicate_source_id
+        nodes = []
+        ng_xml.xpath('//sourceId').each do |node|
+          if nodes.include? node.to_xml
+            node.remove
+          else
+            nodes << node.to_xml
+          end
         end
       end
 

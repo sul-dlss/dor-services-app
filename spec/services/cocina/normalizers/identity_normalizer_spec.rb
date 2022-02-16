@@ -54,6 +54,29 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
     end
   end
 
+  context 'when #remove_duplicate_source_id' do
+    let(:original_xml) do
+      <<~XML
+        <identityMetadata>
+          <sourceId source="sul">M0443_S2_D-K_B9_F33_011</sourceId>
+          <sourceId source="sul">M0443_S2_D-K_B9_F33_011</sourceId>
+        </identityMetadata>
+      XML
+    end
+
+    it 'removes the duplicate' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <identityMetadata>
+            <sourceId source="sul">M0443_S2_D-K_B9_F33_011</sourceId>
+            <objectCreator>DOR</objectCreator>
+            <objectLabel>Some cool object label</objectLabel>
+          </identityMetadata>
+        XML
+      )
+    end
+  end
+
   describe '#add_missing_sourceid_from_otherid_dissertationid' do
     context 'when there is an existing sourceId' do
       let(:original_xml) do
