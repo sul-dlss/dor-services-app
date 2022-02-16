@@ -171,7 +171,7 @@ RSpec.describe Publish::MetadataTransferService do
           item.rightsMetadata.content = "<rightsMetadata><access type='discover'><machine><world/></machine></access></rightsMetadata>"
           service.publish
           expect(Publish::PublicXmlService).to have_received(:new).with(item, public_cocina: Cocina::Models::DRO, released_for: release_tags, thumbnail_service: thumbnail_service)
-          expect(Publish::PublicDescMetadataService).to have_received(:new).with(item)
+          expect(Publish::PublicDescMetadataService).to have_received(:new).with(item, Cocina::Models::DRO)
         end
 
         it 'even when rightsMetadata uses xml namespaces' do

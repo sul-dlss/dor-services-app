@@ -6,9 +6,6 @@ class QueriesController < ApplicationController
 
   # Returns a list of collections this object is in.
   def collections
-    # isMemberOf may be nil, in which case we want to return an empty array
-    @collections = Array(@cocina_object.structural.isMemberOf).map do |collection_id|
-      CocinaObjectStore.find(collection_id)
-    end
+    @collections = CocinaObjectStore.find_collections_for(@cocina_object)
   end
 end

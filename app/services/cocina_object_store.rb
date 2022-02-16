@@ -43,6 +43,17 @@ class CocinaObjectStore
     new.destroy(druid)
   end
 
+  # @param [Cocina::Models::DRO] cocina_item
+  # @param [Boolean] swallow_exceptions (false) should this return a list even if some members aren't found?
+  def self.find_collections_for(cocina_item, swallow_exceptions: false)
+    # isMemberOf may be nil, in which case we want to return an empty array
+    Array(cocina_item.structural.isMemberOf).filter_map do |collection_id|
+      find(collection_id)
+    rescue CocinaObjectNotFoundError
+      raise unless swallow_exceptions
+    end
+  end
+
   def find(druid)
     fedora_to_cocina_find(druid)
   end

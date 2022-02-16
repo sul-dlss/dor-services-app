@@ -3,13 +3,14 @@
 module Publish
   # Creates the descriptive XML that we display on purl.stanford.edu
   class PublicDescMetadataService
-    attr_reader :object
+    attr_reader :object, :cocina_object
 
     NOKOGIRI_DEEP_COPY = 1
     MODS_NS = 'http://www.loc.gov/mods/v3'
 
-    def initialize(object)
+    def initialize(object, cocina_object)
       @object = object
+      @cocina_object = cocina_object
     end
 
     # @return [Nokogiri::XML::Document] A copy of the descriptiveMetadata of the object, to be modified
@@ -106,14 +107,14 @@ module Publish
     # For use in published mods and mods-to-DC conversion.
     # @return [Void]
     def add_collection_reference!
-      collections = object.relationships(:is_member_of_collection)
-      return if collections.empty?
+      return if @cocina_object.structural&.isMemberOf.blank?
+
+      collections = CocinaObjectStore.find_collections_for(@cocina_object, swallow_exceptions: true)
 
       remove_related_item_nodes_for_collections!
 
-      collections.each do |collection_uri|
-        collection_druid = collection_uri.gsub('info:fedora/', '')
-        add_related_item_node_for_collection! collection_druid
+      collections.each do |cocina_collection|
+        add_related_item_node_for_collection! cocina_collection
       end
     end
 
@@ -124,15 +125,9 @@ module Publish
       end
     end
 
-    def add_related_item_node_for_collection!(collection_druid)
-      begin
-        collection_obj = Dor.find(collection_druid)
-      rescue ActiveFedora::ObjectNotFoundError
-        return nil
-      end
-
+    def add_related_item_node_for_collection!(cocina_collection)
       title_node         = Nokogiri::XML::Node.new('title', doc)
-      title_node.content = collection_obj.full_title
+      title_node.content = TitleBuilder.build(cocina_collection.description.title)
 
       title_info_node = Nokogiri::XML::Node.new('titleInfo', doc)
       title_info_node.add_child(title_node)
@@ -143,7 +138,7 @@ module Publish
       #   </location>
       loc_node = doc.create_element('location', xmlns: MODS_NS)
       url_node = doc.create_element('url', xmlns: MODS_NS)
-      url_node.content = purl_url(collection_druid)
+      url_node.content = purl_url(cocina_collection.externalIdentifier)
       loc_node << url_node
 
       type_node = doc.create_element('typeOfResource', xmlns: MODS_NS)
