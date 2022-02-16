@@ -69,11 +69,11 @@ module Cocina
       def remove_duplicate_source_id
         nodes = []
         ng_xml.xpath('//sourceId').each do |node|
-          nodes.each do |node1|
-            node.remove if EquivalentXml.equivalent?(node1, node)
-            next
+          if nodes.include? node.to_xml
+            node.remove
+          else
+            nodes << node.to_xml
           end
-          nodes << node
         end
       end
 
