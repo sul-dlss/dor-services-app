@@ -289,8 +289,11 @@ end
 
 results = Parallel.map(druids, progress: 'Testing') do |druid|
   validate_druid(druid, loader, no_content: options[:no_content], no_desc: options[:no_descriptive], create: !options[:update])
+rescue StandardError
+  [druid, :validate_error]
 end
-counts = { different: 0, success: 0, mapping_error: 0, update_error: 0, create_error: 0, normalization_error: 0, missing: 0, unmapped: 0, expected_unmapped: 0, bad_cache: 0 }
+counts = { different: 0, success: 0, mapping_error: 0, update_error: 0, create_error: 0, normalization_error: 0, validate_error: 0, missing: 0, unmapped: 0, expected_unmapped: 0,
+           bad_cache: 0 }
 File.open('results/results.txt', 'w') do |file|
   results.each do |druid, result|
     counts[result] += 1
@@ -298,7 +301,7 @@ File.open('results/results.txt', 'w') do |file|
   end
 end
 
-denom = druids.size - counts[:missing] - counts[:unmapped] - counts[:expected_unmapped] - counts[:bad_cache]
+denom = druids.size - counts[:missing] - counts[:unmapped] - counts[:expected_unmapped] - counts[:bad_cache] - counts[:validate_error]
 
 puts "Status (n=#{druids.size}; not using Missing for success/different/error stats):"
 puts "  Success:   #{counts[:success]} (#{percentage(counts[:success], denom)}%)"
@@ -314,3 +317,4 @@ puts "  Missing from cache:     #{counts[:missing]} (#{(100 * counts[:missing].t
 puts "  Unmapped:     #{counts[:unmapped]} (#{(100 * counts[:unmapped].to_f / druids.size).round(3)}%)"
 puts "  Expected unmapped:     #{counts[:expected_unmapped]} (#{(100 * counts[:expected_unmapped].to_f / druids.size).round(3)}%)"
 puts "  Bad cache:     #{counts[:bad_cache]} (#{(100 * counts[:bad_cache].to_f / druids.size).round(3)}%)"
+puts "  Validate error:     #{counts[:validate_error]} (#{(100 * counts[:validate_error].to_f / druids.size).round(3)}%)"
