@@ -846,4 +846,30 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       )
     end
   end
+
+  context 'when bookData pageStart exists' do
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata objectId="druid:bb035tg0974" type="book">
+          <bookData readingOrder="rtl" pageStart="right"/>
+          <resource type="page"/>
+        </contentMetadata>
+      XML
+    end
+
+    before do
+      allow(AdministrativeTags).to receive(:content_type).and_return(['Book (rtl)'])
+    end
+
+    it 'removes pageStart' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <contentMetadata objectId="druid:bb035tg0974" type="book">
+            <bookData readingOrder="rtl"/>
+            <resource type="page"/>
+          </contentMetadata>
+        XML
+      )
+    end
+  end
 end

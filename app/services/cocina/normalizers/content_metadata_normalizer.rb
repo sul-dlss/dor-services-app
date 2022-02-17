@@ -42,6 +42,7 @@ module Cocina
         remove_empty_labels
         remove_provider_checksum
         remove_meaningless_attr_elements
+        remove_pagestart_attribute
         normalize_object_id_attribute(druid)
         normalize_reading_order(druid)
         normalize_attr_label
@@ -134,6 +135,10 @@ module Cocina
 
       def remove_provider_checksum
         ng_xml.xpath('//resource/file/provider_checksum').each(&:remove)
+      end
+
+      def remove_pagestart_attribute
+        ng_xml.xpath('//bookData/@pageStart').each(&:remove)
       end
 
       def normalize_reading_order(druid)
