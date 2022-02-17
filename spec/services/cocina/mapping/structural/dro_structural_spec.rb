@@ -301,4 +301,62 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
       end
     end
   end
+
+  context 'when duplicate imageData elements' do
+    it_behaves_like 'DRO Structural Fedora Cocina mapping' do
+      # object type "book" is hardcoded into shared examples
+      let(:content_xml) do
+        <<~XML
+          <contentMetadata objectId="#{druid}" type="book">
+            <resource sequence="1" type="image">
+              <label>Image 1</label>
+              <file id="foo.tif" preserve="yes" publish="no" shelve="no" mimetype="image/tiff" size="666">
+                <checksum type="md5">f4f8a5f330348fc14bb87c4efcfa7bbd</checksum>
+                <checksum type="sha1">4d2fe2a791482e17312c902f8d002fcafffa34b6</checksum>
+                <imageData width="4044" height="2698"/>
+                <imageData width="4044" height="2698"/>
+              </file>
+            </resource>
+            <bookData readingOrder="ltr"/>
+          </contentMetadata>
+        XML
+      end
+
+      let(:roundtrip_content_xml) do
+        <<~XML
+          <contentMetadata objectId="#{druid}" type="book">
+            <resource sequence="1" type="image">
+              <label>Image 1</label>
+              <file id="foo.tif" preserve="yes" publish="no" shelve="no" mimetype="image/tiff" size="666">
+                <checksum type="md5">f4f8a5f330348fc14bb87c4efcfa7bbd</checksum>
+                <checksum type="sha1">4d2fe2a791482e17312c902f8d002fcafffa34b6</checksum>
+                <imageData width="4044" height="2698"/>
+              </file>
+            </resource>
+            <bookData readingOrder="ltr"/>
+          </contentMetadata>
+        XML
+      end
+
+      let(:cocina_structural_props) do
+        { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
+                       type: 'http://cocina.sul.stanford.edu/models/resources/image.jsonld',
+                       version: 1,
+                       structural: { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                                                  type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                                                  label: 'foo.tif',
+                                                  filename: 'foo.tif',
+                                                  size: 666,
+                                                  version: 1,
+                                                  hasMessageDigests: [{ type: 'sha1',
+                                                                        digest: '4d2fe2a791482e17312c902f8d002fcafffa34b6' },
+                                                                      { type: 'md5', digest: 'f4f8a5f330348fc14bb87c4efcfa7bbd' }],
+                                                  access: { access: 'world', download: 'world' },
+                                                  administrative: { publish: false, sdrPreserve: true, shelve: false },
+                                                  hasMimeType: 'image/tiff',
+                                                  presentation: { height: 2698, width: 4044 } }] },
+                       label: 'Image 1' }], hasMemberOrders: [{ viewingDirection: 'left-to-right' }] }
+      end
+    end
+  end
 end

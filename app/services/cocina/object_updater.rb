@@ -75,6 +75,7 @@ module Cocina
     end
 
     # rubocop:disable Style/GuardClause
+    # rubocop:disable Metrics/AbcSize
     def update_apo
       # fedora_object.source_id = cocina_object.identification.sourceId
       Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label) if has_changed?(:label)
@@ -89,6 +90,7 @@ module Cocina
       end
     end
     # rubocop:enable Style/GuardClause
+    # rubocop:enable Metrics/AbcSize
 
     def update_collection
       Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label) if has_changed?(:label)

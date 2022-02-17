@@ -69,10 +69,11 @@ module Cocina
         end
       end
 
+      # rubocop:disable Metrics/AbcSize
       def build_files(file_nodes)
         file_nodes.map do |node|
-          height = node.xpath('imageData/@height').text.presence&.to_i
-          width = node.xpath('imageData/@width').text.presence&.to_i
+          height = node.xpath('imageData/@height').first&.text.presence&.to_i
+          width = node.xpath('imageData/@width').first&.text.presence&.to_i
           use = node.xpath('@role').text.presence
           {
             # External identifier is always generated because it is not stored in Fedora.
@@ -97,6 +98,7 @@ module Cocina
           end
         end
       end
+      # rubocop:enable Metrics/AbcSize
 
       def access(filename)
         file_specific_rights = rights_object.file[filename]
