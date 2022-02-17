@@ -6,6 +6,7 @@ RSpec.describe Publish::PublicDescMetadataService do
   subject(:service) { described_class.new(obj, cocina_object) }
 
   let(:obj) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
+  let(:access) { {} }
   let(:structural) { {} }
   let(:description) do
     { title: [{ value: 'stuff' }], purl: 'https://purl.stanford.edu/bc123df4567' }
@@ -15,7 +16,7 @@ RSpec.describe Publish::PublicDescMetadataService do
                            'type' => Cocina::Models::Vocab.object,
                            'label' => 'test',
                            'externalIdentifier' => 'druid:bc123df4567',
-                           'access' => {},
+                           'access' => access,
                            'version' => 1,
                            'structural' => structural,
                            'administrative' => {
@@ -112,39 +113,6 @@ RSpec.describe Publish::PublicDescMetadataService do
   describe '#to_xml' do
     subject(:xml) { service.to_xml }
 
-    let(:rights_xml) do
-      <<-XML
-      <rightsMetadata>
-        <copyright>
-          <human type="copyright">
-            Property rights reside with the repository. Copyright &#xA9; Stanford University. All Rights Reserved.
-          </human>
-        </copyright>
-        <access type="discover">
-          <machine>
-            <world/>
-          </machine>
-        </access>
-        <access type="read">
-          <machine>
-            <world/>
-          </machine>
-        </access>
-        <use>
-          <human type="useAndReproduction">
-            Image from the Glen McLaughlin Map Collection yada ...
-          </human>
-          <machine type="creativeCommons">by-nc</machine>
-          <human type="creativeCommons">
-            Attribution Non-Commercial 3.0 Unported
-          </human>
-        </use>
-      </rightsMetadata>
-      XML
-    end
-
-    let(:collection) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
-
     let(:cocina_collection) do
       Cocina::Models.build({
                              'type' => Cocina::Models::Vocab.collection,
@@ -164,16 +132,20 @@ RSpec.describe Publish::PublicDescMetadataService do
                              'identification' => {}
                            })
     end
+
+    let(:access) do
+      {
+        copyright: 'Property rights reside with the repository. Copyright &#xA9; Stanford University. All Rights Reserved.',
+        useAndReproductionStatement: 'Image from the Glen McLaughlin Map Collection yada ...',
+        license: 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
+      }
+    end
+
     let(:structural) { { isMemberOf: ['druid:zb871zd0767'] } }
 
     before do
       allow(CocinaObjectStore).to receive(:find).with('druid:zb871zd0767').and_return(cocina_collection)
-    end
-
-    before do
       allow(Settings.stacks).to receive(:document_cache_host).and_return('purl.stanford.edu')
-
-      obj.rightsMetadata.content = rights_xml
     end
 
     context 'when using ex2_related_mods.xml' do
@@ -242,61 +214,37 @@ RSpec.describe Publish::PublicDescMetadataService do
   end
 
   describe '#add_access_conditions' do
-    let(:rights_xml) do
-      <<-XML
-      <rightsMetadata>
-        <copyright>
-          <human type="copyright">
-            Property rights reside with the repository. Copyright &#xA9; Stanford University. All Rights Reserved.
-          </human>
-        </copyright>
-        <access type="discover">
-          <machine>
-            <world/>
-          </machine>
-        </access>
-        <access type="read">
-          <machine>
-            <world/>
-          </machine>
-        </access>
-        <use>
-          <human type="useAndReproduction">
-            Image from the Glen McLaughlin Map Collection yada ...
-          </human>
-          <machine type="creativeCommons">by-nc</machine>
-          <human type="creativeCommons">
-            Attribution Non-Commercial 3.0 Unported
-          </human>
-        </use>
-      </rightsMetadata>
-      XML
+    let(:access) do
+      {
+        copyright: 'Property rights reside with the repository. Copyright &#xA9; Stanford University. All Rights Reserved.',
+        useAndReproductionStatement: 'Image from the Glen McLaughlin Map Collection yada ...',
+        license: 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
+      }
     end
 
     let(:license_node) { public_mods.xpath('//mods:accessCondition[@type="license"]').first }
     let(:mods) { read_fixture('ex2_related_mods.xml') }
     let(:obj) do
-      b = Dor::Item.new(pid: 'druid:bc123df4567')
-      b.descMetadata.content = mods
-      b.rightsMetadata.content = rights_xml
-      b
+      Dor::Item.new(pid: 'druid:bc123df4567').tap do |b|
+        b.descMetadata.content = mods
+      end
     end
 
     let(:public_mods) do
       service.ng_xml
     end
 
-    it 'adds useAndReproduction accessConditions based on rightsMetadata' do
+    it 'adds useAndReproduction accessConditions' do
       expect(public_mods.xpath('//mods:accessCondition[@type="useAndReproduction"]').size).to eq 1
       expect(public_mods.xpath('//mods:accessCondition[@type="useAndReproduction"]').text).to match(/yada/)
     end
 
-    it 'adds copyright accessConditions based on rightsMetadata' do
+    it 'adds copyright accessConditions' do
       expect(public_mods.xpath('//mods:accessCondition[@type="copyright"]').size).to eq 1
       expect(public_mods.xpath('//mods:accessCondition[@type="copyright"]').text).to match(/Property rights reside with/)
     end
 
-    it 'adds license accessCondtitions based on creativeCommons or openDataCommons statements' do
+    it 'adds license accessCondtitions' do
       expect(public_mods.xpath('//mods:accessCondition[@type="license"]').size).to eq 1
       expect(license_node.text).to eq 'This work is licensed under a Creative Commons Attribution Non Commercial 3.0 Unported license (CC BY-NC).'
       expect(public_mods.root.namespaces).to include('xmlns:xlink')
@@ -320,77 +268,6 @@ RSpec.describe Publish::PublicDescMetadataService do
       end
     end
 
-    context 'when a license node is present in rightsMetadata' do
-      before do
-        obj.rightsMetadata.content = <<~XML
-          <rightsMetadata>
-            <use>
-              <license>https://creativecommons.org/licenses/by-nd/4.0/legalcode</license>
-            </use>
-          </rightsMetadata>
-        XML
-      end
-
-      it 'adds license accessConditions' do
-        expect(license_node.text).to eq 'This work is licensed under a Creative Commons Attribution No Derivatives 4.0 International license (CC BY-ND).'
-        expect(license_node['xlink:href']).to eq 'https://creativecommons.org/licenses/by-nd/4.0/legalcode'
-      end
-    end
-
-    context 'when a license attribute (with a legacy URI) is present in rightsMetadata' do
-      before do
-        obj.rightsMetadata.content = <<~XML
-          <rightsMetadata>
-            <use>
-              <human type="creativeCommons">Attribution Non-Commercial, No Derivatives 3.0 Unported</human>
-              <machine type="creativeCommons" uri="https://creativecommons.org/licenses/by-nc-nd/3.0/">by-nc-nd</machine>
-              <human type="useAndReproduction">User agrees that, where applicable, content will not be used to identify or to otherwise infringe the privacy or confidentiality rights of individuals. Content distributed via the Stanford Digital Repository may be subject to additional license and use restrictions applied by the depositor.</human>
-            </use>
-          </rightsMetadata>
-        XML
-        allow(Honeybadger).to receive(:notify)
-      end
-
-      it 'adds license accessConditions' do
-        expect(license_node.text).to eq 'This work is licensed under a Creative Commons Attribution Non Commercial No Derivatives 3.0 Unported license (CC BY-NC-ND).'
-        expect(license_node['xlink:href']).to eq 'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode'
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] https://creativecommons.org/licenses/by-nc-nd/3.0/ is not a supported license')
-      end
-    end
-
-    context 'when the machine node is odc-by' do
-      before do
-        obj.rightsMetadata.content = <<~XML
-          <rightsMetadata>
-            <use>
-              <machine type="openDataCommons">odc-by</machine>
-            </use>
-          </rightsMetadata>
-        XML
-      end
-
-      it 'adds license accessConditions' do
-        expect(license_node.text).to eq 'This work is licensed under an Open Data Commons Attribution License v1.0.'
-        expect(license_node['xlink:href']).to eq 'https://opendatacommons.org/licenses/by/1-0/'
-      end
-    end
-
-    context 'when the machine node has a value of none' do
-      before do
-        obj.rightsMetadata.content = <<~XML
-          <rightsMetadata>
-            <use>
-              <machine type="creativeCommons">none</machine>
-            </use>
-          </rightsMetadata>
-        XML
-      end
-
-      it 'does not add license accessConditions' do
-        expect(license_node).to be_nil
-      end
-    end
-
     it 'removes any pre-existing accessConditions already in the mods' do
       expect(obj.descMetadata.ng_xml.xpath('//mods:accessCondition[text()[contains(.,"Public Services")]]').count).to eq 1
       expect(public_mods.xpath('//mods:accessCondition').size).to eq 3
@@ -407,46 +284,9 @@ RSpec.describe Publish::PublicDescMetadataService do
         expect(public_mods.xpath('//mods:accessCondition[text()[contains(.,"Should not be here anymore")]]', 'mods' => 'http://www.loc.gov/mods/v3').count).to eq(0)
       end
     end
-
-    context 'when the rightsMetadata has empty nodes' do
-      let(:blank_rights_xml) do
-        <<-XML
-        <rightsMetadata>
-          <copyright>
-            <human type="copyright"></human>
-          </copyright>
-          <access type="discover">
-            <machine>
-              <world/>
-            </machine>
-          </access>
-          <access type="read">
-            <machine>
-              <world/>
-            </machine>
-          </access>
-          <use>
-            <human type="useAndReproduction" />
-            <machine type="creativeCommons">by-nc</machine>
-            <human type="creativeCommons"></human>
-          </use>
-        </rightsMetadata>
-        XML
-      end
-
-      before do
-        obj.rightsMetadata.content = blank_rights_xml
-      end
-
-      it 'does not add empty mods nodes' do
-        expect(public_mods.xpath('//mods:accessCondition[@type="useAndReproduction"]').size).to eq 0
-        expect(public_mods.xpath('//mods:accessCondition[@type="copyright"]').size).to eq 0
-      end
-    end
   end
 
   describe 'add_collection_reference' do
-    # let(:collection) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
     let(:structural) { { isMemberOf: ['druid:zb871zd0767'] } }
 
     let(:collection) do

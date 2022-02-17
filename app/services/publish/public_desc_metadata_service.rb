@@ -27,7 +27,7 @@ module Publish
     def ng_xml(include_access_conditions: true)
       @ng_xml ||= begin
         add_collection_reference!
-        AccessConditions.add(public_mods: doc, rights_md: object.rightsMetadata) if include_access_conditions
+        AccessConditions.add(public_mods: doc, access: cocina_object.access) if include_access_conditions
         add_constituent_relations!
         add_doi
         strip_comments!
