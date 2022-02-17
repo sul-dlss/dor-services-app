@@ -52,6 +52,7 @@ module Cocina
         missing_type_attribute_assigned_file
         normalize_image_data
         normalize_blank_file_directives
+        normalize_relationship
 
         regenerate_ng_xml(ng_xml.to_s)
       end
@@ -205,6 +206,12 @@ module Cocina
 
       def remove_external_resource_id
         ng_xml.xpath('//externalFile/@resourceId').each(&:remove)
+      end
+
+      def normalize_relationship
+        ng_xml.root.xpath('//relationship[not(@type)]').each do |node|
+          node['type'] = 'alsoAvailableAs'
+        end
       end
     end
   end
