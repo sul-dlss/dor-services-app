@@ -12,6 +12,7 @@ module Preserve
       versionAdditions.xml
       versionInventory.xml
       data/metadata/versionMetadata.xml
+      data/metadata/cocina.json
     ].freeze
 
     # @param [Pathname] bag_dir the location of the bag to be verified
