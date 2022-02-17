@@ -3,9 +3,29 @@
 require 'rails_helper'
 
 RSpec.describe Publish::PublicDescMetadataService do
-  subject(:service) { described_class.new(obj) }
+  subject(:service) { described_class.new(obj, cocina_object) }
 
   let(:obj) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
+  let(:structural) { {} }
+  let(:description) do
+    { title: [{ value: 'stuff' }], purl: 'https://purl.stanford.edu/bc123df4567' }
+  end
+  let(:cocina_object) do
+    Cocina::Models.build({
+                           'type' => Cocina::Models::Vocab.object,
+                           'label' => 'test',
+                           'externalIdentifier' => 'druid:bc123df4567',
+                           'access' => {},
+                           'version' => 1,
+                           'structural' => structural,
+                           'administrative' => {
+                             'hasAdminPolicy' => 'druid:bz845pv2292'
+                           },
+                           'description' => description,
+                           'identification' => {}
+                         })
+  end
+
   let(:solr_response) { { 'response' => { 'docs' => virtual_object_solr_docs } } }
   let(:virtual_object_solr_docs) { [] }
   let(:solr_client) { instance_double(RSolr::Client, get: solr_response) }
@@ -17,25 +37,31 @@ RSpec.describe Publish::PublicDescMetadataService do
   describe '#ng_xml' do
     subject(:doc) { service.ng_xml }
 
-    context 'with isMemberOfCollection relationships' do
-      let(:relationships) do
-        <<-EOXML
-          <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:hydra="http://projecthydra.org/ns/relations#">
-            <rdf:Description rdf:about="info:fedora/druid:ab123cd4567">
-              <hydra:isGovernedBy rdf:resource="info:fedora/druid:789012"></hydra:isGovernedBy>
-              <fedora-model:hasModel rdf:resource="info:fedora/hydra:commonMetadata"></fedora-model:hasModel>
-              <fedora:isMemberOf rdf:resource="info:fedora/druid:xh235dd9059"></fedora:isMemberOf>
-              <fedora:isMemberOfCollection rdf:resource="info:fedora/druid:xh235dd9059"></fedora:isMemberOfCollection>
-            </rdf:Description>
-          </rdf:RDF>
-        EOXML
+    context 'when it is a member of a collection' do
+      let(:structural) { { isMemberOf: ['druid:xh235dd9059'] } }
+
+      let(:collection) do
+        Cocina::Models.build({
+                               'type' => Cocina::Models::Vocab.collection,
+                               'label' => 'test',
+                               'externalIdentifier' => 'druid:xh235dd9059',
+                               'access' => {},
+                               'version' => 1,
+                               'administrative' => {
+                                 'hasAdminPolicy' => 'druid:bz845pv2292'
+                               },
+                               'description' => {
+                                 title: [
+                                   { value: 'David Rumsey Map Collection at Stanford University Libraries' }
+                                 ],
+                                 purl: 'https://purl-test.stanford.edu/xh235dd9059'
+                               },
+                               'identification' => {}
+                             })
       end
 
       before do
-        ActiveFedora::RelsExtDatastream.from_xml(relationships, obj.rels_ext)
-
-        # load up collection items from fixture data
-        expect(Dor).to receive(:find).with('druid:xh235dd9059').and_return(instantiate_fixture('druid:xh235dd9059', Dor::Item))
+        allow(CocinaObjectStore).to receive(:find).with('druid:xh235dd9059').and_return(collection)
       end
 
       it 'writes the relationships into MODS' do
@@ -119,63 +145,56 @@ RSpec.describe Publish::PublicDescMetadataService do
 
     let(:collection) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
 
+    let(:cocina_collection) do
+      Cocina::Models.build({
+                             'type' => Cocina::Models::Vocab.collection,
+                             'label' => 'test',
+                             'externalIdentifier' => 'druid:zb871zd0767',
+                             'access' => {},
+                             'version' => 1,
+                             'administrative' => {
+                               'hasAdminPolicy' => 'druid:bz845pv2292'
+                             },
+                             'description' => {
+                               title: [
+                                 { value: 'The complete works of Henry George' }
+                               ],
+                               purl: 'https://purl-test.stanford.edu/zb871zd0767'
+                             },
+                             'identification' => {}
+                           })
+    end
+    let(:structural) { { isMemberOf: ['druid:zb871zd0767'] } }
+
     before do
-      allow(obj).to receive(:relationships).with(:is_member_of_collection).and_return(['info:fedora/druid:zb871zd0767'])
+      allow(CocinaObjectStore).to receive(:find).with('druid:zb871zd0767').and_return(cocina_collection)
+    end
+
+    before do
       allow(Settings.stacks).to receive(:document_cache_host).and_return('purl.stanford.edu')
 
       obj.rightsMetadata.content = rights_xml
-
-      c_mods = Nokogiri::XML(read_fixture('ex1_mods.xml'))
-      collection.descMetadata.content = c_mods.to_s
-
-      allow(Dor).to receive(:find) do |pid|
-        pid == 'druid:ab123cd4567' ? obj : collection
-      end
     end
 
     context 'when using ex2_related_mods.xml' do
-      before do
-        mods_xml = read_fixture('ex2_related_mods.xml')
-        mods = Nokogiri::XML(mods_xml)
-        mods.search('//mods:relatedItem/mods:typeOfResource[@collection=\'yes\']').each do |node|
-          node.parent.remove
-        end
-        obj.descMetadata.content = mods.to_s
+      let(:description) do
+        { title: [{ value: 'Slides, IA, Geodesic Domes [1 of 2]' }],
+          purl: 'https://purl.stanford.edu/bc123df4567',
+          form: [{ value: 'still image', type: 'resource type',
+                   source: { value: 'MODS resource types' } },
+                 { value: 'photographs, color transparencies', type: 'form' }],
+          identifier: [{ displayLabel: 'Image ID', type: 'local', value: 'M1090_S15_B01_F01_0055',
+                         note: [{ type: 'type', value: 'local', uri: 'http://id.loc.gov/vocabulary/identifiers/local',
+                                  source: { value: 'Standard Identifier Schemes', uri: 'http://id.loc.gov/vocabulary/identifiers/' } }] }],
+          relatedResource: [{ access: { physicalLocation: [{ value: 'Series 15 | Box 1 | Folder 1', type: 'location' }] }, type: 'part of' }],
+          access: { accessContact: [{ value: 'Stanford University. Libraries. Dept. of Special Collections and Stanford University Archives.', type: 'repository' }],
+                    note: [{ value: 'Property rights reside with the repository.' }] } }
       end
 
       it 'adds collections and generates accessConditions' do
         doc = Nokogiri::XML(xml)
         expect(doc.encoding).to eq('UTF-8')
         expect(doc.xpath('//comment()').size).to eq 0
-        collections = doc.search('//mods:relatedItem/mods:typeOfResource[@collection=\'yes\']')
-        collection_title = doc.search('//mods:relatedItem/mods:titleInfo/mods:title')
-        collection_uri   = doc.search('//mods:relatedItem/mods:location/mods:url')
-        expect(collections.length).to eq 1
-        expect(collection_title.length).to eq 1
-        expect(collection_uri.length).to eq 1
-        expect(collection_title.first.content).to eq 'The complete works of Henry George'
-        expect(collection_uri.first.content).to eq 'https://purl.stanford.edu/zb871zd0767'
-        %w[useAndReproduction copyright license].each do |term|
-          expect(doc.xpath("//mods:accessCondition[@type=\"#{term}\"]").size).to eq 1
-        end
-        expect(doc.xpath('//mods:accessCondition[@type="useAndReproduction"]').text).to match(/yada/)
-        expect(doc.xpath('//mods:accessCondition[@type="copyright"]').text).to match(/Property rights reside with/)
-        expect(doc.xpath('//mods:accessCondition[@type="license"]').text).to eq 'This work is licensed under a Creative Commons Attribution Non Commercial 3.0 Unported license (CC BY-NC).'
-      end
-    end
-
-    context 'when using mods_default_ns.xml' do
-      before do
-        mods_xml = read_fixture('mods_default_ns.xml')
-        mods = Nokogiri::XML(mods_xml)
-        mods.search('//mods:relatedItem/mods:typeOfResource[@collection=\'yes\']', 'mods' => 'http://www.loc.gov/mods/v3').each do |node|
-          node.parent.remove
-        end
-        obj.descMetadata.content = mods.to_s
-      end
-
-      it 'handles mods as the default namespace' do
-        doc = Nokogiri::XML(xml)
         collections = doc.search('//xmlns:relatedItem/xmlns:typeOfResource[@collection=\'yes\']')
         collection_title = doc.search('//xmlns:relatedItem/xmlns:titleInfo/xmlns:title')
         collection_uri   = doc.search('//xmlns:relatedItem/xmlns:location/xmlns:url')
@@ -427,32 +446,61 @@ RSpec.describe Publish::PublicDescMetadataService do
   end
 
   describe 'add_collection_reference' do
-    let(:collection) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
+    # let(:collection) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
+    let(:structural) { { isMemberOf: ['druid:zb871zd0767'] } }
+
+    let(:collection) do
+      Cocina::Models.build({
+                             'type' => Cocina::Models::Vocab.collection,
+                             'label' => 'test',
+                             'externalIdentifier' => 'druid:zb871zd0767',
+                             'access' => {},
+                             'version' => 1,
+                             'administrative' => {
+                               'hasAdminPolicy' => 'druid:bz845pv2292'
+                             },
+                             'description' => {
+                               title: [
+                                 {
+                                   structuredValue: [
+                                     { value: 'The', type: 'nonsorting characters' },
+                                     { value: 'complete works of Henry George', type: 'main title' }
+                                   ],
+                                   note: [{ value: '4', type: 'nonsorting character count' }]
+                                 }
+                               ],
+                               purl: 'https://purl-test.stanford.edu/zb871zd0767'
+                             },
+                             'identification' => {}
+                           })
+    end
 
     before do
-      allow(obj).to receive(:relationships).with(:is_member_of_collection).and_return(['info:fedora/druid:zb871zd0767'])
+      allow(CocinaObjectStore).to receive(:find).with('druid:zb871zd0767').and_return(collection)
       allow(Settings.stacks).to receive(:document_cache_host).and_return('purl.stanford.edu')
-
-      allow(Dor).to receive(:find) do |pid|
-        pid == 'druid:ab123cd4567' ? obj : collection
-      end
     end
 
     describe 'relatedItem' do
       let(:mods) { read_fixture('ex2_related_mods.xml') }
       let(:public_mods) { service.ng_xml }
-      let(:collection_mods) { read_fixture('ex1_mods.xml') }
 
       before do
         obj.descMetadata.content = mods
-        collection.descMetadata.content = collection_mods
       end
 
-      context 'if the item is a member of a collection' do
-        before do
-          obj.descMetadata.ng_xml.search('//mods:relatedItem/mods:typeOfResource[@collection=\'yes\']').each do |node|
-            node.parent.remove
-          end
+      context 'when the item is a member of a collection' do
+        let(:description) do
+          { title: [{ value: 'Slides, IA, Geodesic Domes [1 of 2]' }],
+            purl: 'https://purl.stanford.edu/bc123df4567',
+            form: [{ value: 'still image', type: 'resource type',
+                     source: { value: 'MODS resource types' } },
+                   { value: 'photographs, color transparencies', type: 'form' }],
+            identifier: [{ displayLabel: 'Image ID', type: 'local', value: 'M1090_S15_B01_F01_0055',
+                           note: [{ type: 'type', value: 'local', uri: 'http://id.loc.gov/vocabulary/identifiers/local',
+                                    source: { value: 'Standard Identifier Schemes', uri: 'http://id.loc.gov/vocabulary/identifiers/' } }] }],
+            relatedResource: [{ access: { physicalLocation: [{ value: 'Series 15 | Box 1 | Folder 1', type: 'location' }] }, type: 'part of' }],
+            access: { accessContact: [{ value: 'Stanford University. Libraries. Dept. of Special Collections and Stanford University Archives.', type: 'repository' }],
+                      note: [{ value: 'Property rights reside with the repository.' }] } }
         end
 
         it 'adds a relatedItem node for the collection' do
@@ -479,8 +527,24 @@ RSpec.describe Publish::PublicDescMetadataService do
       end
 
       context 'if there is no collection relationship' do
-        before do
-          allow(obj).to receive(:relationships).with(:is_member_of_collection).and_return([])
+        let(:structural) { { isMemberOf: [] } }
+
+        let(:descriptive) do
+          { title: [{ value: 'Slides, IA, Geodesic Domes [1 of 2]' }],
+            purl: 'https://purl.stanford.edu/zb871zd0767',
+            form: [{ value: 'still image', type: 'resource type',
+                     source: { value: 'MODS resource types' } }, { value: 'photographs, color transparencies', type: 'form' }],
+            identifier: [{ displayLabel: 'Image ID', type: 'local', value: 'M1090_S15_B01_F01_0055',
+                           note: [{ type: 'type', value: 'local', uri: 'http://id.loc.gov/vocabulary/identifiers/local',
+                                    source: { value: 'Standard Identifier Schemes', uri: 'http://id.loc.gov/vocabulary/identifiers/' } }] }],
+            relatedResource: [{ title: [{ value: 'Buckminster Fuller papers, 1920-1983' }],
+                                form: [{ value: 'collection', source: { value: 'MODS resource types' } }], type: 'part of' },
+                              { access: { physicalLocation: [{ value: 'Series 15 | Box 1 | Folder 1', type: 'location' }] },
+                                type: 'part of' }],
+            access: { accessContact: [
+              { value: 'Stanford University. Libraries. Dept. of Special Collections and Stanford University Archives.', type: 'repository' }
+            ],
+                      note: [{ value: 'Property rights reside with the repository.' }] } }
         end
 
         it 'does not touch an existing relatedItem if there is no collection relationship' do
@@ -493,14 +557,12 @@ RSpec.describe Publish::PublicDescMetadataService do
       end
 
       context 'if the referenced collection does not exist' do
-        before do
-          allow(obj).to receive(:relationships).with(:is_member_of_collection).and_return([non_existent_druid])
-        end
+        let(:structural) { { isMemberOf: [non_existent_druid] } }
 
-        let(:non_existent_druid) { 'druid:doesnotexist' }
+        let(:non_existent_druid) { 'druid:xx000xx0000' }
 
         before do
-          allow(Dor).to receive(:find).with(non_existent_druid).and_raise(ActiveFedora::ObjectNotFoundError)
+          allow(CocinaObjectStore).to receive(:find).with(non_existent_druid).and_raise(CocinaObjectStore::CocinaObjectNotFoundError)
         end
 
         it 'does not add relatedItem and does not error out if the referenced collection does not exist' do

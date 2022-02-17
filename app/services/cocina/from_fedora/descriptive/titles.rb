@@ -80,7 +80,7 @@ module Cocina
             if node['nameTitleGroup']
               structured_name(node: node, display_types: display_types)
             else
-              attrs = TitleBuilder.build(title_info_element: node, notifier: notifier)
+              attrs = Descriptive::TitleBuilder.build(title_info_element: node, notifier: notifier)
               attrs.present? ? attrs.merge(common_attributes(node, display_types: display_types)) : nil
             end
           end

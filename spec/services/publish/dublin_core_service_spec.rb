@@ -6,7 +6,22 @@ RSpec.describe Publish::DublinCoreService do
   subject(:service) { described_class.new(desc_md_xml) }
 
   let(:item) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
-  let(:desc_md_xml) { Publish::PublicDescMetadataService.new(item).ng_xml(include_access_conditions: false) }
+  let(:cocina_object) do
+    Cocina::Models.build({
+                           'type' => Cocina::Models::Vocab.object,
+                           'label' => 'test',
+                           'externalIdentifier' => 'druid:bc123df4567',
+                           'access' => {},
+                           'version' => 1,
+                           'structural' => {},
+                           'administrative' => {
+                             'hasAdminPolicy' => 'druid:bz845pv2292'
+                           },
+                           'description' => { title: [{ value: 'stuff' }], purl: 'https://purl.stanford.edu/bc123df4567' },
+                           'identification' => {}
+                         })
+  end
+  let(:desc_md_xml) { Publish::PublicDescMetadataService.new(item, cocina_object).ng_xml(include_access_conditions: false) }
   let(:solr_client) { instance_double(RSolr::Client, get: solr_response) }
   let(:solr_response) { { 'response' => { 'docs' => virtual_object_solr_docs } } }
   let(:virtual_object_solr_docs) { [] }

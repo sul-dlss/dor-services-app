@@ -2,17 +2,17 @@
 
 # A controller to display derived metadata about an object
 class MetadataController < ApplicationController
-  before_action :load_item, :load_cocina_object
-  before_action :load_cocina_object, only: [:public_xml]
+  before_action :load_item
+  before_action :load_cocina_object, only: %i[dublin_core descriptive public_xml]
 
   def dublin_core
-    desc_md_xml = Publish::PublicDescMetadataService.new(@item).ng_xml(include_access_conditions: false)
+    desc_md_xml = Publish::PublicDescMetadataService.new(@item, @cocina_object).ng_xml(include_access_conditions: false)
     service = Publish::DublinCoreService.new(desc_md_xml)
     render xml: service
   end
 
   def descriptive
-    service = Publish::PublicDescMetadataService.new(@item)
+    service = Publish::PublicDescMetadataService.new(@item, @cocina_object)
     render xml: service
   end
 

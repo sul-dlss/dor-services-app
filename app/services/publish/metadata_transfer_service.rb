@@ -38,7 +38,7 @@ module Publish
                                                    thumbnail_service: @thumbnail_service)
       transfer_to_document_store(public_cocina.to_json, 'cocina.json')
       transfer_to_document_store(public_nokogiri.to_xml, 'public')
-      transfer_to_document_store(PublicDescMetadataService.new(item).to_xml, 'mods')
+      transfer_to_document_store(PublicDescMetadataService.new(item, public_cocina).to_xml, 'mods')
     end
 
     # Clear out the document cache for this item
