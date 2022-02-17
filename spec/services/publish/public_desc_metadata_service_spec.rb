@@ -7,6 +7,7 @@ RSpec.describe Publish::PublicDescMetadataService do
 
   let(:obj) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
   let(:access) { {} }
+  let(:identification) { {} }
   let(:structural) { {} }
   let(:description) do
     { title: [{ value: 'stuff' }], purl: 'https://purl.stanford.edu/bc123df4567' }
@@ -23,7 +24,7 @@ RSpec.describe Publish::PublicDescMetadataService do
                              'hasAdminPolicy' => 'druid:bz845pv2292'
                            },
                            'description' => description,
-                           'identification' => {}
+                           'identification' => identification
                          })
   end
 
@@ -108,6 +109,27 @@ RSpec.describe Publish::PublicDescMetadataService do
                 })
       end
     end
+
+    context 'when the object is a collection' do
+      let(:cocina_object) do
+        Cocina::Models.build({
+                               'type' => Cocina::Models::Vocab.collection,
+                               'label' => 'test',
+                               'externalIdentifier' => 'druid:bc123df4567',
+                               'access' => access,
+                               'version' => 1,
+                               'administrative' => {
+                                 'hasAdminPolicy' => 'druid:bz845pv2292'
+                               },
+                               'description' => description,
+                               'identification' => identification
+                             })
+      end
+
+      it 'has no errors' do
+        doc
+      end
+    end
   end
 
   describe '#to_xml' do
@@ -186,20 +208,13 @@ RSpec.describe Publish::PublicDescMetadataService do
   end
 
   describe '#add_doi' do
-    let(:identity_metadata) do
-      <<-XML
-      <identityMetadata>
-        <doi>10.80343/ty606df5808</doi>
-      </identityMetadata>
-      XML
-    end
+    let(:identification) { { doi: '10.80343/ty606df5808' } }
 
     let(:mods) { read_fixture('mods_default_ns.xml') }
     let(:obj) do
-      b = Dor::Item.new(pid: 'druid:bc123df4567')
-      b.descMetadata.content = mods
-      b.identityMetadata.content = identity_metadata
-      b
+      Dor::Item.new(pid: 'druid:bc123df4567').tap do |b|
+        b.descMetadata.content = mods
+      end
     end
 
     let(:public_mods) do

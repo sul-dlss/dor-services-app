@@ -44,15 +44,12 @@ module Publish
       doc.xpath('//comment()').remove
     end
 
-    # We began to record DOI names in identityMetadata in the Summer of 2021
-    # So we need to export this into the public descMetadata in order to allow
-    # PURL to display the DOI
+    # Export DOI into the public descMetadata to allow PURL to display it
     def add_doi
-      value = object.identityMetadata.ng_xml.xpath('//doi').first
-      return unless value
+      return unless cocina_object.dro? && cocina_object.identification.doi
 
       identifier = doc.create_element('identifier', xmlns: MODS_NS)
-      identifier.content = "https://doi.org/#{value.text}"
+      identifier.content = "https://doi.org/#{cocina_object.identification.doi}"
       identifier['type'] = 'doi'
       identifier['displayLabel'] = 'DOI'
       doc.root << identifier
@@ -107,9 +104,9 @@ module Publish
     # For use in published mods and mods-to-DC conversion.
     # @return [Void]
     def add_collection_reference!
-      return if @cocina_object.structural&.isMemberOf.blank?
+      return if cocina_object.collection? || cocina_object.structural&.isMemberOf.blank?
 
-      collections = CocinaObjectStore.find_collections_for(@cocina_object, swallow_exceptions: true)
+      collections = CocinaObjectStore.find_collections_for(cocina_object, swallow_exceptions: true)
 
       remove_related_item_nodes_for_collections!
 
