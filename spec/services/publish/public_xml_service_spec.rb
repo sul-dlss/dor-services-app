@@ -221,6 +221,7 @@ RSpec.describe Publish::PublicXmlService do
         expected = <<~XML
           <identityMetadata>
             <objectType>item</objectType>
+            <objectLabel>A generic label</objectLabel>
             <otherId name="catkey">129483625</otherId>
           </identityMetadata>
         XML

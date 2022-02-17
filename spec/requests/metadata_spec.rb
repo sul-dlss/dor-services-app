@@ -137,6 +137,7 @@ RSpec.describe 'Display metadata' do
         <publicObject id="druid:mk420bs7601" published="#{now.utc.xmlschema}" publishVersion="dor-services/#{Dor::VERSION}">
           <identityMetadata>
             <objectType>item</objectType>
+            <objectLabel>A generic label</objectLabel>
           </identityMetadata>
           <rightsMetadata>
             <access type="discover">
