@@ -28,8 +28,6 @@ module Cocina
     end
 
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
-    # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/CyclomaticComplexity
     def run(event_factory:, notifier: nil)
       @notifier = notifier
 
@@ -50,20 +48,16 @@ module Cocina
       update_descriptive if has_changed?(:description) && update_descriptive?
       update_version if has_changed?(:version)
 
+      # Map back before saving to make sure that valid
+      updated_cocina_object = Mapper.build(fedora_object, notifier: notifier)
       fedora_object.save! unless trial
 
-      event_factory.create(druid: fedora_object.pid, event_type: 'update_complete', data: { success: true }) unless trial
-
-      # This will rebuild the cocina model from fedora, which shows we are only returning persisted data
-      Mapper.build(fedora_object, notifier: notifier).tap do
-        event_factory.create(druid: fedora_object.pid, event_type: 'update', data: { success: true, request: cocina_object.to_h }) unless trial
-      end
+      event_factory.create(druid: fedora_object.pid, event_type: 'update', data: { success: true, request: updated_cocina_object.to_h }) unless trial
+      updated_cocina_object
     rescue Mapper::MapperError, ValidationError, NotImplemented => e
       event_factory.create(druid: fedora_object.pid, event_type: 'update', data: { success: false, error: e.message, request: cocina_object.to_h }) unless trial
       raise
     end
-    # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/CyclomaticComplexity
 
     private
 

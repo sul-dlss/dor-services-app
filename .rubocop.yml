@@ -96,6 +96,9 @@ RSpec/ExampleLength:
 RSpec/MultipleExpectations:
   Max: 19
 
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
 RSpec/ExpectActual:
   Exclude:
     - 'spec/routing/**'

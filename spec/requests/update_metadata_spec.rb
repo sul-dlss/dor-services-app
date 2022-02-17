@@ -93,12 +93,14 @@ RSpec.describe 'Update object' do
     }
   end
 
+  let(:content_type) { Cocina::Models::Vocab.book }
+
   let(:data) do
     <<~JSON
       {
         "cocinaVersion": "0.0.1",
         "externalIdentifier": "#{druid}",
-        "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
+        "type":"#{content_type}",
         "label":"#{label}","version":1,
         "access":{
           "access":"#{access}",
@@ -466,6 +468,19 @@ RSpec.describe 'Update object' do
         .with(druid: other_druid,
               data: hash_including(:request, success: false, error: "Identifier on the query and in the body don't match"),
               event_type: 'update')
+    end
+  end
+
+  context 'when updated cocina cannot be mapped' do
+    # Geo content type without geographic.
+    let(:content_type) { Cocina::Models::Vocab.geo }
+
+    it 'is a bad request and does not save' do
+      patch "/v1/objects/#{druid}",
+            params: data,
+            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+      expect(response.status).to eq(422)
+      expect(item).not_to have_received(:save!)
     end
   end
 
