@@ -3,9 +3,9 @@
 module Cocina
   # Validates that the sourceId attribute for a new DRO has not been used before
   class UniqueSourceIdValidator
-    # @param [#dro?] item to be validated
-    def initialize(item)
-      @item = item
+    # @param [#dro?] cocina_dro to be validated
+    def initialize(cocina_dro)
+      @cocina_dro = cocina_dro
     end
 
     attr_reader :error
@@ -14,14 +14,14 @@ module Cocina
     def valid?
       return true unless meets_preconditions?
 
-      @error = "An object (#{duplicate_druid}) with the source ID '#{item.identification.sourceId}' has already been registered." if duplicate_druid
+      @error = "An object (#{duplicate_druid}) with the source ID '#{cocina_dro.identification.sourceId}' has already been registered." if duplicate_druid
 
       @error.nil?
     end
 
     private
 
-    attr_reader :item
+    attr_reader :cocina_dro
 
     def duplicate_druid
       unless @already_ran
@@ -35,11 +35,11 @@ module Cocina
     end
 
     def lookup_duplicate
-      Dor::SearchService.query_by_id(item.identification.sourceId).first
+      Dor::SearchService.query_by_id(cocina_dro.identification.sourceId).first
     end
 
     def meets_preconditions?
-      item.dro?
+      cocina_dro.dro?
     end
   end
 end

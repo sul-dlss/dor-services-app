@@ -4,7 +4,7 @@
 class ShelveJob < ApplicationJob
   queue_as :default
 
-  # @param [String] druid the identifier of the item to be published
+  # @param [String] druid the identifier of the object to be shelved
   # @param [BackgroundJobResult] background_job_result identifier of a background job result to store status info
   def perform(druid:, background_job_result:)
     background_job_result.processing!
@@ -13,15 +13,15 @@ class ShelveJob < ApplicationJob
       cocina_object = CocinaObjectStore.find(druid)
 
       # Disabling validation until pre-assembly and WAS handle this correctly.
-      # validator = validator_for?(item)
+      # validator = validator_for?(cocina_object)
       # unless validator.valid?
-      # Honeybadger.notify("Not all files for '#{druid}' have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}")
+      # Honeybadger.notify("Not all files for '#{druid}' have dark access and/or are unshelved when dro access is dark: #{validator.invalid_filenames}")
       # return LogFailureJob.perform_later(druid: druid,
       #                                    background_job_result: background_job_result,
       #                                    workflow: 'accessionWF',
       #                                    workflow_process: 'shelve',
       #                                    output: { errors: [{ title: 'Access mismatch',
-      #                                                         detail: "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" }] })
+      #                                                         detail: "Not all files have dark access and/or are unshelved when dro access is dark: #{validator.invalid_filenames}" }] })
       # end
 
       ShelvingService.shelve(cocina_object)
@@ -44,8 +44,8 @@ class ShelveJob < ApplicationJob
                                 workflow_process: 'shelve')
   end
 
-  def validator_for?(item)
-    model = Cocina::Mapper.build(item)
+  def validator_for?(cocina_object)
+    model = Cocina::Mapper.build(cocina_object)
     Cocina::ValidateDarkService.new(model)
   end
 end

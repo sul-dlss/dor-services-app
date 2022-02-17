@@ -3,9 +3,9 @@
 module Cocina
   # Validates that shelve and publish file attributes are set to false for dark DRO objects.
   class ValidateDarkService
-    # @param [#dro?] item to be validated
-    def initialize(item)
-      @item = item
+    # @param [#dro?] cocina_object to be validated
+    def initialize(cocina_object)
+      @cocina_object = cocina_object
     end
 
     attr_reader :error
@@ -14,17 +14,17 @@ module Cocina
     def valid?
       return true unless meets_preconditions?
 
-      @error = "Not all files have dark access and/or are unshelved when item access is dark: #{invalid_filenames}" unless invalid_files.empty?
+      @error = "Not all files have dark access and/or are unshelved when object access is dark: #{invalid_filenames}" unless invalid_files.empty?
 
       @error.nil?
     end
 
     private
 
-    attr_reader :item
+    attr_reader :cocina_object
 
     def meets_preconditions?
-      item.dro? && item.access&.access == 'dark'
+      cocina_object.dro? && cocina_object.access&.access == 'dark'
     end
 
     def invalid_files
@@ -52,9 +52,9 @@ module Cocina
 
     def files
       [].tap do |files|
-        next if item&.structural&.contains.nil?
+        next if cocina_object&.structural&.contains.nil?
 
-        item.structural.contains.each do |fileset|
+        cocina_object.structural.contains.each do |fileset|
           next if fileset&.structural&.contains.nil?
 
           fileset.structural.contains.each do |file|

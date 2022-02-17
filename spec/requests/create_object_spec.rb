@@ -551,7 +551,7 @@ RSpec.describe 'Create object' do
           expect(response.status).to eq 400
           expect(response.body).to eq '{"errors":[' \
                                       '{"status":"400","title":"Bad Request",' \
-                                      '"detail":"Not all files have dark access and/or are unshelved when item access is dark: ' \
+                                      '"detail":"Not all files have dark access and/or are unshelved when object access is dark: ' \
                                       '[\\"00001.jp2\\", \\"00002.jp2\\"]"}]}'
         end
       end
