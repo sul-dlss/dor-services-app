@@ -3,9 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe Publish::PublicDescMetadataService do
-  subject(:service) { described_class.new(obj, cocina_object) }
+  subject(:service) { described_class.new(cocina_object) }
 
-  let(:obj) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
   let(:access) { {} }
   let(:identification) { {} }
   let(:structural) { {} }
@@ -68,40 +67,28 @@ RSpec.describe Publish::PublicDescMetadataService do
 
       it 'writes the relationships into MODS' do
         # test that we have 2 expansions
-        expect(doc.xpath('//mods:mods/mods:relatedItem[@type="host"]', 'mods' => 'http://www.loc.gov/mods/v3').size).to eq(1)
+        expect(doc.xpath('//xmlns:mods/xmlns:relatedItem[@type="host"]').size).to eq(1)
 
         # test the validity of the collection expansion
-        xpath_expr = '//mods:mods/mods:relatedItem[@type="host" and not(@displayLabel)]/mods:titleInfo/mods:title'
-        expect(doc.xpath(xpath_expr, 'mods' => 'http://www.loc.gov/mods/v3').first.text.strip).to eq('David Rumsey Map Collection at Stanford University Libraries')
-        xpath_expr = '//mods:mods/mods:relatedItem[@type="host" and not(@displayLabel)]/mods:location/mods:url'
-        expect(doc.xpath(xpath_expr, 'mods' => 'http://www.loc.gov/mods/v3').first.text.strip).to match(%r{^https?://purl.*\.stanford\.edu/xh235dd9059$})
+        xpath_expr = '//xmlns:mods/xmlns:relatedItem[@type="host" and not(@displayLabel)]/xmlns:titleInfo/xmlns:title'
+        expect(doc.xpath(xpath_expr).first.text.strip).to eq('David Rumsey Map Collection at Stanford University Libraries')
+        xpath_expr = '//xmlns:mods/xmlns:relatedItem[@type="host" and not(@displayLabel)]/xmlns:location/xmlns:url'
+        expect(doc.xpath(xpath_expr).first.text.strip).to match(%r{^https?://purl.*\.stanford\.edu/xh235dd9059$})
       end
     end
 
     context 'with isConstituentOf relationships' do
-      let(:relationships) do
-        <<-EOXML
-          <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:hydra="http://projecthydra.org/ns/relations#">
-            <rdf:Description rdf:about="info:fedora/druid:ab123cd4567">
-              <hydra:isGovernedBy rdf:resource="info:fedora/druid:789012"></hydra:isGovernedBy>
-              <fedora-model:hasModel rdf:resource="info:fedora/hydra:commonMetadata"></fedora-model:hasModel>
-              <fedora:isConstituentOf rdf:resource="info:fedora/druid:hj097bm8879"></fedora:isConstituentOf>
-            </rdf:Description>
-          </rdf:RDF>
-        EOXML
-      end
-
       let(:virtual_object_solr_docs) { [{ 'id' => 'druid:hj097bm8879', 'sw_display_title_tesim' => ["Carey's American Atlas: Containing Twenty Maps"] }] }
 
       it 'writes the relationships into MODS' do
         # test that we have 2 expansions
-        expect(doc.xpath('//mods:mods/mods:relatedItem[@type="host"]', 'mods' => 'http://www.loc.gov/mods/v3').size).to eq(1)
+        expect(doc.xpath('//xmlns:mods/xmlns:relatedItem[@type="host"]').size).to eq(1)
 
         # test the validity of the constituent expansion
-        xpath_expr = '//mods:mods/mods:relatedItem[@type="host" and @displayLabel="Appears in"]/mods:titleInfo/mods:title'
-        expect(doc.xpath(xpath_expr, 'mods' => 'http://www.loc.gov/mods/v3').first.text.strip).to start_with("Carey's American Atlas: Containing Twenty Maps")
-        xpath_expr = '//mods:mods/mods:relatedItem[@type="host" and @displayLabel="Appears in"]/mods:location/mods:url'
-        expect(doc.xpath(xpath_expr, 'mods' => 'http://www.loc.gov/mods/v3').first.text.strip).to match(%r{^https://purl.*\.stanford\.edu/hj097bm8879$})
+        xpath_expr = '//xmlns:mods/xmlns:relatedItem[@type="host" and @displayLabel="Appears in"]/xmlns:titleInfo/xmlns:title'
+        expect(doc.xpath(xpath_expr).first.text.strip).to start_with("Carey's American Atlas: Containing Twenty Maps")
+        xpath_expr = '//xmlns:mods/xmlns:relatedItem[@type="host" and @displayLabel="Appears in"]/xmlns:location/xmlns:url'
+        expect(doc.xpath(xpath_expr).first.text.strip).to match(%r{^https://purl.*\.stanford\.edu/hj097bm8879$})
         expect(solr_client).to have_received(:get)
           .with('select', params: {
                   q: 'has_constituents_ssim:druid\:bc123df4567',
@@ -170,7 +157,7 @@ RSpec.describe Publish::PublicDescMetadataService do
       allow(Settings.stacks).to receive(:document_cache_host).and_return('purl.stanford.edu')
     end
 
-    context 'when using ex2_related_mods.xml' do
+    context 'with a descriptive metadata' do
       let(:description) do
         { title: [{ value: 'Slides, IA, Geodesic Domes [1 of 2]' }],
           purl: 'https://purl.stanford.edu/bc123df4567',
@@ -210,25 +197,22 @@ RSpec.describe Publish::PublicDescMetadataService do
   describe '#add_doi' do
     let(:identification) { { doi: '10.80343/ty606df5808' } }
 
-    let(:mods) { read_fixture('mods_default_ns.xml') }
-    let(:obj) do
-      Dor::Item.new(pid: 'druid:bc123df4567').tap do |b|
-        b.descMetadata.content = mods
-      end
-    end
-
     let(:public_mods) do
       service.ng_xml
     end
 
     it 'adds the doi in identityMetadata' do
-      expect(public_mods.xpath('//mods:identifier[@type="doi"]', mods: Publish::PublicDescMetadataService::MODS_NS).to_xml).to eq(
+      expect(public_mods.xpath('//xmlns:identifier[@type="doi"]').to_xml).to eq(
         '<identifier type="doi" displayLabel="DOI">https://doi.org/10.80343/ty606df5808</identifier>'
       )
     end
   end
 
   describe '#add_access_conditions' do
+    subject(:public_mods) do
+      service.ng_xml
+    end
+
     let(:access) do
       {
         copyright: 'Property rights reside with the repository. Copyright &#xA9; Stanford University. All Rights Reserved.',
@@ -237,66 +221,44 @@ RSpec.describe Publish::PublicDescMetadataService do
       }
     end
 
-    let(:license_node) { public_mods.xpath('//mods:accessCondition[@type="license"]').first }
-    let(:mods) { read_fixture('ex2_related_mods.xml') }
-    let(:obj) do
-      Dor::Item.new(pid: 'druid:bc123df4567').tap do |b|
-        b.descMetadata.content = mods
-      end
-    end
-
-    let(:public_mods) do
-      service.ng_xml
-    end
+    let(:license_node) { public_mods.xpath('//xmlns:accessCondition[@type="license"]').first }
 
     it 'adds useAndReproduction accessConditions' do
-      expect(public_mods.xpath('//mods:accessCondition[@type="useAndReproduction"]').size).to eq 1
-      expect(public_mods.xpath('//mods:accessCondition[@type="useAndReproduction"]').text).to match(/yada/)
+      expect(public_mods.xpath('//xmlns:accessCondition[@type="useAndReproduction"]').size).to eq 1
+      expect(public_mods.xpath('//xmlns:accessCondition[@type="useAndReproduction"]').text).to match(/yada/)
     end
 
     it 'adds copyright accessConditions' do
-      expect(public_mods.xpath('//mods:accessCondition[@type="copyright"]').size).to eq 1
-      expect(public_mods.xpath('//mods:accessCondition[@type="copyright"]').text).to match(/Property rights reside with/)
+      expect(public_mods.xpath('//xmlns:accessCondition[@type="copyright"]').size).to eq 1
+      expect(public_mods.xpath('//xmlns:accessCondition[@type="copyright"]').text).to match(/Property rights reside with/)
     end
 
-    it 'adds license accessCondtitions' do
-      expect(public_mods.xpath('//mods:accessCondition[@type="license"]').size).to eq 1
+    it 'adds license accessConditions' do
+      expect(public_mods.xpath('//xmlns:accessCondition[@type="license"]').size).to eq 1
       expect(license_node.text).to eq 'This work is licensed under a Creative Commons Attribution Non Commercial 3.0 Unported license (CC BY-NC).'
       expect(public_mods.root.namespaces).to include('xmlns:xlink')
       expect(license_node['xlink:href']).to eq 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
     end
 
-    context 'when source MODS does not have xlink namespace' do
-      let(:mods) do
-        <<~XML
-          <mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
-            <mods:titleInfo>
-                <mods:title type="main">Slides, IA, Geodesic Domes [1 of 2]</mods:title>
-            </mods:titleInfo>
-          </mods:mods>
-        XML
+    context 'when there are existing access conditions' do
+      let(:description) do
+        {
+          title: [{ value: 'stuff' }],
+          purl: 'https://purl.stanford.edu/bc123df4567',
+          access: {
+            note: [
+              {
+                value: 'Available to Stanford researchers only.',
+                type: 'access restriction'
+              }
+            ]
+          }
+        }
       end
 
-      it 'adds license accessCondtitions based on creativeCommons or openDataCommons statements' do
-        expect(public_mods.root.namespaces).to include('xmlns:xlink')
-        expect(license_node['xlink:href']).to eq 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
-      end
-    end
-
-    it 'removes any pre-existing accessConditions already in the mods' do
-      expect(obj.descMetadata.ng_xml.xpath('//mods:accessCondition[text()[contains(.,"Public Services")]]').count).to eq 1
-      expect(public_mods.xpath('//mods:accessCondition').size).to eq 3
-      expect(public_mods.xpath('//mods:accessCondition[text()[contains(.,"Public Services")]]').count).to eq 0
-    end
-
-    context 'when mods is declared as the default value' do
-      let(:mods) { read_fixture('mods_default_ns.xml') }
-
-      it 'deals with mods declared as the default xmlns' do
-        expect(obj.descMetadata.ng_xml.xpath('//mods:accessCondition[text()[contains(.,"Should not be here anymore")]]', 'mods' => 'http://www.loc.gov/mods/v3').count).to eq(1)
-
-        expect(public_mods.xpath('//mods:accessCondition', 'mods' => 'http://www.loc.gov/mods/v3').size).to eq 3
-        expect(public_mods.xpath('//mods:accessCondition[text()[contains(.,"Should not be here anymore")]]', 'mods' => 'http://www.loc.gov/mods/v3').count).to eq(0)
+      it 'removes any pre-existing accessConditions already in the mods' do
+        expect(public_mods.xpath('//xmlns:accessCondition').size).to eq 3
+        expect(public_mods.xpath('//xmlns:accessCondition[text()[contains(.,"Stanford researchers")]]')).to be_empty
       end
     end
   end
@@ -336,12 +298,7 @@ RSpec.describe Publish::PublicDescMetadataService do
     end
 
     describe 'relatedItem' do
-      let(:mods) { read_fixture('ex2_related_mods.xml') }
       let(:public_mods) { service.ng_xml }
-
-      before do
-        obj.descMetadata.content = mods
-      end
 
       context 'when the item is a member of a collection' do
         let(:description) do
@@ -359,9 +316,9 @@ RSpec.describe Publish::PublicDescMetadataService do
         end
 
         it 'adds a relatedItem node for the collection' do
-          collections      = public_mods.search('//mods:relatedItem/mods:typeOfResource[@collection=\'yes\']')
-          collection_title = public_mods.search('//mods:relatedItem/mods:titleInfo/mods:title')
-          collection_uri   = public_mods.search('//mods:relatedItem/mods:location/mods:url')
+          collections      = public_mods.search('//xmlns:relatedItem/xmlns:typeOfResource[@collection=\'yes\']')
+          collection_title = public_mods.search('//xmlns:relatedItem/xmlns:titleInfo/xmlns:title')
+          collection_uri   = public_mods.search('//xmlns:relatedItem/xmlns:location/xmlns:url')
           expect(collections.length).to eq 1
           expect(collection_title.length).to eq 1
           expect(collection_uri.length).to eq 1
@@ -371,9 +328,9 @@ RSpec.describe Publish::PublicDescMetadataService do
       end
 
       it 'replaces an existing relatedItem if there is a parent collection with title' do
-        collections      = public_mods.search('//mods:relatedItem/mods:typeOfResource[@collection=\'yes\']')
-        collection_title = public_mods.search('//mods:relatedItem/mods:titleInfo/mods:title')
-        collection_uri   = public_mods.search('//mods:relatedItem/mods:location/mods:url')
+        collections      = public_mods.search('//xmlns:relatedItem/xmlns:typeOfResource[@collection=\'yes\']')
+        collection_title = public_mods.search('//xmlns:relatedItem/xmlns:titleInfo/xmlns:title')
+        collection_uri   = public_mods.search('//xmlns:relatedItem/xmlns:location/xmlns:url')
         expect(collections.length).to eq 1
         expect(collection_title.length).to eq 1
         expect(collection_uri.length).to eq 1
@@ -384,7 +341,7 @@ RSpec.describe Publish::PublicDescMetadataService do
       context 'if there is no collection relationship' do
         let(:structural) { { isMemberOf: [] } }
 
-        let(:descriptive) do
+        let(:description) do
           { title: [{ value: 'Slides, IA, Geodesic Domes [1 of 2]' }],
             purl: 'https://purl.stanford.edu/zb871zd0767',
             form: [{ value: 'still image', type: 'resource type',
@@ -403,8 +360,8 @@ RSpec.describe Publish::PublicDescMetadataService do
         end
 
         it 'does not touch an existing relatedItem if there is no collection relationship' do
-          collections      = public_mods.search('//mods:relatedItem/mods:typeOfResource[@collection=\'yes\']')
-          collection_title = public_mods.search('//mods:relatedItem/mods:titleInfo/mods:title')
+          collections      = public_mods.search('//xmlns:relatedItem/xmlns:typeOfResource[@collection=\'yes\']')
+          collection_title = public_mods.search('//xmlns:relatedItem/xmlns:titleInfo/xmlns:title')
           expect(collections.length).to eq 1
           expect(collection_title.length).to eq 1
           expect(collection_title.first.content).to eq 'Buckminster Fuller papers, 1920-1983'
@@ -421,9 +378,9 @@ RSpec.describe Publish::PublicDescMetadataService do
         end
 
         it 'does not add relatedItem and does not error out if the referenced collection does not exist' do
-          collections      = public_mods.search('//mods:relatedItem/mods:typeOfResource[@collection=\'yes\']')
-          collection_title = public_mods.search('//mods:relatedItem/mods:titleInfo/mods:title')
-          collection_uri   = public_mods.search('//mods:relatedItem/mods:location/mods:url')
+          collections      = public_mods.search('//xmlns:relatedItem/xmlns:typeOfResource[@collection=\'yes\']')
+          collection_title = public_mods.search('//xmlns:relatedItem/xmlns:titleInfo/xmlns:title')
+          collection_uri   = public_mods.search('//xmlns:relatedItem/xmlns:location/xmlns:url')
           expect(collections.length).to eq 0
           expect(collection_title.length).to eq 0
           expect(collection_uri.length).to eq 0

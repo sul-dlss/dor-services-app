@@ -16,12 +16,7 @@ module Publish
     # @raise [CrosswalkError] Raises an Exception if the generated DC is empty or has no children
     # @return [Nokogiri::XML::Document] the DublinCore XML document object
     def ng_xml
-      dc_doc = MODS_TO_DC_XSLT.transform(desc_md_xml)
-      dc_doc.xpath('/oai_dc:dc/*[count(text()) = 0]', oai_dc: XMLNS_OAI_DC).remove # Remove empty nodes
-      raise CrosswalkError, "DublinCoreService#ng_xml produced incorrect xml (no root):\n#{dc_doc.to_xml}" if dc_doc.root.nil?
-      raise CrosswalkError, "DublinCoreService#ng_xml produced incorrect xml (no children):\n#{dc_doc.to_xml}" if dc_doc.root.children.empty?
-
-      dc_doc
+      MODS_TO_DC_XSLT.transform(desc_md_xml)
     end
 
     # @return [String] the DublinCore XML document object
