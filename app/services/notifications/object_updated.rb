@@ -5,6 +5,8 @@ module Notifications
   # The primary use case here is that an index may need to be updated (dor-indexing-app)
   class ObjectUpdated
     def self.publish(model:, created_at:, modified_at:)
+      return unless Settings.rabbitmq.enabled
+
       Rails.logger.debug "Publishing Rabbitmq Message for updating #{model.externalIdentifier}"
       new(model: model, created_at: created_at, modified_at: modified_at, channel: RabbitChannel.instance).publish
       Rails.logger.debug "Published Rabbitmq Message for updating #{model.externalIdentifier}"

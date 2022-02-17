@@ -58,7 +58,7 @@ class EmbargoReleaseService
     VersionService.close(cocina_object, { description: 'embargo released', significance: 'admin' }, event_factory: EventFactory)
 
     # Broadcast this action to a topic
-    Notifications::EmbargoLifted.publish(model: cocina_object) if Settings.rabbitmq.enabled
+    Notifications::EmbargoLifted.publish(model: cocina_object)
   rescue StandardError => e
     Rails.logger.error("!!! Unable to release embargo for: #{druid}\n#{e.inspect}\n#{e.backtrace.join("\n")}")
     Honeybadger.notify "Unable to release embargo for: #{druid}", backtrace: e.backtrace

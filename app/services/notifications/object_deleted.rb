@@ -5,6 +5,8 @@ module Notifications
   # The primary use case here is that an index may need to be updated (dor-indexing-app)
   class ObjectDeleted
     def self.publish(model:, deleted_at:)
+      return unless Settings.rabbitmq.enabled
+
       Rails.logger.debug "Publishing Rabbitmq Message for deleting #{model.externalIdentifier}"
       new(model: model, deleted_at: deleted_at, channel: RabbitChannel.instance).publish
       Rails.logger.debug "Published Rabbitmq Message for deleting #{model.externalIdentifier}"

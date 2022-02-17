@@ -76,7 +76,7 @@ class CocinaObjectStore
     cocina_to_ar_save(updated_cocina_object) if Settings.enabled_features.postgres.update && ar_exists?(cocina_object.externalIdentifier)
 
     # Broadcast this update action to a topic
-    Notifications::ObjectUpdated.publish(model: updated_cocina_object, created_at: created_at, modified_at: modified_at) if Settings.rabbitmq.enabled
+    Notifications::ObjectUpdated.publish(model: updated_cocina_object, created_at: created_at, modified_at: modified_at)
     updated_cocina_object
   end
 
@@ -116,7 +116,7 @@ class CocinaObjectStore
 
     ar_destroy(druid) if Settings.enabled_features.postgres.destroy && ar_exists?(druid)
 
-    Notifications::ObjectDeleted.publish(model: cocina_object, deleted_at: Time.zone.now) if Settings.rabbitmq.enabled
+    Notifications::ObjectDeleted.publish(model: cocina_object, deleted_at: Time.zone.now)
   end
 
   # This is only public for ObjectCreator use.

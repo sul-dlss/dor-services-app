@@ -55,11 +55,9 @@ class MetadataController < ApplicationController
     cocina_object = Cocina::Mapper.build(@item)
 
     @item.save!
-    if Settings.rabbitmq.enabled
-      Notifications::ObjectUpdated.publish(model: cocina_object,
-                                           created_at: @item.create_date,
-                                           modified_at: @item.modified_date)
-    end
+    Notifications::ObjectUpdated.publish(model: cocina_object,
+                                         created_at: @item.create_date,
+                                         modified_at: @item.modified_date)
   rescue LegacyMetadataService::DatastreamValidationError => e
     json_api_error(status: :unprocessable_entity, message: e.detail, title: e.message)
   rescue Rubydora::FedoraInvalidRequest
