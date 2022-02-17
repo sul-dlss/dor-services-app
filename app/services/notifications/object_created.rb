@@ -5,6 +5,8 @@ module Notifications
   # The primary use case here is that the requestor may want to know what druid was assigned to the request.
   class ObjectCreated
     def self.publish(model:, created_at:, modified_at:)
+      return unless Settings.rabbitmq.enabled
+
       # Skipping APOs because they don't (yet) have a partOfProject assertion.
       return if model.is_a? Cocina::Models::AdminPolicy
 

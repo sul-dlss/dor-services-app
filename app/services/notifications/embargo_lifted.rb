@@ -5,6 +5,8 @@ module Notifications
   # The primary use case here is that h2 needs to log a message when this happens
   class EmbargoLifted
     def self.publish(model:)
+      return unless Settings.rabbitmq.enabled
+
       Rails.logger.debug "Publishing Rabbitmq Message for embargo #{model.externalIdentifier}"
       new(model: model, channel: RabbitChannel.instance).publish
       Rails.logger.debug "Published Rabbitmq Message for embargo #{model.externalIdentifier}"

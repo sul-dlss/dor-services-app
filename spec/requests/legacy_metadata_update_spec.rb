@@ -107,7 +107,6 @@ RSpec.describe 'Update the legacy (datastream) metadata' do
     allow(Dor).to receive(:find).and_return(item)
     allow(LegacyMetadataService).to receive(:update_datastream_if_newer)
     allow(Notifications::ObjectUpdated).to receive(:publish)
-    allow(Settings.rabbitmq).to receive(:enabled).and_return(true)
     allow(Cocina::Mapper).to receive(:build).and_return(instance_double(Cocina::Models::DRO))
   end
 

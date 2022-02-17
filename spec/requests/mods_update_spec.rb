@@ -25,7 +25,6 @@ RSpec.describe 'Update MODS' do
     allow(Dor).to receive(:find).and_return(object)
     allow(object).to receive(:save!)
     allow(Notifications::ObjectUpdated).to receive(:publish)
-    allow(Settings.rabbitmq).to receive(:enabled).and_return(true)
   end
 
   context 'with valid xml' do
