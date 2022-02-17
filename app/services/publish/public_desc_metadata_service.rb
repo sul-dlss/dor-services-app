@@ -3,19 +3,17 @@
 module Publish
   # Creates the descriptive XML that we display on purl.stanford.edu
   class PublicDescMetadataService
-    attr_reader :object, :cocina_object
+    attr_reader :cocina_object
 
-    NOKOGIRI_DEEP_COPY = 1
     MODS_NS = 'http://www.loc.gov/mods/v3'
 
-    def initialize(object, cocina_object)
-      @object = object
+    def initialize(cocina_object)
       @cocina_object = cocina_object
     end
 
     # @return [Nokogiri::XML::Document] A copy of the descriptiveMetadata of the object, to be modified
     def doc
-      @doc ||= object.descMetadata.ng_xml.dup(NOKOGIRI_DEEP_COPY)
+      @doc ||= Cocina::ToFedora::Descriptive.transform(cocina_object.description, cocina_object.externalIdentifier)
     end
 
     # @return [String] Public descriptive medatada XML
@@ -85,7 +83,7 @@ module Publish
 
     # @return[Array<Dor::Item>]
     def find_virtual_object
-      query = "has_constituents_ssim:#{object.id.sub(':', '\:')}"
+      query = "has_constituents_ssim:#{cocina_object.externalIdentifier.sub(':', '\:')}"
       response = solr_conn.get('select', params: { q: query, fl: 'id sw_display_title_tesim' })
       response.fetch('response').fetch('docs').map do |row|
         { id: row.fetch('id'), title: row.fetch('sw_display_title_tesim').first }

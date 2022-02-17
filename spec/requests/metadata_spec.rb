@@ -6,7 +6,7 @@ RSpec.describe 'Display metadata' do
   let(:object) { Dor::Item.new(pid: 'druid:mk420bs7601') }
   let(:description) do
     {
-      title: [{ value: 'Constituent label &amp; A Special character' }],
+      title: [{ value: 'Hello' }],
       purl: 'https://purl.stanford.edu/mk420bs7601'
     }
   end
@@ -22,7 +22,6 @@ RSpec.describe 'Display metadata' do
   end
 
   before do
-    object.descMetadata.title_info.main_title = 'Hello'
     allow(Dor).to receive(:find).and_return(object)
     allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
   end
@@ -45,6 +44,10 @@ RSpec.describe 'Display metadata' do
   end
 
   describe 'mods' do
+    before do
+      object.descMetadata.title_info.main_title = 'Hello'
+    end
+
     it 'returns the source MODS xml' do
       get '/v1/objects/druid:mk420bs7601/metadata/mods',
           headers: { 'Authorization' => "Bearer #{jwt}" }
@@ -73,10 +76,13 @@ RSpec.describe 'Display metadata' do
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(response.body).to be_equivalent_to <<~XML
-        <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
           <titleInfo>
             <title>Hello</title>
           </titleInfo>
+          <location>
+            <url usage="primary display">https://purl.stanford.edu/mk420bs7601</url>\n
+          </location>\n
         </mods>
       XML
     end
@@ -157,11 +163,15 @@ RSpec.describe 'Display metadata' do
           #{relationships_xml}
           <oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:srw_dc="info:srw/schema/1/dc-schema" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
             <dc:title>Hello</dc:title>
+            <dc:identifier>https://purl.stanford.edu/mk420bs7601</dc:identifier>
           </oai_dc:dc>
-          <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+          <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
             <titleInfo>
               <title>Hello</title>
             </titleInfo>
+            <location>
+              <url usage="primary display">https://purl.stanford.edu/mk420bs7601</url>
+            </location>
           </mods>
           <releaseData>
             <release to="SearchWorks">true</release>
