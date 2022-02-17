@@ -872,4 +872,30 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       )
     end
   end
+
+  context 'when normalizing contentMetadata virtual object relationship with missing type' do
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata type="file" objectId="druid:bb035tg0974">
+          <resource sequence="1" id="bb035tg0974_1" type="file">
+            <externalFile objectId="druid:fn851rw5684" resourceId="fn851rw5684_1" fileId="PC0170_s3_Oregon_State_2008-08-28_154120_0001.jp2" mimetype="image/jp2"/>
+            <relationship objectId="druid:fn851rw5684"/>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    it 'adds a type' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <contentMetadata type="file" objectId="druid:bb035tg0974">
+            <resource type="file">
+              <externalFile objectId="druid:fn851rw5684" fileId="PC0170_s3_Oregon_State_2008-08-28_154120_0001.jp2" mimetype="image/jp2"/>
+              <relationship objectId="druid:fn851rw5684" type="alsoAvailableAs"/>
+            </resource>
+          </contentMetadata>
+        XML
+      )
+    end
+  end
 end
