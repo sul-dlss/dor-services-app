@@ -69,7 +69,6 @@ module Cocina
         end
 
         # rubocop:disable Metrics/PerceivedComplexity
-        # rubocop:disable Metrics/AbcSize
         def write_parallel(title:, title_info_attrs: {})
           title_alt_rep_group = id_generator.next_altrepgroup
 
@@ -98,9 +97,8 @@ module Cocina
             end
           end
         end
-        # rubocop:enable Metrics/PerceivedComplexity
-        # rubocop:enable Metrics/AbcSize
 
+        # rubocop:enable Metrics/PerceivedComplexity
         def write_grouped(title:, title_info_attrs: {})
           title.groupedValue.each { |grouped_title| write_basic(title: grouped_title, title_info_attrs: title_info_attrs) }
         end

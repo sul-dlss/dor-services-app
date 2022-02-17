@@ -27,7 +27,6 @@ class LegacyMetadataService
     @event_factory = event_factory
   end
 
-  # rubocop:disable Metrics/AbcSize
   def update_datastream_if_newer
     if !datastream.createDate || updated > datastream.createDate
       datastream.content = content
@@ -46,7 +45,6 @@ class LegacyMetadataService
                        "date (#{datastream.createDate}) after the file was modified (#{updated}). " \
                        'Doing an experiment to see if this ever happens.')
   end
-  # rubocop:enable Metrics/AbcSize
 
   private
 

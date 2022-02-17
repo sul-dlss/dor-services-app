@@ -22,7 +22,8 @@ module Cocina
           # To build file sets, we need to consider both content metadata and
           # rights metadata, the latter of which is used to map file-specific
           # access/rights.
-          contains = FileSets.build(fedora_item.contentMetadata,
+          contains = FileSets.build(fedora_item.pid,
+                                    fedora_item.contentMetadata,
                                     rights_metadata: fedora_item.rightsMetadata,
                                     version: fedora_item.current_version.to_i,
                                     notifier: notifier)

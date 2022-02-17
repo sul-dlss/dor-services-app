@@ -34,7 +34,6 @@ module Cocina
 
       attr_reader :fedora_apo, :notifier
 
-      # rubocop:disable Metrics/AbcSize
       def build_apo_administrative
         {}.tap do |admin|
           registration_workflows = fedora_apo.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/registration/workflow/@id').map(&:value)
@@ -49,7 +48,6 @@ module Cocina
           admin[:roles] = build_roles
         end
       end
-      # rubocop:enable Metrics/AbcSize
 
       # @return [Array<Hash>] the list of name and members
       def build_roles
