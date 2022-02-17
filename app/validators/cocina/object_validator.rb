@@ -3,37 +3,44 @@
 module Cocina
   # Validates objects are valid
   class ObjectValidator
-    def initialize(item)
-      @item = item
+    def initialize(cocina_object)
+      @cocina_object = cocina_object
     end
 
     attr_reader :error
 
-    # @param [RequestAdminPolicy, RequestDRO, RequestCollection]
-    def self.validate(obj)
-      new(obj).validate
+    # @param [Cocina::Models::RequestAdminPolicy,Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::DRO,Cocina::Models::AdminPolicy,Cocina::Models::Collection]
+    # @raises [ValidationError] if not valid
+    def self.validate(cocina_object)
+      new(cocina_object).validate
     end
 
     # @raises [ValidationError] if not valid
     def validate
-      validator = Cocina::UniqueSourceIdValidator.new(item)
-      raise ValidationError.new(validator.error, status: :conflict) unless validator.valid?
+      if request?
+        validator = Cocina::UniqueSourceIdValidator.new(cocina_object)
+        raise ValidationError.new(validator.error, status: :conflict) unless validator.valid?
+      end
 
-      validator = ValidateDarkService.new(item)
+      validator = ValidateDarkService.new(cocina_object)
       raise ValidationError, validator.error unless validator.valid?
 
-      validator = Cocina::ApoExistenceValidator.new(item)
+      validator = Cocina::ApoExistenceValidator.new(cocina_object)
       raise ValidationError, validator.error unless validator.valid?
 
-      return if item.collection? || item.admin_policy?
+      return unless cocina_object.dro?
 
       # Only DROs have collection membership
-      validator = Cocina::CollectionExistenceValidator.new(item)
+      validator = Cocina::CollectionExistenceValidator.new(cocina_object)
       raise ValidationError, validator.error unless validator.valid?
     end
 
     private
 
-    attr_reader :item
+    attr_reader :cocina_object
+
+    def request?
+      !cocina_object.respond_to?(:externalIdentifier)
+    end
   end
 end

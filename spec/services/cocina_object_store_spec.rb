@@ -13,6 +13,7 @@ RSpec.describe CocinaObjectStore do
       allow(ActiveFedora::ContentModel).to receive(:models_asserted_by).and_return(['info:fedora/afmodel:Item'])
       allow(item).to receive(:create_date).and_return(date)
       allow(item).to receive(:modified_date).and_return(date)
+      allow(Cocina::ObjectValidator).to receive(:validate)
     end
 
     describe '#find' do
@@ -79,6 +80,7 @@ RSpec.describe CocinaObjectStore do
           expect(Dor).to have_received(:find).with(druid)
           expect(Cocina::ObjectUpdater).to have_received(:run).with(item, cocina_object)
           expect(Notifications::ObjectUpdated).to have_received(:publish).with(model: updated_cocina_object, created_at: item.create_date, modified_at: item.modified_date)
+          expect(Cocina::ObjectValidator).to have_received(:validate).with(cocina_object)
         end
       end
 
@@ -112,6 +114,24 @@ RSpec.describe CocinaObjectStore do
           expect(cocina_object_store).to have_received(:cocina_to_ar_save).with(updated_cocina_object)
           expect(cocina_object_store).to have_received(:ar_exists?).with(druid)
         end
+      end
+    end
+
+    describe '#create' do
+      let(:requested_cocina_object) { instance_double(Cocina::Models::RequestDRO) }
+      let(:created_cocina_object) { instance_double(Cocina::Models::DRO) }
+
+      before do
+        allow(Settings.rabbitmq).to receive(:enabled).and_return(true)
+        allow(Notifications::ObjectCreated).to receive(:publish)
+        allow(Cocina::ObjectCreator).to receive(:create).and_return(created_cocina_object)
+      end
+
+      it 'maps and saves to Fedora' do
+        expect(described_class.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
+        expect(Cocina::ObjectCreator).to have_received(:create).with(requested_cocina_object, assign_doi: true)
+        expect(Notifications::ObjectCreated).to have_received(:publish).with(model: created_cocina_object, created_at: kind_of(Time), modified_at: kind_of(Time))
+        expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
       end
     end
 
