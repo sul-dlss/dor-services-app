@@ -72,10 +72,9 @@ module Publish
     end
 
     def release_date
-      return unless object.is_a?(Dor::Item)
-      return unless object.embargoMetadata.status == 'embargoed'
+      return unless public_cocina.dro? && public_cocina.access.embargo
 
-      object.embargoMetadata.release_date.first.to_datetime.utc.iso8601
+      public_cocina.access.embargo.releaseDate.utc.iso8601
     end
 
     SYMPHONY = 'symphony'

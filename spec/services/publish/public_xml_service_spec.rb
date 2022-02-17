@@ -138,43 +138,20 @@ RSpec.describe Publish::PublicXmlService do
                                 version: 1,
                                 description: description,
                                 identification: {},
-                                access: {},
+                                access: {
+                                  embargo: {
+                                    releaseDate: DateTime.parse('2050-05-31')
+                                  }
+                                },
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
-      end
-
-      let(:embargo) do
-        <<~XML
-          <embargoMetadata>
-            <status>embargoed</status>
-            <releaseDate>2021-10-08T00:00:00Z</releaseDate>
-            <twentyPctVisibilityStatus/>
-            <twentyPctVisibilityReleaseDate/>
-            <releaseAccess>
-              <access type="discover">
-                <machine>
-                  <world/>
-                </machine>
-              </access>
-              <access type="read">
-                <machine>
-                  <world/>
-                </machine>
-              </access>
-            </releaseAccess>
-          </embargoMetadata>
-        XML
       end
 
       let(:result) do
         ng_xml.at_xpath('/publicObject/rightsMetadata/access[@type="read"]/machine/embargoReleaseDate').text
       end
 
-      before do
-        item.embargoMetadata.content = embargo
-      end
-
       it 'adds embargo to the rights' do
-        expect(result).to eq '2021-10-08T00:00:00Z'
+        expect(result).to eq '2050-05-31T00:00:00Z'
       end
     end
 
