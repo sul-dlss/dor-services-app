@@ -358,6 +358,8 @@ $ scp deploy@sdr-deploy.stanford.edu:~/jlit/dor-services-app/results.txt results
 $ grep Error results-oct30.txt # shows the unique errors
 ```
 
+Note that the environment variable [`PARALLEL_PROCESSOR_COUNT`](https://github.com/grosser/parallel/blob/master/lib/parallel/processor_count.rb#L9) is set to 8 to allow better sharing of sdr-deploy.
+
 ## Other tools
 ### Generating a list of druids from Solr query
 ```
