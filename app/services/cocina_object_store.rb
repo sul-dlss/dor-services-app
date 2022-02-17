@@ -87,7 +87,7 @@ class CocinaObjectStore
     cocina_object = fedora_create(cocina_request_object, assign_doi: assign_doi)
 
     # Broadcast this to a topic
-    Notifications::ObjectCreated.publish(model: cocina_object, created_at: Time.zone.now, modified_at: Time.zone.now) if Settings.rabbitmq.enabled
+    Notifications::ObjectCreated.publish(model: cocina_object, created_at: Time.zone.now, modified_at: Time.zone.now)
     cocina_object
   end
 

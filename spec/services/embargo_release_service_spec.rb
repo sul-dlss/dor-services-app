@@ -249,7 +249,6 @@ RSpec.describe EmbargoReleaseService do
       context 'when it is openable' do
         before do
           allow(Notifications::EmbargoLifted).to receive(:publish)
-          allow(Settings.rabbitmq).to receive(:enabled).and_return(true)
         end
 
         it 'is successful' do

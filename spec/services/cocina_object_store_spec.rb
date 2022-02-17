@@ -69,7 +69,6 @@ RSpec.describe CocinaObjectStore do
         let(:updated_cocina_object) { instance_double(Cocina::Models::DRO) }
 
         before do
-          allow(Settings.rabbitmq).to receive(:enabled).and_return(true)
           allow(Notifications::ObjectUpdated).to receive(:publish)
           allow(Dor).to receive(:find).and_return(item)
           allow(Cocina::ObjectUpdater).to receive(:run).and_return(updated_cocina_object)
@@ -122,7 +121,6 @@ RSpec.describe CocinaObjectStore do
       let(:created_cocina_object) { instance_double(Cocina::Models::DRO) }
 
       before do
-        allow(Settings.rabbitmq).to receive(:enabled).and_return(true)
         allow(Notifications::ObjectCreated).to receive(:publish)
         allow(Cocina::ObjectCreator).to receive(:create).and_return(created_cocina_object)
       end
@@ -140,7 +138,6 @@ RSpec.describe CocinaObjectStore do
         let(:fedora_object) { instance_double(Dor::Item, destroy: nil) }
 
         before do
-          allow(Settings.rabbitmq).to receive(:enabled).and_return(true)
           allow(Dor).to receive(:find).and_return(fedora_object)
           allow(Notifications::ObjectDeleted).to receive(:publish)
           allow(described_class).to receive(:find).and_return(cocina_object)
