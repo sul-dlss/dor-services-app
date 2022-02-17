@@ -16,8 +16,16 @@ module Cocina
       end
 
       def generate
-        return unless embargo&.releaseDate
+        generate_embargo if embargo&.releaseDate
+        clear_embargo if embargo.nil? && embargo_metadata.status == 'embargoed'
+        embargo_metadata.ng_xml.to_xml
+      end
 
+      private
+
+      attr_reader :embargo_metadata, :embargo
+
+      def generate_embargo
         embargo_metadata.ng_xml_will_change!
 
         embargo_metadata.release_date = embargo.releaseDate
@@ -25,13 +33,12 @@ module Cocina
         embargo_metadata.use_and_reproduction_statement = embargo.useAndReproductionStatement if embargo.useAndReproductionStatement
 
         AccessGenerator.generate(root: embargo_metadata.release_access_node, access: embargo)
-
-        embargo_metadata.ng_xml.to_xml
       end
 
-      private
-
-      attr_reader :embargo_metadata, :embargo
+      def clear_embargo
+        embargo_metadata.ng_xml_will_change!
+        embargo_metadata.status = 'released'
+      end
     end
   end
 end
