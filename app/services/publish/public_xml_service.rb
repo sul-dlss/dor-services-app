@@ -82,6 +82,7 @@ module Publish
 
     # catkeys are used by PURL
     # objectType is used by purl-fetcher
+    # objectLabel is used by https://github.com/sul-dlss/searchworks_traject_indexer/blob/b5ed9906a5a0130eca5e68fbb0e8633bdbe6ffd6/lib/sdr_stuff.rb#L54
     def public_identity_metadata
       catkeys = Array(public_cocina.identification&.catalogLinks).filter_map { |link| link.catalogRecordId if link.catalog == SYMPHONY }
       nodes = catkeys.map { |catkey| "  <otherId name=\"catkey\">#{catkey}</otherId>" }
@@ -90,6 +91,7 @@ module Publish
         <<~XML
           <identityMetadata>
             <objectType>#{public_cocina.collection? ? 'collection' : 'item'}</objectType>
+            <objectLabel>#{public_cocina.label}</objectLabel>
           #{nodes.join("\n")}
           </identityMetadata>
         XML
