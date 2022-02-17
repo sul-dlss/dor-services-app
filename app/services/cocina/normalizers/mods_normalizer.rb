@@ -125,7 +125,7 @@ module Cocina
 
       def normalize_version
         # Only normalize version when version isn't mapped.
-        match = /MODS version (\d\.\d)/.match(ng_xml.root.at('//mods:recordInfo/mods:recordOrigin', mods: MODS_NS)&.content)
+        match = /MODS version (\d\.\d)/.match(ng_xml.at('//mods:recordInfo/mods:recordOrigin', mods: MODS_NS)&.content)
 
         if !match
           ng_xml.root['version'] = '3.7'
@@ -138,7 +138,7 @@ module Cocina
 
       def normalize_authority_uris
         Cocina::FromFedora::Descriptive::Authority::NORMALIZE_AUTHORITY_URIS.each do |authority_uri|
-          ng_xml.root.xpath("//mods:*[@authorityURI='#{authority_uri}']", mods: MODS_NS).each do |node|
+          ng_xml.xpath("//mods:*[@authorityURI='#{authority_uri}']", mods: MODS_NS).each do |node|
             node[:authorityURI] = "#{authority_uri}/"
           end
         end
@@ -146,7 +146,7 @@ module Cocina
 
       def normalize_purl_location
         normalize_purl_for(ng_xml.root, purl: Purl.for(druid: druid))
-        ng_xml.root.xpath('mods:relatedItem', mods: MODS_NS).each { |related_item_node| normalize_purl_for(related_item_node) }
+        ng_xml.xpath('/mods:mods/mods:relatedItem', mods: MODS_NS).each { |related_item_node| normalize_purl_for(related_item_node) }
       end
 
       # rubocop:disable Metrics/AbcSize
@@ -203,7 +203,7 @@ module Cocina
       end
 
       def normalize_related_item_other_type
-        ng_xml.root.xpath('//mods:relatedItem[@type and @otherType]', mods: MODS_NS).each do |related_node|
+        ng_xml.xpath('//mods:relatedItem[@type and @otherType]', mods: MODS_NS).each do |related_node|
           related_node.delete('otherType')
           related_node.delete('otherTypeURI')
           related_node.delete('otherTypeAuth')
@@ -211,16 +211,16 @@ module Cocina
       end
 
       def normalize_empty_notes
-        ng_xml.root.xpath('//mods:note[not(text()) and not(@xlink:href)]', mods: MODS_NS, xlink: XLINK_NS).each(&:remove)
+        ng_xml.xpath('//mods:note[not(text()) and not(@xlink:href)]', mods: MODS_NS, xlink: XLINK_NS).each(&:remove)
       end
 
       def normalize_empty_type_of_resource
-        ng_xml.root.xpath('//mods:typeOfResource[not(text())][not(@*)]', mods: MODS_NS).each(&:remove)
+        ng_xml.xpath('//mods:typeOfResource[not(text())][not(@*)]', mods: MODS_NS).each(&:remove)
       end
 
       def normalize_unmatched_altrepgroup
         normalize_unmatched_altrepgroup_for(ng_xml.root)
-        ng_xml.root.xpath('//mods:relatedItem', mods: MODS_NS).each { |related_item_node| normalize_unmatched_altrepgroup_for(related_item_node) }
+        ng_xml.xpath('//mods:relatedItem', mods: MODS_NS).each { |related_item_node| normalize_unmatched_altrepgroup_for(related_item_node) }
       end
 
       def normalize_unmatched_altrepgroup_for(base_node)
@@ -240,7 +240,7 @@ module Cocina
 
       def normalize_unmatched_nametitlegroup
         normalize_unmatched_nametitlegroup_for(ng_xml.root)
-        ng_xml.root.xpath('//mods:relatedItem', mods: MODS_NS).each { |related_item_node| normalize_unmatched_nametitlegroup_for(related_item_node) }
+        ng_xml.xpath('//mods:relatedItem', mods: MODS_NS).each { |related_item_node| normalize_unmatched_nametitlegroup_for(related_item_node) }
       end
 
       def normalize_unmatched_nametitlegroup_for(base_node)
@@ -259,40 +259,40 @@ module Cocina
       end
 
       def normalize_empty_attributes
-        ng_xml.root.xpath('//mods:*[@*=""]', mods: MODS_NS).each do |node|
+        ng_xml.xpath('//mods:*[@*=""]', mods: MODS_NS).each do |node|
           node.each { |attr_name, attr_value| node.delete(attr_name) if attr_value.blank? }
         end
       end
 
       def normalize_xml_space
-        ng_xml.root.xpath('//mods:*[@xml:space]', mods: MODS_NS).each do |node|
+        ng_xml.xpath('//mods:*[@xml:space]', mods: MODS_NS).each do |node|
           node.delete('space')
         end
       end
 
       def normalize_language_term_type
-        ng_xml.root.xpath('//mods:languageTerm[not(@type)]', mods: MODS_NS).each do |node|
+        ng_xml.xpath('//mods:languageTerm[not(@type)]', mods: MODS_NS).each do |node|
           node['type'] = 'code'
         end
       end
 
       def normalize_access_condition
-        ng_xml.root.xpath('//mods:accessCondition[@type="restrictionOnAccess"]', mods: MODS_NS).each do |node|
+        ng_xml.xpath('//mods:accessCondition[@type="restrictionOnAccess"]', mods: MODS_NS).each do |node|
           node['type'] = 'restriction on access'
         end
-        ng_xml.root.xpath('//mods:accessCondition[@type="useAndReproduction"]', mods: MODS_NS).each do |node|
+        ng_xml.xpath('//mods:accessCondition[@type="useAndReproduction"]', mods: MODS_NS).each do |node|
           node['type'] = 'use and reproduction'
         end
       end
 
       def normalize_identifier_type_attr
-        ng_xml.root.xpath('//mods:identifier[@type]', mods: MODS_NS).each do |node|
+        ng_xml.xpath('//mods:identifier[@type]', mods: MODS_NS).each do |node|
           node['type'] = normalized_identifier_type_for(node['type'])
         end
-        ng_xml.root.xpath('//mods:nameIdentifier[@type]', mods: MODS_NS).each do |node|
+        ng_xml.xpath('//mods:nameIdentifier[@type]', mods: MODS_NS).each do |node|
           node['type'] = normalized_identifier_type_for(node['type'])
         end
-        ng_xml.root.xpath('//mods:recordIdentifier[@source]', mods: MODS_NS).each do |node|
+        ng_xml.xpath('//mods:recordIdentifier[@source]', mods: MODS_NS).each do |node|
           node['source'] = normalized_identifier_type_for(node['source'])
         end
       end
@@ -306,7 +306,7 @@ module Cocina
       end
 
       def normalize_location_physical_location
-        ng_xml.root.xpath('//mods:location', mods: MODS_NS).each do |location_node|
+        ng_xml.xpath('//mods:location', mods: MODS_NS).each do |location_node|
           location_node.xpath('mods:physicalLocation|mods:url|mods:shelfLocator', mods: MODS_NS).each do |node|
             next unless node.content.present? || node['xlink:href']
 
@@ -319,14 +319,14 @@ module Cocina
       end
 
       def normalize_empty_related_items
-        ng_xml.root.xpath('//mods:relatedItem/mods:part[count(mods:*)=1]/mods:detail[count(mods:*)=1]/mods:number[not(text())]', mods: MODS_NS).each do |number_node|
+        ng_xml.xpath('//mods:relatedItem/mods:part[count(mods:*)=1]/mods:detail[count(mods:*)=1]/mods:number[not(text())]', mods: MODS_NS).each do |number_node|
           number_node.parent.parent.remove
         end
-        ng_xml.root.xpath('//mods:relatedItem[not(mods:*) and not(@xlink:href)]', mods: MODS_NS, xlink: XLINK_NS).each(&:remove)
+        ng_xml.xpath('//mods:relatedItem[not(mods:*) and not(@xlink:href)]', mods: MODS_NS, xlink: XLINK_NS).each(&:remove)
       end
 
       def normalize_notes
-        ng_xml.root.xpath('//mods:note', mods: MODS_NS).each do |note_node|
+        ng_xml.xpath('//mods:note', mods: MODS_NS).each do |note_node|
           if ToFedora::Descriptive::Note.note_type_to_abstract_type.include?(note_node['type']&.downcase) ||
              ToFedora::Descriptive::Note.display_label_to_abstract_type.include?(note_node['displayLabel'])
             note_node.delete('type') unless note_node['type']&.downcase == 'summary'
@@ -337,7 +337,7 @@ module Cocina
       end
 
       def normalize_abstracts
-        ng_xml.root.xpath('mods:abstract', mods: MODS_NS).each do |abstract_node|
+        ng_xml.xpath('/mods:mods/mods:abstract', mods: MODS_NS).each do |abstract_node|
           abstract_node['type'] = abstract_node['type'].downcase if ToFedora::Descriptive::Note.note_type_to_abstract_type.include? abstract_node['type']&.downcase
           abstract_node['displayLabel'] = abstract_node['displayLabel'].capitalize if ToFedora::Descriptive::Note.display_label_to_abstract_type.include? abstract_node['displayLabel']
           abstract_node.delete('type') if abstract_node['type'] == 'abstract'
@@ -346,8 +346,8 @@ module Cocina
 
       def normalize_usage_primary
         normalize_usage_primary_for(ng_xml.root)
-        ng_xml.root.xpath('mods:relatedItem', mods: ModsNormalizer::MODS_NS).each { |related_item_node| normalize_usage_primary_for(related_item_node) }
-        ng_xml.root.xpath('//mods:subject', mods: ModsNormalizer::MODS_NS).each { |subject_node| normalize_usage_primary_for(subject_node) }
+        ng_xml.xpath('/mods:mods/mods:relatedItem', mods: ModsNormalizer::MODS_NS).each { |related_item_node| normalize_usage_primary_for(related_item_node) }
+        ng_xml.xpath('//mods:subject', mods: ModsNormalizer::MODS_NS).each { |subject_node| normalize_usage_primary_for(subject_node) }
       end
 
       def normalize_usage_primary_for(base_node)
@@ -360,7 +360,7 @@ module Cocina
       end
 
       def normalize_related_item_attributes
-        ng_xml.root.xpath('mods:relatedItem[@lang or @script]', mods: ModsNormalizer::MODS_NS).each do |related_item_node|
+        ng_xml.xpath('/mods:mods/mods:relatedItem[@lang or @script]', mods: ModsNormalizer::MODS_NS).each do |related_item_node|
           related_item_node.delete('lang')
           related_item_node.delete('script')
         end
