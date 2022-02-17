@@ -3,8 +3,8 @@
 module Cocina
   # Validates that the structural.isMemberOf property references Collections
   class CollectionExistenceValidator
-    def initialize(item)
-      @collection_ids = Array.wrap(item.structural&.isMemberOf)
+    def initialize(cocina_object)
+      @collection_ids = Array.wrap(cocina_object.structural&.isMemberOf)
     end
 
     attr_reader :error

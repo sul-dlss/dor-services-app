@@ -3,8 +3,8 @@
 module Cocina
   # Validates that the administrative.hasAdminPolicy property references an AdminPolicyObject
   class ApoExistenceValidator
-    def initialize(item)
-      @apo_id = item.administrative.hasAdminPolicy
+    def initialize(cocina_object)
+      @apo_id = cocina_object.administrative.hasAdminPolicy
     end
 
     attr_reader :error

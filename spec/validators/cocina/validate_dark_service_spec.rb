@@ -71,7 +71,7 @@ RSpec.describe Cocina::ValidateDarkService do
     context 'when not a WARC' do
       it 'is not valid' do
         expect(validator.valid?).to be false
-        expect(validator.error).to eq 'Not all files have dark access and/or are unshelved when item access is dark: ["page1.txt"]'
+        expect(validator.error).to eq 'Not all files have dark access and/or are unshelved when object access is dark: ["page1.txt"]'
       end
     end
 
