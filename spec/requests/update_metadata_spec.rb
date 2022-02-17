@@ -18,6 +18,7 @@ RSpec.describe 'Update object' do
     allow(AdministrativeTags).to receive(:project).and_return(['Google Books'])
     allow(AdministrativeTags).to receive(:content_type).and_return(['Book (rtl)'])
     allow(AdministrativeTags).to receive(:for).and_return([])
+    allow(Cocina::ObjectValidator).to receive(:validate)
 
     allow(EventFactory).to receive(:create)
   end
@@ -135,6 +136,7 @@ RSpec.describe 'Update object' do
     expect(response.body).to equal_cocina_model(expected)
     expect(item).to have_received(:save!)
     expect(item).to have_received(:admin_policy_object_id=).with(apo_druid)
+    expect(Cocina::ObjectValidator).to have_received(:validate)
 
     # Tags are created.
     expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : EEMS'])
@@ -480,6 +482,20 @@ RSpec.describe 'Update object' do
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.status).to eq(422)
+      expect(item).not_to have_received(:save!)
+    end
+  end
+
+  context 'when validation fails' do
+    before do
+      allow(Cocina::ObjectValidator).to receive(:validate).and_raise(Cocina::ValidationError, 'Not on my watch.')
+    end
+
+    it 'is a bad request' do
+      patch "/v1/objects/#{druid}",
+            params: data,
+            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+      expect(response.status).to eq(400)
       expect(item).not_to have_received(:save!)
     end
   end

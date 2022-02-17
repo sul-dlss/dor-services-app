@@ -210,36 +210,6 @@ RSpec.describe Cocina::ObjectCreator do
       end
     end
 
-    context "when the collection doesn't exist" do
-      before do
-        allow(Dor).to receive(:find).and_raise(ActiveFedora::ObjectNotFoundError)
-        allow(CocinaObjectStore).to receive(:find).and_raise(CocinaObjectStore::CocinaObjectNotFoundError)
-      end
-
-      let(:params) do
-        {
-          'type' => 'http://cocina.sul.stanford.edu/models/media.jsonld',
-          'label' => ':auto',
-          'access' => { 'access' => 'world', 'download' => 'world' },
-          'version' => 1,
-          'administrative' => {
-            'hasAdminPolicy' => apo
-          },
-          'structural' => {
-            'isMemberOf' => ['druid:bk024qs1809']
-          },
-          'identification' => {
-            'sourceId' => 'sul:8.559351',
-            'catalogLinks' => [{ 'catalog' => 'symphony', 'catalogRecordId' => '10121797' }]
-          }
-        }
-      end
-
-      it 'raises an error' do
-        expect { result }.to raise_error Cocina::ValidationError
-      end
-    end
-
     context 'when the type is agreement' do
       let(:params) do
         {

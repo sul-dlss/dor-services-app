@@ -157,13 +157,7 @@ module Cocina
 
     # rubocop:disable Style/GuardClause
     def validate
-      validator = ValidateDarkService.new(cocina_object)
-      raise ValidationError, validator.error unless validator.valid?
-
       raise ValidationError, "Identifier on the query and in the body don't match" if fedora_object.pid != cocina_object.externalIdentifier
-
-      validator = ApoExistenceValidator.new(cocina_object)
-      raise ValidationError, validator.error unless validator.valid?
 
       raise NotImplemented, 'Updating descriptive metadata not supported' if !update_descriptive? && client_attempted_metadata_update?
 

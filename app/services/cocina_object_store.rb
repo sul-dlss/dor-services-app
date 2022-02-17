@@ -54,11 +54,21 @@ class CocinaObjectStore
     end
   end
 
+  # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object
+  # @param [boolean] assign_doi
+  # @rturn [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
+  # @raises [SymphonyReader::ResponseError] if symphony connection failed
+  # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
+  def self.create(cocina_request_object, assign_doi: false)
+    new.create(cocina_request_object, assign_doi: assign_doi)
+  end
+
   def find(druid)
     fedora_to_cocina_find(druid)
   end
 
   def save(cocina_object)
+    validate(cocina_object)
     (updated_cocina_object, created_at, modified_at) = cocina_to_fedora_save(cocina_object)
 
     # Only want to update if already exists in PG (i.e., added by create or migration).
@@ -68,6 +78,17 @@ class CocinaObjectStore
     # Broadcast this update action to a topic
     Notifications::ObjectUpdated.publish(model: updated_cocina_object, created_at: created_at, modified_at: modified_at) if Settings.rabbitmq.enabled
     updated_cocina_object
+  end
+
+  def create(cocina_request_object, assign_doi: false)
+    ensure_ur_admin_policy_exists(cocina_request_object)
+    validate(cocina_request_object)
+
+    cocina_object = fedora_create(cocina_request_object, assign_doi: assign_doi)
+
+    # Broadcast this to a topic
+    Notifications::ObjectCreated.publish(model: cocina_object, created_at: Time.zone.now, modified_at: Time.zone.now) if Settings.rabbitmq.enabled
+    cocina_object
   end
 
   def exists?(druid)
@@ -144,6 +165,14 @@ class CocinaObjectStore
     fedora_find(druid).destroy
   end
 
+  # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object
+  # @param [boolean] assign_doi
+  # @rturn [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
+  # @raises SymphonyReader::ResponseError if symphony connection failed
+  def fedora_create(cocina_request_object, assign_doi: false)
+    Cocina::ObjectCreator.create(cocina_request_object, assign_doi: assign_doi)
+  end
+
   # The *ar* methods are private. In later steps in the migration, the *ar* methods will be invoked by the
   # above public methods.
 
@@ -169,5 +198,19 @@ class CocinaObjectStore
 
   def ar_destroy(druid)
     ar_find(druid).destroy
+  end
+
+  # If an object references the Ur-AdminPolicy, it has to exist first.
+  # This is particularly important in testing, where the repository may be empty.
+  def ensure_ur_admin_policy_exists(cocina_object)
+    return unless Settings.enabled_features.create_ur_admin_policy && cocina_object.administrative.hasAdminPolicy == Settings.ur_admin_policy.druid
+
+    Dor::AdminPolicyObject.exists?(Settings.ur_admin_policy.druid) || UrAdminPolicyFactory.create
+  end
+
+  # @raise [Cocina::ValidationError]
+  def validate(cocina_object)
+    # Validate will raise an error if not valid.
+    Cocina::ObjectValidator.validate(cocina_object)
   end
 end

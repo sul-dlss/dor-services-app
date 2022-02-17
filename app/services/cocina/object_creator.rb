@@ -21,8 +21,6 @@ module Cocina
     # @raises SymphonyReader::ResponseError if symphony connection failed
     # rubocop:disable Metrics/ParameterLists
     def create(cocina_object, event_factory:, persister:, trial: false, notifier: nil, assign_doi: false)
-      ensure_ur_admin_policy_exists if Settings.enabled_features.create_ur_admin_policy && cocina_object.administrative.hasAdminPolicy == Settings.ur_admin_policy.druid
-
       validate(cocina_object) unless trial
 
       fedora_object = create_from_model(cocina_object, trial: trial, assign_doi: assign_doi)
@@ -68,12 +66,6 @@ module Cocina
       else
         raise "unsupported type #{cocina_object.type}"
       end
-    end
-
-    # If an object references the Ur-AdminPolicy, it has to exist first.
-    # This is particularly important in testing, where the repository may be empty.
-    def ensure_ur_admin_policy_exists
-      Dor::AdminPolicyObject.exists?(Settings.ur_admin_policy.druid) || UrAdminPolicyFactory.create
     end
 
     # @param [Cocina::Models::RequestAdminPolicy,Cocina::Models::AdminPolicy] cocina_admin_policy
@@ -210,13 +202,10 @@ module Cocina
     end
 
     def validate(cocina_object)
-      if Settings.enabled_features.validate_descriptive_roundtrip.create
-        result = DescriptionRoundtripValidator.valid_from_cocina?(cocina_object)
-        raise RoundtripValidationError, result.failure unless result.success?
-      end
+      return unless Settings.enabled_features.validate_descriptive_roundtrip.create
 
-      # Validate will raise an error if not valid.
-      ObjectValidator.validate(cocina_object)
+      result = DescriptionRoundtripValidator.valid_from_cocina?(cocina_object)
+      raise RoundtripValidationError, result.failure unless result.success?
     end
   end
 end

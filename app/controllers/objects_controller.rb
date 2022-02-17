@@ -43,10 +43,7 @@ class ObjectsController < ApplicationController
     return json_api_error(status: :service_unavailable, message: 'Registration is temporarily disabled') unless Settings.enabled_features.registration
 
     model_request = Cocina::Models.build_request(params.except(:action, :controller, :assign_doi).to_unsafe_h)
-    cocina_object = Cocina::ObjectCreator.create(model_request, assign_doi: params[:assign_doi])
-
-    # Broadcast this to a topic
-    Notifications::ObjectCreated.publish(model: cocina_object, created_at: Time.zone.now, modified_at: Time.zone.now) if Settings.rabbitmq.enabled
+    cocina_object = CocinaObjectStore.create(model_request, assign_doi: params[:assign_doi])
 
     render status: :created, location: object_path(cocina_object.externalIdentifier), json: cocina_object
   rescue SymphonyReader::ResponseError => e
