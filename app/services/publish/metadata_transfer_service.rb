@@ -48,8 +48,7 @@ module Publish
     end
 
     def world_discoverable?
-      rights = item.rightsMetadata.ng_xml.clone.remove_namespaces!
-      rights.at_xpath("//rightsMetadata/access[@type='discover']/machine/world")
+      ['world', 'citation-only'].include? cocina_object.access.access
     end
 
     # Create a file inside the content directory under the stacks.local_document_cache_root

@@ -173,12 +173,6 @@ RSpec.describe Publish::MetadataTransferService do
           expect(Publish::PublicXmlService).to have_received(:new).with(item, public_cocina: Cocina::Models::DRO, released_for: release_tags, thumbnail_service: thumbnail_service)
           expect(Publish::PublicDescMetadataService).to have_received(:new).with(Cocina::Models::DRO)
         end
-
-        it 'even when rightsMetadata uses xml namespaces' do
-          item.rightsMetadata.content = %q(<rightsMetadata xmlns="http://hydra-collab.stanford.edu/schemas/rightsMetadata/v1">
-            <access type='discover'><machine><world/></machine></access></rightsMetadata>)
-          service.publish
-        end
       end
 
       context 'with a collection object' do
