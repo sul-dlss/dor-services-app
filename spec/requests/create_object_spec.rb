@@ -31,7 +31,7 @@ RSpec.describe 'Create object' do
 
   before do
     allow(Dor::SuriService).to receive(:mint_id).and_return(druid)
-    allow(CocinaObjectStore).to receive(:find).with('druid:dd999df4567').and_return(apo)
+    allow_any_instance_of(CocinaObjectStore).to receive(:find).with('druid:dd999df4567').and_return(apo)
     allow(Cocina::ActiveFedoraPersister).to receive(:store)
     stub_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')
     allow(Dor::SearchService).to receive(:query_by_id).and_return(search_result)
@@ -583,7 +583,7 @@ RSpec.describe 'Create object' do
 
       before do
         # Allows the CollectionExistenceValidator to find the collection:
-        allow(CocinaObjectStore).to receive(:find).with('druid:xx888xx7777').and_return(collection)
+        allow_any_instance_of(CocinaObjectStore).to receive(:find).with('druid:xx888xx7777').and_return(collection)
 
         allow(Dor::Item).to receive(:new).and_return(item)
         allow(item).to receive(:collections).and_return([dor_collection])

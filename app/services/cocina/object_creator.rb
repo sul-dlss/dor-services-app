@@ -103,10 +103,7 @@ module Cocina
                 catkey: catkey_for(cocina_item)).tap do |fedora_item|
         add_description(fedora_item, cocina_item, trial: trial)
 
-        unless trial
-          add_dro_tags(pid, cocina_item)
-          cocina_item = default_access_for(cocina_item)
-        end
+        add_dro_tags(pid, cocina_item) unless trial
 
         Cocina::ToFedora::DROAccess.apply(fedora_item, cocina_item.access, cocina_item.structural) if cocina_item.access || cocina_item.structural
 
@@ -137,7 +134,6 @@ module Cocina
                           catkey: catkey_for(cocina_collection)).tap do |fedora_collection|
         add_description(fedora_collection, cocina_collection, trial: trial)
         add_collection_tags(pid, cocina_collection) unless trial
-        cocina_collection = default_access_for(cocina_collection) unless trial
         Cocina::ToFedora::CollectionAccess.apply(fedora_collection, cocina_collection.access) if cocina_collection.access
         Cocina::ToFedora::Identity.initialize_identity(fedora_collection)
         Cocina::ToFedora::Identity.apply_catalog_links(fedora_collection, catalog_links: cocina_collection.identification&.catalogLinks)
@@ -182,23 +178,6 @@ module Cocina
       return unless cocina_object.administrative.partOfProject
 
       AdministrativeTags.create(pid: pid, tags: ["Project : #{cocina_object.administrative.partOfProject}"])
-    end
-
-    # Copy the default rights, use statement and copyright statement from the
-    # admin policy to the provided item.  If the user provided the access
-    # subschema, they may overwrite some of these defaults.
-    def default_access_for(cocina_object)
-      apo = CocinaObjectStore.find(cocina_object.administrative.hasAdminPolicy)
-      return cocina_object unless apo.administrative.respond_to?(:defaultAccess) && apo.administrative.defaultAccess
-
-      default_access = apo.administrative.defaultAccess
-      updated_access = if cocina_object.collection?
-                         # Collection access only supports dark or world, but default access is more complicated
-                         (cocina_object.access || Cocina::Models::CollectionAccess).new(access: default_access.access == 'dark' ? 'dark' : 'world')
-                       else
-                         (cocina_object.access || Cocina::Models::DROAccess).new(default_access.to_h)
-                       end
-      cocina_object.new(access: updated_access)
     end
 
     def validate(cocina_object)
