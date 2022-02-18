@@ -60,7 +60,7 @@ class CocinaObjectStore
 
   # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object
   # @param [boolean] assign_doi
-  # @rturn [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
+  # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
   # @raises [SymphonyReader::ResponseError] if symphony connection failed
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
   def self.create(cocina_request_object, assign_doi: false)
@@ -88,8 +88,8 @@ class CocinaObjectStore
     ensure_ur_admin_policy_exists(cocina_request_object)
     validate(cocina_request_object)
     updated_cocina_request_object = default_access_for(cocina_request_object)
-
-    cocina_object = fedora_create(updated_cocina_request_object, assign_doi: assign_doi)
+    druid = Dor::SuriService.mint_id
+    cocina_object = fedora_create(updated_cocina_request_object, druid: druid, assign_doi: assign_doi)
 
     # Broadcast this to a topic
     Notifications::ObjectCreated.publish(model: cocina_object, created_at: Time.zone.now, modified_at: Time.zone.now)
@@ -171,11 +171,12 @@ class CocinaObjectStore
   end
 
   # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object
+  # @param [String] druid
   # @param [boolean] assign_doi
   # @rturn [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
   # @raises SymphonyReader::ResponseError if symphony connection failed
-  def fedora_create(cocina_request_object, assign_doi: false)
-    Cocina::ObjectCreator.create(cocina_request_object, assign_doi: assign_doi)
+  def fedora_create(cocina_request_object, druid:, assign_doi: false)
+    Cocina::ObjectCreator.create(cocina_request_object, druid: druid, assign_doi: assign_doi)
   end
 
   # The *ar* methods are private. In later steps in the migration, the *ar* methods will be invoked by the
