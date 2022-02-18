@@ -50,8 +50,9 @@ module Cocina
         downcase_checksum_type
         normalize_empty_xml
         missing_type_attribute_assigned_file
-        normalize_image_data
+        remove_empty_image_data
         remove_duplicate_image_data
+        normalize_image_data_to_integers
         normalize_blank_file_directives
         normalize_relationship
 
@@ -99,10 +100,17 @@ module Cocina
 
       # remove empty width and height attributes from imageData, e.g. <imageData width="" height=""/>
       # then remove any totally empty imageData nodes, e.g. <imageData/>
-      def normalize_image_data
+      def remove_empty_image_data
         ng_xml.xpath('//imageData[@height=""]').each { |node| node.remove_attribute('height') }
         ng_xml.xpath('//imageData[@width=""]').each { |node| node.remove_attribute('width') }
         ng_xml.xpath('//imageData[not(text())][not(@*)]').each(&:remove)
+      end
+
+      # convert any imageData to integers and ditch any units <imageData width="27.544308mm" height="29.510118mm"/>
+      # goes to <imageData width="27" height="29"/>
+      def normalize_image_data_to_integers
+        ng_xml.xpath('//imageData[not(@height="")]').each { |node| node['height'] = node['height'].to_i if node['height'] }
+        ng_xml.xpath('//imageData[not(@width="")]').each { |node| node['width'] = node['width'].to_i if node['width'] }
       end
 
       def remove_duplicate_image_data
