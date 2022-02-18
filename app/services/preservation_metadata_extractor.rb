@@ -69,6 +69,7 @@ class PreservationMetadataExtractor
     ds = (ds_name == :relationshipMetadata ? 'RELS-EXT' : ds_name.to_s)
     return workflow_xml if ds_name == :workflows
     return version_xml(item) if ds_name == :versionMetadata
+    return content_xml if ds_name == :contentMetadata
     return item.datastreams[ds].content if item.datastreams.key?(ds) && !item.datastreams[ds].new?
 
     raise "required datastream #{ds_name} for #{item.pid} not found in DOR" if required
@@ -84,6 +85,10 @@ class PreservationMetadataExtractor
     VersionMigrationService.migrate(item)
 
     ObjectVersion.version_xml(cocina_object.externalIdentifier)
+  end
+
+  def content_xml
+    Cocina::ToFedora::ContentMetadataGenerator.generate(druid: cocina_object.externalIdentifier, structural: cocina_object.structural, type: cocina_object.type)
   end
 
   def extract_cocina
