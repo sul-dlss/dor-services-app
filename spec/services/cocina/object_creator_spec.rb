@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ObjectCreator do
-  subject(:result) { described_class.create(request, persister: persister, assign_doi: assign_doi) }
+  subject(:result) { described_class.create(request, druid: druid, persister: persister, assign_doi: assign_doi) }
 
   let(:apo) { 'druid:bz845pv2292' }
   let(:minimal_cocina_admin_policy) do
@@ -18,13 +18,13 @@ RSpec.describe Cocina::ObjectCreator do
   end
   let(:persister) { class_double(Cocina::ActiveFedoraPersister, store: nil) }
   let(:request) { Cocina::Models.build_request(params) }
+  let(:druid) { 'druid:mb046vj7485' }
   let(:assign_doi) { false }
 
   before do
     allow(Dor::SearchService).to receive(:query_by_id).and_return([])
     allow(Dor).to receive(:find).with(apo).and_return(Dor::AdminPolicyObject.new)
     allow(CocinaObjectStore).to receive(:find).with('druid:bz845pv2292').and_return(minimal_cocina_admin_policy)
-    allow(Dor::SuriService).to receive(:mint_id).and_return('druid:mb046vj7485')
     allow(RefreshMetadataAction).to receive(:run) do |args|
       args[:fedora_object].descMetadata.mods_title = 'foo'
     end
