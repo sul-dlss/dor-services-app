@@ -102,7 +102,7 @@ RSpec.describe 'Display metadata' do
       XML
     end
     let(:cocina_object) do
-      Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+      Cocina::Models::DRO.new(externalIdentifier: 'druid:mk420bs7601',
                               type: Cocina::Models::Vocab.object,
                               label: 'A generic label',
                               version: 1,

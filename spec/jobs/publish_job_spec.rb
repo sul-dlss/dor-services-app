@@ -9,14 +9,14 @@ RSpec.describe PublishJob, type: :job do
 
   let(:druid) { 'druid:mk420bs7601' }
   let(:result) { create(:background_job_result) }
-  let(:item) { instance_double(Dor::Item) }
+  let(:item) { instance_double(Cocina::Models::DRO) }
   let(:workflow) { 'accessionWF' }
   let(:validator) { instance_double(Cocina::ValidateDarkService, valid?: valid, invalid_filenames: invalid_filenames) }
   let(:valid) { true }
   let(:invalid_filenames) { [] }
 
   before do
-    allow(Dor).to receive(:find).with(druid).and_return(item)
+    allow(CocinaObjectStore).to receive(:find).with(druid).and_return(item)
     allow(result).to receive(:processing!)
     allow(EventFactory).to receive(:create)
     allow(Cocina::Mapper).to receive(:build)

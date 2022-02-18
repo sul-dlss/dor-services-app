@@ -3,15 +3,14 @@
 module Publish
   # Merges contentMetadata from several objects into one and sends it to PURL
   class MetadataTransferService
-    # @param [Dor::Item] item the object to be publshed
-    def self.publish(item)
-      new(item).publish
+    # @param [Cocina::Models::DRO,Cocina::Models::Collection] cocina_object the object to be publshed
+    def self.publish(cocina_object)
+      new(cocina_object).publish
     end
 
-    def initialize(item)
-      @item = item
-      @cocina_object = Cocina::Mapper.build(@item)
-      @thumbnail_service = ThumbnailService.new(@cocina_object)
+    def initialize(cocina_object)
+      @cocina_object = cocina_object
+      @thumbnail_service = ThumbnailService.new(cocina_object)
     end
 
     # Appends contentMetadata file resources from the source objects to this object
@@ -28,14 +27,14 @@ module Publish
 
     private
 
-    attr_reader :item, :cocina_object
+    attr_reader :cocina_object
 
     # @raise [Dor::DataError]
     def transfer_metadata(release_tags)
       public_cocina = PublicCocinaService.create(cocina_object)
-      public_nokogiri = PublicXmlService.new(item, public_cocina: public_cocina,
-                                                   released_for: release_tags,
-                                                   thumbnail_service: @thumbnail_service)
+      public_nokogiri = PublicXmlService.new(public_cocina: public_cocina,
+                                             released_for: release_tags,
+                                             thumbnail_service: @thumbnail_service)
       transfer_to_document_store(public_cocina.to_json, 'cocina.json')
       transfer_to_document_store(public_nokogiri.to_xml, 'public')
       transfer_to_document_store(PublicDescMetadataService.new(public_cocina).to_xml, 'mods')
@@ -48,8 +47,7 @@ module Publish
     end
 
     def world_discoverable?
-      rights = item.rightsMetadata.ng_xml.clone.remove_namespaces!
-      rights.at_xpath("//rightsMetadata/access[@type='discover']/machine/world")
+      ['world', 'citation-only'].include? cocina_object.access.access
     end
 
     # Create a file inside the content directory under the stacks.local_document_cache_root
@@ -58,12 +56,12 @@ module Publish
     # @return [void]
     def transfer_to_document_store(content, filename)
       new_file = File.join(purl_druid.content_dir, filename)
-      Rails.logger.debug("[Publish][#{item.pid}] Writing #{new_file}")
+      Rails.logger.debug("[Publish][#{cocina_object.externalIdentifier}] Writing #{new_file}")
       File.write(new_file, content)
     end
 
     def purl_druid
-      @purl_druid ||= DruidTools::PurlDruid.new item.pid, Settings.stacks.local_document_cache_root
+      @purl_druid ||= DruidTools::PurlDruid.new cocina_object.externalIdentifier, Settings.stacks.local_document_cache_root
     end
 
     ##
@@ -81,11 +79,9 @@ module Publish
     end
 
     def purl_services_url
-      id = item.pid.gsub(/^druid:/, '')
-
       raise 'You have not configured perl-fetcher (Settings.purl_services_url).' unless Settings.purl_services_url
 
-      "#{Settings.purl_services_url}/purls/#{id}"
+      "#{Settings.purl_services_url}/purls/#{cocina_object.externalIdentifier.delete_prefix('druid:')}"
     end
   end
 end

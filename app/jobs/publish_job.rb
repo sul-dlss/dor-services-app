@@ -12,7 +12,7 @@ class PublishJob < ApplicationJob
     background_job_result.processing!
     workflow_process = workflow == 'releaseWF' ? 'release-publish' : 'publish'
     begin
-      fedora_item = Dor.find(druid)
+      cocina_object = CocinaObjectStore.find(druid)
 
       # Disabling validation until pre-assembly and WAS handle this correctly.
       # validator = validator_for?(fedora_item)
@@ -26,7 +26,7 @@ class PublishJob < ApplicationJob
       #                                                         detail: "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" }] })
       # end
 
-      Publish::MetadataTransferService.publish(fedora_item)
+      Publish::MetadataTransferService.publish(cocina_object)
       EventFactory.create(druid: druid, event_type: 'publishing_complete', data: { background_job_result_id: background_job_result.id })
     rescue Dor::DataError => e
       return LogFailureJob.perform_later(druid: druid,
