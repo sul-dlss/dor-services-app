@@ -2,6 +2,8 @@
 
 module Cocina
   # Given a Cocina model, create an ActiveFedora model.
+  # This should only contain Fedora-specific actions.
+  # Actions that should be performed regardless of datastore should be in CocinaObjectStore.
   class ObjectCreator
     # @raises SymphonyReader::ResponseError if symphony connection failed
     def self.create(cocina_object, event_factory: EventFactory, persister: ActiveFedoraPersister, assign_doi: false, cocina_object_store: CocinaObjectStore.new)
