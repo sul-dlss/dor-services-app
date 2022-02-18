@@ -46,7 +46,7 @@ module Cocina
         raise "unsupported type #{cocina_object.type}"
       end
 
-      update_descriptive if has_changed?(:description) && update_descriptive?
+      update_descriptive if has_changed?(:description)
       update_version if has_changed?(:version)
 
       # Map back before saving to make sure that valid
@@ -162,24 +162,17 @@ module Cocina
     def validate
       raise ValidationError, "Identifier on the query and in the body don't match" if fedora_object.pid != cocina_object.externalIdentifier
 
-      raise NotImplemented, 'Updating descriptive metadata not supported' if !update_descriptive? && client_attempted_metadata_update?
-
-      if has_changed?(:description) && update_descriptive? && Settings.enabled_features.validate_descriptive_roundtrip.update
+      if has_changed?(:description) && Settings.enabled_features.validate_descriptive_roundtrip.update
         result = DescriptionRoundtripValidator.valid_from_cocina?(cocina_object)
         raise RoundtripValidationError, result.failure unless result.success?
       end
     end
     # rubocop:enable Style/GuardClause
 
-    def update_descriptive?
-      Settings.enabled_features.update_descriptive || trial
-    end
-
     def client_attempted_metadata_update?
       title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: fedora_object.label)
 
       descriptive = FromFedora::Descriptive.props(title_builder: title_builder, mods: fedora_object.descMetadata.ng_xml, druid: fedora_object.pid)
-
       cocina_object.description.title != descriptive.fetch(:title).map { |value| Cocina::Models::Title.new(value) }
     end
 
