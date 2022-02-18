@@ -4,17 +4,12 @@ require 'rails_helper'
 
 RSpec.describe Publish::PublicXmlService do
   subject(:service) do
-    described_class.new(item,
-                        public_cocina: public_cocina,
+    described_class.new(public_cocina: public_cocina,
                         released_for: release_tags,
                         thumbnail_service: thumbnail_service)
   end
 
   let(:public_cocina) { Publish::PublicCocinaService.create(cocina_object) }
-  let(:release_tags) { {} }
-
-  let(:druid) { 'druid:bc123df4567' }
-  let(:item) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
   let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
   let(:description) do
     {
@@ -50,9 +45,13 @@ RSpec.describe Publish::PublicXmlService do
       }]
     }
   end
+  let(:release_tags) { {} }
+
+  let(:druid) { 'druid:bc123df4567' }
+  let(:item) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
 
   before do
-    allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+    allow(Dor).to receive(:find).with(druid).and_return(item)
   end
 
   describe '#to_xml' do

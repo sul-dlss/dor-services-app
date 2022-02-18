@@ -5,8 +5,8 @@ require_relative '../config/environment'
 
 File.readlines('repub.txt').each do |druid|
   puts "Republishing #{druid}"
-  object = Dor.find(druid)
-  Publish::MetadataTransferService.publish(object)
+  cocina_object = CocinaObjectStore.find(druid)
+  Publish::MetadataTransferService.publish(cocina_object)
 rescue StandardError => e
   puts "Problem with #{druid}: #{e.inspect}"
 end

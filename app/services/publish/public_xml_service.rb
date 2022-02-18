@@ -3,14 +3,10 @@
 module Publish
   # Exports the full object XML that we display on purl.stanford.edu
   class PublicXmlService
-    attr_reader :object
-
-    # @param [Dor::Item] object
     # @param [Cocina::Models::DRO, Cocina::Models::Collection] public_cocina a cocina object stripped of non-public data
     # @param [Hash{String => Boolean}] released_for keys are Project name strings, values are boolean
     # @param [ThumbnailService] thumbnail_service
-    def initialize(object, public_cocina:, released_for:, thumbnail_service:)
-      @object = object
+    def initialize(public_cocina:, released_for:, thumbnail_service:)
       @public_cocina = public_cocina
       @released_for = released_for
       @thumbnail_service = thumbnail_service
@@ -21,7 +17,7 @@ module Publish
     # @note Rails sends args when rendering XML but we ignore them
     def to_xml(**)
       pub = Nokogiri::XML('<publicObject/>').root
-      pub['id'] = object.pid
+      pub['id'] = public_cocina.externalIdentifier
       pub['published'] = Time.now.utc.xmlschema
       pub['publishVersion'] = "dor-services/#{Dor::VERSION}"
       pub.add_child(public_identity_metadata.root) # add in modified identityMetadata datastream
@@ -64,11 +60,11 @@ module Publish
     end
 
     def public_relationships
-      PublishedRelationshipsFilter.new(object).xml
+      PublishedRelationshipsFilter.new(fedora_object).xml
     end
 
     def public_rights_metadata
-      @public_rights_metadata ||= RightsMetadata.new(object.rightsMetadata.ng_xml, release_date: release_date).create
+      @public_rights_metadata ||= RightsMetadata.new(fedora_object.rightsMetadata.ng_xml, release_date: release_date).create
     end
 
     def release_date
@@ -99,7 +95,11 @@ module Publish
 
     # @return [Nokogiri::XML::Document] sanitized for public consumption
     def public_content_metadata
-      @public_content_metadata ||= FedoraPublicContentMetadataGenerator.generate(fedora_object: object)
+      @public_content_metadata ||= FedoraPublicContentMetadataGenerator.generate(fedora_object: fedora_object)
+    end
+
+    def fedora_object
+      @fedora_object = Dor.find(public_cocina.externalIdentifier)
     end
   end
 end
