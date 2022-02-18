@@ -36,7 +36,6 @@ class VersionService
   # @return [Cocina::Models::DRO, Cocina::Models::AdminPolicy, Cocina::Models::Collection] updated cocina object
   # @raise [Dor::Exception] if the object hasn't been accessioned, or if a version is already opened
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  # rubocop:disable Metrics/AbcSize
   def open(opts = {})
     # This can be removed after migration.
     VersionMigrationService.find_and_migrate(druid)
@@ -59,7 +58,6 @@ class VersionService
     event_factory.create(druid: druid, event_type: 'version_open', data: { who: opts[:opening_user_name], version: new_object_version.version.to_s })
     update_cocina_object
   end
-  # rubocop:enable Metrics/AbcSize
 
   # Determines whether a new version can be opened for an object.
   # @param [Hash] opts optional params

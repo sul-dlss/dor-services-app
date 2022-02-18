@@ -4,8 +4,9 @@ module Cocina
   module FromFedora
     # builds the FileSet instance from a Dor::Item
     class FileSets
-      def self.build(content_metadata_ds, rights_metadata:, version:, notifier:, ignore_resource_type_errors: false)
+      def self.build(druid, content_metadata_ds, rights_metadata:, version:, notifier:, ignore_resource_type_errors: false)
         new(
+          druid,
           content_metadata_ds,
           rights_metadata: rights_metadata,
           version: version,
@@ -14,7 +15,8 @@ module Cocina
         ).build
       end
 
-      def initialize(content_metadata_ds, rights_metadata:, version:, notifier:, ignore_resource_type_errors:)
+      def initialize(druid, content_metadata_ds, rights_metadata:, version:, notifier:, ignore_resource_type_errors:)
+        @druid = druid
         @content_metadata_ds = content_metadata_ds
         @rights_metadata = rights_metadata
         @version = version
@@ -24,11 +26,12 @@ module Cocina
 
       def build
         content_metadata_ds.ng_xml.xpath('//resource[file]').map do |resource_node|
-          files = build_files(resource_node.xpath('file'))
+          resource_id = IdGenerator.generate_or_existing_fileset_id(resource_id: resource_node['id'], druid: druid)
+          files = build_files(resource_node.xpath('file'), resource_id: resource_id, druid: druid)
           structural = {}
           structural[:contains] = files if files.present?
           {
-            externalIdentifier: IdGenerator.generate_or_existing_fileset_id(resource_node['id']),
+            externalIdentifier: resource_id,
             type: resource_type(resource_node),
             version: version,
             structural: structural
@@ -40,7 +43,7 @@ module Cocina
 
       private
 
-      attr_reader :content_metadata_ds, :rights_metadata, :version, :notifier, :ignore_resource_type_errors
+      attr_reader :content_metadata_ds, :rights_metadata, :version, :notifier, :ignore_resource_type_errors, :druid
 
       def rights_object
         rights_metadata.dra_object
@@ -69,15 +72,13 @@ module Cocina
         end
       end
 
-      # rubocop:disable Metrics/AbcSize
-      def build_files(file_nodes)
+      def build_files(file_nodes, resource_id:, druid:)
         file_nodes.map do |node|
           height = node.xpath('imageData/@height').first&.text.presence&.to_i
           width = node.xpath('imageData/@width').first&.text.presence&.to_i
           use = node.xpath('@role').text.presence
           {
-            # External identifier is always generated because it is not stored in Fedora.
-            externalIdentifier: IdGenerator.generate_file_id,
+            externalIdentifier: IdGenerator.generate_or_existing_file_id(file_id: node['id'], resource_id: resource_id, druid: druid),
             type: Cocina::Models::Vocab.file,
             label: node['id'],
             filename: node['id'],
@@ -98,7 +99,6 @@ module Cocina
           end
         end
       end
-      # rubocop:enable Metrics/AbcSize
 
       def access(filename)
         file_specific_rights = rights_object.file[filename]

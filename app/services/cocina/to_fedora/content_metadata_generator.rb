@@ -119,7 +119,7 @@ module Cocina
       # @param [Integer] sequence
       def create_resource_node(cocina_fileset, sequence)
         Nokogiri::XML::Node.new('resource', @xml_doc).tap do |resource|
-          resource['id'] = IdGenerator.generate_or_existing_fileset_id(cocina_fileset.respond_to?(:externalIdentifier) ? cocina_fileset.externalIdentifier : nil)
+          resource['id'] = IdGenerator.generate_or_existing_fileset_id(resource_id: cocina_fileset.try(:externalIdentifier), druid: druid)
           resource['sequence'] = sequence
           resource['type'] = type_for(cocina_fileset)
 
@@ -134,7 +134,7 @@ module Cocina
 
       def create_external_resource_node(cocina_fileset, sequence, external_druid)
         Nokogiri::XML::Node.new('resource', @xml_doc).tap do |resource|
-          resource['id'] = IdGenerator.generate_or_existing_fileset_id(cocina_fileset.respond_to?(:externalIdentifier) ? cocina_fileset.externalIdentifier : nil)
+          resource['id'] = IdGenerator.generate_or_existing_fileset_id(resource_id: cocina_fileset.try(:externalIdentifier), druid: druid)
           resource['sequence'] = sequence
           resource['type'] = type_for(cocina_fileset)
 

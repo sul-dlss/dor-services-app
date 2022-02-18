@@ -6,13 +6,11 @@ module Cocina
   # Actions that should be performed regardless of datastore should be in CocinaObjectStore.
   class ObjectCreator
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    # rubocop:disable Metrics/ParameterLists
     def self.create(cocina_object, druid:, event_factory: EventFactory, persister: ActiveFedoraPersister, assign_doi: false, cocina_object_store: CocinaObjectStore.new)
       _fedora_object, cocina_object = new(cocina_object_store: cocina_object_store).create(cocina_object, druid: druid, event_factory: event_factory, persister: persister,
                                                                                                           assign_doi: assign_doi)
       cocina_object
     end
-    # rubocop:enable Metrics/ParameterLists
 
     def self.trial_create(cocina_object, notifier:, cocina_object_store:)
       new(cocina_object_store: cocina_object_store).create(cocina_object, druid: cocina_object.externalIdentifier, event_factory: nil, persister: nil, trial: true, notifier: notifier)

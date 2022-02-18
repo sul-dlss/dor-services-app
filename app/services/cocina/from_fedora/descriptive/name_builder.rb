@@ -228,7 +228,6 @@ module Cocina
         end
 
         # shameless green
-        # rubocop:disable Metrics/AbcSize
         def role_for(ng_role)
           code = ng_role.xpath('./mods:roleTerm[@type="code"]', mods: DESC_METADATA_NS).first
           text = ng_role.xpath('./mods:roleTerm[@type="text"] | ./mods:roleTerm[not(@type)]', mods: DESC_METADATA_NS).first
@@ -257,7 +256,6 @@ module Cocina
             end
           end.compact
         end
-        # rubocop:enable Metrics/AbcSize
 
         def type_for(type)
           return nil if type.blank?

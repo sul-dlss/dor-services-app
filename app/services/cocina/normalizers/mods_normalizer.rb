@@ -38,7 +38,6 @@ module Cocina
         @label = label
       end
 
-      # rubocop:disable Metrics/AbcSize
       def normalize
         normalize_default_namespace
         normalize_xsi
@@ -70,7 +69,6 @@ module Cocina
         remove_empty_elements(ng_xml.root) # this must be last
         ng_xml
       end
-      # rubocop:enable Metrics/AbcSize
 
       def normalize_purl
         normalize_purl_location
@@ -149,7 +147,6 @@ module Cocina
         ng_xml.xpath('/mods:mods/mods:relatedItem', mods: MODS_NS).each { |related_item_node| normalize_purl_for(related_item_node) }
       end
 
-      # rubocop:disable Metrics/AbcSize
       def normalize_purl_for(base_node, purl: nil)
         purl_nodes(base_node).each do |purl_node|
           purl_node.content = FromFedora::Descriptive::Purl.purl_value(purl_node)
@@ -185,7 +182,6 @@ module Cocina
           end
         end
       end
-      # rubocop:enable Metrics/AbcSize
 
       def purl_nodes(base_node)
         base_node.xpath('mods:location/mods:url', mods: MODS_NS).select { |url_node| ::Purl.purl?(url_node.text) }

@@ -14,11 +14,9 @@ module Cocina
     # @param [Cocina::FromFedora::DataErrorNotifier] notifier
     # @param [CocinaObjectStore] cocina_object_store
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
-    # rubocop:disable Metrics/ParameterLists
     def self.run(fedora_object, cocina_object, event_factory: EventFactory, trial: false, notifier: nil, cocina_object_store: CocinaObjectStore)
       new(fedora_object, cocina_object, trial: trial, cocina_object_store: cocina_object_store).run(event_factory: event_factory, notifier: notifier)
     end
-    # rubocop:enable Metrics/ParameterLists
 
     def initialize(fedora_object, cocina_object, cocina_object_store:, trial: false)
       @params = params
@@ -76,7 +74,6 @@ module Cocina
     end
 
     # rubocop:disable Style/GuardClause
-    # rubocop:disable Metrics/AbcSize
     def update_apo
       # fedora_object.source_id = cocina_object.identification.sourceId
       Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label) if has_changed?(:label)
@@ -90,9 +87,8 @@ module Cocina
         Cocina::ToFedora::Roles.write(fedora_object, Array(cocina_object.administrative.roles))
       end
     end
-    # rubocop:enable Style/GuardClause
-    # rubocop:enable Metrics/AbcSize
 
+    # rubocop:enable Style/GuardClause
     def update_collection
       Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label) if has_changed?(:label)
 

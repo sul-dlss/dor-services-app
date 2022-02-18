@@ -10,7 +10,6 @@ class SdrIngestService
   # @param [Cocina::Models::DRO, Cocina::Models::Collection] cocina_object The representation of the digital object
   # @return [void] Create the Moab/bag manifests for new version, export data to BagIt bag, kick off the SDR preservation workflow
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  # rubocop:disable Metrics/AbcSize
   def self.transfer(cocina_object)
     druid = cocina_object.externalIdentifier
     workspace = DruidTools::Druid.new(druid, Settings.sdr.local_workspace_root)
@@ -41,8 +40,6 @@ class SdrIngestService
     bagger.create_tagfiles
     Preserve::BagVerifier.verify(directory: bag_dir)
   end
-  # rubocop:enable Metrics/AbcSize
-
   # NOTE: the following methods should probably all be private
 
   # @param [String] druid The object identifier

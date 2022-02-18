@@ -69,7 +69,6 @@ module Cocina
           %i[access controlledDigitalLending download readLocation]
         end
 
-        # rubocop:disable Metrics/AbcSize
         def read_machine_node(file_access)
           Nokogiri::XML::Node.new('machine', document).tap do |machine_node| # rubocop:disable Metrics/BlockLength
             read_access_level_node =
@@ -100,7 +99,6 @@ module Cocina
             machine_node.add_child(read_access_level_node)
           end
         end
-        # rubocop:enable Metrics/AbcSize
 
         def download_machine_node(file_access)
           return unless (location_based_download?(file_access) && (stanford_read_access?(file_access) || world_read_access?(file_access))) ||
