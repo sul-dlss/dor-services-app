@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
-# Abstracts persistence operations for Cocina objects
+# Abstracts persistence operations for Cocina objects.
+# For the actions that are supported, this class includes step that happen regardless of the datastore.
+# For example, publishing a notification upon create.
+# See ObjectCreator and ObjectUpdater for Fedora-specific steps for creating and updating when persisting to Fedora.
 # rubocop:disable Metrics/ClassLength
 class CocinaObjectStore
   # Generic base error class.

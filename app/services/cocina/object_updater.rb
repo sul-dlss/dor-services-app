@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 module Cocina
-  # This takes a cocina object and updates the corresponding ActiveFedora object
-  # with the provided values
+  # This takes a cocina object and updates the corresponding ActiveFedora object with the provided values
+  # This should only contain Fedora-specific actions.
+  # Actions that should be performed regardless of datastore should be in CocinaObjectStore.
   class ObjectUpdater
     class NotImplemented < StandardError; end
 
