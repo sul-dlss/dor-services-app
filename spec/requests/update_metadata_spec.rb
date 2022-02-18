@@ -501,15 +501,19 @@ RSpec.describe 'Update object' do
   end
 
   context 'when title changes' do
-    before do
-      item.descMetadata.title_info.main_title = 'Not the title'
+    let(:description) do
+      {
+        title: [{ value: 'Not a title' }],
+        purl: 'https://purl.stanford.edu/gg777gg7777'
+      }
     end
 
-    it 'raises 422' do
+    it 'returns the updated object' do
       patch "/v1/objects/#{druid}",
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-      expect(response.status).to eq(422)
+      expect(response.status).to eq(200)
+      expect(response.body).to include('Not a title')
     end
   end
 
