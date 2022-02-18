@@ -98,7 +98,8 @@ RSpec.describe SymphonyReader do
       end
 
       it 'returns the catkey given a barcode' do
-        stub_request(:get, format(barcode_url, barcode: barcode)).to_return(body: barcode_body.to_json, headers: { 'Content-Length': 162 })
+        stub_request(:get, format(barcode_url, barcode: barcode)).to_return(body: barcode_body.to_json,
+                                                                            headers: { 'Content-Length': 162 })
         expect(barcode_reader.fetch_catkey).to eq catkey
       end
 

@@ -18,7 +18,10 @@ class ResetWorkspaceService
   def self.reset_workspace_druid_tree(druid:, version:, workspace_root:)
     druid_tree_path = DruidTools::Druid.new(druid, workspace_root).pathname.to_s
 
-    raise DirectoryAlreadyExists, "The archived directory #{druid_tree_path}_v#{version} already existed." if File.exist?("#{druid_tree_path}_v#{version}")
+    if File.exist?("#{druid_tree_path}_v#{version}")
+      raise DirectoryAlreadyExists,
+            "The archived directory #{druid_tree_path}_v#{version} already existed."
+    end
 
     # If the file doesn't exist it is a truncated tree where we shouldn't do anything
     return unless File.exist?(druid_tree_path)
@@ -30,7 +33,10 @@ class ResetWorkspaceService
     id = druid.split(':').last
     bag_dir = File.join(export_root, id)
 
-    raise BagAlreadyExists, "The archived bag #{bag_dir}_v#{version} already existed." if File.exist?("#{bag_dir}_v#{version}")
+    if File.exist?("#{bag_dir}_v#{version}")
+      raise BagAlreadyExists,
+            "The archived bag #{bag_dir}_v#{version} already existed."
+    end
 
     FileUtils.mv(bag_dir, "#{bag_dir}_v#{version}") if File.exist?(bag_dir)
 

@@ -16,7 +16,8 @@ class LegacyMetadataService
   # If the updated value is newer than then createDate of the datastream, then update it.
   # @raise [DatastreamValidationError] if datastream fails validation
   def self.update_datastream_if_newer(item:, datastream_name:, updated:, content:, event_factory:)
-    new(item: item, datastream_name: datastream_name, updated: updated, content: content, event_factory: event_factory).update_datastream_if_newer
+    new(item: item, datastream_name: datastream_name, updated: updated, content: content,
+        event_factory: event_factory).update_datastream_if_newer
   end
 
   def initialize(item:, datastream_name:, updated:, content:, event_factory:)
@@ -31,7 +32,8 @@ class LegacyMetadataService
   def update_datastream_if_newer
     if !datastream.createDate || updated > datastream.createDate
       datastream.content = content
-      event_factory.create(druid: datastream.pid, event_type: 'legacy_metadata_update', data: { datastream: datastream.dsid })
+      event_factory.create(druid: datastream.pid, event_type: 'legacy_metadata_update',
+                           data: { datastream: datastream.dsid })
     end
 
     validate_desc_metadata if datastream.dsid == 'descMetadata'
@@ -66,6 +68,9 @@ class LegacyMetadataService
       raise DatastreamValidationError.new('MODS roundtripping failed', detail: result.failure) unless result.success?
     end
 
-    raise DatastreamValidationError, "#{datastream.pid} descMetadata missing required fields (<title>)" if datastream.mods_title.blank?
+    if datastream.mods_title.blank?
+      raise DatastreamValidationError,
+            "#{datastream.pid} descMetadata missing required fields (<title>)"
+    end
   end
 end

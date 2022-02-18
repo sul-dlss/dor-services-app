@@ -22,7 +22,8 @@ class MarcxmlResource
   private
 
   def marc_to_mods_xslt
-    @marc_to_mods_xslt ||= Nokogiri::XSLT(File.open(File.join(Rails.root, 'app', 'xslt', 'MARC21slim2MODS3-7_SDR_v2-5.xsl')))
+    @marc_to_mods_xslt ||= Nokogiri::XSLT(File.open(File.join(Rails.root, 'app', 'xslt',
+                                                              'MARC21slim2MODS3-7_SDR_v2-5.xsl')))
   end
 
   # @raises SymphonyReader::ResponseError

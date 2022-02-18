@@ -34,7 +34,9 @@ module Cocina
 
         def write_parallel(parallel_identifier)
           altrepgroup_id = id_generator.next_altrepgroup
-          parallel_identifier.parallelValue.each { |identifier| write_identifier(identifier, altrepgroup_id: altrepgroup_id) }
+          parallel_identifier.parallelValue.each do |identifier|
+            write_identifier(identifier, altrepgroup_id: altrepgroup_id)
+          end
         end
 
         def write_identifier(identifier, altrepgroup_id: nil)

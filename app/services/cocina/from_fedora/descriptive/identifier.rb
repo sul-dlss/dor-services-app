@@ -21,7 +21,9 @@ module Cocina
           altrepgroup_identifier_nodes, other_identifier_nodes = AltRepGroup.split(nodes: identifiers)
 
           altrepgroup_identifier_nodes.map { |id_nodes| build_parallel(id_nodes) } +
-            other_identifier_nodes.map { |id_node| IdentifierBuilder.build_from_identifier(identifier_element: id_node) }
+            other_identifier_nodes.map do |id_node|
+              IdentifierBuilder.build_from_identifier(identifier_element: id_node)
+            end
         end
 
         private
@@ -30,13 +32,16 @@ module Cocina
 
         def build_parallel(identifier_nodes)
           {
-            parallelValue: identifier_nodes.map { |id_node| IdentifierBuilder.build_from_identifier(identifier_element: id_node) }
+            parallelValue: identifier_nodes.map do |id_node|
+                             IdentifierBuilder.build_from_identifier(identifier_element: id_node)
+                           end
           }
         end
 
         def identifiers
           (resource_element.xpath('mods:identifier', mods: DESC_METADATA_NS) +
-            resource_element.xpath('mods:recordIdentifier', mods: DESC_METADATA_NS)).reject { |identifier_node| identifier_node.text.blank? && identifier_node.attributes.size.zero? }
+            resource_element.xpath('mods:recordIdentifier',
+                                   mods: DESC_METADATA_NS)).reject { |identifier_node| identifier_node.text.blank? && identifier_node.attributes.size.zero? }
         end
       end
     end

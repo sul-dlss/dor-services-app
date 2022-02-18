@@ -224,7 +224,8 @@ RSpec.describe EmbargoReleaseService do
         allow(item).to receive(:save!)
         allow(Honeybadger).to receive(:notify)
         allow(WorkflowClientFactory).to receive(:build).and_return(client)
-        allow(client).to receive(:lifecycle).with(druid: 'druid:999', milestone_name: 'accessioned').and_return(1.day.ago)
+        allow(client).to receive(:lifecycle).with(druid: 'druid:999',
+                                                  milestone_name: 'accessioned').and_return(1.day.ago)
         allow(Cocina::Mapper).to receive(:build).and_return(cocina_object)
       end
 

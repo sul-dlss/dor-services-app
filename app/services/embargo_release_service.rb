@@ -55,7 +55,8 @@ class EmbargoReleaseService
     yield ei if block_given?
     ei.save!
     cocina_object = Cocina::Mapper.build(ei)
-    VersionService.close(cocina_object, { description: 'embargo released', significance: 'admin' }, event_factory: EventFactory)
+    VersionService.close(cocina_object, { description: 'embargo released', significance: 'admin' },
+                         event_factory: EventFactory)
 
     # Broadcast this action to a topic
     Notifications::EmbargoLifted.publish(model: cocina_object)

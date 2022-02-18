@@ -14,7 +14,9 @@ RSpec.shared_examples 'Agreement Object Identification Fedora Cocina mapping' do
   #  releaseTag -> we need to KEEP
   #  missing collections OK -- don't produce cocina with nil druid for collection
 
-  let(:namespaced_source_id) { defined?(source_id) && defined?(source_id_source) ? "#{source_id_source}:#{source_id}" : nil }
+  let(:namespaced_source_id) do
+    defined?(source_id) && defined?(source_id_source) ? "#{source_id_source}:#{source_id}" : nil
+  end
   let(:namespaced_other_ids) do
     other_id_nodes = Nokogiri::XML(identity_metadata_xml).xpath('//identityMetadata/otherId')
     other_id_nodes.map { |other_id_node| "#{other_id_node['name']}:#{other_id_node.text}" }
@@ -52,9 +54,12 @@ RSpec.shared_examples 'Agreement Object Identification Fedora Cocina mapping' do
     # the starting identityMetadata.xml is normalized to address discrepancies found against identityMetadata roundtripped
     #  from data store (Fedora) and back, per Andrew's specifications.
     #  E.g., <adminPolicy> is removed as that information will not be carried over and is retrieved from RELS-EXT
-    Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: Nokogiri::XML(identity_metadata_xml), label: label).to_xml
+    Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: Nokogiri::XML(identity_metadata_xml),
+                                                      label: label).to_xml
   end
-  let(:roundtrip_identity_md_xml) { defined?(roundtrip_identity_metadata_xml) ? roundtrip_identity_metadata_xml : identity_metadata_xml }
+  let(:roundtrip_identity_md_xml) do
+    defined?(roundtrip_identity_metadata_xml) ? roundtrip_identity_metadata_xml : identity_metadata_xml
+  end
   let(:roundtrip_fedora_agreement) do
     cocina_dro = Cocina::Models::DRO.new(mapped_cocina_props)
     fedora_agreement = Dor::Agreement.new(pid: cocina_dro.externalIdentifier,

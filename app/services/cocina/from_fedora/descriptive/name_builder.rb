@@ -148,7 +148,10 @@ module Cocina
           type = name_part_node['type']
 
           notifier.warn('Name/namePart type attribute set to ""') if type == ''
-          notifier.warn('namePart has unknown type assigned', type: type) if type.present? && !Contributor::NAME_PART.key?(type)
+          if type.present? && !Contributor::NAME_PART.key?(type)
+            notifier.warn('namePart has unknown type assigned',
+                          type: type)
+          end
 
           if activity_date?(name_part_node)
             'activity dates'
@@ -202,7 +205,9 @@ module Cocina
         end
 
         def build_identifier(name_node)
-          name_node.xpath('mods:nameIdentifier', mods: DESC_METADATA_NS).map { |identifier| IdentifierBuilder.build_from_name_identifier(identifier_element: identifier) }.presence
+          name_node.xpath('mods:nameIdentifier', mods: DESC_METADATA_NS).map do |identifier|
+            IdentifierBuilder.build_from_name_identifier(identifier_element: identifier)
+          end.presence
         end
 
         def build_notes(name_node)
@@ -231,7 +236,8 @@ module Cocina
         # rubocop:disable Metrics/AbcSize
         def role_for(ng_role)
           code = ng_role.xpath('./mods:roleTerm[@type="code"]', mods: DESC_METADATA_NS).first
-          text = ng_role.xpath('./mods:roleTerm[@type="text"] | ./mods:roleTerm[not(@type)]', mods: DESC_METADATA_NS).first
+          text = ng_role.xpath('./mods:roleTerm[@type="text"] | ./mods:roleTerm[not(@type)]',
+                               mods: DESC_METADATA_NS).first
           return if code.nil? && text.nil?
 
           authority = ng_role.xpath('./mods:roleTerm/@authority', mods: DESC_METADATA_NS).first&.content

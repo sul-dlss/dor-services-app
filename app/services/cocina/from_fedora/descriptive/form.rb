@@ -41,7 +41,9 @@ module Cocina
           altrepgroup_subject_nodes, other_subject_nodes = AltRepGroup.split(nodes: subject_nodes)
 
           forms.concat(
-            altrepgroup_subject_nodes.map { |parallel_subject_nodes| build_parallel_cartographics(parallel_subject_nodes) } +
+            altrepgroup_subject_nodes.map do |parallel_subject_nodes|
+              build_parallel_cartographics(parallel_subject_nodes)
+            end +
             other_subject_nodes.flat_map { |subject_node| build_cartographics(subject_node) }.uniq
           )
         end
@@ -55,7 +57,9 @@ module Cocina
         def build_cartographics(subject_node)
           carto_forms = []
           subject_node.xpath('mods:cartographics[mods:scale]', mods: DESC_METADATA_NS).each do |carto_node|
-            scale_nodes = carto_node.xpath('mods:scale', mods: DESC_METADATA_NS).reject { |scale_node| scale_node.text.blank? }
+            scale_nodes = carto_node.xpath('mods:scale', mods: DESC_METADATA_NS).reject do |scale_node|
+              scale_node.text.blank?
+            end
             if scale_nodes.size == 1
               carto_forms << {
                 value: scale_nodes.first.text,
@@ -218,7 +222,9 @@ module Cocina
         end
 
         def adjust_parallel_value(form, key)
-          return unless form[:parallelValue].all? { |form_value| form_value[key] && form_value[key] == form[:parallelValue].first[key] }
+          return unless form[:parallelValue].all? do |form_value|
+                          form_value[key] && form_value[key] == form[:parallelValue].first[key]
+                        end
 
           form[key] = form[:parallelValue].first[key]
           form[:parallelValue].each { |form_value| form_value.delete(key) }
@@ -342,7 +348,8 @@ module Cocina
         end
 
         def datacite_resource_type
-          node = resource_element.xpath('mods:extension[@displayLabel="datacite"]/mods:resourceType', mods: DESC_METADATA_NS).first
+          node = resource_element.xpath('mods:extension[@displayLabel="datacite"]/mods:resourceType',
+                                        mods: DESC_METADATA_NS).first
           return unless node
 
           { value: node[:resourceTypeGeneral], type: 'resource type', source: { value: 'DataCite resource types' } }
@@ -350,7 +357,8 @@ module Cocina
 
         # returns genre at the root and inside subjects excluding structured genres
         def basic_genre
-          resource_element.xpath("mods:genre[not(@type) or not(starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}'))]", mods: DESC_METADATA_NS)
+          resource_element.xpath("mods:genre[not(@type) or not(starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}'))]",
+                                 mods: DESC_METADATA_NS)
         end
 
         def subject_genre
@@ -359,7 +367,8 @@ module Cocina
 
         # returns structured genres at the root and inside subjects, which are combined to form a single, structured Cocina element
         def structured_genre
-          resource_element.xpath("mods:genre[@type and starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}')]", mods: DESC_METADATA_NS)
+          resource_element.xpath("mods:genre[@type and starts-with(@type, '#{H2_GENRE_TYPE_PREFIX}')]",
+                                 mods: DESC_METADATA_NS)
         end
       end
       # rubocop:enable Metrics/ClassLength

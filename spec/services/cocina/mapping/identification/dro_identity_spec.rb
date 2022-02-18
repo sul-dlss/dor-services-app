@@ -19,7 +19,9 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
   # multiple collections -> ok
   #  objectAdminClass -> normalize out
 
-  let(:namespaced_source_id) { defined?(source_id) && defined?(source_id_source) ? "#{source_id_source}:#{source_id}" : nil }
+  let(:namespaced_source_id) do
+    defined?(source_id) && defined?(source_id_source) ? "#{source_id_source}:#{source_id}" : nil
+  end
   let(:namespaced_other_ids) do
     other_id_nodes = Nokogiri::XML(identity_metadata_xml).xpath('//identityMetadata/otherId')
     other_id_nodes.map { |other_id_node| "#{other_id_node['name']}:#{other_id_node.text}" }
@@ -58,9 +60,12 @@ RSpec.shared_examples 'DRO Identification Fedora Cocina mapping' do
     # the starting identityMetadata.xml is normalized to address discrepancies found against identityMetadata roundtripped
     #  from data store (Fedora) and back, per Andrew's specifications.
     #  E.g., <citationTitle> and <citationCreator> are removed
-    Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: Nokogiri::XML(identity_metadata_xml), label: label).to_xml
+    Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: Nokogiri::XML(identity_metadata_xml),
+                                                      label: label).to_xml
   end
-  let(:roundtrip_identity_md_xml) { defined?(roundtrip_identity_metadata_xml) ? roundtrip_identity_metadata_xml : identity_metadata_xml }
+  let(:roundtrip_identity_md_xml) do
+    defined?(roundtrip_identity_metadata_xml) ? roundtrip_identity_metadata_xml : identity_metadata_xml
+  end
   let(:roundtrip_fedora_item) do
     cocina_dro = Cocina::Models::DRO.new(mapped_cocina_props)
     fedora_item = Dor::Item.new(pid: cocina_dro.externalIdentifier,
@@ -1391,7 +1396,9 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
     # it_behaves_like 'DRO Identification Fedora Cocina mapping' do
     xit 'to be implemented: what to do with 2 catkeys' do
       let(:item_id) { 'druid:bb029vy9696' }
-      let(:label) { 'EEMs: Finite State Continuous-Time Markov Decision Processes with Applications to a Class of Optimization Problems in Queueing Theory' }
+      let(:label) do
+        'EEMs: Finite State Continuous-Time Markov Decision Processes with Applications to a Class of Optimization Problems in Queueing Theory'
+      end
       let(:object_label) { label }
       let(:catkey) { '10208128' }
       let(:admin_policy_id) { 'druid:jj305hm5259' } # from RELS-EXT

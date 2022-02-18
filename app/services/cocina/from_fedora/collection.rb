@@ -26,7 +26,8 @@ module Cocina
           access: CollectionAccess.props(fedora_collection.rightsMetadata)
         }.tap do |props|
           title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: fedora_collection.label)
-          description = FromFedora::Descriptive.props(title_builder: title_builder, mods: fedora_collection.descMetadata.ng_xml, druid: fedora_collection.pid, notifier: notifier)
+          description = FromFedora::Descriptive.props(title_builder: title_builder,
+                                                      mods: fedora_collection.descMetadata.ng_xml, druid: fedora_collection.pid, notifier: notifier)
           props[:description] = description unless description.nil?
           identification = FromFedora::Identification.props(fedora_collection)
           props[:identification] = identification unless identification.empty?

@@ -35,10 +35,8 @@ class PublishedRelationshipsFilter
   end
 
   # This creates a duplicate of RELS-EXT and yields it to the block
-  def relationships_ng_xml
-    duplicate_rels_ext.tap do |ng_xml|
-      yield(ng_xml)
-    end
+  def relationships_ng_xml(&block)
+    duplicate_rels_ext.tap(&block)
   end
 
   def duplicate_rels_ext

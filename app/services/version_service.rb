@@ -50,13 +50,19 @@ class VersionService
       new_object_version = ObjectVersion.increment_version(druid)
     end
     update_cocina_object = cocina_object
-    update_cocina_object = CocinaObjectStore.save(cocina_object.new(version: new_object_version.version)) if cocina_object.version != new_object_version.version
+    if cocina_object.version != new_object_version.version
+      update_cocina_object = CocinaObjectStore.save(cocina_object.new(version: new_object_version.version))
+    end
 
     workflow_client.create_workflow_by_name(druid, 'versioningWF', version: new_object_version.version.to_s)
 
-    ObjectVersion.update_current_version(druid, description: opts[:description], significance: opts[:significance].to_sym) if opts[:description] && opts[:significance]
+    if opts[:description] && opts[:significance]
+      ObjectVersion.update_current_version(druid, description: opts[:description],
+                                                  significance: opts[:significance].to_sym)
+    end
 
-    event_factory.create(druid: druid, event_type: 'version_open', data: { who: opts[:opening_user_name], version: new_object_version.version.to_s })
+    event_factory.create(druid: druid, event_type: 'version_open',
+                         data: { who: opts[:opening_user_name], version: new_object_version.version.to_s })
     update_cocina_object
   end
   # rubocop:enable Metrics/AbcSize
@@ -89,11 +95,23 @@ class VersionService
     # This can be removed after migration.
     VersionMigrationService.find_and_migrate(druid)
 
-    ObjectVersion.update_current_version(druid, description: opts[:description], significance: opts[:significance].to_sym) if opts[:description] && opts[:significance]
+    if opts[:description] && opts[:significance]
+      ObjectVersion.update_current_version(druid, description: opts[:description],
+                                                  significance: opts[:significance].to_sym)
+    end
 
-    raise Dor::Exception, "latest version in versionMetadata for #{druid} requires tag and description before it can be closed" unless ObjectVersion.current_version_closeable?(druid)
-    raise Dor::Exception, "Trying to close version #{cocina_object.version} on #{druid} which is not opened for versioning" unless open_for_versioning?
-    raise Dor::Exception, "Trying to close version #{cocina_object.version} on #{druid} which has active assemblyWF" if active_assembly_wf?
+    unless ObjectVersion.current_version_closeable?(druid)
+      raise Dor::Exception,
+            "latest version in versionMetadata for #{druid} requires tag and description before it can be closed"
+    end
+    unless open_for_versioning?
+      raise Dor::Exception,
+            "Trying to close version #{cocina_object.version} on #{druid} which is not opened for versioning"
+    end
+    if active_assembly_wf?
+      raise Dor::Exception,
+            "Trying to close version #{cocina_object.version} on #{druid} which has active assemblyWF"
+    end
     raise Dor::Exception, "accessionWF already created for versioned object #{druid}" if accessioning?
 
     # Default to creating accessionWF when calling close_version
@@ -102,7 +120,8 @@ class VersionService
                                   version: cocina_object.version.to_s,
                                   create_accession_wf: create_accession_wf)
 
-    event_factory.create(druid: druid, event_type: 'version_close', data: { who: opts[:user_name], version: cocina_object.version.to_s })
+    event_factory.create(druid: druid, event_type: 'version_close',
+                         data: { who: opts[:user_name], version: cocina_object.version.to_s })
   end
   # rubocop:enable Metrics/AbcSize
 
@@ -139,7 +158,8 @@ class VersionService
   # Checks if current version has any incomplete wf steps and there is a versionWF
   # @return [Boolean] true if object is open for versioning
   def open_for_versioning?
-    return true if workflow_client.active_lifecycle(druid: druid, milestone_name: 'opened', version: cocina_object.version.to_s)
+    return true if workflow_client.active_lifecycle(druid: druid, milestone_name: 'opened',
+                                                    version: cocina_object.version.to_s)
 
     false
   end
@@ -147,7 +167,8 @@ class VersionService
   # Checks if the current version has any incomplete wf steps and there is an accessionWF.
   # @return [Boolean] true if object is currently being accessioned
   def accessioning?
-    return true if workflow_client.active_lifecycle(druid: druid, milestone_name: 'submitted', version: cocina_object.version.to_s)
+    return true if workflow_client.active_lifecycle(druid: druid, milestone_name: 'submitted',
+                                                    version: cocina_object.version.to_s)
 
     false
   end
@@ -157,7 +178,8 @@ class VersionService
   private
 
   def active_assembly_wf?
-    return true if workflow_client.workflow_status(druid: druid, version: cocina_object.version.to_s, workflow: 'assemblyWF', process: 'accessioning-initiate') == 'waiting'
+    return true if workflow_client.workflow_status(druid: druid, version: cocina_object.version.to_s,
+                                                   workflow: 'assemblyWF', process: 'accessioning-initiate') == 'waiting'
   end
 
   def workflow_client

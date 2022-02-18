@@ -30,7 +30,10 @@ class SdrIngestService
       content_dir = workspace.find_filelist_parent('content', new_file_list)
     end
     content_group = version_inventory.group('content')
-    signature_catalog.normalize_group_signatures(content_group, content_dir) unless content_group.nil? || content_group.files.empty?
+    unless content_group.nil? || content_group.files.empty?
+      signature_catalog.normalize_group_signatures(content_group,
+                                                   content_dir)
+    end
     # export the bag (in tar format)
     bag_dir = Pathname(Settings.sdr.local_export_home).join(druid.sub('druid:', ''))
     bagger = Moab::Bagger.new(version_inventory, signature_catalog, bag_dir)

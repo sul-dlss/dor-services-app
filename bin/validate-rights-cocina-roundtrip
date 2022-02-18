@@ -34,7 +34,8 @@ def write_result(druid, original_ng_xml, normalized_original_ng_xml, roundtrip_n
   File.open("results/#{druid}.txt", 'w') do |file|
     file.write("Druid: #{druid}\n\n")
 
-    file.write("Difference:\n#{Diffy::Diff.new("#{normalized_original_ng_xml.to_xml}\n", "#{roundtrip_ng_xml.to_xml}\n")}\n")
+    file.write("Difference:\n#{Diffy::Diff.new("#{normalized_original_ng_xml.to_xml}\n",
+                                               "#{roundtrip_ng_xml.to_xml}\n")}\n")
 
     file.write("\nOriginal XML:\n#{format_xml(original_ng_xml)}\n")
     file.write("\nNormalized original XML:\n#{format_xml(normalized_original_ng_xml)}\n")
@@ -87,7 +88,8 @@ def validate_druid(druid, loader)
     cocina_access_props = Cocina::FromFedora::DROAccess.props(fedora_obj.rightsMetadata, fedora_obj.embargoMetadata)
     cocina_access = Cocina::Models::DROAccess.new(cocina_access_props)
 
-    cocina_structural_props = Cocina::FromFedora::DroStructural.props(fedora_obj, type: Cocina::FromFedora::DRO.dro_type(fedora_obj), notifier: DataErrorNotifier.new)
+    cocina_structural_props = Cocina::FromFedora::DroStructural.props(fedora_obj,
+                                                                      type: Cocina::FromFedora::DRO.dro_type(fedora_obj), notifier: DataErrorNotifier.new)
     cocina_structural = Cocina::Models::DROStructural.new(cocina_structural_props)
   rescue StandardError => e
     write_error(druid, original_ng_xml, cocina_access_props, e)
@@ -145,7 +147,8 @@ puts "On branch name: #{branch_name} (commit: #{short_commit_hash})..."
 results = Parallel.map(druids, progress: 'Testing') do |druid|
   validate_druid(druid, loader)
 end
-counts = { different: 0, success: 0, to_cocina_error: 0, to_fedora_error: 0, rights_normalizer_error: 0, missing: 0, not_dro: 0, bad_cache: 0, unmapped: 0, expected_unmapped: 0 }
+counts = { different: 0, success: 0, to_cocina_error: 0, to_fedora_error: 0, rights_normalizer_error: 0, missing: 0,
+           not_dro: 0, bad_cache: 0, unmapped: 0, expected_unmapped: 0 }
 File.open('results/results.txt', 'w') do |file|
   results.each do |druid, result|
     counts[result] += 1
@@ -161,7 +164,9 @@ puts "  Different: #{counts[:different]} (#{percentage(counts[:different], denom
 puts "  To Cocina error:     #{counts[:to_cocina_error]} (#{percentage(counts[:to_cocina_error], denom)}%)"
 puts "  To Fedora error:     #{counts[:to_fedora_error]} (#{percentage(counts[:to_fedora_error], denom)}%)"
 puts "  Missing (no rightsMetadata):     #{counts[:missing]} (#{(100 * counts[:missing].to_f / druids.size).round(3)}%)"
-puts "  Rights normalizer error:     #{counts[:rights_normalizer_error]} (#{percentage(counts[:rights_normalizer_error], denom)}%)"
+puts "  Rights normalizer error:     #{counts[:rights_normalizer_error]} (#{percentage(
+  counts[:rights_normalizer_error], denom
+)}%)"
 puts "  Not a DRO:     #{counts[:not_dro]} (#{(100 * counts[:not_dro].to_f / druids.size).round(3)}%)"
 puts "  Bad cache:     #{counts[:bad_cache]} (#{(100 * counts[:bad_cache].to_f / druids.size).round(3)}%)"
 puts "  Unmapped:     #{counts[:unmapped]} (#{(100 * counts[:unmapped].to_f / druids.size).round(3)}%)"

@@ -10,7 +10,10 @@ module Cocina
         ].freeze
 
         def self.sniff(uri, notifier)
-          notifier.warn('Value URI has unexpected value', { uri: uri }) if uri.present? && !uri.starts_with?(*SUPPORTED_PREFIXES)
+          if uri.present? && !uri.starts_with?(*SUPPORTED_PREFIXES)
+            notifier.warn('Value URI has unexpected value',
+                          { uri: uri })
+          end
 
           uri.presence
         end

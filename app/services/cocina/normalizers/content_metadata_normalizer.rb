@@ -160,7 +160,8 @@ module Cocina
         return if ng_xml.root['type'] != 'book'
         return if ng_xml.xpath('//bookData[@readingOrder]').present?
 
-        reading_direction = Cocina::FromFedora::ViewingDirectionHelper.viewing_direction(druid: druid, content_ng_xml: ng_xml)
+        reading_direction = Cocina::FromFedora::ViewingDirectionHelper.viewing_direction(druid: druid,
+                                                                                         content_ng_xml: ng_xml)
         fedora_reading_direction = case reading_direction
                                    when nil, 'left-to-right'
                                      'ltr'
@@ -203,7 +204,9 @@ module Cocina
       end
 
       def downcase_checksum_type
-        ng_xml.xpath('//file/checksum/@type').each { |checksum_type| checksum_type.value = checksum_type.value.downcase }
+        ng_xml.xpath('//file/checksum/@type').each do |checksum_type|
+          checksum_type.value = checksum_type.value.downcase
+        end
       end
 
       # some objects have <xml> instead of <contentMetadata>, e.g. normalize <xml type="file"/> --> <contentMetadata type="file"/>

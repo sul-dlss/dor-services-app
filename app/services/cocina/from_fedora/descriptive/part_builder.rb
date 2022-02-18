@@ -72,7 +72,9 @@ module Cocina
         end
 
         def detail_values
-          part_element.xpath('mods:detail', mods: DESC_METADATA_NS).filter_map { |detail_node| detail_values_for(detail_node) }
+          part_element.xpath('mods:detail', mods: DESC_METADATA_NS).filter_map do |detail_node|
+            detail_values_for(detail_node)
+          end
         end
 
         def detail_values_for(detail_node)
@@ -81,12 +83,17 @@ module Cocina
           detail_values.concat(part_note_value_for(detail_node, 'caption'))
           detail_values.concat(part_note_value_for(detail_node, 'title'))
           detail_values.reject!(&:blank?)
-          detail_values.concat(part_note_value_for(detail_node, 'detail type', xpath: '@type')) if detail_values.present?
+          if detail_values.present?
+            detail_values.concat(part_note_value_for(detail_node, 'detail type',
+                                                     xpath: '@type'))
+          end
           detail_values
         end
 
         def extent_values
-          part_element.xpath('mods:extent', mods: DESC_METADATA_NS).filter_map { |extent_node| extent_values_for(extent_node) }
+          part_element.xpath('mods:extent', mods: DESC_METADATA_NS).filter_map do |extent_node|
+            extent_values_for(extent_node)
+          end
         end
 
         def extent_values_for(extent_node)
@@ -94,7 +101,10 @@ module Cocina
           extent_values.concat(part_note_value_for(extent_node, 'list'))
           extent_values << pages_for(extent_node)
           extent_values.reject!(&:blank?)
-          extent_values.concat(part_note_value_for(extent_node, 'extent unit', xpath: '@unit')) if extent_values.present?
+          if extent_values.present?
+            extent_values.concat(part_note_value_for(extent_node, 'extent unit',
+                                                     xpath: '@unit'))
+          end
           extent_values
         end
 

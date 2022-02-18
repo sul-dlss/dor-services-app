@@ -56,7 +56,10 @@ class TablesHaveDataCheck < OkComputer::Check
 end
 
 OkComputer::Registry.register 'version', CustomAppVersionCheck.new
-OkComputer::Registry.register 'external-symphony', SymphonyCheck.new(format(Settings.catalog.symphony.base_url + Settings.catalog.symphony.marcxml_path, catkey: 12345))
+OkComputer::Registry.register 'external-symphony',
+                              SymphonyCheck.new(format(
+                                                  Settings.catalog.symphony.base_url + Settings.catalog.symphony.marcxml_path, catkey: 12_345
+                                                ))
 OkComputer::Registry.register 'background_jobs', OkComputer::SidekiqLatencyCheck.new('default', 25)
 OkComputer::Registry.register 'feature-tables-have-data', TablesHaveDataCheck.new
 
@@ -68,4 +71,4 @@ if Settings.rabbitmq.enabled
                                                               password: Settings.rabbitmq.password)
 end
 
-OkComputer.make_optional %w(external-symphony)
+OkComputer.make_optional %w[external-symphony]

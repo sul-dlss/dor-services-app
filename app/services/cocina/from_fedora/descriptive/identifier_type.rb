@@ -257,16 +257,24 @@ module Cocina
 
           # Try to find a standard identifier scheme type (case insensitive)
           COCINA_TO_STANDARD_IDENTIFIER_SCHEMES.each_pair do |cocina_type, check_mods_type|
-            return [cocina_type, check_mods_type, STANDARD_IDENTIFIER_SCHEMES] if check_mods_type&.downcase == mods_type.downcase
+            if check_mods_type&.downcase == mods_type.downcase
+              return [cocina_type, check_mods_type,
+                      STANDARD_IDENTIFIER_SCHEMES]
+            end
           end
 
           # Try to find a standard identifier scheme type (case insensitive)
           COCINA_TO_STANDARD_IDENTIFIER_SOURCE_CODES.each_pair do |cocina_type, check_mods_type|
-            return [cocina_type, check_mods_type, STANDARD_IDENTIFIER_SOURCE_CODES] if check_mods_type&.downcase == mods_type.downcase
+            if check_mods_type&.downcase == mods_type.downcase
+              return [cocina_type, check_mods_type,
+                      STANDARD_IDENTIFIER_SOURCE_CODES]
+            end
           end
 
           # Try to find a Cocina type (case insensitive)
-          ALL_COCINA_TYPES.each { |cocina_type| return [cocina_type, nil, COCINA] if cocina_type.casecmp(mods_type).zero? }
+          ALL_COCINA_TYPES.each do |cocina_type|
+            return [cocina_type, nil, COCINA] if cocina_type.casecmp(mods_type).zero?
+          end
 
           [mods_type, nil, nil]
         end

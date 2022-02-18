@@ -49,7 +49,8 @@ module Publish
       src_resource_id = external_file['resourceId']
       src_druid = external_file['objectId']
       src_file_id = external_file['fileId']
-      raise Dor::DataError, "Malformed externalFile data: #{external_file.to_xml}" if [src_resource_id, src_file_id, src_druid].map(&:blank?).any?
+      raise Dor::DataError, "Malformed externalFile data: #{external_file.to_xml}" if [src_resource_id, src_file_id,
+                                                                                       src_druid].map(&:blank?).any?
 
       # grab source item
       src_item = Dor.find(src_druid)
@@ -65,7 +66,10 @@ module Publish
       end
 
       src_file = src_resource.at_xpath("file[@id=\"#{src_file_id}\"]")
-      raise Dor::DataError, "Unable to find a file node with id=\"#{src_file_id}\" (child of #{fedora_object.pid})" unless src_file
+      unless src_file
+        raise Dor::DataError,
+              "Unable to find a file node with id=\"#{src_file_id}\" (child of #{fedora_object.pid})"
+      end
 
       src_image_data = src_file.at_xpath('imageData')
 
@@ -76,7 +80,8 @@ module Publish
       # PURL uses these resource identifiers to generate IIIF Manifests.
       # Each of these identifiers represents a IIIF Canvas and would look like:
       #   https://purl.stanford.edu/vq627fg9932/iiif/canvas/cocina-fileSet-UUID
-      external_file['resourceId'] = external_file['resourceId'].sub('http://cocina.sul.stanford.edu/fileSet/', 'cocina-fileSet-')
+      external_file['resourceId'] =
+        external_file['resourceId'].sub('http://cocina.sul.stanford.edu/fileSet/', 'cocina-fileSet-')
 
       # add the extracted label and imageData
       external_file.add_previous_sibling(src_label)

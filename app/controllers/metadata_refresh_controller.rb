@@ -11,8 +11,14 @@ class MetadataRefreshController < ApplicationController
   def refresh
     status = RefreshMetadataAction.run(identifiers: identifiers,
                                        fedora_object: @item)
-    return render status: :unprocessable_entity, plain: "#{@item.pid} had no resolvable identifiers: #{identifiers.inspect}" unless status
-    return render status: :internal_server_error, plain: "#{@item.pid} descMetadata missing required fields (<title>)" if missing_required_fields?
+    unless status
+      return render status: :unprocessable_entity,
+                    plain: "#{@item.pid} had no resolvable identifiers: #{identifiers.inspect}"
+    end
+    if missing_required_fields?
+      return render status: :internal_server_error,
+                    plain: "#{@item.pid} descMetadata missing required fields (<title>)"
+    end
 
     @item.save!
   rescue SymphonyReader::NotFound => e

@@ -49,15 +49,18 @@ RSpec.describe "Looking up an item's marcxml" do
   end
 
   it 'looks up an item by catkey' do
-    stub_request(:get, format(marc_url, catkey: catkey)).to_return(body: body.to_json, headers: { 'Content-Length': 394 })
+    stub_request(:get, format(marc_url, catkey: catkey)).to_return(body: body.to_json,
+                                                                   headers: { 'Content-Length': 394 })
 
     get "/v1/catalog/marcxml?catkey=#{catkey}", headers: { 'Authorization' => "Bearer #{jwt}" }
     expect(response.body).to start_with '<record'
   end
 
   it 'looks up an item by barcode' do
-    stub_request(:get, format(barcode_url, barcode: barcode)).to_return(body: barcode_body.to_json, headers: { 'Content-Length': 157 })
-    stub_request(:get, format(marc_url, catkey: catkey)).to_return(body: body.to_json, headers: { 'Content-Length': 394 })
+    stub_request(:get, format(barcode_url, barcode: barcode)).to_return(body: barcode_body.to_json,
+                                                                        headers: { 'Content-Length': 157 })
+    stub_request(:get, format(marc_url, catkey: catkey)).to_return(body: body.to_json,
+                                                                   headers: { 'Content-Length': 394 })
 
     get "/v1/catalog/marcxml?barcode=#{barcode}", headers: { 'Authorization' => "Bearer #{jwt}" }
 

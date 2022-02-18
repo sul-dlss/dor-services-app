@@ -61,7 +61,9 @@ RSpec.shared_examples 'MODS cocina mapping' do
   context 'when mapping from MODS (to cocina)' do
     let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
-    let(:actual_cocina_props) { Cocina::FromFedora::Descriptive.props(mods: orig_mods_ng, druid: local_druid, notifier: notifier) }
+    let(:actual_cocina_props) do
+      Cocina::FromFedora::Descriptive.props(mods: orig_mods_ng, druid: local_druid, notifier: notifier)
+    end
 
     before do
       allow(notifier).to receive(:warn)
@@ -86,13 +88,15 @@ RSpec.shared_examples 'MODS cocina mapping' do
 
     it 'notifier receives warning and/or error messages as specified' do
       # TODO: support testing with no title
-      Cocina::FromFedora::Descriptive.props(mods: orig_mods_ng, druid: local_druid, notifier: notifier, title_builder: TestTitleBuilder)
+      Cocina::FromFedora::Descriptive.props(mods: orig_mods_ng, druid: local_druid, notifier: notifier,
+                                            title_builder: TestTitleBuilder)
       if local_warnings.empty?
         expect(notifier).not_to have_received(:warn)
       else
         local_warnings.each do |warning|
           if warning.context
-            expect(notifier).to have_received(:warn).with(warning.msg, warning.context).exactly(warning.times || 1).times
+            expect(notifier).to have_received(:warn).with(warning.msg,
+                                                          warning.context).exactly(warning.times || 1).times
           else
             expect(notifier).to have_received(:warn).with(warning.msg).exactly(warning.times || 1).times
           end
@@ -114,7 +118,10 @@ RSpec.shared_examples 'MODS cocina mapping' do
   end
 
   context 'when mapping to MODS (from cocina)' do
-    let(:expected_mods_ng) { Cocina::Normalizers::ModsNormalizer.normalize_purl(mods_ng_xml: (roundtrip_mods_ng || orig_mods_ng), druid: local_druid) }
+    let(:expected_mods_ng) do
+      Cocina::Normalizers::ModsNormalizer.normalize_purl(mods_ng_xml: (roundtrip_mods_ng || orig_mods_ng),
+                                                         druid: local_druid)
+    end
 
     let(:actual_mods_ng) { Cocina::ToFedora::Descriptive.transform(orig_cocina_description, local_druid) }
 
@@ -128,20 +135,32 @@ RSpec.shared_examples 'MODS cocina mapping' do
       # the starting MODS is normalized to address discrepancies found against MODS roundtripped to data store (Fedora)
       #  and back, per Arcadia's specifications.  E.g., removal of empty nodes and attributes; addition of eventType to
       #  originInfo nodes.
-      expect(actual_xml).to be_equivalent_to Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: orig_mods_ng, druid: local_druid, label: label).to_xml unless skip_normalization
+      unless skip_normalization
+        expect(actual_xml).to be_equivalent_to Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: orig_mods_ng,
+                                                                                             druid: local_druid, label: label).to_xml
+      end
     end
   end
 
   context 'when mapping from roundtrip MODS (to cocina)' do
     let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
-    let(:roundtrip_mods_xml) { Cocina::Normalizers::ModsNormalizer.normalize_purl(mods_ng_xml: roundtrip_mods_ng, druid: local_druid).to_xml if defined?(roundtrip_mods) }
+    let(:roundtrip_mods_xml) do
+      if defined?(roundtrip_mods)
+        Cocina::Normalizers::ModsNormalizer.normalize_purl(mods_ng_xml: roundtrip_mods_ng,
+                                                           druid: local_druid).to_xml
+      end
+    end
 
-    let(:roundtrip_cocina_props) { Cocina::FromFedora::Descriptive.props(mods: roundtrip_mods_ng, druid: local_druid, notifier: notifier) }
+    let(:roundtrip_cocina_props) do
+      Cocina::FromFedora::Descriptive.props(mods: roundtrip_mods_ng, druid: local_druid, notifier: notifier)
+    end
 
     let(:roundtrip_cocina_description) { Cocina::Models::Description.new(roundtrip_cocina_props, false, false) }
 
-    let(:re_roundtrip_mods_xml) { Cocina::ToFedora::Descriptive.transform(roundtrip_cocina_description, local_druid).to_xml }
+    let(:re_roundtrip_mods_xml) do
+      Cocina::ToFedora::Descriptive.transform(roundtrip_cocina_description, local_druid).to_xml
+    end
 
     before do
       allow(notifier).to receive(:warn)
@@ -160,7 +179,10 @@ RSpec.shared_examples 'MODS cocina mapping' do
       # the starting MODS is normalized to address discrepancies found against MODS roundtripped to data store (Fedora)
       #  and back, per Arcadia's specifications.  E.g., removal of empty nodes and attributes; addition of eventType to
       #  originInfo nodes.
-      normalized_rt_mods_xml = Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: roundtrip_mods_xml, druid: local_druid, label: label).to_xml if defined?(roundtrip_mods)
+      if defined?(roundtrip_mods)
+        normalized_rt_mods_xml = Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: roundtrip_mods_xml,
+                                                                               druid: local_druid, label: label).to_xml
+      end
       expect(re_roundtrip_mods_xml).to be_equivalent_to normalized_rt_mods_xml if defined?(roundtrip_mods)
     end
   end
@@ -200,14 +222,17 @@ RSpec.shared_examples 'cocina MODS mapping' do
     # as we are starting with a cocina representation, there may be empty cocina values
     # which could result in empty MODS elements from the transform.  The empty elements are correct at this point.
     it 'cocina Description maps to expected MODS' do
-      expect(actual_xml).to be_equivalent_to Cocina::Normalizers::ModsNormalizer.normalize_purl(mods_ng_xml: mods_ng, druid: local_druid).to_xml
+      expect(actual_xml).to be_equivalent_to Cocina::Normalizers::ModsNormalizer.normalize_purl(mods_ng_xml: mods_ng,
+                                                                                                druid: local_druid).to_xml
     end
   end
 
   context 'when mapping to cocina (from MODS)' do
     let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
-    let(:actual_cocina_props) { Cocina::FromFedora::Descriptive.props(mods: mods_ng, druid: local_druid, notifier: notifier) }
+    let(:actual_cocina_props) do
+      Cocina::FromFedora::Descriptive.props(mods: mods_ng, druid: local_druid, notifier: notifier)
+    end
 
     let(:expected_cocina) { defined?(roundtrip_cocina) ? roundtrip_cocina : cocina }
 
@@ -227,13 +252,15 @@ RSpec.shared_examples 'cocina MODS mapping' do
     end
 
     it 'notifier receives warning and/or error messages as specified' do
-      Cocina::FromFedora::Descriptive.props(mods: mods_ng, druid: local_druid, notifier: notifier, title_builder: TestTitleBuilder)
+      Cocina::FromFedora::Descriptive.props(mods: mods_ng, druid: local_druid, notifier: notifier,
+                                            title_builder: TestTitleBuilder)
       if local_warnings.empty?
         expect(notifier).not_to have_received(:warn)
       else
         local_warnings.each do |warning|
           if warning.context
-            expect(notifier).to have_received(:warn).with(warning.msg, warning.context).exactly(warning.times || 1).times
+            expect(notifier).to have_received(:warn).with(warning.msg,
+                                                          warning.context).exactly(warning.times || 1).times
           else
             expect(notifier).to have_received(:warn).with(warning.msg).exactly(warning.times || 1).times
           end
@@ -259,13 +286,17 @@ RSpec.shared_examples 'cocina MODS mapping' do
 
     let(:my_roundtrip_cocina) { defined?(roundtrip_cocina) ? roundtrip_cocina : cocina }
 
-    let(:roundtrip_cocina_description) { Cocina::Models::Description.new(add_purl(my_roundtrip_cocina, local_druid), false, false) }
+    let(:roundtrip_cocina_description) do
+      Cocina::Models::Description.new(add_purl(my_roundtrip_cocina, local_druid), false, false)
+    end
 
     let(:roundtrip_mods_ng) { Cocina::ToFedora::Descriptive.transform(roundtrip_cocina_description, local_druid) }
 
     let(:roundtrip_mods_xml) { roundtrip_mods_ng.to_xml }
 
-    let(:re_roundtrip_cocina_props) { Cocina::FromFedora::Descriptive.props(mods: roundtrip_mods_ng, druid: local_druid, notifier: notifier) }
+    let(:re_roundtrip_cocina_props) do
+      Cocina::FromFedora::Descriptive.props(mods: roundtrip_mods_ng, druid: local_druid, notifier: notifier)
+    end
 
     before do
       allow(notifier).to receive(:warn)
@@ -274,7 +305,10 @@ RSpec.shared_examples 'cocina MODS mapping' do
 
     it 'roundtrip cocina Description maps to expected MODS, normalized' do
       # the roundtrip cocina is, effectively, the cocina for the normalized MODS - the MODS is normalized before it gets to cocina
-      normalized_mods_xml = Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: mods_xml, druid: local_druid, label: label).to_xml if defined?(roundtrip_cocina)
+      if defined?(roundtrip_cocina)
+        normalized_mods_xml = Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: mods_xml, druid: local_druid,
+                                                                            label: label).to_xml
+      end
       expect(roundtrip_mods_xml).to be_equivalent_to normalized_mods_xml if defined?(roundtrip_cocina)
     end
 
@@ -305,7 +339,8 @@ class TestTitleBuilder
     if titles.empty?
       [{ value: 'Placeholder title for specs' }]
     else
-      Cocina::FromFedora::Descriptive::Titles.build(resource_element: resource_element, notifier: notifier, require_title: require_title)
+      Cocina::FromFedora::Descriptive::Titles.build(resource_element: resource_element, notifier: notifier,
+                                                    require_title: require_title)
     end
   end
 end

@@ -20,7 +20,10 @@ module Cocina
           {
             releaseDate: embargo_metadata_ds.release_date.first.utc.iso8601
           }.tap do |embargo|
-            embargo[:useAndReproductionStatement] = embargo_metadata_ds.use_and_reproduction_statement.first if embargo_metadata_ds.use_and_reproduction_statement.present?
+            if embargo_metadata_ds.use_and_reproduction_statement.present?
+              embargo[:useAndReproductionStatement] =
+                embargo_metadata_ds.use_and_reproduction_statement.first
+            end
           end.merge(AccessRights.props(dor_rights_auth_object, rights_xml: embargo_metadata_ds.to_xml))
         end
 

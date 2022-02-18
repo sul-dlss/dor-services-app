@@ -58,7 +58,8 @@ RSpec.describe 'Update MODS' do
 
   context 'when invalid cocina' do
     before do
-      allow(Cocina::Mapper).to receive(:build).and_raise(Cocina::Mapper::UnexpectedBuildError, ' #/components/schemas/DRO missing required parameters')
+      allow(Cocina::Mapper).to receive(:build).and_raise(Cocina::Mapper::UnexpectedBuildError,
+                                                         ' #/components/schemas/DRO missing required parameters')
     end
 
     it 'returns error' do

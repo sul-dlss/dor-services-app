@@ -111,7 +111,8 @@ RSpec.describe Cocina::FromFedora::CollectionAccess do
       end
 
       it 'builds the hash' do
-        expect(collection_access).to eq(access: 'dark', useAndReproductionStatement: 'User agrees that, where applicable, stuff.')
+        expect(collection_access).to eq(access: 'dark',
+                                        useAndReproductionStatement: 'User agrees that, where applicable, stuff.')
       end
     end
 

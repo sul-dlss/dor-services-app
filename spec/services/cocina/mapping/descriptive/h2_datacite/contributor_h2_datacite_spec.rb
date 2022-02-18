@@ -17,7 +17,9 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
   ## Do not map to DataCite contributors.name
   ## Instead map to DataCite fundingReference.funderName
 
-  let(:cocina_description) { Cocina::Models::Description.new(cocina.merge(purl: Purl.for(druid: 'druid:bb423sd6663')), false, false) }
+  let(:cocina_description) do
+    Cocina::Models::Description.new(cocina.merge(purl: Purl.for(druid: 'druid:bb423sd6663')), false, false)
+  end
   let(:attributes) { Cocina::ToDatacite::CreatorContributorFunder.attributes(cocina_description) }
   let(:creator_attributes) { attributes[:creators] }
   let(:contributor_attributes) { attributes[:contributors] }

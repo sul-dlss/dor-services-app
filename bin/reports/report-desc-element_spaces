@@ -5,7 +5,9 @@ require_relative '../../config/environment'
 require_relative '../../lib/report'
 
 Report.new(name: 'desc-element_spaces', dsid: 'descMetadata').run do |ng_xml|
-  bad_elements = ng_xml.xpath('//mods:*[name() != "mods:identifier" and not(*) and text() and (starts-with(text(), " "))]', mods: MODS_NS)
+  bad_elements = ng_xml.xpath(
+    '//mods:*[name() != "mods:identifier" and not(*) and text() and (starts-with(text(), " "))]', mods: MODS_NS
+  )
   return false if bad_elements.empty?
 
   bad_elements.map(&:to_s).join('; ')

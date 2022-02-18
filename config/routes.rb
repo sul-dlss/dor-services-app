@@ -53,7 +53,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resource :workspace, only: [:create, :destroy] do
+      resource :workspace, only: %i[create destroy] do
         collection do
           post 'reset'
         end
@@ -74,9 +74,9 @@ Rails.application.routes.draw do
         resource :mods, only: %i[update show]
       end
 
-      resources :events, only: [:create, :index], defaults: { format: :json }
+      resources :events, only: %i[create index], defaults: { format: :json }
 
-      resources :versions, only: [:create, :index] do
+      resources :versions, only: %i[create index] do
         collection do
           get 'openable'
           get 'current'

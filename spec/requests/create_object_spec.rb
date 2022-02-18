@@ -157,7 +157,8 @@ RSpec.describe 'Create object' do
                  params: data,
                  headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           end.to change(Event, :count).by(1)
-          expect(a_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
+          expect(a_request(:post,
+                           'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
           expect(response.body).to equal_cocina_model(expected)
           expect(response.status).to eq(201)
           expect(response.location).to eq "/v1/objects/#{druid}"
@@ -215,7 +216,8 @@ RSpec.describe 'Create object' do
           post '/v1/objects',
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(a_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
+          expect(a_request(:post,
+                           'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
           expect(response.body).to equal_cocina_model(expected)
           expect(response.status).to eq(201)
           expect(response.location).to eq "/v1/objects/#{druid}"

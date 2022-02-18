@@ -5,7 +5,10 @@ require 'rails_helper'
 RSpec.describe CocinaMigrationService do
   describe '#migrate' do
     let(:druid) { 'druid:hv992ry2431' }
-    let(:fedora_object) { instance_double(Dor::Item, pid: druid, create_date: '2021-05-24T21:55:33.337Z', modified_date: '2022-05-24T21:55:33.337Z') }
+    let(:fedora_object) do
+      instance_double(Dor::Item, pid: druid, create_date: '2021-05-24T21:55:33.337Z',
+                                 modified_date: '2022-05-24T21:55:33.337Z')
+    end
 
     let(:cocina_object) do
       Cocina::Models::DRO.new(type: Cocina::Models::Vocab.image,

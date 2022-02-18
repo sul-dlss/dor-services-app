@@ -25,7 +25,8 @@ module Cocina
           administrative: build_apo_administrative
         }.tap do |props|
           title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: fedora_apo.label)
-          description = FromFedora::Descriptive.props(title_builder: title_builder, mods: fedora_apo.descMetadata.ng_xml, druid: fedora_apo.pid, notifier: notifier)
+          description = FromFedora::Descriptive.props(title_builder: title_builder,
+                                                      mods: fedora_apo.descMetadata.ng_xml, druid: fedora_apo.pid, notifier: notifier)
           props[:description] = description unless description.nil?
         end
       end

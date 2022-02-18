@@ -8,7 +8,8 @@ class FedoraCache
   include Rubydora::FedoraUrlHelpers
   include Dry::Monads[:result]
 
-  DATASTREAMS = %w[descMetadata identityMetadata rightsMetadata contentMetadata geoMetadata embargoMetadata administrativeMetadata roleMetadata defaultObjectRights RELS-EXT].freeze
+  DATASTREAMS = %w[descMetadata identityMetadata rightsMetadata contentMetadata geoMetadata embargoMetadata
+                   administrativeMetadata roleMetadata defaultObjectRights RELS-EXT].freeze
 
   def initialize(overwrite: false, cache_dir: nil)
     @overwrite = overwrite
@@ -46,7 +47,11 @@ class FedoraCache
 
     Zip::File.open(zip_path, Zip::File::CREATE) do |zipfile|
       zipfile.get_output_stream('object.xml') { |file| file.write(object) }
-      datastreams.each_pair { |dsid, datastream| zipfile.get_output_stream("#{dsid}.xml") { |file| file.write(datastream) } }
+      datastreams.each_pair do |dsid, datastream|
+        zipfile.get_output_stream("#{dsid}.xml") do |file|
+          file.write(datastream)
+        end
+      end
       zipfile.get_output_stream('tags.json') { |file| file.write(JSON.generate(tags)) }
     end
   end

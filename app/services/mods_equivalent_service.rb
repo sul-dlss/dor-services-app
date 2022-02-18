@@ -66,7 +66,8 @@ class ModsEquivalentService
 
   private
 
-  attr_reader :mods_ng_xml1, :mods_ng_xml2, :altrepgroup_ids, :altrepgroup_nodes, :nametitlegroup_ids, :nametitlegroup_nodes
+  attr_reader :mods_ng_xml1, :mods_ng_xml2, :altrepgroup_ids, :altrepgroup_nodes, :nametitlegroup_ids,
+              :nametitlegroup_nodes
 
   def xml_equivalent?
     @xml_equivalent ||= EquivalentXml.equivalent?(mods_ng_xml1, mods_ng_xml2) do |node1, node2|
@@ -130,7 +131,9 @@ class ModsEquivalentService
   end
 
   def norm_mods_nodes2
-    @norm_mods_nodes2 ||= mods_ng_xml2.root.xpath('mods:*', mods: Dor::DescMetadataDS::MODS_NS).map { |node| norm_node(node) }
+    @norm_mods_nodes2 ||= mods_ng_xml2.root.xpath('mods:*', mods: Dor::DescMetadataDS::MODS_NS).map do |node|
+      norm_node(node)
+    end
   end
 
   def norm_node(node)
@@ -152,7 +155,9 @@ class ModsEquivalentService
   end
 
   def find_closest_node(mods_node1)
-    mods_nodes2_with_same_tag = mods_nodes2_without_equivalent.select { |mods_node2| mods_node2.name == mods_node1.name }
+    mods_nodes2_with_same_tag = mods_nodes2_without_equivalent.select do |mods_node2|
+      mods_node2.name == mods_node1.name
+    end
 
     return nil if mods_nodes2_with_same_tag.empty?
     return mods_nodes2_with_same_tag.first if mods_nodes2_with_same_tag.size == 1

@@ -21,7 +21,9 @@ module Cocina
 
         AccessGenerator.generate(root: collection.rightsMetadata.ng_xml.root, access: access)
         collection.rightsMetadata.copyright = access.copyright if access.copyright
-        collection.rightsMetadata.use_statement = access.useAndReproductionStatement if access.useAndReproductionStatement
+        if access.useAndReproductionStatement
+          collection.rightsMetadata.use_statement = access.useAndReproductionStatement
+        end
         License.update(collection.rightsMetadata, access.license) if access.license
         collection.rightsMetadata.ng_xml_will_change!
       end

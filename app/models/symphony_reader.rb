@@ -25,7 +25,7 @@ class SymphonyReader
 
   # @raises ResponseError
   def to_marc
-    @catkey = fetch_catkey if catkey.nil? # we need a catkey to do this lookup, so fetch it from the barcode if none exists
+    @catkey = fetch_catkey if catkey.nil?
 
     record = MARC::Record.new
 
@@ -33,7 +33,7 @@ class SymphonyReader
     record.leader = leader
 
     fields.uniq.each do |field|
-      record << marc_field(field) unless %w[001 003].include? field['tag'] # explicitly remove all 001 and 003 fields from the record
+      record << marc_field(field) unless %w[001 003].include? field['tag']
     end
 
     # explicitly inject the catkey into the 001 field

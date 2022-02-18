@@ -99,7 +99,9 @@ module Cocina
 
       #  keep objectType collection and drop set (set is vestigial early SDR junk)
       def normalize_out_set_object_type
-        ng_xml.root.xpath('//objectType[text() = "set"]').each(&:remove) if ng_xml.root.xpath('//objectType[text() = "collection"]').present?
+        if ng_xml.root.xpath('//objectType[text() = "collection"]').present?
+          ng_xml.root.xpath('//objectType[text() = "set"]').each(&:remove)
+        end
       end
 
       # displayType is vestigial early SDR junk

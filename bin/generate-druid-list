@@ -27,7 +27,8 @@ query = ARGV[0]
 druids = []
 
 loop do
-  results = ActiveFedora::SolrService.query('*:*', fl: 'id', rows: 10000, fq: query, start: druids.length, sort: 'id asc')
+  results = ActiveFedora::SolrService.query('*:*', fl: 'id', rows: 10_000, fq: query, start: druids.length,
+                                                   sort: 'id asc')
   break if results.empty? || (options[:sample] && druids.size >= options[:sample])
 
   results.each { |r| druids << r['id'] }

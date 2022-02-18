@@ -3,8 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
-  let(:normalized_ng_xml) { described_class.normalize(druid: 'druid:bb035tg0974', content_ng_xml: Nokogiri::XML(original_xml)) }
-  let(:normalized_roundtripped_ng_xml) { described_class.normalize_roundtrip(content_ng_xml: Nokogiri::XML(original_xml)) }
+  let(:normalized_ng_xml) do
+    described_class.normalize(druid: 'druid:bb035tg0974', content_ng_xml: Nokogiri::XML(original_xml))
+  end
+  let(:normalized_roundtripped_ng_xml) do
+    described_class.normalize_roundtrip(content_ng_xml: Nokogiri::XML(original_xml))
+  end
 
   context 'when normalizing resource ids' do
     let(:original_xml) do

@@ -304,7 +304,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
 
       it 'generates blank symphony records for an item object' do
-        expect(generate_symphony_records).to match_array %W(123\tbc123dg9393\t 456\tbc123dg9393\t)
+        expect(generate_symphony_records).to match_array %W[123\tbc123dg9393\t 456\tbc123dg9393\t]
       end
     end
 
@@ -433,7 +433,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     end
 
     context 'for multiple records including special characters' do
-      let(:marc_records) { %w(ab!#cdef 12@345 thirdrecord'withquote fourthrecordwith"doublequote) }
+      let(:marc_records) { %w[ab!#cdef 12@345 thirdrecord'withquote fourthrecordwith"doublequote] }
 
       it 'writes the record' do
         expect(writer).not_to be_nil
@@ -1317,7 +1317,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
 
       it 'returns values for previous catkeys in identityMetadata' do
-        expect(previous_ckeys).to eq(%w(123 456))
+        expect(previous_ckeys).to eq(%w[123 456])
       end
     end
 

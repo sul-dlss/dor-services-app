@@ -6,7 +6,9 @@ module Cocina
       # Support for PURLs.
       class Purl
         def self.primary_purl_node(resource_element, purl)
-          purl_nodes = resource_element.xpath('mods:location/mods:url', mods: DESC_METADATA_NS).select { |url_node| ::Purl.purl?(url_node.text) }
+          purl_nodes = resource_element.xpath('mods:location/mods:url', mods: DESC_METADATA_NS).select do |url_node|
+            ::Purl.purl?(url_node.text)
+          end
 
           return purl_nodes.find { |purl_node| purl_value(purl_node) == purl } if purl
 

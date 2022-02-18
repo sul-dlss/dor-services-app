@@ -78,7 +78,10 @@ RSpec.describe Publish::PublicDescMetadataService do
     end
 
     context 'with isConstituentOf relationships' do
-      let(:virtual_object_solr_docs) { [{ 'id' => 'druid:hj097bm8879', 'sw_display_title_tesim' => ["Carey's American Atlas: Containing Twenty Maps"] }] }
+      let(:virtual_object_solr_docs) do
+        [{ 'id' => 'druid:hj097bm8879',
+           'sw_display_title_tesim' => ["Carey's American Atlas: Containing Twenty Maps"] }]
+      end
 
       it 'writes the relationships into MODS' do
         # test that we have 2 expansions
@@ -167,7 +170,10 @@ RSpec.describe Publish::PublicDescMetadataService do
           identifier: [{ displayLabel: 'Image ID', type: 'local', value: 'M1090_S15_B01_F01_0055',
                          note: [{ type: 'type', value: 'local', uri: 'http://id.loc.gov/vocabulary/identifiers/local',
                                   source: { value: 'Standard Identifier Schemes', uri: 'http://id.loc.gov/vocabulary/identifiers/' } }] }],
-          relatedResource: [{ access: { physicalLocation: [{ value: 'Series 15 | Box 1 | Folder 1', type: 'location' }] }, type: 'part of' }],
+          relatedResource: [{
+            access: { physicalLocation: [{ value: 'Series 15 | Box 1 | Folder 1',
+                                           type: 'location' }] }, type: 'part of'
+          }],
           access: { accessContact: [{ value: 'Stanford University. Libraries. Dept. of Special Collections and Stanford University Archives.', type: 'repository' }],
                     note: [{ value: 'Property rights reside with the repository.' }] } }
       end
@@ -310,7 +316,10 @@ RSpec.describe Publish::PublicDescMetadataService do
             identifier: [{ displayLabel: 'Image ID', type: 'local', value: 'M1090_S15_B01_F01_0055',
                            note: [{ type: 'type', value: 'local', uri: 'http://id.loc.gov/vocabulary/identifiers/local',
                                     source: { value: 'Standard Identifier Schemes', uri: 'http://id.loc.gov/vocabulary/identifiers/' } }] }],
-            relatedResource: [{ access: { physicalLocation: [{ value: 'Series 15 | Box 1 | Folder 1', type: 'location' }] }, type: 'part of' }],
+            relatedResource: [{
+              access: { physicalLocation: [{ value: 'Series 15 | Box 1 | Folder 1',
+                                             type: 'location' }] }, type: 'part of'
+            }],
             access: { accessContact: [{ value: 'Stanford University. Libraries. Dept. of Special Collections and Stanford University Archives.', type: 'repository' }],
                       note: [{ value: 'Property rights reside with the repository.' }] } }
         end
@@ -354,7 +363,9 @@ RSpec.describe Publish::PublicDescMetadataService do
                               { access: { physicalLocation: [{ value: 'Series 15 | Box 1 | Folder 1', type: 'location' }] },
                                 type: 'part of' }],
             access: { accessContact: [
-              { value: 'Stanford University. Libraries. Dept. of Special Collections and Stanford University Archives.', type: 'repository' }
+              {
+                value: 'Stanford University. Libraries. Dept. of Special Collections and Stanford University Archives.', type: 'repository'
+              }
             ],
                       note: [{ value: 'Property rights reside with the repository.' }] } }
         end

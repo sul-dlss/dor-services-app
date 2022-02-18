@@ -27,7 +27,10 @@ RSpec.describe ResetWorkspaceService do
     after do
       # To reset the environment to its original format
       FileUtils.mv("#{druid_tree_path}_v2", druid_tree_path) if File.exist?("#{druid_tree_path}_v2")
-      FileUtils.mv("#{archived_druid_tree_path}_v3", archived_druid_tree_path) if File.exist?("#{archived_druid_tree_path}_v3")
+      if File.exist?("#{archived_druid_tree_path}_v3")
+        FileUtils.mv("#{archived_druid_tree_path}_v3",
+                     archived_druid_tree_path)
+      end
     end
 
     it 'renames the directory tree with the directory not empty' do
@@ -45,7 +48,9 @@ RSpec.describe ResetWorkspaceService do
     end
 
     it 'throws an error if the directory is already archived' do
-      expect { described_class.reset_workspace_druid_tree(druid: archived_druid, version: '2', workspace_root: workspace_root) }
+      expect do
+        described_class.reset_workspace_druid_tree(druid: archived_druid, version: '2', workspace_root: workspace_root)
+      end
         .to raise_error(ResetWorkspaceService::DirectoryAlreadyExists)
     end
 

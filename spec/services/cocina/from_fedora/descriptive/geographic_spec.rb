@@ -88,7 +88,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
       it 'builds the cocina data structure and warns' do
         expect(build).to eq([expected_hash])
         build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
-        expect(notifier).to have_received(:warn).with('dc:type normalized to <dc:type>Image</dc:type>', { type: 'image' })
+        expect(notifier).to have_received(:warn).with('dc:type normalized to <dc:type>Image</dc:type>',
+                                                      { type: 'image' })
       end
     end
   end
@@ -170,7 +171,8 @@ RSpec.describe Cocina::FromFedora::Descriptive::Geographic do
       it 'builds the cocina data structure and warns' do
         expect(build).to eq([expected_hash])
         build.each { |model| Cocina::Models::DescriptiveGeographicMetadata.new(model) }
-        expect(notifier).to have_received(:warn).with('dc:type normalized to <dc:type>Image</dc:type>', { type: 'image' })
+        expect(notifier).to have_received(:warn).with('dc:type normalized to <dc:type>Image</dc:type>',
+                                                      { type: 'image' })
       end
     end
   end

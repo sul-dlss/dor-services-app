@@ -40,7 +40,8 @@ RSpec.describe Cocina::FromFedora::DROAccess do
     end
 
     it 'has embargo' do
-      expect(access).to include(embargo: { access: 'world', download: 'none', releaseDate: '2029-02-28T00:00:00Z', useAndReproductionStatement: 'in public domain' })
+      expect(access).to include(embargo: { access: 'world', download: 'none', releaseDate: '2029-02-28T00:00:00Z',
+                                           useAndReproductionStatement: 'in public domain' })
     end
   end
 
@@ -74,7 +75,8 @@ RSpec.describe Cocina::FromFedora::DROAccess do
       end
 
       it 'builds the hash' do
-        expect(access).to eq(access: 'dark', download: 'none', useAndReproductionStatement: 'User agrees that, where applicable, stuff.')
+        expect(access).to eq(access: 'dark', download: 'none',
+                             useAndReproductionStatement: 'User agrees that, where applicable, stuff.')
       end
     end
 

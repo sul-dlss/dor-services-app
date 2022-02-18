@@ -29,7 +29,8 @@ RSpec.describe LegacyMetadataService do
     end
     let(:title) { ['One title'] }
     let(:item) do
-      instance_double(Dor::Item, datastreams: { 'descMetadata' => datastream }, label: 'test label', pid: 'druid:bc123df4567')
+      instance_double(Dor::Item, datastreams: { 'descMetadata' => datastream }, label: 'test label',
+                                 pid: 'druid:bc123df4567')
     end
     let(:datastream) do
       instance_double(Dor::DescMetadataDS, createDate: create_date,

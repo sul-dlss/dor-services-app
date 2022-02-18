@@ -51,7 +51,10 @@ module Cocina
             'xmlns:dc' => 'http://purl.org/dc/elements/1.1/'
           }
 
-          namespace['xmlns:gmd'] = 'http://www.isotc211.org/2005/gmd' if geo.subject&.first&.type&.include? 'point coordinates'
+          if geo.subject&.first&.type&.include? 'point coordinates'
+            namespace['xmlns:gmd'] =
+              'http://www.isotc211.org/2005/gmd'
+          end
 
           namespace
         end
@@ -66,7 +69,9 @@ module Cocina
         end
 
         def extract_type(geo)
-          type = geo[:form].find { |form| form[:type].match(TYPE_REGEX) || (form[:type].match(MEDIA_REGEX) && form[:value] == 'Image') }
+          type = geo[:form].find do |form|
+            form[:type].match(TYPE_REGEX) || (form[:type].match(MEDIA_REGEX) && form[:value] == 'Image')
+          end
           return type[:value] if type
 
           nil

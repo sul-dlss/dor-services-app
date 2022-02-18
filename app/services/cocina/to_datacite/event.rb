@@ -106,7 +106,10 @@ module Cocina
           }
           if creation_event_creation_date.value
             created_date[:date] = creation_event_creation_date.value
-            created_date[:dateInformation] = creation_event_creation_date.qualifier if creation_event_creation_date.qualifier.present?
+            if creation_event_creation_date.qualifier.present?
+              created_date[:dateInformation] =
+                creation_event_creation_date.qualifier
+            end
           else
             created_date.merge!(structured_date_result(creation_event_creation_date))
           end
@@ -120,7 +123,9 @@ module Cocina
       end
 
       def deposit_event_publication_date_value
-        @deposit_event_publication_date_value ||= deposit_event&.date&.find { |date| date&.type == 'publication' }&.value
+        @deposit_event_publication_date_value ||= deposit_event&.date&.find do |date|
+                                                    date&.type == 'publication'
+                                                  end&.value
       end
 
       def deposit_event
@@ -128,7 +133,9 @@ module Cocina
       end
 
       def publication_event_publication_date_value
-        @publication_event_publication_date_value ||= publication_event&.date&.find { |date| date&.type == 'publication' }&.value
+        @publication_event_publication_date_value ||= publication_event&.date&.find do |date|
+                                                        date&.type == 'publication'
+                                                      end&.value
       end
 
       def publication_event

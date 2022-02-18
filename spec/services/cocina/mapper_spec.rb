@@ -26,7 +26,8 @@ RSpec.describe Cocina::Mapper do
       fedora_object.contentMetadata.contentType = [content_type]
       allow(Cocina::FromFedora::Label).to receive(:for).and_return('object label')
 
-      create(:administrative_tag, druid: fedora_object.pid, tag_label: create(:tag_label, tag: 'Project : Google Books'))
+      create(:administrative_tag, druid: fedora_object.pid,
+                                  tag_label: create(:tag_label, tag: 'Project : Google Books'))
       create(:administrative_tag, druid: fedora_object.pid, tag_label: create(:tag_label, tag: type))
     end
 
@@ -166,7 +167,9 @@ RSpec.describe Cocina::Mapper do
 
       it 'raises and Honeybadger notifies' do
         expect { cocina_model }.to raise_error(Cocina::Mapper::UnexpectedBuildError)
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Missing title', { tags: 'data_error', context: { druid: 'druid:mx000xm0000' } })
+        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Missing title',
+                                                           { tags: 'data_error',
+                                                             context: { druid: 'druid:mx000xm0000' } })
         expect(Honeybadger).to have_received(:notify).with(Cocina::Models::ValidationError)
       end
     end

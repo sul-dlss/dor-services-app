@@ -35,7 +35,9 @@ module Cocina
         end
 
         def build(require_title: true)
-          altrepgroup_title_info_nodes, other_title_info_nodes = AltRepGroup.split(nodes: resource_element.xpath('mods:titleInfo', mods: DESC_METADATA_NS))
+          altrepgroup_title_info_nodes, other_title_info_nodes = AltRepGroup.split(nodes: resource_element.xpath(
+            'mods:titleInfo', mods: DESC_METADATA_NS
+          ))
 
           result = altrepgroup_title_info_nodes.map { |title_info_nodes| parallel(title_info_nodes) } \
             + simple_or_structured(other_title_info_nodes)
@@ -87,7 +89,8 @@ module Cocina
         end
 
         def structured_name(node:, display_types: true)
-          name_node = resource_element.xpath("mods:name[@nameTitleGroup='#{node['nameTitleGroup']}']", mods: DESC_METADATA_NS).first
+          name_node = resource_element.xpath("mods:name[@nameTitleGroup='#{node['nameTitleGroup']}']",
+                                             mods: DESC_METADATA_NS).first
 
           structured_values = if name_node.nil?
                                 notifier.warn('Name not found for title group')

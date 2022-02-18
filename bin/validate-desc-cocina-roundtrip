@@ -65,7 +65,8 @@ def write_result(druid, original_ng_xml, roundtrip_ng_xml, cocina, differences, 
       file.write("\nNote that data errors are from the original XML, not the normalized XML shown below.\n\n")
     end
 
-    file.write("Node count mismatch between original and roundtripped.\n") unless node_count_match?(original_ng_xml, roundtrip_ng_xml)
+    file.write("Node count mismatch between original and roundtripped.\n") unless node_count_match?(original_ng_xml,
+                                                                                                    roundtrip_ng_xml)
 
     differences.each_with_index do |difference, index|
       file.write("Differences #{index + 1}\n")
@@ -135,7 +136,8 @@ def validate_druid(druid, cache, fast: false)
 
   begin
     # Perform approved XML normalization changes to avoid noise in roundtrip failures
-    norm_original_ng_xml = Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: original_ng_xml, druid: druid, label: label)
+    norm_original_ng_xml = Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: original_ng_xml, druid: druid,
+                                                                         label: label)
   rescue StandardError => e
     write_error(druid, original_ng_xml, cocina_props, e) unless fast
     return [druid, :mods_normalizer_error]
@@ -157,7 +159,10 @@ def validate_druid(druid, cache, fast: false)
   return [druid, :success] if equiv.success?
 
   # If not equivalent, but no diffs reported, then try in reverse.
-  reverse_equiv = ModsEquivalentService.equivalent_with_result?(roundtrip_ng_xml, norm_original_ng_xml) if equiv.failure.empty?
+  if equiv.failure.empty?
+    reverse_equiv = ModsEquivalentService.equivalent_with_result?(roundtrip_ng_xml,
+                                                                  norm_original_ng_xml)
+  end
 
   write_result(druid,
                norm_original_ng_xml,
@@ -215,5 +220,6 @@ puts "  Success:   #{counts[:success]} (#{percentage(counts[:success], denom)}%)
 puts "  Different: #{counts[:different]} (#{percentage(counts[:different], denom)}%)"
 puts "  To Cocina error:     #{counts[:to_cocina_error]} (#{percentage(counts[:to_cocina_error], denom)}%)"
 puts "  To Fedora error:     #{counts[:to_fedora_error]} (#{percentage(counts[:to_fedora_error], denom)}%)"
-puts "  MODS normalizer error:     #{counts[:mods_normalizer_error]} (#{percentage(counts[:mods_normalizer_error], denom)}%)"
+puts "  MODS normalizer error:     #{counts[:mods_normalizer_error]} (#{percentage(counts[:mods_normalizer_error],
+                                                                                   denom)}%)"
 puts "  Missing (no descMetadata):     #{counts[:missing]} (#{(100 * counts[:missing].to_f / druids.size).round(3)}%)"

@@ -24,9 +24,15 @@ class EventsMigrationService
 
   def migrate_event(event_type, who, timestamp, message)
     version = version_from_message(message)
-    create_event('version_open', who, timestamp, version) if event_type == 'open' && version && existing_open_versions.exclude?(version)
+    if event_type == 'open' && version && existing_open_versions.exclude?(version)
+      create_event('version_open', who, timestamp,
+                   version)
+    end
 
-    create_event('version_close', who, timestamp, version) if event_type == 'close' && version && existing_close_versions.exclude?(version)
+    if event_type == 'close' && version && existing_close_versions.exclude?(version)
+      create_event('version_close', who, timestamp,
+                   version)
+    end
   end
 
   def version_from_message(message)
@@ -42,10 +48,14 @@ class EventsMigrationService
   end
 
   def existing_open_versions
-    @existing_open_versions = Event.where(druid: fedora_object.pid, event_type: 'version_open').map { |event| event.data['version'] }
+    @existing_open_versions = Event.where(druid: fedora_object.pid, event_type: 'version_open').map do |event|
+      event.data['version']
+    end
   end
 
   def existing_close_versions
-    @existing_close_versions = Event.where(druid: fedora_object.pid, event_type: 'version_close').map { |event| event.data['version'] }
+    @existing_close_versions = Event.where(druid: fedora_object.pid, event_type: 'version_close').map do |event|
+      event.data['version']
+    end
   end
 end

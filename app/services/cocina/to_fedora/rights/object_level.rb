@@ -73,7 +73,10 @@ module Cocina
             cdl_node
           elsif world_read_access?
             world_node = Nokogiri::XML::Node.new('world', document)
-            world_node.set_attribute('rule', 'no-download') if no_download? || location_based_download? || stanford_download?
+            if no_download? || location_based_download? || stanford_download?
+              world_node.set_attribute('rule',
+                                       'no-download')
+            end
             world_node
           elsif stanford_read_access?
             group_node = Nokogiri::XML::Node.new('group', document)

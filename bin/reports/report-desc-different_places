@@ -11,8 +11,12 @@ Report.new(name: 'desc-different_places', dsid: 'descMetadata').run do |ng_xml|
     text_place_term = place_node.xpath('//mods:placeTerm[@type="text"]', mods: MODS_NS).first
     next unless code_place_term && text_place_term
     next unless code_place_term['authority'] && text_place_term['authority']
-    next unless code_place_term['authorityURI'] =~ %r{id.loc.gov/authorities} || code_place_term['valueURI'] =~ %r{id.loc.gov/authorities}
-    next unless text_place_term['authorityURI'] =~ %r{id.loc.gov/authorities} || text_place_term['valueURI'] =~ %r{id.loc.gov/authorities}
+    unless code_place_term['authorityURI'] =~ %r{id.loc.gov/authorities} || code_place_term['valueURI'] =~ %r{id.loc.gov/authorities}
+      next
+    end
+    unless text_place_term['authorityURI'] =~ %r{id.loc.gov/authorities} || text_place_term['valueURI'] =~ %r{id.loc.gov/authorities}
+      next
+    end
 
     return true
   end

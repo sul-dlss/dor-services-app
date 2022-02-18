@@ -50,7 +50,8 @@ module Cocina
         def remove_empty_origin_info
           ng_xml.root.xpath('//mods:originInfo[not(mods:*) and not(@*)]', mods: ModsNormalizer::MODS_NS).each(&:remove)
           # make sure we remove ones such as <originInfo eventType="publication"/>
-          ng_xml.root.xpath('//mods:originInfo[not(mods:*) and not(text()[normalize-space()])]', mods: ModsNormalizer::MODS_NS).each(&:remove)
+          ng_xml.root.xpath('//mods:originInfo[not(mods:*) and not(text()[normalize-space()])]',
+                            mods: ModsNormalizer::MODS_NS).each(&:remove)
         end
 
         LEGACY_EVENT_TYPES_2_TYPE = Cocina::FromFedora::Descriptive::Event::LEGACY_EVENT_TYPES_2_TYPE
@@ -75,7 +76,8 @@ module Cocina
         # if the cocina model doesn't have a code, then it will have a value;
         #   this is output as attribute type=text on the roundtripped placeTerm element
         def place_term_type_normalization
-          ng_xml.root.xpath('//mods:originInfo/mods:place/mods:placeTerm', mods: ModsNormalizer::MODS_NS).each do |place_term_node|
+          ng_xml.root.xpath('//mods:originInfo/mods:place/mods:placeTerm',
+                            mods: ModsNormalizer::MODS_NS).each do |place_term_node|
             next if place_term_node.content.blank?
 
             place_term_node['type'] = 'text' if place_term_node.attributes['type'].blank?
@@ -87,8 +89,10 @@ module Cocina
         # element has no authority attributes but the code element DOES have authority attributes, then both
         # the text and the code elements get the authority attributes from the code element.
         def place_term_authority_normalization
-          ng_xml.root.xpath('//mods:originInfo/mods:place[mods:placeTerm/@type]', mods: ModsNormalizer::MODS_NS).each do |place_node|
-            text_place_term_node = place_node.xpath("mods:placeTerm[not(@type='code')]", mods: ModsNormalizer::MODS_NS).first
+          ng_xml.root.xpath('//mods:originInfo/mods:place[mods:placeTerm/@type]',
+                            mods: ModsNormalizer::MODS_NS).each do |place_node|
+            text_place_term_node = place_node.xpath("mods:placeTerm[not(@type='code')]",
+                                                    mods: ModsNormalizer::MODS_NS).first
             next unless text_place_term_node
             next if text_place_term_node.text.blank?
 
@@ -133,7 +137,8 @@ module Cocina
 
         def single_key_date
           DATE_FIELDS.each do |date_field|
-            key_date_nodes = ng_xml.root.xpath("//mods:originInfo/mods:#{date_field}[@point and @keyDate='yes']", mods: ModsNormalizer::MODS_NS)
+            key_date_nodes = ng_xml.root.xpath("//mods:originInfo/mods:#{date_field}[@point and @keyDate='yes']",
+                                               mods: ModsNormalizer::MODS_NS)
             next unless key_date_nodes.size == 2
 
             end_node = key_date_nodes.find { |node| node['point'] == 'end' }

@@ -39,7 +39,10 @@ class ObjectVersion < ApplicationRecord
   def self.sync_then_increment_version(druid, known_version, significance: nil, description: nil)
     current_version = current_version(druid)&.version || 0
 
-    raise Dor::Exception, "Cannot sync to a version greater than current: #{current_version}, requested #{known_version}" if current_version < known_version
+    if current_version < known_version
+      raise Dor::Exception,
+            "Cannot sync to a version greater than current: #{current_version}, requested #{known_version}"
+    end
 
     ObjectVersion.where(druid: druid).where('version > ?', known_version).destroy_all if current_version > known_version
 
@@ -62,7 +65,8 @@ class ObjectVersion < ApplicationRecord
 
     if significance
       # Greatest version with a tag.
-      last_object_version = ObjectVersion.where(druid: druid).where.not(tag: nil, version: current_object_version.version).order(version: :desc).first
+      last_object_version = ObjectVersion.where(druid: druid).where.not(tag: nil,
+                                                                        version: current_object_version.version).order(version: :desc).first
       last_tag = VersionTag.parse(last_object_version.tag)
       current_object_version.tag = last_tag.increment(significance).to_s
     end

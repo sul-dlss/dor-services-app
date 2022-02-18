@@ -47,7 +47,8 @@ module Cocina
         # rubocop:disable Metrics/CyclomaticComplexity
         # rubocop:disable Metrics/AbcSize
         def normalize_subject
-          ng_xml.root.xpath('//mods:subject[not(mods:cartographics)]', mods: ModsNormalizer::MODS_NS).each do |subject_node|
+          ng_xml.root.xpath('//mods:subject[not(mods:cartographics)]',
+                            mods: ModsNormalizer::MODS_NS).each do |subject_node|
             children_nodes = subject_node.xpath('mods:*', mods: ModsNormalizer::MODS_NS)
 
             next if children_nodes.empty?
@@ -55,12 +56,21 @@ module Cocina
             if (have_authorityURI?(subject_node) || have_valueURI?(subject_node)) &&
                children_nodes.size == 1
               # If subject has authority and child doesn't, copy to child.
-              add_authority(children_nodes, subject_node) if have_authority?(subject_node) && !have_authority?(children_nodes)
+              if have_authority?(subject_node) && !have_authority?(children_nodes)
+                add_authority(children_nodes,
+                              subject_node)
+              end
               # If subject has authorityURI and child doesn't, move to child.
-              add_authorityURI(children_nodes, subject_node) if have_authorityURI?(subject_node) && !have_authorityURI?(children_nodes)
+              if have_authorityURI?(subject_node) && !have_authorityURI?(children_nodes)
+                add_authorityURI(children_nodes,
+                                 subject_node)
+              end
               subject_node.delete('authorityURI')
               # If subject has valueURI and child doesn't, move to child.
-              add_valueURI(children_nodes, subject_node) if have_valueURI?(subject_node) && !have_valueURI?(children_nodes)
+              if have_valueURI?(subject_node) && !have_valueURI?(children_nodes)
+                add_valueURI(children_nodes,
+                             subject_node)
+              end
               subject_node.delete('valueURI')
             end
 
@@ -81,7 +91,8 @@ module Cocina
         end
 
         def normalize_subject_children
-          ng_xml.root.xpath('//mods:subject[not(mods:cartographics)]', mods: ModsNormalizer::MODS_NS).each do |subject_node|
+          ng_xml.root.xpath('//mods:subject[not(mods:cartographics)]',
+                            mods: ModsNormalizer::MODS_NS).each do |subject_node|
             children_nodes = subject_node.xpath('mods:*', mods: ModsNormalizer::MODS_NS)
 
             children_nodes.each do |child_node|
@@ -113,7 +124,9 @@ module Cocina
         end
 
         def have_same_authority?(nodes, same_node)
-          nodes_to_a(nodes).all? { |node| same_node[:authority] == node[:authority] || (lcsh_or_naf?(same_node) && lcsh_or_naf?(node)) }
+          nodes_to_a(nodes).all? do |node|
+            same_node[:authority] == node[:authority] || (lcsh_or_naf?(same_node) && lcsh_or_naf?(node))
+          end
         end
 
         def lcsh_or_naf?(node)
@@ -188,11 +201,14 @@ module Cocina
         # Collapse multiple subject/cartographics nodes into a single one
         def normalize_subject_cartographics
           normalize_subject_cartographics_for(ng_xml.root)
-          ng_xml.root.xpath('mods:relatedItem', mods: ModsNormalizer::MODS_NS).each { |related_item_node| normalize_subject_cartographics_for(related_item_node) }
+          ng_xml.root.xpath('mods:relatedItem', mods: ModsNormalizer::MODS_NS).each do |related_item_node|
+            normalize_subject_cartographics_for(related_item_node)
+          end
         end
 
         def normalize_subject_cartographics_for(root_node)
-          carto_subject_nodes = root_node.xpath('mods:subject[not(@altRepGroup)][mods:cartographics]', mods: ModsNormalizer::MODS_NS)
+          carto_subject_nodes = root_node.xpath('mods:subject[not(@altRepGroup)][mods:cartographics]',
+                                                mods: ModsNormalizer::MODS_NS)
           return if carto_subject_nodes.empty?
 
           # Create a default carto subject.
@@ -214,7 +230,9 @@ module Cocina
         def normalize_cartographic_node(carto_node, carto_subject_node, default_carto_node)
           child_nodes = if carto_subject_node['authority'] || carto_subject_node['authorityURI'] || carto_subject_node['valueURI']
                           # Move scale and coordinates to default carto subject.
-                          carto_node.xpath('mods:scale', mods: ModsNormalizer::MODS_NS) + carto_node.xpath('mods:coordinates', mods: ModsNormalizer::MODS_NS)
+                          carto_node.xpath('mods:scale',
+                                           mods: ModsNormalizer::MODS_NS) + carto_node.xpath('mods:coordinates',
+                                                                                             mods: ModsNormalizer::MODS_NS)
                         else
                           # Merge all into default carto_subject.
                           carto_node.elements
@@ -230,7 +248,9 @@ module Cocina
         end
 
         def child_node_exists?(child_node, parent_node)
-          parent_node.elements.any? { |check_node| child_node.name == check_node.name && child_node.content == check_node.content }
+          parent_node.elements.any? do |check_node|
+            child_node.name == check_node.name && child_node.content == check_node.content
+          end
         end
 
         def normalize_subject_authority_naf
@@ -259,7 +279,8 @@ module Cocina
         end
 
         def normalize_empty_temporal
-          ng_xml.root.xpath('//mods:subject/mods:temporal[not(text())]', mods: ModsNormalizer::MODS_NS).each do |temporal_node|
+          ng_xml.root.xpath('//mods:subject/mods:temporal[not(text())]',
+                            mods: ModsNormalizer::MODS_NS).each do |temporal_node|
             subject_node = temporal_node.parent
             temporal_node.remove
             subject_node.remove if subject_node.elements.empty?
@@ -267,7 +288,8 @@ module Cocina
         end
 
         def normalize_empty_geographic
-          ng_xml.root.xpath('//mods:subject/mods:geographic[not(@valueURI) and not(text())]', mods: ModsNormalizer::MODS_NS).each do |geo_node|
+          ng_xml.root.xpath('//mods:subject/mods:geographic[not(@valueURI) and not(text())]',
+                            mods: ModsNormalizer::MODS_NS).each do |geo_node|
             subject_node = geo_node.parent
             geo_node.remove
             subject_node.remove if subject_node.elements.empty? && subject_node.attributes.empty?
@@ -275,7 +297,8 @@ module Cocina
         end
 
         def normalize_xlink_href
-          ng_xml.root.xpath('//mods:subject/mods:*[@xlink:href]', mods: ModsNormalizer::MODS_NS, xlink: ModsNormalizer::XLINK_NS).each do |child_node|
+          ng_xml.root.xpath('//mods:subject/mods:*[@xlink:href]', mods: ModsNormalizer::MODS_NS,
+                                                                  xlink: ModsNormalizer::XLINK_NS).each do |child_node|
             subject_node = child_node.parent
             subject_node['xlink:href'] = child_node['xlink:href']
             child_node.delete('href')

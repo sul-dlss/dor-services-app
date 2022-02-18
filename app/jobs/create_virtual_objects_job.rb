@@ -18,7 +18,8 @@ class CreateVirtualObjectsJob < ApplicationJob
       # Do not add `nil`s to the errors array as they signify successful
       # creation of the virtual object
       errors << result if result.present?
-    rescue ActiveFedora::ObjectNotFoundError, Rubydora::FedoraInvalidRequest, Dor::Exception, Preservation::Client::Error => e
+    rescue ActiveFedora::ObjectNotFoundError, Rubydora::FedoraInvalidRequest, Dor::Exception,
+           Preservation::Client::Error => e
       errors << { virtual_object_id => [e.message] }
     rescue StandardError => e
       errors << { virtual_object_id => [e.message] }

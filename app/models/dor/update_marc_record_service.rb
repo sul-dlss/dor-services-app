@@ -7,7 +7,7 @@ module Dor
   # rubocop:disable Metrics/ClassLength
   class UpdateMarcRecordService
     # objects goverened by these APOs (ETD and EEMs) will get indicator 2 = 0, else 1
-    BORN_DIGITAL_APOS = %w(druid:bx911tp9024 druid:jj305hm5259).freeze
+    BORN_DIGITAL_APOS = %w[druid:bx911tp9024 druid:jj305hm5259].freeze
 
     def initialize(cocina_object, thumbnail_service:)
       @cocina_object = cocina_object
@@ -57,7 +57,9 @@ module Dor
 
       # now add the current ckey
       if @cocina_object.identification.catalogLinks.find { |link| link.catalog == 'symphony' }.present?
-        catalog_record_id = @cocina_object.identification.catalogLinks.find { |link| link.catalog == 'symphony' }.catalogRecordId
+        catalog_record_id = @cocina_object.identification.catalogLinks.find do |link|
+          link.catalog == 'symphony'
+        end.catalogRecordId
         records << (released_to_searchworks? ? new_856_record(catalog_record_id) : get_identifier(catalog_record_id))
       end
 
@@ -78,13 +80,17 @@ module Dor
       Open3.popen3(command) do |_stdin, stdout, stderr, _wait_thr|
         stdout_text = stdout.read
         stderr_text = stderr.read
-        raise "Error in writing marc_record file using the command #{command}\n#{stdout_text}\n#{stderr_text}" if stdout_text.length > 0 || stderr_text.length > 0
+        if stdout_text.length.positive? || stderr_text.length.positive?
+          raise "Error in writing marc_record file using the command #{command}\n#{stdout_text}\n#{stderr_text}"
+        end
       end
     end
 
     def new_856_record(ckey)
       new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{get_object_type_from_uri}"
-      new856 += "|xbarcode:#{@cocina_object.identification.barcode}" if @cocina_object.identification.respond_to?(:barcode) && @cocina_object.identification.barcode
+      if @cocina_object.identification.respond_to?(:barcode) && @cocina_object.identification.barcode
+        new856 += "|xbarcode:#{@cocina_object.identification.barcode}"
+      end
       new856 += "|xfile:#{thumb}" unless thumb.nil?
       new856 += get_x2_collection_info unless get_x2_collection_info.nil?
       new856 += get_x2_constituent_info unless get_x2_constituent_info.nil?
@@ -150,7 +156,8 @@ module Dor
       collections.each do |collection_druid|
         collection = CocinaObjectStore.find(collection_druid)
         catkey = collection.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
-        collection_info += "|xcollection:#{collection.externalIdentifier.sub('druid:', '')}:#{catkey&.catalogRecordId}:#{collection.label}"
+        collection_info += "|xcollection:#{collection.externalIdentifier.sub('druid:',
+                                                                             '')}:#{catkey&.catalogRecordId}:#{collection.label}"
       end
 
       collection_info
@@ -213,7 +220,10 @@ module Dor
     end
 
     def released_to_searchworks?
-      rel = released_for.transform_keys { |key| key.to_s.upcase } # upcase all release tags to make the check case insensitive
+      rel = # upcase all release tags to make the check case insensitive
+        released_for.transform_keys do |key|
+          key.to_s.upcase
+        end
       rel.dig('SEARCHWORKS', 'release').presence || false
     end
 
@@ -243,7 +253,9 @@ module Dor
     # the previous ckeys for the current object
     # @return [Array] previous catkeys for the object in an array, empty array if none exist
     def previous_ckeys
-      @cocina_object.identification.catalogLinks.select { |link| link.catalog == 'previous symphony' }.map(&:catalogRecordId)
+      @cocina_object.identification.catalogLinks.select do |link|
+        link.catalog == 'previous symphony'
+      end.map(&:catalogRecordId)
     end
 
     # the @id attribute of resource/file elements including extension

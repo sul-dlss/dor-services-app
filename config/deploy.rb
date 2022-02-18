@@ -33,8 +33,8 @@ set :log_level, :info
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
-set :linked_dirs, %w(log tmp/pids tmp/cache tmp/sockets vendor/bundle config/certs config/settings)
-set :linked_files, %w(config/secrets.yml config/honeybadger.yml config/newrelic.yml config/database.yml)
+set :linked_dirs, %w[log tmp/pids tmp/cache tmp/sockets vendor/bundle config/certs config/settings]
+set :linked_files, %w[config/secrets.yml config/honeybadger.yml config/newrelic.yml config/database.yml]
 
 # Namespace crontab entries by application and stage
 set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }

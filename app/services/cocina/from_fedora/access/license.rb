@@ -33,7 +33,9 @@ module Cocina
         def self.find_legacy_license(datastream)
           return NONE_LICENSE_URI if datastream.use_license&.first == 'none'
 
-          uris = datastream.ng_xml.xpath('/rightsMetadata/use/machine[@uri]').map { |node| node['uri'] }.reject(&:blank?)
+          uris = datastream.ng_xml.xpath('/rightsMetadata/use/machine[@uri]').map do |node|
+            node['uri']
+          end.reject(&:blank?)
           return uris.first if uris.present?
 
           if datastream.open_data_commons.first.present?

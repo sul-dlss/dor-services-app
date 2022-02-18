@@ -58,7 +58,10 @@ RSpec.describe WorkspaceService do
 
     it 'raises DifferentContentExistsError if a directory already exists in the workspace for this druid' do
       druid_obj.mkdir(fixture_dir)
-      expect { described_class.send(:mkdir_with_final_link, druid: druid_obj, source: source_dir) }.to raise_error(DruidTools::DifferentContentExistsError)
+      expect do
+        described_class.send(:mkdir_with_final_link, druid: druid_obj,
+                                                     source: source_dir)
+      end.to raise_error(DruidTools::DifferentContentExistsError)
     end
   end
 end

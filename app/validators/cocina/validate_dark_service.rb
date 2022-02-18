@@ -14,7 +14,9 @@ module Cocina
     def valid?
       return true unless meets_preconditions?
 
-      @error = "Not all files have dark access and/or are unshelved when object access is dark: #{invalid_filenames}" unless invalid_files.empty?
+      unless invalid_files.empty?
+        @error = "Not all files have dark access and/or are unshelved when object access is dark: #{invalid_filenames}"
+      end
 
       @error.nil?
     end

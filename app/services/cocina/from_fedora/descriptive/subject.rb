@@ -75,7 +75,9 @@ module Cocina
             notifier.warn('Subject has text', { subject: subject_node.to_s }) if subject_node.content.present?
           end
 
-          children_nodes = subject_node.xpath('mods:*', mods: DESC_METADATA_NS).to_a.reject { |child_node| child_node.children.empty? && child_node.attributes.empty? }
+          children_nodes = subject_node.xpath('mods:*', mods: DESC_METADATA_NS).to_a.reject do |child_node|
+            child_node.children.empty? && child_node.attributes.empty?
+          end
           first_child_node = children_nodes.first
 
           if children_nodes.empty?
@@ -130,7 +132,10 @@ module Cocina
 
           return nil if code.nil?
 
-          notifier.warn('Subject has unknown authority code', { code: code }) unless SubjectAuthorityCodes::SUBJECT_AUTHORITY_CODES.include?(code)
+          unless SubjectAuthorityCodes::SUBJECT_AUTHORITY_CODES.include?(code)
+            notifier.warn('Subject has unknown authority code',
+                          { code: code })
+          end
           code
         end
 
@@ -170,7 +175,9 @@ module Cocina
         def adjust_lang(attrs)
           # If all values have same valueLanguage then move to subject.
           check_value_language = attrs[:structuredValue].first[:valueLanguage]
-          return unless check_value_language && attrs[:structuredValue].all? { |value| value[:valueLanguage] == check_value_language }
+          return unless check_value_language && attrs[:structuredValue].all? do |value|
+                          value[:valueLanguage] == check_value_language
+                        end
 
           attrs[:valueLanguage] = check_value_language
           attrs[:structuredValue].each { |value| value.delete(:valueLanguage) }
@@ -241,12 +248,20 @@ module Cocina
         end
 
         def subject_classification(subject_classification_node, attrs)
-          notifier.warn('No source given for classification value', value: subject_classification_node.text) unless attrs[:uri] || attrs.dig(:source, :code) || attrs.dig(:source, :uri)
+          unless attrs[:uri] || attrs.dig(
+            :source, :code
+          ) || attrs.dig(:source, :uri)
+            notifier.warn('No source given for classification value',
+                          value: subject_classification_node.text)
+          end
 
           classification_attributes = {}.tap do |attributes|
             attributes[:type] = 'classification'
             attributes[:value] = subject_classification_node.text
-            attributes[:displayLabel] = subject_classification_node[:displayLabel] if subject_classification_node[:displayLabel]
+            if subject_classification_node[:displayLabel]
+              attributes[:displayLabel] =
+                subject_classification_node[:displayLabel]
+            end
             attributes[:status] = 'primary' if subject_classification_node['usage'] == 'primary'
           end
           attrs.merge(classification_attributes)
@@ -326,8 +341,12 @@ module Cocina
 
         def name_notes_for(roles, name_node)
           notes = Array(roles).map { |role| role.merge({ type: 'role' }) }
-          name_node.xpath('mods:affiliation', mods: DESC_METADATA_NS).each { |affil_node| notes << { value: affil_node.text, type: 'affiliation' } }
-          name_node.xpath('mods:description', mods: DESC_METADATA_NS).each { |descr_node| notes << { value: descr_node.text, type: 'description' } }
+          name_node.xpath('mods:affiliation', mods: DESC_METADATA_NS).each do |affil_node|
+            notes << { value: affil_node.text, type: 'affiliation' }
+          end
+          name_node.xpath('mods:description', mods: DESC_METADATA_NS).each do |descr_node|
+            notes << { value: descr_node.text, type: 'description' }
+          end
           notes
         end
 
@@ -353,7 +372,9 @@ module Cocina
         end
 
         def subject_nodes
-          resource_element.xpath('mods:subject', mods: DESC_METADATA_NS) + resource_element.xpath('mods:classification', mods: DESC_METADATA_NS)
+          resource_element.xpath('mods:subject',
+                                 mods: DESC_METADATA_NS) + resource_element.xpath('mods:classification',
+                                                                                  mods: DESC_METADATA_NS)
         end
 
         def temporal_range(children_nodes, attrs)
@@ -370,7 +391,8 @@ module Cocina
 
         def build_cartographics
           coordinates = subject_nodes.map do |subject_node|
-            subject_node.xpath('mods:cartographics/mods:coordinates', mods: DESC_METADATA_NS).filter_map do |coordinate_node|
+            subject_node.xpath('mods:cartographics/mods:coordinates',
+                               mods: DESC_METADATA_NS).filter_map do |coordinate_node|
               coordinate = coordinate_node.content
               next if coordinate.blank?
 

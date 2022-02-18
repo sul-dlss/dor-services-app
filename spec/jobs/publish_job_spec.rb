@@ -92,7 +92,9 @@ RSpec.describe PublishJob, type: :job do
               background_job_result: result,
               workflow: 'accessionWF',
               workflow_process: 'publish',
-              output: { errors: [{ detail: 'Not all files have dark access and/or are unshelved when item access is dark: ["foo.txt", "bar.txt"]', title: 'Access mismatch' }] })
+              output: { errors: [{
+                detail: 'Not all files have dark access and/or are unshelved when item access is dark: ["foo.txt", "bar.txt"]', title: 'Access mismatch'
+              }] })
     end
   end
 end

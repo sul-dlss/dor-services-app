@@ -2,7 +2,7 @@
 
 # Handles API routes for managing the DOR workspace
 class WorkspacesController < ApplicationController
-  before_action :load_cocina_object, only: [:create, :reset]
+  before_action :load_cocina_object, only: %i[create reset]
 
   rescue_from(DruidTools::SameContentExistsError, DruidTools::DifferentContentExistsError) do |e|
     render status: :conflict, plain: e.message

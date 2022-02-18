@@ -48,7 +48,8 @@ RSpec.describe Publish::DublinCoreService do
         relatedResource: [
           { title: [{ value: 'Buckminster Fuller papers, 1920-1983' }],
             form: [{ value: 'collection', source: { value: 'MODS resource types' } }], type: 'part of' },
-          { access: { physicalLocation: [{ value: 'Series 15 | Box 1 | Folder 1', type: 'location' }] }, type: 'part of' }
+          { access: { physicalLocation: [{ value: 'Series 15 | Box 1 | Folder 1', type: 'location' }] },
+            type: 'part of' }
         ],
         access: { accessContact: [{ value: 'Stanford University. Libraries. Dept. of Special Collections and Stanford University Archives.', type: 'repository' }],
                   note: [{ value: 'Property rights reside with the repository. ' \

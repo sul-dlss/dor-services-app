@@ -9,7 +9,10 @@ class ShelvingService
   end
 
   def initialize(cocina_object)
-    raise ConfigurationError, 'Missing configuration Dor::Config.stacks.local_workspace_root' if Dor::Config.stacks.local_workspace_root.nil?
+    if Dor::Config.stacks.local_workspace_root.nil?
+      raise ConfigurationError,
+            'Missing configuration Dor::Config.stacks.local_workspace_root'
+    end
     raise Dor::Exception, 'Missing structural' if cocina_object.structural.nil?
 
     @cocina_object = cocina_object
@@ -23,7 +26,8 @@ class ShelvingService
     workspace_druid = DruidTools::Druid.new(cocina_object.externalIdentifier, Dor::Config.stacks.local_workspace_root)
 
     workspace_content_pathname = Pathname(workspace_druid.content_dir(true))
-    ShelvableFilesStager.stage(cocina_object.externalIdentifier, content_metadata, shelve_diff, workspace_content_pathname)
+    ShelvableFilesStager.stage(cocina_object.externalIdentifier, content_metadata, shelve_diff,
+                               workspace_content_pathname)
 
     # workspace_content_pathname = workspace_content_dir(shelve_diff, workspace_druid)
     # delete, rename, or copy files to the stacks area
@@ -42,7 +46,8 @@ class ShelvingService
   # @raise [ConfigurationError] if missing local workspace root.
   # @raise [Dor::Exception] if something went wrong.
   def shelve_diff
-    @shelve_diff ||= Preservation::Client.objects.shelve_content_diff(druid: cocina_object.externalIdentifier, content_metadata: content_metadata)
+    @shelve_diff ||= Preservation::Client.objects.shelve_content_diff(druid: cocina_object.externalIdentifier,
+                                                                      content_metadata: content_metadata)
   rescue Preservation::Client::Error => e
     raise Dor::Exception, e
   end
@@ -68,7 +73,8 @@ class ShelvingService
   end
 
   def content_metadata
-    @content_metadata ||= Cocina::ToFedora::ContentMetadataGenerator.generate(druid: cocina_object.externalIdentifier, structural: cocina_object.structural, type: cocina_object.type)
+    @content_metadata ||= Cocina::ToFedora::ContentMetadataGenerator.generate(druid: cocina_object.externalIdentifier,
+                                                                              structural: cocina_object.structural, type: cocina_object.type)
   end
 
   def workflow_client

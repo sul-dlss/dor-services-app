@@ -27,7 +27,7 @@ module Publish
       desc_md_xml = Publish::PublicDescMetadataService.new(public_cocina).ng_xml(include_access_conditions: false)
       pub.add_child(DublinCoreService.new(desc_md_xml).ng_xml.root)
       pub.add_child(PublicDescMetadataService.new(public_cocina).ng_xml.root)
-      pub.add_child(release_xml.root) unless release_xml.xpath('//release').children.empty? # If there are no release_tags, this prevents an empty <releaseData/> from being added
+      pub.add_child(release_xml.root) unless release_xml.xpath('//release').children.empty?
       # Note we cannot base this on if an individual object has release tags or not, because the collection may cause one to be generated for an item,
       # so we need to calculate it and then look at the final result.
 
@@ -64,7 +64,8 @@ module Publish
     end
 
     def public_rights_metadata
-      @public_rights_metadata ||= RightsMetadata.new(fedora_object.rightsMetadata.ng_xml, release_date: release_date).create
+      @public_rights_metadata ||= RightsMetadata.new(fedora_object.rightsMetadata.ng_xml,
+                                                     release_date: release_date).create
     end
 
     def release_date
@@ -79,7 +80,9 @@ module Publish
     # objectType is used by purl-fetcher
     # objectLabel is used by https://github.com/sul-dlss/searchworks_traject_indexer/blob/b5ed9906a5a0130eca5e68fbb0e8633bdbe6ffd6/lib/sdr_stuff.rb#L54
     def public_identity_metadata
-      catkeys = Array(public_cocina.identification&.catalogLinks).filter_map { |link| link.catalogRecordId if link.catalog == SYMPHONY }
+      catkeys = Array(public_cocina.identification&.catalogLinks).filter_map do |link|
+        link.catalogRecordId if link.catalog == SYMPHONY
+      end
       nodes = catkeys.map { |catkey| "  <otherId name=\"catkey\">#{catkey}</otherId>" }
 
       Nokogiri::XML(

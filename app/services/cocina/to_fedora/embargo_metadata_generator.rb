@@ -22,7 +22,9 @@ module Cocina
 
         embargo_metadata.release_date = embargo.releaseDate
         embargo_metadata.status = 'embargoed'
-        embargo_metadata.use_and_reproduction_statement = embargo.useAndReproductionStatement if embargo.useAndReproductionStatement
+        if embargo.useAndReproductionStatement
+          embargo_metadata.use_and_reproduction_statement = embargo.useAndReproductionStatement
+        end
 
         AccessGenerator.generate(root: embargo_metadata.release_access_node, access: embargo)
 

@@ -20,7 +20,10 @@ module Cocina
             download: download,
             readLocation: location
           }.compact.tap do |h|
-            h[:controlledDigitalLending] = controlled_digital_lending? if h[:access] == 'stanford' && h[:download] == 'none'
+            if h[:access] == 'stanford' && h[:download] == 'none'
+              h[:controlledDigitalLending] =
+                controlled_digital_lending?
+            end
           end
         end
 
@@ -34,7 +37,9 @@ module Cocina
         #       `dor-rights-auth` gem.
         def download
           # Some access types dictate no downloading. Handle those cases first.
-          return 'none' if no_download? || stanford_no_download? || world_no_download? || location_no_download? || controlled_digital_lending?
+          if no_download? || stanford_no_download? || world_no_download? || location_no_download? || controlled_digital_lending?
+            return 'none'
+          end
 
           # Then check to see if download is based on location
           return 'location-based' if location_based_download?
@@ -68,7 +73,9 @@ module Cocina
         end
 
         def controlled_digital_lending?
-          return contextual_rights.controlled_digital_lending unless contextual_rights.controlled_digital_lending.respond_to?(:value)
+          unless contextual_rights.controlled_digital_lending.respond_to?(:value)
+            return contextual_rights.controlled_digital_lending
+          end
 
           contextual_rights.controlled_digital_lending.value
         end

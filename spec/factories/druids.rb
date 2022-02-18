@@ -6,6 +6,6 @@ FactoryBot.define do
     # * start the counter from 0.
     # * div the counter so that the 3 digit cluster increments every time the 4 digit cluster rolls over.
     idx = n - 1
-    format('druid:zx%03dwv%04d', idx / 10000, idx) # rubocop:disable Style/FormatStringToken annotations make this string less readable
+    format('druid:zx%03dwv%04d', idx / 10_000, idx) # rubocop:disable Style/FormatStringToken annotations make this string less readable
   end
 end

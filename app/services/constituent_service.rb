@@ -23,13 +23,17 @@ class ConstituentService
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   # @return [NilClass, Hash] true if successful, hash of errors otherwise (if combinable validation fails)
   def add(constituent_druids:)
-    errors = ItemQueryService.validate_combinable_items(virtual_object: virtual_object_druid, constituents: constituent_druids)
+    errors = ItemQueryService.validate_combinable_items(virtual_object: virtual_object_druid,
+                                                        constituents: constituent_druids)
 
     return errors if errors.any?
 
     # Make sure the virtual_object is open before making modifications
     virtual_object_cocina_object = find_cocina_object(virtual_object_druid)
-    VersionService.open(virtual_object_cocina_object, event_factory: event_factory) unless VersionService.open?(virtual_object_cocina_object)
+    unless VersionService.open?(virtual_object_cocina_object)
+      VersionService.open(virtual_object_cocina_object,
+                          event_factory: event_factory)
+    end
 
     virtual_object_fedora_object = find_fedora_object(virtual_object_druid)
     reset_metadata!(virtual_object_fedora_object)
@@ -56,7 +60,10 @@ class ConstituentService
   def add_constituent(constituent_druid:, virtual_object:)
     constituent_cocina_object = find_cocina_object(constituent_druid)
     # Make sure the constituent is open before making modifications
-    VersionService.open(constituent_cocina_object, event_factory: event_factory) unless VersionService.open?(constituent_cocina_object)
+    unless VersionService.open?(constituent_cocina_object)
+      VersionService.open(constituent_cocina_object,
+                          event_factory: event_factory)
+    end
 
     constituent = find_fedora_object(constituent_druid)
     constituent.contentMetadata.ng_xml.search('//resource').each do |resource|

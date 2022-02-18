@@ -62,7 +62,9 @@ module Cocina
         end
 
         def build_identifier
-          identifiers = record_identifiers.map { |identifier| IdentifierBuilder.build_from_record_identifier(identifier_element: identifier) }
+          identifiers = record_identifiers.map do |identifier|
+            IdentifierBuilder.build_from_record_identifier(identifier_element: identifier)
+          end
 
           return nil if identifiers.empty?
 

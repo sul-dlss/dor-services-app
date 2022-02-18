@@ -38,7 +38,9 @@ module Cocina
 
             # Make adjustments for a parallel person.
             if parallel_subject_values.present? && FromFedora::Descriptive::Contributor::ROLES.value?(subject.type)
-              display_values, parallel_subject_values = parallel_subject_values.partition { |value| value.type == 'display' }
+              display_values, parallel_subject_values = parallel_subject_values.partition do |value|
+                value.type == 'display'
+              end
               if parallel_subject_values.size == 1
                 subject_value = parallel_subject_values.first
                 parallel_subject_values = []
@@ -47,7 +49,8 @@ module Cocina
             end
 
             if parallel_subject_values.size > 1
-              write_parallel(subject, parallel_subject_values, alt_rep_group: id_generator.next_altrepgroup, display_values: display_values)
+              write_parallel(subject, parallel_subject_values, alt_rep_group: id_generator.next_altrepgroup,
+                                                               display_values: display_values)
             else
               write_subject(subject, subject_value, display_values: display_values, type: type)
             end
@@ -61,9 +64,11 @@ module Cocina
 
         def write_subject(subject, subject_value, alt_rep_group: nil, type: nil, display_values: nil)
           if subject_value.structuredValue.present? || subject_value.groupedValue.present?
-            write_structured_or_grouped(subject, subject_value, alt_rep_group: alt_rep_group, type: type, display_values: display_values)
+            write_structured_or_grouped(subject, subject_value, alt_rep_group: alt_rep_group, type: type,
+                                                                display_values: display_values)
           else
-            write_basic(subject, subject_value, alt_rep_group: alt_rep_group, type: type, display_values: display_values)
+            write_basic(subject, subject_value, alt_rep_group: alt_rep_group, type: type,
+                                                display_values: display_values)
           end
         end
 
@@ -77,7 +82,8 @@ module Cocina
             end
           else
             subject_values.each do |subject_value|
-              write_subject(subject, subject_value, alt_rep_group: alt_rep_group, type: subject.type, display_values: display_values)
+              write_subject(subject, subject_value, alt_rep_group: alt_rep_group, type: subject.type,
+                                                    display_values: display_values)
             end
           end
         end
@@ -224,7 +230,8 @@ module Cocina
         # Write nodes within MODS subject
         def write_topic(subject, subject_value, is_parallel: false, type: nil, subject_values_have_same_authority: true)
           type ||= subject_value.type
-          topic_attributes = topic_attributes_for(subject, subject_value, type, is_parallel: is_parallel, subject_values_have_same_authority: subject_values_have_same_authority)
+          topic_attributes = topic_attributes_for(subject, subject_value, type, is_parallel: is_parallel,
+                                                                                subject_values_have_same_authority: subject_values_have_same_authority)
           case type
           when 'person'
             xml.name topic_attributes.merge(type: 'personal') do
@@ -239,7 +246,8 @@ module Cocina
             title.delete(:type)
             title.delete(:valueLanguage)
             title[:source].delete(:code) if subject_value.source&.code && !topic_attributes[:authority]
-            Title.write(xml: xml, titles: [Cocina::Models::DescriptiveValue.new(title)], id_generator: id_generator, additional_attrs: topic_attributes)
+            Title.write(xml: xml, titles: [Cocina::Models::DescriptiveValue.new(title)], id_generator: id_generator,
+                        additional_attrs: topic_attributes)
           when 'place'
             geographic(subject, subject_value, is_parallel: is_parallel)
           else
@@ -249,7 +257,8 @@ module Cocina
 
         def topic_attributes_for(subject, subject_value, type, is_parallel: false, subject_values_have_same_authority: true)
           {
-            authority: authority_for_topic(subject, subject_value, type, is_parallel, subject_values_have_same_authority),
+            authority: authority_for_topic(subject, subject_value, type, is_parallel,
+                                           subject_values_have_same_authority),
             authorityURI: subject_value.source&.uri,
             encoding: subject_value.encoding&.code,
             valueURI: subject_value.uri
@@ -278,9 +287,11 @@ module Cocina
 
         def geographic(subject, subject_value, is_parallel: false)
           if subject_value.code
-            xml.geographicCode subject_value.code, topic_attributes_for(subject, subject_value, 'place', is_parallel: is_parallel)
+            xml.geographicCode subject_value.code,
+                               topic_attributes_for(subject, subject_value, 'place', is_parallel: is_parallel)
           else
-            xml.geographic subject_value.value, topic_attributes_for(subject, subject_value, 'place', is_parallel: is_parallel)
+            xml.geographic subject_value.value,
+                           topic_attributes_for(subject, subject_value, 'place', is_parallel: is_parallel)
           end
         end
 
@@ -308,7 +319,9 @@ module Cocina
         # rubocop:disable Metrics/CyclomaticComplexity
         def write_cartographic_without_authority(forms)
           # With all subject/forms without authorities.
-          scale_forms = forms.select { |form| form.type == 'map scale' }.flat_map { |form| form.groupedValue.presence || form }
+          scale_forms = forms.select do |form|
+                          form.type == 'map scale'
+                        end.flat_map { |form| form.groupedValue.presence || form }
           projection_forms = forms.select { |form| form.type == 'map projection' && form.source.nil? }
           carto_subjects = subjects.select { |subject| subject.type == 'map coordinates' }
           return unless scale_forms.present? || projection_forms.present? || carto_subjects.present?
@@ -325,7 +338,9 @@ module Cocina
 
         def write_parallel_cartographic_without_authority(forms, alt_rep_group:)
           # With all subject/forms without authorities.
-          scale_forms = forms.select { |form| form.type == 'map scale' }.flat_map { |form| form.groupedValue.presence || form }
+          scale_forms = forms.select do |form|
+                          form.type == 'map scale'
+                        end.flat_map { |form| form.groupedValue.presence || form }
           projection_forms = forms.select { |form| form.type == 'map projection' && form.source.nil? }
           return unless scale_forms.present? || projection_forms.present?
 
@@ -340,7 +355,9 @@ module Cocina
 
         def write_cartographic_with_authority(forms, alt_rep_group: nil)
           # Each for form with authority.
-          projection_forms_with_authority = forms.select { |form| form.type == 'map projection' && form.source.present? }
+          projection_forms_with_authority = forms.select do |form|
+            form.type == 'map projection' && form.source.present?
+          end
           projection_forms_with_authority.each do |projection_form|
             xml.subject carto_subject_attributes_for(projection_form, alt_rep_group: alt_rep_group) do
               xml.cartographics do
@@ -442,7 +459,9 @@ module Cocina
 
         def write_parallel_structured_person(value)
           parallel_subject_values = Array(value.parallelValue)
-          display_values, parallel_subject_values = parallel_subject_values.partition { |par_value| par_value.type == 'display' }
+          display_values, parallel_subject_values = parallel_subject_values.partition do |par_value|
+            par_value.type == 'display'
+          end
 
           # there will not be more than one parallelValue within a structuredValue
           parallel_subject_value = parallel_subject_values.first

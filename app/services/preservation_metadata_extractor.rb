@@ -88,7 +88,8 @@ class PreservationMetadataExtractor
   end
 
   def content_xml
-    Cocina::ToFedora::ContentMetadataGenerator.generate(druid: cocina_object.externalIdentifier, structural: cocina_object.structural, type: cocina_object.type)
+    Cocina::ToFedora::ContentMetadataGenerator.generate(druid: cocina_object.externalIdentifier,
+                                                        structural: cocina_object.structural, type: cocina_object.type)
   end
 
   def extract_cocina

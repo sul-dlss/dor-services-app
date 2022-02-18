@@ -85,7 +85,10 @@ module Cocina
           Array(cocina_file.hasMessageDigests).each do |message_digest|
             file_node.add_child(create_checksum_node(message_digest.type, message_digest.digest))
           end
-          file_node.add_child(create_image_data_node(cocina_file.presentation.height, cocina_file.presentation.width)) if cocina_file.presentation
+          if cocina_file.presentation
+            file_node.add_child(create_image_data_node(cocina_file.presentation.height,
+                                                       cocina_file.presentation.width))
+          end
         end
       end
 
@@ -119,7 +122,8 @@ module Cocina
       # @param [Integer] sequence
       def create_resource_node(cocina_fileset, sequence)
         Nokogiri::XML::Node.new('resource', @xml_doc).tap do |resource|
-          resource['id'] = IdGenerator.generate_or_existing_fileset_id(cocina_fileset.respond_to?(:externalIdentifier) ? cocina_fileset.externalIdentifier : nil)
+          resource['id'] =
+            IdGenerator.generate_or_existing_fileset_id(cocina_fileset.respond_to?(:externalIdentifier) ? cocina_fileset.externalIdentifier : nil)
           resource['sequence'] = sequence
           resource['type'] = type_for(cocina_fileset)
 
@@ -134,7 +138,8 @@ module Cocina
 
       def create_external_resource_node(cocina_fileset, sequence, external_druid)
         Nokogiri::XML::Node.new('resource', @xml_doc).tap do |resource|
-          resource['id'] = IdGenerator.generate_or_existing_fileset_id(cocina_fileset.respond_to?(:externalIdentifier) ? cocina_fileset.externalIdentifier : nil)
+          resource['id'] =
+            IdGenerator.generate_or_existing_fileset_id(cocina_fileset.respond_to?(:externalIdentifier) ? cocina_fileset.externalIdentifier : nil)
           resource['sequence'] = sequence
           resource['type'] = type_for(cocina_fileset)
 
@@ -146,7 +151,9 @@ module Cocina
         #   <externalFile fileId="PC0170_s1_B_0540.jp2" mimetype="image/jp2" objectId="druid:tm207xk5096" resourceId="tm207xk5096_1"/>
         #     <relationship objectId="druid:tm207xk5096" type="alsoAvailableAs"/>
         # Note: Only creating if published.
-        cocina_fileset.structural.contains.filter { |cocina_file| cocina_file.administrative.publish }.each do |cocina_file|
+        cocina_fileset.structural.contains.filter do |cocina_file|
+          cocina_file.administrative.publish
+        end.each do |cocina_file|
           resource.add_child(create_external_file_node(cocina_file, cocina_fileset.externalIdentifier, external_druid))
           resource.add_child(create_relationship_node(external_druid))
         end

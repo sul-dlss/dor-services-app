@@ -27,7 +27,8 @@ class ReleaseTags
       # With Self Tags resolved we now need to deal with tags on all sets this object is part of.
       # Get all release tags on the item and strip out the what = self ones, we've already processed all the self tags on this item.
       # This will be where we store all tags that apply, regardless of their timestamp:
-      potential_applicable_release_tags = tags_for_what_value(release_tags_for_item_and_all_governing_sets, 'collection')
+      potential_applicable_release_tags = tags_for_what_value(release_tags_for_item_and_all_governing_sets,
+                                                              'collection')
       administrative_tags = AdministrativeTags.for(pid: cocina_object.externalIdentifier) # Get admin tags once here and pass them down
 
       # We now have the keys for all potential releases, we need to check the tags: the most recent timestamp with an explicit true or false wins.
@@ -47,7 +48,7 @@ class ReleaseTags
     def release_tags_for_item_and_all_governing_sets
       return_tags = release_tags # this objects initial release tags
 
-      return return_tags unless cocina_object.dro? # no need to continue if this is a collection, since they don't nest anymore
+      return return_tags unless cocina_object.dro?
 
       # now go through any collections it is a member of and add them
       cocina_object.structural.isMemberOf.each do |collection_druid|
@@ -91,7 +92,7 @@ class ReleaseTags
     def tags_for_what_value(tags, what_target)
       return_hash = {}
       tags.each_key do |key|
-        self_tags = tags[key].select { |tag| tag['what'].casecmp(what_target) == 0 }
+        self_tags = tags[key].select { |tag| tag['what'].casecmp(what_target).zero? }
         return_hash[key] = self_tags unless self_tags.empty?
       end
       return_hash
@@ -126,7 +127,7 @@ class ReleaseTags
     # @return [Boolean] true or false if it applies (not true or false if it is released, that is the release_tag data)
     def does_release_tag_apply(release_tag, admin_tags = false)
       # Is the tag global or restricted
-      return true if release_tag['tag'].nil? # no specific tag specificied means this tag is global to all members of the collection
+      return true if release_tag['tag'].nil?
 
       # We use false instead of [], since an item can have no admin_tags at
       # which point we'd be passing this var as [] and would not attempt to
@@ -147,7 +148,7 @@ class ReleaseTags
       # This could be optimized by reordering on the timestamp and just running down it instead of constantly resorting, at least if we end up getting numerous release tags on an item
       release_tags.slice!(release_tags.index(newest_tag))
 
-      return latest_applicable_release_tag_in_array(release_tags, admin_tags) unless release_tags.empty? # Try again after dropping the inapplicable
+      return latest_applicable_release_tag_in_array(release_tags, admin_tags) unless release_tags.empty?
 
       nil # We're out of tags, no applicable ones
     end

@@ -29,16 +29,24 @@ module Cocina
       attr_reader :cocina_desc
 
       def cocina_creators
-        @cocina_creators ||= Array(cocina_desc.contributor).select { |cocina_contributor| datacite_creator?(cocina_contributor) }
+        @cocina_creators ||= Array(cocina_desc.contributor).select do |cocina_contributor|
+          datacite_creator?(cocina_contributor)
+        end
       end
 
       def cocina_contributors
-        @cocina_contributors ||= Array(cocina_desc.contributor).select { |cocina_contributor| !datacite_creator?(cocina_contributor) && !datacite_funder?(cocina_contributor) } +
-                                 Array(cocina_desc.event).select { |cocina_event| cocina_event.type == 'publication' }.flat_map { |cocina_event| Array(cocina_event.contributor) }
+        @cocina_contributors ||= Array(cocina_desc.contributor).select do |cocina_contributor|
+          !datacite_creator?(cocina_contributor) && !datacite_funder?(cocina_contributor)
+        end +
+                                 Array(cocina_desc.event).select do |cocina_event|
+                                   cocina_event.type == 'publication'
+                                 end.flat_map { |cocina_event| Array(cocina_event.contributor) }
       end
 
       def cocina_funders
-        @cocina_funders ||= Array(cocina_desc.contributor).select { |cocina_contributor| datacite_funder?(cocina_contributor) }
+        @cocina_funders ||= Array(cocina_desc.contributor).select do |cocina_contributor|
+          datacite_funder?(cocina_contributor)
+        end
       end
 
       def datacite_creator?(cocina_contributor)
@@ -54,7 +62,9 @@ module Cocina
       end
 
       def datacite_contributors
-        @datacite_contributors ||= cocina_contributors.map { |cocina_contributor| datacite_contributor(cocina_contributor) }.uniq
+        @datacite_contributors ||= cocina_contributors.map do |cocina_contributor|
+          datacite_contributor(cocina_contributor)
+        end.uniq
       end
 
       def datacite_funders
@@ -105,7 +115,10 @@ module Cocina
       end
 
       def contributor_type(cocina_contributor)
-        return DATACITE_PERSON_CONTRIBUTOR_TYPES.fetch(marc_relator(cocina_contributor), 'Other') if person?(cocina_contributor)
+        if person?(cocina_contributor)
+          return DATACITE_PERSON_CONTRIBUTOR_TYPES.fetch(marc_relator(cocina_contributor),
+                                                         'Other')
+        end
 
         DATACITE_ORGANIZATION_CONTRIBUTOR_TYPES.fetch(marc_relator(cocina_contributor), 'Other')
       end

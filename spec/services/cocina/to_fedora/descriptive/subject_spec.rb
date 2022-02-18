@@ -13,7 +13,8 @@ RSpec.describe Cocina::ToFedora::Descriptive::Subject do
                'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
                'version' => '3.6',
                'xsi:schemaLocation' => 'http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd') do
-        described_class.write(xml: xml, subjects: subjects, forms: forms, id_generator: Cocina::ToFedora::Descriptive::IdGenerator.new)
+        described_class.write(xml: xml, subjects: subjects, forms: forms,
+                              id_generator: Cocina::ToFedora::Descriptive::IdGenerator.new)
       end
     end
   end

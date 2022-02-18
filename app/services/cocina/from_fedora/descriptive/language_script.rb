@@ -16,7 +16,10 @@ module Cocina
               value_language[:code] = node['lang']
               value_language[:source] = { code: 'iso639-2b' }
             end
-            value_language[:valueScript] = { code: node['script'], source: { code: 'iso15924' } } if node['script'].present?
+            if node['script'].present?
+              value_language[:valueScript] =
+                { code: node['script'], source: { code: 'iso15924' } }
+            end
           end
         end
       end

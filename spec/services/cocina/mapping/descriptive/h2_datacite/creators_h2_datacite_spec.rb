@@ -6,7 +6,9 @@ RSpec.describe 'Cocina --> DataCite creator mappings (H2 specific)' do
   # Full role mapping: https://docs.google.com/spreadsheets/d/1CvEd_NODprNhM2D9VfvJBFs1jfAMEUr0kDxXHe2HkL4/edit?usp=sharing
   # H2 Authors to include in citation
 
-  let(:cocina_description) { Cocina::Models::Description.new(cocina.merge(purl: Purl.for(druid: 'druid:bb423sd6663')), false, false) }
+  let(:cocina_description) do
+    Cocina::Models::Description.new(cocina.merge(purl: Purl.for(druid: 'druid:bb423sd6663')), false, false)
+  end
   let(:attributes) { Cocina::ToDatacite::CreatorContributorFunder.attributes(cocina_description)[:creators] }
 
   describe 'Cited contributor with author role' do

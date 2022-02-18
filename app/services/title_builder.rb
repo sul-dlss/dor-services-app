@@ -66,7 +66,10 @@ class TitleBuilder # rubocop:disable Metrics/ClassLength
     structured_values.each do |structured_value|
       # There can be a structuredValue inside a structuredValue.  For example,
       #   a uniform title where both the name and the title have internal StructuredValue
-      return title_from_structured_values(structured_value.structuredValue, non_sorting_char_count) if structured_value.structuredValue.present?
+      if structured_value.structuredValue.present?
+        return title_from_structured_values(structured_value.structuredValue,
+                                            non_sorting_char_count)
+      end
 
       value = structured_value.value&.strip
       next unless value

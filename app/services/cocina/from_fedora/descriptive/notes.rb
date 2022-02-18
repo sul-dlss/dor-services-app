@@ -26,7 +26,9 @@ module Cocina
         attr_reader :resource_element
 
         def abstracts
-          all_abstract_nodes = resource_element.xpath('mods:abstract', mods: DESC_METADATA_NS).select { |node| note_present?(node) }
+          all_abstract_nodes = resource_element.xpath('mods:abstract', mods: DESC_METADATA_NS).select do |node|
+            note_present?(node)
+          end
           altrepgroup_abstract_nodes, other_abstract_nodes = AltRepGroup.split(nodes: all_abstract_nodes)
           other_abstract_nodes.map { |node| common_note_for(node).merge(abstract_type(node)) } + \
             altrepgroup_abstract_nodes.map { |parallel_nodes| parallel_abstract_for(parallel_nodes) }
@@ -35,7 +37,9 @@ module Cocina
         def parallel_abstract_for(abstract_nodes)
           {
             type: 'abstract',
-            parallelValue: abstract_nodes.map { |node| common_note_for(node).merge(abstract_type(node, parallel: true)) }
+            parallelValue: abstract_nodes.map do |node|
+                             common_note_for(node).merge(abstract_type(node, parallel: true))
+                           end
           }
         end
 
@@ -60,13 +64,17 @@ module Cocina
         end
 
         def note_type(node)
-          return node['type'].downcase if ToFedora::Descriptive::Note.note_type_to_abstract_type.include?(node['type']&.downcase)
+          if ToFedora::Descriptive::Note.note_type_to_abstract_type.include?(node['type']&.downcase)
+            return node['type'].downcase
+          end
 
           node['type']
         end
 
         def display_label(node)
-          return node[:displayLabel].capitalize if ToFedora::Descriptive::Note.display_label_to_abstract_type.include? node[:displayLabel]
+          if ToFedora::Descriptive::Note.display_label_to_abstract_type.include? node[:displayLabel]
+            return node[:displayLabel].capitalize
+          end
 
           node[:displayLabel].presence
         end
@@ -82,7 +90,9 @@ module Cocina
         end
 
         def notes
-          all_note_nodes = resource_element.xpath('mods:note', mods: DESC_METADATA_NS).select { |node| note_present?(node) && node[:type] != 'contact' }
+          all_note_nodes = resource_element.xpath('mods:note', mods: DESC_METADATA_NS).select do |node|
+            note_present?(node) && node[:type] != 'contact'
+          end
           altrepgroup_note_nodes, other_note_nodes = AltRepGroup.split(nodes: all_note_nodes)
           other_note_nodes.map { |node| common_note_for(node) } + \
             altrepgroup_note_nodes.map { |parallel_nodes| parallel_note_for(parallel_nodes) }
@@ -111,7 +121,9 @@ module Cocina
         end
 
         def table_of_contents
-          all_toc_nodes = resource_element.xpath('mods:tableOfContents', mods: DESC_METADATA_NS).select { |node| note_present?(node) }
+          all_toc_nodes = resource_element.xpath('mods:tableOfContents', mods: DESC_METADATA_NS).select do |node|
+            note_present?(node)
+          end
           altrepgroup_toc_nodes, other_toc_nodes = AltRepGroup.split(nodes: all_toc_nodes)
           other_toc_nodes.map { |node| toc_for(node).merge({ type: 'table of contents' }) } + \
             altrepgroup_toc_nodes.map { |parallel_nodes| parallel_toc_for(parallel_nodes) }

@@ -29,7 +29,8 @@ RSpec.describe Cocina::ObjectUpdater do
 
   before do
     allow(Cocina::Mapper).to receive(:build).and_return(orig_cocina_object)
-    allow(Cocina::ApoExistenceValidator).to receive(:new).and_return(instance_double(Cocina::ApoExistenceValidator, valid?: true))
+    allow(Cocina::ApoExistenceValidator).to receive(:new).and_return(instance_double(Cocina::ApoExistenceValidator,
+                                                                                     valid?: true))
     allow(Settings.enabled_features).to receive(:update_descriptive).and_return(true)
     allow(AdministrativeTags).to receive(:for).and_return([])
     allow(event_factory).to receive(:create)
@@ -650,7 +651,7 @@ RSpec.describe Cocina::ObjectUpdater do
                       'externalIdentifier' => 'http://cocina.sul.stanford.edu/file/8ee2d21b-9183-4df6-9813-c0a104b329ce',
                       'label' => 'sul-logo.png',
                       'filename' => 'sul-logo.png',
-                      'size' => 19823,
+                      'size' => 19_823,
                       'version' => 1,
                       'hasMimeType' => 'image/png',
                       'hasMessageDigests' => [{ 'type' => 'sha1', 'digest' => 'b5f3221455c8994afb85214576bc2905d6b15418' },

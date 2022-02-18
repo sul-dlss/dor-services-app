@@ -77,7 +77,9 @@ class CocinaObjectStore
 
     # Only want to update if already exists in PG (i.e., added by create or migration).
     # This will make sure gets correct create/update dates.
-    cocina_to_ar_save(updated_cocina_object) if Settings.enabled_features.postgres.update && ar_exists?(cocina_object.externalIdentifier)
+    if Settings.enabled_features.postgres.update && ar_exists?(cocina_object.externalIdentifier)
+      cocina_to_ar_save(updated_cocina_object)
+    end
 
     # Broadcast this update action to a topic
     Notifications::ObjectUpdated.publish(model: updated_cocina_object, created_at: created_at, modified_at: modified_at)
@@ -209,7 +211,9 @@ class CocinaObjectStore
   # If an object references the Ur-AdminPolicy, it has to exist first.
   # This is particularly important in testing, where the repository may be empty.
   def ensure_ur_admin_policy_exists(cocina_object)
-    return unless Settings.enabled_features.create_ur_admin_policy && cocina_object.administrative.hasAdminPolicy == Settings.ur_admin_policy.druid
+    unless Settings.enabled_features.create_ur_admin_policy && cocina_object.administrative.hasAdminPolicy == Settings.ur_admin_policy.druid
+      return
+    end
 
     Dor::AdminPolicyObject.exists?(Settings.ur_admin_policy.druid) || UrAdminPolicyFactory.create
   end

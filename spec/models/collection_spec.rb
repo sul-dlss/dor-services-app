@@ -42,7 +42,10 @@ RSpec.describe Collection do
     end
 
     context 'with complete Collection' do
-      let(:collection) { create(:collection, :with_administrative, :with_collection_description, :with_collection_identification, external_identifier: druid) }
+      let(:collection) do
+        create(:collection, :with_administrative, :with_collection_description, :with_collection_identification,
+               external_identifier: druid)
+      end
 
       it 'returns a Cocina::Model::Collection' do
         expect(collection.to_cocina).to eq(cocina_collection)

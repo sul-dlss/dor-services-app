@@ -15,7 +15,9 @@ RSpec.shared_examples 'Collection Identification Fedora Cocina mapping' do
   #  multiple objectType -> can drop set type and keep collection type
   #  displayType -> normalize out
 
-  let(:namespaced_source_id) { defined?(source_id) && defined?(source_id_source) ? "#{source_id_source}:#{source_id}" : nil }
+  let(:namespaced_source_id) do
+    defined?(source_id) && defined?(source_id_source) ? "#{source_id_source}:#{source_id}" : nil
+  end
   let(:namespaced_other_id) { defined?(other_id) && defined?(other_id_name) ? "#{other_id_name}:#{other_id}" : nil }
   let(:mods_xml) do
     <<~XML
@@ -52,9 +54,12 @@ RSpec.shared_examples 'Collection Identification Fedora Cocina mapping' do
     # the starting identityMetadata.xml is normalized to address discrepancies found against identityMetadata roundtripped
     #  from data store (Fedora) and back, per Andrew's specifications.
     #  E.g., <adminPolicy> is removed as that information will not be carried over and is retrieved from RELS-EXT
-    Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: Nokogiri::XML(identity_metadata_xml), label: label).to_xml
+    Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: Nokogiri::XML(identity_metadata_xml),
+                                                      label: label).to_xml
   end
-  let(:roundtrip_identity_md_xml) { defined?(roundtrip_identity_metadata_xml) ? roundtrip_identity_metadata_xml : identity_metadata_xml }
+  let(:roundtrip_identity_md_xml) do
+    defined?(roundtrip_identity_metadata_xml) ? roundtrip_identity_metadata_xml : identity_metadata_xml
+  end
   let(:mapped_cocina_collection) { Cocina::Models::Collection.new(mapped_cocina_props) }
   let(:mapped_fedora_collection) do
     Dor::Collection.new(pid: mapped_cocina_collection.externalIdentifier,
@@ -65,7 +70,8 @@ RSpec.shared_examples 'Collection Identification Fedora Cocina mapping' do
   let(:mapped_roundtrip_identity_xml) do
     Cocina::ToFedora::Identity.initialize_identity(mapped_fedora_collection)
     Cocina::ToFedora::Identity.apply_label(mapped_fedora_collection, label: mapped_cocina_collection.label)
-    Cocina::ToFedora::Identity.apply_release_tags(mapped_fedora_collection, release_tags: mapped_cocina_collection.administrative.releaseTags)
+    Cocina::ToFedora::Identity.apply_release_tags(mapped_fedora_collection,
+                                                  release_tags: mapped_cocina_collection.administrative.releaseTags)
     mapped_fedora_collection.identityMetadata.to_xml
   end
 

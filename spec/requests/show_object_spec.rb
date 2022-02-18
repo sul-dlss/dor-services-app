@@ -67,7 +67,8 @@ RSpec.describe 'Get the object' do
       before do
         allow(object).to receive(:collections).and_return([collection])
 
-        embargo = Cocina::Models::Embargo.new(releaseDate: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world', download: 'world')
+        embargo = Cocina::Models::Embargo.new(releaseDate: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world',
+                                              download: 'world')
         Cocina::ToFedora::EmbargoMetadataGenerator.generate(embargo_metadata: object.embargoMetadata, embargo: embargo)
         # add a release tag to our fedora object for this test
         object.identityMetadata.add_value(:release, true, {
@@ -136,7 +137,8 @@ RSpec.describe 'Get the object' do
 
     context 'when the object has a released embargo' do
       before do
-        embargo = Cocina::Models::Embargo.new(releaseDate: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world', download: 'world')
+        embargo = Cocina::Models::Embargo.new(releaseDate: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world',
+                                              download: 'world')
         Cocina::ToFedora::EmbargoMetadataGenerator.generate(embargo_metadata: object.embargoMetadata, embargo: embargo)
         object.embargoMetadata.status = 'released'
       end

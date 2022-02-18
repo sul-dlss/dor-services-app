@@ -27,7 +27,10 @@ module Cocina
         def write
           Array(contributors)
             .reject { |contributor| NameTitleGroup.part_of_nametitlegroup?(contributor: contributor, titles: titles) }
-            .each { |contributor| ContributorWriter.write(xml: xml, contributor: contributor, id_generator: id_generator) }
+            .each do |contributor|
+            ContributorWriter.write(xml: xml, contributor: contributor,
+                                    id_generator: id_generator)
+          end
         end
 
         private

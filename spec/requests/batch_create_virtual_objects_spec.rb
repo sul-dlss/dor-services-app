@@ -8,7 +8,9 @@ RSpec.describe 'Batch creation of virtual objects' do
   # We use `#with_indifferent_access` here to mimic how Rails parses JSON parameters
   let(:body) { JSON.parse(response.body).with_indifferent_access }
   let(:virtual_object_id) { 'druid:mk420bs7601' }
-  let(:virtual_objects) { [{ virtual_object_id: virtual_object_id, constituent_ids: [constituent1_id, constituent2_id] }] }
+  let(:virtual_objects) do
+    [{ virtual_object_id: virtual_object_id, constituent_ids: [constituent1_id, constituent2_id] }]
+  end
   let(:druid_pattern) { '^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$' }
 
   before do
@@ -120,7 +122,8 @@ RSpec.describe 'Batch creation of virtual objects' do
   context 'when virtual_objects array has a hash w/ constituent_ids containing empties' do
     it 'renders an error' do
       post '/v1/virtual_objects',
-           params: { virtual_objects: [{ virtual_object_id: 'druid:bb111cc3333', constituent_ids: ['druid:ff111cc3333', 'druid:cc111dd3333', ''] }] }.to_json,
+           params: { virtual_objects: [{ virtual_object_id: 'druid:bb111cc3333',
+                                         constituent_ids: ['druid:ff111cc3333', 'druid:cc111dd3333', ''] }] }.to_json,
            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)

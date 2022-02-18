@@ -115,7 +115,8 @@ module Publish
 
     # Remove existing relatedItem entries for collections from descMetadata
     def remove_related_item_nodes_for_collections!
-      doc.search('/mods:mods/mods:relatedItem[@type="host"]/mods:typeOfResource[@collection=\'yes\']', 'mods' => 'http://www.loc.gov/mods/v3').each do |node|
+      doc.search('/mods:mods/mods:relatedItem[@type="host"]/mods:typeOfResource[@collection=\'yes\']',
+                 'mods' => 'http://www.loc.gov/mods/v3').each do |node|
         node.parent.remove
       end
     end

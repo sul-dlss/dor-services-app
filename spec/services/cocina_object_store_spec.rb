@@ -78,7 +78,8 @@ RSpec.describe CocinaObjectStore do
           expect(described_class.save(cocina_object)).to be updated_cocina_object
           expect(Dor).to have_received(:find).with(druid)
           expect(Cocina::ObjectUpdater).to have_received(:run).with(item, cocina_object)
-          expect(Notifications::ObjectUpdated).to have_received(:publish).with(model: updated_cocina_object, created_at: item.create_date, modified_at: item.modified_date)
+          expect(Notifications::ObjectUpdated).to have_received(:publish).with(model: updated_cocina_object,
+                                                                               created_at: item.create_date, modified_at: item.modified_date)
           expect(Cocina::ObjectValidator).to have_received(:validate).with(cocina_object)
         end
       end
@@ -130,8 +131,10 @@ RSpec.describe CocinaObjectStore do
 
       it 'maps and saves to Fedora' do
         expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
-        expect(Cocina::ObjectCreator).to have_received(:create).with(requested_cocina_object, druid: druid, assign_doi: true)
-        expect(Notifications::ObjectCreated).to have_received(:publish).with(model: created_cocina_object, created_at: kind_of(Time), modified_at: kind_of(Time))
+        expect(Cocina::ObjectCreator).to have_received(:create).with(requested_cocina_object, druid: druid,
+                                                                                              assign_doi: true)
+        expect(Notifications::ObjectCreated).to have_received(:publish).with(model: created_cocina_object,
+                                                                             created_at: kind_of(Time), modified_at: kind_of(Time))
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
         expect(cocina_object_store).to have_received(:default_access_for).with(requested_cocina_object)
       end
@@ -151,7 +154,8 @@ RSpec.describe CocinaObjectStore do
           described_class.destroy(druid)
           expect(fedora_object).to have_received(:destroy)
 
-          expect(Notifications::ObjectDeleted).to have_received(:publish).with(model: cocina_object, deleted_at: kind_of(Time))
+          expect(Notifications::ObjectDeleted).to have_received(:publish).with(model: cocina_object,
+                                                                               deleted_at: kind_of(Time))
         end
       end
 
@@ -194,7 +198,9 @@ RSpec.describe CocinaObjectStore do
     describe '#ar_to_cocina_find' do
       context 'when object is not found in datastore' do
         it 'raises' do
-          expect { store.send(:ar_to_cocina_find, 'druid:bc123df4567') }.to raise_error(CocinaObjectStore::CocinaObjectNotFoundError)
+          expect do
+            store.send(:ar_to_cocina_find, 'druid:bc123df4567')
+          end.to raise_error(CocinaObjectStore::CocinaObjectNotFoundError)
         end
       end
 
@@ -210,7 +216,8 @@ RSpec.describe CocinaObjectStore do
         let(:ar_cocina_object) { create(:admin_policy) }
 
         it 'returns Cocina::Models::AdminPolicy' do
-          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_a(Cocina::Models::AdminPolicy)
+          expect(store.send(:ar_to_cocina_find,
+                            ar_cocina_object.external_identifier)).to be_a(Cocina::Models::AdminPolicy)
         end
       end
 
@@ -218,7 +225,8 @@ RSpec.describe CocinaObjectStore do
         let(:ar_cocina_object) { create(:collection) }
 
         it 'returns Cocina::Models::Collection' do
-          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_a(Cocina::Models::Collection)
+          expect(store.send(:ar_to_cocina_find,
+                            ar_cocina_object.external_identifier)).to be_a(Cocina::Models::Collection)
         end
       end
     end
@@ -286,7 +294,8 @@ RSpec.describe CocinaObjectStore do
                                             type: Cocina::Models::Vocab.admin_policy,
                                             label: 'Test Admin Policy',
                                             version: 1,
-                                            administrative: { hasAdminPolicy: 'druid:hy787xj5878', hasAgreement: 'druid:bb033gt0615' }
+                                            administrative: { hasAdminPolicy: 'druid:hy787xj5878',
+                                                              hasAgreement: 'druid:bb033gt0615' }
                                           })
         end
 

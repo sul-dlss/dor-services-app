@@ -46,15 +46,19 @@ module Cocina
         end
 
         def physical_location
-          descriptive_value_for(resource_element.xpath("mods:location/mods:physicalLocation[not(@type='repository')][not(@type='discovery')]", mods: DESC_METADATA_NS))
+          descriptive_value_for(resource_element.xpath(
+                                  "mods:location/mods:physicalLocation[not(@type='repository')][not(@type='discovery')]", mods: DESC_METADATA_NS
+                                ))
         end
 
         def digital_location
-          descriptive_value_for(resource_element.xpath("mods:location/mods:physicalLocation[(@type='discovery')]", mods: DESC_METADATA_NS))
+          descriptive_value_for(resource_element.xpath("mods:location/mods:physicalLocation[(@type='discovery')]",
+                                                       mods: DESC_METADATA_NS))
         end
 
         def xlink_location
-          resource_element.xpath('mods:location/mods:physicalLocation[@xlink:href]', mods: DESC_METADATA_NS, xlink: XLINK_NS).map do |node|
+          resource_element.xpath('mods:location/mods:physicalLocation[@xlink:href]', mods: DESC_METADATA_NS,
+                                                                                     xlink: XLINK_NS).map do |node|
             {
               valueAt: node['xlink:href']
             }
@@ -62,12 +66,15 @@ module Cocina
         end
 
         def access_contact
-          descriptive_value_for(resource_element.xpath("mods:location/mods:physicalLocation[@type='repository']", mods: DESC_METADATA_NS)) +
-            descriptive_value_for(resource_element.xpath("mods:note[@type='contact']", mods: DESC_METADATA_NS), type: 'email')
+          descriptive_value_for(resource_element.xpath("mods:location/mods:physicalLocation[@type='repository']",
+                                                       mods: DESC_METADATA_NS)) +
+            descriptive_value_for(resource_element.xpath("mods:note[@type='contact']", mods: DESC_METADATA_NS),
+                                  type: 'email')
         end
 
         def shelf_location
-          resource_element.xpath('mods:location/mods:shelfLocator', mods: DESC_METADATA_NS).filter_map do |shelf_locator_elem|
+          resource_element.xpath('mods:location/mods:shelfLocator',
+                                 mods: DESC_METADATA_NS).filter_map do |shelf_locator_elem|
             next if shelf_locator_elem.content.blank?
 
             {

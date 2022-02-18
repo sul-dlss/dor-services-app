@@ -46,10 +46,13 @@ RSpec.describe Cocina::Serializer do
                     'externalIdentifier' => 'http://cocina.sul.stanford.edu/file/8ee2d21b-9183-4df6-9813-c0a104b329ce',
                     'label' => 'sul-logo.png',
                     'filename' => 'sul-logo.png',
-                    'size' => 19823,
+                    'size' => 19_823,
                     'version' => 1,
                     'hasMimeType' => 'image/png',
-                    'hasMessageDigests' => [{ 'type' => 'sha1', 'digest' => 'b5f3221455c8994afb85214576bc2905d6b15418' }, { 'type' => 'md5', 'digest' => '7142ce948827c16120cc9e19b05acd49' }],
+                    'hasMessageDigests' => [
+                      { 'type' => 'sha1',
+                        'digest' => 'b5f3221455c8994afb85214576bc2905d6b15418' }, { 'type' => 'md5', 'digest' => '7142ce948827c16120cc9e19b05acd49' }
+                    ],
                     'access' => { 'access' => 'world', 'download' => 'world' },
                     'administrative' => {
                       'publish' => true,
@@ -123,7 +126,7 @@ RSpec.describe Cocina::Serializer do
               externalIdentifier: 'http://cocina.sul.stanford.edu/file/8ee2d21b-9183-4df6-9813-c0a104b329ce',
               label: 'sul-logo.png',
               filename: 'sul-logo.png',
-              size: 19823,
+              size: 19_823,
               version: 1,
               hasMimeType: 'image/png',
               hasMessageDigests: [{

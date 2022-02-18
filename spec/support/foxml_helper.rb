@@ -33,13 +33,13 @@ def item_from_foxml(foxml, item_class = Dor::Abstract)
       result.add_datastream(ds)
     end
 
-    if ds.is_a?(ActiveFedora::OmDatastream)
-      result.datastreams[dsid] = ds.class.from_xml(Nokogiri::XML(content), ds)
-    elsif ds.is_a?(ActiveFedora::RelsExtDatastream)
-      result.datastreams[dsid] = ds.class.from_xml(content, ds)
-    else
-      result.datastreams[dsid] = ds.class.from_xml(ds, stream)
-    end
+    result.datastreams[dsid] = if ds.is_a?(ActiveFedora::OmDatastream)
+                                 ds.class.from_xml(Nokogiri::XML(content), ds)
+                               elsif ds.is_a?(ActiveFedora::RelsExtDatastream)
+                                 ds.class.from_xml(content, ds)
+                               else
+                                 ds.class.from_xml(ds, stream)
+                               end
   rescue StandardError
     # TODO: (?) rescue if 1 datastream failed
   end

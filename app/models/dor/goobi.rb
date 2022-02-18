@@ -23,7 +23,10 @@ module Dor
                    rescue: RETRIABLE_EXCEPTIONS) do |_attempt|
         response = Faraday.post(Settings.goobi.url, xml_request, 'Content-Type' => 'application/xml')
         # When we upgrade to Faraday 1.0, we can rely on Faraday::ServerError
-        raise ServerError, status: response.status, body: response.body if SERVER_ERROR_STATUSES.include?(response.status)
+        if SERVER_ERROR_STATUSES.include?(response.status)
+          raise ServerError, status: response.status,
+                             body: response.body
+        end
 
         response
       end
@@ -64,7 +67,9 @@ module Dor
     def goobi_workflow_name
       @goobi_workflow_name ||= begin
         dpg_workflow_tag_id = 'DPG : Workflow : '
-        content_tag = AdministrativeTags.for(pid: cocina_obj.externalIdentifier).select { |tag| tag.include?(dpg_workflow_tag_id) }
+        content_tag = AdministrativeTags.for(pid: cocina_obj.externalIdentifier).select do |tag|
+          tag.include?(dpg_workflow_tag_id)
+        end
         content_tag.empty? ? Settings.goobi.default_goobi_workflow_name : content_tag[0].split(':').last.strip
       end
     end
@@ -96,7 +101,9 @@ module Dor
     # @return [String] first project tag value if one exists (blank if none)
     def project_name
       project_tag_id = 'Project : '
-      content_tag = AdministrativeTags.for(pid: cocina_obj.externalIdentifier).select { |tag| tag.include?(project_tag_id) }
+      content_tag = AdministrativeTags.for(pid: cocina_obj.externalIdentifier).select do |tag|
+        tag.include?(project_tag_id)
+      end
       content_tag.empty? ? '' : content_tag[0].gsub(project_tag_id, '').strip
     end
 
@@ -115,7 +122,10 @@ module Dor
     def goobi_ocr_tag_present?
       @goobi_ocr_tag_present ||= begin
         dpg_goobi_ocr_tag = 'DPG : OCR : TRUE'
-        AdministrativeTags.for(pid: cocina_obj.externalIdentifier).any? { |tag| tag.casecmp(dpg_goobi_ocr_tag).zero? } # case insensitive compare
+        # case insensitive compare
+        AdministrativeTags.for(pid: cocina_obj.externalIdentifier).any? do |tag|
+          tag.casecmp(dpg_goobi_ocr_tag).zero?
+        end
       end
     end
 

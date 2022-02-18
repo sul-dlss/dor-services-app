@@ -4,7 +4,9 @@ require 'rails_helper'
 
 RSpec.describe Cocina::Normalizers::EmbargoNormalizer do
   let(:normalized_ng_xml) { described_class.normalize(embargo_ng_xml: Nokogiri::XML(original_xml)) }
-  let(:normalized_roundtripped_ng_xml) { described_class.normalize_roundtrip(embargo_ng_xml: Nokogiri::XML(original_xml)) }
+  let(:normalized_roundtripped_ng_xml) do
+    described_class.normalize_roundtrip(embargo_ng_xml: Nokogiri::XML(original_xml))
+  end
 
   context 'when released embargo' do
     let(:original_xml) do

@@ -14,7 +14,8 @@ module Cocina
         # @params [Hash] additional_attrs for title
         # @params [IdGenerator] id_generator
         def self.write(xml:, titles:, id_generator:, contributors: [], additional_attrs: {})
-          new(xml: xml, titles: titles, contributors: contributors, additional_attrs: additional_attrs, id_generator: id_generator).write
+          new(xml: xml, titles: titles, contributors: contributors, additional_attrs: additional_attrs,
+              id_generator: id_generator).write
         end
 
         def initialize(xml:, titles:, additional_attrs:, contributors: [], id_generator: {})
@@ -47,7 +48,8 @@ module Cocina
           end
 
           name_title_groups.each_pair do |contributor, name_title_group_indexes|
-            ContributorWriter.write(xml: xml, contributor: contributor, name_title_group_indexes: name_title_group_indexes, id_generator: id_generator)
+            ContributorWriter.write(xml: xml, contributor: contributor,
+                                    name_title_group_indexes: name_title_group_indexes, id_generator: id_generator)
           end
         end
 
@@ -102,13 +104,16 @@ module Cocina
         # rubocop:enable Metrics/AbcSize
 
         def write_grouped(title:, title_info_attrs: {})
-          title.groupedValue.each { |grouped_title| write_basic(title: grouped_title, title_info_attrs: title_info_attrs) }
+          title.groupedValue.each do |grouped_title|
+            write_basic(title: grouped_title, title_info_attrs: title_info_attrs)
+          end
         end
 
         def name_title_group_for(title)
           return nil unless contributors
 
-          contributor, name_index, parallel_index = NameTitleGroup.find_contributor(title: title, contributors: contributors)
+          contributor, name_index, parallel_index = NameTitleGroup.find_contributor(title: title,
+                                                                                    contributors: contributors)
 
           return nil unless contributor
 

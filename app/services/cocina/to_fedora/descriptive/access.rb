@@ -41,15 +41,20 @@ module Cocina
         attr_reader :xml, :access, :purl
 
         def write_physical_locations
-          Array(access.physicalLocation).reject { |physical_location| shelf_locator?(physical_location) }.each do |physical_location|
+          Array(access.physicalLocation).reject do |physical_location|
+            shelf_locator?(physical_location)
+          end.each do |physical_location|
             xml.location do
-              xml.physicalLocation physical_location.value || physical_location.code, descriptive_attrs(physical_location)
+              xml.physicalLocation physical_location.value || physical_location.code,
+                                   descriptive_attrs(physical_location)
             end
           end
         end
 
         def write_digital_locations
-          Array(access.digitalLocation).select { |digital_location| digital_location.type == 'discovery' }.each do |digital_location|
+          Array(access.digitalLocation).select do |digital_location|
+            digital_location.type == 'discovery'
+          end.each do |digital_location|
             xml.location do
               xml.physicalLocation digital_location.value || digital_location.code, descriptive_attrs(digital_location)
             end
@@ -62,14 +67,17 @@ module Cocina
               xml.note access_contact.value, descriptive_attrs(access_contact).merge({ type: 'contact' })
             else
               xml.location do
-                xml.physicalLocation access_contact.value || access_contact.code, { type: 'repository' }.merge(descriptive_attrs(access_contact))
+                xml.physicalLocation access_contact.value || access_contact.code,
+                                     { type: 'repository' }.merge(descriptive_attrs(access_contact))
               end
             end
           end
         end
 
         def write_shelf_locators
-          Array(access.physicalLocation).select { |physical_location| shelf_locator?(physical_location) }.each do |physical_location|
+          Array(access.physicalLocation).select do |physical_location|
+            shelf_locator?(physical_location)
+          end.each do |physical_location|
             xml.location do
               xml.shelfLocator physical_location.value
             end

@@ -40,7 +40,10 @@ class ObjectsController < ApplicationController
   end
 
   def create
-    return json_api_error(status: :service_unavailable, message: 'Registration is temporarily disabled') unless Settings.enabled_features.registration
+    unless Settings.enabled_features.registration
+      return json_api_error(status: :service_unavailable,
+                            message: 'Registration is temporarily disabled')
+    end
 
     model_request = Cocina::Models.build_request(params.except(:action, :controller, :assign_doi).to_unsafe_h)
     cocina_object = CocinaObjectStore.create(model_request, assign_doi: params[:assign_doi])
@@ -48,7 +51,8 @@ class ObjectsController < ApplicationController
     render status: :created, location: object_path(cocina_object.externalIdentifier), json: cocina_object
   rescue SymphonyReader::ResponseError => e
     Honeybadger.notify(e)
-    json_api_error(status: :bad_gateway, title: 'Catalog connection error', message: 'Unable to read descriptive metadata from the catalog')
+    json_api_error(status: :bad_gateway, title: 'Catalog connection error',
+                   message: 'Unable to read descriptive metadata from the catalog')
   rescue SymphonyReader::NotFound => e
     json_api_error(status: :bad_request, title: 'Catkey not found in Symphony', message: e.message)
   rescue Cocina::RoundtripValidationError => e
@@ -107,7 +111,8 @@ class ObjectsController < ApplicationController
     end
 
     # initialize workflow
-    workflow_client.create_workflow_by_name(@cocina_object.externalIdentifier, workflow, version: updated_cocina_object.version.to_s)
+    workflow_client.create_workflow_by_name(@cocina_object.externalIdentifier, workflow,
+                                            version: updated_cocina_object.version.to_s)
     head :created
   end
 
@@ -116,16 +121,19 @@ class ObjectsController < ApplicationController
   # the 'publish-complete' step of that workflow if provided
   def publish
     result = BackgroundJobResult.create
-    EventFactory.create(druid: params[:id], event_type: 'publish_request_received', data: { background_job_result_id: result.id })
+    EventFactory.create(druid: params[:id], event_type: 'publish_request_received',
+                        data: { background_job_result_id: result.id })
     queue = params['lane-id'] == 'low' ? :low : :default
 
-    PublishJob.set(queue: queue).perform_later(druid: params[:id], background_job_result: result, workflow: params[:workflow])
+    PublishJob.set(queue: queue).perform_later(druid: params[:id], background_job_result: result,
+                                               workflow: params[:workflow])
     head :created, location: result
   end
 
   def preserve
     result = BackgroundJobResult.create
-    EventFactory.create(druid: params[:id], event_type: 'preserve_request_received', data: { background_job_result_id: result.id })
+    EventFactory.create(druid: params[:id], event_type: 'preserve_request_received',
+                        data: { background_job_result_id: result.id })
     queue = params['lane-id'] == 'low' ? :low : :default
 
     PreserveJob.set(queue: queue).perform_later(druid: params[:id], background_job_result: result)
@@ -134,7 +142,8 @@ class ObjectsController < ApplicationController
 
   def unpublish
     result = BackgroundJobResult.create
-    EventFactory.create(druid: params[:id], event_type: 'unpublish_request_received', data: { background_job_result_id: result.id })
+    EventFactory.create(druid: params[:id], event_type: 'unpublish_request_received',
+                        data: { background_job_result_id: result.id })
     queue = params['lane-id'] == 'low' ? :low : :default
     UnpublishJob.set(queue: queue).perform_later(druid: params[:id], background_job_result: result)
     head :accepted, location: result

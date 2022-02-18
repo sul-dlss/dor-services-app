@@ -31,7 +31,9 @@ module Cocina
 
       # @return String DataCite resourceTypeGeneral value
       def resource_type_general
-        @resource_type_general ||= Array(cocina_desc.form).find { |cocina_form| datacite_resource_types_form?(cocina_form) }&.value
+        @resource_type_general ||= Array(cocina_desc.form).find do |cocina_form|
+                                     datacite_resource_types_form?(cocina_form)
+                                   end&.value
       end
 
       # @return [String] DataCite resourceType value

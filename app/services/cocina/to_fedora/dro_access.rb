@@ -23,7 +23,10 @@ module Cocina
 
         apply_rights
 
-        EmbargoMetadataGenerator.generate(embargo: access.embargo, embargo_metadata: item.embargoMetadata) if access.embargo
+        if access.embargo
+          EmbargoMetadataGenerator.generate(embargo: access.embargo,
+                                            embargo_metadata: item.embargoMetadata)
+        end
       end
 
       private

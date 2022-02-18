@@ -48,7 +48,9 @@ module Cocina
           'xmlns:rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
           'xmlns:xlink' => 'http://www.w3.org/1999/xlink',
           'version' => mods_version,
-          'xsi:schemaLocation' => "http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-#{mods_version.sub('.', '-')}.xsd"
+          'xsi:schemaLocation' => "http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-#{mods_version.sub(
+            '.', '-'
+          )}.xsd"
         }
       end
     end

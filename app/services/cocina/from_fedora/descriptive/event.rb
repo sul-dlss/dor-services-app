@@ -67,7 +67,9 @@ module Cocina
         end
 
         def build
-          altrepgroup_origin_info_nodes, other_origin_info_nodes = AltRepGroup.split(nodes: resource_element.xpath('mods:originInfo', mods: DESC_METADATA_NS))
+          altrepgroup_origin_info_nodes, other_origin_info_nodes = AltRepGroup.split(nodes: resource_element.xpath(
+            'mods:originInfo', mods: DESC_METADATA_NS
+          ))
 
           results = build_grouped_origin_infos(altrepgroup_origin_info_nodes) + build_ungrouped_origin_infos(other_origin_info_nodes)
           results if results.present? && results.first.present? # avoid [{}] case
@@ -176,7 +178,8 @@ module Cocina
         XPATH_HAS_CONTENT_PREDICATE = '[string-length(normalize-space()) > 0]'
 
         def build_copyright_notice_event(origin_info_node)
-          date_nodes = origin_info_node.xpath("mods:copyrightDate#{XPATH_HAS_CONTENT_PREDICATE}", mods: DESC_METADATA_NS)
+          date_nodes = origin_info_node.xpath("mods:copyrightDate#{XPATH_HAS_CONTENT_PREDICATE}",
+                                              mods: DESC_METADATA_NS)
           return if date_nodes.blank?
 
           {
@@ -199,7 +202,8 @@ module Cocina
         end
 
         def build_date_desc_values(mods_date_el_name, origin_info_node, default_type)
-          date_nodes = origin_info_node.xpath("mods:#{mods_date_el_name}#{XPATH_HAS_CONTENT_PREDICATE}", mods: DESC_METADATA_NS)
+          date_nodes = origin_info_node.xpath("mods:#{mods_date_el_name}#{XPATH_HAS_CONTENT_PREDICATE}",
+                                              mods: DESC_METADATA_NS)
           if mods_date_el_name == 'dateOther' && date_nodes.present?
             date_other_type = date_other_type_attr(origin_info_node['eventType'], date_nodes.first)
             date_values_for_event(date_nodes, date_other_type)
@@ -259,18 +263,25 @@ module Cocina
           return unless place_nodes_have_info?(place_nodes)
 
           # text only and text-and-code placeTerm types in single place node
-          text_places = place_nodes.select { |place| place.xpath("mods:placeTerm[not(@type='code')]", mods: DESC_METADATA_NS).present? }
+          text_places = place_nodes.select do |place|
+            place.xpath("mods:placeTerm[not(@type='code')]", mods: DESC_METADATA_NS).present?
+          end
           code_only_places = place_nodes.reject { |place| text_places.include?(place) }
 
-          event[:location] = locations_for_place_terms_with_text(text_places) + locations_for_code_only_place_terms(code_only_places)
+          event[:location] =
+            locations_for_place_terms_with_text(text_places) + locations_for_code_only_place_terms(code_only_places)
           event[:location].compact!
         end
 
         def place_nodes_have_info?(place_nodes)
           return true if place_nodes.any? { |node| node.content.present? }
-          return true if place_nodes.any? { |node| node.xpath('mods:placeTerm[@valueURI]', mods: DESC_METADATA_NS).present? }
+          return true if place_nodes.any? do |node|
+                           node.xpath('mods:placeTerm[@valueURI]', mods: DESC_METADATA_NS).present?
+                         end
 
-          place_nodes.any? { |node| node.xpath('mods:placeTerm[@xlink:href]', { mods: DESC_METADATA_NS, xlink: XLINK_NS }).present? }
+          place_nodes.any? do |node|
+            node.xpath('mods:placeTerm[@xlink:href]', { mods: DESC_METADATA_NS, xlink: XLINK_NS }).present?
+          end
         end
 
         # @param [Nokogiri::XML::NodeSet] place elements that have at least one placeTerm child of type text
@@ -288,7 +299,10 @@ module Cocina
               cocina_location[:code] = code_place_term_node.text
               # NOTE: deliberately skipping situation where text node has some authority info and code node
               #  has other authority info as we may never encounter this
-              add_authority_info(cocina_location, code_place_term_node) if cocina_location[:source].blank? && cocina_location[:uri].blank?
+              if cocina_location[:source].blank? && cocina_location[:uri].blank?
+                add_authority_info(cocina_location,
+                                   code_place_term_node)
+              end
             end
             lang_script = LanguageScript.build(node: text_place_term_node)
             cocina_location[:valueLanguage] = lang_script if lang_script
@@ -414,7 +428,9 @@ module Cocina
 
             new_node = node.deep_dup
             new_node.remove_attribute('encoding') if common_attribs[:encoding].present? || node[:encoding]&.size&.zero?
-            new_node.remove_attribute('qualifier') if common_attribs[:qualifier].present? || node[:qualifier]&.size&.zero?
+            if common_attribs[:qualifier].present? || node[:qualifier]&.size&.zero?
+              new_node.remove_attribute('qualifier')
+            end
             build_date(new_node)
           end
           { structuredValue: dates }.merge(common_attribs).compact

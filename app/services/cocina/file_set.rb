@@ -23,7 +23,9 @@ module Cocina
     end
 
     def self.has_any_3d?(file_set)
-      file_set.structural.contains.any? { |file| VALID_THREE_DIMENSION_EXTENSIONS.include?(::File.extname(file.filename)) }
+      file_set.structural.contains.any? do |file|
+        VALID_THREE_DIMENSION_EXTENSIONS.include?(::File.extname(file.filename))
+      end
     end
   end
 end

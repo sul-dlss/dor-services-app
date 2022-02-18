@@ -52,7 +52,8 @@ RSpec.describe ObjectVersion, type: :model do
 
     context 'when in sync' do
       it 'increments version' do
-        new_version = described_class.sync_then_increment_version(druid, 2, significance: :minor, description: 'An update')
+        new_version = described_class.sync_then_increment_version(druid, 2, significance: :minor,
+                                                                            description: 'An update')
         expect(new_version.version).to eq(3)
         expect(new_version.tag).to eq('1.2.0')
         expect(new_version.description).to eq('An update')
@@ -62,7 +63,8 @@ RSpec.describe ObjectVersion, type: :model do
 
     context 'when extra versions' do
       it 'deletes extra version' do
-        new_version = described_class.sync_then_increment_version(druid, 1, significance: :major, description: 'An update')
+        new_version = described_class.sync_then_increment_version(druid, 1, significance: :major,
+                                                                            description: 'An update')
         expect(new_version.version).to eq(2)
         expect(new_version.tag).to eq('2.0.0')
         expect(new_version.description).to eq('An update')

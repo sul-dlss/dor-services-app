@@ -64,8 +64,10 @@ RSpec.describe VersionService do
         expect(CocinaObjectStore).to have_received(:save)
         expect(VersionMigrationService).to have_received(:find_and_migrate).with(druid)
         expect(workflow_client).to have_received(:lifecycle).with(druid: druid, milestone_name: 'accessioned')
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1')
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '1')
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'opened',
+                                                                         version: '1')
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'submitted',
+                                                                         version: '1')
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 
         expect(event_factory).to have_received(:create).with(data: { version: '2', who: nil },
@@ -103,8 +105,10 @@ RSpec.describe VersionService do
         expect(CocinaObjectStore).to have_received(:save)
         expect(VersionMigrationService).to have_received(:find_and_migrate).with(druid)
         expect(workflow_client).to have_received(:lifecycle).with(druid: druid, milestone_name: 'accessioned')
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1')
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '1')
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'opened',
+                                                                         version: '1')
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'submitted',
+                                                                         version: '1')
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 
         expect(event_factory).to have_received(:create).with(data: { version: '2', who: nil },
@@ -166,14 +170,17 @@ RSpec.describe VersionService do
       it 'returns true' do
         expect(can_open?).to be true
         expect(workflow_client).to have_received(:lifecycle).with(druid: druid, milestone_name: 'accessioned')
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1')
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '1')
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'opened',
+                                                                         version: '1')
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'submitted',
+                                                                         version: '1')
       end
     end
 
     context 'when the object has not been accessioned' do
       before do
-        allow(workflow_client).to receive(:lifecycle).with(druid: druid, milestone_name: 'accessioned').and_return(false)
+        allow(workflow_client).to receive(:lifecycle).with(druid: druid,
+                                                           milestone_name: 'accessioned').and_return(false)
       end
 
       it 'returns false' do
@@ -184,23 +191,27 @@ RSpec.describe VersionService do
 
     context 'when the object has already been opened' do
       before do
-        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1').and_return(Time.new)
+        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened',
+                                                                  version: '1').and_return(Time.zone.now)
       end
 
       it 'returns false' do
         expect(can_open?).to be false
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1')
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'opened',
+                                                                         version: '1')
       end
     end
 
     context 'when the object is still being accessioned' do
       before do
-        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '1').and_return(Time.new)
+        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'submitted',
+                                                                  version: '1').and_return(Time.zone.now)
       end
 
       it 'returns false' do
         expect(can_open?).to be false
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '1')
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'submitted',
+                                                                         version: '1')
       end
     end
 
@@ -286,19 +297,24 @@ RSpec.describe VersionService do
 
     context 'when the object has not been opened for versioning' do
       before do
-        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '2').and_return(nil)
+        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened',
+                                                                  version: '2').and_return(nil)
       end
 
       it 'raises an exception' do
-        expect { close }.to raise_error(Dor::Exception, "Trying to close version 2 on #{druid} which is not opened for versioning")
+        expect do
+          close
+        end.to raise_error(Dor::Exception, "Trying to close version 2 on #{druid} which is not opened for versioning")
       end
     end
 
     context 'when the object has an active accesssionWF' do
       before do
         allow(workflow_client).to receive(:workflow_status).with(hash_including(workflow: 'assemblyWF')).and_return('completed')
-        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '2').and_return(Time.new)
-        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '2').and_return(true)
+        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened',
+                                                                  version: '2').and_return(Time.zone.now)
+        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'submitted',
+                                                                  version: '2').and_return(true)
       end
 
       it 'raises an exception' do
@@ -309,11 +325,14 @@ RSpec.describe VersionService do
     context 'when the object has an active assemblyWF' do
       before do
         allow(workflow_client).to receive(:workflow_status).with(hash_including(workflow: 'assemblyWF')).and_return('waiting')
-        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '2').and_return(Time.new)
+        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened',
+                                                                  version: '2').and_return(Time.zone.now)
       end
 
       it 'raises an exception' do
-        expect { close }.to raise_error(Dor::Exception, "Trying to close version 2 on #{druid} which has active assemblyWF")
+        expect do
+          close
+        end.to raise_error(Dor::Exception, "Trying to close version 2 on #{druid} which has active assemblyWF")
         expect(workflow_client).to have_received(:workflow_status).with(hash_including(workflow: 'assemblyWF'))
       end
     end
@@ -322,14 +341,17 @@ RSpec.describe VersionService do
       before do
         allow(workflow_client).to receive(:workflow_status).with(hash_including(workflow: 'assemblyWF')).and_return(nil)
         allow(workflow_client).to receive(:close_version)
-        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '2').and_return(Time.new)
-        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '2').and_return(false)
+        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened',
+                                                                  version: '2').and_return(Time.zone.now)
+        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'submitted',
+                                                                  version: '2').and_return(false)
       end
 
       it 'creates the accessioningWF' do
         close
         expect(workflow_client).to have_received(:workflow_status).with(hash_including(workflow: 'assemblyWF'))
-        expect(workflow_client).to have_received(:close_version).with(druid: druid, version: '2', create_accession_wf: true)
+        expect(workflow_client).to have_received(:close_version).with(druid: druid, version: '2',
+                                                                      create_accession_wf: true)
       end
     end
 
@@ -337,7 +359,10 @@ RSpec.describe VersionService do
       let(:opts) { {} }
 
       it 'raises an exception' do
-        expect { close }.to raise_error(Dor::Exception, "latest version in versionMetadata for #{druid} requires tag and description before it can be closed")
+        expect do
+          close
+        end.to raise_error(Dor::Exception,
+                           "latest version in versionMetadata for #{druid} requires tag and description before it can be closed")
       end
     end
   end

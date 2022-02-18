@@ -6,7 +6,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
   let(:object) { Dor::Item.new }
 
   describe '.build' do
-    subject(:build) { described_class.build(resource_element: ng_xml.root, require_title: require_title, notifier: notifier) }
+    subject(:build) do
+      described_class.build(resource_element: ng_xml.root, require_title: require_title, notifier: notifier)
+    end
 
     let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
@@ -92,7 +94,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       it 'parses' do
-        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
+        expect do
+          Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234')
+        end.not_to raise_error
       end
 
       it 'ignores and warns' do
@@ -121,7 +125,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       it 'parses' do
-        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
+        expect do
+          Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234')
+        end.not_to raise_error
       end
 
       it 'ignores and warns' do
@@ -146,7 +152,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       it 'parses' do
-        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
+        expect do
+          Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234')
+        end.not_to raise_error
       end
 
       it 'creates model' do
@@ -180,7 +188,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       it 'parses' do
-        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
+        expect do
+          Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234')
+        end.not_to raise_error
       end
 
       it 'creates model' do
@@ -219,7 +229,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       it 'parses' do
-        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
+        expect do
+          Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234')
+        end.not_to raise_error
       end
 
       it 'creates value from the authority record' do
@@ -296,7 +308,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       it 'parses' do
-        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
+        expect do
+          Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234')
+        end.not_to raise_error
       end
 
       it 'creates value from the authority record' do
@@ -345,7 +359,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       it 'parses' do
-        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
+        expect do
+          Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234')
+        end.not_to raise_error
       end
 
       it 'creates value from the authority record and warns' do
@@ -386,7 +402,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       end
 
       it 'parses' do
-        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
+        expect do
+          Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234')
+        end.not_to raise_error
       end
 
       it 'creates simple values' do

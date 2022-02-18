@@ -55,7 +55,9 @@ module Cocina
         return true if nodes.map(&:name).uniq.size != 1
 
         # For subjects, script/lang may be in child so looking in both locations.
-        scripts = nodes.map { |node| node['script'].presence || node.elements.first&.attribute('script')&.presence }.uniq
+        scripts = nodes.map do |node|
+          node['script'].presence || node.elements.first&.attribute('script')&.presence
+        end.uniq
         # Every node has a different script.
         return false if scripts.size == nodes.size
 
@@ -75,7 +77,8 @@ module Cocina
       # rubocop:enable Metrics/PerceivedComplexity
 
       def check_version
-        match = /MODS version (\d\.\d)/.match(ng_xml.root.at('//mods:recordInfo/mods:recordOrigin', mods: DESC_METADATA_NS)&.content)
+        match = /MODS version (\d\.\d)/.match(ng_xml.root.at('//mods:recordInfo/mods:recordOrigin',
+                                                             mods: DESC_METADATA_NS)&.content)
 
         return unless match
 

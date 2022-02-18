@@ -55,7 +55,8 @@ module Cocina
         end
 
         def normalize_title_trailing
-          ng_xml.root.xpath('//mods:titleInfo[not(@type="abbreviated")]/mods:title', mods: ModsNormalizer::MODS_NS).each do |title_node|
+          ng_xml.root.xpath('//mods:titleInfo[not(@type="abbreviated")]/mods:title',
+                            mods: ModsNormalizer::MODS_NS).each do |title_node|
             title_node.content = title_node.content.delete_suffix(',')
           end
         end

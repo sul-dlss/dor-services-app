@@ -61,7 +61,8 @@ module Publish
     def add_access_condition(text, type)
       return if text.blank?
 
-      last_element.add_next_sibling public_mods.create_element('accessCondition', text, type: type, xmlns: PublicDescMetadataService::MODS_NS)
+      last_element.add_next_sibling public_mods.create_element('accessCondition', text, type: type,
+                                                                                        xmlns: PublicDescMetadataService::MODS_NS)
     end
 
     def last_element

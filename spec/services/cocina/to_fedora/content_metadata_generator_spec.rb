@@ -52,7 +52,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       'filename' => '00001.jp2',
       'label' => '00001.jp2',
       'hasMimeType' => 'image/jp2',
-      'size' => 149570,
+      'size' => 149_570,
       'administrative' => {
         'publish' => true,
         'sdrPreserve' => true,
@@ -98,7 +98,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       'filename' => '00002.jp2',
       'label' => '00002.jp2',
       'hasMimeType' => 'image/jp2',
-      'size' => 111467,
+      'size' => 111_467,
       'administrative' => {
         'publish' => true,
         'sdrPreserve' => true,
@@ -119,7 +119,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       'filename' => 'checksum.txt',
       'label' => 'checksum.txt',
       'hasMimeType' => 'text/plain',
-      'size' => 11468,
+      'size' => 11_468,
       'administrative' => {
         'publish' => true,
         'sdrPreserve' => true,

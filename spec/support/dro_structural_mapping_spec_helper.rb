@@ -10,15 +10,22 @@ RSpec.shared_examples 'DRO Structural Fedora Cocina mapping' do
   let(:druid) { 'druid:hv992ry2431' }
   let(:notifier) { Cocina::FromFedora::DataErrorNotifier.new(druid: druid) }
   let(:object_type) { Cocina::Models::Vocab.book }
-  let(:mapped_structural_props) { Cocina::FromFedora::DroStructural.props(fedora_item, type: object_type, notifier: notifier) }
+  let(:mapped_structural_props) do
+    Cocina::FromFedora::DroStructural.props(fedora_item, type: object_type, notifier: notifier)
+  end
   let(:roundtrip_content_metadata_xml) { defined?(roundtrip_content_xml) ? roundtrip_content_xml : content_xml }
-  let(:normalized_roundtrip_content_metadata_xml) { Cocina::Normalizers::ContentMetadataNormalizer.normalize_roundtrip(content_ng_xml: Nokogiri::XML(roundtrip_content_metadata_xml)).to_xml }
+  let(:normalized_roundtrip_content_metadata_xml) do
+    Cocina::Normalizers::ContentMetadataNormalizer.normalize_roundtrip(content_ng_xml: Nokogiri::XML(roundtrip_content_metadata_xml)).to_xml
+  end
   let(:normalized_orig_content_xml) do
     orig_content_metadata_ds = Dor::ContentMetadataDS.from_xml(content_xml)
-    Cocina::Normalizers::ContentMetadataNormalizer.normalize(content_ng_xml: orig_content_metadata_ds.ng_xml, druid: druid).to_xml
+    Cocina::Normalizers::ContentMetadataNormalizer.normalize(content_ng_xml: orig_content_metadata_ds.ng_xml,
+                                                             druid: druid).to_xml
   end
   let(:cocina_structural) { Cocina::Models::DROStructural.new(cocina_structural_props) }
-  let(:roundtrip_structural_props) { defined?(roundtrip_cocina_structural_props) ? roundtrip_cocina_structural_props : cocina_structural_props }
+  let(:roundtrip_structural_props) do
+    defined?(roundtrip_cocina_structural_props) ? roundtrip_cocina_structural_props : cocina_structural_props
+  end
 
   let(:rights_xml) do
     <<~XML
@@ -57,8 +64,13 @@ RSpec.shared_examples 'DRO Structural Fedora Cocina mapping' do
   end
 
   context 'when mapping from Cocina to Fedora' do
-    let(:mapped_content_xml) { Cocina::ToFedora::ContentMetadataGenerator.generate(druid: druid, type: object_type, structural: cocina_structural) }
-    let(:normalized_mapped_content_xml) { Cocina::Normalizers::ContentMetadataNormalizer.normalize_roundtrip(content_ng_xml: Nokogiri::XML(mapped_content_xml)).to_xml }
+    let(:mapped_content_xml) do
+      Cocina::ToFedora::ContentMetadataGenerator.generate(druid: druid, type: object_type,
+                                                          structural: cocina_structural)
+    end
+    let(:normalized_mapped_content_xml) do
+      Cocina::Normalizers::ContentMetadataNormalizer.normalize_roundtrip(content_ng_xml: Nokogiri::XML(mapped_content_xml)).to_xml
+    end
 
     it 'contentMetadata roundtrips thru cocina model to provided expected contentMetadata.xml' do
       expect(normalized_mapped_content_xml).to be_equivalent_to(normalized_roundtrip_content_metadata_xml)
@@ -71,7 +83,9 @@ RSpec.shared_examples 'DRO Structural Fedora Cocina mapping' do
 
   context 'when mapping from roundtrip Fedora to (roundtrip) Cocina' do
     let(:roundtrip_fedora_item) { Dor::Item.new }
-    let(:actual_roundtrip_structural_props) { Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: object_type, notifier: notifier) }
+    let(:actual_roundtrip_structural_props) do
+      Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: object_type, notifier: notifier)
+    end
 
     before do
       roundtrip_rights_metadata_ds = Dor::RightsMetadataDS.from_xml(rights_xml)
@@ -87,7 +101,9 @@ RSpec.shared_examples 'DRO Structural Fedora Cocina mapping' do
 
   context 'when mapping from normalized orig Fedora content_xml to (roundtrip) Cocina' do
     let(:roundtrip_fedora_item) { Dor::Item.new }
-    let(:actual_roundtrip_structural_props) { Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: object_type, notifier: notifier) }
+    let(:actual_roundtrip_structural_props) do
+      Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: object_type, notifier: notifier)
+    end
 
     before do
       roundtrip_rights_metadata_ds = Dor::RightsMetadataDS.from_xml(rights_xml)

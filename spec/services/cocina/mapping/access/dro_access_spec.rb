@@ -7,9 +7,13 @@ RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
   # Optional: roundtrip_rights_xml, embargo_xml, content_xml, roundtrip_content_xml, cocina_file_access_props
 
   let(:fedora_item) { Dor::Item.new }
-  let(:mapped_access_props) { Cocina::FromFedora::DROAccess.props(fedora_item.rightsMetadata, fedora_item.embargoMetadata) }
+  let(:mapped_access_props) do
+    Cocina::FromFedora::DROAccess.props(fedora_item.rightsMetadata, fedora_item.embargoMetadata)
+  end
   let(:notifier) { Cocina::FromFedora::DataErrorNotifier.new(druid: 'druid:db708qz9486') }
-  let(:mapped_structural_props) { Cocina::FromFedora::DroStructural.props(fedora_item, type: Cocina::Models::Vocab.book, notifier: notifier) }
+  let(:mapped_structural_props) do
+    Cocina::FromFedora::DroStructural.props(fedora_item, type: Cocina::Models::Vocab.book, notifier: notifier)
+  end
   let(:cocina_file_access_props) { cocina_access_props }
   let(:roundtrip_rights_metadata_xml) { defined?(roundtrip_rights_xml) ? roundtrip_rights_xml : rights_xml }
   let(:normalized_orig_rights_xml) do
@@ -49,7 +53,7 @@ RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
                 type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
                 label: 'sul-logo.png',
                 filename: 'sul-logo.png',
-                size: 19823,
+                size: 19_823,
                 version: 1,
                 hasMessageDigests: [
                   {
@@ -133,8 +137,13 @@ RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
 
   context 'when mapping from roundtrip Fedora to (roundtrip) Cocina' do
     let(:roundtrip_fedora_item) { Dor::Item.new }
-    let(:roundtrip_access_props) { Cocina::FromFedora::DROAccess.props(roundtrip_fedora_item.rightsMetadata, roundtrip_fedora_item.embargoMetadata) }
-    let(:roundtrip_structural_props) { Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: Cocina::Models::Vocab.book, notifier: notifier) }
+    let(:roundtrip_access_props) do
+      Cocina::FromFedora::DROAccess.props(roundtrip_fedora_item.rightsMetadata, roundtrip_fedora_item.embargoMetadata)
+    end
+    let(:roundtrip_structural_props) do
+      Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: Cocina::Models::Vocab.book,
+                                                                     notifier: notifier)
+    end
 
     before do
       roundtrip_rights_metadata_ds = Dor::RightsMetadataDS.from_xml(roundtrip_rights_metadata_xml)
@@ -155,8 +164,13 @@ RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
 
   context 'when mapping from normalized orig Fedora rights_xml to (roundtrip) Cocina' do
     let(:roundtrip_fedora_item) { Dor::Item.new }
-    let(:roundtrip_access_props) { Cocina::FromFedora::DROAccess.props(roundtrip_fedora_item.rightsMetadata, roundtrip_fedora_item.embargoMetadata) }
-    let(:roundtrip_structural_props) { Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: Cocina::Models::Vocab.book, notifier: notifier) }
+    let(:roundtrip_access_props) do
+      Cocina::FromFedora::DROAccess.props(roundtrip_fedora_item.rightsMetadata, roundtrip_fedora_item.embargoMetadata)
+    end
+    let(:roundtrip_structural_props) do
+      Cocina::FromFedora::DroStructural.props(roundtrip_fedora_item, type: Cocina::Models::Vocab.book,
+                                                                     notifier: notifier)
+    end
 
     before do
       roundtrip_rights_metadata_ds = Dor::RightsMetadataDS.from_xml(normalized_orig_rights_xml)

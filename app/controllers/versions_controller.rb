@@ -46,7 +46,8 @@ class VersionsController < ApplicationController
   def openable
     render plain: VersionService.can_open?(@cocina_object, open_params).to_s
   rescue Preservation::Client::Error => e
-    render build_error('Unable to check if openable due to preservation client error', e, status: :internal_server_error)
+    render build_error('Unable to check if openable due to preservation client error', e,
+                       status: :internal_server_error)
   end
 
   private

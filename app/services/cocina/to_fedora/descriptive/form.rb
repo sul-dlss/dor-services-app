@@ -33,7 +33,9 @@ module Cocina
         end
 
         def write
-          other_forms = Array(forms).reject { |form| physical_description?(form) || manuscript?(form) || collection?(form) }
+          other_forms = Array(forms).reject do |form|
+            physical_description?(form) || manuscript?(form) || collection?(form)
+          end
           is_manuscript = Array(forms).any? { |form| manuscript?(form) }
           is_collection = Array(forms).any? { |form| collection?(form) }
 
@@ -78,7 +80,9 @@ module Cocina
 
         def write_parallel_forms(form, is_manuscript, is_collection)
           alt_rep_group = id_generator.next_altrepgroup
-          form.parallelValue.each { |form_value| write_form(form_value, is_manuscript, is_collection, alt_rep_group: alt_rep_group) }
+          form.parallelValue.each do |form_value|
+            write_form(form_value, is_manuscript, is_collection, alt_rep_group: alt_rep_group)
+          end
         end
 
         def write_form(form, is_manuscript, is_collection, alt_rep_group: nil)
@@ -90,7 +94,9 @@ module Cocina
         end
 
         def write_physical_descriptions
-          parallel_physical_descr_forms, other_physical_descr_forms = Array(forms).select { |form| physical_description?(form) }.partition { |form| form.parallelValue.present? }
+          parallel_physical_descr_forms, other_physical_descr_forms = Array(forms).select do |form|
+                                                                        physical_description?(form)
+                                                                      end.partition { |form| form.parallelValue.present? }
           write_physical_description(other_physical_descr_forms)
 
           parallel_physical_descr_forms.each do |parallel_physical_descr_form|
@@ -109,7 +115,9 @@ module Cocina
           # These all get grouped together to form a single physicalDescription.
           other_forms = []
           other_notes = []
-          Array(physical_descr_forms).select { |physical_descr_form| physical_description?(physical_descr_form, type: form&.type) }.each do |physical_descr_form|
+          Array(physical_descr_forms).select do |physical_descr_form|
+            physical_description?(physical_descr_form, type: form&.type)
+          end.each do |physical_descr_form|
             if physical_descr_form.groupedValue.present?
               grouped_forms << physical_descr_form
             elsif merge_form?(physical_descr_form, display_label) || alt_rep_group
@@ -123,10 +131,16 @@ module Cocina
           if other_forms.present?
             write_basic_physical_description(other_forms, other_notes, alt_rep_group: alt_rep_group, form: form)
           else
-            other_notes.each { |other_note| write_basic_physical_description([], [other_note], alt_rep_group: alt_rep_group, form: form) }
+            other_notes.each do |other_note|
+              write_basic_physical_description([], [other_note], alt_rep_group: alt_rep_group, form: form)
+            end
           end
-          simple_forms.each { |simple_form| write_basic_physical_description([simple_form], [simple_form], alt_rep_group: alt_rep_group, form: form) }
-          grouped_forms.each { |grouped_form| write_grouped_physical_description(grouped_form, alt_rep_group: alt_rep_group, form: form) }
+          simple_forms.each do |simple_form|
+            write_basic_physical_description([simple_form], [simple_form], alt_rep_group: alt_rep_group, form: form)
+          end
+          grouped_forms.each do |grouped_form|
+            write_grouped_physical_description(grouped_form, alt_rep_group: alt_rep_group, form: form)
+          end
         end
         # rubocop:enable Metrics/CyclomaticComplexity
         # rubocop:enable Metrics/PerceivedComplexity
@@ -168,7 +182,8 @@ module Cocina
               attrs[:type] = form_type if PHYSICAL_DESCRIPTION_TAG.fetch(form_type) == :form && form_type != 'form'
             end.compact
 
-            xml.public_send PHYSICAL_DESCRIPTION_TAG.fetch(form_type), form_value.value, attributes.merge(uri_attrs(form_value)).merge(uri_attrs(form))
+            xml.public_send PHYSICAL_DESCRIPTION_TAG.fetch(form_type), form_value.value,
+                            attributes.merge(uri_attrs(form_value)).merge(uri_attrs(form))
           end
         end
 
@@ -206,10 +221,14 @@ module Cocina
         end
 
         def datacite_resource_type
-          self_deposit_types = forms.find { |candidate| candidate.source.value == 'Stanford self-deposit resource types' }
+          self_deposit_types = forms.find do |candidate|
+            candidate.source.value == 'Stanford self-deposit resource types'
+          end
           return unless self_deposit_types
 
-          parts = self_deposit_types.structuredValue.select { |val| val.type == 'subtype' }.presence || self_deposit_types.structuredValue
+          parts = self_deposit_types.structuredValue.select do |val|
+            val.type == 'subtype'
+          end.presence || self_deposit_types.structuredValue
           parts.map(&:value).join('; ')
         end
 

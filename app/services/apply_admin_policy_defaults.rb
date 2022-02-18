@@ -45,7 +45,8 @@ class ApplyAdminPolicyDefaults
   def validate_object_type!
     return if @cocina_object.dro? || @cocina_object.collection?
 
-    raise UnsupportedObjectTypeError, "#{@cocina_object.externalIdentifier} is a #{@cocina_object.class} and this type cannot have APO defaults applied"
+    raise UnsupportedObjectTypeError,
+          "#{@cocina_object.externalIdentifier} is a #{@cocina_object.class} and this type cannot have APO defaults applied"
   end
 
   def validate_workflow_state!
@@ -109,7 +110,9 @@ class ApplyAdminPolicyDefaults
     when :file
       default_access_from_apo.slice(*FILE_ACCESS_PROPS).tap { |access| access[:access] = FILE_ACCESS[access[:access]] }
     when :collection
-      default_access_from_apo.slice(*COLLECTION_ACCESS_PROPS).tap { |access| access[:access] = COLLECTION_ACCESS[access[:access]] }
+      default_access_from_apo.slice(*COLLECTION_ACCESS_PROPS).tap do |access|
+        access[:access] = COLLECTION_ACCESS[access[:access]]
+      end
     when :dro
       default_access_from_apo
     end

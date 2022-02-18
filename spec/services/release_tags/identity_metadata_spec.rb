@@ -42,7 +42,9 @@ RSpec.describe ReleaseTags::IdentityMetadata do
   let(:releases) { described_class.for(cocina_item) }
   let(:bryar_trans_am_admin_tags) { AdministrativeTags.for(pid: pid) }
   let(:array_of_times) do
-    ['2015-01-06 23:33:47Z', '2015-01-07 23:33:47Z', '2015-01-08 23:33:47Z', '2015-01-09 23:33:47Z'].map { |x| Time.parse(x).iso8601 }
+    ['2015-01-06 23:33:47Z', '2015-01-07 23:33:47Z', '2015-01-08 23:33:47Z', '2015-01-09 23:33:47Z'].map do |x|
+      Time.parse(x).iso8601
+    end
   end
 
   before do
@@ -56,8 +58,10 @@ RSpec.describe ReleaseTags::IdentityMetadata do
   describe 'Tag sorting, combining, and comparision functions' do
     let(:dummy_tags) do
       [
-        { 'when' => array_of_times[0], 'tag' => "Project: Jim Harbaugh's Finest Moments At Stanford.", 'what' => 'self' },
-        { 'when' => array_of_times[1], 'tag' => "Project: Jim Harbaugh's Even Finer Moments At Michigan.", 'what' => 'collection' }
+        { 'when' => array_of_times[0], 'tag' => "Project: Jim Harbaugh's Finest Moments At Stanford.",
+          'what' => 'self' },
+        { 'when' => array_of_times[1], 'tag' => "Project: Jim Harbaugh's Even Finer Moments At Michigan.",
+          'what' => 'collection' }
       ]
     end
 
@@ -82,19 +86,23 @@ RSpec.describe ReleaseTags::IdentityMetadata do
 
       it 'returns a tag when it does apply' do
         valid_tag = { 'when' => array_of_times[3], 'tag' => 'Project : Revs' }
-        expect(releases.send(:latest_applicable_release_tag_in_array, dummy_tags << valid_tag, bryar_trans_am_admin_tags)).to eq(valid_tag)
+        expect(releases.send(:latest_applicable_release_tag_in_array, dummy_tags << valid_tag,
+                             bryar_trans_am_admin_tags)).to eq(valid_tag)
       end
 
       it 'returns a valid tag even if there are non applicable older ones in front of it' do
         valid_tag = { 'when' => array_of_times[2], 'tag' => 'Project : Revs' }
-        newer_no_op_tag = { 'when' => array_of_times[3], 'tag' => "Jim Harbaugh's Nonexistent Moments With The Raiders" }
-        expect(releases.send(:latest_applicable_release_tag_in_array, dummy_tags + [valid_tag, newer_no_op_tag], bryar_trans_am_admin_tags)).to eq(valid_tag)
+        newer_no_op_tag = { 'when' => array_of_times[3],
+                            'tag' => "Jim Harbaugh's Nonexistent Moments With The Raiders" }
+        expect(releases.send(:latest_applicable_release_tag_in_array, dummy_tags + [valid_tag, newer_no_op_tag],
+                             bryar_trans_am_admin_tags)).to eq(valid_tag)
       end
 
       it 'returns the most recent tag when there are two valid tags' do
         valid_tag = { 'when' => array_of_times[2], 'tag' => 'Project : Revs' }
         newer_valid_tag = { 'when' => array_of_times[3], 'tag' => 'tag : test1' }
-        expect(releases.send(:latest_applicable_release_tag_in_array, dummy_tags + [valid_tag, newer_valid_tag], bryar_trans_am_admin_tags)).to eq(newer_valid_tag)
+        expect(releases.send(:latest_applicable_release_tag_in_array, dummy_tags + [valid_tag, newer_valid_tag],
+                             bryar_trans_am_admin_tags)).to eq(newer_valid_tag)
       end
     end
 
@@ -114,7 +122,8 @@ RSpec.describe ReleaseTags::IdentityMetadata do
     describe '#tags_for_what_value' do
       it 'only returns tags for the specific what value' do
         expect(releases.send(:tags_for_what_value, { 'Revs' => dummy_tags }, 'self')).to eq('Revs' => [dummy_tags[0]])
-        expect(releases.send(:tags_for_what_value, { 'Revs' => dummy_tags, 'FRDA' => dummy_tags }, 'collection')).to eq('Revs' => [dummy_tags[1]], 'FRDA' => [dummy_tags[1]])
+        expect(releases.send(:tags_for_what_value, { 'Revs' => dummy_tags, 'FRDA' => dummy_tags },
+                             'collection')).to eq('Revs' => [dummy_tags[1]], 'FRDA' => [dummy_tags[1]])
       end
     end
 
@@ -128,7 +137,9 @@ RSpec.describe ReleaseTags::IdentityMetadata do
     end
 
     it 'only returns self release tags' do
-      expect(releases.send(:self_release_tags, 'Revs' => dummy_tags, 'FRDA' => dummy_tags, 'BV' => [dummy_tags[1]])).to eq('Revs' => [dummy_tags[0]], 'FRDA' => [dummy_tags[0]])
+      expect(releases.send(:self_release_tags, 'Revs' => dummy_tags, 'FRDA' => dummy_tags,
+                                               'BV' => [dummy_tags[1]])).to eq('Revs' => [dummy_tags[0]],
+                                                                               'FRDA' => [dummy_tags[0]])
     end
   end
 
@@ -154,9 +165,12 @@ RSpec.describe ReleaseTags::IdentityMetadata do
     it 'returns the releases for an item that has release tags' do
       exp_result = {
         'Revs' => [
-          { 'what' => 'collection', 'when' => Time.zone.parse('2015-01-06 23:33:47Z'), 'who' => 'carrickr', 'release' => true },
-          { 'what' => 'self', 'when' => Time.zone.parse('2015-01-06 23:33:54Z'), 'who' => 'carrickr', 'release' => true },
-          { 'what' => 'self', 'when' => Time.zone.parse('2015-01-06 23:40:01Z'), 'who' => 'carrickr', 'release' => false }
+          { 'what' => 'collection', 'when' => Time.zone.parse('2015-01-06 23:33:47Z'), 'who' => 'carrickr',
+            'release' => true },
+          { 'what' => 'self', 'when' => Time.zone.parse('2015-01-06 23:33:54Z'), 'who' => 'carrickr',
+            'release' => true },
+          { 'what' => 'self', 'when' => Time.zone.parse('2015-01-06 23:40:01Z'), 'who' => 'carrickr',
+            'release' => false }
         ]
       }
       expect(release_tags).to eq exp_result
@@ -174,7 +188,8 @@ RSpec.describe ReleaseTags::IdentityMetadata do
     let(:collection_release_tags) do
       {
         'Searchworks' => [
-          { 'tag' => 'true', 'what' => 'collection', 'when' => Time.zone.parse('2015-01-06 23:33:47Z'), 'who' => 'carrickr', 'release' => true }
+          { 'tag' => 'true', 'what' => 'collection', 'when' => Time.zone.parse('2015-01-06 23:33:47Z'),
+            'who' => 'carrickr', 'release' => true }
         ]
       }
     end

@@ -26,7 +26,9 @@ class ShelvableFilesStager
 
       # If they preserved the file in a previous version, but didn't shelve it, we can copy it to staging.
       # We infer that the file is unchanged if was not also added to preservation in this version.
-      next if file_deltas[:added].include?(file) && file_previously_in_preservation?(file) && copy_file_from_preservation(file)
+      if file_deltas[:added].include?(file) && file_previously_in_preservation?(file) && copy_file_from_preservation(file)
+        next
+      end
 
       raise FileNotFound, "Unable to find #{file} in the content directory"
     end
@@ -73,7 +75,8 @@ class ShelvableFilesStager
   # @raise [Dor::Exception] if something went wrong.
   def preserve_diff
     @preserve_diff ||= begin
-      inventory_diff = Preservation::Client.objects.content_inventory_diff(druid: pid, content_metadata: content_metadata, subset: 'preserve')
+      inventory_diff = Preservation::Client.objects.content_inventory_diff(druid: pid,
+                                                                           content_metadata: content_metadata, subset: 'preserve')
       inventory_diff.group_difference('content')
     end
   rescue Preservation::Client::Error => e

@@ -76,7 +76,10 @@ RSpec.describe Dro do
     end
 
     context 'with complete DRO' do
-      let(:dro) { create(:dro, :with_dro_description, :with_dro_identification, :with_structural, :with_geographic, external_identifier: druid) }
+      let(:dro) do
+        create(:dro, :with_dro_description, :with_dro_identification, :with_structural, :with_geographic,
+               external_identifier: druid)
+      end
 
       it 'returns a Cocina::Model::DRO' do
         expect(dro.to_cocina).to eq(cocina_dro)

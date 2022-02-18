@@ -14,7 +14,9 @@ RSpec.describe Notifications::ObjectUpdated do
 
   let(:channel) { instance_double(Notifications::RabbitChannel, topic: topic) }
   let(:topic) { instance_double(Bunny::Exchange, publish: true) }
-  let(:message) { "{\"model\":{\"data\":\"455\"},\"created_at\":\"#{created_at.to_datetime.httpdate}\",\"modified_at\":\"#{modified_at.to_datetime.httpdate}\"}" }
+  let(:message) do
+    "{\"model\":{\"data\":\"455\"},\"created_at\":\"#{created_at.to_datetime.httpdate}\",\"modified_at\":\"#{modified_at.to_datetime.httpdate}\"}"
+  end
 
   context 'when RabbitMQ is enabled' do
     before do

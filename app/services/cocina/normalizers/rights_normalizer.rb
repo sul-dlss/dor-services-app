@@ -64,7 +64,9 @@ module Cocina
 
       def normalize_use_and_reproduction
         # Pending https://github.com/sul-dlss/dor-services-app/issues/2752
-        ng_xml.root.xpath('//use/human[@type="useAndReproduction" and text()]').each { |human_node| human_node.content = human_node.content }
+        ng_xml.root.xpath('//use/human[@type="useAndReproduction" and text()]').each do |human_node|
+          human_node.content = human_node.content
+        end
       end
 
       def normalize_discover

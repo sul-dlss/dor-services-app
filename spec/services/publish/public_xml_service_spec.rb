@@ -230,7 +230,8 @@ RSpec.describe Publish::PublicXmlService do
       end
 
       it 'generated dublin core' do
-        expect(ng_xml.at_xpath('/publicObject/oai_dc:dc', 'oai_dc' => 'http://www.openarchives.org/OAI/2.0/oai_dc/')).to be
+        expect(ng_xml.at_xpath('/publicObject/oai_dc:dc',
+                               'oai_dc' => 'http://www.openarchives.org/OAI/2.0/oai_dc/')).to be
       end
 
       it 'relationships' do
@@ -315,7 +316,8 @@ RSpec.describe Publish::PublicXmlService do
         expect(ng_xml.at_xpath('/publicObject/rightsMetadata')).to be
         expect(ng_xml.at_xpath('/publicObject/mods:mods', 'mods' => 'http://www.loc.gov/mods/v3')).to be
         expect(ng_xml.at_xpath('/publicObject/rdf:RDF', 'rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')).to be
-        expect(ng_xml.at_xpath('/publicObject/oai_dc:dc', 'oai_dc' => 'http://www.openarchives.org/OAI/2.0/oai_dc/')).to be
+        expect(ng_xml.at_xpath('/publicObject/oai_dc:dc',
+                               'oai_dc' => 'http://www.openarchives.org/OAI/2.0/oai_dc/')).to be
       end
     end
 
@@ -370,9 +372,11 @@ RSpec.describe Publish::PublicXmlService do
         end
 
         it 'raises an error' do
-          expect { xml }.to raise_error(Dor::DataError, 'The contentMetadata of druid:bc123df4567 has an externalFile ' \
-                                                        "reference to druid:cg767mn6478, cg767mn6478_1, but druid:cg767mn6478 doesn't have " \
-                                                        'a matching resource node in its contentMetadata')
+          expect do
+            xml
+          end.to raise_error(Dor::DataError, 'The contentMetadata of druid:bc123df4567 has an externalFile ' \
+                                             "reference to druid:cg767mn6478, cg767mn6478_1, but druid:cg767mn6478 doesn't have " \
+                                             'a matching resource node in its contentMetadata')
         end
       end
 
@@ -402,7 +406,10 @@ RSpec.describe Publish::PublicXmlService do
         end
 
         it 'raises an error' do
-          expect { xml }.to raise_error(Dor::DataError, 'Unable to find a file node with id="2542A.jp2" (child of druid:bc123df4567)')
+          expect do
+            xml
+          end.to raise_error(Dor::DataError,
+                             'Unable to find a file node with id="2542A.jp2" (child of druid:bc123df4567)')
         end
       end
 

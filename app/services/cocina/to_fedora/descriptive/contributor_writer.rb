@@ -15,7 +15,8 @@ module Cocina
         # @params [IdGenerator] id_generator
         # @params [String] name_title_group_indexes
         def self.write(xml:, contributor:, id_generator:, name_title_group_indexes: {})
-          new(xml: xml, contributor: contributor, id_generator: id_generator, name_title_group_indexes: name_title_group_indexes).write
+          new(xml: xml, contributor: contributor, id_generator: id_generator,
+              name_title_group_indexes: name_title_group_indexes).write
         end
 
         def initialize(xml:, contributor:, id_generator:, name_title_group_indexes: {})
@@ -34,7 +35,8 @@ module Cocina
               altrepgroup_id = id_generator.next_altrepgroup
               parallel_values.each_with_index do |parallel_value, index|
                 name_title_group = name_title_group_indexes.dig(0, index)
-                write_parallel_contributor(contributor, contributor.name.first, parallel_value, name_title_group, altrepgroup_id)
+                write_parallel_contributor(contributor, contributor.name.first, parallel_value, name_title_group,
+                                           altrepgroup_id)
               end
             else
               write_contributor(contributor)

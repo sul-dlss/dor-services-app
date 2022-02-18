@@ -90,7 +90,10 @@ module Cocina
           return unless status_value
 
           status_value.downcase.tap do |value|
-            notifier.warn("#{language_element.name} usage attribute not downcased", { value: language_element[:usage] }) if status_value != value
+            if status_value != value
+              notifier.warn("#{language_element.name} usage attribute not downcased",
+                            { value: language_element[:usage] })
+            end
           end
         end
       end

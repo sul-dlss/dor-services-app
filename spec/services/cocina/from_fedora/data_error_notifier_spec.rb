@@ -16,12 +16,16 @@ RSpec.describe Cocina::FromFedora::DataErrorNotifier do
 
     it 'Honeybadger notifies for warning' do
       notifier.warn('Danger, Will Robinson!', { type: 'robot' })
-      expect(Honeybadger).to have_received(:notify).with('[DATA WARNING] Danger, Will Robinson!', { context: { druid: 'druid:zq087nd5094', type: 'robot' }, tags: 'data_warning' })
+      expect(Honeybadger).to have_received(:notify).with('[DATA WARNING] Danger, Will Robinson!',
+                                                         { context: { druid: 'druid:zq087nd5094', type: 'robot' },
+                                                           tags: 'data_warning' })
     end
 
     it 'Honeybadger notifies for error' do
       notifier.error('Fix it! Fix it! Fix it!', { type: 'robot' })
-      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Fix it! Fix it! Fix it!', { context: { druid: 'druid:zq087nd5094', type: 'robot' }, tags: 'data_error' })
+      expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Fix it! Fix it! Fix it!',
+                                                         { context: { druid: 'druid:zq087nd5094', type: 'robot' },
+                                                           tags: 'data_error' })
     end
   end
 

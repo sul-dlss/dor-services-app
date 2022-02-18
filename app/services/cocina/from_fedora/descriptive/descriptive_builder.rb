@@ -38,7 +38,8 @@ module Cocina
         # @return [Hash] a hash that can be mapped to a cocina descriptive model
         def build(resource_element:, purl: nil, require_title: true)
           cocina_description = {}
-          title_result = @title_builder.build(resource_element: resource_element, require_title: require_title, notifier: notifier)
+          title_result = @title_builder.build(resource_element: resource_element, require_title: require_title,
+                                              notifier: notifier)
           cocina_description[:title] = title_result if title_result.present?
 
           purl_value = purl || Descriptive::Purl.primary_purl_value(resource_element, purl)

@@ -14,7 +14,9 @@ module Cocina
     def valid?
       return true unless meets_preconditions?
 
-      @error = "An object (#{duplicate_druid}) with the source ID '#{cocina_dro.identification.sourceId}' has already been registered." if duplicate_druid
+      if duplicate_druid
+        @error = "An object (#{duplicate_druid}) with the source ID '#{cocina_dro.identification.sourceId}' has already been registered."
+      end
 
       @error.nil?
     end

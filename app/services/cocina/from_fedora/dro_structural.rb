@@ -54,7 +54,8 @@ module Cocina
       end
 
       def create_member_order
-        viewing_direction = ViewingDirectionHelper.viewing_direction(druid: fedora_item.pid, content_ng_xml: fedora_item.contentMetadata.ng_xml)
+        viewing_direction = ViewingDirectionHelper.viewing_direction(druid: fedora_item.pid,
+                                                                     content_ng_xml: fedora_item.contentMetadata.ng_xml)
         viewing_direction ||= 'left-to-right'
 
         [{ viewingDirection: viewing_direction }]

@@ -19,7 +19,12 @@ module Cocina
         def initialize(root:, access:, structural:)
           @root = root
           # citation-only (object level) gets mapped to dark (file level)
-          @access = access.access == 'citation-only' ? Cocina::Models::DROAccess.new(access: 'dark', download: 'none') : access
+          @access = if access.access == 'citation-only'
+                      Cocina::Models::DROAccess.new(access: 'dark',
+                                                    download: 'none')
+                    else
+                      access
+                    end
           @structural = structural
         end
 
@@ -82,12 +87,18 @@ module Cocina
                 cdl_node
               elsif world_read_access?(file_access)
                 world_node = Nokogiri::XML::Node.new('world', document)
-                world_node.set_attribute('rule', 'no-download') if no_download?(file_access) || location_based_download?(file_access) || stanford_download?(file_access)
+                if no_download?(file_access) || location_based_download?(file_access) || stanford_download?(file_access)
+                  world_node.set_attribute('rule',
+                                           'no-download')
+                end
                 world_node
               elsif stanford_read_access?(file_access)
                 group_node = Nokogiri::XML::Node.new('group', document)
                 group_node.content = 'stanford'
-                group_node.set_attribute('rule', 'no-download') if no_download?(file_access) || location_based_download?(file_access)
+                if no_download?(file_access) || location_based_download?(file_access)
+                  group_node.set_attribute('rule',
+                                           'no-download')
+                end
                 group_node
               elsif location_based_access?(file_access)
                 loc_node = Nokogiri::XML::Node.new('location', document)

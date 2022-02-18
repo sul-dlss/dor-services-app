@@ -15,7 +15,8 @@ module Cocina
     # rubocop:enable Metrics/ParameterLists
 
     def self.trial_create(cocina_object, notifier:, cocina_object_store:)
-      new(cocina_object_store: cocina_object_store).create(cocina_object, druid: cocina_object.externalIdentifier, event_factory: nil, persister: nil, trial: true, notifier: notifier)
+      new(cocina_object_store: cocina_object_store).create(cocina_object, druid: cocina_object.externalIdentifier,
+                                                                          event_factory: nil, persister: nil, trial: true, notifier: notifier)
     end
 
     def initialize(cocina_object_store: CocinaObjectStore.new)
@@ -87,8 +88,12 @@ module Cocina
                                  label: cocina_admin_policy.label).tap do |fedora_apo|
         add_description(fedora_apo, cocina_admin_policy, trial: trial)
 
-        Cocina::ToFedora::DefaultRights.write(fedora_apo.defaultObjectRights, cocina_admin_policy.administrative.defaultAccess) if cocina_admin_policy.administrative.defaultAccess
-        Cocina::ToFedora::AdministrativeMetadata.write(fedora_apo.administrativeMetadata, cocina_admin_policy.administrative)
+        if cocina_admin_policy.administrative.defaultAccess
+          Cocina::ToFedora::DefaultRights.write(fedora_apo.defaultObjectRights,
+                                                cocina_admin_policy.administrative.defaultAccess)
+        end
+        Cocina::ToFedora::AdministrativeMetadata.write(fedora_apo.administrativeMetadata,
+                                                       cocina_admin_policy.administrative)
         Cocina::ToFedora::Roles.write(fedora_apo, Array(cocina_admin_policy.administrative.roles))
         Cocina::ToFedora::Identity.initialize_identity(fedora_apo)
       end
@@ -114,7 +119,10 @@ module Cocina
 
         add_dro_tags(druid, cocina_item)
 
-        Cocina::ToFedora::DROAccess.apply(fedora_item, cocina_item.access, cocina_item.structural) if cocina_item.access || cocina_item.structural
+        if cocina_item.access || cocina_item.structural
+          Cocina::ToFedora::DROAccess.apply(fedora_item, cocina_item.access,
+                                            cocina_item.structural)
+        end
 
         fedora_item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: druid, type: cocina_item.type, structural: cocina_item.structural,
                                                                                                   cocina_object_store: cocina_object_store)
@@ -144,10 +152,15 @@ module Cocina
                           catkey: catkey_for(cocina_collection)).tap do |fedora_collection|
         add_description(fedora_collection, cocina_collection, trial: trial)
         add_collection_tags(druid, cocina_collection) unless trial
-        Cocina::ToFedora::CollectionAccess.apply(fedora_collection, cocina_collection.access) if cocina_collection.access
+        if cocina_collection.access
+          Cocina::ToFedora::CollectionAccess.apply(fedora_collection,
+                                                   cocina_collection.access)
+        end
         Cocina::ToFedora::Identity.initialize_identity(fedora_collection)
-        Cocina::ToFedora::Identity.apply_catalog_links(fedora_collection, catalog_links: cocina_collection.identification&.catalogLinks)
-        Cocina::ToFedora::Identity.apply_release_tags(fedora_collection, release_tags: cocina_collection.administrative&.releaseTags)
+        Cocina::ToFedora::Identity.apply_catalog_links(fedora_collection,
+                                                       catalog_links: cocina_collection.identification&.catalogLinks)
+        Cocina::ToFedora::Identity.apply_release_tags(fedora_collection,
+                                                      release_tags: cocina_collection.administrative&.releaseTags)
       end
     end
 
@@ -168,7 +181,8 @@ module Cocina
         Cocina::ToFedora::Identity.apply_label(fedora_object, label: label)
       elsif cocina_object.description
         description = AddPurlToDescription.call(cocina_object.description, fedora_object.pid)
-        fedora_object.descMetadata.content = Cocina::ToFedora::Descriptive.transform(description, fedora_object.pid).to_xml
+        fedora_object.descMetadata.content = Cocina::ToFedora::Descriptive.transform(description,
+                                                                                     fedora_object.pid).to_xml
         fedora_object.descMetadata.content_will_change!
         Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label)
       else
@@ -179,7 +193,8 @@ module Cocina
 
     def add_dro_tags(pid, cocina_object)
       tags = []
-      process_tag = ToFedora::ProcessTag.map(cocina_object.type, cocina_object.structural&.hasMemberOrders&.first&.viewingDirection)
+      process_tag = ToFedora::ProcessTag.map(cocina_object.type,
+                                             cocina_object.structural&.hasMemberOrders&.first&.viewingDirection)
       tags << process_tag if process_tag
       tags << "Project : #{cocina_object.administrative.partOfProject}" if cocina_object.administrative.partOfProject
       AdministrativeTags.create(pid: pid, tags: tags) if tags.any?

@@ -37,7 +37,8 @@ RSpec.describe "Looking up an item's catkey by it's barcode" do
   end
 
   it 'looks up an item by barcode' do
-    stub_request(:get, format(barcode_url, barcode: barcode)).to_return(body: barcode_body.to_json, headers: { 'Content-Length': 157 })
+    stub_request(:get, format(barcode_url, barcode: barcode)).to_return(body: barcode_body.to_json,
+                                                                        headers: { 'Content-Length': 157 })
 
     get "/v1/catalog/catkey?barcode=#{barcode}", headers: { 'Authorization' => "Bearer #{jwt}" }
 
@@ -45,7 +46,9 @@ RSpec.describe "Looking up an item's catkey by it's barcode" do
   end
 
   it 'returns nothing when catkey could not be found in returned response' do
-    stub_request(:get, format(barcode_url, barcode: barcode_with_no_catkey)).to_return(body: barcode_with_no_catkey_body.to_json, headers: { 'Content-Length': 93 })
+    stub_request(:get, format(barcode_url, barcode: barcode_with_no_catkey)).to_return(
+      body: barcode_with_no_catkey_body.to_json, headers: { 'Content-Length': 93 }
+    )
 
     get "/v1/catalog/catkey?barcode=#{barcode_with_no_catkey}", headers: { 'Authorization' => "Bearer #{jwt}" }
 

@@ -6,7 +6,8 @@ RSpec.describe ShelvingService do
   let(:druid) { 'druid:ng782rw8378' }
 
   let(:cocina_object) do
-    instance_double(Cocina::Models::DRO, externalIdentifier: druid, structural: structural, type: Cocina::Models::Vocab.book)
+    instance_double(Cocina::Models::DRO, externalIdentifier: druid, structural: structural,
+                                         type: Cocina::Models::Vocab.book)
   end
 
   let(:structural) do
@@ -22,7 +23,8 @@ RSpec.describe ShelvingService do
                                                 version: 1,
                                                 hasMessageDigests: [{ type: 'sha1',
                                                                       digest: '61dfac472b7904e1413e0cbf4de432bda2a97627' },
-                                                                    { type: 'md5', digest: 'e2837b9f02e0b0b76f526eeb81c7aa7b' }],
+                                                                    { type: 'md5',
+                                                                      digest: 'e2837b9f02e0b0b76f526eeb81c7aa7b' }],
                                                 access: { access: 'world', download: 'world' },
                                                 administrative: { publish: true, sdrPreserve: false, shelve: true },
                                                 hasMimeType: 'text/plain' }] },
@@ -80,7 +82,8 @@ RSpec.describe ShelvingService do
       expect(DigitalStacksService).to have_received(:remove_from_stacks).with(stacks_object_pathname, mock_diff)
       expect(DigitalStacksService).to have_received(:rename_in_stacks).with(stacks_object_pathname, mock_diff)
       expect(DigitalStacksService).to have_received(:shelve_to_stacks).with(Pathname, stacks_object_pathname, mock_diff)
-      expect(Cocina::ToFedora::ContentMetadataGenerator).to have_received(:generate).with(druid: druid, structural: structural, type: Cocina::Models::Vocab.book)
+      expect(Cocina::ToFedora::ContentMetadataGenerator).to have_received(:generate).with(druid: druid,
+                                                                                          structural: structural, type: Cocina::Models::Vocab.book)
     end
   end
 
@@ -104,7 +107,8 @@ RSpec.describe ShelvingService do
       expect(DigitalStacksService).to have_received(:remove_from_stacks).with(stacks_object_pathname, mock_diff)
       expect(DigitalStacksService).to have_received(:rename_in_stacks).with(stacks_object_pathname, mock_diff)
       expect(DigitalStacksService).to have_received(:shelve_to_stacks).with(Pathname, stacks_object_pathname, mock_diff)
-      expect(Cocina::ToFedora::ContentMetadataGenerator).to have_received(:generate).with(druid: druid, structural: structural, type: Cocina::Models::Vocab.book)
+      expect(Cocina::ToFedora::ContentMetadataGenerator).to have_received(:generate).with(druid: druid,
+                                                                                          structural: structural, type: Cocina::Models::Vocab.book)
     end
   end
 

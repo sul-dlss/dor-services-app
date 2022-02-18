@@ -7,6 +7,7 @@ class UnpublishJob < ApplicationJob
   def perform(druid:, background_job_result:)
     background_job_result.processing!
     UnpublishService.unpublish(druid: druid)
-    EventFactory.create(druid: druid, event_type: 'unpublish_complete', data: { background_job_result_id: background_job_result.id })
+    EventFactory.create(druid: druid, event_type: 'unpublish_complete',
+                        data: { background_job_result_id: background_job_result.id })
   end
 end

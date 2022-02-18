@@ -61,7 +61,8 @@ module Publish
     end
 
     def purl_druid
-      @purl_druid ||= DruidTools::PurlDruid.new cocina_object.externalIdentifier, Settings.stacks.local_document_cache_root
+      @purl_druid ||= DruidTools::PurlDruid.new cocina_object.externalIdentifier,
+                                                Settings.stacks.local_document_cache_root
     end
 
     ##

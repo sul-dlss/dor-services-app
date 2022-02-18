@@ -3,7 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe 'Operations regarding object versions' do
-  let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: 'druid:mx123qw2323', version: version) }
+  let(:cocina_object) do
+    instance_double(Cocina::Models::DRO, externalIdentifier: 'druid:mx123qw2323', version: version)
+  end
 
   let(:version) { 1 }
 
@@ -156,7 +158,8 @@ RSpec.describe 'Operations regarding object versions' do
 
     context 'when preservation client call fails' do
       before do
-        allow(VersionService).to receive(:can_open?).and_raise(Preservation::Client::UnexpectedResponseError, 'Oops, a 500')
+        allow(VersionService).to receive(:can_open?).and_raise(Preservation::Client::UnexpectedResponseError,
+                                                               'Oops, a 500')
       end
 
       it 'returns an error' do

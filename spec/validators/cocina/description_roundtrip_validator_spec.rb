@@ -142,7 +142,9 @@ RSpec.describe Cocina::DescriptionRoundtripValidator do
 
     context 'when invalid' do
       before do
-        allow(Cocina::Normalizers::ModsNormalizer).to receive(:normalize).and_return(Nokogiri::XML(mods.gsub('Chi Running', 'Zen of Running')))
+        allow(Cocina::Normalizers::ModsNormalizer).to receive(:normalize).and_return(Nokogiri::XML(mods.gsub(
+                                                                                                     'Chi Running', 'Zen of Running'
+                                                                                                   )))
       end
 
       it 'returns failure' do

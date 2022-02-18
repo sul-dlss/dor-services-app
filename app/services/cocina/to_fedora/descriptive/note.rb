@@ -14,7 +14,8 @@ module Cocina
 
         # notes with a displayLabel set to any of these values will produce an `abstract` XML node
         def self.display_label_to_abstract_type
-          ['Content advice', 'Subject', 'Abstract', 'Review', 'Summary', 'Scope and content', 'Scope and Content', 'Content Advice']
+          ['Content advice', 'Subject', 'Abstract', 'Review', 'Summary', 'Scope and content', 'Scope and Content',
+           'Content Advice']
         end
 
         # notes with these types will produce an `abstract` XML node
@@ -59,7 +60,8 @@ module Cocina
         end
 
         def tag(note, tag_name, attributes)
-          attributes[:type] = note.type if note.type && note.type != 'abstract' && [:tableOfContents, :targetAudience].exclude?(tag_name)
+          attributes[:type] = note.type if note.type && note.type != 'abstract' && %i[tableOfContents
+                                                                                      targetAudience].exclude?(tag_name)
           value = if note.structuredValue.present?
                     note.structuredValue.map(&:value).join(' -- ')
                   else

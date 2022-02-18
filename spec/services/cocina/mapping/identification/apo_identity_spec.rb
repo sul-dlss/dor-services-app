@@ -45,7 +45,8 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
                     agreement_object_id: agreement_object_id,
                     identityMetadata: Dor::IdentityMetadataDS.from_xml(identity_metadata_xml),
                     descMetadata: instance_double(Dor::DescMetadataDS, ng_xml: mods_ng_xml),
-                    defaultObjectRights: instance_double(Dor::DefaultObjectRightsDS, content: default_object_rights_xml),
+                    defaultObjectRights: instance_double(Dor::DefaultObjectRightsDS,
+                                                         content: default_object_rights_xml),
                     administrativeMetadata: Dor::AdministrativeMetadataDS.from_xml(administrative_metadata_xml),
                     roleMetadata: instance_double(Dor::RoleMetadataDS, find_by_xpath: []))
   end
@@ -54,9 +55,12 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
     # the starting identityMetadata.xml is normalized to address discrepancies found against identityMetadata roundtripped
     #  from data store (Fedora) and back, per Andrew's specifications.
     #  E.g., <adminPolicy> is removed as that information will not be carried over and is retrieved from RELS-EXT
-    Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: Nokogiri::XML(identity_metadata_xml), label: label).to_xml
+    Cocina::Normalizers::IdentityNormalizer.normalize(identity_ng_xml: Nokogiri::XML(identity_metadata_xml),
+                                                      label: label).to_xml
   end
-  let(:roundtrip_identity_metadata_xml) { defined?(roundtrip_identity_metadata_xml) ? roundtrip_identity_metadata_xml : identity_metadata_xml }
+  let(:roundtrip_identity_metadata_xml) do
+    defined?(roundtrip_identity_metadata_xml) ? roundtrip_identity_metadata_xml : identity_metadata_xml
+  end
 
   context 'when mapping from Fedora to Cocina' do
     it 'cocina hash produces valid Cocina Descriptive model' do
@@ -101,7 +105,8 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
                       agreement_object_id: mapped_cocina_props[:administrative][:hasAgreement],
                       identityMetadata: Dor::IdentityMetadataDS.from_xml(identity_metadata_xml),
                       descMetadata: instance_double(Dor::DescMetadataDS, ng_xml: mods_ng_xml),
-                      defaultObjectRights: instance_double(Dor::DefaultObjectRightsDS, content: default_object_rights_xml),
+                      defaultObjectRights: instance_double(Dor::DefaultObjectRightsDS,
+                                                           content: default_object_rights_xml),
                       administrativeMetadata: Dor::AdministrativeMetadataDS.from_xml(administrative_metadata_xml),
                       roleMetadata: instance_double(Dor::RoleMetadataDS, find_by_xpath: []))
     end
@@ -123,7 +128,8 @@ RSpec.shared_examples 'APO Identification Fedora Cocina mapping' do
                       agreement_object_id: agreement_object_id,
                       identityMetadata: Dor::IdentityMetadataDS.from_xml(normalized_orig_identity_xml),
                       descMetadata: instance_double(Dor::DescMetadataDS, ng_xml: mods_ng_xml),
-                      defaultObjectRights: instance_double(Dor::DefaultObjectRightsDS, content: default_object_rights_xml),
+                      defaultObjectRights: instance_double(Dor::DefaultObjectRightsDS,
+                                                           content: default_object_rights_xml),
                       administrativeMetadata: Dor::AdministrativeMetadataDS.from_xml(administrative_metadata_xml),
                       roleMetadata: instance_double(Dor::RoleMetadataDS, find_by_xpath: []))
     end

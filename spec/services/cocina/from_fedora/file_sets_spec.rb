@@ -183,7 +183,8 @@ RSpec.describe Cocina::FromFedora::FileSets do
       end
 
       it 'generates file-level access metadata for files with their own rights' do
-        expect(text_fileset.pluck(:access)).to include(access: 'stanford', controlledDigitalLending: true, download: 'none')
+        expect(text_fileset.pluck(:access)).to include(access: 'stanford', controlledDigitalLending: true,
+                                                       download: 'none')
       end
     end
 
@@ -246,7 +247,8 @@ RSpec.describe Cocina::FromFedora::FileSets do
       end
 
       it 'generates file-level access metadata for files with their own rights' do
-        expect(text_fileset.pluck(:access)).to include(access: 'stanford', download: 'none', controlledDigitalLending: false)
+        expect(text_fileset.pluck(:access)).to include(access: 'stanford', download: 'none',
+                                                       controlledDigitalLending: false)
       end
     end
 
@@ -334,7 +336,8 @@ RSpec.describe Cocina::FromFedora::FileSets do
         end
 
         it 'generates file-level access metadata for files with their own rights' do
-          expect(text_fileset.pluck(:access)).to include(access: 'location-based', download: 'location-based', readLocation: location)
+          expect(text_fileset.pluck(:access)).to include(access: 'location-based', download: 'location-based',
+                                                         readLocation: location)
         end
       end
 
@@ -355,7 +358,8 @@ RSpec.describe Cocina::FromFedora::FileSets do
         end
 
         it 'generates file-level access metadata for files with their own rights' do
-          expect(text_fileset.pluck(:access)).to include(access: 'location-based', download: 'none', readLocation: location)
+          expect(text_fileset.pluck(:access)).to include(access: 'location-based', download: 'none',
+                                                         readLocation: location)
         end
       end
 
@@ -379,7 +383,8 @@ RSpec.describe Cocina::FromFedora::FileSets do
         end
 
         it 'generates file-level access metadata for files with their own rights' do
-          expect(text_fileset.pluck(:access)).to include(access: 'stanford', download: 'location-based', readLocation: location)
+          expect(text_fileset.pluck(:access)).to include(access: 'stanford', download: 'location-based',
+                                                         readLocation: location)
         end
       end
 
@@ -403,7 +408,8 @@ RSpec.describe Cocina::FromFedora::FileSets do
         end
 
         it 'generates file-level access metadata for files with their own rights' do
-          expect(text_fileset.pluck(:access)).to include(access: 'world', download: 'location-based', readLocation: location)
+          expect(text_fileset.pluck(:access)).to include(access: 'world', download: 'location-based',
+                                                         readLocation: location)
         end
       end
     end

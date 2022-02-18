@@ -35,7 +35,9 @@ module Cocina
         def normalize_parallel_name_role
           # For parallel names, all should have the same roles.
           name_nodes = ng_xml.root.xpath('//mods:name[@altRepGroup]', mods: ModsNormalizer::MODS_NS)
-          grouped_name_nodes = name_nodes.group_by { |name_node| name_node['altRepGroup'] }.values.reject { |name_node_group| name_node_group.size == 1 }
+          grouped_name_nodes = name_nodes.group_by do |name_node|
+                                 name_node['altRepGroup']
+                               end.values.reject { |name_node_group| name_node_group.size == 1 }
           grouped_name_nodes.each do |name_node_group|
             name_node_with_role = name_node_group.find { |name_node| role_node_for(name_node) }
             next unless name_node_with_role
@@ -69,20 +71,25 @@ module Cocina
 
           # Some MODS 3.3 items have xlink:href attributes. See https://argo.stanford.edu/view/druid:yy910cj7795
           # Move them only when there are children.
-          ng_xml.xpath('//mods:name[@xlink:href and mods:*]', mods: ModsNormalizer::MODS_NS, xlink: ModsNormalizer::XLINK_NS).each do |node|
+          ng_xml.xpath('//mods:name[@xlink:href and mods:*]', mods: ModsNormalizer::MODS_NS,
+                                                              xlink: ModsNormalizer::XLINK_NS).each do |node|
             node['valueURI'] = node.remove_attribute('href').value
           end
         end
 
         def normalize_dupes
           normalize_dupes_for(ng_xml.root)
-          ng_xml.root.xpath('mods:relatedItem', mods: ModsNormalizer::MODS_NS).each { |related_item_node| normalize_dupes_for(related_item_node) }
+          ng_xml.root.xpath('mods:relatedItem', mods: ModsNormalizer::MODS_NS).each do |related_item_node|
+            normalize_dupes_for(related_item_node)
+          end
         end
 
         def normalize_dupes_for(base_node)
           name_nodes = base_node.xpath('mods:name', mods: ModsNormalizer::MODS_NS)
 
-          dupe_name_nodes_groups = name_nodes.group_by { |name_node| name_for_grouping(name_node) }.values.select { |grouped_name_nodes| grouped_name_nodes.size > 1 }
+          dupe_name_nodes_groups = name_nodes.group_by do |name_node|
+                                     name_for_grouping(name_node)
+                                   end.values.select { |grouped_name_nodes| grouped_name_nodes.size > 1 }
           dupe_name_nodes_groups.each do |dupe_name_nodes|
             # If there is a name with nameTitleGroup, prefer retaining it.
             nametitle_names, other_names = dupe_name_nodes.partition { |name_node| name_node['nameTitleGroup'] }
@@ -122,7 +129,8 @@ module Cocina
 
         # remove the roleTerm when there is no text value and no valueURI or URI attribute
         def normalize_role_term
-          ng_xml.root.xpath('//mods:roleTerm[not(text()) and not(@valueURI) and not(@authorityURI)]', mods: ModsNormalizer::MODS_NS).each(&:remove)
+          ng_xml.root.xpath('//mods:roleTerm[not(text()) and not(@valueURI) and not(@authorityURI)]',
+                            mods: ModsNormalizer::MODS_NS).each(&:remove)
         end
 
         # remove the role when there are no child elements and no attributes

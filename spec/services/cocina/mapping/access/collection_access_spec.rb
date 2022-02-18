@@ -50,7 +50,9 @@ RSpec.shared_examples 'Collection Access Fedora Cocina mapping' do
 
   context 'when mapping from roundtrip Fedora to Cocina' do
     let(:roundtrip_fedora_collection) { Dor::Collection.new }
-    let(:roundtrip_cocina_props) { Cocina::FromFedora::CollectionAccess.props(roundtrip_fedora_collection.rightsMetadata) }
+    let(:roundtrip_cocina_props) do
+      Cocina::FromFedora::CollectionAccess.props(roundtrip_fedora_collection.rightsMetadata)
+    end
 
     it 'roundtrip Fedora maps to expected Cocina (collection) Access props' do
       roundtrip_rights_metadata_ds = Dor::RightsMetadataDS.from_xml(roundtrip_rights_metadata_xml)

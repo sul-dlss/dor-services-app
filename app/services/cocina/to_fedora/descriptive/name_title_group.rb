@@ -16,7 +16,9 @@ module Cocina
             Array(contributor.name).each_with_index do |contributor_name, name_index|
               if contributor_name.parallelValue.present?
                 contributor_name.parallelValue.each_with_index do |parallel_contributor_name, parallel_index|
-                  return [contributor, name_index, parallel_index] if contributor_name_matches?(parallel_contributor_name, title_name_parts)
+                  return [contributor, name_index, parallel_index] if contributor_name_matches?(
+                    parallel_contributor_name, title_name_parts
+                  )
                 end
               elsif contributor_name_matches?(contributor_name, title_name_parts)
                 return [contributor, name_index, nil]
@@ -31,7 +33,8 @@ module Cocina
         # @params [boolean] true if contributor part of name title group
         def self.part_of_nametitlegroup?(contributor:, titles:)
           Array(titles).any? do |title|
-            contributor_match, _name_index, _parallel_index = find_contributor(title: title, contributors: [contributor])
+            contributor_match, _name_index, _parallel_index = find_contributor(title: title,
+                                                                               contributors: [contributor])
             contributor_match.present?
           end
         end
@@ -48,7 +51,9 @@ module Cocina
         def self.title_name_parts_for_structured_value(title)
           return nil if title.structuredValue.blank?
 
-          structured_title = title.structuredValue.find { |check_structured_title| check_structured_title.type == 'name' }
+          structured_title = title.structuredValue.find do |check_structured_title|
+            check_structured_title.type == 'name'
+          end
           if structured_title.nil?
             nil
           elsif structured_title.structuredValue.present?

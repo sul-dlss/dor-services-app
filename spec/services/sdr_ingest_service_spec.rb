@@ -43,7 +43,8 @@ RSpec.describe SdrIngestService do
     before do
       allow(Preservation::Client.objects).to receive(:signature_catalog).and_return(fixture_sig_cat_obj)
       allow(Cocina::Mapper).to receive(:build).and_return(cocina_object)
-      expect(PreservationMetadataExtractor).to receive(:extract).with(workspace: an_instance_of(DruidTools::Druid), cocina_object: cocina_object).and_return(metadata_dir)
+      expect(PreservationMetadataExtractor).to receive(:extract).with(workspace: an_instance_of(DruidTools::Druid),
+                                                                      cocina_object: cocina_object).and_return(metadata_dir)
     end
 
     specify 'with content changes' do
@@ -144,7 +145,10 @@ RSpec.describe SdrIngestService do
 
   specify '.verify_version_id' do
     expect(described_class.verify_version_id('/mypath/myfile', 2, 2)).to be_truthy
-    expect { described_class.verify_version_id('/mypath/myfile', 1, 2) }.to raise_exception('Version mismatch in /mypath/myfile, expected 1, found 2')
+    expect do
+      described_class.verify_version_id('/mypath/myfile', 1,
+                                        2)
+    end.to raise_exception('Version mismatch in /mypath/myfile, expected 1, found 2')
   end
 
   specify '.vmfile_version_id' do
