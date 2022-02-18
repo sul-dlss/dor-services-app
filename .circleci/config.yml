@@ -10,7 +10,7 @@ workflows:
           name: lint
           # Remove this once app is using Ruby3
           executor:
-            name: ruby-rails/ruby-postgres
+            name: ruby-rails/ruby
             ruby-tag: '2.7.5'
       - ruby-rails/test-rails:
           name: test
