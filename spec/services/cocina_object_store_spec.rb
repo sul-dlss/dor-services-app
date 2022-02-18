@@ -117,19 +117,22 @@ RSpec.describe CocinaObjectStore do
     end
 
     describe '#create' do
+      let(:cocina_object_store) { described_class.new }
       let(:requested_cocina_object) { instance_double(Cocina::Models::RequestDRO) }
       let(:created_cocina_object) { instance_double(Cocina::Models::DRO) }
 
       before do
         allow(Notifications::ObjectCreated).to receive(:publish)
         allow(Cocina::ObjectCreator).to receive(:create).and_return(created_cocina_object)
+        allow(cocina_object_store).to receive(:default_access_for).and_return(requested_cocina_object)
       end
 
       it 'maps and saves to Fedora' do
-        expect(described_class.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
+        expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
         expect(Cocina::ObjectCreator).to have_received(:create).with(requested_cocina_object, assign_doi: true)
         expect(Notifications::ObjectCreated).to have_received(:publish).with(model: created_cocina_object, created_at: kind_of(Time), modified_at: kind_of(Time))
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
+        expect(cocina_object_store).to have_received(:default_access_for).with(requested_cocina_object)
       end
     end
 

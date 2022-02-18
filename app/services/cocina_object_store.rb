@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # Abstracts persistence operations for Cocina objects
+# rubocop:disable Metrics/ClassLength
 class CocinaObjectStore
   # Generic base error class.
   class CocinaObjectStoreError < StandardError; end
@@ -83,8 +84,9 @@ class CocinaObjectStore
   def create(cocina_request_object, assign_doi: false)
     ensure_ur_admin_policy_exists(cocina_request_object)
     validate(cocina_request_object)
+    updated_cocina_request_object = default_access_for(cocina_request_object)
 
-    cocina_object = fedora_create(cocina_request_object, assign_doi: assign_doi)
+    cocina_object = fedora_create(updated_cocina_request_object, assign_doi: assign_doi)
 
     # Broadcast this to a topic
     Notifications::ObjectCreated.publish(model: cocina_object, created_at: Time.zone.now, modified_at: Time.zone.now)
@@ -213,4 +215,25 @@ class CocinaObjectStore
     # Validate will raise an error if not valid.
     Cocina::ObjectValidator.validate(cocina_object)
   end
+
+  # Copy the default rights, use statement and copyright statement from the
+  # admin policy to the provided DRO or collection.  If the user provided the access
+  # subschema, they may overwrite some of these defaults.
+  # @return[Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy]
+  def default_access_for(cocina_object)
+    return cocina_object if cocina_object.admin_policy?
+
+    apo = find(cocina_object.administrative.hasAdminPolicy)
+    return cocina_object unless apo.administrative.respond_to?(:defaultAccess) && apo.administrative.defaultAccess
+
+    default_access = apo.administrative.defaultAccess
+    updated_access = if cocina_object.collection?
+                       # Collection access only supports dark or world, but default access is more complicated
+                       (cocina_object.access || Cocina::Models::CollectionAccess).new(access: default_access.access == 'dark' ? 'dark' : 'world')
+                     else
+                       (cocina_object.access || Cocina::Models::DROAccess).new(default_access.to_h)
+                     end
+    cocina_object.new(access: updated_access)
+  end
 end
+# rubocop:enable Metrics/ClassLength
