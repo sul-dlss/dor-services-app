@@ -102,6 +102,70 @@ RSpec.describe PreservationMetadataExtractor do
       it { is_expected.to be_equivalent_to expected_xml }
     end
 
+    context 'when datastream is contentMetadata' do
+      let(:ds_name) { :contentMetadata }
+      let(:structural) do
+        {
+          contains: [{
+            type: Cocina::Models::Vocab::Resources.image,
+            externalIdentifier: 'wt183gy6220',
+            label: 'Image 1',
+            version: 1,
+            structural: {
+              contains: [{
+                type: Cocina::Models::Vocab.file,
+                externalIdentifier: 'wt183gy6220_1',
+                label: 'Image 1',
+                filename: 'wt183gy6220_00_0001.jp2',
+                hasMimeType: 'image/jp2',
+                size: 3_182_927,
+                version: 1,
+                access: {},
+                administrative: {
+                  publish: false,
+                  sdrPreserve: false,
+                  shelve: false
+                },
+                hasMessageDigests: []
+              }]
+            }
+          }]
+        }
+      end
+      let(:cocina_object) do
+        Cocina::Models::DRO.new({
+                                  cocinaVersion: '0.0.1',
+                                  externalIdentifier: druid,
+                                  type: Cocina::Models::Vocab.book,
+                                  label: 'Test DRO',
+                                  version: 1,
+                                  access: { access: 'world', download: 'world' },
+                                  administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
+                                  structural: structural
+                                })
+      end
+
+      let(:fileset_id) { 'http://cocina.sul.stanford.edu/fileSet/3f231c45-5af9-4530-bea9-f99982e394fb' }
+      let(:expected_xml) do
+        <<~XML
+          <contentMetadata objectId="druid:nc893zj8956" type="book">\n
+            <resource id="http://cocina.sul.stanford.edu/fileSet/3f231c45-5af9-4530-bea9-f99982e394fb" sequence="1" type="image">\n
+              <label>Image 1</label>\n
+              <file id="wt183gy6220_00_0001.jp2" mimetype="image/jp2" size="3182927" publish="no" shelve="no" preserve="no"/>\n
+            </resource>\n
+          </contentMetadata>
+        XML
+      end
+
+      before do
+        allow(Cocina::IdGenerator).to receive(:generate_or_existing_fileset_id).and_return(fileset_id)
+      end
+
+      it 'returns the correct datastream xml' do
+        expect(datastream_content).to be_equivalent_to expected_xml
+      end
+    end
+
     context 'when datastream is empty or missing' do
       let(:ds_name) { :dummy }
 
