@@ -110,7 +110,7 @@ module Cocina
                 catkey: catkey_for(cocina_item)).tap do |fedora_item|
         add_description(fedora_item, cocina_item, trial: trial)
 
-        add_dro_tags(druid, cocina_item)
+        add_dro_tags(druid, cocina_item) unless trial
 
         Cocina::ToFedora::DROAccess.apply(fedora_item, cocina_item.access, cocina_item.structural) if cocina_item.access || cocina_item.structural
 
