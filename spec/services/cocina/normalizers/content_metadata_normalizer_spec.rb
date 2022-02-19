@@ -355,7 +355,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       end
     end
 
-    context 'when normalizing imageData' do
+    context 'when removing blank imageData' do
       # adapted from druid:bb101rd7954
       let(:original_xml) do
         <<~XML
@@ -412,6 +412,37 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
                 <file id="Thumbs3.db" mimetype="image/vnd.fpx" size="17408" preserve="yes" publish="no" shelve="no">
                   <checksum type="md5">99c8d3026749b6103f20c911ea102339</checksum>
                   <checksum type="sha1">f73a49b173c741b540170a4f3aa64b87988d4db7</checksum>
+                </file>
+              </resource>
+            </contentMetadata>
+          XML
+        )
+      end
+    end
+
+    context 'when normalizing non-integer imageData' do
+      # adapted from druid:ft996xy0052
+      let(:original_xml) do
+        <<~XML
+          <contentMetadata objectId="druid:ft996xy0052" type="image">
+            <resource type="image">
+              <label>Image 1</label>
+              <file id="test.jpg" mimetype="image/jpg" size="100" preserve="yes" publish="no" shelve="no">
+                <imageData width="27.544308mm" height="29.510118mm"/>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      end
+
+      it 'converts imagedata to integers and removes units' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+            <contentMetadata objectId="druid:ft996xy0052" type="image">
+              <resource type="image">
+                <label>Image 1</label>
+                <file id="test.jpg" mimetype="image/jpg" size="100" preserve="yes" publish="no" shelve="no">
+                  <imageData width="27" height="29"/>
                 </file>
               </resource>
             </contentMetadata>
