@@ -1,4 +1,5 @@
-FROM ruby:2.7.5-alpine
+# Temporarily pinned to 3.13 to deal with errors installing bundler in a docker layer in CI
+FROM ruby:2.7.5-alpine3.13
 
 # Provide SSL defaults that work in dev/test environments where we do not require connections to secured services
 # These values are overrideable at both buildtime and runtime (hence the ARG/ENV combo).
