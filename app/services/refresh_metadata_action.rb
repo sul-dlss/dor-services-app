@@ -3,50 +3,40 @@
 # Look into identityMetadata for compliant ids and use them to fetch
 # descriptive metadata from Symphony.  Put the fetched value in the descMetadata
 class RefreshMetadataAction
-  # @return [NilClass,Object] returns nil if there was no resolvable metadata id.
+  include Dry::Monads[:result]
+
+  # @return [Dry::Monads::Result::Failure,Object] returns Failure if there was no resolvable metadata id, otherwise the Cocina object
   # @raises SymphonyReader::ResponseError
-  def self.run(identifiers:, fedora_object:)
-    new(identifiers: identifiers, fedora_object: fedora_object).run
+  def self.run(identifiers:, cocina_object:)
+    new(identifiers: identifiers, cocina_object: cocina_object).run
   end
 
   # @param [Array<String>] identifiers the set of identifiers that might be resolvable
-  # @param [Dor::Abstract] fedora_object to refresh
-  def initialize(identifiers:, fedora_object:)
+  # @param [Cocina::Models::DRO|Collection|APO|Agreement] cocina_object to refresh
+  def initialize(identifiers:, cocina_object:)
     @identifiers = identifiers
-    @fedora_object = fedora_object
-    @datastream = fedora_object.descMetadata
+    @cocina_object = cocina_object
   end
 
-  # Returns nil if it didn't retrieve anything
+  # @return [Dry::Monads::Results,Object] Returns Failure if it didn't retrieve anything, otherwise the Cocicna object
   # @raises SymphonyReader::ResponseError
   def run
-    content = fetch_datastream
-    return nil if content.nil?
+    metadata = fetch_metadata
+    return Failure() if metadata.nil?
 
-    datastream.dsLabel = 'Descriptive Metadata'
-    datastream.ng_xml = Nokogiri::XML(content)
-    datastream.ng_xml.normalize_text!
-    datastream.content = datastream.ng_xml.to_xml
+    description_props = Cocina::FromFedora::Descriptive.props(mods: Nokogiri::XML(fetch_metadata), druid: cocina_object.externalIdentifier)
+    return Failure() if description_props.nil?
 
-    validate
-
-    datastream
+    cocina_object.new(description: description_props)
   end
 
   private
 
-  attr_reader :identifiers, :datastream, :fedora_object
+  attr_reader :identifiers, :cocina_object
 
   # @raises SymphonyReader::ResponseError
-  def fetch_datastream
+  def fetch_metadata
     metadata_id = MetadataService.resolvable(identifiers).first
     metadata_id.nil? ? nil : MetadataService.fetch(metadata_id.to_s)
-  end
-
-  def validate
-    return unless Settings.enabled_features.validate_descriptive_roundtrip.refresh
-
-    result = Cocina::DescriptionRoundtripValidator.valid_from_fedora?(fedora_object)
-    Honeybadger.notify('DescMetadata did not successfully roundtrip after metadata refresh.') if result.failure?
   end
 end
