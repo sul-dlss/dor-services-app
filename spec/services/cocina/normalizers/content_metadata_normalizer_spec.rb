@@ -174,7 +174,12 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     let(:original_xml) do
       <<~XML
         <contentMetadata objectId="druid:bb035tg0974" type="file">
-          <resource objectId="druid:bb035tg0974" id="content" type="file" />
+          <resource objectId="druid:bb035tg0974" id="content" type="file">
+            <file id="2021 March Off Highway Vehicles.pdf" mimetype="application/pdf" size="75211" publish="yes" shelve="yes" preserve="yes">
+              <checksum type="sha1">f715cfa0f2a2cdd0fc14aa73a3e75326babe9ec4</checksum>
+              <checksum type="md5">f3118304673f2135e3c37a6a233034b7</checksum>
+            </file>
+          </resource>
         </contentMetadata>
       XML
     end
@@ -182,7 +187,12 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     let(:expected_xml) do
       <<~XML
         <contentMetadata objectId="druid:bb035tg0974" type="file">
-          <resource type="file" />
+          <resource type="file">
+            <file id="2021 March Off Highway Vehicles.pdf" mimetype="application/pdf" size="75211" publish="yes" shelve="yes" preserve="yes">
+              <checksum type="sha1">f715cfa0f2a2cdd0fc14aa73a3e75326babe9ec4</checksum>
+              <checksum type="md5">f3118304673f2135e3c37a6a233034b7</checksum>
+            </file>
+          </resource>
         </contentMetadata>
       XML
     end
@@ -309,7 +319,12 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       let(:original_xml) do
         <<~XML
           <contentMetadata objectId="druid:bb035tg0974" type="book">
-            <resource sequence="1" type="page" />
+            <resource sequence="1" type="page">
+              <file id="2021 March Off Highway Vehicles.pdf" mimetype="application/pdf" size="75211" publish="yes" shelve="yes" preserve="yes">
+                <checksum type="sha1">f715cfa0f2a2cdd0fc14aa73a3e75326babe9ec4</checksum>
+                <checksum type="md5">f3118304673f2135e3c37a6a233034b7</checksum>
+              </file>
+            </resource>
           </contentMetadata>
         XML
       end
@@ -323,7 +338,12 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
           <<~XML
             <contentMetadata objectId="druid:bb035tg0974" type="book">
               <bookData readingOrder="ltr"/>
-              <resource type="page" />
+              <resource type="page">
+                <file id="2021 March Off Highway Vehicles.pdf" mimetype="application/pdf" size="75211" publish="yes" shelve="yes" preserve="yes">
+                  <checksum type="sha1">f715cfa0f2a2cdd0fc14aa73a3e75326babe9ec4</checksum>
+                  <checksum type="md5">f3118304673f2135e3c37a6a233034b7</checksum>
+                </file>
+              </resource>
             </contentMetadata>
           XML
         )
@@ -334,7 +354,12 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       let(:original_xml) do
         <<~XML
           <contentMetadata objectId="druid:bb035tg0974" type="book">
-            <resource sequence="1" type="page" />
+            <resource sequence="1" type="page">
+              <file id="2021 March Off Highway Vehicles.pdf" mimetype="application/pdf" size="75211" publish="yes" shelve="yes" preserve="yes">
+                <checksum type="sha1">f715cfa0f2a2cdd0fc14aa73a3e75326babe9ec4</checksum>
+                <checksum type="md5">f3118304673f2135e3c37a6a233034b7</checksum>
+              </file>
+            </resource>
           </contentMetadata>
         XML
       end
@@ -348,7 +373,12 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
           <<~XML
             <contentMetadata objectId="druid:bb035tg0974" type="book">
               <bookData readingOrder="rtl"/>
-              <resource type="page" />
+              <resource type="page">
+                <file id="2021 March Off Highway Vehicles.pdf" mimetype="application/pdf" size="75211" publish="yes" shelve="yes" preserve="yes">
+                  <checksum type="sha1">f715cfa0f2a2cdd0fc14aa73a3e75326babe9ec4</checksum>
+                  <checksum type="md5">f3118304673f2135e3c37a6a233034b7</checksum>
+                </file>
+              </resource>
             </contentMetadata>
           XML
         )
@@ -883,7 +913,12 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       <<~XML
         <contentMetadata objectId="druid:bb035tg0974" type="book">
           <bookData readingOrder="rtl" pageStart="right"/>
-          <resource type="page"/>
+          <resource type="page">
+            <file id="2021 March Off Highway Vehicles.pdf" mimetype="application/pdf" size="75211" publish="yes" shelve="yes" preserve="yes">
+              <checksum type="sha1">f715cfa0f2a2cdd0fc14aa73a3e75326babe9ec4</checksum>
+              <checksum type="md5">f3118304673f2135e3c37a6a233034b7</checksum>
+            </file>
+          </resource>
         </contentMetadata>
       XML
     end
@@ -897,7 +932,12 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
         <<~XML
           <contentMetadata objectId="druid:bb035tg0974" type="book">
             <bookData readingOrder="rtl"/>
-            <resource type="page"/>
+            <resource type="page">
+              <file id="2021 March Off Highway Vehicles.pdf" mimetype="application/pdf" size="75211" publish="yes" shelve="yes" preserve="yes">
+                <checksum type="sha1">f715cfa0f2a2cdd0fc14aa73a3e75326babe9ec4</checksum>
+                <checksum type="md5">f3118304673f2135e3c37a6a233034b7</checksum>
+              </file>
+            </resource>
           </contentMetadata>
         XML
       )
@@ -985,6 +1025,41 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
           </contentMetadata>
         XML
       )
+    end
+  end
+
+  context 'when normalizing empty resources' do
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata objectId="druid:bk689jd2364" type="file">
+          <resource type="file">
+            <file id="Decision.Record_6-30-03_signed.pdf" preserve="yes" publish="yes" shelve="yes" mimetype="application/pdf" size="102937">
+              <checksum type="md5">50d5fc2730503a98bc2dda643064ae5b</checksum>
+              <checksum type="sha1">df31b2f415d8e0806fa283db4e2c7fda690d1b02</checksum>
+            </file>
+          </resource>
+          <resource id="image_33" sequence="33" type="image">
+            <label>Volume 556 - Title 490 - Folio 017ar</label>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    let(:expected_xml) do
+      <<~XML
+        <contentMetadata objectId="druid:bk689jd2364" type="file">
+          <resource type="file">
+            <file id="Decision.Record_6-30-03_signed.pdf" preserve="yes" publish="yes" shelve="yes" mimetype="application/pdf" size="102937">
+              <checksum type="md5">50d5fc2730503a98bc2dda643064ae5b</checksum>
+              <checksum type="sha1">df31b2f415d8e0806fa283db4e2c7fda690d1b02</checksum>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    it 'removes empty resources' do
+      expect(normalized_ng_xml).to be_equivalent_to(expected_xml)
     end
   end
 end
