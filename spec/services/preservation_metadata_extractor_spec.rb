@@ -164,6 +164,24 @@ RSpec.describe PreservationMetadataExtractor do
       it 'returns the correct datastream xml' do
         expect(datastream_content).to be_equivalent_to expected_xml
       end
+
+      context 'when cocina structural is nil (APOs, collections)' do
+        let(:cocina_object) do
+          Cocina::Models::Collection.new({
+                                           cocinaVersion: '0.0.1',
+                                           externalIdentifier: druid,
+                                           type: Cocina::Models::Vocab.collection,
+                                           label: 'Test Collection',
+                                           version: 1,
+                                           access: { access: 'world' },
+                                           administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
+                                         })
+        end
+
+        it 'returns nil' do
+          expect(datastream_content).to be_nil
+        end
+      end
     end
 
     context 'when datastream is empty or missing' do
