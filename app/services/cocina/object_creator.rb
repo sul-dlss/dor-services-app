@@ -7,9 +7,9 @@ module Cocina
   class ObjectCreator
     # @raises SymphonyReader::ResponseError if symphony connection failed
     def self.create(cocina_object, druid:, event_factory: EventFactory, persister: ActiveFedoraPersister, assign_doi: false, cocina_object_store: CocinaObjectStore.new)
-      _fedora_object, cocina_object = new(cocina_object_store: cocina_object_store).create(cocina_object, druid: druid, event_factory: event_factory, persister: persister,
+      fedora_object, _cocina_object = new(cocina_object_store: cocina_object_store).create(cocina_object, druid: druid, event_factory: event_factory, persister: persister,
                                                                                                           assign_doi: assign_doi)
-      cocina_object
+      fedora_object
     end
 
     def self.trial_create(cocina_object, notifier:, cocina_object_store:)
@@ -110,8 +110,6 @@ module Cocina
                 catkey: catkey_for(cocina_item)).tap do |fedora_item|
         add_description(fedora_item, cocina_item, trial: trial)
 
-        add_dro_tags(druid, cocina_item) unless trial
-
         Cocina::ToFedora::DROAccess.apply(fedora_item, cocina_item.access, cocina_item.structural) if cocina_item.access || cocina_item.structural
 
         fedora_item.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: druid, type: cocina_item.type, structural: cocina_item.structural,
@@ -141,7 +139,6 @@ module Cocina
                           source_id: cocina_collection.identification&.sourceId,
                           catkey: catkey_for(cocina_collection)).tap do |fedora_collection|
         add_description(fedora_collection, cocina_collection, trial: trial)
-        add_collection_tags(druid, cocina_collection) unless trial
         Cocina::ToFedora::CollectionAccess.apply(fedora_collection, cocina_collection.access) if cocina_collection.access
         Cocina::ToFedora::Identity.initialize_identity(fedora_collection)
         Cocina::ToFedora::Identity.apply_catalog_links(fedora_collection, catalog_links: cocina_collection.identification&.catalogLinks)
@@ -173,20 +170,6 @@ module Cocina
         fedora_object.descMetadata.mods_title = cocina_object.label
         Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label)
       end
-    end
-
-    def add_dro_tags(pid, cocina_object)
-      tags = []
-      process_tag = ToFedora::ProcessTag.map(cocina_object.type, cocina_object.structural&.hasMemberOrders&.first&.viewingDirection)
-      tags << process_tag if process_tag
-      tags << "Project : #{cocina_object.administrative.partOfProject}" if cocina_object.administrative.partOfProject
-      AdministrativeTags.create(pid: pid, tags: tags) if tags.any?
-    end
-
-    def add_collection_tags(pid, cocina_object)
-      return unless cocina_object.administrative.partOfProject
-
-      AdministrativeTags.create(pid: pid, tags: ["Project : #{cocina_object.administrative.partOfProject}"])
     end
 
     def validate(cocina_object)

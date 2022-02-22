@@ -13,7 +13,6 @@ module Cocina
     # @param [boolean] trial do not persist or event; run all mappings regardless of changes
     # @param [Cocina::FromFedora::DataErrorNotifier] notifier
     # @param [CocinaObjectStore] cocina_object_store
-    # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
     def self.run(fedora_object, cocina_object, event_factory: EventFactory, trial: false, notifier: nil, cocina_object_store: CocinaObjectStore)
       new(fedora_object, cocina_object, trial: trial, cocina_object_store: cocina_object_store).run(event_factory: event_factory, notifier: notifier)
     end
@@ -52,7 +51,6 @@ module Cocina
       fedora_object.save! unless trial
 
       event_factory.create(druid: fedora_object.pid, event_type: 'update', data: { success: true, request: updated_cocina_object.to_h }) unless trial
-      updated_cocina_object
     rescue Mapper::MapperError, ValidationError, NotImplemented => e
       event_factory.create(druid: fedora_object.pid, event_type: 'update', data: { success: false, error: e.message, request: cocina_object.to_h }) unless trial
       raise
@@ -127,8 +125,6 @@ module Cocina
       update_content_metadata(fedora_object, cocina_object) if has_changed?(:structural) || has_changed?(:type)
 
       fedora_object.geoMetadata.content = cocina_object.geographic.iso19139 if cocina_object&.geographic&.iso19139 && has_changed?(:geographic)
-
-      add_tags(fedora_object.pid, cocina_object)
     end
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/CyclomaticComplexity
@@ -182,38 +178,6 @@ module Cocina
     # TODO: duplicate from ObjectCreator
     def catkey_for(cocina_object)
       cocina_object.identification&.catalogLinks&.find { |l| l.catalog == 'symphony' }&.catalogRecordId
-    end
-
-    def add_tags(pid, cocina_object)
-      if has_changed?(:structural)
-        # This is necessary so that the content type tag for a book can get updated
-        # to reflect the new direction if the direction hash changed in the structural metadata.
-        tag = ToFedora::ProcessTag.map(cocina_object.type, cocina_object.structural&.hasMemberOrders&.first&.viewingDirection)
-        add_tag(pid, tag, 'Process : Content Type') if tag
-      end
-      add_tag(pid, "Project : #{cocina_object.administrative.partOfProject}", 'Project') if cocina_object.administrative.partOfProject && has_changed?(:administrative)
-    end
-
-    def add_tag(pid, new_tag, prefix)
-      return if trial
-      raise "Must provide a #{prefix} tag for #{pid}" unless new_tag
-
-      existing_tags = tags_starting_with(pid, prefix)
-      if existing_tags.empty?
-        AdministrativeTags.create(pid: pid, tags: [new_tag])
-      elsif existing_tags.size > 1
-        raise "Too many tags for prefix #{prefix}. Expected one."
-      elsif existing_tags.first != new_tag
-        AdministrativeTags.update(pid: pid, current: existing_tags.first, new: new_tag)
-      end
-    end
-
-    def tags_starting_with(pid, prefix)
-      # This lets us find tags like "Project : Hydrus" when "Project" is the prefix, but will not match on tags like "Project : Hydrus : IR : data"
-      prefix_count = prefix.count(':') + 1
-      AdministrativeTags.for(pid: pid).select do |tag|
-        tag.start_with?(prefix) && tag.count(':') == prefix_count
-      end
     end
 
     def update_version

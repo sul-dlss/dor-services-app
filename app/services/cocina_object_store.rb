@@ -73,7 +73,11 @@ class CocinaObjectStore
 
   def save(cocina_object)
     validate(cocina_object)
-    (updated_cocina_object, created_at, modified_at) = cocina_to_fedora_save(cocina_object)
+    (fedora_object, created_at, modified_at) = cocina_to_fedora_save(cocina_object)
+    add_tags_for_update(cocina_object)
+
+    # Doing late mapping so that can add tags first.
+    updated_cocina_object = Cocina::Mapper.build(fedora_object)
 
     # Only want to update if already exists in PG (i.e., added by create or migration).
     # This will make sure gets correct create/update dates.
@@ -89,7 +93,11 @@ class CocinaObjectStore
     validate(cocina_request_object)
     updated_cocina_request_object = default_access_for(cocina_request_object)
     druid = Dor::SuriService.mint_id
-    cocina_object = fedora_create(updated_cocina_request_object, druid: druid, assign_doi: assign_doi)
+    fedora_object = fedora_create(updated_cocina_request_object, druid: druid, assign_doi: assign_doi)
+    add_tags_for_create(druid, updated_cocina_request_object)
+
+    # Doing late mapping so that can add tags first.
+    cocina_object = Cocina::Mapper.build(fedora_object)
 
     # Broadcast this to a topic
     Notifications::ObjectCreated.publish(model: cocina_object, created_at: Time.zone.now, modified_at: Time.zone.now)
@@ -156,7 +164,8 @@ class CocinaObjectStore
     # Currently this only supports an update, not a save.
     fedora_object = fedora_find(cocina_object.externalIdentifier)
     # Updating produces a different Cocina object than it was provided.
-    [Cocina::ObjectUpdater.run(fedora_object, cocina_object), fedora_object.create_date, fedora_object.modified_date]
+    Cocina::ObjectUpdater.run(fedora_object, cocina_object)
+    [fedora_object, fedora_object.create_date, fedora_object.modified_date]
   end
 
   def fedora_exists?(druid)
@@ -173,7 +182,7 @@ class CocinaObjectStore
   # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object
   # @param [String] druid
   # @param [boolean] assign_doi
-  # @rturn [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
+  # @return [Dor::Abstract] Fedora item
   # @raises SymphonyReader::ResponseError if symphony connection failed
   def fedora_create(cocina_request_object, druid:, assign_doi: false)
     Cocina::ObjectCreator.create(cocina_request_object, druid: druid, assign_doi: assign_doi)
@@ -238,6 +247,58 @@ class CocinaObjectStore
                        (cocina_object.access || Cocina::Models::DROAccess).new(default_access.to_h)
                      end
     cocina_object.new(access: updated_access)
+  end
+
+  def add_tags_for_create(druid, cocina_request_object)
+    add_dro_tags_for_create(druid, cocina_request_object) if cocina_request_object.dro?
+    add_collection_tags_for_create(druid, cocina_request_object) if cocina_request_object.collection?
+  end
+
+  def add_dro_tags_for_create(druid, cocina_request_object)
+    tags = []
+    process_tag = Cocina::ToFedora::ProcessTag.map(cocina_request_object.type, cocina_request_object.structural&.hasMemberOrders&.first&.viewingDirection)
+    tags << process_tag if process_tag
+    tags << "Project : #{cocina_request_object.administrative.partOfProject}" if cocina_request_object.administrative.partOfProject
+    AdministrativeTags.create(pid: druid, tags: tags) if tags.any?
+  end
+
+  def add_collection_tags_for_create(druid, cocina_request_object)
+    return unless cocina_request_object.administrative.partOfProject
+
+    AdministrativeTags.create(pid: druid, tags: ["Project : #{cocina_request_object.administrative.partOfProject}"])
+  end
+
+  def add_tags_for_update(cocina_object)
+    if cocina_object.dro?
+      # This is necessary so that the content type tag for a book can get updated
+      # to reflect the new direction if the direction hash changed in the structural metadata.
+      tag = Cocina::ToFedora::ProcessTag.map(cocina_object.type, cocina_object.structural&.hasMemberOrders&.first&.viewingDirection)
+      add_tag_for_update(cocina_object.externalIdentifier, tag, 'Process : Content Type') if tag
+    end
+    return unless (cocina_object.dro? || cocina_object.collection?) && cocina_object.administrative.partOfProject
+
+    add_tag_for_update(cocina_object.externalIdentifier, "Project : #{cocina_object.administrative.partOfProject}", 'Project')
+  end
+
+  def add_tag_for_update(druid, new_tag, prefix)
+    raise "Must provide a #{prefix} tag for #{druid}" unless new_tag
+
+    existing_tags = tags_starting_with(druid, prefix)
+    if existing_tags.empty?
+      AdministrativeTags.create(pid: druid, tags: [new_tag])
+    elsif existing_tags.size > 1
+      raise "Too many tags for prefix #{prefix}. Expected one."
+    elsif existing_tags.first != new_tag
+      AdministrativeTags.update(pid: druid, current: existing_tags.first, new: new_tag)
+    end
+  end
+
+  def tags_starting_with(druid, prefix)
+    # This lets us find tags like "Project : Hydrus" when "Project" is the prefix, but will not match on tags like "Project : Hydrus : IR : data"
+    prefix_count = prefix.count(':') + 1
+    AdministrativeTags.for(pid: druid).select do |tag|
+      tag.start_with?(prefix) && tag.count(':') == prefix_count
+    end
   end
 end
 # rubocop:enable Metrics/ClassLength
