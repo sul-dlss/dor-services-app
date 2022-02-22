@@ -3,7 +3,7 @@
 # This writes the object metadata files to the workspace metadata directory
 class PreservationMetadataExtractor
   # @param [Cocina::Models::DRO, Cocina::Models::AdminPolicy, Cocina::Models::Collection] cocina_object The representation of the digital object
-  # @param [DruidTools::Druid] workspace The representation of the item's work area
+  # @param workspace The representation of the item's work area
   # @return [Pathname] Pull all the datastreams specified in the configuration file
   #   into the workspace's metadata directory, overwriting existing file if present
   def self.extract(cocina_object:, workspace:)
@@ -11,7 +11,7 @@ class PreservationMetadataExtractor
   end
 
   # @param [Cocina::Models::DRO, Cocina::Models::AdminPolicy, Cocina::Models::Collection] cocina_object The representation of the digital object
-  # @param [DruidTools::Druid] workspace The representation of the item's work area
+  # @param workspace The representation of the item's work area
   # @param [Hash<Symbol,Bool>] datastream_config the list of datastreams to export and whether they are required or not.
   def initialize(cocina_object:, workspace:, datastream_config: DEFAULT_DATASTREAM_CONFIG)
     @cocina_object = cocina_object
@@ -53,10 +53,10 @@ class PreservationMetadataExtractor
   # Pull all the datastreams specified in the configuration file
   #   into the workspace's metadata directory, overwriting existing file if present
   def extract_datastreams
-    item = Dor.find(cocina_object.externalIdentifier)
+    fedora_object = Dor.find(cocina_object.externalIdentifier)
     datastream_config.each do |ds_name, required|
       metadata_file = metadata_dir.join("#{ds_name}.xml")
-      metadata_string = datastream_content(item, ds_name, required)
+      metadata_string = datastream_content(fedora_object, ds_name, required)
       metadata_file.open('w') { |f| f << metadata_string } if metadata_string
     end
   end
@@ -65,14 +65,14 @@ class PreservationMetadataExtractor
   # @param [Boolean] required is the datastream required
   # @return [String] return the xml text of the specified datastream if it exists.
   #   If not found, return nil unless it is a required datastream in which case raise exception
-  def datastream_content(item, ds_name, required)
+  def datastream_content(fedora_object, ds_name, required)
     ds = (ds_name == :relationshipMetadata ? 'RELS-EXT' : ds_name.to_s)
     return workflow_xml if ds_name == :workflows
-    return version_xml(item) if ds_name == :versionMetadata
+    return version_xml(fedora_object) if ds_name == :versionMetadata
     return content_xml if ds_name == :contentMetadata
-    return item.datastreams[ds].content if item.datastreams.key?(ds) && !item.datastreams[ds].new?
+    return fedora_object.datastreams[ds].content if fedora_object.datastreams.key?(ds) && !fedora_object.datastreams[ds].new?
 
-    raise "required datastream #{ds_name} for #{item.pid} not found in DOR" if required
+    raise "required datastream #{ds_name} for #{fedora_object.pid} not found in DOR" if required
   end
 
   # Get the workflow xml representation from the workflow service
@@ -80,14 +80,16 @@ class PreservationMetadataExtractor
     WorkflowClientFactory.build.all_workflows_xml(cocina_object.externalIdentifier)
   end
 
-  def version_xml(item)
+  def version_xml(fedora_object)
     # This can be removed after migration.
-    VersionMigrationService.migrate(item)
+    VersionMigrationService.migrate(fedora_object)
 
     ObjectVersion.version_xml(cocina_object.externalIdentifier)
   end
 
   def content_xml
+    return if cocina_object.admin_policy? || cocina_object.collection?
+
     Cocina::ToFedora::ContentMetadataGenerator.generate(druid: cocina_object.externalIdentifier, structural: cocina_object.structural, type: cocina_object.type)
   end
 
