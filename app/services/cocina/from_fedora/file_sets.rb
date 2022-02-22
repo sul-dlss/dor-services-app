@@ -72,6 +72,7 @@ module Cocina
         end
       end
 
+      # rubocop:disable Metrics/abcSize
       def build_files(file_nodes, resource_id:, druid:)
         file_nodes.map do |node|
           height = node.xpath('imageData/@height').first&.text.presence&.to_i
@@ -87,9 +88,9 @@ module Cocina
             hasMessageDigests: digests(node),
             access: access(node['id']),
             administrative: {
-              publish: node['publish'] == 'yes' || node['deliver'] == 'yes',
-              sdrPreserve: node['preserve'] == 'yes',
-              shelve: node['shelve'] == 'yes'
+              publish: node['publish']&.strip == 'yes' || node['deliver'] == 'yes',
+              sdrPreserve: node['preserve']&.strip == 'yes',
+              shelve: node['shelve']&.strip == 'yes'
             }
           }.tap do |attrs|
             # Files from Goobi don't have mimetype until they hit exif-collect in the assemblyWF
@@ -99,6 +100,7 @@ module Cocina
           end
         end
       end
+      # rubocop:enable Metrics/abcSize
 
       def access(filename)
         file_specific_rights = rights_object.file[filename]

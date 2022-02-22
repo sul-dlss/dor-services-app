@@ -53,7 +53,7 @@ module Cocina
         remove_empty_image_data
         remove_duplicate_image_data
         normalize_image_data_to_integers
-        normalize_blank_file_directives
+        normalize_file_directives
         normalize_relationship
         normalize_empty_resources
 
@@ -194,9 +194,12 @@ module Cocina
       end
 
       # publish, shelve, preserve
-      def normalize_blank_file_directives
+      def normalize_file_directives
         FILE_DIRECTIVES.each do |directive|
-          ng_xml.xpath("//file[@#{directive} = '']").each { |file| file[directive] = 'no' }
+          ng_xml.xpath("//file[@#{directive}]").each do |node|
+            node[directive] = 'no' if node[directive] == ''
+            node[directive] = node[directive].strip
+          end
         end
       end
 
