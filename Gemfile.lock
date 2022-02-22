@@ -129,7 +129,7 @@ GEM
       activesupport
     diff-lcs (1.5.0)
     diffy (3.4.0)
-    dlss-capistrano (3.11.1)
+    dlss-capistrano (4.0.0)
       capistrano (~> 3.0)
       capistrano-bundle_audit (>= 0.3.0)
       capistrano-one_time_key
@@ -571,7 +571,7 @@ DEPENDENCIES
   datacite (~> 0.2.0)
   deprecation
   diffy
-  dlss-capistrano (~> 3.6)
+  dlss-capistrano
   dor-rights-auth (>= 1.5.0)
   dor-services (~> 9.6)
   dor-services-client
