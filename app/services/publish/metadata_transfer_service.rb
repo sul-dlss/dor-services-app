@@ -16,7 +16,7 @@ module Publish
     # Appends contentMetadata file resources from the source objects to this object
     # @raise [Dor::DataError]
     def publish
-      return unpublish unless world_discoverable?
+      return unpublish unless discoverable?
 
       # Retrieve release tags from identityMetadata and all collections this item is a member of
       release_tags = ReleaseTags.for(cocina_object: cocina_object)
@@ -46,8 +46,8 @@ module Publish
       publish_delete_on_success
     end
 
-    def world_discoverable?
-      ['world', 'citation-only'].include? cocina_object.access.access
+    def discoverable?
+      cocina_object.access.access != 'dark'
     end
 
     # Create a file inside the content directory under the stacks.local_document_cache_root
