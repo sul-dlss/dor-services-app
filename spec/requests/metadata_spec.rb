@@ -53,10 +53,13 @@ RSpec.describe 'Display metadata' do
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(response.body).to be_equivalent_to <<~XML
-        <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+        <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
           <titleInfo>
             <title>Hello</title>
           </titleInfo>
+          <location>
+            <url usage="primary display">https://purl.stanford.edu/mk420bs7601</url>\n
+          </location>
         </mods>
       XML
     end
