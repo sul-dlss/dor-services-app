@@ -27,6 +27,8 @@ module Cocina
       # @return [Hash] a hash that can be mapped to a cocina descriptive model
       # @raises [Cocina::Mapper::InvalidDescMetadata] if some assumption about descMetadata is violated
       def props
+        return nil if ng_xml.root.nil?
+
         check_altrepgroups
         check_version
         DescriptiveBuilder.build(title_builder: title_builder,
