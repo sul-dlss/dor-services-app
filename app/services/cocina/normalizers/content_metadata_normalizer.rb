@@ -29,10 +29,7 @@ module Cocina
       end
 
       def normalize(druid:)
-        remove_resource_id_attribute
-        remove_resource_objectid_attribute
         remove_resource_data_attribute
-        remove_external_resource_id
         remove_resource_sequence_attribute
         remove_location
         remove_file_format_and_data_type_attributes
@@ -62,8 +59,6 @@ module Cocina
 
       # resource ids and sequence numbers are regenerated so they must be normalized out of the roundtrip comparison
       def normalize_roundtrip
-        remove_resource_id_attribute
-        remove_external_resource_id
         remove_resource_sequence_attribute
 
         regenerate_ng_xml(ng_xml.to_s)
@@ -72,14 +67,6 @@ module Cocina
       private
 
       attr_reader :ng_xml, :druid
-
-      def remove_resource_id_attribute
-        ng_xml.xpath('//resource/@id').each(&:remove)
-      end
-
-      def remove_resource_objectid_attribute
-        ng_xml.xpath('//resource/@objectId').each(&:remove)
-      end
 
       def remove_resource_data_attribute
         ng_xml.xpath('//resource/@data').each(&:remove)
@@ -228,10 +215,6 @@ module Cocina
         ng_xml.xpath('//contentMetadata[not(@type)]').each do |node|
           node['type'] = 'file'
         end
-      end
-
-      def remove_external_resource_id
-        ng_xml.xpath('//externalFile/@resourceId').each(&:remove)
       end
 
       def normalize_relationship

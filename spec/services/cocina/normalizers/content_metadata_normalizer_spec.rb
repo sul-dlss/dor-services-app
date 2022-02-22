@@ -23,7 +23,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     let(:expected_xml) do
       <<~XML
         <contentMetadata objectId="druid:bk689jd2364" type="file">
-          <resource type="file">
+          <resource id="bk689jd2364_1" type="file">
             <file id="Decision.Record_6-30-03_signed.pdf" preserve="yes" publish="yes" shelve="yes" mimetype="application/pdf" size="102937">
               <checksum type="md5">50d5fc2730503a98bc2dda643064ae5b</checksum>
               <checksum type="sha1">df31b2f415d8e0806fa283db4e2c7fda690d1b02</checksum>
@@ -93,7 +93,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     let(:expected_xml) do
       <<~XML
         <contentMetadata type="file" objectId="druid:ft113wv9260">
-          <resource type="file">
+          <resource id="ft113wv9260_1" type="file" objectId="druid:ft113wv9260">
             <file mimetype="image/tiff" preserve="no" size="456" shelve="no" publish="no" id="ft113wv9260_00_0001.tif">
               <imageData width="4865" height="4933"/>
             </file>
@@ -142,20 +142,20 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     let(:expected_xml) do
       <<~XML
         <contentMetadata type="file" objectId="druid:dm559qb5551">
-          <resource type="permissions">
+          <resource id="dm559qb5551_3" type="permissions" objectId="druid:gc571ym3095">
             <file id="OSA_Copyright_Statement.pdf" mimetype="application/pdf" size="128546" shelve="yes" publish="no" preserve="yes">
               <checksum type="md5">6b7b69c16a839fbb17e94c7cc5ec1467</checksum>
               <checksum type="sha1">0ebbc2d45e1b03df31d57accd8e442f2a8188b5a</checksum>
             </file>
           </resource>
-          <resource type="permissions">
+          <resource id="dm559qb5551_4" type="permissions" objectId="druid:rw602tg5136">
             <label>Some cool label</label>
             <file id="copyxfer.pdf" mimetype="application/pdf" size="57053" shelve="yes" publish="no" preserve="yes">
               <checksum type="md5">036df64941635bcfa525fe3faf86d84f</checksum>
               <checksum type="sha1">87fc2454991de4f60f26c1f6fa4b51b4e7c913f3</checksum>
             </file>
           </resource>
-          <resource type="file">
+          <resource id="http://cocina.sul.stanford.edu/fileSet/18dabbd3-16fb-42be-9833-5da5401129a1" type="file">
             <file id="2021 March Off Highway Vehicles.pdf" mimetype="application/pdf" size="75211" publish="yes" shelve="yes" preserve="yes">
               <checksum type="sha1">f715cfa0f2a2cdd0fc14aa73a3e75326babe9ec4</checksum>
               <checksum type="md5">f3118304673f2135e3c37a6a233034b7</checksum>
@@ -187,7 +187,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     let(:expected_xml) do
       <<~XML
         <contentMetadata objectId="druid:bb035tg0974" type="file">
-          <resource type="file">
+          <resource objectId="druid:bb035tg0974" id="content" type="file">
             <file id="2021 March Off Highway Vehicles.pdf" mimetype="application/pdf" size="75211" publish="yes" shelve="yes" preserve="yes">
               <checksum type="sha1">f715cfa0f2a2cdd0fc14aa73a3e75326babe9ec4</checksum>
               <checksum type="md5">f3118304673f2135e3c37a6a233034b7</checksum>
@@ -504,7 +504,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
         expect(normalized_ng_xml).to be_equivalent_to(
           <<~XML
             <contentMetadata objectId="druid:bk689jd2364" type="file">
-              <resource type="page">
+              <resource type="page" id="page268">
                 <file preserve="yes" mimetype="image/jp2" size="92631" shelve="no" id="00000268.jp2" publish="no">
                   <imageData width="1310" height="2071"/>
                   <checksum type="sha-1">50d77a392ba30dcbbf4ada379e09ded02f9658f2</checksum>
@@ -525,7 +525,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       # adapted/modified from druid:bf016hc1150
       let(:original_xml) do
         <<~XML
-            <contentMetadata type="file" objectId="druid:bf016hc1150">
+          <contentMetadata type="file" objectId="druid:bf016hc1150">
             <resource id="bf016hc1150_1" type="main-original">
               <attr name="label">Body of dissertation (as submitted)</attr>
               <file id="Jiajing Wang_Dissertation_final.pdf" mimetype="application/pdf" size="10063288" shelve="yes" publish="no" preserve="yes">
@@ -548,14 +548,14 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
         expect(normalized_ng_xml).to be_equivalent_to(
           <<~XML
             <contentMetadata type="file" objectId="druid:bf016hc1150">
-              <resource type="main-original">
+              <resource id="bf016hc1150_1" type="main-original">
                 <label>Body of dissertation (as submitted)</label>
                 <file id="Jiajing Wang_Dissertation_final.pdf" mimetype="application/pdf" size="10063288" shelve="yes" publish="no" preserve="yes">
                   <checksum type="md5">4730200a3f0e2e59a4b5222b24c56479</checksum>
                   <checksum type="sha1">1da942c37bf02c83a50840607e5d537981a685ca</checksum>
                 </file>
               </resource>
-              <resource type="main-augmented">
+              <resource id="bf016hc1150_2" type="main-augmented" objectId="druid:hn674mz7318">
                 <label>Body of dissertation</label>
                 <file id="Jiajing Wang_Dissertation_final-augmented.pdf" mimetype="application/pdf" size="8669074" shelve="yes" publish="yes" preserve="yes">
                   <checksum type="md5">59447a86931f3663f5c129ffb2326808</checksum>
@@ -588,7 +588,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
         expect(normalized_ng_xml).to be_equivalent_to(
           <<~XML
               <contentMetadata type="file" objectId="druid:tt395zz8686">
-              <resource type="file">
+              <resource objectId="druid:tt395zz8686" id="content" type="file">
                 <label>Using xSearch for Accelerating Research-Review of Deep Web Technologies Federated Search Service</label>
                 <file preserve="yes" size="4333001" mimetype="application/pdf" id="xSearch_Review_Charleston_Advisor.pdf" shelve="yes" publish="yes">
                   <checksum type="md5">c22b3d0fd5569fc1039901bf22dad4f0</checksum>
@@ -759,7 +759,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       expect(normalized_ng_xml).to be_equivalent_to(
         <<~XML
           <contentMetadata objectId="druid:cc377hs8114" type="geo">
-            <resource type="object">
+            <resource id="cc377hs8114_1" type="object">
               <label>Data</label>
               <file preserve="yes" shelve="yes" publish="yes" id="data.zip" mimetype="application/zip" size="1216894" role="master">
                 <checksum type="sha1">ae052966c362af7bcfec55a9ac2f2c4fdef21738</checksum>
@@ -770,7 +770,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
                 <checksum type="md5">6917a0345c5fc5d24c213994fcaadd44</checksum>
               </file>
             </resource>
-            <resource type="preview">
+            <resource id="cc377hs8114_2" type="preview">
               <label>Preview</label>
               <file preserve="yes" shelve="yes" publish="yes" id="preview.jpg" mimetype="image/jpeg" size="5954" role="master">
                 <checksum type="sha1">69054c3a2f650fcc70e30f5cf5d96372b715b34c</checksum>
@@ -820,7 +820,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       expect(normalized_ng_xml).to be_equivalent_to(
         <<~XML
           <contentMetadata type="webarchive-seed" objectId="druid:bb035tg0974">
-            <resource type="image">
+            <resource id="bb035tg0974_1" type="image">
               <file preserve="no" publish="yes" shelve="yes" mimetype="image/jp2" id="thumbnail.jp2" size="20199">
                 <checksum type="md5">7a2e7d50f03917674f8014cacd77cc26</checksum>
                 <checksum type="sha1">9db56401e6c2c2515c9d7a75b8316ca1d5425709</checksum>
@@ -960,8 +960,8 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       expect(normalized_ng_xml).to be_equivalent_to(
         <<~XML
           <contentMetadata type="file" objectId="druid:bb035tg0974">
-            <resource type="file">
-              <externalFile objectId="druid:fn851rw5684" fileId="PC0170_s3_Oregon_State_2008-08-28_154120_0001.jp2" mimetype="image/jp2"/>
+            <resource id="bb035tg0974_1" type="file">
+              <externalFile objectId="druid:fn851rw5684" resourceId="fn851rw5684_1"  fileId="PC0170_s3_Oregon_State_2008-08-28_154120_0001.jp2" mimetype="image/jp2"/>
               <relationship objectId="druid:fn851rw5684" type="alsoAvailableAs"/>
             </resource>
           </contentMetadata>
@@ -1088,7 +1088,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       expect(normalized_ng_xml).to be_equivalent_to(
         <<~XML
           <contentMetadata objectId="druid:bb035tg0974" type="image">
-            <resource type="image">
+            <resource id="sv384vk4422_12" type="image">
               <label>Image (1 of 24)</label>
               <file id="sv384vk4422_BlackB_Photo1.jpg" preserve="yes" publish="no" shelve="no" mimetype="image/jpeg" size="511657">
                 <checksum type="md5">c7b01aa5d8b29fed2132417d2e2a073e</checksum>
