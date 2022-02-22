@@ -1062,4 +1062,48 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       expect(normalized_ng_xml).to be_equivalent_to(expected_xml)
     end
   end
+
+  context 'when normalizing preserve, shelve, publish with trailing whitespace' do
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata objectId="druid:bb035tg0974" type="image">
+          <resource sequence="12" id="sv384vk4422_12" type="image">
+            <label>Image (1 of 24)</label>
+            <file id="sv384vk4422_BlackB_Photo1.jpg" preserve="yes " publish="no " shelve="no " mimetype="image/jpeg" size="511657">
+              <checksum type="md5">c7b01aa5d8b29fed2132417d2e2a073e</checksum>
+              <checksum type="sha1">9e7e6b55b828a5436f09b283f8cb25418714a75f</checksum>
+              <imageData width="682" height="1227"/>
+            </file>
+            <file id="sv384vk4422_BlackB_Photo1.jp2" mimetype="image/jp2" size="171954" preserve="no" publish="yes" shelve="yes">
+              <checksum type="md5">3fc167a53318a3e4789c9b6b2fdc8702</checksum>
+              <checksum type="sha1">67ebb1e9d5571b0ea9d0d448aa9fff03d889eca5</checksum>
+              <imageData width="682" height="1227"/>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    it 'removes the whitespace' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <contentMetadata objectId="druid:bb035tg0974" type="image">
+            <resource type="image">
+              <label>Image (1 of 24)</label>
+              <file id="sv384vk4422_BlackB_Photo1.jpg" preserve="yes" publish="no" shelve="no" mimetype="image/jpeg" size="511657">
+                <checksum type="md5">c7b01aa5d8b29fed2132417d2e2a073e</checksum>
+                <checksum type="sha1">9e7e6b55b828a5436f09b283f8cb25418714a75f</checksum>
+                <imageData width="682" height="1227"/>
+              </file>
+              <file id="sv384vk4422_BlackB_Photo1.jp2" mimetype="image/jp2" size="171954" preserve="no" publish="yes" shelve="yes">
+                <checksum type="md5">3fc167a53318a3e4789c9b6b2fdc8702</checksum>
+                <checksum type="sha1">67ebb1e9d5571b0ea9d0d448aa9fff03d889eca5</checksum>
+                <imageData width="682" height="1227"/>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      )
+    end
+  end
 end
