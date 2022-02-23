@@ -9,6 +9,8 @@ module Cocina
     def self.create(cocina_object, druid:, persister: ActiveFedoraPersister, assign_doi: false, cocina_object_store: CocinaObjectStore.new)
       fedora_object, _cocina_object = new(cocina_object_store: cocina_object_store).create(cocina_object, druid: druid, persister: persister,
                                                                                                           assign_doi: assign_doi)
+
+      # Return Fedora object so that CocinaObjectStore can perform late mapping.
       fedora_object
     end
 

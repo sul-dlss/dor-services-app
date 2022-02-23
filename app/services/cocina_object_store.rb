@@ -32,15 +32,16 @@ class CocinaObjectStore
   # Normalizes, validates, and updates a Cocina object in the datastore.
   # Since normalization is performed, the Cocina object that is returned may differ from the Cocina object that is provided.
   # @param [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] cocina_object
+  # @param [#create] event_factory creates events
   # @raise [Cocina::RoundtripValidationError] raised when validating roundtrip mapping fails. This error will no longer be raised when Fedora is removed.
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
   # @raise [CocinaObjectNotFoundError] raised if the cocina object does not already exist in the datastore. This error will no longer be raised when support create.
   # @return [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] normalized cocina object
-  def self.save(cocina_object)
-    new.save(cocina_object)
+  def self.save(cocina_object, event_factory: EventFactory)
+    new(event_factory: event_factory).save(cocina_object)
   end
 
-  # Removes a Cocina object from the datastore.
+  # Removes a Cocina object from the   datastore.
   # @param [String] druid
   # @raise [CocinaObjectNotFoundError] raised when the Cocina object is not found.
   def self.destroy(druid)
@@ -60,6 +61,7 @@ class CocinaObjectStore
 
   # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object
   # @param [boolean] assign_doi
+  # @param [#create] event_factory creates events
   # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
   # @raises [SymphonyReader::ResponseError] if symphony connection failed
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
@@ -87,9 +89,14 @@ class CocinaObjectStore
     # This will make sure gets correct create/update dates.
     cocina_to_ar_save(updated_cocina_object) if Settings.enabled_features.postgres.update && ar_exists?(cocina_object.externalIdentifier)
 
+    event_factory.create(druid: updated_cocina_object.externalIdentifier, event_type: 'update', data: { success: true, request: updated_cocina_object.to_h })
+
     # Broadcast this update action to a topic
     Notifications::ObjectUpdated.publish(model: updated_cocina_object, created_at: created_at, modified_at: modified_at)
     updated_cocina_object
+  rescue Cocina::ValidationError => e
+    event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update', data: { success: false, error: e.message, request: cocina_object.to_h })
+    raise
   end
 
   def create(cocina_request_object, assign_doi: false)
@@ -164,6 +171,9 @@ class CocinaObjectStore
     # Updating produces a different Cocina object than it was provided.
     Cocina::ObjectUpdater.run(fedora_object, cocina_object)
     [fedora_object, fedora_object.create_date, fedora_object.modified_date]
+  rescue Cocina::Mapper::MapperError, Cocina::ObjectUpdater::NotImplemented => e
+    event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update', data: { success: false, error: e.message, request: cocina_object.to_h })
+    raise
   end
 
   def fedora_exists?(druid)

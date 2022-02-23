@@ -7,7 +7,7 @@ require 'rails_helper'
 RSpec.describe Cocina::ObjectUpdater do
   include Dry::Monads[:result]
 
-  subject(:update) { described_class.run(item, cocina_object, event_factory: event_factory, trial: trial) }
+  subject(:update) { described_class.run(item, cocina_object, trial: trial) }
 
   # For the existing item.
   let(:orig_cocina_object) do
@@ -21,8 +21,6 @@ RSpec.describe Cocina::ObjectUpdater do
 
   let(:cocina_attrs) { orig_cocina_attrs }
 
-  let(:event_factory) { class_double(EventFactory) }
-
   let(:trial) { false }
 
   let(:version_metadata) { instance_double(Dor::VersionMetadataDS, increment_version: nil) }
@@ -32,7 +30,6 @@ RSpec.describe Cocina::ObjectUpdater do
     allow(Cocina::ApoExistenceValidator).to receive(:new).and_return(instance_double(Cocina::ApoExistenceValidator, valid?: true))
     allow(Settings.enabled_features).to receive(:update_descriptive).and_return(true)
     allow(AdministrativeTags).to receive(:for).and_return([])
-    allow(event_factory).to receive(:create)
   end
 
   context 'when an admin policy' do
@@ -783,7 +780,6 @@ RSpec.describe Cocina::ObjectUpdater do
     it 'updates but does not save' do
       update
       expect(item).not_to have_received(:save!)
-      expect(event_factory).not_to have_received(:create)
       expect(AdministrativeTags).not_to have_received(:create)
 
       expect(item).to have_received(:admin_policy_object_id=)

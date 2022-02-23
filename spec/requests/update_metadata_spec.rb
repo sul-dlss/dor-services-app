@@ -466,10 +466,6 @@ RSpec.describe 'Update object' do
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.status).to eq(400)
-      expect(EventFactory).to have_received(:create)
-        .with(druid: other_druid,
-              data: hash_including(:request, success: false, error: "Identifier on the query and in the body don't match"),
-              event_type: 'update')
     end
   end
 

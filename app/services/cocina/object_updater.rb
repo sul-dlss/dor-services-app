@@ -9,12 +9,11 @@ module Cocina
 
     # @param [ActiveFedora::Base] fedora_object the Fedora object to update
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object the cocina model provided by the client
-    # @param [#create] event_factory creates events
     # @param [boolean] trial do not persist or event; run all mappings regardless of changes
     # @param [Cocina::FromFedora::DataErrorNotifier] notifier
     # @param [CocinaObjectStore] cocina_object_store
-    def self.run(fedora_object, cocina_object, event_factory: EventFactory, trial: false, notifier: nil, cocina_object_store: CocinaObjectStore)
-      new(fedora_object, cocina_object, trial: trial, cocina_object_store: cocina_object_store).run(event_factory: event_factory, notifier: notifier)
+    def self.run(fedora_object, cocina_object, trial: false, notifier: nil, cocina_object_store: CocinaObjectStore)
+      new(fedora_object, cocina_object, trial: trial, cocina_object_store: cocina_object_store).run(notifier: notifier)
     end
 
     def initialize(fedora_object, cocina_object, cocina_object_store:, trial: false)
@@ -26,7 +25,7 @@ module Cocina
     end
 
     # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
-    def run(event_factory:, notifier: nil)
+    def run(notifier: nil)
       @notifier = notifier
 
       # Validate will raise an error if not valid.
@@ -47,13 +46,8 @@ module Cocina
       update_version if has_changed?(:version)
 
       # Map back before saving to make sure that valid
-      updated_cocina_object = Mapper.build(fedora_object, notifier: notifier)
+      Mapper.build(fedora_object, notifier: notifier)
       fedora_object.save! unless trial
-
-      event_factory.create(druid: fedora_object.pid, event_type: 'update', data: { success: true, request: updated_cocina_object.to_h }) unless trial
-    rescue Mapper::MapperError, ValidationError, NotImplemented => e
-      event_factory.create(druid: fedora_object.pid, event_type: 'update', data: { success: false, error: e.message, request: cocina_object.to_h }) unless trial
-      raise
     end
 
     private

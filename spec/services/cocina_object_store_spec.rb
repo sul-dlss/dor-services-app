@@ -8,6 +8,7 @@ RSpec.describe CocinaObjectStore do
     let(:date) { Time.zone.now }
     let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid) }
     let(:druid) { 'druid:bc123df4567' }
+    let(:cocina_hash) { { fake: 'hash' } }
 
     before do
       allow(ActiveFedora::ContentModel).to receive(:models_asserted_by).and_return(['info:fedora/afmodel:Item'])
@@ -68,7 +69,7 @@ RSpec.describe CocinaObjectStore do
       context 'when object is found in datastore' do
         let(:cocina_object_store) { described_class.new }
 
-        let(:updated_cocina_object) { instance_double(Cocina::Models::DRO) }
+        let(:updated_cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, to_h: cocina_hash) }
 
         before do
           allow(Notifications::ObjectUpdated).to receive(:publish)
@@ -76,6 +77,7 @@ RSpec.describe CocinaObjectStore do
           allow(Cocina::ObjectUpdater).to receive(:run)
           allow(Cocina::Mapper).to receive(:build).and_return(updated_cocina_object)
           allow(cocina_object_store).to receive(:add_tags_for_update)
+          allow(EventFactory).to receive(:create)
         end
 
         it 'maps and saves to Fedora' do
@@ -86,6 +88,7 @@ RSpec.describe CocinaObjectStore do
           expect(Cocina::ObjectValidator).to have_received(:validate).with(cocina_object)
           expect(cocina_object_store).to have_received(:add_tags_for_update).with(cocina_object)
           expect(Cocina::Mapper).to have_received(:build).with(item)
+          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'update', data: { success: true, request: cocina_hash })
         end
       end
 
@@ -101,7 +104,7 @@ RSpec.describe CocinaObjectStore do
 
       context 'when postgres update is enabled' do
         let(:cocina_object_store) { described_class.new }
-        let(:updated_cocina_object) { instance_double(Cocina::Models::DRO) }
+        let(:updated_cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, to_h: cocina_hash) }
 
         before do
           allow(Settings.enabled_features.postgres).to receive(:update).and_return(true)
@@ -112,6 +115,7 @@ RSpec.describe CocinaObjectStore do
           allow(cocina_object_store).to receive(:cocina_to_ar_save)
           allow(cocina_object_store).to receive(:ar_exists?).and_return(true)
           allow(cocina_object_store).to receive(:add_tags_for_update)
+          allow(EventFactory).to receive(:create)
         end
 
         it 'maps and saves to Fedora' do
@@ -122,13 +126,43 @@ RSpec.describe CocinaObjectStore do
           expect(cocina_object_store).to have_received(:ar_exists?).with(druid)
         end
       end
+
+      context 'when validation error' do
+        let(:cocina_object_store) { described_class.new }
+
+        before do
+          allow(Cocina::ObjectValidator).to receive(:validate).and_raise(Cocina::ValidationError, 'Ooops.')
+          allow(EventFactory).to receive(:create)
+          allow(cocina_object).to receive(:to_h).and_return(cocina_hash)
+        end
+
+        it 'raises' do
+          expect { cocina_object_store.save(cocina_object) }.to raise_error(Cocina::ValidationError)
+          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'update', data: { success: false, request: cocina_hash, error: 'Ooops.' })
+        end
+      end
+
+      context 'when Fedora-specific error' do
+        let(:cocina_object_store) { described_class.new }
+
+        before do
+          allow(Dor).to receive(:find).and_return(item)
+          allow(Cocina::ObjectUpdater).to receive(:run).and_raise(Cocina::Mapper::MapperError)
+          allow(EventFactory).to receive(:create)
+          allow(cocina_object).to receive(:to_h).and_return(cocina_hash)
+        end
+
+        it 'raises' do
+          expect { cocina_object_store.save(cocina_object) }.to raise_error(Cocina::Mapper::MapperError)
+          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'update', data: { success: false, request: cocina_hash, error: 'Cocina::Mapper::MapperError' })
+        end
+      end
     end
 
     describe '#create' do
       let(:cocina_object_store) { described_class.new }
       let(:requested_cocina_object) { instance_double(Cocina::Models::RequestDRO) }
       let(:created_cocina_object) { instance_double(Cocina::Models::DRO, to_h: cocina_hash) }
-      let(:cocina_hash) { { fake: 'hash' } }
 
       before do
         allow(Notifications::ObjectCreated).to receive(:publish)
