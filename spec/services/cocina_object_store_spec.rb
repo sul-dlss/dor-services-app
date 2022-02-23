@@ -127,7 +127,8 @@ RSpec.describe CocinaObjectStore do
     describe '#create' do
       let(:cocina_object_store) { described_class.new }
       let(:requested_cocina_object) { instance_double(Cocina::Models::RequestDRO) }
-      let(:created_cocina_object) { instance_double(Cocina::Models::DRO) }
+      let(:created_cocina_object) { instance_double(Cocina::Models::DRO, to_h: cocina_hash) }
+      let(:cocina_hash) { { fake: 'hash' } }
 
       before do
         allow(Notifications::ObjectCreated).to receive(:publish)
@@ -136,6 +137,8 @@ RSpec.describe CocinaObjectStore do
         allow(cocina_object_store).to receive(:add_tags_for_create)
         allow(Dor::SuriService).to receive(:mint_id).and_return(druid)
         allow(Cocina::Mapper).to receive(:build).and_return(created_cocina_object)
+        allow(SynchronousIndexer).to receive(:reindex_remotely)
+        allow(EventFactory).to receive(:create)
       end
 
       it 'maps and saves to Fedora' do
@@ -146,6 +149,21 @@ RSpec.describe CocinaObjectStore do
         expect(cocina_object_store).to have_received(:default_access_for).with(requested_cocina_object)
         expect(cocina_object_store).to have_received(:add_tags_for_create).with(druid, requested_cocina_object)
         expect(Cocina::Mapper).to have_received(:build).with(item)
+        expect(SynchronousIndexer).to have_received(:reindex_remotely).with(druid)
+        expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
+        expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'registration', data: cocina_hash)
+      end
+
+      context 'when postgres create is enabled' do
+        before do
+          allow(Settings.enabled_features.postgres).to receive(:create).and_return(true)
+          allow(cocina_object_store).to receive(:cocina_to_ar_save)
+        end
+
+        it 'save to postgres' do
+          expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
+          expect(cocina_object_store).to have_received(:cocina_to_ar_save).with(created_cocina_object)
+        end
       end
     end
 

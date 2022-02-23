@@ -6,14 +6,14 @@ module Cocina
   # Actions that should be performed regardless of datastore should be in CocinaObjectStore.
   class ObjectCreator
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    def self.create(cocina_object, druid:, event_factory: EventFactory, persister: ActiveFedoraPersister, assign_doi: false, cocina_object_store: CocinaObjectStore.new)
-      fedora_object, _cocina_object = new(cocina_object_store: cocina_object_store).create(cocina_object, druid: druid, event_factory: event_factory, persister: persister,
+    def self.create(cocina_object, druid:, persister: ActiveFedoraPersister, assign_doi: false, cocina_object_store: CocinaObjectStore.new)
+      fedora_object, _cocina_object = new(cocina_object_store: cocina_object_store).create(cocina_object, druid: druid, persister: persister,
                                                                                                           assign_doi: assign_doi)
       fedora_object
     end
 
     def self.trial_create(cocina_object, notifier:, cocina_object_store:)
-      new(cocina_object_store: cocina_object_store).create(cocina_object, druid: cocina_object.externalIdentifier, event_factory: nil, persister: nil, trial: true, notifier: notifier)
+      new(cocina_object_store: cocina_object_store).create(cocina_object, druid: cocina_object.externalIdentifier, persister: nil, trial: true, notifier: notifier)
     end
 
     def initialize(cocina_object_store: CocinaObjectStore.new)
@@ -23,8 +23,7 @@ module Cocina
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object
     # @param [String] druid
     # @raises SymphonyReader::ResponseError if symphony connection failed
-    # rubocop:disable Metrics/ParameterLists
-    def create(cocina_object, druid:, event_factory:, persister:, trial: false, notifier: nil, assign_doi: false)
+    def create(cocina_object, druid:, persister:, trial: false, notifier: nil, assign_doi: false)
       validate(cocina_object) unless trial
 
       fedora_object = create_from_model(cocina_object, druid: druid, trial: trial, assign_doi: assign_doi)
@@ -32,24 +31,10 @@ module Cocina
       # This will rebuild the cocina model from fedora, which shows we are only returning persisted data
       roundtrip_cocina_object = Mapper.build(fedora_object, notifier: notifier)
 
-      unless trial
-        persister.store(fedora_object)
-
-        # Fedora 3 has no unique constrains, so
-        # index right away to reduce the likelyhood of duplicate sourceIds
-        SynchronousIndexer.reindex_remotely(fedora_object.pid)
-
-        event_factory.create(druid: fedora_object.pid, event_type: 'registration', data: cocina_object.to_h)
-
-        # This creates version 1.0.0 (Initial Version)
-        ObjectVersion.increment_version(fedora_object.pid)
-
-        cocina_object_store.cocina_to_ar_save(roundtrip_cocina_object) if Settings.enabled_features.postgres.create
-      end
+      persister.store(fedora_object) unless trial
 
       [fedora_object, roundtrip_cocina_object]
     end
-    # rubocop:enable Metrics/ParameterLists
 
     private
 

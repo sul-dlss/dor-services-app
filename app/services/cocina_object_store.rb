@@ -63,8 +63,12 @@ class CocinaObjectStore
   # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
   # @raises [SymphonyReader::ResponseError] if symphony connection failed
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
-  def self.create(cocina_request_object, assign_doi: false)
-    new.create(cocina_request_object, assign_doi: assign_doi)
+  def self.create(cocina_request_object, assign_doi: false, event_factory: EventFactory)
+    new(event_factory: event_factory).create(cocina_request_object, assign_doi: assign_doi)
+  end
+
+  def initialize(event_factory: EventFactory)
+    @event_factory = event_factory
   end
 
   def find(druid)
@@ -93,11 +97,22 @@ class CocinaObjectStore
     validate(cocina_request_object)
     updated_cocina_request_object = default_access_for(cocina_request_object)
     druid = Dor::SuriService.mint_id
+
+    # This saves the Fedora object.
     fedora_object = fedora_create(updated_cocina_request_object, druid: druid, assign_doi: assign_doi)
     add_tags_for_create(druid, updated_cocina_request_object)
+    # This creates version 1.0.0 (Initial Version)
+    ObjectVersion.increment_version(druid)
+
+    # Fedora 3 has no unique constrains, so
+    # index right away to reduce the likelyhood of duplicate sourceIds
+    SynchronousIndexer.reindex_remotely(druid)
 
     # Doing late mapping so that can add tags first.
     cocina_object = Cocina::Mapper.build(fedora_object)
+    cocina_to_ar_save(cocina_object) if Settings.enabled_features.postgres.create
+
+    event_factory.create(druid: druid, event_type: 'registration', data: cocina_object.to_h)
 
     # Broadcast this to a topic
     Notifications::ObjectCreated.publish(model: cocina_object, created_at: Time.zone.now, modified_at: Time.zone.now)
@@ -132,26 +147,9 @@ class CocinaObjectStore
     Notifications::ObjectDeleted.publish(model: cocina_object, deleted_at: Time.zone.now)
   end
 
-  # This is only public for ObjectCreator use.
-  # Persist a Cocina object with ActiveRecord.
-  # @param [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy] cocina_object
-  # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
-  def cocina_to_ar_save(cocina_object)
-    model_clazz = case cocina_object
-                  when Cocina::Models::AdminPolicy
-                    AdminPolicy
-                  when Cocina::Models::DRO
-                    Dro
-                  when Cocina::Models::Collection
-                    Collection
-                  else
-                    raise CocinaObjectStoreError, "unsupported type #{cocina_object&.type}"
-                  end
-    model_clazz.upsert_cocina(cocina_object)
-    cocina_object
-  end
-
   private
+
+  attr_reader :event_factory
 
   # In later steps in the migration, the *fedora* methods will be replaced by the *ar* methods.
 
@@ -190,6 +188,24 @@ class CocinaObjectStore
 
   # The *ar* methods are private. In later steps in the migration, the *ar* methods will be invoked by the
   # above public methods.
+
+  # Persist a Cocina object with ActiveRecord.
+  # @param [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy] cocina_object
+  # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
+  def cocina_to_ar_save(cocina_object)
+    model_clazz = case cocina_object
+                  when Cocina::Models::AdminPolicy
+                    AdminPolicy
+                  when Cocina::Models::DRO
+                    Dro
+                  when Cocina::Models::Collection
+                    Collection
+                  else
+                    raise CocinaObjectStoreError, "unsupported type #{cocina_object&.type}"
+                  end
+    model_clazz.upsert_cocina(cocina_object)
+    cocina_object
+  end
 
   # Find a Cocina object persisted by ActiveRecord.
   # @param [String] druid to find
