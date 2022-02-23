@@ -3,7 +3,7 @@
 # This writes the object metadata files to the workspace metadata directory
 class PreservationMetadataExtractor
   # @param [Cocina::Models::DRO, Cocina::Models::AdminPolicy, Cocina::Models::Collection] cocina_object The representation of the digital object
-  # @param workspace The representation of the item's work area
+  # @param [DruidTools::Druid] workspace The representation of the item's work area
   # @return [Pathname] Pull all the datastreams specified in the configuration file
   #   into the workspace's metadata directory, overwriting existing file if present
   def self.extract(cocina_object:, workspace:)
@@ -11,7 +11,7 @@ class PreservationMetadataExtractor
   end
 
   # @param [Cocina::Models::DRO, Cocina::Models::AdminPolicy, Cocina::Models::Collection] cocina_object The representation of the digital object
-  # @param workspace The representation of the item's work area
+  # @param [DruidTools::Druid] workspace The representation of the item's work area
   # @param [Hash<Symbol,Bool>] datastream_config the list of datastreams to export and whether they are required or not.
   def initialize(cocina_object:, workspace:, datastream_config: DEFAULT_DATASTREAM_CONFIG)
     @cocina_object = cocina_object
