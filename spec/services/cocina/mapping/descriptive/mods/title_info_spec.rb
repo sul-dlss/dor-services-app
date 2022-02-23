@@ -443,12 +443,9 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Name-title authority plus additional contributor not part of uniform title' do
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'update not implemented' do
       let(:mods) do
         <<~XML
-          <titleInfo usage="primary">
-            <title>Hamlet</title>
-          </titleInfo>
           <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
             valueURI="http://id.loc.gov/authorities/names/n80008522" nameTitleGroup="1">
             <title>Hamlet</title>
@@ -469,24 +466,6 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
           title: [
             {
               value: 'Hamlet',
-              status: 'primary'
-            },
-            {
-              structuredValue: [
-                {
-                  value: 'Hamlet',
-                  type: 'title'
-                },
-                {
-                  value: 'Shakespeare, William, 1564-1616',
-                  type: 'name',
-                  uri: 'http://id.loc.gov/authorities/names/n78095332',
-                  source: {
-                    uri: 'http://id.loc.gov/authorities/names/',
-                    code: 'naf'
-                  }
-                }
-              ],
               type: 'uniform',
               uri: 'http://id.loc.gov/authorities/names/n80008522',
               source: {
