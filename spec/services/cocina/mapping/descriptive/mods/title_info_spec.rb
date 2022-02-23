@@ -328,9 +328,13 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
     end
   end
 
-  describe 'Uniform title with authority' do
+  describe 'Uniform title with authority and primary title' do
     # How to ID: titleInfo type="uniform"
-    it_behaves_like 'MODS cocina mapping' do
+    # NOTE: For MODS roundtrip of uniform titles, assign the nameTitleGroup to
+    # 1) name with status "primary" in contributor with status "primary" or
+    # 2) first name in contributor with status "primary" or
+    # If neither of those criteria are met in Cocina, do not assign nameTitleGroup in MODS
+    xit 'update not implemented' do
       let(:mods) do
         <<~XML
           <titleInfo usage="primary">
@@ -355,21 +359,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
               status: 'primary'
             },
             {
-              structuredValue: [
-                {
-                  value: 'Hamlet',
-                  type: 'title'
-                },
-                {
-                  value: 'Shakespeare, William, 1564-1616',
-                  type: 'name',
-                  uri: 'http://id.loc.gov/authorities/names/n78095332',
-                  source: {
-                    uri: 'http://id.loc.gov/authorities/names/',
-                    code: 'naf'
-                  }
-                }
-              ],
+              value: 'Hamlet'
               type: 'uniform',
               source: {
                 uri: 'http://id.loc.gov/authorities/names/',
@@ -400,7 +390,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Uniform title with multiple namePart subelements' do
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'update not implemented' do
       let(:mods) do
         <<~XML
           <titleInfo type="uniform" nameTitleGroup="1">
@@ -581,7 +571,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
         XML
       end
 
-      # Ignore usage and nameTitleGroup when determining duplication
+      # Ignore usage and nameTitleGroup when determining duplication; all subelements of name should be exact duplication
       let(:roundtrip_mods) do
         <<~XML
           <titleInfo type="uniform" nameTitleGroup="1">
@@ -660,6 +650,104 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
       ]
     end
   end
+
+  describe 'Uniform title with repetition of author plus role' do
+    # Adapted from bf818dg3045
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo>
+            <title>Spring dreams</title>
+          </titleInfo>
+          <titleInfo type="uniform" nameTitleGroup="1">
+            <title>Instrumental music. Selections</title>
+          </titleInfo>
+          <name type="personal" usage="primary" nameTitleGroup="1">
+            <namePart>Sheng, Bright</namePart>
+            <namePart type="date">1955-</namePart>
+          </name>
+          <name type="personal">
+            <namePart>Sheng, Bright</namePart>
+            <namePart type="date">1955-</namePart>
+            <role>
+              <roleTerm authority="marcrelator" type="code">prf</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      # Ignore usage and nameTitleGroup when determining duplication; all subelements of name should be exact duplication
+      let(:roundtrip_mods) do
+        <<~XML
+          <titleInfo type="uniform" nameTitleGroup="1">
+            <title>Roman de la Rose. 1878</title>
+          </titleInfo>
+          <name type="personal" usage="primary" nameTitleGroup="1">
+            <namePart>Guillaume</namePart>
+            <namePart type="termsOfAddress">de Lorris</namePart>
+            <namePart type="date">active 1230</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          title: [
+            {
+              structuredValue: [
+                {
+                  value: 'Roman de la Rose. 1878',
+                  type: 'title'
+                },
+                {
+                  structuredValue: [
+                    {
+                      value: 'Guillaume',
+                      type: 'name'
+                    },
+                    {
+                      value: 'de Lorris',
+                      type: 'term of address'
+                    },
+                    # Type 'activity dates' when value starts with 'active', 'fl', or 'floruit'
+                    {
+                      value: 'active 1230',
+                      type: 'activity dates'
+                    }
+                  ],
+                  type: 'name'
+                }
+              ],
+              type: 'uniform'
+            }
+          ],
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Guillaume',
+                      type: 'name'
+                    },
+                    {
+                      value: 'de Lorris',
+                      type: 'term of address'
+                    },
+                    {
+                      value: 'active 1230',
+                      type: 'activity dates'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary'
+            }
+          ]
+        }
+      end
+    end
 
   describe 'Supplied title' do
     # How to ID: titleInfo supplied="yes"
