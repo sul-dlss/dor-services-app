@@ -32,8 +32,8 @@ module Cocina
       end
 
       def initialize(mods_ng_xml:, druid:, label: nil)
-        @ng_xml = mods_ng_xml.dup
-        @ng_xml.encoding = 'UTF-8' if @ng_xml.respond_to?(:encoding=) # sometimes it's a String (?)
+        @ng_xml = mods_ng_xml.root ? mods_ng_xml.dup : blank_ng_xml
+        @ng_xml.encoding = 'UTF-8'
         @druid = druid
         @label = label
       end
@@ -360,6 +360,16 @@ module Cocina
           related_item_node.delete('lang')
           related_item_node.delete('script')
         end
+      end
+
+      def blank_ng_xml
+        Nokogiri::XML(<<~XML
+          <mods xmlns="http://www.loc.gov/mods/v3"#{' '}
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"#{' '}
+            version="3.6"#{' '}
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd" />
+        XML
+                     )
       end
     end
   end

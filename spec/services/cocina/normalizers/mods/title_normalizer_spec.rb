@@ -51,6 +51,24 @@ RSpec.describe Cocina::Normalizers::Mods::TitleNormalizer do
     end
   end
 
+  context 'when normalizing Hydrus title with no root' do
+    let(:label) { 'Hydrus' }
+
+    let(:mods_ng_xml) do
+      Nokogiri::XML('')
+    end
+
+    it 'adds Hydrus titleInfo' do
+      expect(normalized_ng_xml).to be_equivalent_to <<~XML
+        <mods #{MODS_ATTRIBUTES}>
+          <titleInfo>
+            <title>Hydrus</title>
+          </titleInfo>
+        </mods>
+      XML
+    end
+  end
+
   context 'when normalizing titles with type' do
     let(:mods_ng_xml) do
       Nokogiri::XML <<~XML
