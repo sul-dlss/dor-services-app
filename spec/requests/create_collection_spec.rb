@@ -39,7 +39,7 @@ RSpec.describe 'Create object' do
         {
           "cocinaVersion":"0.0.1",
           "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
-          "label":"#{label}","version":1,"access":{},
+          "label":"#{label}","version":1,"access":{"access":"world"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"value":"#{title}"}]},
           "identification":#{identification.to_json}}
@@ -126,7 +126,7 @@ RSpec.describe 'Create object' do
         {
           "cocinaVersion":"0.0.1",
           "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
-          "label":"#{label}","version":1,"access":{},
+          "label":"#{label}","version":1,"access":{"access":"world"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Hydrus"},
           "identification":{"sourceId":"hydrus:collection-456"},
           "description":{"title":[{"value":"#{title}"}]}
@@ -152,7 +152,7 @@ RSpec.describe 'Create object' do
           "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
           "label":"#{label}",
           "version":1,
-          "access":{},
+          "access":{"access":"world"},
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "description":{
             "title":[{"value":"#{title}"}],

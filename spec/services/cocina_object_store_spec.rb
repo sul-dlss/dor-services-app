@@ -167,7 +167,7 @@ RSpec.describe CocinaObjectStore do
       before do
         allow(Notifications::ObjectCreated).to receive(:publish)
         allow(Cocina::ObjectCreator).to receive(:create).and_return(item)
-        allow(cocina_object_store).to receive(:default_access_for).and_return(requested_cocina_object)
+        allow(cocina_object_store).to receive(:merge_access_for).and_return(requested_cocina_object)
         allow(cocina_object_store).to receive(:add_tags_for_create)
         allow(Dor::SuriService).to receive(:mint_id).and_return(druid)
         allow(Cocina::Mapper).to receive(:build).and_return(created_cocina_object)
@@ -180,7 +180,7 @@ RSpec.describe CocinaObjectStore do
         expect(Cocina::ObjectCreator).to have_received(:create).with(requested_cocina_object, druid: druid, assign_doi: true)
         expect(Notifications::ObjectCreated).to have_received(:publish).with(model: created_cocina_object, created_at: kind_of(Time), modified_at: kind_of(Time))
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
-        expect(cocina_object_store).to have_received(:default_access_for).with(requested_cocina_object)
+        expect(cocina_object_store).to have_received(:merge_access_for).with(requested_cocina_object)
         expect(cocina_object_store).to have_received(:add_tags_for_create).with(druid, requested_cocina_object)
         expect(Cocina::Mapper).to have_received(:build).with(item)
         expect(SynchronousIndexer).to have_received(:reindex_remotely).with(druid)
