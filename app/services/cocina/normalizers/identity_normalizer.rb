@@ -36,6 +36,7 @@ module Cocina
         normalize_out_release_tags
         normalize_out_otherid_labels
         normalize_out_apo_hydrus_source_id
+        normalize_catkey_trailing_space
 
         add_missing_object_creator
         add_missing_object_label
@@ -200,6 +201,11 @@ module Cocina
         diss_id_node.node_name = 'sourceId'
         diss_id_node['source'] = diss_id_node['name']
         diss_id_node.delete('name')
+      end
+
+      def normalize_catkey_trailing_space
+        ng_xml.root.xpath('//otherId[@name="catkey" or @name="previous_catkey"]')
+              .each { |node| node.content = node.content.chomp(' ') }
       end
     end
     # rubocop:enable Metrics/ClassLength

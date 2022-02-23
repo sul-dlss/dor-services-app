@@ -805,5 +805,35 @@ RSpec.describe Cocina::Normalizers::IdentityNormalizer do
         )
       end
     end
+
+    describe '#normalize_catkey_trailing_space' do
+      let(:original_xml) do
+        <<~XML
+          <identityMetadata>
+            <otherId name="catkey">666</otherId>
+            <otherId name="catkey">667 </otherId>
+            <otherId name="previous_catkey">668</otherId>
+            <otherId name="catkey">669 </otherId>
+            <objectCreator>DOR</objectCreator>
+            <objectLabel>Label</objectLabel>
+          </identityMetadata>
+        XML
+      end
+
+      it 'removes trailing space' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+              <identityMetadata>
+              <otherId name="catkey">666</otherId>
+              <otherId name="catkey">667</otherId>
+              <otherId name="previous_catkey">668</otherId>
+              <otherId name="catkey">669</otherId>
+              <objectCreator>DOR</objectCreator>
+              <objectLabel>Label</objectLabel>
+            </identityMetadata>
+          XML
+        )
+      end
+    end
   end
 end
