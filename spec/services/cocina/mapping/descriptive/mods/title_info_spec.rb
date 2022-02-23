@@ -408,30 +408,9 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
         {
           title: [
             {
-              structuredValue: [
-                {
-                  value: 'Princesse jaune. Vocal score',
-                  type: 'title'
-                },
-                {
-                  structuredValue: [
-                    {
-                      value: 'Saint-Saëns',
-                      type: 'surname'
-                    },
-                    {
-                      value: 'Camille',
-                      type: 'forename'
-                    },
-                    {
-                      value: '1835-1921',
-                      type: 'life dates'
-                    }
-                  ],
-                  type: 'name'
-                }
-              ],
-              type: 'uniform'
+              {
+                value: 'Princesse jaune. Vocal score',
+                type: 'uniform'
             }
           ],
           contributor: [
