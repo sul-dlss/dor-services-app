@@ -117,6 +117,28 @@ RSpec.describe Publish::PublicDescMetadataService do
         doc
       end
     end
+
+    context 'when the object is an apo' do
+      subject(:doc) { service.ng_xml(include_access_conditions: false) }
+
+      let(:cocina_object) do
+        Cocina::Models.build({
+                               'type' => Cocina::Models::Vocab.admin_policy,
+                               'label' => 'test',
+                               'externalIdentifier' => 'druid:bb666cc7777',
+                               'version' => 1,
+                               'administrative' => {
+                                 'hasAdminPolicy' => 'druid:ss666tt7777',
+                                 'hasAgreement' => 'druid:ff666kk6666'
+                               },
+                               'description' => description
+                             })
+      end
+
+      it 'has no errors' do
+        doc
+      end
+    end
   end
 
   describe '#to_xml' do

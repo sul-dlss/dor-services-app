@@ -102,7 +102,7 @@ module Publish
     # For use in published mods and mods-to-DC conversion.
     # @return [Void]
     def add_collection_reference!
-      return if cocina_object.collection? || cocina_object.structural&.isMemberOf.blank?
+      return if cocina_object.collection? || cocina_object.admin_policy? || cocina_object.structural&.isMemberOf.blank?
 
       collections = CocinaObjectStore.find_collections_for(cocina_object, swallow_exceptions: true)
 
