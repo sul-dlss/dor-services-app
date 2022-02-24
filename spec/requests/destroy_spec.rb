@@ -4,10 +4,10 @@ require 'rails_helper'
 
 RSpec.describe 'Destroy Object' do
   let(:druid) { 'druid:mx123qw2323' }
-  let(:object) { Dor::Item.new(pid: druid) }
+  let(:object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid) }
 
   before do
-    allow(Dor).to receive(:find).and_return(object)
+    allow(CocinaObjectStore).to receive(:find).and_return(object)
     allow(DeleteService).to receive(:destroy).and_return(nil)
   end
 
