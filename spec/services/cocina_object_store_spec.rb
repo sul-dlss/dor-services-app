@@ -42,6 +42,31 @@ RSpec.describe CocinaObjectStore do
       end
     end
 
+    describe '#find_with_timestamps' do
+      context 'when DRO is found' do
+        before do
+          allow(Dor).to receive(:find).and_return(item)
+          allow(Cocina::Mapper).to receive(:build).and_return(cocina_object)
+        end
+
+        it 'returns Cocina object adn the timestamps' do
+          expect(described_class.find_with_timestamps(druid)).to eq [cocina_object, date, date]
+          expect(Dor).to have_received(:find).with(druid)
+          expect(Cocina::Mapper).to have_received(:build).with(item)
+        end
+      end
+
+      context 'when DRO is not found' do
+        before do
+          allow(Dor).to receive(:find).and_raise(ActiveFedora::ObjectNotFoundError)
+        end
+
+        it 'returns Cocina object' do
+          expect { described_class.find_with_timestamps(druid) }.to raise_error(CocinaObjectStore::CocinaObjectNotFoundError)
+        end
+      end
+    end
+
     describe '#exists?' do
       context 'when DRO is found' do
         before do

@@ -2,8 +2,7 @@
 
 # rubocop:disable Metrics/ClassLength
 class ObjectsController < ApplicationController
-  before_action :load_cocina_object, only: %i[show update_doi_metadata update_marc_record notify_goobi accession destroy]
-  before_action :load_item, only: %i[show]
+  before_action :load_cocina_object, only: %i[update_doi_metadata update_marc_record notify_goobi accession destroy]
 
   # No longer be necessary when remove Fedora.
   rescue_from(Cocina::ObjectUpdater::NotImplemented) do |e|
@@ -72,8 +71,9 @@ class ObjectsController < ApplicationController
   end
 
   def show
-    headers['Last-Modified'] = @item.modified_date.to_datetime.httpdate
-    headers['X-Created-At'] = @item.create_date.to_datetime.httpdate
+    (@cocina_object, created_at, modified_at) = CocinaObjectStore.find_with_timestamps(params[:id])
+    headers['X-Created-At'] = created_at.httpdate
+    headers['Last-Modified'] = modified_at.httpdate
     render json: @cocina_object
   end
 
