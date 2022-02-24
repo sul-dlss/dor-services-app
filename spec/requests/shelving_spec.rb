@@ -4,23 +4,23 @@ require 'rails_helper'
 
 RSpec.describe 'Shelve object' do
   let(:druid) { 'druid:mx123qw2323' }
-  let(:object) { Dor::Item.new(pid: druid) }
+  let(:object) { instance_double(Cocina::Models::DRO, dro?: true, externalIdentifier: druid) }
 
   let(:job) { class_double(ShelveJob, perform_later: nil) }
 
   before do
-    allow(Dor).to receive(:find).and_return(object)
+    allow(CocinaObjectStore).to receive(:find).and_return(object)
     allow(ShelveJob).to receive(:set).and_return(job)
   end
 
   context 'with a collection' do
-    let(:object) { Dor::Collection.new(pid: druid) }
+    let(:object) { instance_double(Cocina::Models::Collection, dro?: false, type: Cocina::Models::Vocab.collection) }
 
     it 'returns a 422 error' do
       post "/v1/objects/#{druid}/shelve", headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to have_http_status(:unprocessable_entity)
       json = JSON.parse(response.body)
-      expect(json['errors'].first['detail']).to eq("A Dor::Item is required but you provided 'Dor::Collection'")
+      expect(json['errors'].first['detail']).to eq "A DRO is required but you provided 'http://cocina.sul.stanford.edu/models/collection.jsonld'"
       expect(job).not_to have_received(:perform_later)
     end
   end
