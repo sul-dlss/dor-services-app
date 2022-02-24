@@ -1096,7 +1096,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Uniform title with corporate author' do
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated spec not implemented' do
       let(:mods) do
         <<~XML
           <titleInfo type="uniform" nameTitleGroup="1">
@@ -1112,16 +1112,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
         {
           title: [
             {
-              structuredValue: [
-                {
-                  value: 'United States',
-                  type: 'name'
-                },
-                {
-                  value: 'Laws, etc. (United States code service)',
-                  type: 'title'
-                }
-              ],
+              value: 'Laws, etc. (United States code service)'
               type: 'uniform'
             }
           ],
