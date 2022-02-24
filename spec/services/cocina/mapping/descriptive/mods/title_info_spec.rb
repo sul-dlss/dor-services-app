@@ -906,8 +906,8 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Multilingual uniform title' do
-    it_behaves_like 'MODS cocina mapping' do
-      # Both <name> elements have usage="primary" so "status": "primary" maps to contributor rather than name.
+    # NOTE: clunky workaround for MARC data
+    xit 'updated spec not implemented' do
       let(:mods) do
         <<~XML
           <titleInfo>
@@ -936,57 +936,6 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
         {
           title: [
             {
-              parallelValue: [
-                {
-                  structuredValue: [
-                    {
-                      value: 'Mishnah berurah. English and Hebrew',
-                      type: 'title'
-                    },
-                    {
-                      structuredValue: [
-                        {
-                          value: 'Israel Meir',
-                          type: 'name'
-                        },
-                        {
-                          value: 'ha-Kohen',
-                          type: 'term of address'
-                        },
-                        {
-                          value: '1838-1933',
-                          type: 'life dates'
-                        }
-                      ],
-                      type: 'name'
-                    }
-                  ]
-                },
-                {
-                  structuredValue: [
-                    {
-                      structuredValue: [
-                        {
-                          value: 'Israel Meir in Hebrew characters',
-                          type: 'name'
-                        },
-                        {
-                          value: '1838-1933',
-                          type: 'life dates'
-                        }
-                      ],
-                      type: 'name'
-                    },
-                    {
-                      value: 'Mishnah berurah in Hebrew characters',
-                      type: 'title'
-                    }
-                  ]
-                }
-              ],
-              type: 'uniform'
-            },
-            {
               structuredValue: [
                 {
                   value: 'Mishnah berurah',
@@ -997,6 +946,17 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
                   type: 'subtitle'
                 }
               ]
+            },
+            {
+              parallelValue: [
+                {
+                  value: 'Mishnah berurah. English and Hebrew'
+                },
+                {
+                  value: 'Mishnah berurah in Hebrew characters'
+                }
+              ],
+              type: 'uniform'
             }
           ],
           contributor: [
@@ -1019,7 +979,12 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
                           type: 'life dates'
                         }
                       ],
-                      status: 'primary'
+                      status: 'primary',
+                      appliesTo: [
+                        {
+                          value: 'Mishnah berurah. English and Hebrew'
+                        }
+                      ]
                     },
                     {
                       structuredValue: [
@@ -1030,6 +995,11 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
                         {
                           value: '1838-1933',
                           type: 'life dates'
+                        }
+                      ],
+                      appliesTo: [
+                        {
+                          value: 'Mishnah berurah in Hebrew characters'
                         }
                       ]
                     }
