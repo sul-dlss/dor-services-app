@@ -285,6 +285,19 @@ else
   druids = options[:druids]
 end
 
+def branch_name
+  `git rev-parse --abbrev-ref HEAD`.strip
+end
+
+def short_commit_hash
+  `git rev-parse --short HEAD`.strip
+end
+
+def now_str
+  DateTime.now.utc.iso8601.to_s
+end
+
+puts "Running against: branch_name=#{branch_name} / short_commit_hash=#{short_commit_hash} (starting at: #{now_str})"
 results = Parallel.map(druids, progress: 'Testing') do |druid|
   validate_druid(druid, loader, no_content: options[:no_content], no_desc: options[:no_descriptive], create: !options[:update])
 rescue StandardError

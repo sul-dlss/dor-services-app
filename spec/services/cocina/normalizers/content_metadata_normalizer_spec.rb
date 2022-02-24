@@ -481,6 +481,34 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       end
     end
 
+    context 'when normalizing svg imageData' do
+      let(:original_xml) do
+        <<~XML
+          <contentMetadata objectId="druid:ft996xy0052" type="image">
+            <resource type="image">
+              <label>Image 1</label>
+              <file id="12220080_labyrinth_trace.svg" preserve="yes" shelve="yes" publish="yes" size="13543" mimetype="image/svg+xml">
+                <imageData width="27" height="29"/>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      end
+
+      it 'removes the imageData element' do
+        expect(normalized_ng_xml).to be_equivalent_to(
+          <<~XML
+            <contentMetadata objectId="druid:ft996xy0052" type="image">
+              <resource type="image">
+                <label>Image 1</label>
+                <file id="12220080_labyrinth_trace.svg" preserve="yes" shelve="yes" publish="yes" size="13543" mimetype="image/svg+xml" />
+              </resource>
+            </contentMetadata>
+          XML
+        )
+      end
+    end
+
     context 'when normalizing format' do
       let(:original_xml) do
         <<~XML

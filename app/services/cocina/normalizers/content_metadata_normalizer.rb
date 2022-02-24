@@ -51,6 +51,7 @@ module Cocina
         downcase_checksum_type
         normalize_empty_xml
         missing_type_attribute_assigned_file
+        remove_svg_image_data
         remove_empty_image_data
         remove_duplicate_image_data
         normalize_image_data_to_integers
@@ -98,6 +99,12 @@ module Cocina
 
       def remove_location
         ng_xml.xpath('//location[@type="url"]').each(&:remove)
+      end
+
+      def remove_svg_image_data
+        ng_xml.xpath('//file[@mimetype="image/svg+xml"]').each do |file_node|
+          file_node.xpath('./imageData').each(&:remove)
+        end
       end
 
       # remove empty width and height attributes from imageData, e.g. <imageData width="" height=""/>
