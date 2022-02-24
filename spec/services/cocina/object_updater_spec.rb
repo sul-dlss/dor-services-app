@@ -7,7 +7,7 @@ require 'rails_helper'
 RSpec.describe Cocina::ObjectUpdater do
   include Dry::Monads[:result]
 
-  subject(:update) { described_class.run(item, cocina_object, event_factory: event_factory, trial: trial) }
+  subject(:update) { described_class.run(item, cocina_object, trial: trial) }
 
   # For the existing item.
   let(:orig_cocina_object) do
@@ -21,8 +21,6 @@ RSpec.describe Cocina::ObjectUpdater do
 
   let(:cocina_attrs) { orig_cocina_attrs }
 
-  let(:event_factory) { class_double(EventFactory) }
-
   let(:trial) { false }
 
   let(:version_metadata) { instance_double(Dor::VersionMetadataDS, increment_version: nil) }
@@ -32,7 +30,6 @@ RSpec.describe Cocina::ObjectUpdater do
     allow(Cocina::ApoExistenceValidator).to receive(:new).and_return(instance_double(Cocina::ApoExistenceValidator, valid?: true))
     allow(Settings.enabled_features).to receive(:update_descriptive).and_return(true)
     allow(AdministrativeTags).to receive(:for).and_return([])
-    allow(event_factory).to receive(:create)
   end
 
   context 'when an admin policy' do
@@ -452,62 +449,6 @@ RSpec.describe Cocina::ObjectUpdater do
       end
     end
 
-    context 'when updating administrative' do
-      before do
-        allow(item).to receive(:admin_policy_object_id=)
-        allow(AdministrativeTags).to receive(:create)
-      end
-
-      context 'when administrative has changed' do
-        let(:cocina_attrs) do
-          orig_cocina_attrs.tap do |attrs|
-            attrs[:administrative] = {
-              hasAdminPolicy: 'druid:ff000df4567',
-              partOfProject: 'Google Books'
-            }
-          end
-        end
-
-        context 'when creating a new project tag' do
-          it 'updates administrative' do
-            update
-            expect(item).to have_received(:admin_policy_object_id=).with('druid:ff000df4567')
-            expect(AdministrativeTags).to have_received(:create)
-          end
-        end
-
-        context 'when multiple project tags already exists' do
-          before do
-            allow(AdministrativeTags).to receive(:for).and_return(['Project : Phoenix', 'Project : Google Books'])
-          end
-
-          it 'updates administrative' do
-            expect { update }.to raise_error(/Too many tags for prefix/)
-          end
-        end
-
-        context 'when creating a new project tag with an existing project subtag' do
-          before do
-            allow(AdministrativeTags).to receive(:for).and_return(['Project : Google Books : Special'])
-          end
-
-          it 'updates administrative' do
-            update
-            expect(item).to have_received(:admin_policy_object_id=).with('druid:ff000df4567')
-            expect(AdministrativeTags).to have_received(:create)
-          end
-        end
-      end
-
-      context 'when administrative has not changed' do
-        it 'does not update administrative' do
-          update
-          expect(item).not_to have_received(:admin_policy_object_id=)
-          expect(AdministrativeTags).not_to have_received(:create)
-        end
-      end
-    end
-
     context 'when updating identification' do
       before do
         allow(item).to receive(:source_id=)
@@ -586,7 +527,6 @@ RSpec.describe Cocina::ObjectUpdater do
           instance_double(Dor::RightsMetadataDS, ng_xml_will_change!: nil)
         )
         allow(content_metadata).to receive(:contentType=)
-        allow(AdministrativeTags).to receive(:create)
         allow(content_metadata).to receive(:ng_xml)
         allow(Cocina::ToFedora::DROAccess).to receive(:apply)
       end
@@ -606,7 +546,6 @@ RSpec.describe Cocina::ObjectUpdater do
           expect(item).to have_received(:collection_ids=)
           expect(content_metadata).to have_received(:contentType=)
           expect(content_metadata).not_to have_received(:ng_xml)
-          expect(AdministrativeTags).to have_received(:create)
           expect(Cocina::ToFedora::DROAccess).to have_received(:apply)
         end
       end
@@ -616,7 +555,6 @@ RSpec.describe Cocina::ObjectUpdater do
           update
           expect(item).not_to have_received(:collection_ids=)
           expect(content_metadata).not_to have_received(:contentType=)
-          expect(AdministrativeTags).not_to have_received(:create)
           expect(Cocina::ToFedora::DROAccess).not_to have_received(:apply)
         end
       end
@@ -631,7 +569,6 @@ RSpec.describe Cocina::ObjectUpdater do
         allow(content_metadata).to receive(:content=)
         allow(content_metadata).to receive(:contentType=)
         allow(content_metadata).to receive(:ng_xml)
-        allow(AdministrativeTags).to receive(:create)
         allow(Cocina::ToFedora::DROAccess).to receive(:apply)
       end
 
@@ -676,7 +613,6 @@ RSpec.describe Cocina::ObjectUpdater do
         expect(content_metadata).to have_received(:content=)
         expect(content_metadata).not_to have_received(:contentType=)
         expect(content_metadata).not_to have_received(:ng_xml)
-        expect(AdministrativeTags).to have_received(:create)
         expect(Cocina::ToFedora::DROAccess).to have_received(:apply)
       end
     end
@@ -844,7 +780,6 @@ RSpec.describe Cocina::ObjectUpdater do
     it 'updates but does not save' do
       update
       expect(item).not_to have_received(:save!)
-      expect(event_factory).not_to have_received(:create)
       expect(AdministrativeTags).not_to have_received(:create)
 
       expect(item).to have_received(:admin_policy_object_id=)

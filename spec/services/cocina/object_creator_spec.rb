@@ -5,6 +5,8 @@ require 'rails_helper'
 RSpec.describe Cocina::ObjectCreator do
   subject(:result) { described_class.create(request, druid: druid, persister: persister, assign_doi: assign_doi) }
 
+  let(:created_cocina_object) { Cocina::Mapper.build(result) }
+
   let(:apo) { 'druid:bz845pv2292' }
   let(:minimal_cocina_admin_policy) do
     Cocina::Models::AdminPolicy.new({
@@ -28,7 +30,6 @@ RSpec.describe Cocina::ObjectCreator do
     allow(RefreshMetadataAction).to receive(:run) do |args|
       args[:fedora_object].descMetadata.mods_title = 'foo'
     end
-    allow(SynchronousIndexer).to receive(:reindex_remotely)
     allow(Settings.datacite).to receive(:prefix).and_return('10.25740')
   end
 
@@ -52,7 +53,7 @@ RSpec.describe Cocina::ObjectCreator do
       end
 
       it 'title is set to result of RefreshMetadataAction when there is a catalogLink' do
-        expect(result.description.title.first.value).to eq 'foo'
+        expect(created_cocina_object.description.title.first.value).to eq 'foo'
       end
     end
 
@@ -74,7 +75,7 @@ RSpec.describe Cocina::ObjectCreator do
       end
 
       it 'title is set to label' do
-        expect(result.description.title.first.value).to eq 'label value'
+        expect(created_cocina_object.description.title.first.value).to eq 'label value'
       end
     end
 
@@ -152,36 +153,36 @@ RSpec.describe Cocina::ObjectCreator do
       end
 
       it 'title is set to value passed in' do
-        expect(result.description.title.first.value).to eq 'more desc mappings'
+        expect(created_cocina_object.description.title.first.value).to eq 'more desc mappings'
       end
 
       it 'contributors are set' do
-        expect(result.description.contributor.first.type).to eq 'person'
-        expect(result.description.contributor.first.name.first.value).to eq 'Miss Piggy'
-        expect(result.description.contributor.first.role.first.value).to eq 'Creator'
-        expect(result.description.contributor.last.type).to eq 'organization'
-        expect(result.description.contributor.last.name.first.value).to eq 'funder.example.org'
-        expect(result.description.contributor.last.role.first.value).to eq 'Funder'
+        expect(created_cocina_object.description.contributor.first.type).to eq 'person'
+        expect(created_cocina_object.description.contributor.first.name.first.value).to eq 'Miss Piggy'
+        expect(created_cocina_object.description.contributor.first.role.first.value).to eq 'Creator'
+        expect(created_cocina_object.description.contributor.last.type).to eq 'organization'
+        expect(created_cocina_object.description.contributor.last.name.first.value).to eq 'funder.example.org'
+        expect(created_cocina_object.description.contributor.last.role.first.value).to eq 'Funder'
       end
 
       it 'subjects are set' do
-        expect(result.description.subject.first.type).to eq 'topic'
-        expect(result.description.subject.first.value).to eq 'I am a keyword'
+        expect(created_cocina_object.description.subject.first.type).to eq 'topic'
+        expect(created_cocina_object.description.subject.first.value).to eq 'I am a keyword'
       end
 
       it 'abstract (note of type abstract) is set' do
-        summary_note = result.description.note.find { |note| note.type == 'abstract' }
+        summary_note = created_cocina_object.description.note.find { |note| note.type == 'abstract' }
         expect(summary_note.value).to eq 'I am an abstract'
       end
 
       it 'contact (note of type contact) is set' do
-        contact_note = result.description.note.find { |note| note.type == 'email' }
+        contact_note = created_cocina_object.description.note.find { |note| note.type == 'email' }
         expect(contact_note.value).to eq 'marypoppins@umbrellas.org'
         expect(contact_note.displayLabel).to eq 'Contact'
       end
 
       it 'preferred citation is set with the link placeholder replaced' do
-        contact_note = result.description.note.find { |note| note.type == 'preferred citation' }
+        contact_note = created_cocina_object.description.note.find { |note| note.type == 'preferred citation' }
         expect(contact_note.value).to eq 'Zappa, F. (2013) https://purl.stanford.edu/mb046vj7485'
       end
     end
@@ -206,7 +207,7 @@ RSpec.describe Cocina::ObjectCreator do
       end
 
       it 'creates dark access' do
-        expect(result.access.access).to eq 'dark'
+        expect(created_cocina_object.access.access).to eq 'dark'
       end
     end
 
@@ -227,7 +228,7 @@ RSpec.describe Cocina::ObjectCreator do
       end
 
       it 'creates an agreement' do
-        expect(result.type).to eq Cocina::Models::Vocab.agreement
+        expect(created_cocina_object.type).to eq Cocina::Models::Vocab.agreement
       end
     end
 
@@ -253,7 +254,7 @@ RSpec.describe Cocina::ObjectCreator do
       end
 
       it 'adds DOI' do
-        expect(result.identification.doi).to eq '10.25740/mb046vj7485'
+        expect(created_cocina_object.identification.doi).to eq '10.25740/mb046vj7485'
       end
     end
 
@@ -284,37 +285,6 @@ RSpec.describe Cocina::ObjectCreator do
       it 'keeps DOI' do
         expect(result[1].identification.doi).to eq '10.25740/bb010dx6027'
       end
-    end
-  end
-
-  context 'when postgres create is enabled' do
-    let(:params) do
-      {
-        'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
-        'label' => 'label value',
-        'access' => {},
-        'version' => 1,
-        'structural' => {},
-        'administrative' => {
-          'hasAdminPolicy' => apo
-        },
-        'identification' => {
-          'sourceId' => 'donot:care'
-        }
-      }
-    end
-
-    let(:cocina_object_store) { instance_double(CocinaObjectStore, cocina_to_ar_save: nil) }
-
-    before do
-      allow(Settings.enabled_features.postgres).to receive(:create).and_return(true)
-      allow(CocinaObjectStore).to receive(:new).and_return(cocina_object_store)
-    end
-
-    it 'saves to postgres' do
-      result
-
-      expect(cocina_object_store).to have_received(:cocina_to_ar_save).with(instance_of(Cocina::Models::DRO))
     end
   end
 
@@ -353,11 +323,11 @@ RSpec.describe Cocina::ObjectCreator do
       end
 
       it 'collection title is set to params title' do
-        expect(result.description.title.first.value).to eq 'collection title'
+        expect(created_cocina_object.description.title.first.value).to eq 'collection title'
       end
 
       it 'collection abstract (note of type abstract) is set' do
-        summary_note = result.description.note.find { |note| note.type == 'abstract' }
+        summary_note = created_cocina_object.description.note.find { |note| note.type == 'abstract' }
         expect(summary_note.value).to eq 'I am an abstract'
       end
     end
@@ -393,7 +363,7 @@ RSpec.describe Cocina::ObjectCreator do
     end
 
     it 'geoMetadata content is set' do
-      expect(result.geographic.iso19139).to eq geo_xml
+      expect(created_cocina_object.geographic.iso19139).to eq geo_xml
     end
   end
 end

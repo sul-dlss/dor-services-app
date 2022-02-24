@@ -8,6 +8,7 @@ RSpec.describe CocinaObjectStore do
     let(:date) { Time.zone.now }
     let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid) }
     let(:druid) { 'druid:bc123df4567' }
+    let(:cocina_hash) { { fake: 'hash' } }
 
     before do
       allow(ActiveFedora::ContentModel).to receive(:models_asserted_by).and_return(['info:fedora/afmodel:Item'])
@@ -66,20 +67,28 @@ RSpec.describe CocinaObjectStore do
 
     describe '#save' do
       context 'when object is found in datastore' do
-        let(:updated_cocina_object) { instance_double(Cocina::Models::DRO) }
+        let(:cocina_object_store) { described_class.new }
+
+        let(:updated_cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, to_h: cocina_hash) }
 
         before do
           allow(Notifications::ObjectUpdated).to receive(:publish)
           allow(Dor).to receive(:find).and_return(item)
-          allow(Cocina::ObjectUpdater).to receive(:run).and_return(updated_cocina_object)
+          allow(Cocina::ObjectUpdater).to receive(:run)
+          allow(Cocina::Mapper).to receive(:build).and_return(updated_cocina_object)
+          allow(cocina_object_store).to receive(:add_tags_for_update)
+          allow(EventFactory).to receive(:create)
         end
 
         it 'maps and saves to Fedora' do
-          expect(described_class.save(cocina_object)).to be updated_cocina_object
+          expect(cocina_object_store.save(cocina_object)).to be updated_cocina_object
           expect(Dor).to have_received(:find).with(druid)
           expect(Cocina::ObjectUpdater).to have_received(:run).with(item, cocina_object)
           expect(Notifications::ObjectUpdated).to have_received(:publish).with(model: updated_cocina_object, created_at: item.create_date, modified_at: item.modified_date)
           expect(Cocina::ObjectValidator).to have_received(:validate).with(cocina_object)
+          expect(cocina_object_store).to have_received(:add_tags_for_update).with(cocina_object)
+          expect(Cocina::Mapper).to have_received(:build).with(item)
+          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'update', data: { success: true, request: cocina_hash })
         end
       end
 
@@ -95,15 +104,18 @@ RSpec.describe CocinaObjectStore do
 
       context 'when postgres update is enabled' do
         let(:cocina_object_store) { described_class.new }
-        let(:updated_cocina_object) { instance_double(Cocina::Models::DRO) }
+        let(:updated_cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, to_h: cocina_hash) }
 
         before do
           allow(Settings.enabled_features.postgres).to receive(:update).and_return(true)
           allow(described_class).to receive(:new).and_return(cocina_object_store)
           allow(Dor).to receive(:find).and_return(item)
-          allow(Cocina::ObjectUpdater).to receive(:run).and_return(updated_cocina_object)
+          allow(Cocina::ObjectUpdater).to receive(:run)
+          allow(Cocina::Mapper).to receive(:build).and_return(updated_cocina_object)
           allow(cocina_object_store).to receive(:cocina_to_ar_save)
           allow(cocina_object_store).to receive(:ar_exists?).and_return(true)
+          allow(cocina_object_store).to receive(:add_tags_for_update)
+          allow(EventFactory).to receive(:create)
         end
 
         it 'maps and saves to Fedora' do
@@ -114,18 +126,53 @@ RSpec.describe CocinaObjectStore do
           expect(cocina_object_store).to have_received(:ar_exists?).with(druid)
         end
       end
+
+      context 'when validation error' do
+        let(:cocina_object_store) { described_class.new }
+
+        before do
+          allow(Cocina::ObjectValidator).to receive(:validate).and_raise(Cocina::ValidationError, 'Ooops.')
+          allow(EventFactory).to receive(:create)
+          allow(cocina_object).to receive(:to_h).and_return(cocina_hash)
+        end
+
+        it 'raises' do
+          expect { cocina_object_store.save(cocina_object) }.to raise_error(Cocina::ValidationError)
+          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'update', data: { success: false, request: cocina_hash, error: 'Ooops.' })
+        end
+      end
+
+      context 'when Fedora-specific error' do
+        let(:cocina_object_store) { described_class.new }
+
+        before do
+          allow(Dor).to receive(:find).and_return(item)
+          allow(Cocina::ObjectUpdater).to receive(:run).and_raise(Cocina::Mapper::MapperError)
+          allow(EventFactory).to receive(:create)
+          allow(cocina_object).to receive(:to_h).and_return(cocina_hash)
+        end
+
+        it 'raises' do
+          expect { cocina_object_store.save(cocina_object) }.to raise_error(Cocina::Mapper::MapperError)
+          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'update', data: { success: false, request: cocina_hash, error: 'Cocina::Mapper::MapperError' })
+        end
+      end
     end
 
     describe '#create' do
       let(:cocina_object_store) { described_class.new }
       let(:requested_cocina_object) { instance_double(Cocina::Models::RequestDRO) }
-      let(:created_cocina_object) { instance_double(Cocina::Models::DRO) }
+      let(:created_cocina_object) { instance_double(Cocina::Models::DRO, to_h: cocina_hash) }
 
       before do
         allow(Notifications::ObjectCreated).to receive(:publish)
-        allow(Cocina::ObjectCreator).to receive(:create).and_return(created_cocina_object)
+        allow(Cocina::ObjectCreator).to receive(:create).and_return(item)
         allow(cocina_object_store).to receive(:default_access_for).and_return(requested_cocina_object)
+        allow(cocina_object_store).to receive(:add_tags_for_create)
         allow(Dor::SuriService).to receive(:mint_id).and_return(druid)
+        allow(Cocina::Mapper).to receive(:build).and_return(created_cocina_object)
+        allow(SynchronousIndexer).to receive(:reindex_remotely)
+        allow(EventFactory).to receive(:create)
       end
 
       it 'maps and saves to Fedora' do
@@ -134,6 +181,23 @@ RSpec.describe CocinaObjectStore do
         expect(Notifications::ObjectCreated).to have_received(:publish).with(model: created_cocina_object, created_at: kind_of(Time), modified_at: kind_of(Time))
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
         expect(cocina_object_store).to have_received(:default_access_for).with(requested_cocina_object)
+        expect(cocina_object_store).to have_received(:add_tags_for_create).with(druid, requested_cocina_object)
+        expect(Cocina::Mapper).to have_received(:build).with(item)
+        expect(SynchronousIndexer).to have_received(:reindex_remotely).with(druid)
+        expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
+        expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'registration', data: cocina_hash)
+      end
+
+      context 'when postgres create is enabled' do
+        before do
+          allow(Settings.enabled_features.postgres).to receive(:create).and_return(true)
+          allow(cocina_object_store).to receive(:cocina_to_ar_save)
+        end
+
+        it 'save to postgres' do
+          expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
+          expect(cocina_object_store).to have_received(:cocina_to_ar_save).with(created_cocina_object)
+        end
       end
     end
 
@@ -183,6 +247,44 @@ RSpec.describe CocinaObjectStore do
           described_class.destroy(druid)
           expect(fedora_object).to have_received(:destroy)
           expect(cocina_object_store).to have_received(:ar_destroy).with(druid)
+        end
+      end
+    end
+
+    describe '#add_tags_for_update' do
+      let(:cocina_object_store) { described_class.new }
+      let(:cocina_object) { instance_double(Cocina::Models::Collection, dro?: false, collection?: true, administrative: administrative, externalIdentifier: druid) }
+      let(:administrative) { instance_double(Cocina::Models::Administrative, partOfProject: 'Google Books') }
+
+      before do
+        allow(AdministrativeTags).to receive(:create)
+      end
+
+      context 'when creating a new project tag' do
+        it 'creates tag' do
+          cocina_object_store.send(:add_tags_for_update, cocina_object)
+          expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : Google Books'])
+        end
+      end
+
+      context 'when multiple project tags already exists' do
+        before do
+          allow(AdministrativeTags).to receive(:for).and_return(['Project : Phoenix', 'Project : Google Books'])
+        end
+
+        it 'raises' do
+          expect { cocina_object_store.send(:add_tags_for_update, cocina_object) }.to raise_error(/Too many tags for prefix/)
+        end
+      end
+
+      context 'when creating a new project tag with an existing project subtag' do
+        before do
+          allow(AdministrativeTags).to receive(:for).and_return(['Project : Google Books : Special'])
+        end
+
+        it 'creates tag' do
+          cocina_object_store.send(:add_tags_for_update, cocina_object)
+          expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : Google Books'])
         end
       end
     end
