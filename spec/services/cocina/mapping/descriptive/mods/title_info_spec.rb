@@ -596,7 +596,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
   describe 'Uniform title with repetition of author plus role' do
     # Adapted from bf818dg3045
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'update not implemented' do
       let(:mods) do
         <<~XML
           <titleInfo>
@@ -619,48 +619,14 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
         XML
       end
 
-      # Ignore usage and nameTitleGroup when determining duplication; all subelements of name should be exact duplication
-      let(:roundtrip_mods) do
-        <<~XML
-          <titleInfo type="uniform" nameTitleGroup="1">
-            <title>Roman de la Rose. 1878</title>
-          </titleInfo>
-          <name type="personal" usage="primary" nameTitleGroup="1">
-            <namePart>Guillaume</namePart>
-            <namePart type="termsOfAddress">de Lorris</namePart>
-            <namePart type="date">active 1230</namePart>
-          </name>
-        XML
-      end
-
       let(:cocina) do
         {
           title: [
             {
-              structuredValue: [
-                {
-                  value: 'Roman de la Rose. 1878',
-                  type: 'title'
-                },
-                {
-                  structuredValue: [
-                    {
-                      value: 'Guillaume',
-                      type: 'name'
-                    },
-                    {
-                      value: 'de Lorris',
-                      type: 'term of address'
-                    },
-                    # Type 'activity dates' when value starts with 'active', 'fl', or 'floruit'
-                    {
-                      value: 'active 1230',
-                      type: 'activity dates'
-                    }
-                  ],
-                  type: 'name'
-                }
-              ],
+              value: 'Spring dreams'
+            },
+            {
+              value: 'Instrumental music. Selections',
               type: 'uniform'
             }
           ],
@@ -670,22 +636,43 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
                 {
                   structuredValue: [
                     {
-                      value: 'Guillaume',
+                      value: 'Sheng, Bright',
                       type: 'name'
                     },
                     {
-                      value: 'de Lorris',
-                      type: 'term of address'
-                    },
-                    {
-                      value: 'active 1230',
-                      type: 'activity dates'
+                      value: '1955-',
+                      type: 'life dates'
                     }
                   ]
                 }
               ],
               type: 'person',
               status: 'primary'
+            },
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Sheng, Bright',
+                      type: 'name'
+                    },
+                    {
+                      value: '1955-',
+                      type: 'life dates'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              role: [
+                {
+                  code: 'prf',
+                  source: {
+                    code: 'marcrelator'
+                  }
+                }
+              ]
             }
           ]
         }
