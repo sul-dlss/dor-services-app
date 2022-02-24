@@ -22,6 +22,16 @@ class CocinaObjectStore
     new.find(druid)
   end
 
+  # Retrieves a Cocina object from the datastore and supplies the timestamps
+  # @param [String] druid
+  # @return [Array] a tuple consisting of cocina_object, created date and updated date
+  # @raise [SolrConnectionError] raised when cannot connect to Solr. This error will no longer be raised when Fedora is removed.
+  # @raise [Cocina::Mapper::UnexpectedBuildError] raised when an mapping error occurs. This error will no longer be raised when Fedora is removed.
+  # @raise [CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
+  def self.find_with_timestamps(druid)
+    new.find_with_timestamps(druid)
+  end
+
   # Determine if an object exists in the datastore.
   # @param [String] druid
   # @return [boolean] true if object exists
@@ -74,6 +84,11 @@ class CocinaObjectStore
   end
 
   def find(druid)
+    fedora_to_cocina_find(druid).first
+  end
+
+  # @return [Array] a tuple consisting of cocina object, created date and modified date
+  def find_with_timestamps(druid)
     fedora_to_cocina_find(druid)
   end
 
@@ -160,9 +175,10 @@ class CocinaObjectStore
 
   # In later steps in the migration, the *fedora* methods will be replaced by the *ar* methods.
 
+  # @return [Array] a tuple consisting of cocina object, created date and modified date
   def fedora_to_cocina_find(druid)
     fedora_object = fedora_find(druid)
-    Cocina::Mapper.build(fedora_object)
+    [Cocina::Mapper.build(fedora_object), fedora_object.create_date.to_datetime, fedora_object.modified_date.to_datetime]
   end
 
   def cocina_to_fedora_save(cocina_object)
