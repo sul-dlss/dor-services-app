@@ -70,6 +70,7 @@ class ApplicationController < ActionController::API
     @item = Dor.find(params[:object_id] || params[:id])
   end
 
+  # @raise [CocinaObjectStore::CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
   def load_cocina_object
     @cocina_object = CocinaObjectStore.find(params[:object_id] || params[:id])
   end

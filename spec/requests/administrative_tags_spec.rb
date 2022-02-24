@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Administrative tags' do
   let(:druid) { 'druid:mx123qw2323' }
-  let(:item) { Dor::Item.new(pid: druid) }
+  let(:item) { instance_double(Cocina::Models::DRO) }
   let(:tags) do
     [
       'Process : Content Type : Map',
@@ -15,7 +15,7 @@ RSpec.describe 'Administrative tags' do
   end
 
   before do
-    allow(Dor).to receive(:find).and_return(item)
+    allow(CocinaObjectStore).to receive(:find).and_return(item)
   end
 
   describe '#show' do
@@ -61,8 +61,8 @@ RSpec.describe 'Administrative tags' do
 
     context 'when item is not found' do
       before do
-        allow(Dor).to receive(:find)
-          .and_raise(ActiveFedora::ObjectNotFoundError, "Unable to find '#{druid}' in fedora. See logger for details.")
+        allow(CocinaObjectStore).to receive(:find)
+          .and_raise(CocinaObjectStore::CocinaObjectNotFoundError, "Unable to find '#{druid}' in fedora. See logger for details.")
       end
 
       it 'returns a 404' do
@@ -144,8 +144,8 @@ RSpec.describe 'Administrative tags' do
 
     context 'when item is not found' do
       before do
-        allow(Dor).to receive(:find)
-          .and_raise(ActiveFedora::ObjectNotFoundError, "Unable to find '#{druid}' in fedora. See logger for details.")
+        allow(CocinaObjectStore).to receive(:find)
+          .and_raise(CocinaObjectStore::CocinaObjectNotFoundError, "Unable to find '#{druid}' in fedora. See logger for details.")
       end
 
       it 'returns a 404' do
@@ -273,8 +273,8 @@ RSpec.describe 'Administrative tags' do
 
     context 'when item is not found' do
       before do
-        allow(Dor).to receive(:find)
-          .and_raise(ActiveFedora::ObjectNotFoundError, "Unable to find '#{druid}' in fedora. See logger for details.")
+        allow(CocinaObjectStore).to receive(:find)
+          .and_raise(CocinaObjectStore::CocinaObjectNotFoundError, "Unable to find '#{druid}' in fedora. See logger for details.")
       end
 
       it 'returns a 404' do
