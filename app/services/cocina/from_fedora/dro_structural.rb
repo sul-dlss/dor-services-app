@@ -45,20 +45,23 @@ module Cocina
       attr_reader :fedora_item, :type, :notifier
 
       def build_has_member_orders
-        member_orders = create_member_order if type == Cocina::Models::Vocab.book
+        member_orders = create_member_order
         sequence = build_sequence(fedora_item.contentMetadata)
-        if sequence.present?
-          member_orders ||= [{}]
-          member_orders.first[:members] = sequence
-        end
-        member_orders
+        member_orders.first[:members] = sequence if sequence.present?
+        member_orders.filter_map(&:presence)
       end
 
+      # Books MUST have a viewing direction, images MAY have a viewing direction.
+      # @return [Array<Hash>] an array representing a list of Cocina::Models::Sequences
       def create_member_order
-        viewing_direction = ViewingDirectionHelper.viewing_direction(druid: fedora_item.pid, content_ng_xml: fedora_item.contentMetadata.ng_xml)
-        viewing_direction ||= 'left-to-right'
+        return [{}] unless [Cocina::Models::Vocab.book, Cocina::Models::Vocab.image].include?(type)
 
-        [{ viewingDirection: viewing_direction }]
+        viewing_direction = ViewingDirectionHelper.viewing_direction(druid: fedora_item.pid,
+                                                                     content_ng_xml: fedora_item.contentMetadata.ng_xml,
+                                                                     use_tags: Cocina::Models::Vocab.book == type)
+        viewing_direction ||= 'left-to-right' if type == Cocina::Models::Vocab.book
+
+        [{ viewingDirection: viewing_direction }.compact]
       end
 
       # @return [Array<String>] the identifiers of files in a sequence for a virtual object
