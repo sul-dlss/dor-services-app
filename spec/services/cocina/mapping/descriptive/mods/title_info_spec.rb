@@ -906,6 +906,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Multilingual uniform title' do
+    # adapted from cv621pf3709
     # NOTE: clunky workaround for MARC data
     xit 'updated spec not implemented' do
       let(:mods) do
