@@ -3,9 +3,9 @@
 # Administrative tags controller (nested resource under objects)
 class AdministrativeTagsController < ApplicationController
   # This just validates that this is an existing object
-  before_action :load_item, only: %i[create update destroy]
+  before_action :load_cocina_object, only: %i[create update destroy]
 
-  rescue_from(ActiveFedora::ObjectNotFoundError) do |e|
+  rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
     render status: :not_found, plain: e.message
   end
 
