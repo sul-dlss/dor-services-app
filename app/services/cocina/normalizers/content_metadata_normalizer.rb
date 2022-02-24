@@ -179,7 +179,7 @@ module Cocina
 
         book_data_node = Nokogiri::XML::Node.new('bookData', ng_xml)
         book_data_node['readingOrder'] = fedora_reading_direction
-        ng_xml.root << book_data_node
+        ng_xml.root.prepend_child(book_data_node)
       end
 
       def normalize_attr_label
