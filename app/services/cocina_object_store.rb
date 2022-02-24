@@ -84,12 +84,16 @@ class CocinaObjectStore
   end
 
   def find(druid)
-    fedora_to_cocina_find(druid).first
+    find_with_timestamps(druid).first
   end
 
   # @return [Array] a tuple consisting of cocina object, created date and modified date
   def find_with_timestamps(druid)
-    fedora_to_cocina_find(druid)
+    if Settings.enabled_features.postgres.find && ar_exists?(druid)
+      ar_to_cocina_find(druid)
+    else
+      fedora_to_cocina_find(druid)
+    end
   end
 
   def save(cocina_object)
@@ -235,9 +239,10 @@ class CocinaObjectStore
 
   # Find a Cocina object persisted by ActiveRecord.
   # @param [String] druid to find
-  # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
+  # @return [Array] a tuple consisting of cocina object, created date and modified date
   def ar_to_cocina_find(druid)
-    ar_find(druid).to_cocina
+    ar_cocina_object = ar_find(druid)
+    [ar_cocina_object.to_cocina, ar_cocina_object.created_at, ar_cocina_object.updated_at]
   end
 
   # Find an ActiveRecord Cocina object.
