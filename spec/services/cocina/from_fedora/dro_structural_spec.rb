@@ -245,9 +245,10 @@ RSpec.describe Cocina::FromFedora::DroStructural do
     subject { structural[:hasMemberOrders].first[:viewingDirection] }
 
     let(:book_data) { "<bookData readingOrder=\"#{reading_direction}\" />" }
+    let(:content_type) { 'book' }
     let(:xml) do
       <<~XML
-        <contentMetadata type="book" id="druid:hx013yf6680">
+        <contentMetadata type="#{content_type}" id="druid:hx013yf6680">
           #{book_data}
           <resource id="bb000sc2803_1" sequence="1" type="page">
             <file id="aar_19990525_0001.jp2" preserve="yes" shelve="no" publish="no" size="6765428" mimetype="image/jp2">
@@ -274,40 +275,58 @@ RSpec.describe Cocina::FromFedora::DroStructural do
 
     context "when bookData doesn't exist" do
       before do
-        allow(AdministrativeTags).to receive(:content_type).with(pid: item.id).and_return(content_type)
+        allow(AdministrativeTags).to receive(:content_type).with(pid: item.id).and_return(content_type_tag)
       end
 
       let(:book_data) { nil }
 
-      context "when content type is ['Book (rtl)']" do
-        let(:content_type) { ['Book (rtl)'] }
+      context "when content type tag is ['Book (rtl)']" do
+        let(:content_type_tag) { ['Book (rtl)'] }
 
         it { is_expected.to eq 'right-to-left' }
       end
 
-      context "when content type is ['Book (flipbook, ltr)']" do
-        let(:content_type) { ['Book (flipbook, ltr)'] }
+      context "when content type tag is ['Book (flipbook, ltr)']" do
+        let(:content_type_tag) { ['Book (flipbook, ltr)'] }
 
         it { is_expected.to eq 'left-to-right' }
       end
 
-      context "when content type is ['Book (flipbook, rtl)']" do
-        let(:content_type) { ['Book (flipbook, rtl)'] }
+      context "when content type tag is ['Book (flipbook, rtl)']" do
+        let(:content_type_tag) { ['Book (flipbook, rtl)'] }
 
         it { is_expected.to eq 'right-to-left' }
       end
 
-      context "when content type is ['Manuscript (flipbook, ltr)']" do
-        let(:content_type) { ['Manuscript (flipbook, ltr)'] }
+      context "when content type tag is ['Manuscript (flipbook, ltr)']" do
+        let(:content_type_tag) { ['Manuscript (flipbook, ltr)'] }
 
         it { is_expected.to eq 'left-to-right' }
       end
 
-      context "when content type is ['Manuscript (ltr)']" do
-        let(:content_type) { ['Manuscript (ltr)'] }
+      context "when content type tag is ['Manuscript (ltr)']" do
+        let(:content_type_tag) { ['Manuscript (ltr)'] }
 
         it { is_expected.to eq 'left-to-right' }
       end
+
+      context 'when content type is image' do
+        let(:content_type) { 'image' }
+        let(:content_type_tag) { [] }
+        let(:type) { Cocina::Models::Vocab.image }
+
+        it "doesn't have hasMemberOrders" do
+          expect(structural[:hasMemberOrders]).to be_nil
+        end
+      end
+    end
+
+    context 'when content type is image' do
+      let(:content_type) { 'image' }
+      let(:type) { Cocina::Models::Vocab.image }
+      let(:reading_direction) { 'rtl' }
+
+      it { is_expected.to eq 'right-to-left' }
     end
   end
 

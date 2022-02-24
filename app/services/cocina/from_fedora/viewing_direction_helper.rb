@@ -13,7 +13,7 @@ module Cocina
         'Manuscript (ltr)' => 'left-to-right'
       }.freeze
 
-      def self.viewing_direction(druid:, content_ng_xml:)
+      def self.viewing_direction(druid:, content_ng_xml:, use_tags: true)
         reading_direction = content_ng_xml.xpath('//bookData/@readingOrder').first&.value
         # See https://consul.stanford.edu/pages/viewpage.action?spaceKey=chimera&title=DOR+content+types%2C+resource+types+and+interpretive+metadata
         case reading_direction
@@ -22,10 +22,12 @@ module Cocina
         when 'rtl'
           'right-to-left'
         else
-          # Fallback to using tags.  Some books don't have bookData nodes in contentMetadata XML.
-          # When we migrate from Fedora 3, we don't need to look this up from AdministrativeTags
-          content_type = AdministrativeTags.content_type(pid: druid).first
-          VIEWING_DIRECTION_FOR_CONTENT_TYPE[content_type]
+          if use_tags
+            # Fallback to using tags.  Some books don't have bookData nodes in contentMetadata XML.
+            # When we migrate from Fedora 3, we don't need to look this up from AdministrativeTags
+            content_type = AdministrativeTags.content_type(pid: druid).first
+            VIEWING_DIRECTION_FOR_CONTENT_TYPE[content_type]
+          end
         end
       end
     end
