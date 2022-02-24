@@ -3,18 +3,39 @@
 require 'rails_helper'
 
 RSpec.describe 'Refresh metadata' do
-  let(:object) { Dor::Item.new(pid: 'druid:1234') }
+  let(:druid) { 'druid:mx123qw2323' }
+  let(:dro_props) do
+    {
+      externalIdentifier: druid,
+      version: 1,
+      type: Cocina::Models::Vocab.document,
+      label: 'Object Title & A Special character',
+      identification: {
+        catalogLinks: catalog_links,
+        sourceId: 'some:source_id'
+      },
+      access: {},
+      administrative: {
+        hasAdminPolicy: 'druid:dd999df4567'
+      }
+    }
+  end
+  let(:catalog_links) { [{ catalog: 'symphony', catalogRecordId: 'ckey_12345' }] }
+  let(:object) { Cocina::Models::DRO.new(dro_props) }
 
   before do
-    allow(Dor).to receive(:find).and_return(object)
-    allow(object).to receive(:save)
+    allow(CocinaObjectStore).to receive(:find).and_return(object)
+    allow(CocinaObjectStore).to receive(:save)
   end
 
   context 'when happy path' do
+    let(:catalog_links) { [{ catalog: 'symphony', catalogRecordId: '123' }] }
+
     before do
-      object.descMetadata.mods_title = ['one title']
-      object.identityMetadata.otherId = ['catkey:123']
-      allow(RefreshMetadataAction).to receive(:run).and_return('<xml />')
+      allow(RefreshMetadataAction).to receive(:run).and_return({
+                                                                 title: [{ value: 'Updated.' }],
+                                                                 purl: 'http://purl.stanford.edu/123'
+                                                               })
     end
 
     it 'updates the metadata and saves the changes' do
@@ -22,14 +43,15 @@ RSpec.describe 'Refresh metadata' do
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(RefreshMetadataAction).to have_received(:run)
-        .with(fedora_object: object, identifiers: [':catkey:123'])
-      expect(object).to have_received(:save)
+        .with(pid: druid, identifiers: ['catkey:123'])
+      expect(CocinaObjectStore).to have_received(:save)
     end
   end
 
   context "when the item doesn't have metadata ids" do
+    let(:catalog_links) { [] }
+
     before do
-      object.identityMetadata.otherId = ['uuid:1234']
       allow(RefreshMetadataAction).to receive(:run).and_return(nil)
     end
 
@@ -37,36 +59,32 @@ RSpec.describe 'Refresh metadata' do
       post '/v1/objects/druid:mk420bs7601/refresh_metadata',
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(response.body).to eq 'druid:1234 had no resolvable identifiers: [":uuid:1234"]'
+      expect(response.body).to eq 'druid:mx123qw2323 had no resolvable identifiers: []'
       expect(RefreshMetadataAction).to have_received(:run)
-        .with(fedora_object: object, identifiers: [':uuid:1234'])
-      expect(object).not_to have_received(:save)
+        .with(pid: druid, identifiers: [])
+      expect(CocinaObjectStore).not_to have_received(:save)
     end
   end
 
   context "when the item doesn't get a title" do
     before do
-      object.identityMetadata.otherId = ['catkey:123']
-      allow(RefreshMetadataAction).to receive(:run).and_return('<xml />')
+      allow(RefreshMetadataAction).to receive(:run).and_return({})
     end
 
     it 'raises an error' do
       post '/v1/objects/druid:mk420bs7601/refresh_metadata',
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response.status).to eq(500)
-      expect(response.body).to eq('druid:1234 descMetadata missing required fields (<title>)')
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to match(/:purl is missing in Hash input/)
       expect(RefreshMetadataAction).to have_received(:run)
-        .with(fedora_object: object, identifiers: [':catkey:123'])
-      expect(object).not_to have_received(:save)
+        .with(pid: druid, identifiers: ['catkey:ckey_12345'])
+      expect(CocinaObjectStore).not_to have_received(:save)
     end
   end
 
   describe 'errors in response from Symphony' do
     let(:marc_url) { Settings.catalog.symphony.base_url + Settings.catalog.symphony.marcxml_path }
-
-    before do
-      allow(object.identityMetadata).to receive(:otherId).and_return(['catkey:666'])
-    end
+    let(:catalog_links) { [{ catalog: 'symphony', catalogRecordId: '666' }] }
 
     context 'when incomplete response' do
       before do

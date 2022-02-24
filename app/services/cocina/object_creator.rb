@@ -144,7 +144,9 @@ module Cocina
     def add_description(fedora_object, cocina_object, trial:)
       # Synch from symphony if a catkey is present
       if fedora_object.catkey && !trial
-        RefreshMetadataAction.run(identifiers: ["catkey:#{fedora_object.catkey}"], fedora_object: fedora_object)
+        description_props = RefreshMetadataAction.run(identifiers: ["catkey:#{fedora_object.catkey}"], pid: fedora_object.pid)
+        fedora_object.descMetadata.content = Cocina::ToFedora::Descriptive.transform(Cocina::Models::Description.new(description_props), fedora_object.pid).to_xml
+        fedora_object.descMetadata.content_will_change!
         label = MetadataService.label_from_mods(fedora_object.descMetadata.ng_xml)
         fedora_object.objectLabel = label
         Cocina::ToFedora::Identity.apply_label(fedora_object, label: label)
