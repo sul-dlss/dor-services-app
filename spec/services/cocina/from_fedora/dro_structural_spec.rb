@@ -241,6 +241,37 @@ RSpec.describe Cocina::FromFedora::DroStructural do
     end
   end
 
+  context 'with imageData' do
+    subject { structural[:contains].first[:structural][:contains].first[:presentation] }
+
+    let(:xml) do
+      <<~XML
+        <contentMetadata objectId="ft996xy0052" type="file">
+          <resource id="ft996xy0052_3" sequence="3" type="file">
+            <label>File 3</label>
+            <file id="12220080_labyrinth_trace.svg" preserve="yes" shelve="yes" publish="yes" size="13543" mimetype="#{mime_type}">
+              <checksum type="md5">f4d7c7316e50b026d922e7450b1ec11a</checksum>
+              <checksum type="sha1">09ad00510e0acd8882c202a19ef5f1a9111ae19f</checksum>
+              <imageData width="27" height="29"/>
+            </file>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+
+    context 'when image is svg' do
+      let(:mime_type) { 'image/svg+xml' }
+
+      it { is_expected.to be nil }
+    end
+
+    context 'when image is not svg' do
+      let(:mime_type) { 'image' }
+
+      it { is_expected.to eq({ height: 29, width: 27 }) }
+    end
+  end
+
   context 'with bookData' do
     subject { structural[:hasMemberOrders].first[:viewingDirection] }
 
