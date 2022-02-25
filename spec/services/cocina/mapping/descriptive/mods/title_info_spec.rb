@@ -510,6 +510,13 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
   describe 'Uniform title with repetition of author' do
     # Adapted from kd992vz2371
+    # Ignore usage and nameTitleGroup when determining duplication; all subelements of name should be exact duplication
+    let(:warnings) do
+      [
+        Notification.new(msg: 'Duplicate name entry')
+      ]
+    end
+
     xit 'update not implemented' do
       let(:mods) do
         <<~XML
@@ -584,13 +591,6 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
           ]
         }
       end
-    end
-
-    # Ignore usage and nameTitleGroup when determining duplication; all subelements of name should be exact duplication
-    let(:warnings) do
-      [
-        Notification.new(msg: 'Duplicate name entry')
-      ]
     end
   end
 
