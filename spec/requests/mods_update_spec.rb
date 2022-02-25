@@ -90,11 +90,11 @@ RSpec.describe 'Update MODS' do
       XML
     end
 
-    it 'saves the original cocina object' do
+    it 'returns bad request' do
       put '/v1/objects/druid:mk420bs7601/metadata/mods',
           params: xml,
           headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response).to have_http_status(:no_content)
+      expect(response).to have_http_status(:bad_request)
     end
   end
 end

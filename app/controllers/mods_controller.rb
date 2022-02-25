@@ -12,5 +12,7 @@ class ModsController < ApplicationController
     props = Cocina::FromFedora::Descriptive.props(mods: Nokogiri::XML(request.body.read), druid: @cocina_object.externalIdentifier)
     updated_cocina_object = @cocina_object.new(description: props)
     CocinaObjectStore.save(updated_cocina_object)
+  rescue Cocina::Models::ValidationError => e
+    json_api_error(status: :bad_request, message: e.message)
   end
 end

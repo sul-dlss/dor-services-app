@@ -468,7 +468,6 @@ RSpec.describe 'Get the object' do
         expect(json['type']).to eq 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld'
         expect(json['label']).to eq 'bar'
         expect(json['version']).to eq 1
-        expect(json['administrative']['defaultObjectRights']).to match '<rightsMetadata>'
         expect(json['administrative']['registrationWorkflow']).to eq []
         expect(json['administrative']['hasAdminPolicy']).to eq 'druid:df123cd4567'
         expect(json['administrative']['roles']).to eq []
@@ -522,7 +521,6 @@ RSpec.describe 'Get the object' do
         expect(json['type']).to eq 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld'
         expect(json['label']).to eq 'bar'
         expect(json['version']).to eq 1
-        expect(json['administrative']['defaultObjectRights']).to match '<rightsMetadata>'
         expect(json['administrative']['registrationWorkflow']).to eq %w[registrationWF goobiWF]
         expect(json['administrative']['disseminationWorkflow']).to eq 'wasCrawlPreassemblyWF'
         expect(json['administrative']['roles']).to eq [
