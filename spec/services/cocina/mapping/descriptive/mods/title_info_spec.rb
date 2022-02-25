@@ -333,7 +333,8 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
     # NOTE: For MODS roundtrip of uniform titles, assign the nameTitleGroup to
     # 1) name with status "primary" in contributor with status "primary" or
     # 2) first name in contributor with status "primary" or
-    # If neither of those criteria are met in Cocina, do not assign nameTitleGroup in MODS
+    # 3) if "appliesTo" is present, the title that matches that value
+    # If none of those criteria are met in Cocina, do not assign nameTitleGroup in MODS
     xit 'update not implemented' do
       let(:mods) do
         <<~XML
@@ -359,7 +360,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
               status: 'primary'
             },
             {
-              value: 'Hamlet'
+              value: 'Hamlet',
               type: 'uniform',
               source: {
                 uri: 'http://id.loc.gov/authorities/names/',
