@@ -5,152 +5,259 @@ require 'rails_helper'
 RSpec.describe ItemQueryService do
   subject(:service) { described_class }
 
-  let(:druid) { 'bc123df4567' }
-  let(:item) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
-  let(:cocina_object) { instance_double(Cocina::Models::DRO) }
-  let(:workflow_client) { instance_double(Dor::Workflow::Client, workflow_routes: workflow_routes) }
-  let(:workflow_routes) { instance_double(Dor::Workflow::Client::WorkflowRoutes, all_workflows: workflows_response) }
-  let(:workflows_response) do
-    instance_double(Dor::Workflow::Response::Workflows, errors_for: errors)
+  let(:druid) { 'druid:bc123df4567' }
+  let(:access) { { access: 'world' } }
+  let(:cocina_object) do
+    Cocina::Models::DRO.new(
+      externalIdentifier: druid,
+      version: 1,
+      type: Cocina::Models::Vocab.object,
+      label: 'Dummy DRO',
+      access: { download: 'none' }.merge(access),
+      administrative: { hasAdminPolicy: 'druid:df123cd4567' }
+    )
   end
-  let(:errors) { [] }
+  let(:workflow_state) { 'Accessioned' }
+  let(:workflow_client) { instance_double(Dor::Workflow::Client, status: status_client) }
+  let(:status_client) { instance_double(Dor::Workflow::Client::Status, display_simplified: workflow_state) }
 
   before do
-    allow(Dor::Item).to receive(:find).and_return(item)
-    allow(VersionService).to receive(:can_open?).with(cocina_object).and_return(true)
-    allow(VersionService).to receive(:open?).with(cocina_object).and_return(true)
+    allow(CocinaObjectStore).to receive(:find).with(druid).and_return(cocina_object)
     allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
-    allow(Cocina::Mapper).to receive(:build).with(item).and_return(cocina_object)
   end
 
   describe '.find_combinable_item' do
-    context 'when object has workflow errors' do
-      let(:errors) { ['Net::ReadTimeout', 'Gremlins'] }
+    context 'with item in accessioned state' do
+      let(:workflow_state) { 'Accessioned' }
 
-      it 'raises an error' do
-        expect { service.find_combinable_item('bc123df4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:bc123df4567 has workflow errors: Net::ReadTimeout; Gremlins')
+      it 'returns the item' do
+        expect(service.find_combinable_item(druid)).to eq(cocina_object)
       end
     end
 
-    it 'raises error if object is neither open nor openable' do
-      allow(VersionService).to receive(:can_open?).with(cocina_object).and_return(false)
-      allow(VersionService).to receive(:open?).with(cocina_object).and_return(false)
-      expect { service.find_combinable_item('bc123df4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:bc123df4567 is not open or openable')
+    context 'with item in opened state' do
+      let(:workflow_state) { 'Opened' }
+
+      it 'returns the item' do
+        expect(service.find_combinable_item(druid)).to eq(cocina_object)
+      end
     end
 
-    it 'raises error if object is dark' do
-      dra = instance_double(Dor::RightsAuth, dark?: true, citation_only?: false)
-      rights_ds = instance_double(Dor::RightsMetadataDS, dra_object: dra)
-      allow(item).to receive(:rightsMetadata).and_return(rights_ds)
-      expect { service.find_combinable_item('bc123df4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:bc123df4567 is dark')
+    context 'with item in registered state' do
+      let(:workflow_state) { 'Registered' }
+
+      it 'raises an error' do
+        expect { service.find_combinable_item(druid) }.to raise_error(
+          described_class::UncombinableItemError,
+          "Item #{druid} is not in the accessioned or opened workflow state"
+        )
+      end
     end
 
-    it 'raises error if object is citation_only' do
-      dra = instance_double(Dor::RightsAuth, dark?: false, citation_only?: true)
-      rights_ds = instance_double(Dor::RightsMetadataDS, dra_object: dra)
-      allow(item).to receive(:rightsMetadata).and_return(rights_ds)
-      expect { service.find_combinable_item('bc123df4567') }.to raise_error(described_class::UncombinableItemError, 'Item druid:bc123df4567 is citation_only')
+    context 'with item in accessioning state' do
+      let(:workflow_state) { 'In Accessioning' }
+
+      it 'raises an error' do
+        expect { service.find_combinable_item(druid) }.to raise_error(
+          described_class::UncombinableItemError,
+          "Item #{druid} is not in the accessioned or opened workflow state"
+        )
+      end
     end
 
-    it 'returns item otherwise' do
-      dra = instance_double(Dor::RightsAuth, dark?: false, citation_only?: false)
-      rights_ds = instance_double(Dor::RightsMetadataDS, dra_object: dra)
-      allow(item).to receive(:rightsMetadata).and_return(rights_ds)
-      service.find_combinable_item('bc123df4567')
+    context 'with item in unknown state' do
+      let(:workflow_state) { 'Unknown Status' }
+
+      it 'raises an error' do
+        expect { service.find_combinable_item(druid) }.to raise_error(
+          described_class::UncombinableItemError,
+          "Item #{druid} is not in the accessioned or opened workflow state"
+        )
+      end
+    end
+
+    context 'with dark item' do
+      let(:access) { { access: 'dark' } }
+
+      it 'raises an error' do
+        expect { service.find_combinable_item(druid) }.to raise_error(
+          described_class::UncombinableItemError,
+          "Item #{druid} is dark"
+        )
+      end
+    end
+
+    context 'with citation-only item' do
+      let(:access) { { access: 'citation-only' } }
+
+      it 'raises an error' do
+        expect { service.find_combinable_item(druid) }.to raise_error(
+          described_class::UncombinableItemError,
+          "Item #{druid} is citation-only"
+        )
+      end
+    end
+
+    context 'with world-accessible item' do
+      let(:access) { { access: 'world' } }
+
+      it 'returns the item' do
+        expect(service.find_combinable_item(druid)).to eq(cocina_object)
+      end
+    end
+
+    context 'with stanford-accessible item' do
+      let(:access) { { access: 'stanford', download: 'stanford' } }
+
+      it 'returns the item' do
+        expect(service.find_combinable_item(druid)).to eq(cocina_object)
+      end
+    end
+
+    context 'with location-based item' do
+      let(:access) { { access: 'location-based', readLocation: 'music' } }
+
+      it 'returns the item' do
+        expect(service.find_combinable_item(druid)).to eq(cocina_object)
+      end
+    end
+
+    context 'with CDL item' do
+      let(:access) { { access: 'stanford', controlledDigitalLending: true } }
+
+      it 'returns the item' do
+        expect(service.find_combinable_item(druid)).to eq(cocina_object)
+      end
+    end
+
+    context 'with a collection' do
+      let(:cocina_object) do
+        Cocina::Models::Collection.new(
+          externalIdentifier: druid,
+          version: 1,
+          type: Cocina::Models::Vocab.collection,
+          label: 'Dummy DRO',
+          access: access,
+          administrative: { hasAdminPolicy: 'druid:df123cd4567' }
+        )
+      end
+
+      it 'raises an error' do
+        expect { service.find_combinable_item(druid) }.to raise_error(
+          described_class::UncombinableItemError,
+          "Item #{druid} is not an item"
+        )
+      end
+    end
+
+    context 'with an admin policy' do
+      let(:cocina_object) do
+        Cocina::Models::AdminPolicy.new(
+          externalIdentifier: druid,
+          version: 1,
+          type: Cocina::Models::Vocab.admin_policy,
+          label: 'Dummy DRO',
+          administrative: { hasAdminPolicy: 'druid:df123cd4567', hasAgreement: 'druid:mg978jy9754' }
+        )
+      end
+
+      it 'raises an error' do
+        expect { service.find_combinable_item(druid) }.to raise_error(
+          described_class::UncombinableItemError,
+          "Item #{druid} is not an item"
+        )
+      end
+    end
+
+    context 'with an virtual object' do
+      let(:cocina_object) do
+        Cocina::Models::DRO.new(
+          externalIdentifier: druid,
+          version: 1,
+          type: Cocina::Models::Vocab.object,
+          label: 'Dummy DRO',
+          access: { download: 'none' }.merge(access),
+          administrative: { hasAdminPolicy: 'druid:df123cd4567' },
+          structural: {
+            hasMemberOrders: [
+              {
+                members: ['druid:df123cd4567', 'druid:mg978jy9754']
+              }
+            ]
+          }
+        )
+      end
+
+      it 'raises an error' do
+        expect { service.find_combinable_item(druid) }.to raise_error(
+          described_class::UncombinableItemError,
+          "Item #{druid} is itself a virtual object"
+        )
+      end
+    end
+
+    context 'with an DRO having memberless member orders' do
+      let(:cocina_object) do
+        Cocina::Models::DRO.new(
+          externalIdentifier: druid,
+          version: 1,
+          type: Cocina::Models::Vocab.object,
+          label: 'Dummy DRO',
+          access: { download: 'none' }.merge(access),
+          administrative: { hasAdminPolicy: 'druid:df123cd4567' },
+          structural: {
+            hasMemberOrders: [
+              {
+                viewingDirection: 'left-to-right'
+              }
+            ]
+          }
+        )
+      end
+
+      it 'returns the item' do
+        expect(service.find_combinable_item(druid)).to eq(cocina_object)
+      end
     end
   end
 
   describe '.validate_combinable_items' do
-    let(:item2) { instantiate_fixture('druid:xh235dd9059', Dor::Item) }
-    let(:item3) { instantiate_fixture('druid:hj097bm8879', Dor::Item) }
-    let(:cocina_object2) { instance_double(Cocina::Models::DRO, externalIdentifier: 'druid:xh235dd9059') }
-    let(:cocina_object3) { instance_double(Cocina::Models::DRO, externalIdentifier: 'druid:hj097bm8879') }
-    let(:dark_rights) { instance_double(Dor::RightsAuth, dark?: true, citation_only?: false) }
-    let(:citation_only_rights) { instance_double(Dor::RightsAuth, dark?: false, citation_only?: true) }
-    let(:permissive_rights) { instance_double(Dor::RightsAuth, dark?: false, citation_only?: false) }
-    let(:dark_rights_ds) { instance_double(Dor::RightsMetadataDS, dra_object: dark_rights) }
-    let(:citation_only_rights_ds) { instance_double(Dor::RightsMetadataDS, dra_object: citation_only_rights) }
-    let(:permissive_rights_ds) { instance_double(Dor::RightsMetadataDS, dra_object: permissive_rights) }
+    let(:constituent_druids) { ['druid:xh235dd9059'] }
 
-    # Set defaults on all fixture objects and avoid making HTTP calls. Set defaults to the non-error cases.
-    before do
-      allow(Dor::Item).to receive(:find).with('druid:xh235dd9059').and_return(item2)
-      allow(Dor::Item).to receive(:find).with('druid:hj097bm8879').and_return(item3)
-      allow(VersionService).to receive(:can_open?).and_return(true)
-      allow(VersionService).to receive(:open?).and_return(true)
-      allow(Cocina::Mapper).to receive(:build).with(item2).and_return(cocina_object2)
-      allow(Cocina::Mapper).to receive(:build).with(item3).and_return(cocina_object3)
-      [item, item2, item3].each do |i|
-        allow(i).to receive(:rightsMetadata).and_return(permissive_rights_ds)
-      end
-    end
-
-    context 'when any objects have workflow errors' do
-      let(:error_response) do
-        instance_double(Dor::Workflow::Response::Workflows, errors_for: ['Boom'])
-      end
-
+    context 'when any items are uncombinable' do
       before do
-        allow(workflow_routes).to receive(:all_workflows).with(pid: item.id).and_return(error_response)
+        allow(described_class).to receive(:find_combinable_item)
+        allow(described_class).to receive(:find_combinable_item).with(druid).and_raise(described_class::UncombinableItemError, "Item #{druid} is dark")
       end
 
-      it 'returns a single error' do
-        expect(service.validate_combinable_items(virtual_object: 'druid:bc123df4567', constituents: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
-          'druid:bc123df4567' => ['Item druid:bc123df4567 has workflow errors: Boom']
+      it 'returns an error' do
+        expect(service.validate_combinable_items(virtual_object: druid, constituents: constituent_druids)).to eq(
+          'druid:bc123df4567' => ['Item druid:bc123df4567 is dark']
         )
       end
     end
 
-    context 'when any objects are both not open and not openable' do
+    context 'when all items are combinable' do
       before do
-        allow(VersionService).to receive(:open?).with(cocina_object).and_return(false)
-        allow(VersionService).to receive(:can_open?).with(cocina_object).and_return(false)
-      end
-
-      it 'returns a single error if one object does not allow modification' do
-        expect(service.validate_combinable_items(virtual_object: 'druid:bc123df4567', constituents: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
-          'druid:bc123df4567' => ['Item druid:bc123df4567 is not open or openable']
-        )
-      end
-    end
-
-    context 'when any objects are dark' do
-      before do
-        [item2, item3].each do |i|
-          allow(i).to receive(:rightsMetadata).and_return(dark_rights_ds)
-        end
-      end
-
-      it 'returns errors if any objects are dark' do
-        expect(service.validate_combinable_items(virtual_object: 'druid:bc123df4567', constituents: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
-          'druid:bc123df4567' => ['Item druid:xh235dd9059 is dark', 'Item druid:hj097bm8879 is dark']
-        )
-      end
-    end
-
-    context 'when any objects are citation-only' do
-      before do
-        [item, item3].each do |i|
-          allow(i).to receive(:rightsMetadata).and_return(citation_only_rights_ds)
-        end
-      end
-
-      it 'raises error if any objects are citation_only' do
-        expect(service.validate_combinable_items(virtual_object: 'druid:bc123df4567', constituents: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq(
-          'druid:bc123df4567' => ['Item druid:bc123df4567 is citation_only', 'Item druid:hj097bm8879 is citation_only']
-        )
-      end
-    end
-
-    context 'when none of the error conditions exist' do
-      before do
-        [item, item2, item3].each do |i|
-          allow(i).to receive(:rightsMetadata).and_return(permissive_rights_ds)
-        end
+        allow(described_class).to receive(:find_combinable_item)
       end
 
       it 'returns an empty hash otherwise' do
-        expect(service.validate_combinable_items(virtual_object: 'druid:bc123df4567', constituents: ['druid:xh235dd9059', 'druid:hj097bm8879'])).to eq({})
+        expect(service.validate_combinable_items(virtual_object: druid, constituents: constituent_druids)).to eq({})
+      end
+    end
+
+    context 'when constituents include the virtual object' do
+      let(:constituent_druids) { ['druid:xh235dd9059', druid] }
+
+      before do
+        allow(described_class).to receive(:find_combinable_item)
+      end
+
+      it 'returns an error' do
+        expect(service.validate_combinable_items(virtual_object: druid, constituents: constituent_druids)).to eq(
+          druid => ['Item druid:bc123df4567 cannot be a constituent of itself']
+        )
       end
     end
   end

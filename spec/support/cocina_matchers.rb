@@ -51,6 +51,8 @@ module CocinaMatchers
       end
     end
   end
+
+  alias_matcher :match_cocina_object_with, :cocina_object_with
 end
 
 RSpec.configure do |config|

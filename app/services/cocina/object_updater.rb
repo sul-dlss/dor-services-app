@@ -125,12 +125,20 @@ module Cocina
     # rubocop:enable Metrics/PerceivedComplexity
 
     def update_content_metadata(fedora_object, cocina_object)
-      # We don't want to overwrite contentMetadata unless they provided structural.contains
-      # Note that a change to a book content type will generate completely new structural metadata, and
-      # thus lead to a full replacement of the contentMetadata with the new bookData node.
-      if cocina_object.structural&.contains.present?
-        fedora_object.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(druid: fedora_object.pid, type: cocina_object.type, structural: cocina_object.structural,
-                                                                                                    cocina_object_store: cocina_object_store)
+      # We don't want to overwrite contentMetadata unless they provided
+      # structural.contains (garden-variety DRO) or structural.hasMemberOrders
+      # (virtual object DRO)
+      #
+      # Note that a change to a book content type will generate completely new
+      # structural metadata, and thus lead to a full replacement of the
+      # contentMetadata with the new bookData node.
+      if cocina_object.structural&.contains.present? || cocina_object.structural&.hasMemberOrders&.first&.members&.present?
+        fedora_object.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(
+          druid: cocina_object.externalIdentifier,
+          type: cocina_object.type,
+          structural: cocina_object.structural,
+          cocina_object_store: cocina_object_store
+        )
       else
         # remove bookData reading order node if no reading direction is specified in the cocina model
         # ...this can happen if the content type is changed from a book type to a non-book type

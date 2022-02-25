@@ -4,18 +4,15 @@
 class ItemQueryService
   class UncombinableItemError < RuntimeError; end
 
-  # @param [String] id - The id of the item
-  # @param [#exists?, #find] item_relation - How we will query some of the related information
-  def initialize(id:, item_relation: default_item_relation)
-    @id = id
-    @item_relation = item_relation
-  end
+  ALLOWED_WORKFLOW_STATES = %w[Accessioned Opened].freeze
 
   # @param [String] virtual_object a virtual_object druid
   # @param [Array] constituents a list of constituent druids
   # @return [Hash]
   def self.validate_combinable_items(virtual_object:, constituents:)
     errors = Hash.new { |hash, key| hash[key] = [] }
+
+    errors[virtual_object] << "Item #{virtual_object} cannot be a constituent of itself" if constituents.include?(virtual_object)
 
     ([virtual_object] + constituents).each do |druid|
       find_combinable_item(druid)
@@ -28,36 +25,36 @@ class ItemQueryService
 
   # @raise [UncombinableItemError] if the item is dark, citation_only, or not modifiable
   def self.find_combinable_item(druid)
-    query_service = ItemQueryService.new(id: druid)
-    query_service.item do |item|
-      workflow_errors = errors_for(item.id, item.current_version)
-      cocina_object = Cocina::Mapper.build(item)
-      raise UncombinableItemError, "Item #{item.pid} has workflow errors: #{workflow_errors.join('; ')}" if workflow_errors.any?
-      raise UncombinableItemError, "Item #{item.pid} is not open or openable" unless VersionService.open?(cocina_object) || VersionService.can_open?(cocina_object)
-      raise UncombinableItemError, "Item #{item.pid} is dark" if item.rightsMetadata.dra_object.dark?
-      raise UncombinableItemError, "Item #{item.pid} is citation_only" if item.rightsMetadata.dra_object.citation_only?
+    new(id: druid).item do |item|
+      raise UncombinableItemError, "Item #{item.externalIdentifier} is not an item" unless item.dro?
+      raise UncombinableItemError, "Item #{item.externalIdentifier} is dark" if item.access.access == 'dark'
+      raise UncombinableItemError, "Item #{item.externalIdentifier} is citation-only" if item.access.access == 'citation-only'
+      raise UncombinableItemError, "Item #{item.externalIdentifier} is itself a virtual object" if item.structural&.hasMemberOrders&.any? { |order| order.members.any? }
+      raise UncombinableItemError, "Item #{item.externalIdentifier} is not in the accessioned or opened workflow state" unless current_workflow_state(item).in?(ALLOWED_WORKFLOW_STATES)
     end
   end
 
-  def self.errors_for(pid, version)
-    WorkflowClientFactory.build.workflow_routes
-                         .all_workflows(pid: pid)
-                         .errors_for(version: version)
+  def self.current_workflow_state(item)
+    WorkflowClientFactory
+      .build
+      .status(druid: item.externalIdentifier, version: item.version)
+      .display_simplified
   end
-  private_class_method :errors_for
+  private_class_method :current_workflow_state
+
+  # @param [String] id - The id of the item
+  def initialize(id:)
+    @id = id
+  end
 
   def item(&block)
-    @item ||= item_relation.find(id)
-    return @item unless block
+    @cocina_item ||= CocinaObjectStore.find(id)
+    return @cocina_item unless block
 
-    @item.tap(&block)
+    @cocina_item.tap(&block)
   end
 
   private
 
-  attr_reader :id, :item_relation
-
-  def default_item_relation
-    Dor::Item
-  end
+  attr_reader :id
 end
