@@ -758,33 +758,6 @@ RSpec.describe 'Create object' do
                                       externalIdentifier: druid)
     end
 
-    let(:default_object_rights) do
-      <<~XML
-        <?xml version="1.0" encoding="UTF-8"?>
-
-        <rightsMetadata>
-           <access type="discover">
-              <machine>
-                 <world/>
-              </machine>
-           </access>
-           <access type="read">
-              <machine>
-                 <location>ars</location>
-              </machine>
-           </access>
-           <use>
-              <human type="openDataCommons">Open Data Commons Attribution License 1.0</human>
-              <machine type="openDataCommons" uri="http://opendatacommons.org/licenses/by/1.0/">odc-by</machine>
-              <human type="useAndReproduction">Whatever makes you happy</human>
-           </use>
-           <copyright>
-              <human>My copyright statement</human>
-           </copyright>
-        </rightsMetadata>
-      XML
-    end
-
     let(:data) do
       <<~JSON
         {
@@ -792,7 +765,6 @@ RSpec.describe 'Create object' do
           "type":"http://cocina.sul.stanford.edu/models/admin_policy.jsonld",
           "label":"This is my label","version":1,
           "administrative":{
-            "defaultObjectRights":#{default_object_rights.to_json},
             "defaultAccess":{
               "access":"location-based",
               "download":"location-based",
