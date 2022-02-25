@@ -65,6 +65,33 @@ RSpec.describe CocinaObjectStore do
           expect { described_class.find_with_timestamps(druid) }.to raise_error(CocinaObjectStore::CocinaObjectNotFoundError)
         end
       end
+
+      context 'when postgres find is enabled' do
+        before do
+          allow(Settings.enabled_features.postgres).to receive(:find).and_return(true)
+        end
+
+        context 'when found in postgres' do
+          let!(:ar_cocina_object) { create(:dro) }
+
+          it 'returns from postgres' do
+            expect(described_class.find_with_timestamps(ar_cocina_object.external_identifier)).to match([instance_of(Cocina::Models::DRO), kind_of(Time),
+                                                                                                         kind_of(Time)])
+          end
+        end
+
+        context 'when not found in postgres' do
+          before do
+            allow(Dor).to receive(:find).and_return(item)
+            allow(Cocina::Mapper).to receive(:build).and_return(cocina_object)
+          end
+
+          it 'returns from fedora' do
+            expect(described_class.find_with_timestamps(druid)).to eq [cocina_object, date, date]
+            expect(Dor).to have_received(:find).with(druid)
+          end
+        end
+      end
     end
 
     describe '#exists?' do
@@ -329,7 +356,7 @@ RSpec.describe CocinaObjectStore do
         let(:ar_cocina_object) { create(:dro) }
 
         it 'returns Cocina::Models::DRO' do
-          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_a(Cocina::Models::DRO)
+          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to match([instance_of(Cocina::Models::DRO), kind_of(Time), kind_of(Time)])
         end
       end
 
@@ -337,7 +364,7 @@ RSpec.describe CocinaObjectStore do
         let(:ar_cocina_object) { create(:admin_policy) }
 
         it 'returns Cocina::Models::AdminPolicy' do
-          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_a(Cocina::Models::AdminPolicy)
+          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to match([instance_of(Cocina::Models::AdminPolicy), kind_of(Time), kind_of(Time)])
         end
       end
 
@@ -345,7 +372,7 @@ RSpec.describe CocinaObjectStore do
         let(:ar_cocina_object) { create(:collection) }
 
         it 'returns Cocina::Models::Collection' do
-          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_a(Cocina::Models::Collection)
+          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to match([instance_of(Cocina::Models::Collection), kind_of(Time), kind_of(Time)])
         end
       end
     end

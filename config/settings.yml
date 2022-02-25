@@ -13,6 +13,7 @@ enabled_features:
     update: false
     create: false
     destroy: false
+    find: false
 
 # Ur Admin Policy
 ur_admin_policy:
