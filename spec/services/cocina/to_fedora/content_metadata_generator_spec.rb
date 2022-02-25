@@ -726,4 +726,190 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       XML
     end
   end
+
+  context 'with a virtual object' do
+    let(:model) do
+      Cocina::Models.build(JSON.parse(data))
+    end
+
+    let(:object_type) { Cocina::Models::Vocab.image }
+
+    let(:filesets) do
+      [
+        {
+          'version' => 1,
+          'type' => 'http://cocina.sul.stanford.edu/models/resources/image.jsonld',
+          'label' => 'Page 1',
+          'structural' => { 'contains' => [file1, file2] },
+          'externalIdentifier' => "#{constituent_druid}_1"
+        },
+        {
+          'version' => 1,
+          'type' => 'http://cocina.sul.stanford.edu/models/resources/image.jsonld',
+          'label' => 'Page 2',
+          'structural' => { 'contains' => [file3, file4] },
+          'externalIdentifier' => "#{constituent_druid}_2"
+        }
+      ]
+    end
+
+    let(:structural) do
+      {
+        hasMemberOrders: [
+          { members: [constituent_druid] }
+        ]
+      }
+    end
+
+    let(:data) do
+      <<~JSON
+        { "externalIdentifier":"druid:bc123df5678",
+          "type":"#{object_type}",
+          "label":"The object label","version":1,"access":{},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "description":{
+            "title":[{"status":"primary","value":"the object title"}],
+            "purl":"https://purl.stanford.edu/bc123df5678"
+          },
+          "identification":{"sourceId":"sul:9999999"},
+          "structural":#{structural.to_json}}
+      JSON
+    end
+    let(:constituent_druid) { 'druid:cb321fd8765' }
+    let(:constituent_item) do
+      Cocina::Models::DRO.new(
+        externalIdentifier: constituent_druid,
+        version: 1,
+        type: Cocina::Models::Vocab.object,
+        label: 'Dummy DRO',
+        access: {},
+        administrative: { hasAdminPolicy: 'druid:df123cd4567' },
+        structural: {
+          contains: filesets
+        }
+      )
+    end
+
+    let(:file1) do
+      {
+        'externalIdentifier' => '00001.html',
+        'version' => 1,
+        'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+        'filename' => '00001.html',
+        'label' => '00001.html',
+        'hasMimeType' => 'text/html',
+        'use' => 'transcription',
+        'size' => 997,
+        'administrative' => {
+          'publish' => false,
+          'sdrPreserve' => true,
+          'shelve' => false
+        },
+        'access' => {
+          'access' => 'dark',
+          'download' => 'none'
+        },
+        'hasMessageDigests' => [
+          {
+            'type' => 'sha1',
+            'digest' => 'cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7'
+          },
+          {
+            'type' => 'md5',
+            'digest' => 'e6d52da47a5ade91ae31227b978fb023'
+          }
+
+        ]
+      }
+    end
+
+    let(:file2) do
+      {
+        'externalIdentifier' => '00001.jp2',
+        'version' => 1,
+        'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+        'filename' => '00001.jp2',
+        'label' => '00001.jp2',
+        'hasMimeType' => 'image/jp2',
+        'size' => 149570,
+        'administrative' => {
+          'publish' => true,
+          'sdrPreserve' => true,
+          'shelve' => true
+        },
+        'access' => {
+          'access' => 'stanford',
+          'download' => 'stanford'
+        },
+        'hasMessageDigests' => [],
+        'presentation' => {
+          'height' => 200,
+          'width' => 300
+        }
+      }
+    end
+
+    let(:file3) do
+      {
+        'externalIdentifier' => '00002.html',
+        'version' => 1,
+        'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+        'filename' => '00002.html',
+        'label' => '00002.html',
+        'hasMimeType' => 'text/html',
+        'size' => 1914,
+        'administrative' => {
+          'publish' => false,
+          'sdrPreserve' => true,
+          'shelve' => false
+        },
+        'access' => {
+          'access' => 'world',
+          'download' => 'world'
+        },
+        'hasMessageDigests' => []
+      }
+    end
+
+    let(:file4) do
+      {
+        'externalIdentifier' => '00002.jp2',
+        'version' => 1,
+        'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+        'filename' => '00002.jp2',
+        'label' => '00002.jp2',
+        'hasMimeType' => 'image/jp2',
+        'size' => 111467,
+        'administrative' => {
+          'publish' => true,
+          'sdrPreserve' => true,
+          'shelve' => true
+        },
+        'access' => {
+          'access' => 'world',
+          'download' => 'world'
+        },
+        'hasMessageDigests' => []
+      }
+    end
+
+    before do
+      allow(CocinaObjectStore).to receive(:find).with(constituent_druid).and_return(constituent_item)
+    end
+
+    it 'generates contentMetadata.xml' do
+      expect(generate).to be_equivalent_to <<~XML
+        <contentMetadata objectId="#{druid}" type="image">
+          <resource id="http://cocina.sul.stanford.edu/fileSet/bc123df5678/#{constituent_druid}_1" sequence="1" type="image">
+            <externalFile fileId="00001.jp2" mimetype="image/jp2" objectId="#{constituent_druid}" resourceId="#{constituent_druid}_1"/>
+            <relationship objectId="#{constituent_druid}" type="alsoAvailableAs"/>
+          </resource>
+          <resource id="http://cocina.sul.stanford.edu/fileSet/bc123df5678/#{constituent_druid}_2" sequence="2" type="image">
+            <externalFile fileId="00002.jp2" mimetype="image/jp2" objectId="#{constituent_druid}" resourceId="#{constituent_druid}_2"/>
+            <relationship objectId="#{constituent_druid}" type="alsoAvailableAs"/>
+          </resource>
+        </contentMetadata>
+      XML
+    end
+  end
 end

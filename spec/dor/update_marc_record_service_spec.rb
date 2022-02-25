@@ -120,6 +120,30 @@ RSpec.describe Dor::UpdateMarcRecordService do
     Settings.release.symphony_path = './spec/fixtures/sdr-purl'
   end
 
+  describe '.update' do
+    let(:instance) { described_class.new(cocina_object, thumbnail_service: thumbnail_service) }
+    let(:cocina_object) do
+      Cocina::Models::DRO.new(externalIdentifier: druid,
+                              type: Cocina::Models::Vocab.object,
+                              label: dro_object_label,
+                              version: 1,
+                              description: descriptive_metadata_basic,
+                              identification: identity_metadata_basic,
+                              access: {},
+                              administrative: { hasAdminPolicy: apo_druid })
+    end
+
+    before do
+      allow(described_class).to receive(:new).and_return(instance)
+      allow(instance).to receive(:update)
+    end
+
+    it 'invokes #update on a new instance' do
+      described_class.update(cocina_object, thumbnail_service: thumbnail_service)
+      expect(instance).to have_received(:update).once
+    end
+  end
+
   context 'for a druid without a catkey' do
     let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,

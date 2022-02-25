@@ -6,6 +6,10 @@ require 'shellwords'
 module Dor
   # rubocop:disable Metrics/ClassLength
   class UpdateMarcRecordService
+    def self.update(cocina_object, thumbnail_service:)
+      new(cocina_object, thumbnail_service: thumbnail_service).update
+    end
+
     # objects goverened by these APOs (ETD and EEMs) will get indicator 2 = 0, else 1
     BORN_DIGITAL_APOS = %w(druid:bx911tp9024 druid:jj305hm5259).freeze
 

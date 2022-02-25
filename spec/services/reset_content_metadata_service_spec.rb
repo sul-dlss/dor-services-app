@@ -3,106 +3,346 @@
 require 'rails_helper'
 
 RSpec.describe ResetContentMetadataService do
-  subject(:service) { described_class.new(args) }
-
-  let(:args) { { item: virtual_object } }
-  let(:constituent1) do
-    instance_double(Dor::Item,
-                    id: 'druid:constituent1',
-                    relationships_are_dirty?: true,
-                    save!: true,
-                    clear_relationship: nil)
+  let(:item_druid) { 'druid:bc123df4567' }
+  let(:cocina_item) do
+    Cocina::Models::DRO.new(
+      externalIdentifier: item_druid,
+      version: 1,
+      type: Cocina::Models::Vocab.object,
+      label: 'Dummy DRO',
+      access: {},
+      administrative: { hasAdminPolicy: 'druid:df123cd4567' },
+      **structural_kwargs
+    )
   end
-  let(:constituent2) do
-    instance_double(Dor::Item,
-                    id: 'druid:constituent2',
-                    relationships_are_dirty?: true,
-                    save!: true,
-                    clear_relationship: nil)
-  end
-  let(:content_metadata) do
-    instance_double(Dor::ContentMetadataDS,
-                    ng_xml: xml,
-                    'content=': nil)
-  end
-  let(:default_content_xml) { "<contentMetadata objectId='druid:virtual_object' type='image'/>" }
-  let(:virtual_object) do
-    instance_double(Dor::Item,
-                    id: 'druid:virtual_object',
-                    contentMetadata: content_metadata,
-                    save!: true)
-  end
-  let(:predicate) { :is_constituent_of }
+  let(:structural_kwargs) { { structural: structural } }
+  let(:service) { described_class.new(cocina_item: cocina_item) }
 
-  describe '.new' do
-    let(:xml) { '<notUsed/>' }
-
-    context 'when only the `item:` argument is included' do
-      it 'uses the supplied `item` attribute' do
-        expect(service.item).to eq(virtual_object)
-      end
-
-      it 'uses the default `type` attribute' do
-        expect(service.type).to eq(described_class::DEFAULT_ITEM_TYPE)
-      end
-    end
-
-    context 'when `item:` and `type:` arguments are included' do
-      let(:args) { { item: virtual_object, type: custom_type } }
-      let(:custom_type) { 'book' }
-
-      it 'uses the supplied `type` attribute' do
-        expect(service.type).to eq(custom_type)
-      end
-    end
+  before do
+    allow(Honeybadger).to receive(:notify)
   end
 
   describe '#reset' do
-    context 'without constituent relationships recorded in content metadata' do
-      let(:xml) { Nokogiri::XML(default_content_xml) }
+    context 'with no constituent druids' do
+      subject(:updated_cocina_item) { service.reset }
 
-      before do
-        allow(Dor::Item).to receive(:find)
+      context 'when item has no structural metadata' do
+        let(:structural) { {} }
+
+        it 'returns item with structural metadata containing no orders' do
+          expect(updated_cocina_item).to match_cocina_object_with(structural: { hasMemberOrders: [] })
+          expect(Honeybadger).not_to have_received(:notify)
+        end
       end
 
-      it 'resets content metadata without touching constituents' do
-        service.reset
-        expect(content_metadata).to have_received(:content=).with(default_content_xml).once
-        expect(virtual_object).to have_received(:save!).once
-        expect(Dor::Item).not_to have_received(:find)
+      context 'when item has structural metadata with no orders' do
+        let(:structural) do
+          {
+            isMemberOf: ['druid:fd234jh8769'],
+            contains: [
+              {
+                externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/234-567-890',
+                version: 1,
+                type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                label: 'Page 1',
+                structural: {
+                  contains: [
+                    {
+                      externalIdentifier: 'http://cocina.sul.stanford.edu/file/223-456-789',
+                      version: 1,
+                      type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                      filename: '00001.jp2',
+                      label: '00001.jp2',
+                      hasMimeType: 'image/jp2',
+                      administrative: {
+                        publish: true,
+                        sdrPreserve: true,
+                        shelve: true
+                      },
+                      access: {
+                        access: 'stanford',
+                        download: 'stanford'
+                      },
+                      hasMessageDigests: []
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        end
+
+        it 'returns item with structural metadata containing no orders' do
+          expect(updated_cocina_item).to match_cocina_object_with(structural: structural)
+          expect(Honeybadger).not_to have_received(:notify)
+        end
+      end
+
+      context 'when item has one or more non-member orders' do
+        let(:structural) do
+          {
+            hasMemberOrders: [
+              {
+                members: [],
+                viewingDirection: 'left-to-right'
+              }
+            ]
+          }
+        end
+
+        it 'returns only non-member orders' do
+          expect(updated_cocina_item).to match_cocina_object_with(structural: structural)
+          expect(Honeybadger).not_to have_received(:notify)
+        end
+      end
+
+      context 'when item has one member order' do
+        let(:structural) do
+          {
+            hasMemberOrders: [
+              {
+                members: ['druid:bj876jy8756']
+              }
+            ]
+          }
+        end
+
+        it 'returns empty member order' do
+          expect(updated_cocina_item).to match_cocina_object_with(
+            structural: {
+              hasMemberOrders: []
+            }
+          )
+          expect(Honeybadger).not_to have_received(:notify)
+        end
+      end
+
+      context 'when item has one or more member orders' do
+        let(:structural) do
+          {
+            hasMemberOrders: [
+              {
+                members: ['druid:bj876jy8756']
+              },
+              {
+                members: ['druid:bj776jy8755']
+              }
+            ]
+          }
+        end
+
+        it 'returns empty member order and notifies of data error' do
+          expect(updated_cocina_item).to match_cocina_object_with(
+            structural: {
+              hasMemberOrders: []
+            }
+          )
+          expect(Honeybadger).to have_received(:notify)
+            .once
+            .with(
+              "[DATA ERROR] item #{item_druid} has multiple member orders",
+              {
+                tags: 'data_error',
+                context: { druid: item_druid }
+              }
+            )
+        end
       end
     end
 
-    context 'with constituent relationships recorded in content metadata' do
-      let(:xml) do
-        Nokogiri::XML(
-          <<~XML
-            <contentMetadata objectId="druid:virtual_object1" type="image">
-              <resource sequence="1" id="druid:constituent1_1" type="image">
-                <relationship type="alsoAvailableAs" objectId="druid:constituent1"/>
-              </resource>
-              <resource sequence="2" id="druid:constituent2_2" type="image">
-                <relationship type="alsoAvailableAs" objectId="druid:constituent2"/>
-              </resource>
-            </contentMetadata>
-          XML
-        )
+    context 'with constituent druids' do
+      subject(:updated_cocina_item) { service.reset(constituent_druids: constituent_druids) }
+
+      let(:constituent_druids) { ['druid:bj876jy8756', 'druid:bj776jy8755'] }
+
+      context 'when item has no structural metadata' do
+        let(:structural) { {} }
+
+        it 'returns single member order' do
+          expect(updated_cocina_item).to match_cocina_object_with(
+            structural: {
+              hasMemberOrders: [
+                {
+                  members: constituent_druids
+                }
+              ]
+            }
+          )
+          expect(Honeybadger).not_to have_received(:notify)
+        end
       end
 
-      before do
-        allow(Dor::Item).to receive(:find).with(constituent1.id).and_return(constituent1)
-        allow(Dor::Item).to receive(:find).with(constituent2.id).and_return(constituent2)
+      context 'when item has structural metadata with no orders' do
+        let(:structural) do
+          {
+            isMemberOf: ['druid:fd234jh8769'],
+            contains: [
+              {
+                externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/234-567-890',
+                version: 1,
+                type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                label: 'Page 1',
+                structural: {
+                  contains: [
+                    {
+                      externalIdentifier: 'http://cocina.sul.stanford.edu/file/223-456-789',
+                      version: 1,
+                      type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                      filename: '00001.jp2',
+                      label: '00001.jp2',
+                      hasMimeType: 'image/jp2',
+                      administrative: {
+                        publish: true,
+                        sdrPreserve: true,
+                        shelve: true
+                      },
+                      access: {
+                        access: 'stanford',
+                        download: 'stanford'
+                      },
+                      hasMessageDigests: []
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        end
+
+        it 'returns single member order' do
+          expect(updated_cocina_item).to match_cocina_object_with(
+            structural: {
+              isMemberOf: ['druid:fd234jh8769'],
+              hasMemberOrders: [
+                {
+                  members: constituent_druids
+                }
+              ],
+              contains: [
+                {
+                  externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/234-567-890',
+                  version: 1,
+                  type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                  label: 'Page 1',
+                  structural: {
+                    contains: [
+                      {
+                        externalIdentifier: 'http://cocina.sul.stanford.edu/file/223-456-789',
+                        version: 1,
+                        type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                        filename: '00001.jp2',
+                        label: '00001.jp2',
+                        hasMimeType: 'image/jp2',
+                        administrative: {
+                          publish: true,
+                          sdrPreserve: true,
+                          shelve: true
+                        },
+                        access: {
+                          access: 'stanford',
+                          download: 'stanford'
+                        },
+                        hasMessageDigests: []
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          )
+          expect(Honeybadger).not_to have_received(:notify)
+        end
       end
 
-      it 'severs the constituent relationships and resets content metadata' do
-        service.reset
-        expect(content_metadata).to have_received(:content=).with(default_content_xml).once
-        expect(virtual_object).to have_received(:save!).once
-        expect(Dor::Item).to have_received(:find).exactly(2).times
-        expect(constituent1).to have_received(:clear_relationship).with(predicate).once
-        expect(constituent2).to have_received(:clear_relationship).with(predicate).once
-        expect(constituent1).to have_received(:save!)
-        expect(constituent2).to have_received(:save!)
+      context 'when item has one or more non-member orders' do
+        let(:structural) do
+          {
+            hasMemberOrders: [
+              {
+                members: [],
+                viewingDirection: 'left-to-right'
+              }
+            ]
+          }
+        end
+
+        it 'returns single member order plus non-member orders' do
+          expect(updated_cocina_item).to match_cocina_object_with(
+            structural: {
+              hasMemberOrders: [
+                {
+                  members: [],
+                  viewingDirection: 'left-to-right'
+                },
+                {
+                  members: constituent_druids
+                }
+              ]
+            }
+          )
+          expect(Honeybadger).not_to have_received(:notify)
+        end
+      end
+
+      context 'when item has one member order' do
+        let(:structural) do
+          {
+            hasMemberOrders: [
+              {
+                members: ['druid:bj876jy8756']
+              }
+            ]
+          }
+        end
+
+        it 'returns new member order' do
+          expect(updated_cocina_item).to match_cocina_object_with(
+            structural: {
+              hasMemberOrders: [
+                {
+                  members: constituent_druids
+                }
+              ]
+            }
+          )
+          expect(Honeybadger).not_to have_received(:notify)
+        end
+      end
+
+      context 'when item has one or more member orders' do
+        let(:structural) do
+          {
+            hasMemberOrders: [
+              {
+                members: ['druid:bj876jy8756']
+              },
+              {
+                members: ['druid:bj776jy8755']
+              }
+            ]
+          }
+        end
+
+        it 'returns new member order and notifies of data error' do
+          expect(updated_cocina_item).to match_cocina_object_with(
+            structural: {
+              hasMemberOrders: [
+                {
+                  members: constituent_druids
+                }
+              ]
+            }
+          )
+          expect(Honeybadger).to have_received(:notify)
+            .once
+            .with(
+              "[DATA ERROR] item #{item_druid} has multiple member orders",
+              {
+                tags: 'data_error',
+                context: { druid: item_druid }
+              }
+            )
+        end
       end
     end
   end
