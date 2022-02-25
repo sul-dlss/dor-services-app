@@ -4,6 +4,6 @@
 require_relative '../../config/environment'
 require_relative '../../lib/report'
 
-Report.new(name: 'content-file-deliver', dsid: 'contentMetadata').run do |ng_xml|
+Report.new(name: 'content-file-deliver', dsids: ['contentMetadata']).run do |ng_xml|
   ng_xml.xpath('/contentMetadata/resource/file/@deliver').present?
 end

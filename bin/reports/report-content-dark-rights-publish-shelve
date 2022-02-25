@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+Report.new(name: 'content-dark-rights-publish-shelve', dsids: ['rightsMetadata', 'contentMetadata']).run do |rights_xml, content_xml|
+  rights = Dor::RightsAuth.parse(rights_xml, true)
+  next unless rights.dark?
+
+  content_xml.xpath('/contentMetadata/resource[file]/file[@shelve="yes" or @publish="yes"]').present?
+end

@@ -4,6 +4,6 @@
 require_relative '../../config/environment'
 require_relative '../../lib/report'
 
-Report.new(name: 'content-checksum-attribs', dsid: 'contentMetadata').run do |ng_xml|
+Report.new(name: 'content-checksum-attribs', dsids: ['contentMetadata']).run do |ng_xml|
   ng_xml.xpath('/contentMetadata/resource/file/@md5').present? || ng_xml.xpath('/contentMetadata/resource/file/@sha1').present?
 end

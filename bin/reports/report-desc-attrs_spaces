@@ -4,7 +4,7 @@
 require_relative '../../config/environment'
 require_relative '../../lib/report'
 
-Report.new(name: 'desc-attrs_spaces', dsid: 'descMetadata').run do |ng_xml|
+Report.new(name: 'desc-attrs_spaces', dsids: ['descMetadata']).run do |ng_xml|
   bad_elements = ng_xml.xpath('//*[(starts-with(@*, " "))]')
   return false if bad_elements.empty?
 

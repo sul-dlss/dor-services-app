@@ -4,6 +4,6 @@
 require_relative '../../config/environment'
 require_relative '../../lib/report'
 
-Report.new(name: 'rights-missing_use', dsid: 'rightsMetadata').run do |ng_xml|
+Report.new(name: 'rights-missing_use', dsids: ['rightsMetadata']).run do |ng_xml|
   ng_xml.xpath('human | machine').present?
 end

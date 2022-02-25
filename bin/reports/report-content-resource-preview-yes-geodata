@@ -4,7 +4,7 @@
 require_relative '../../config/environment'
 require_relative '../../lib/report'
 
-Report.new(name: 'content-resource-type-preview-yes-geodata', dsid: 'contentMetadata').run do |ng_xml|
+Report.new(name: 'content-resource-type-preview-yes-geodata', dsids: ['contentMetadata']).run do |ng_xml|
   # there is a resource with type=preview and there is a geoData element in the contentMetadata
   ng_xml.xpath('/contentMetadata[resource/file/geoData]/resource/@type="preview"')
 end
