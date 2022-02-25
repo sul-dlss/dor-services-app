@@ -409,9 +409,8 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
         {
           title: [
             {
-              {
-                value: 'Princesse jaune. Vocal score',
-                type: 'uniform'
+              value: 'Princesse jaune. Vocal score',
+              type: 'uniform'
             }
           ],
           contributor: [
@@ -1114,7 +1113,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
         {
           title: [
             {
-              value: 'Laws, etc. (United States code service)'
+              value: 'Laws, etc. (United States code service)',
               type: 'uniform'
             }
           ],
