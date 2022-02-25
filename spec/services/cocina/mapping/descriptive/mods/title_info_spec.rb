@@ -678,6 +678,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
         }
       end
     end
+  end
 
   describe 'Supplied title' do
     # How to ID: titleInfo supplied="yes"
