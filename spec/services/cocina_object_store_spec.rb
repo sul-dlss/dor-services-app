@@ -68,7 +68,7 @@ RSpec.describe CocinaObjectStore do
 
       context 'when postgres find is enabled' do
         before do
-          allow(Settings.enabled_features.postgres).to receive(:find).and_return(true)
+          allow(Settings.enabled_features.postgres).to receive(:ar_find).and_return(true)
         end
 
         context 'when found in postgres' do
