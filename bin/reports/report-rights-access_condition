@@ -4,6 +4,6 @@
 require_relative '../../config/environment'
 require_relative '../../lib/report'
 
-Report.new(name: 'rights-access_condition', dsid: 'rightsMetadata').run do |ng_xml|
+Report.new(name: 'rights-access_condition', dsids: ['rightsMetadata']).run do |ng_xml|
   ng_xml.xpath('accessCondition').present?
 end

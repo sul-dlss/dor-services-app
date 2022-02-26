@@ -4,7 +4,7 @@
 require_relative '../../config/environment'
 require_relative '../../lib/report'
 
-Report.new(name: 'desc-bad_value_uri', dsid: 'descMetadata').run do |ng_xml|
+Report.new(name: 'desc-bad_value_uri', dsids: ['descMetadata']).run do |ng_xml|
   bad_elements = ng_xml.xpath('mods:*[@valueURI and not(starts-with(@valueURI, "http"))]', mods: MODS_NS)
   return false if bad_elements.empty?
 

@@ -9,22 +9,25 @@ MODS_NS = Cocina::FromFedora::Descriptive::DESC_METADATA_NS
 
 # Report generator using Fedora objects stored in cache.
 class Report
+  class CacheFailure < RuntimeError; end
+
   Result = Struct.new(:druid, :apo, :catkey, :result)
 
-  def initialize(name:, dsid:)
+  def initialize(name:, dsids:)
     @name = name
-    @dsid = dsid
+    @dsids = dsids
     @options = build_options
   end
 
   def run
-    results = Parallel.map(druids, progress: 'Testing') do |druid|
-      cache_result = cache.datastream(druid, dsid)
-      next if cache_result.failure?
+    results = Parallel.map(druids, progress: "Running #{name} report") do |druid|
+      report_result =
+        begin
+          yield(*datastream_xmls(druid))
+        rescue CacheFailure
+          next
+        end
 
-      ng_xml = Nokogiri::XML(cache_result.value!)
-
-      report_result = yield ng_xml
       next unless report_result
 
       if options[:fast]
@@ -44,7 +47,16 @@ class Report
 
   private
 
-  attr_reader :name, :options, :dsid
+  attr_reader :name, :options, :dsids
+
+  def datastream_xmls(druid)
+    dsids.map do |dsid|
+      cache_result = cache.datastream(druid, dsid)
+      raise CacheFailure if cache_result.failure?
+
+      Nokogiri::XML(cache_result.value!)
+    end
+  end
 
   def write_report(results)
     CSV.open("#{name}.csv", 'w') do |writer|
