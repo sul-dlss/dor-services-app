@@ -89,7 +89,7 @@ class CocinaObjectStore
 
   # @return [Array] a tuple consisting of cocina object, created date and modified date
   def find_with_timestamps(druid)
-    if Settings.enabled_features.postgres.find && ar_exists?(druid)
+    if Settings.enabled_features.postgres.ar_find && ar_exists?(druid)
       ar_to_cocina_find(druid)
     else
       fedora_to_cocina_find(druid)
