@@ -124,10 +124,11 @@ class CocinaObjectStore
     updated_cocina_request_object = merge_access_for(cocina_request_object)
     druid = SuriService.mint_id
     updated_cocina_request_object = sync_from_symphony(updated_cocina_request_object, druid)
+    cocina_object = cocina_from_request(updated_cocina_request_object, druid)
 
     # This saves the Fedora object.
-    fedora_object = fedora_create(updated_cocina_request_object, druid: druid, assign_doi: assign_doi)
-    add_tags_for_create(druid, updated_cocina_request_object)
+    fedora_object = fedora_create(cocina_object, druid: druid, assign_doi: assign_doi)
+    add_tags_for_create(druid, cocina_object)
     # This creates version 1.0.0 (Initial Version)
     ObjectVersion.increment_version(druid)
 
@@ -359,6 +360,35 @@ class CocinaObjectStore
 
   def catkeys_for(cocina_request_object)
     cocina_request_object.identification&.catalogLinks&.filter_map { |clink| "catkey:#{clink.catalogRecordId}" if clink.catalog == 'symphony' }
+  end
+
+  # Converts from Cocina::Models::RequestDRO|RequestCollection|RequestAdminPolicy to Cocina::Models::DRO|Collection||AdminPolicy
+  def cocina_from_request(cocina_request_object, druid)
+    props = cocina_request_object.to_h.with_indifferent_access
+    props[:externalIdentifier] = druid
+
+    # Add purl to description
+    if props[:description].present?
+      purl = Purl.for(druid: druid)
+      props[:description][:purl] = purl
+      # This replaces the :link: placeholder in the citation with the purl, which we are now able to derive.
+      # This is specifically for H2, but could be utilized by any client that provides preferred citation.
+      Array(props[:description][:note]).each do |note|
+        note[:value] = note[:value].gsub(/:link:/, purl) if note[:type] == 'preferred citation' && note[:value]
+      end
+    end
+
+    # Add externalIdentifiers to structural
+    Array(props.dig(:structural, :contains)).each do |fileset_props|
+      fileset_id = fileset_props[:externalIdentifier] || Cocina::IdGenerator.generate_or_existing_fileset_id(druid: druid)
+      fileset_props[:externalIdentifier] = fileset_id
+      Array(fileset_props.dig(:structural, :contains)).each do |file_props|
+        file_id = file_props[:externalIdentifier] || Cocina::IdGenerator.generate_or_existing_file_id(druid: druid, resource_id: fileset_id, file_id: file_props[:filename])
+        file_props[:externalIdentifier] = file_id
+      end
+    end
+
+    Cocina::Models.build(props)
   end
 end
 # rubocop:enable Metrics/ClassLength

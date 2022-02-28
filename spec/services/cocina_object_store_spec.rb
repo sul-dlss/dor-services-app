@@ -215,9 +215,10 @@ RSpec.describe CocinaObjectStore do
 
     describe '#create' do
       let(:cocina_object_store) { described_class.new }
-      let(:requested_cocina_object) { instance_double(Cocina::Models::RequestDRO, admin_policy?: false, identification: identification) }
+      let(:requested_cocina_object) { instance_double(Cocina::Models::RequestDRO, admin_policy?: false, identification: identification, to_h: cocina_hash) }
       let(:identification) { instance_double(Cocina::Models::RequestIdentification, catalogLinks: catalog_links) }
       let(:catalog_links) { [] }
+      let(:cocina_hash) { {} }
 
       let(:created_cocina_object) { instance_double(Cocina::Models::DRO, to_h: cocina_hash) }
 
@@ -231,20 +232,24 @@ RSpec.describe CocinaObjectStore do
         allow(SynchronousIndexer).to receive(:reindex_remotely)
         allow(EventFactory).to receive(:create)
         allow(RefreshMetadataAction).to receive(:run)
+        allow(Cocina::Models).to receive(:build).and_return(cocina_object)
       end
 
       it 'maps and saves to Fedora' do
         expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
-        expect(Cocina::ObjectCreator).to have_received(:create).with(requested_cocina_object, druid: druid, assign_doi: true)
+        expect(Cocina::ObjectCreator).to have_received(:create).with(cocina_object, druid: druid, assign_doi: true)
         expect(Notifications::ObjectCreated).to have_received(:publish).with(model: created_cocina_object, created_at: kind_of(Time), modified_at: kind_of(Time))
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
         expect(cocina_object_store).to have_received(:merge_access_for).with(requested_cocina_object)
-        expect(cocina_object_store).to have_received(:add_tags_for_create).with(druid, requested_cocina_object)
+        expect(cocina_object_store).to have_received(:add_tags_for_create).with(druid, cocina_object)
         expect(Cocina::Mapper).to have_received(:build).with(item)
         expect(SynchronousIndexer).to have_received(:reindex_remotely).with(druid)
         expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
         expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'registration', data: cocina_hash)
         expect(RefreshMetadataAction).not_to have_received(:run)
+        expect(Cocina::Models).to have_received(:build).with({
+                                                               externalIdentifier: druid
+                                                             })
       end
 
       context 'when refreshing from symphony' do
@@ -290,6 +295,172 @@ RSpec.describe CocinaObjectStore do
         it 'does not add to description' do
           expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
           expect(RefreshMetadataAction).to have_received(:run).with(identifiers: ['catkey:abc123'], cocina_object: requested_cocina_object, druid: druid)
+        end
+      end
+
+      context 'when there is description' do
+        let(:cocina_hash) do
+          {
+            description: {
+              note: [
+                {
+                  type: 'abstract',
+                  value: 'I am an abstract'
+                },
+                {
+                  type: 'preferred citation',
+                  value: 'Zappa, F. (2013) :link:'
+                }
+              ],
+              title: [
+                {
+                  value: 'The Lost Episodes'
+                }
+              ]
+            }
+          }
+        end
+
+        it 'adds purl and updates notes in description' do
+          expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
+          expect(Cocina::Models).to have_received(:build).with({
+                                                                 externalIdentifier: druid,
+                                                                 description: {
+                                                                   note: [
+                                                                     {
+                                                                       type: 'abstract',
+                                                                       value: 'I am an abstract'
+                                                                     },
+                                                                     {
+                                                                       type: 'preferred citation',
+                                                                       value: 'Zappa, F. (2013) https://purl.stanford.edu/bc123df4567'
+                                                                     }
+                                                                   ],
+                                                                   title: [
+                                                                     {
+                                                                       value: 'The Lost Episodes'
+                                                                     }
+                                                                   ],
+                                                                   purl: 'https://purl.stanford.edu/bc123df4567'
+                                                                 }
+                                                               })
+        end
+      end
+
+      context 'when there is structural' do
+        let(:cocina_hash) do
+          {
+            structural: {
+              contains: [
+                {
+                  type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                  label: 'Page 1', version: 1,
+                  structural: {
+                    contains: [
+                      {
+                        type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                        label: '00001.html',
+                        filename: '00001.html',
+                        size: 0,
+                        version: 1,
+                        hasMimeType: 'text/html',
+                        use: 'transcription',
+                        hasMessageDigests: [
+                          {
+                            type: 'sha1', digest: 'cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7'
+                          }, {
+                            type: 'md5', digest: 'e6d52da47a5ade91ae31227b978fb023'
+                          }
+                        ],
+                        access: { access: 'dark', download: 'none' },
+                        administrative: { publish: false, sdrPreserve: true, shelve: false }
+                      }
+                    ]
+                  }
+                },
+                # Already has identifiers
+                {
+                  type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                  externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/gg777gg7777/334-567-890',
+                  label: 'Page 2', version: 1,
+                  structural: {
+                    contains: [
+                      {
+                        type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                        externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777/334-567-890/00002.html',
+                        label: '00002.html', filename: '00002.html', size: 0,
+                        version: 1, hasMimeType: 'text/html',
+                        hasMessageDigests: [],
+                        access: { access: 'dark', download: 'none' },
+                        administrative: { publish: false, sdrPreserve: true, shelve: false }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        end
+
+        before do
+          allow(SecureRandom).to receive(:uuid).and_return('abc123')
+        end
+
+        it 'adds external identifiers' do
+          expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
+          expect(Cocina::Models).to have_received(:build).with({
+                                                                 externalIdentifier: druid,
+                                                                 structural: {
+                                                                   contains: [
+                                                                     {
+                                                                       type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                                                                       externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/bc123df4567-abc123',
+                                                                       label: 'Page 1', version: 1,
+                                                                       structural: {
+                                                                         contains: [
+                                                                           {
+                                                                             type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                                                                             externalIdentifier: 'http://cocina.sul.stanford.edu/file/bc123df4567-abc123/00001.html',
+                                                                             label: '00001.html',
+                                                                             filename: '00001.html',
+                                                                             size: 0,
+                                                                             version: 1,
+                                                                             hasMimeType: 'text/html',
+                                                                             use: 'transcription',
+                                                                             hasMessageDigests: [
+                                                                               {
+                                                                                 type: 'sha1', digest: 'cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7'
+                                                                               }, {
+                                                                                 type: 'md5', digest: 'e6d52da47a5ade91ae31227b978fb023'
+                                                                               }
+                                                                             ],
+                                                                             access: { access: 'dark', download: 'none' },
+                                                                             administrative: { publish: false, sdrPreserve: true, shelve: false }
+                                                                           }
+                                                                         ]
+                                                                       }
+                                                                     },
+                                                                     {
+                                                                       type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                                                                       externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/gg777gg7777/334-567-890',
+                                                                       label: 'Page 2', version: 1,
+                                                                       structural: {
+                                                                         contains: [
+                                                                           {
+                                                                             type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                                                                             externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777/334-567-890/00002.html',
+                                                                             label: '00002.html', filename: '00002.html', size: 0,
+                                                                             version: 1, hasMimeType: 'text/html',
+                                                                             hasMessageDigests: [],
+                                                                             access: { access: 'dark', download: 'none' },
+                                                                             administrative: { publish: false, sdrPreserve: true, shelve: false }
+                                                                           }
+                                                                         ]
+                                                                       }
+                                                                     }
+                                                                   ]
+                                                                 }
+                                                               })
         end
       end
 

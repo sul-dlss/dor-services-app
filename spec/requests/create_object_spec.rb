@@ -274,7 +274,8 @@ RSpec.describe 'Create object' do
       context 'when descriptive roundtrip validation fails' do
         let(:changed_description) do
           {
-            title: [{ value: 'changed title' }]
+            title: [{ value: 'changed title' }],
+            purl: 'https://purl.stanford.edu/gg777gg7777'
           }
         end
 

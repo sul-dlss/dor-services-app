@@ -143,8 +143,7 @@ module Cocina
     # @raises SymphonyReader::ResponseError if symphony connection failed
     def add_description(fedora_object, cocina_object, trial:)
       if cocina_object.description
-        description = AddPurlToDescription.call(cocina_object.description, fedora_object.pid)
-        fedora_object.descMetadata.content = Cocina::ToFedora::Descriptive.transform(description, fedora_object.pid).to_xml
+        fedora_object.descMetadata.content = Cocina::ToFedora::Descriptive.transform(cocina_object.description, fedora_object.pid).to_xml
         fedora_object.descMetadata.content_will_change!
       else
         fedora_object.descMetadata.mods_title = cocina_object.label
