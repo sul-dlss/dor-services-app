@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe RefreshMetadataAction do
   include Dry::Monads[:result]
 
-  subject(:refresh) { described_class.run(identifiers: ['catkey:123'], cocina_object: cocina_object) }
+  subject(:refresh) { described_class.run(identifiers: ['catkey:123'], cocina_object: cocina_object, druid: druid) }
 
   let(:druid) { 'druid:bc753qt7345' }
   let(:apo_druid) { 'druid:pp000pp0000' }
@@ -21,19 +21,6 @@ RSpec.describe RefreshMetadataAction do
                             label: 'A new map of Africa',
                             version: 1,
                             description: description,
-                            identification: {},
-                            access: {},
-                            administrative: { hasAdminPolicy: apo_druid })
-  end
-  let(:updated_cocina_object) do
-    Cocina::Models::DRO.new(externalIdentifier: druid,
-                            type: Cocina::Models::Vocab.object,
-                            label: 'A new map of Africa',
-                            version: 1,
-                            description: {
-                              title: [{ value: 'Paying for College' }],
-                              purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
-                            },
                             identification: {},
                             access: {},
                             administrative: { hasAdminPolicy: apo_druid })
@@ -54,8 +41,13 @@ RSpec.describe RefreshMetadataAction do
     allow(Honeybadger).to receive(:notify)
   end
 
-  it 'gets the data and updates the cocina object' do
-    expect(refresh).to eq(updated_cocina_object)
+  it 'gets the data and returns success' do
+    expect(refresh.success?).to be(true)
+    expect(refresh.value!.description_props).to eq({
+                                                     title: [{ value: 'Paying for College' }],
+                                                     purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+                                                   })
+    expect(refresh.value!.mods_ng_xml).to be_equivalent_to(Nokogiri::XML(mods))
     expect(Honeybadger).not_to have_received(:notify)
   end
 
@@ -75,7 +67,7 @@ RSpec.describe RefreshMetadataAction do
     end
 
     it 'returns a Dry::Monads::Result::Failure object' do
-      expect(refresh).to be_a(Dry::Monads::Result::Failure)
+      expect(refresh.failure?).to be(true)
     end
   end
 
@@ -85,7 +77,7 @@ RSpec.describe RefreshMetadataAction do
     end
 
     it 'returns a Dry::Monads::Result::Failure object' do
-      expect(refresh).to be_a(Dry::Monads::Result::Failure)
+      expect(refresh.failure?).to be(true)
     end
   end
 end

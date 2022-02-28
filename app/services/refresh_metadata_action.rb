@@ -5,38 +5,47 @@
 class RefreshMetadataAction
   include Dry::Monads[:result]
 
-  # @return [Dry::Monads::Result::Failure,Object] returns Failure if there was no resolvable metadata id, otherwise the Cocina object
+  Result = Struct.new('Result', :description_props, :mods_ng_xml)
+
+  # @return [Dry::Monads::Results] returns Failure if there was no resolvable metadata id, otherwise Success (Result with description_props and mods)
   # @raises SymphonyReader::ResponseError
-  def self.run(identifiers:, cocina_object:)
-    new(identifiers: identifiers, cocina_object: cocina_object).run
+  def self.run(identifiers:, cocina_object:, druid:)
+    new(identifiers: identifiers, cocina_object: cocina_object, druid: druid).run
   end
 
   # @param [Array<String>] identifiers the set of identifiers that might be resolvable
-  # @param [Cocina::Models::DRO|Collection|APO|Agreement] cocina_object to refresh
-  def initialize(identifiers:, cocina_object:)
+  # @param [Cocina::Models::DRO|Collection|APO|Agreement|RequestDRO|RequestCollection|RequestAPO|RequestAgreement] cocina_object to refresh
+  # @param [string] druid
+  def initialize(identifiers:, cocina_object:, druid:)
     @identifiers = identifiers
     @cocina_object = cocina_object
+    @druid = druid
   end
 
-  # @return [Dry::Monads::Results,Object] Returns Failure if it didn't retrieve anything, otherwise the Cocicna object
+  # @return [Dry::Monads::Results] Returns Failure if it didn't retrieve anything, otherwise Success (Result with description_props and mods)
   # @raises SymphonyReader::ResponseError
   def run
-    metadata = fetch_metadata
-    return Failure() if metadata.nil?
+    return Failure() if mods.nil?
 
-    description_props = Cocina::FromFedora::Descriptive.props(mods: Nokogiri::XML(fetch_metadata), druid: cocina_object.externalIdentifier)
+    description_props = Cocina::FromFedora::Descriptive.props(mods: mods_ng_xml, druid: druid)
     return Failure() if description_props.nil?
 
-    cocina_object.new(description: description_props)
+    Success(Result.new(description_props, mods_ng_xml))
   end
 
   private
 
-  attr_reader :identifiers, :cocina_object
+  attr_reader :identifiers, :cocina_object, :druid
 
   # @raises SymphonyReader::ResponseError
-  def fetch_metadata
-    metadata_id = MetadataService.resolvable(identifiers).first
-    metadata_id.nil? ? nil : MetadataService.fetch(metadata_id.to_s)
+  def mods
+    @mods ||= begin
+      metadata_id = MetadataService.resolvable(identifiers).first
+      metadata_id.nil? ? nil : MetadataService.fetch(metadata_id.to_s)
+    end
+  end
+
+  def mods_ng_xml
+    @mods_ng_xml ||= Nokogiri::XML(mods)
   end
 end

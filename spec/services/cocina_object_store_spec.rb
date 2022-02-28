@@ -3,6 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe CocinaObjectStore do
+  include Dry::Monads[:result]
+
   describe 'to Fedora' do
     let(:item) { instance_double(Dor::Item) }
     let(:date) { Time.zone.now }
@@ -213,7 +215,10 @@ RSpec.describe CocinaObjectStore do
 
     describe '#create' do
       let(:cocina_object_store) { described_class.new }
-      let(:requested_cocina_object) { instance_double(Cocina::Models::RequestDRO) }
+      let(:requested_cocina_object) { instance_double(Cocina::Models::RequestDRO, admin_policy?: false, identification: identification) }
+      let(:identification) { instance_double(Cocina::Models::RequestIdentification, catalogLinks: catalog_links) }
+      let(:catalog_links) { [] }
+
       let(:created_cocina_object) { instance_double(Cocina::Models::DRO, to_h: cocina_hash) }
 
       before do
@@ -225,6 +230,7 @@ RSpec.describe CocinaObjectStore do
         allow(Cocina::Mapper).to receive(:build).and_return(created_cocina_object)
         allow(SynchronousIndexer).to receive(:reindex_remotely)
         allow(EventFactory).to receive(:create)
+        allow(RefreshMetadataAction).to receive(:run)
       end
 
       it 'maps and saves to Fedora' do
@@ -238,6 +244,53 @@ RSpec.describe CocinaObjectStore do
         expect(SynchronousIndexer).to have_received(:reindex_remotely).with(druid)
         expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
         expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'registration', data: cocina_hash)
+        expect(RefreshMetadataAction).not_to have_received(:run)
+      end
+
+      context 'when refreshing from symphony' do
+        let(:catalog_links) { [Cocina::Models::CatalogLink.new(catalog: 'symphony', catalogRecordId: 'abc123')] }
+        let(:description_props) do
+          {
+            title: [{ value: 'The Well-Grounded Rubyist' }],
+            purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+          }
+        end
+
+        let(:mods) do
+          Nokogiri::XML(
+            <<~XML
+              <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.7">
+                <titleInfo>
+                  <title>The Well-Grounded Rubyist</title>
+                </titleInfo>
+              </mods>
+            XML
+          )
+        end
+
+        before do
+          allow(RefreshMetadataAction).to receive(:run).and_return(Success(RefreshMetadataAction::Result.new(description_props, mods)))
+          allow(requested_cocina_object).to receive(:new).and_return(requested_cocina_object)
+        end
+
+        it 'adds to description' do
+          expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
+          expect(RefreshMetadataAction).to have_received(:run).with(identifiers: ['catkey:abc123'], cocina_object: requested_cocina_object, druid: druid)
+          expect(requested_cocina_object).to have_received(:new).with(label: 'The Well-Grounded Rubyist', description: { title: [{ value: 'The Well-Grounded Rubyist' }] })
+        end
+      end
+
+      context 'when fails refreshing from symphony' do
+        let(:catalog_links) { [Cocina::Models::CatalogLink.new(catalog: 'symphony', catalogRecordId: 'abc123')] }
+
+        before do
+          allow(RefreshMetadataAction).to receive(:run).and_return(Failure())
+        end
+
+        it 'does not add to description' do
+          expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
+          expect(RefreshMetadataAction).to have_received(:run).with(identifiers: ['catkey:abc123'], cocina_object: requested_cocina_object, druid: druid)
+        end
       end
 
       context 'when postgres create is enabled' do

@@ -9,11 +9,11 @@ class MetadataRefreshController < ApplicationController
   end
 
   def refresh
-    updated_cocina_object = RefreshMetadataAction.run(identifiers: identifiers,
-                                                      cocina_object: @cocina_object)
-    return render status: :unprocessable_entity, plain: "#{@cocina_object.externalIdentifier} had no resolvable identifiers: #{identifiers.inspect}" unless updated_cocina_object
+    result = RefreshMetadataAction.run(identifiers: identifiers,
+                                       cocina_object: @cocina_object, druid: @cocina_object.externalIdentifier)
+    return render status: :unprocessable_entity, plain: "#{@cocina_object.externalIdentifier} had no resolvable identifiers: #{identifiers.inspect}" if result.failure?
 
-    CocinaObjectStore.save(updated_cocina_object)
+    CocinaObjectStore.save(@cocina_object.new(description: result.value!.description_props))
   rescue SymphonyReader::NotFound => e
     json_api_error(status: :bad_request, title: 'Catkey not found in Symphony', message: e.message)
   end
