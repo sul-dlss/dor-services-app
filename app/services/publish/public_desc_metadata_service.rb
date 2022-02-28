@@ -56,7 +56,7 @@ module Publish
     # expand constituent relations into relatedItem references -- see JUMBO-18
     # @return [Void]
     def add_constituent_relations!
-      find_virtual_object.each do |solr_doc|
+      VirtualObject.for(druid: cocina_object.externalIdentifier).each do |solr_doc|
         # create the MODS relation
         relatedItem = doc.create_element('relatedItem', xmlns: MODS_NS)
         relatedItem['type'] = 'host'
@@ -78,15 +78,6 @@ module Publish
 
         # finish up by adding relation to public MODS
         doc.root << relatedItem
-      end
-    end
-
-    # @return[Array<Dor::Item>]
-    def find_virtual_object
-      query = "has_constituents_ssim:#{cocina_object.externalIdentifier.sub(':', '\:')}"
-      response = SolrService.get(query, { fl: 'id sw_display_title_tesim' })
-      response.fetch('response').fetch('docs').map do |row|
-        { id: row.fetch('id'), title: row.fetch('sw_display_title_tesim').first }
       end
     end
 

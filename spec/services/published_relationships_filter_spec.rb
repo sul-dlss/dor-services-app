@@ -3,50 +3,70 @@
 require 'rails_helper'
 
 RSpec.describe PublishedRelationshipsFilter do
-  subject(:service) { described_class.new(obj) }
-
-  let(:obj) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
+  subject(:service) { described_class.new(cocina_object) }
 
   describe '#xml' do
     subject(:doc) { service.xml }
 
-    context 'with isMemberOfCollection and isConstituentOf relationships' do
-      let(:relationships) do
-        <<~EOXML
-          <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:hydra="http://projecthydra.org/ns/relations#">
+    before do
+      allow(VirtualObject).to receive(:for).and_return([{ id: 'druid:hj097bm8879' }])
+    end
+
+    context 'with a DRO' do
+      let(:cocina_object) do
+        Cocina::Models::DRO.new(
+          {
+            externalIdentifier: 'druid:bc123df4567',
+            type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
+            label: 'foo',
+            version: 1,
+            access: {},
+            administrative: {
+              hasAdminPolicy: 'druid:df123cd4567'
+            },
+            structural: {
+              isMemberOf: ['druid:xh235dd9059']
+            }
+          }
+        )
+      end
+
+      it 'serializes the relations as RDF' do
+        expect(doc).to be_equivalent_to <<~XML
+          <?xml version="1.0"?>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#">
             <rdf:Description rdf:about="info:fedora/druid:bc123df4567">
-              <hydra:isGovernedBy rdf:resource="info:fedora/druid:789012"></hydra:isGovernedBy>
-              <fedora-model:hasModel rdf:resource="info:fedora/hydra:commonMetadata"></fedora-model:hasModel>
-              <fedora:isMemberOf rdf:resource="info:fedora/druid:xh235dd9059"></fedora:isMemberOf>
-              <fedora:isMemberOfCollection rdf:resource="info:fedora/druid:xh235dd9059"></fedora:isMemberOfCollection>
-              <fedora:isConstituentOf rdf:resource="info:fedora/druid:hj097bm8879"></fedora:isConstituentOf>
+              <fedora:isMemberOfCollection rdf:resource="info:fedora/druid:xh235dd9059"/>
+              <fedora:isConstituentOf rdf:resource="info:fedora/druid:hj097bm8879"/>
             </rdf:Description>
           </rdf:RDF>
-        EOXML
-      end
-
-      let(:expected) do
-        <<~XML
-          <?xml version="1.0"?>
-            <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:hydra="http://projecthydra.org/ns/relations#">
-              <rdf:Description rdf:about="info:fedora/druid:bc123df4567">
-                <fedora:isMemberOf rdf:resource="info:fedora/druid:xh235dd9059"/>
-                <fedora:isMemberOfCollection rdf:resource="info:fedora/druid:xh235dd9059"/>
-                <fedora:isConstituentOf rdf:resource="info:fedora/druid:hj097bm8879"/>
-              </rdf:Description>
-            </rdf:RDF>
         XML
       end
+    end
 
-      before do
-        ActiveFedora::RelsExtDatastream.from_xml(relationships, obj.rels_ext)
-        # Needed to generate the Datastream#content
-        obj.object_relations.dirty = true
-        obj.rels_ext.serialize!
+    context 'with a Collection' do
+      let(:cocina_object) do
+        Cocina::Models::Collection.new(
+          {
+            externalIdentifier: 'druid:bc123df4567',
+            type: 'http://cocina.sul.stanford.edu/models/collection.jsonld',
+            label: 'foo',
+            version: 1,
+            access: {},
+            administrative: {
+              hasAdminPolicy: 'druid:df123cd4567'
+            }
+          }
+        )
       end
 
-      it 'discards the non-allowed relations' do
-        expect(doc).to be_equivalent_to expected
+      it 'serializes the relations as RDF' do
+        expect(doc).to be_equivalent_to <<~XML
+          <?xml version="1.0"?>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#">
+            <rdf:Description rdf:about="info:fedora/druid:bc123df4567" />
+          </rdf:RDF>
+        XML
       end
     end
   end

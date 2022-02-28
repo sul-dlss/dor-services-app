@@ -95,9 +95,8 @@ RSpec.describe 'Display metadata' do
     let(:now) { Time.now } # rubocop:disable Rails/TimeZone
     let(:relationships_xml) do
       <<~XML
-        <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:hydra="http://projecthydra.org/ns/relations#">
+        <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#">
           <rdf:Description rdf:about="info:fedora/druid:ab123cd4567">
-            <fedora:isMemberOf rdf:resource="info:fedora/druid:xh235dd9059"/>
             <fedora:isMemberOfCollection rdf:resource="info:fedora/druid:xh235dd9059"/>
             <fedora:isConstituentOf rdf:resource="info:fedora/druid:hj097bm8879"/>
           </rdf:Description>
@@ -127,7 +126,7 @@ RSpec.describe 'Display metadata' do
         'elsewhere' => { 'release' => false }
       )
       allow(Time).to receive(:now).and_return(now)
-      allow_any_instance_of(PublishedRelationshipsFilter).to receive(:xml).and_return(Nokogiri::XML(relationships_xml))
+      allow_any_instance_of(PublishedRelationshipsFilter).to receive(:xml).and_return(relationships_xml)
       allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
     end
 

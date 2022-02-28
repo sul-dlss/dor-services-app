@@ -42,7 +42,8 @@ RSpec.describe Publish::PublicXmlService do
             hasMessageDigests: []
           }]
         }
-      }]
+      }],
+      isMemberOf: ['druid:xh235dd9059']
     }
   end
   let(:release_tags) { {} }
@@ -57,19 +58,6 @@ RSpec.describe Publish::PublicXmlService do
   describe '#to_xml' do
     subject(:xml) { service.to_xml }
 
-    let(:rels) do
-      <<-EOXML
-            <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:hydra="http://projecthydra.org/ns/relations#">
-              <rdf:Description rdf:about="info:fedora/druid:bc123df4567">
-                <hydra:isGovernedBy rdf:resource="info:fedora/druid:789012"></hydra:isGovernedBy>
-                <fedora-model:hasModel rdf:resource="info:fedora/hydra:commonMetadata"></fedora-model:hasModel>
-                <fedora:isMemberOf rdf:resource="info:fedora/druid:xh235dd9059"></fedora:isMemberOf>
-                <fedora:isMemberOfCollection rdf:resource="info:fedora/druid:xh235dd9059"></fedora:isMemberOfCollection>
-                <fedora:isConstituentOf rdf:resource="info:fedora/druid:hj097bm8879"></fedora:isConstituentOf>
-              </rdf:Description>
-            </rdf:RDF>
-      EOXML
-    end
     let(:ng_xml) { Nokogiri::XML(xml) }
 
     let(:rights) do
@@ -101,10 +89,10 @@ RSpec.describe Publish::PublicXmlService do
         </mods:mods>
       EOXML
 
+      allow(VirtualObject).to receive(:for).and_return([{ id: 'druid:hj097bm8879' }])
       item.contentMetadata.content = '<contentMetadata/>'
       item.descMetadata.content    = mods
       item.rightsMetadata.content  = rights
-      item.rels_ext.content        = rels
       allow_any_instance_of(Publish::PublicDescMetadataService).to receive(:ng_xml).and_return(Nokogiri::XML(mods)) # calls Item.find and not needed in general tests
       allow(OpenURI).to receive(:open_uri).with('https://purl-test.stanford.edu/bc123df4567.xml').and_return('<xml/>')
       WebMock.disable_net_connect!
@@ -251,19 +239,13 @@ RSpec.describe Publish::PublicXmlService do
         expect(ng_xml.at_xpath('/publicObject/oai_dc:dc', 'oai_dc' => 'http://www.openarchives.org/OAI/2.0/oai_dc/')).to be
       end
 
-      it 'relationships' do
+      it 'exports relationships' do
         ns = {
           'rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-          'hydra' => 'http://projecthydra.org/ns/relations#',
-          'fedora' => 'info:fedora/fedora-system:def/relations-external#',
-          'fedora-model' => 'info:fedora/fedora-system:def/model#'
+          'fedora' => 'info:fedora/fedora-system:def/relations-external#'
         }
-        expect(ng_xml.at_xpath('/publicObject/rdf:RDF', ns)).to be
-        expect(ng_xml.at_xpath('/publicObject/rdf:RDF/rdf:Description/fedora:isMemberOf', ns)).to be
         expect(ng_xml.at_xpath('/publicObject/rdf:RDF/rdf:Description/fedora:isMemberOfCollection', ns)).to be
         expect(ng_xml.at_xpath('/publicObject/rdf:RDF/rdf:Description/fedora:isConstituentOf', ns)).to be
-        expect(ng_xml.at_xpath('/publicObject/rdf:RDF/rdf:Description/fedora-model:hasModel', ns)).not_to be
-        expect(ng_xml.at_xpath('/publicObject/rdf:RDF/rdf:Description/hydra:isGovernedBy', ns)).not_to be
       end
 
       context 'when no thumb is present' do
