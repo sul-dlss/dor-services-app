@@ -5,11 +5,19 @@
 # from the datastream abstraction.
 class DatastreamsController < ApplicationController
   def index
-    item = Dor.find(params[:object_id])
-    result = item.datastreams
-                 .reject { |name, instance| instance.new? || name == 'workflows' }
-                 .values
-                 .map { |ds| serialize_datastream(ds) }
+    druid = params[:object_id]
+    result = if Settings.enabled_features.postgres.ar_find && CocinaObjectStore.new.ar_exists?(druid)
+               # By returning an empty array for objects that are retrieved from postgres, this allows
+               # editing to continue on objects that are retrieved from Fedora.
+               # The empty array serves to disable datastream editing in Argo for the object without
+               # breaking or requiring changes in Argo.
+               []
+             else
+               Dor.find(druid).datastreams
+                  .reject { |name, instance| instance.new? || name == 'workflows' }
+                  .values
+                  .map { |ds| serialize_datastream(ds) }
+             end
     render json: result
   end
 

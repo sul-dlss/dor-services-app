@@ -11,6 +11,9 @@ RSpec.describe 'Datastreams' do
   end
 
   describe 'get a list' do
+    let(:cocina_object_store) { instance_double(CocinaObjectStore, ar_exists?: ar_exists?) }
+    let(:ar_exists?) { false }
+
     before do
       object.datastreams['workflows'] = instance_double(ActiveFedora::Datastream, new?: false)
       object.versionMetadata.content = 'hello'
@@ -18,15 +21,53 @@ RSpec.describe 'Datastreams' do
       object.contentMetadata.content = 'howdy'
       allow(object.contentMetadata).to receive(:new?).and_return(false)
       allow(object.contentMetadata).to receive(:versionID).and_return('contentMetadata.5')
+      allow(CocinaObjectStore).to receive(:new).and_return(cocina_object_store)
     end
 
-    it 'returns a 200' do
-      get "/v1/objects/#{druid}/metadata/datastreams",
-          headers: { 'Authorization' => "Bearer #{jwt}" }
+    context 'when ar_find not enabled' do
+      it 'returns a 200 with datastreams' do
+        get "/v1/objects/#{druid}/metadata/datastreams",
+            headers: { 'Authorization' => "Bearer #{jwt}" }
 
-      expect(response.status).to eq(200)
-      expect(response.body).to eq '[{"label":"Version Metadata","dsid":"versionMetadata","pid":"druid:mx123qw2323","size":null,"mimeType":"text/xml","versionId":"v0"},' \
-                                  '{"label":"Content Metadata","dsid":"contentMetadata","pid":"druid:mx123qw2323","size":null,"mimeType":"text/xml","versionId":"v5"}]'
+        expect(response.status).to eq(200)
+        expect(response.body).to eq '[{"label":"Version Metadata","dsid":"versionMetadata","pid":"druid:mx123qw2323","size":null,"mimeType":"text/xml","versionId":"v0"},' \
+                                    '{"label":"Content Metadata","dsid":"contentMetadata","pid":"druid:mx123qw2323","size":null,"mimeType":"text/xml","versionId":"v5"}]'
+      end
+    end
+
+    context 'when ar_find enabled but cocina object not stored in postgres' do
+      before do
+        allow(Settings.enabled_features.postgres).to receive(:ar_find).and_return(true)
+      end
+
+      it 'returns a 200 with datastreams' do
+        get "/v1/objects/#{druid}/metadata/datastreams",
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+
+        expect(response.status).to eq(200)
+        expect(response.body).to eq '[{"label":"Version Metadata","dsid":"versionMetadata","pid":"druid:mx123qw2323","size":null,"mimeType":"text/xml","versionId":"v0"},' \
+                                    '{"label":"Content Metadata","dsid":"contentMetadata","pid":"druid:mx123qw2323","size":null,"mimeType":"text/xml","versionId":"v5"}]'
+
+        expect(cocina_object_store).to have_received(:ar_exists?).with(druid)
+      end
+    end
+
+    context 'when ar_find enabled and cocina object stored in postgres' do
+      let(:ar_exists?) { true }
+
+      before do
+        allow(Settings.enabled_features.postgres).to receive(:ar_find).and_return(true)
+      end
+
+      it 'returns a 200 with empty array' do
+        get "/v1/objects/#{druid}/metadata/datastreams",
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+
+        expect(response.status).to eq(200)
+        expect(response.body).to eq '[]'
+
+        expect(cocina_object_store).to have_received(:ar_exists?).with(druid)
+      end
     end
   end
 
