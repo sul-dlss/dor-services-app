@@ -8,7 +8,8 @@ RSpec.describe CocinaObjectStore do
   describe 'to Fedora' do
     let(:item) { instance_double(Dor::Item) }
     let(:date) { Time.zone.now }
-    let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid) }
+    let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, dro?: true) }
+
     let(:druid) { 'druid:bc123df4567' }
     let(:cocina_hash) { { fake: 'hash' } }
 
@@ -215,8 +216,8 @@ RSpec.describe CocinaObjectStore do
 
     describe '#create' do
       let(:cocina_object_store) { described_class.new }
-      let(:requested_cocina_object) { instance_double(Cocina::Models::RequestDRO, admin_policy?: false, identification: identification, to_h: cocina_hash) }
-      let(:identification) { instance_double(Cocina::Models::RequestIdentification, catalogLinks: catalog_links) }
+      let(:requested_cocina_object) { instance_double(Cocina::Models::RequestDRO, admin_policy?: false, identification: request_identification, to_h: cocina_hash) }
+      let(:request_identification) { instance_double(Cocina::Models::RequestIdentification, catalogLinks: catalog_links) }
       let(:catalog_links) { [] }
       let(:cocina_hash) { {} }
 
@@ -236,8 +237,8 @@ RSpec.describe CocinaObjectStore do
       end
 
       it 'maps and saves to Fedora' do
-        expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
-        expect(Cocina::ObjectCreator).to have_received(:create).with(cocina_object, druid: druid, assign_doi: true)
+        expect(cocina_object_store.create(requested_cocina_object)).to be created_cocina_object
+        expect(Cocina::ObjectCreator).to have_received(:create).with(cocina_object, druid: druid)
         expect(Notifications::ObjectCreated).to have_received(:publish).with(model: created_cocina_object, created_at: kind_of(Time), modified_at: kind_of(Time))
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
         expect(cocina_object_store).to have_received(:merge_access_for).with(requested_cocina_object)
@@ -279,7 +280,7 @@ RSpec.describe CocinaObjectStore do
         end
 
         it 'adds to description' do
-          expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
+          expect(cocina_object_store.create(requested_cocina_object)).to be created_cocina_object
           expect(RefreshMetadataAction).to have_received(:run).with(identifiers: ['catkey:abc123'], cocina_object: requested_cocina_object, druid: druid)
           expect(requested_cocina_object).to have_received(:new).with(label: 'The Well-Grounded Rubyist', description: { title: [{ value: 'The Well-Grounded Rubyist' }] })
         end
@@ -293,7 +294,7 @@ RSpec.describe CocinaObjectStore do
         end
 
         it 'does not add to description' do
-          expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
+          expect(cocina_object_store.create(requested_cocina_object)).to be created_cocina_object
           expect(RefreshMetadataAction).to have_received(:run).with(identifiers: ['catkey:abc123'], cocina_object: requested_cocina_object, druid: druid)
         end
       end
@@ -322,7 +323,7 @@ RSpec.describe CocinaObjectStore do
         end
 
         it 'adds purl and updates notes in description' do
-          expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
+          expect(cocina_object_store.create(requested_cocina_object)).to be created_cocina_object
           expect(Cocina::Models).to have_received(:build).with({
                                                                  externalIdentifier: druid,
                                                                  description: {
@@ -407,7 +408,7 @@ RSpec.describe CocinaObjectStore do
         end
 
         it 'adds external identifiers' do
-          expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
+          expect(cocina_object_store.create(requested_cocina_object)).to be created_cocina_object
           expect(Cocina::Models).to have_received(:build).with({
                                                                  externalIdentifier: druid,
                                                                  structural: {
@@ -464,6 +465,23 @@ RSpec.describe CocinaObjectStore do
         end
       end
 
+      context 'when assigning DOI' do
+        let(:identification) { instance_double(Cocina::Models::Identification) }
+        let(:updated_identification) { instance_double(Cocina::Models::Identification) }
+
+        before do
+          allow(cocina_object).to receive(:identification).and_return(identification)
+          allow(cocina_object).to receive(:new).and_return(cocina_object)
+          allow(identification).to receive(:new).and_return(updated_identification)
+        end
+
+        it 'adds DOI to identification' do
+          expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
+          expect(identification).to have_received(:new).with(doi: '10.80343/bc123df4567')
+          expect(cocina_object).to have_received(:new).with(identification: updated_identification)
+        end
+      end
+
       context 'when postgres create is enabled' do
         before do
           allow(Settings.enabled_features.postgres).to receive(:create).and_return(true)
@@ -471,7 +489,7 @@ RSpec.describe CocinaObjectStore do
         end
 
         it 'save to postgres' do
-          expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be created_cocina_object
+          expect(cocina_object_store.create(requested_cocina_object)).to be created_cocina_object
           expect(cocina_object_store).to have_received(:cocina_to_ar_save).with(created_cocina_object)
         end
       end
