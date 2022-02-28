@@ -3,276 +3,268 @@
 require 'rails_helper'
 
 RSpec.describe EmbargoReleaseService do
-  let(:service) { described_class.new(item) }
-  let(:embargo_release_date) { Time.now.utc - 100_000 }
-  let(:release_access) do
-    <<-EOXML
-    <releaseAccess>
-      <access type="discover">
-        <machine>
-          <world/>
-        </machine>
-      </access>
-      <access type="read">
-        <machine>
-          <world/>
-        </machine>
-      </access>
-    </releaseAccess>
-    EOXML
-  end
+  let(:service) { described_class.new(druid) }
 
-  let(:rights_xml) do
-    <<-EOXML
-    <rightsMetadata objectId="druid:rt923jk342">
-      <access type="discover">
-        <machine>
-          <world />
-        </machine>
-      </access>
-      <access type="read">
-        <machine>
-          <group>stanford</group>
-          <embargoReleaseDate>#{embargo_release_date.iso8601}</embargoReleaseDate>
-        </machine>
-      </access>
-    </rightsMetadata>
-    EOXML
-  end
+  let(:druid) { 'druid:bb033gt0615' }
 
-  describe '#release_embargo' do
-    subject(:release) do
-      service.release('application:embargo-release')
+  describe '#release' do
+    let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, version: 1) }
+
+    let(:open_cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, version: 2) }
+
+    let(:released_cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, version: 2) }
+
+    let(:workflow_client) { instance_double(Dor::Workflow::Client, lifecycle: accessioned?) }
+
+    let(:accessioned?) { true }
+
+    let(:can_open?) { true }
+
+    before do
+      allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+      allow(VersionService).to receive(:can_open?).and_return(can_open?)
+      allow(VersionService).to receive(:open).and_return(open_cocina_object)
+      allow(VersionService).to receive(:close)
+      allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
+      allow(service).to receive(:release_cocina_object).and_return(released_cocina_object)
+      allow(Rails.logger).to receive(:warn)
+      allow(Notifications::EmbargoLifted).to receive(:publish)
+      allow(Rails.logger).to receive(:error)
+      allow(Honeybadger).to receive(:notify)
+      allow(EventFactory).to receive(:create)
     end
 
-    let(:embargo_ds) do
-      eds = Dor::EmbargoMetadataDS.new
-      eds.status = 'embargoed'
-      eds.release_date = embargo_release_date
-      eds.release_access_node = Nokogiri::XML(release_access) { |config| config.default_xml.noblanks }
-      eds
-    end
-    let(:item) do
-      embargo_item = Dor::Item.new
-      embargo_item.datastreams['embargoMetadata'] = embargo_ds
-      rds = Dor::RightsMetadataDS.new
-      rds.content = Nokogiri::XML(rights_xml) { |config| config.default_xml.noblanks }.to_s
-      embargo_item.datastreams['rightsMetadata'] = rds
-      embargo_item
-    end
+    context 'when not yet accessioned' do
+      let(:accessioned?) { false }
 
-    it 'rights metadata has no embargo after Dor::Item.release_embargo' do
-      expect(item.rightsMetadata.ng_xml.at_xpath('//embargoReleaseDate')).not_to be_nil
-      expect(item.rightsMetadata.content).to match('embargoReleaseDate')
-      release
-      expect(item.rightsMetadata.ng_xml.at_xpath('//embargoReleaseDate')).to be_nil
-      expect(item.rightsMetadata.content).not_to match('embargoReleaseDate')
-    end
-
-    it 'embargo metadata changes to status released after Dor::Item.release_embargo' do
-      expect(item.embargoMetadata.ng_xml.at_xpath('//status').text).to eql 'embargoed'
-      release
-      expect(item.embargoMetadata.ng_xml.at_xpath('//status').text).to eql 'released'
-    end
-
-    it 'sets the embargo status to released and indicates it is not embargoed' do
-      release
-      expect(embargo_ds.status).to eq('released')
-      expect(item).not_to be_embargoed
-    end
-
-    context 'with rightsMetadata modifications' do
-      it 'deletes embargoReleaseDate' do
-        release
-        rights = item.datastreams['rightsMetadata'].ng_xml
-        expect(rights.at_xpath('//embargoReleaseDate')).to be_nil
-      end
-
-      context "when there is more than one <access type='read'> node in <releaseAccess>" do
-        let(:release_access) do
-          <<-EOXML
-          <releaseAccess>
-            <access type="read">
-              <machine>
-                <world/>
-              </machine>
-            </access>
-            <access type="read">
-              <file id="restricted.doc"/>
-              <machine>
-                <group>stanford</group>
-              </machine>
-            </access>
-          </releaseAccess>
-          EOXML
-        end
-
-        it 'handles it' do
-          release
-          rights = item.datastreams['rightsMetadata'].ng_xml
-          expect(rights.xpath("//rightsMetadata/access[@type='read']/file").size).to eq(1)
-        end
-
-        it 'replaces/adds access nodes with nodes from embargoMetadata/releaseAccess' do
-          release
-          rights = item.datastreams['rightsMetadata'].ng_xml
-          expect(rights.xpath("//rightsMetadata/access[@type='read']").size).to eq(2)
-          expect(rights.xpath("//rightsMetadata/access[@type='discover']").size).to eq(1)
-          expect(rights.xpath("//rightsMetadata/access[@type='read']/machine/world").size).to eq(1)
-          expect(rights.at_xpath("//rightsMetadata/access[@type='read' and not(file)]/machine/group")).to be_nil
-        end
-      end
-
-      it 'marks the datastream as changed' do
-        release
-        expect(item.datastreams['rightsMetadata']).to be_changed
+      it 'skips' do
+        service.release
+        expect(Rails.logger).to have_received(:warn).with("Skipping #{druid} - not yet accessioned")
+        expect(workflow_client).to have_received(:lifecycle).with(druid: druid, milestone_name: 'accessioned')
+        expect(VersionService).not_to have_received(:can_open?)
       end
     end
 
-    it "writes 'embargo released' to event history" do
-      release
-      events = item.datastreams['events']
-      events.find_events_by_type('embargo') do |who, _timestamp, message|
-        expect(who).to eq 'application:embargo-release'
-        expect(message).to eq 'Embargo released'
+    context 'when already open' do
+      let(:can_open?) { false }
+
+      it 'skips' do
+        service.release
+        expect(Rails.logger).to have_received(:warn).with("Skipping #{druid} - object is already open")
+        expect(VersionService).to have_received(:can_open?).with(cocina_object)
+        expect(VersionService).not_to have_received(:open)
+      end
+    end
+
+    context 'when not open' do
+      it 'lifts embargo' do
+        service.release
+        expect(VersionService).to have_received(:open).with(cocina_object, event_factory: EventFactory)
+        expect(service).to have_received(:release_cocina_object).with(open_cocina_object)
+        expect(VersionService).to have_received(:close).with(released_cocina_object, { description: 'embargo released', significance: 'admin' }, event_factory: EventFactory)
+        expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'embargo_released', data: {})
+        expect(Notifications::EmbargoLifted).to have_received(:publish).with(model: released_cocina_object)
+      end
+    end
+
+    context 'when error raised' do
+      before do
+        allow(VersionService).to receive(:open).and_raise('Nope.')
+      end
+
+      it 'logs and notifies' do
+        service.release
+        expect(Rails.logger).to have_received(:error)
+        expect(Honeybadger).to have_received(:notify)
       end
     end
   end
 
-  describe '.release_all' do
-    let(:fake_item) { instance_double(Dor::Item) }
-    let(:fake_instance) do
-      instance_double(described_class, release: nil)
+  describe '#release_cocina_object' do
+    let(:embargoed_cocina_object) do
+      Cocina::Models::DRO.new({
+                                cocinaVersion: '0.0.1',
+                                externalIdentifier: druid,
+                                type: Cocina::Models::Vocab.book,
+                                label: 'Test DRO',
+                                version: 1,
+                                access: access,
+                                structural: structural,
+                                administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
+                              })
+    end
+
+    let(:structural) do
+      Cocina::Models::DROStructural.new(
+        {
+          contains: [
+            {
+              version: 1,
+              type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+              label: 'Page 1',
+              externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/gg777gg7777/123-456-789',
+              structural: { contains: [
+                {
+                  version: 1,
+                  type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                  externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777/123-456-789/00001.html',
+                  filename: '00001.html',
+                  label: '00001.html',
+                  hasMimeType: 'text/html',
+                  use: 'transcription',
+                  administrative: {
+                    publish: false,
+                    sdrPreserve: true,
+                    shelve: false
+                  },
+                  access: {
+                    access: 'dark'
+                  },
+                  hasMessageDigests: [
+                    {
+                      type: 'sha1',
+                      digest: 'cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7'
+                    },
+                    {
+                      type: 'md5',
+                      digest: 'e6d52da47a5ade91ae31227b978fb023'
+                    }
+                  ]
+                }
+              ] }
+            }
+          ]
+        }
+      ).to_h
     end
 
     before do
-      allow(described_class).to receive(:release_items)
-        .with(described_class::RELEASEABLE_NOW_QUERY)
-        .and_yield(fake_item)
-
-      allow(described_class).to receive(:new).and_return(fake_instance)
+      # This allows getting back the cocina object that was saved.
+      allow(CocinaObjectStore).to receive(:save) { |cocina_object| cocina_object }
     end
 
-    it 'releases all items that are releaseable currently' do
-      described_class.release_all
+    context 'when embargo access is world' do
+      let(:access) do
+        Cocina::Models::DROAccess.new({
+                                        access: 'citation-only',
+                                        download: 'none',
+                                        embargo: {
+                                          releaseDate: DateTime.parse('2029-02-28'),
+                                          access: 'world',
+                                          download: 'world',
+                                          useAndReproductionStatement: 'Free!'
+                                        }
+                                      }).to_h
+      end
 
-      expect(described_class).to have_received(:release_items)
-        .once.with(described_class::RELEASEABLE_NOW_QUERY)
-      expect(fake_instance).to have_received(:release).once
+      it 'moves embargo to access and updates file access' do
+        released_cocina_object = service.send(:release_cocina_object, embargoed_cocina_object)
+        expect(released_cocina_object.access.to_h).to eq(
+          {
+            access: 'world',
+            download: 'world',
+            useAndReproductionStatement: 'Free!'
+          }
+        )
+        expect(released_cocina_object.structural.contains.first.structural.contains.first.access.to_h).to eq(
+          {
+            access: 'world',
+            download: 'world'
+          }
+        )
+        expect(CocinaObjectStore).to have_received(:save)
+      end
+    end
+
+    context 'when embargo access is citation-only' do
+      let(:access) do
+        Cocina::Models::DROAccess.new({
+                                        access: 'citation-only',
+                                        download: 'none',
+                                        embargo: {
+                                          releaseDate: DateTime.parse('2029-02-28'),
+                                          access: 'citation-only',
+                                          download: 'none',
+                                          useAndReproductionStatement: 'Free!'
+                                        }
+                                      }).to_h
+      end
+
+      it 'moves embargo to access and updates file access' do
+        released_cocina_object = service.send(:release_cocina_object, embargoed_cocina_object)
+        expect(released_cocina_object.access.to_h).to eq(
+          {
+            access: 'citation-only',
+            download: 'none',
+            useAndReproductionStatement: 'Free!'
+          }
+        )
+        expect(released_cocina_object.structural.contains.first.structural.contains.first.access.to_h).to eq(
+          {
+            access: 'dark',
+            download: 'none'
+          }
+        )
+        expect(CocinaObjectStore).to have_received(:save)
+      end
+    end
+
+    context 'when structural is nil' do
+      let(:embargoed_cocina_object) do
+        Cocina::Models::DRO.new({
+                                  cocinaVersion: '0.0.1',
+                                  externalIdentifier: druid,
+                                  type: Cocina::Models::Vocab.book,
+                                  label: 'Test DRO',
+                                  version: 1,
+                                  access: access,
+                                  administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
+                                })
+      end
+
+      let(:access) do
+        Cocina::Models::DROAccess.new({
+                                        access: 'citation-only',
+                                        download: 'none',
+                                        embargo: {
+                                          releaseDate: DateTime.parse('2029-02-28'),
+                                          access: 'citation-only',
+                                          download: 'none',
+                                          useAndReproductionStatement: 'Free!'
+                                        }
+                                      }).to_h
+      end
+
+      let(:structural) { nil }
+
+      it 'moves embargo to access' do
+        released_cocina_object = service.send(:release_cocina_object, embargoed_cocina_object)
+        expect(released_cocina_object.access.to_h).to eq(
+          {
+            access: 'citation-only',
+            download: 'none',
+            useAndReproductionStatement: 'Free!'
+          }
+        )
+        expect(released_cocina_object.structural).to be(nil)
+        expect(CocinaObjectStore).to have_received(:save)
+      end
     end
   end
 
-  describe '.release_items' do
-    subject(:release_items) { described_class.release_items(query, &block) }
-
-    let(:block) { proc {} }
-    let(:query) { 'foo' }
+  describe '#release_all' do
     let(:response) do
       { 'response' => { 'numFound' => 1, 'docs' => [{ 'id' => 'druid:999' }] } }
     end
 
     before do
       allow(Dor::SearchService).to receive(:query).and_return(response)
+      allow(described_class).to receive(:release)
     end
 
-    context 'when the object is not in fedora' do
-      before do
-        allow(Dor).to receive(:find).and_raise(StandardError, 'Not Found')
-        allow(Honeybadger).to receive(:notify)
-      end
-
-      it 'handles the error' do
-        release_items
-        expect(Honeybadger).to have_received(:notify)
-      end
-    end
-
-    context 'when the object is in fedora' do
-      let(:item) do
-        i = Dor::Item.new
-        rds = Dor::RightsMetadataDS.new
-        rds.content = Nokogiri::XML(rights_xml) { |config| config.default_xml.noblanks }.to_s
-        i.datastreams['rightsMetadata'] = rds
-        eds = Dor::EmbargoMetadataDS.new
-        eds.content = Nokogiri::XML(embargo_xml) { |config| config.default_xml.noblanks }.to_s
-        i.datastreams['embargoMetadata'] = eds
-        i
-      end
-
-      let(:cocina_object) { instance_double(Cocina::Models::DRO) }
-
-      let(:embargo_xml) do
-        <<-EOXML
-        <embargoMetadata>
-          <status>embargoed</status>
-          <releaseDate>#{embargo_release_date.iso8601}</releaseDate>
-          <twentyPctVisibilityStatus/>
-          <twentyPctVisibilityReleaseDate/>
-          #{release_access}
-        </embargoMetadata>
-        EOXML
-      end
-      let(:client) { instance_double(Dor::Workflow::Client) }
-      let(:event_factory) { { event_factory: EventFactory } }
-      let(:close_params) { { description: 'embargo released', significance: 'admin' } }
-
-      before do
-        allow(Dor).to receive(:find).and_return(item)
-        allow(VersionService).to receive(:can_open?).and_return(true)
-        allow(VersionService).to receive(:open).with(cocina_object, event_factory)
-        allow(VersionService).to receive(:close).with(cocina_object, close_params, event_factory)
-        allow(item).to receive(:save!)
-        allow(Honeybadger).to receive(:notify)
-        allow(WorkflowClientFactory).to receive(:build).and_return(client)
-        allow(client).to receive(:lifecycle).with(druid: 'druid:999', milestone_name: 'accessioned').and_return(1.day.ago)
-        allow(Cocina::Mapper).to receive(:build).and_return(cocina_object)
-      end
-
-      it 'skips release if not accessioned' do
-        allow(client).to receive(:lifecycle).with(druid: 'druid:999', milestone_name: 'accessioned').and_return(nil)
-        release_items
-        expect(VersionService).not_to have_received(:can_open?)
-      end
-
-      context 'when not openable' do
-        before do
-          allow(VersionService).to receive(:can_open?).with(cocina_object).and_return(false)
-        end
-
-        it 'skips release' do
-          release_items
-          expect(VersionService).to have_received(:can_open?).with(cocina_object)
-          expect(VersionService).not_to have_received(:open)
-        end
-      end
-
-      context 'when it is openable' do
-        before do
-          allow(Notifications::EmbargoLifted).to receive(:publish)
-        end
-
-        it 'is successful' do
-          release_items
-          expect(VersionService).to have_received(:can_open?).with(cocina_object)
-          expect(VersionService).to have_received(:open).with(cocina_object, event_factory)
-          expect(item).to have_received(:save!)
-          expect(VersionService).to have_received(:close).with(cocina_object, close_params, event_factory)
-          expect(Notifications::EmbargoLifted).to have_received(:publish).with(model: cocina_object)
-        end
-      end
-
-      context 'when it cannot save the object' do
-        before do
-          allow(item).to receive(:save!).and_raise(StandardError, 'ActiveFedoraError, actually')
-        end
-
-        it 'handles error' do
-          release_items
-          exp_msg = 'Unable to release embargo for: druid:999'
-          expect(Honeybadger).to have_received(:notify).with(/.*#{exp_msg}.*/, anything)
-          expect(VersionService).not_to have_received(:close)
-        end
-      end
+    it 'releases based on Solr query' do
+      described_class.release_all
+      expect(described_class).to have_received(:release).with('druid:999')
     end
   end
 end

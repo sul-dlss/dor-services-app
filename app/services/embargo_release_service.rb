@@ -10,7 +10,7 @@ class EmbargoReleaseService
   # Finds druids from solr based on the passed in query
   # It will then load each item from Dor, and call the block with the item
   # @param [String] query used to locate druids of items to release from solr
-  # @yield [Dor::Item] gets executed after loading the object from DOR and opening new version
+  # @yield [Cocina::Models::DRO] gets executed after loading the object from DOR and opening new version
   #  Steps needed to release the particular embargo from the item
   def self.release_items(query, &release_block)
     # Find objects to process
@@ -33,10 +33,37 @@ class EmbargoReleaseService
     Rails.logger.info("Done! Processed #{count} objects out of #{num_found}")
   end
 
-  def self.release_item(druid)
-    ei = Dor.find(druid)
-    cocina_object = Cocina::Mapper.build(ei)
+  def self.release_all
+    # Find objects to process
+    Rails.logger.info("***** Querying solr: #{RELEASEABLE_NOW_QUERY}")
+    solr = Dor::SearchService.query(RELEASEABLE_NOW_QUERY, 'rows' => '5000', 'fl' => 'id')
 
+    num_found = solr['response']['numFound'].to_i
+    if num_found.zero?
+      Rails.logger.info('No objects to process')
+      return
+    end
+    Rails.logger.info("Found #{num_found} objects")
+
+    count = 0
+    solr['response']['docs'].each do |doc|
+      release(doc['id'])
+      count += 1
+    end
+
+    Rails.logger.info("Done! Processed #{count} objects out of #{num_found}")
+  end
+
+  def self.release(druid)
+    new(druid).release
+  end
+
+  # @param [druid] druid
+  def initialize(druid)
+    @druid = druid
+  end
+
+  def release
     unless WorkflowClientFactory.build.lifecycle(druid: druid, milestone_name: 'accessioned')
       Rails.logger.warn("Skipping #{druid} - not yet accessioned")
       return
@@ -48,64 +75,60 @@ class EmbargoReleaseService
     end
     Rails.logger.info("Releasing embargo for #{druid}")
 
-    VersionService.open(cocina_object, event_factory: EventFactory)
+    updated_cocina_object = VersionService.open(cocina_object, event_factory: EventFactory)
 
-    # Reloading ei, since it may have changed in VersionService.open
-    ei = Dor.find(druid)
-    yield ei if block_given?
-    ei.save!
-    cocina_object = Cocina::Mapper.build(ei)
-    VersionService.close(cocina_object, { description: 'embargo released', significance: 'admin' }, event_factory: EventFactory)
+    updated_cocina_object = release_cocina_object(updated_cocina_object)
+
+    VersionService.close(updated_cocina_object, { description: 'embargo released', significance: 'admin' }, event_factory: EventFactory)
+
+    EventFactory.create(druid: druid, event_type: 'embargo_released', data: {})
 
     # Broadcast this action to a topic
-    Notifications::EmbargoLifted.publish(model: cocina_object)
+    Notifications::EmbargoLifted.publish(model: updated_cocina_object)
   rescue StandardError => e
     Rails.logger.error("!!! Unable to release embargo for: #{druid}\n#{e.inspect}\n#{e.backtrace.join("\n")}")
     Honeybadger.notify "Unable to release embargo for: #{druid}", backtrace: e.backtrace
   end
 
-  def self.release_all
-    release_items(RELEASEABLE_NOW_QUERY) do |item|
-      new(item).release('application:accessionWF:embargo-release')
-    end
-  end
-
-  # @param [Dor::Item] item
-  def initialize(item)
-    @item = item
-  end
-
-  # Lift the embargo from the object
-  # Sets embargo status to released in embargoMetadata
-  # Modifies rightsMetadata to remove embargoReleaseDate and updates/adds access from embargoMetadata/releaseAccess
-  # @param [String] release_agent name of the person, application or thing that released embargo
-  # @note The caller should save the object to fedora to commit the changes
-  def release(release_agent)
-    # Set status to released
-    embargoMetadata.status = 'released'
-
-    # Remove all read acces nodes
-    rights_xml = rightsMetadata.ng_xml
-    rightsMetadata.ng_xml_will_change!
-    rights_xml.xpath("//rightsMetadata/access[@type='read']").each(&:remove)
-
-    # Replace rights <access> nodes with those from embargoMetadta
-    release_access = embargoMetadata.release_access_node
-    release_access.xpath('//releaseAccess/access').each do |new_access|
-      access_sibling = rights_xml.at_xpath('//rightsMetadata/access[last()]')
-      if access_sibling
-        access_sibling.add_next_sibling(new_access.clone)
-      else
-        rights_xml.root.add_child(new_access.clone)
-      end
-    end
-
-    events.add_event('embargo', release_agent, 'Embargo released')
-  end
-
   private
 
-  attr_reader :item
+  attr_reader :druid
 
-  delegate :rightsMetadata, :embargoMetadata, :events, to: :item
+  def release_cocina_object(cocina_object)
+    access_props = access_props_for(cocina_object)
+
+    structural_props = structural_props_for(cocina_object, access_props)
+
+    CocinaObjectStore.save(cocina_object.new({ access: access_props, structural: structural_props }.compact))
+  end
+
+  def access_props_for(cocina_object)
+    # Copy access > embargo > useAndReproductionStatement, access, download, readLocation, controlledDigitalLending to access >
+    # Remove access > embargo
+    access_props = cocina_object.access.to_h.except(:access, :download, :readLocation, :controlledDigitalLending, :useAndReproductionStatement)
+    access_props.merge!(access_props[:embargo].except(:releaseDate))
+    # Remove embargo
+    access_props.delete(:embargo)
+    access_props
+  end
+
+  def structural_props_for(cocina_object, access_props)
+    return nil if cocina_object.structural.nil?
+
+    # Apply access to files
+    file_access_props = access_props.slice(:access, :download, :readLocation, :controlledDigitalLending)
+    file_access_props[:access] = 'dark' if file_access_props[:access] == 'citation-only'
+
+    structural_props = cocina_object.structural.to_h
+    Array(structural_props[:contains]).each do |file_set_props|
+      Array(file_set_props.dig(:structural, :contains)).each do |file_props|
+        file_props[:access] = file_access_props
+      end
+    end
+    structural_props
+  end
+
+  def cocina_object
+    @cocina_object ||= CocinaObjectStore.find(druid)
+  end
 end
