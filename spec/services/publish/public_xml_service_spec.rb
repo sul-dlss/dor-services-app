@@ -21,13 +21,13 @@ RSpec.describe Publish::PublicXmlService do
     {
       contains: [{
         type: Cocina::Models::Vocab::Resources.image,
-        externalIdentifier: 'wt183gy6220',
+        externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/9475bc2c-7552-43d8-b8ab-8cd2212d5873',
         label: 'Image 1',
         version: 1,
         structural: {
           contains: [{
             type: Cocina::Models::Vocab.file,
-            externalIdentifier: 'wt183gy6220_1',
+            externalIdentifier: 'http://cocina.sul.stanford.edu/file/15e6e501-d22c-4f96-a824-8a88dd312937',
             label: 'Image 1',
             filename: 'wt183gy6220_00_0001.jp2',
             hasMimeType: 'image/jp2',
@@ -208,20 +208,38 @@ RSpec.describe Publish::PublicXmlService do
         expect(ng_xml.at_xpath('/publicObject/contentMetadata')).not_to be
       end
 
-      describe 'with contentMetadata present' do
-        before do
-          item.contentMetadata.content = <<-XML
-            <?xml version="1.0"?>
-            <contentMetadata objectId="druid:bc123df4567" type="file">
-              <resource id="0001" sequence="1" type="file">
-                <file id="some_file.pdf" mimetype="file/pdf" publish="yes"/>
-              </resource>
-            </contentMetadata>
-          XML
+      describe 'with structural metadata that has a published file' do
+        let(:structural) do
+          {
+            contains: [{
+              type: Cocina::Models::Vocab::Resources.image,
+              externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/9475bc2c-7552-43d8-b8ab-8cd2212d5873',
+              label: 'Image 1',
+              version: 1,
+              structural: {
+                contains: [{
+                  type: Cocina::Models::Vocab.file,
+                  externalIdentifier: 'http://cocina.sul.stanford.edu/file/15e6e501-d22c-4f96-a824-8a88dd312937',
+                  label: 'Image 1',
+                  filename: 'wt183gy6220_00_0001.jp2',
+                  hasMimeType: 'image/jp2',
+                  size: 3_182_927,
+                  version: 1,
+                  access: {},
+                  administrative: {
+                    publish: true,
+                    sdrPreserve: false,
+                    shelve: false
+                  },
+                  hasMessageDigests: []
+                }]
+              }
+            }]
+          }
         end
 
-        it 'include contentMetadata' do
-          expect(ng_xml.at_xpath('/publicObject/contentMetadata')).to be
+        it 'rewrites the resource id so it can be used as a URI component' do
+          expect(ng_xml.at_xpath('/publicObject/contentMetadata/resource[1]')['id']).to eq 'cocina-fileSet-bc123df4567/9475bc2c-7552-43d8-b8ab-8cd2212d5873'
         end
       end
 
@@ -319,9 +337,10 @@ RSpec.describe Publish::PublicXmlService do
     end
 
     context 'with external references' do
+      let(:druid) { 'druid:hj097bm8879' }
       let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::Vocab.object,
+        Cocina::Models::DRO.new(externalIdentifier: druid,
+                                type: Cocina::Models::Vocab.map,
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
@@ -329,181 +348,193 @@ RSpec.describe Publish::PublicXmlService do
                                 access: {},
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
                                 structural: structural)
+      end
+      let(:structural) do
+        {
+          hasMemberOrders: [
+            {
+              members: ['druid:cg767mn6478', 'druid:jw923xn5254']
+            }
+          ]
+        }
+      end
+
+      let(:cover_item) do
+        Cocina::Models::DRO.new(
+          { cocinaVersion: '0.65.1',
+            type: 'http://cocina.sul.stanford.edu/models/image.jsonld',
+            externalIdentifier: 'druid:cg767mn6478',
+            label: "Cover: Carey's American atlas.",
+            version: 3,
+            access: { access: 'world',
+                      download: 'world',
+                      copyright: 'Property rights reside with the repository, Copyright © Stanford University.',
+                      useAndReproductionStatement: 'To obtain permission to publish or reproduce commercially, please contact the Digital & Rare Map Librarian',
+                      license: 'https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode' },
+            administrative: {
+              hasAdminPolicy: 'druid:sq161jk2248'
+            },
+            description: {
+              title: [{
+                value: "(Covers to) Carey's American Atlas: Containing Twenty Maps And One Chart ... Philadelphia: Engraved For, And Published By, Mathew Carey, " \
+                       'No. 118, Market Street. M.DCC.XCV. [Price, Plain, Five Dollars-Coloured, Six Dollars.]'
+              }, {
+                value: "Cover: Carey's American atlas.",
+                type: 'alternative',
+                displayLabel: 'Short title'
+              }],
+              purl: 'https://purl.stanford.edu/cg767mn6478'
+            },
+            identification: { catalogLinks: [],
+                              sourceId: 'Rumsey:2542A' },
+            structural: {
+              contains: [
+                {
+                  type: 'http://cocina.sul.stanford.edu/models/resources/image.jsonld',
+                  externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/9475bc2c-7552-43d8-b8ab-8cd2212d5873',
+                  label: 'Image 1',
+                  version: 3,
+                  structural: {
+                    contains: [
+                      { type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                        externalIdentifier: 'http://cocina.sul.stanford.edu/file/15e6e501-d22c-4f96-a824-8a88dd312937',
+                        label: '2542A.tif',
+                        filename: '2542A.tif',
+                        size: 92_217_124,
+                        version: 3,
+                        hasMimeType: 'image/tiff',
+                        hasMessageDigests: [
+                          { type: 'sha1',
+                            digest: '1f09f8796bfa67db97557f3de48a96c87b286d32' },
+                          { type: 'md5',
+                            digest: '5b79c8570b7ef582735f912aa24ce5f2' }
+                        ],
+                        access: { access: 'world',
+                                  download: 'world' },
+                        administrative: { publish: false,
+                                          sdrPreserve: true,
+                                          shelve: false },
+                        presentation: { height: 4747,
+                                        width: 6475 } },
+                      { type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                        externalIdentifier: 'http://cocina.sul.stanford.edu/file/c59ada47-489b-4d0b-ab28-136b824d3904',
+                        label: '2542A.jp2',
+                        filename: '2542A.jp2',
+                        size: 5_789_764,
+                        version: 3,
+                        hasMimeType: 'image/jp2',
+                        hasMessageDigests: [{ type: 'sha1',
+                                              digest: '39feed6ee1b734cab2d6a446e909a9fc7ac6fd01' }, { type: 'md5',
+                                                                                                      digest: 'cd5ca5c4666cfd5ce0e9dc8c83461d7a' }],
+                        access: { access: 'world',
+                                  download: 'world' },
+                        administrative: { publish: true,
+                                          sdrPreserve: false,
+                                          shelve: true },
+                        presentation: { height: 4747,
+                                        width: 6475 } }
+                    ]
+                  }
+                }
+              ]
+            } }
+        )
+      end
+
+      let(:title_item) do
+        Cocina::Models::DRO.new(
+          { cocinaVersion: '0.65.1',
+            type: 'http://cocina.sul.stanford.edu/models/image.jsonld',
+            externalIdentifier: 'druid:jw923xn5254',
+            label: "Title Page: Carey's American atlas.",
+            version: 3,
+            access: { access: 'world',
+                      download: 'world',
+                      copyright: 'Property rights reside with the repository, Copyright © Stanford University.',
+                      useAndReproductionStatement: 'To obtain permission to publish or reproduce commercially, please contact the Digital & Rare Map Librarian',
+                      license: 'https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode' },
+            administrative: { hasAdminPolicy: 'druid:sq161jk2248',
+                              releaseTags: [] },
+            description: {
+              title: [{
+                value: "(Title Page to) Carey's American Atlas: Containing Twenty Maps And One Chart ... Philadelphia: Engraved For, And Published By, Mathew Carey, " \
+                       'No. 118, Market Street. M.DCC.XCV. [Price, Plain, Five Dollars-Coloured, Six Dollars.]'
+              }, {
+                value: "Title Page: Carey's American atlas.",
+                type: 'alternative',
+                displayLabel: 'Short title'
+              }],
+              purl: 'https://purl.stanford.edu/jw923xn5254'
+            },
+            identification: {
+              catalogLinks: [],
+              sourceId: 'Rumsey:2542B'
+            },
+            structural: {
+              contains: [
+                {
+                  type: 'http://cocina.sul.stanford.edu/models/resources/image.jsonld',
+                  externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/929604b0-00bc-40b1-af71-5c17f066e2fd',
+                  label: 'Image 1',
+                  version: 3,
+                  structural: {
+                    contains: [
+                      {
+                        type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                        externalIdentifier: 'http://cocina.sul.stanford.edu/file/787afaca-ba6e-4998-84bd-1bb43f9182cf',
+                        label: '2542B.tif',
+                        filename: '2542B.tif',
+                        size: 44_028_890,
+                        version: 3,
+                        hasMimeType: 'image/tiff',
+                        hasMessageDigests: [{ type: 'sha1',
+                                              digest: 'a90aea983620238d8e1384d9a5cb683c6acd6984' }, { type: 'md5',
+                                                                                                      digest: 'b5f6fcd6eb0ad02800aeb82cba6d0eed' }],
+                        access: { access: 'world',
+                                  download: 'world' },
+                        administrative: { publish: false,
+                                          sdrPreserve: true,
+                                          shelve: false },
+                        presentation: { height: 4675,
+                                        width: 3139 }
+                      },
+                      {
+                        type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                        externalIdentifier: 'http://cocina.sul.stanford.edu/file/72880460-6865-4aa9-85c7-ac26002aebc5',
+                        label: '2542B.jp2',
+                        filename: '2542B.jp2',
+                        size: 2_762_668,
+                        version: 3,
+                        hasMimeType: 'image/jp2',
+                        hasMessageDigests: [
+                          { type: 'sha1',
+                            digest: '80454c111675ec7e2c425e909810c49a69ffef26' },
+                          { type: 'md5',
+                            digest: 'bccdbb2500bb139d6d622321bfd2aa57' }
+                        ],
+                        access: { access: 'world',
+                                  download: 'world' },
+                        administrative: { publish: true,
+                                          sdrPreserve: false,
+                                          shelve: true },
+                        presentation: { height: 4675,
+                                        width: 3139 }
+                      }
+                    ]
+                  }
+                }
+              ]
+            } }
+        )
       end
 
       it 'handles externalFile references' do
         correct_content_md = Nokogiri::XML(read_fixture('hj097bm8879_publicObject.xml')).at_xpath('/publicObject/contentMetadata').to_xml
         item.contentMetadata.content = read_fixture('hj097bm8879_contentMetadata.xml')
 
-        cover_item = instantiate_fixture('druid:cg767mn6478', Dor::Item)
-        allow(Dor).to receive(:find).with(cover_item.pid).and_return(cover_item)
-        title_item = instantiate_fixture('druid:jw923xn5254', Dor::Item)
-        allow(Dor).to receive(:find).with(title_item.pid).and_return(title_item)
-
-        # generate publicObject XML and verify that the content metadata portion is correct and the correct thumb is present
+        allow(CocinaObjectStore).to receive(:find).with(cover_item.externalIdentifier).and_return(cover_item)
+        allow(CocinaObjectStore).to receive(:find).with(title_item.externalIdentifier).and_return(title_item)
         expect(ng_xml.at_xpath('/publicObject/contentMetadata').to_xml).to be_equivalent_to(correct_content_md)
-        expect(ng_xml.at_xpath('/publicObject/thumb').to_xml).to be_equivalent_to('<thumb>bc123df4567/wt183gy6220_00_0001.jp2</thumb>')
-      end
-
-      context 'when the referenced object does not have the referenced resource' do
-        let(:cover_item) { instance_double(Dor::Item, pid: 'druid:cg767mn6478', contentMetadata: contentMetadata) }
-        let(:contentMetadata) { instance_double(Dor::ContentMetadataDS, ng_xml: Nokogiri::XML(cm_xml)) }
-        let(:cm_xml) do
-          <<-EOXML
-          <contentMetadata objectId="cg767mn6478" type="map">
-          </contentMetadata>
-          EOXML
-        end
-
-        before do
-          item.contentMetadata.content = <<-EOXML
-          <contentMetadata objectId="hj097bm8879" type="map">
-            <resource id="hj097bm8879_1" sequence="1" type="image">
-              <externalFile fileId="2542A.jp2" objectId="druid:cg767mn6478" resourceId="cg767mn6478_1" />
-              <relationship objectId="druid:cg767mn6478" type="alsoAvailableAs"/>
-            </resource>
-          </contentMetadata>
-          EOXML
-
-          allow(Dor).to receive(:find).with(cover_item.pid).and_return(cover_item)
-        end
-
-        it 'raises an error' do
-          expect { xml }.to raise_error(Dor::DataError, 'The contentMetadata of druid:bc123df4567 has an externalFile ' \
-                                                        "reference to druid:cg767mn6478, cg767mn6478_1, but druid:cg767mn6478 doesn't have " \
-                                                        'a matching resource node in its contentMetadata')
-        end
-      end
-
-      context 'when the referenced object does not have the referenced image' do
-        let(:cover_item) { instance_double(Dor::Item, pid: 'druid:cg767mn6478', contentMetadata: contentMetadata) }
-        let(:contentMetadata) { instance_double(Dor::ContentMetadataDS, ng_xml: Nokogiri::XML(cm_xml)) }
-        let(:cm_xml) do
-          <<-EOXML
-          <contentMetadata objectId="cg767mn6478" type="map">
-            <resource id="cg767mn6478_1" sequence="1" type="image">
-            </resource>
-          </contentMetadata>
-          EOXML
-        end
-
-        before do
-          item.contentMetadata.content = <<-EOXML
-          <contentMetadata objectId="hj097bm8879" type="map">
-            <resource id="hj097bm8879_1" sequence="1" type="image">
-              <externalFile fileId="2542A.jp2" objectId="druid:cg767mn6478" resourceId="cg767mn6478_1" />
-              <relationship objectId="druid:cg767mn6478" type="alsoAvailableAs"/>
-            </resource>
-          </contentMetadata>
-          EOXML
-
-          allow(Dor).to receive(:find).with(cover_item.pid).and_return(cover_item)
-        end
-
-        it 'raises an error' do
-          expect { xml }.to raise_error(Dor::DataError, 'Unable to find a file node with id="2542A.jp2" (child of druid:bc123df4567)')
-        end
-      end
-
-      context 'when it is missing resourceId and mimetype attributes' do
-        before do
-          item.contentMetadata.content = <<-EOXML
-          <contentMetadata objectId="hj097bm8879" type="map">
-            <resource id="hj097bm8879_1" sequence="1" type="image">
-              <externalFile fileId="2542A.jp2" objectId="druid:cg767mn6478"/>
-              <relationship objectId="druid:cg767mn6478" type="alsoAvailableAs"/>
-            </resource>
-          </contentMetadata>
-          EOXML
-        end
-
-        it 'raises an error' do
-          # generate publicObject XML and verify that the content metadata portion is invalid
-          expect { xml }.to raise_error(Dor::DataError)
-        end
-      end
-
-      context 'when it has blank resourceId attribute' do
-        before do
-          item.contentMetadata.content = <<-EOXML
-          <contentMetadata objectId="hj097bm8879" type="map">
-            <resource id="hj097bm8879_1" sequence="1" type="image">
-              <externalFile fileId="2542A.jp2" objectId="druid:cg767mn6478" resourceId=" " mimetype="image/jp2"/>
-              <relationship objectId="druid:cg767mn6478" type="alsoAvailableAs"/>
-            </resource>
-          </contentMetadata>
-          EOXML
-        end
-
-        it 'raises an error' do
-          # generate publicObject XML and verify that the content metadata portion is invalid
-          expect { xml }.to raise_error(Dor::DataError)
-        end
-      end
-
-      context 'when it has blank fileId attribute' do
-        before do
-          item.contentMetadata.content = <<-EOXML
-          <contentMetadata objectId="hj097bm8879" type="map">
-            <resource id="hj097bm8879_1" sequence="1" type="image">
-              <externalFile fileId=" " objectId="druid:cg767mn6478" resourceId="cg767mn6478_1" mimetype="image/jp2"/>
-              <relationship objectId="druid:cg767mn6478" type="alsoAvailableAs"/>
-            </resource>
-          </contentMetadata>
-          EOXML
-        end
-
-        it 'raises an error' do
-          # generate publicObject XML and verify that the content metadata portion is invalid
-          expect { xml }.to raise_error(Dor::DataError)
-        end
-      end
-
-      context 'when it has blank objectId attribute' do
-        before do
-          item.contentMetadata.content = <<-EOXML
-          <contentMetadata objectId="hj097bm8879" type="map">
-            <resource id="hj097bm8879_1" sequence="1" type="image">
-              <externalFile fileId="2542A.jp2" objectId=" " resourceId="cg767mn6478_1" mimetype="image/jp2"/>
-              <relationship objectId="druid:cg767mn6478" type="alsoAvailableAs"/>
-            </resource>
-          </contentMetadata>
-          EOXML
-        end
-
-        it 'raises an error' do
-          # generate publicObject XML and verify that the content metadata portion is invalid
-          expect { xml }.to raise_error(Dor::DataError)
-        end
-      end
-    end
-
-    context 'with a cocina-originating object' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::Vocab.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: {},
-                                access: {},
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: structural)
-      end
-
-      before do
-        item.contentMetadata.content = <<-XML
-          <?xml version="1.0"?>
-          <contentMetadata objectId="druid:bc123df4567" type="file">
-            <resource id="http://cocina.sul.stanford.edu/fileSet/7bf4cfb1-7e29-4f27-b865-79e10a77f29e" sequence="1" type="file">
-              <file id="some_file.pdf" mimetype="file/pdf" publish="yes"/>
-            </resource>
-          </contentMetadata>
-        XML
-      end
-
-      it 'cleans up the resource id to be XML-valid' do
-        expect(ng_xml.at_xpath('/publicObject/contentMetadata/resource[1]')['id']).to eq 'cocina-fileSet-7bf4cfb1-7e29-4f27-b865-79e10a77f29e'
       end
     end
   end

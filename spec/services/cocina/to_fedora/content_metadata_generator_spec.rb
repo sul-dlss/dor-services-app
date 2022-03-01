@@ -784,6 +784,10 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         label: 'Dummy DRO',
         access: {},
         administrative: { hasAdminPolicy: 'druid:df123cd4567' },
+        description: {
+          title: [{ value: 'Dummy Title' }],
+          purl: 'https://purl.stanfored.edu/cb321fd8765'
+        },
         structural: {
           contains: filesets
         }
@@ -901,10 +905,14 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       expect(generate).to be_equivalent_to <<~XML
         <contentMetadata objectId="#{druid}" type="image">
           <resource id="http://cocina.sul.stanford.edu/fileSet/bc123df5678/#{constituent_druid}_1" sequence="1" type="image">
-            <externalFile fileId="00001.jp2" mimetype="image/jp2" objectId="#{constituent_druid}" resourceId="#{constituent_druid}_1"/>
+            <label>Dummy Title</label>
+            <externalFile fileId="00001.jp2" mimetype="image/jp2" objectId="#{constituent_druid}" resourceId="#{constituent_druid}_1">
+              <imageData height="200" width="300"/>
+            </externalFile>
             <relationship objectId="#{constituent_druid}" type="alsoAvailableAs"/>
           </resource>
           <resource id="http://cocina.sul.stanford.edu/fileSet/bc123df5678/#{constituent_druid}_2" sequence="2" type="image">
+            <label>Dummy Title</label>
             <externalFile fileId="00002.jp2" mimetype="image/jp2" objectId="#{constituent_druid}" resourceId="#{constituent_druid}_2"/>
             <relationship objectId="#{constituent_druid}" type="alsoAvailableAs"/>
           </resource>

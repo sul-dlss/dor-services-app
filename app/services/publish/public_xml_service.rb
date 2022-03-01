@@ -95,7 +95,15 @@ module Publish
 
     # @return [Nokogiri::XML::Document] sanitized for public consumption
     def public_content_metadata
-      @public_content_metadata ||= FedoraPublicContentMetadataGenerator.generate(fedora_object: fedora_object)
+      return Nokogiri::XML::Document.new unless public_cocina.dro?
+
+      @public_content_metadata ||= ResourceIdRewriter.call(
+        Cocina::ToFedora::ContentMetadataGenerator.generate(
+          druid: public_cocina.externalIdentifier,
+          structural: public_cocina.structural,
+          type: public_cocina.type
+        )
+      )
     end
 
     def fedora_object

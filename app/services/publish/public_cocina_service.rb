@@ -39,6 +39,7 @@ module Publish
         next if files.empty?
 
         new_file_set_structural = fs.structural.new(contains: files)
+
         fs.new(structural: new_file_set_structural)
       end
       cocina.structural.new(contains: new_file_sets)
