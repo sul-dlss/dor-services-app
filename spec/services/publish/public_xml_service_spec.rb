@@ -299,15 +299,14 @@ RSpec.describe Publish::PublicXmlService do
 
     context 'with a collection' do
       let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::Vocab.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: {},
-                                access: {},
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: structural)
+        Cocina::Models::Collection.new(externalIdentifier: 'druid:bc123df4567',
+                                       type: Cocina::Models::Vocab.collection,
+                                       label: 'A generic label',
+                                       version: 1,
+                                       description: description,
+                                       identification: {},
+                                       access: {},
+                                       administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
       end
 
       it 'publishes the expected datastreams' do
