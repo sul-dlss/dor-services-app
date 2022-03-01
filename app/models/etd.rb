@@ -6,9 +6,8 @@
 # This is necessary for the Cocina::Mapper because Etds do not use descMetadata
 # like ever other object.
 class Etd < Dor::Etd
-  # This is required so that LegacyMetadataService can write contentMetadata.
+  # This is required so that we can map from contentMetadata.
   # We need it because Dor::Etd's parent is Dor::Abstract rather than Dor::Item
-  # The other-metadata robot in the etdSubmitWF calls the legacy metadata update.
   has_metadata name: 'contentMetadata',
                type: Dor::ContentMetadataDS,
                label: 'Content Metadata',
