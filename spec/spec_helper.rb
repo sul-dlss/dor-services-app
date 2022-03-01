@@ -4,6 +4,7 @@ require 'simplecov'
 SimpleCov.start :rails do
   add_filter '/spec/'
   add_filter '/lib/data_error_notifier.rb'
+  add_filter '/lib/fedora_archiver.rb'
   add_filter '/lib/fedora_cache.rb'
   add_filter '/lib/fedora_loader.rb'
   add_filter '/lib/report.rb'
