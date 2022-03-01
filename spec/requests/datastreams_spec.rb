@@ -37,7 +37,7 @@ RSpec.describe 'Datastreams' do
 
     context 'when ar_find enabled but cocina object not stored in postgres' do
       before do
-        allow(Settings.enabled_features.postgres).to receive(:ar_find).and_return(true)
+        allow(Settings.enabled_features).to receive(:postgres).and_return(true)
       end
 
       it 'returns a 200 with datastreams' do
@@ -56,7 +56,7 @@ RSpec.describe 'Datastreams' do
       let(:ar_exists?) { true }
 
       before do
-        allow(Settings.enabled_features.postgres).to receive(:ar_find).and_return(true)
+        allow(Settings.enabled_features).to receive(:postgres).and_return(true)
       end
 
       it 'returns a 200 with empty array' do

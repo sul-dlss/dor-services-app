@@ -43,5 +43,6 @@ class Collection < ApplicationRecord
     collection = Collection.find_or_initialize_by(external_identifier: cocina_collection.externalIdentifier)
     collection.update(to_model_hash(cocina_collection).except(:external_identifier))
     collection.save!
+    collection
   end
 end
