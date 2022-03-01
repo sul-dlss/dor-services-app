@@ -246,7 +246,7 @@ RSpec.describe EmbargoReleaseService do
             useAndReproductionStatement: 'Free!'
           }
         )
-        expect(released_cocina_object.structural).to be(nil)
+        expect(released_cocina_object.structural).to be_nil
         expect(CocinaObjectStore).to have_received(:save)
       end
     end

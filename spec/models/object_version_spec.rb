@@ -39,7 +39,7 @@ RSpec.describe ObjectVersion, type: :model do
       # This replicates the current logic from https://github.com/sul-dlss/dor-services/blob/main/lib/dor/datastreams/version_metadata_ds.rb#L100
       fourth_version = described_class.increment_version(druid, significance: :minor, description: 'An update')
       expect(fourth_version.version).to eq(4)
-      expect(fourth_version.tag).to eq(nil)
+      expect(fourth_version.tag).to be_nil
       expect(fourth_version.description).to eq('An update')
     end
   end

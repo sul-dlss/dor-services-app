@@ -54,7 +54,7 @@ RSpec.describe ModsEquivalentService do
     it 'returns diff' do
       expect(result.failure.size).to eq(1)
       expect(result.failure.first.mods_node1.to_s).to eq('<identifier displayLabel="Accession number">1980-12345</identifier>')
-      expect(result.failure.first.mods_node2).to eq(nil)
+      expect(result.failure.first.mods_node2).to be_nil
     end
 
     it 'returns false' do

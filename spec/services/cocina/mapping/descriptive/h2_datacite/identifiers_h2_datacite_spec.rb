@@ -62,7 +62,7 @@ RSpec.describe 'Cocina --> DataCite mappings for identifier and alternateIdentif
     end
 
     it 'identifier_attributes is nil' do
-      expect(identifier_attributes).to eq nil
+      expect(identifier_attributes).to be_nil
     end
   end
 
@@ -74,7 +74,7 @@ RSpec.describe 'Cocina --> DataCite mappings for identifier and alternateIdentif
     end
 
     it 'identifier_attributes is nil' do
-      expect(identifier_attributes).to eq nil
+      expect(identifier_attributes).to be_nil
     end
   end
 
@@ -85,7 +85,7 @@ RSpec.describe 'Cocina --> DataCite mappings for identifier and alternateIdentif
     end
 
     it 'identifier_attributes is nil' do
-      expect(identifier_attributes).to eq nil
+      expect(identifier_attributes).to be_nil
     end
   end
 end

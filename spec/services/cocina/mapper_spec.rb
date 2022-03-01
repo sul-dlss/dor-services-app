@@ -116,7 +116,7 @@ RSpec.describe Cocina::Mapper do
 
       it 'files without imageData have empty presentation attribute' do
         file2 = fileSet1.structural.contains.second
-        expect(file2.presentation).to eq nil
+        expect(file2.presentation).to be_nil
       end
     end
 
