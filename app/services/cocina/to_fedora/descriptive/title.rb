@@ -130,9 +130,24 @@ module Cocina
 
             title_parts_without_names.each do |title_part|
               title_type = tag_name_for(title_part)
-              xml.public_send(title_type, title_part.value) if title_part.note.blank?
+              title_value = title_value_for(title_part, title_type, title)
+              xml.public_send(title_type, title_value) if title_part.note.blank?
             end
           end
+        end
+
+        def title_value_for(title_part, title_type, title)
+          return title_part.value unless title_type == 'nonSort'
+
+          non_sorting_size = [non_sorting_char_count_for(title) - (title_part.value&.size || 0), 0].max
+          "#{title_part.value}#{' ' * non_sorting_size}"
+        end
+
+        def non_sorting_char_count_for(title)
+          non_sort_note = title.note&.find { |note| note.type&.downcase == 'nonsorting character count' }
+          return 0 unless non_sort_note
+
+          non_sort_note.value.to_i
         end
 
         # Flatten the structuredValues into a simple list.

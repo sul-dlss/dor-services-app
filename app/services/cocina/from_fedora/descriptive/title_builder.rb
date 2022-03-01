@@ -78,7 +78,7 @@ module Cocina
           if %w[title titleInfo].include?(tag)
             title.delete_suffix(',')
           elsif tag == 'nonSort'
-            title.delete_suffix(' ')
+            title.sub(/ +$/, '')
           else
             title
           end

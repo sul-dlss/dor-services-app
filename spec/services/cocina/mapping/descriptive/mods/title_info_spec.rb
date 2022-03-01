@@ -1303,4 +1303,42 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
       end
     end
   end
+
+  describe 'Title with non-sorting characters with extra spaces' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo usage="primary">
+            <nonSort>The  </nonSort>
+            <title>means to prosperity</title>
+          </titleInfo>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          title: [
+            {
+              structuredValue: [
+                {
+                  value: 'The',
+                  type: 'nonsorting characters'
+                }, {
+                  value: 'means to prosperity',
+                  type: 'main title'
+                }
+              ],
+              note: [
+                {
+                  value: '5',
+                  type: 'nonsorting character count'
+                }
+              ],
+              status: 'primary'
+            }
+          ]
+        }
+      end
+    end
+  end
 end
