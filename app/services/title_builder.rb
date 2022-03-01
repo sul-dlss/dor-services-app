@@ -74,7 +74,8 @@ class TitleBuilder # rubocop:disable Metrics/ClassLength
       # additional types:  name, uniform ...
       case structured_value.type&.downcase
       when 'nonsorting characters'
-        non_sort_value = value&.size == non_sorting_char_count ? value : "#{value} "
+        non_sorting_size = [non_sorting_char_count - (value&.size || 0), 0].max
+        non_sort_value = "#{value}#{' ' * non_sorting_size}"
         structured_title = if structured_title.present?
                              "#{structured_title}#{non_sort_value}"
                            else
