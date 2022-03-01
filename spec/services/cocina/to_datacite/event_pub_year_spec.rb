@@ -958,7 +958,7 @@ RSpec.describe Cocina::ToDatacite::Event do
       let(:cocina_access) { {} }
 
       it 'pub_year is nil' do
-        expect(pub_year).to eq nil
+        expect(pub_year).to be_nil
       end
     end
 
@@ -971,7 +971,7 @@ RSpec.describe Cocina::ToDatacite::Event do
       let(:cocina_access) { {} }
 
       it 'pub_year is nil' do
-        expect(pub_year).to eq nil
+        expect(pub_year).to be_nil
       end
     end
 
@@ -983,7 +983,7 @@ RSpec.describe Cocina::ToDatacite::Event do
       let(:cocina_access) { {} }
 
       it 'pub_year is nil' do
-        expect(pub_year).to eq nil
+        expect(pub_year).to be_nil
       end
     end
   end

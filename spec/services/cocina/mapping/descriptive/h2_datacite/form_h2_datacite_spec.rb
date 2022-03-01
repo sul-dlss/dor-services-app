@@ -266,7 +266,7 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
     end
 
     it 'returns nil' do
-      expect(type_attributes).to be nil
+      expect(type_attributes).to be_nil
     end
   end
 
@@ -278,7 +278,7 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
     end
 
     it 'returns nil' do
-      expect(type_attributes).to be nil
+      expect(type_attributes).to be_nil
     end
   end
 
@@ -289,7 +289,7 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
     end
 
     it 'returns nil' do
-      expect(type_attributes).to be nil
+      expect(type_attributes).to be_nil
     end
   end
 end

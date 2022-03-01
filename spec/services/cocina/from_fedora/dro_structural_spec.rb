@@ -193,14 +193,14 @@ RSpec.describe Cocina::FromFedora::DroStructural do
       expect(file1[:hasMimeType]).to eq 'text/plain'
       expect(file1[:hasMessageDigests].first[:digest]).to eq '61dfac472b7904e1413e0cbf4de432bda2a97627'
       expect(file1[:hasMessageDigests].first[:type]).to eq 'sha1'
-      expect(file1[:administrative][:shelve]).to eq true
-      expect(file1[:administrative][:sdrPreserve]).to eq false
-      expect(file1[:administrative][:publish]).to eq true
+      expect(file1[:administrative][:shelve]).to be true
+      expect(file1[:administrative][:sdrPreserve]).to be false
+      expect(file1[:administrative][:publish]).to be true
 
       file2 = folder1[:structural][:contains][1]
-      expect(file2[:administrative][:shelve]).to eq false
-      expect(file2[:administrative][:sdrPreserve]).to eq true
-      expect(file2[:administrative][:publish]).to eq false
+      expect(file2[:administrative][:shelve]).to be false
+      expect(file2[:administrative][:sdrPreserve]).to be true
+      expect(file2[:administrative][:publish]).to be false
       expect(file2[:access][:access]).to eq('dark')
     end
   end
@@ -262,7 +262,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
     context 'when image is svg' do
       let(:mime_type) { 'image/svg+xml' }
 
-      it { is_expected.to be nil }
+      it { is_expected.to be_nil }
     end
 
     context 'when image is not svg' do
