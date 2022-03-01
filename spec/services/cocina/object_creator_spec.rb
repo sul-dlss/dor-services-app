@@ -32,29 +32,6 @@ RSpec.describe Cocina::ObjectCreator do
   end
 
   context 'when Cocina::Models::DRO is received' do
-    context 'when no description is supplied (no title, but label)' do
-      let(:params) do
-        {
-          'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
-          'externalIdentifier' => druid,
-          'label' => 'label value',
-          'access' => {},
-          'version' => 1,
-          'structural' => {},
-          'administrative' => {
-            'hasAdminPolicy' => apo
-          },
-          'identification' => {
-            'sourceId' => 'donot:care'
-          }
-        }
-      end
-
-      it 'title is set to label' do
-        expect(created_cocina_object.description.title.first.value).to eq 'label value'
-      end
-    end
-
     context 'when description is supplied' do
       let(:params) do
         {
@@ -161,7 +138,7 @@ RSpec.describe Cocina::ObjectCreator do
         {
           'type' => 'http://cocina.sul.stanford.edu/models/media.jsonld',
           'externalIdentifier' => druid,
-          'label' => ':auto',
+          'label' => 'Rockhounding Utah',
           'access' => { 'access' => 'dark', 'download' => 'none' },
           'version' => 1,
           'structural' => {},
@@ -172,6 +149,10 @@ RSpec.describe Cocina::ObjectCreator do
           'identification' => {
             'sourceId' => 'sul:8.559351',
             'catalogLinks' => [{ 'catalog' => 'symphony', 'catalogRecordId' => '10121797' }]
+          },
+          'description' => {
+            'title' => [{ 'value' => 'Rockhounding Utah' }],
+            'purl' => Purl.for(druid: druid)
           }
         }
       end
@@ -194,6 +175,10 @@ RSpec.describe Cocina::ObjectCreator do
           },
           'identification' => {
             'sourceId' => 'identifier:1'
+          },
+          'description' => {
+            'title' => [{ 'value' => 'My Agreement' }],
+            'purl' => Purl.for(druid: druid)
           }
         }
       end
@@ -211,7 +196,7 @@ RSpec.describe Cocina::ObjectCreator do
         {
           'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
           'externalIdentifier' => druid,
-          'label' => ':auto',
+          'label' => 'Mountain Biking Utah',
           'access' => {},
           'version' => 1,
           'structural' => {},
@@ -223,6 +208,10 @@ RSpec.describe Cocina::ObjectCreator do
             'sourceId' => 'sul:8.559351',
             'catalogLinks' => [{ 'catalog' => 'symphony', 'catalogRecordId' => '10121797' }],
             'doi' => '10.25740/bb010dx6027'
+          },
+          'description' => {
+            'title' => [{ 'value' => 'Mountain Biking Utah' }],
+            'purl' => Purl.for(druid: druid)
           }
         }
       end

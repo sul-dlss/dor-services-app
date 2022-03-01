@@ -124,6 +124,7 @@ class CocinaObjectStore
     updated_cocina_request_object = merge_access_for(cocina_request_object)
     druid = SuriService.mint_id
     updated_cocina_request_object = sync_from_symphony(updated_cocina_request_object, druid)
+    updated_cocina_request_object = add_description(updated_cocina_request_object)
     cocina_object = cocina_from_request(updated_cocina_request_object, druid)
     cocina_object = assign_doi(cocina_object) if assign_doi
 
@@ -349,7 +350,7 @@ class CocinaObjectStore
     return cocina_request_object if catkeys.blank?
 
     result = RefreshMetadataAction.run(identifiers: catkeys, cocina_object: cocina_request_object, druid: druid)
-    return if result.failure?
+    return cocina_request_object if result.failure?
 
     description_props = result.value!.description_props
     # Remove PURL since this is still a request
@@ -396,6 +397,12 @@ class CocinaObjectStore
 
     identification = cocina_object.identification || Cocina::Models::Identification.new
     cocina_object.new(identification: identification.new(doi: Doi.for(druid: cocina_object.externalIdentifier)))
+  end
+
+  def add_description(cocina_request_object)
+    return cocina_request_object if cocina_request_object.description.present?
+
+    cocina_request_object.new(description: { title: [{ value: cocina_request_object.label }] })
   end
 end
 # rubocop:enable Metrics/ClassLength

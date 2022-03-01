@@ -216,8 +216,11 @@ RSpec.describe CocinaObjectStore do
 
     describe '#create' do
       let(:cocina_object_store) { described_class.new }
-      let(:requested_cocina_object) { instance_double(Cocina::Models::RequestDRO, admin_policy?: false, identification: request_identification, to_h: cocina_hash) }
+      let(:requested_cocina_object) do
+        instance_double(Cocina::Models::RequestDRO, admin_policy?: false, identification: request_identification, to_h: cocina_hash, description: request_description)
+      end
       let(:request_identification) { instance_double(Cocina::Models::RequestIdentification, catalogLinks: catalog_links) }
+      let(:request_description) { instance_double(Cocina::Models::RequestDescription) }
       let(:catalog_links) { [] }
       let(:cocina_hash) { {} }
 
@@ -345,6 +348,20 @@ RSpec.describe CocinaObjectStore do
                                                                    purl: 'https://purl.stanford.edu/bc123df4567'
                                                                  }
                                                                })
+        end
+      end
+
+      context 'when there is no description' do
+        let(:request_description) { nil }
+
+        before do
+          allow(requested_cocina_object).to receive(:new).and_return(requested_cocina_object)
+          allow(requested_cocina_object).to receive(:label).and_return('Roadside Geology of Utah')
+        end
+
+        it 'adds a description from label' do
+          expect(cocina_object_store.create(requested_cocina_object)).to be created_cocina_object
+          expect(requested_cocina_object).to have_received(:new).with(description: { title: [{ value: 'Roadside Geology of Utah' }] })
         end
       end
 
