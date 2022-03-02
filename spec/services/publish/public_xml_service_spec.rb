@@ -239,7 +239,7 @@ RSpec.describe Publish::PublicXmlService do
         end
 
         it 'rewrites the resource id so it can be used as a URI component' do
-          expect(ng_xml.at_xpath('/publicObject/contentMetadata/resource[1]')['id']).to eq 'cocina-fileSet-bc123df4567/9475bc2c-7552-43d8-b8ab-8cd2212d5873'
+          expect(ng_xml.at_xpath('/publicObject/contentMetadata/resource[1]')['id']).to eq 'cocina-fileSet-bc123df4567-9475bc2c-7552-43d8-b8ab-8cd2212d5873'
         end
       end
 
