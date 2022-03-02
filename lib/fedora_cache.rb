@@ -55,6 +55,16 @@ class FedoraCache
     File.exist?(zip_path_for(druid))
   end
 
+  def label_and_apo_and_desc_metadata(druid)
+    result = get_cache(druid, only: %w[object descMetadata RELS-EXT])
+    return result if result.failure?
+
+    contents = result.value!
+    return Failure() unless contents.key?('object') && contents.key?('descMetadata')
+
+    Success([label_for(contents['object']), apo_for(contents['RELS-EXT']), contents['descMetadata']])
+  end
+
   def label_and_desc_metadata(druid)
     result = get_cache(druid, only: ['object', 'descMetadata'])
     return result if result.failure?
@@ -138,6 +148,12 @@ class FedoraCache
   def label_for(object)
     ng_xml = Nokogiri::XML(object)
     ng_xml.xpath('//xmlns:objLabel').first.text
+  end
+
+  def apo_for(rels_ext)
+    ng_xml = Nokogiri::XML(rels_ext)
+    ng_xml.xpath('//hydra:isGovernedBy/@rdf:resource', hydra: 'http://projecthydra.org/ns/relations#', rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+          .first&.value&.delete_prefix('info:fedora/')
   end
 
   def fetch_tags(druid)

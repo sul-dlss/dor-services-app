@@ -12,7 +12,6 @@ parser = OptionParser.new do |option_parser|
 
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size, otherwise all druids.')
   option_parser.on('-u', '--unique-filename', 'Result file named for branch and runtime') { options[:unique_filename] = true }
-  option_parser.on('-a', '--apo', 'Include APO in report (slower).') { options[:apo] = true }
   option_parser.on('-iFILENAME', '--input FILENAME', String, 'File containing list of druids (instead of druids.txt).')
   option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
   option_parser.on('-h', '--help', 'Displays help.') do
@@ -34,7 +33,7 @@ def results_by(results)
   results_by = {}
   results.each do |result|
     results_by[result.msg] = [] unless results_by.key?(result.msg)
-    results_by[result.msg] << result.druid
+    results_by[result.msg] << result
   end
   results_by
 end
@@ -42,23 +41,16 @@ end
 def print_results(aggregated_error_results, label)
   aggregated_error_results.each do |error_result|
     puts "#{label}: #{error_result[0]} (#{error_result[1].size} errors)\n"
-    puts "Examples: #{error_result[1].take(10).join(', ')}"
+    puts "Examples: #{error_result[1].take(10).map(&:druid).join(', ')}"
   end
 end
 
-def apo_for(druid)
-  puts "Fetching #{druid}"
-  Dor.find(druid).admin_policy_object_id
-rescue ActiveFedora::ObjectNotFoundError
-  'Not found'
-end
-
-def write_results(file, aggregated_error_results, label, with_apo)
+def write_results(file, aggregated_error_results, label)
   aggregated_error_results.each do |error_result|
     file.write("#{label}: #{error_result[0]} (#{error_result[1].size} errors)\n")
-    error_result[1].each do |druid|
-      file.write(druid)
-      file.write(" (APO: #{apo_for(druid)})") if with_apo
+    error_result[1].each do |result|
+      file.write(result.druid)
+      file.write(" (APO: #{result.apo})") if result.apo
       file.write("\n")
     end
   end
@@ -95,23 +87,23 @@ end
 
 @sample_size = druids.size
 
-Result = Struct.new(:druid, :msg, :error_type)
+Result = Struct.new(:druid, :apo, :msg, :error_type)
 
 results = Parallel.map(druids, progress: 'Testing') do |druid|
   notifier = DataErrorNotifier.new
 
-  result = cache.label_and_desc_metadata(druid)
-  next Result.new(druid, 'Missing', :missing) if result.failure?
+  result = cache.label_and_apo_and_desc_metadata(druid)
+  next Result.new(druid, nil, 'Missing', :missing) if result.failure?
 
-  label, mods_xml = result.value!
+  label, apo, mods_xml = result.value!
   mods_ng_xml = Nokogiri::XML(mods_xml)
 
   title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: label)
   desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: mods_ng_xml, druid: druid, notifier: notifier)
   Cocina::Models::Description.new(desc_props)
-  notifier.error? ? Result.new(druid, notifier.data_errors.first.msg, :data_error) : nil
+  notifier.error? ? Result.new(druid, apo, notifier.data_errors.first.msg, :data_error) : nil
 rescue StandardError => e
-  Result.new(druid, e.message.gsub('\n', ' '), :to_cocina_error)
+  Result.new(druid, apo, e.message.gsub('\n', ' '), :to_cocina_error)
 end.compact
 
 error_results = results.select { |result| result.error_type == :to_cocina_error }
@@ -139,6 +131,6 @@ File.open(results_file_name(options[:unique_filename]), 'w') do |file|
   file.write(summary_line_for('Data error', counts[:data_error]))
   file.write(summary_line_for('Missing', counts[:missing]))
   file.write("\n")
-  write_results(file, aggregated_error_results, 'Error', options[:apo])
-  write_results(file, aggregated_data_error_results, 'Data error', options[:apo])
+  write_results(file, aggregated_error_results, 'Error')
+  write_results(file, aggregated_data_error_results, 'Data error')
 end
