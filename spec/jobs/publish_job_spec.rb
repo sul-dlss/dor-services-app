@@ -46,33 +46,6 @@ RSpec.describe PublishJob, type: :job do
     end
   end
 
-  context 'with errors returned by Publish::MetadataTransferService' do
-    let(:error_message) { "DublinCoreService#ng_xml produced incorrect xml (no children):\n<xml/>" }
-
-    before do
-      allow(Publish::MetadataTransferService).to receive(:publish).and_raise(Dor::DataError, error_message)
-      allow(LogFailureJob).to receive(:perform_later)
-      perform
-    end
-
-    it 'marks the job as processing' do
-      expect(result).to have_received(:processing!).once
-    end
-
-    it 'invokes the Publish::MetadataTransferService' do
-      expect(Publish::MetadataTransferService).to have_received(:publish).with(item).once
-    end
-
-    it 'marks the job as complete' do
-      expect(LogFailureJob).to have_received(:perform_later)
-        .with(druid: druid,
-              background_job_result: result,
-              workflow: 'accessionWF',
-              workflow_process: 'publish',
-              output: { errors: [{ detail: error_message, title: 'Data error' }] })
-    end
-  end
-
   context 'when fails dark validation', skip: true do
     let(:valid) { false }
     let(:invalid_filenames) { ['foo.txt', 'bar.txt'] }

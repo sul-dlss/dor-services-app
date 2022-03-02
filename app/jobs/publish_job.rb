@@ -28,12 +28,6 @@ class PublishJob < ApplicationJob
 
       Publish::MetadataTransferService.publish(cocina_object)
       EventFactory.create(druid: druid, event_type: 'publishing_complete', data: { background_job_result_id: background_job_result.id })
-    rescue Dor::DataError => e
-      return LogFailureJob.perform_later(druid: druid,
-                                         background_job_result: background_job_result,
-                                         workflow: workflow,
-                                         workflow_process: workflow_process,
-                                         output: { errors: [{ title: 'Data error', detail: e.message }] })
     end
 
     LogSuccessJob.perform_later(druid: druid,

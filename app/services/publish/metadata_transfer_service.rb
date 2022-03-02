@@ -14,7 +14,6 @@ module Publish
     end
 
     # Appends contentMetadata file resources from the source objects to this object
-    # @raise [Dor::DataError]
     def publish
       return unpublish unless discoverable?
 
@@ -29,7 +28,6 @@ module Publish
 
     attr_reader :cocina_object
 
-    # @raise [Dor::DataError]
     def transfer_metadata(release_tags)
       public_cocina = PublicCocinaService.create(cocina_object)
       public_nokogiri = PublicXmlService.new(public_cocina: public_cocina,
