@@ -583,7 +583,6 @@ DEPENDENCIES
   faraday (~> 1.0)
   faraday_middleware (~> 1.0.0.rc1)
   honeybadger
-  iso-639 (~> 0.2.8)
   jbuilder
   jwt
   listen (~> 3.0.5)
