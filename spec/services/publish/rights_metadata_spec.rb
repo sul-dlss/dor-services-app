@@ -570,6 +570,162 @@ RSpec.describe Publish::RightsMetadata do
       end
     end
 
+    context 'when an object is open to the world but a file is no download' do
+      let(:structural) do
+        {
+          contains: [{
+            type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+            externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/wf816pb3072/8043b03b-9ec3-44e9-8a93-00be030a5f65',
+            label: 'Image 1',
+            version: 7,
+            structural: {
+              contains: [{
+                type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                externalIdentifier: 'http://cocina.sul.stanford.edu/file/wf816pb3072/8043b03b-9ec3-44e9-8a93-00be030a5f65/placeholder.jp2',
+                label: 'placeholder.jp2',
+                filename: 'placeholder.jp2',
+                size: 111_541_144,
+                version: 7,
+                hasMimeType: 'image/jp2',
+                hasMessageDigests: [],
+                access: {
+                  access: 'world',
+                  download: 'none'
+                },
+                administrative: {
+                  publish: true,
+                  sdrPreserve: false,
+                  shelve: true
+                }
+              }]
+            }
+          }]
+        }
+      end
+      let(:cocina_object) do
+        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+                                type: Cocina::Models::Vocab.object,
+                                label: 'A generic label',
+                                version: 1,
+                                description: description,
+                                identification: {},
+                                access: {
+                                  access: 'world',
+                                  download: 'world'
+                                },
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: structural)
+      end
+      let(:expected) do
+        <<~XML
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <world />
+              </machine>
+            </access>
+            <access type="read">
+              <file>placeholder.jp2</file>
+              <machine>
+                <world rule="no-download"/>
+              </machine>
+            </access>
+          </rightsMetadata>
+        XML
+      end
+
+      it 'returns the appropriate rights metadata xml' do
+        expect(result).to be_equivalent_to(expected)
+      end
+    end
+
+    context 'when object is world but the file is location based and stanford no download' do
+      let(:structural) do
+        {
+          contains: [{
+            type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+            externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/wf816pb3072/8043b03b-9ec3-44e9-8a93-00be030a5f65',
+            label: 'Image 1',
+            version: 7,
+            structural: {
+              contains: [{
+                type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                externalIdentifier: 'http://cocina.sul.stanford.edu/file/wf816pb3072/8043b03b-9ec3-44e9-8a93-00be030a5f65/placeholder.jp2',
+                label: 'placeholder.jp2',
+                filename: 'placeholder.jp2',
+                size: 111_541_144,
+                version: 7,
+                hasMimeType: 'image/jp2',
+                hasMessageDigests: [],
+                access: {
+                  access: 'stanford',
+                  download: 'location-based',
+                  readLocation: 'art'
+                },
+                administrative: {
+                  publish: true,
+                  sdrPreserve: false,
+                  shelve: true
+                }
+              }]
+            }
+          }]
+        }
+      end
+      let(:cocina_object) do
+        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+                                type: Cocina::Models::Vocab.object,
+                                label: 'A generic label',
+                                version: 1,
+                                description: description,
+                                identification: {},
+                                access: {
+                                  access: 'world',
+                                  download: 'world'
+                                },
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: structural)
+      end
+
+      let(:expected) do
+        <<~XML
+          <rightsMetadata>
+            <access type="discover">
+              <machine>
+                <world/>
+              </machine>
+            </access>
+            <access type="read">
+              <machine>
+                <world />
+              </machine>
+            </access>
+            <access type="read">
+              <file>placeholder.jp2</file>
+              <machine>
+                <location>art</location>
+              </machine>
+            </access>
+            <access type="read">
+              <file>placeholder.jp2</file>
+              <machine>
+                <group rule="no-download">stanford</group>
+              </machine>
+            </access>
+          </rightsMetadata>
+        XML
+      end
+
+      it 'outputs read blocks for stanford and the location' do
+        expect(result).to be_equivalent_to(expected)
+      end
+    end
+
     context 'when a collection is world' do
       let(:cocina_object) do
         Cocina::Models::Collection.new(externalIdentifier: 'druid:bc123df4567',

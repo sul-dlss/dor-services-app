@@ -2,6 +2,7 @@
 
 module Publish
   # Exports the rightsMetadata XML that is sent to purl.stanford.edu
+  # rubocop:disable Metrics/ClassLength
   class RightsMetadata
     attr_reader :cocina_object
 
@@ -46,9 +47,9 @@ module Publish
       <<~XML
         <rightsMetadata>
           #{discover}
-          #{read}
-          #{read_location}
+          #{read(cocina_object.access)}
           #{read_world_no_download}
+          #{read_content}
           #{use}
           #{copyright}
         </rightsMetadata>
@@ -71,41 +72,46 @@ module Publish
       'world'
     end
 
-    def read
-      return if location_based?
+    def read(object_access, filename = nil)
+      return read_location(object_access, filename) if location_based?(object_access)
+
+      file = filename ? "<file>#{filename}</file>" : nil
 
       <<~XML
         <access type="read">
+          #{file}
           <machine>
-            #{download}
+            #{download(object_access)}
             #{release_date}
           </machine>
         </access>
+        #{read_location(object_access, filename) if object_access.download == 'location-based'}
       XML
     end
 
-    def location_based?
-      return true if cocina_object.access.access == 'location-based'
-      return true if [cocina_object.access.access, cocina_object.access.download] == %w[world location-based]
+    def location_based?(object_access)
+      return true if object_access.access == 'location-based'
+      return true if [object_access.access, object_access.download] == %w[world location-based]
 
       false
     end
 
-    def read_location
-      return unless [cocina_object.access.access, cocina_object.access.download].include? 'location-based'
+    def read_location(object_access, filename)
+      file = filename ? "<file>#{filename}</file>" : nil
 
       <<~XML
         <access type="read">
+          #{file}
           <machine>
-            #{read_location_based}
+            #{read_location_based(object_access)}
           </machine>
         </access>
       XML
     end
 
-    def read_location_based
-      rule = 'rule="no-download"' if cocina_object.access.download == 'none'
-      "<location #{rule}>#{cocina_object.access.readLocation}</location>" if cocina_object.access.readLocation
+    def read_location_based(object_access)
+      rule = 'rule="no-download"' if object_access.download == 'none'
+      "<location #{rule}>#{object_access.readLocation}</location>" if object_access.readLocation
     end
 
     def read_world_no_download
@@ -115,12 +121,30 @@ module Publish
       '<access type="read"><machine><world rule="no-download" /></machine></access>'
     end
 
-    def download
-      return cdl if cocina_object.access.controlledDigitalLending
-      return '<group>stanford</group>' if cocina_object.access.download == 'stanford'
-      return '<group rule="no-download">stanford</stanford>' if cocina_object.access.access == 'stanford' && cocina_object.access.download != 'stanford'
+    def read_content
+      return unless cocina_object.structural
 
-      "<#{cocina_object.access.download} />"
+      access_nodes = []
+      cocina_object.structural.contains.each do |file_set|
+        next unless file_set.structural
+
+        file_set.structural.contains.each do |file|
+          next if file.access.download == 'world'
+
+          access_nodes.push(read(file.access, file.filename))
+        end
+      end
+
+      access_nodes.join("\n")
+    end
+
+    def download(object_access)
+      return cdl if object_access.controlledDigitalLending
+      return '<group>stanford</group>' if object_access.download == 'stanford'
+      return '<group rule="no-download">stanford</stanford>' if object_access.access == 'stanford' && object_access.download != 'stanford'
+      return '<world rule="no-download" />' if object_access.access == 'world' && object_access.download == 'none'
+
+      "<#{object_access.download} />"
     end
 
     def cdl
@@ -155,4 +179,5 @@ module Publish
       "<human>#{cocina_object.access.copyright}</human>" if cocina_object.access.copyright
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end

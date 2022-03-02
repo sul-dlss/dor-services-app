@@ -73,7 +73,6 @@ RSpec.describe Publish::PublicXmlService do
       allow(VirtualObject).to receive(:for).and_return([{ id: 'druid:hj097bm8879' }])
       item.contentMetadata.content = '<contentMetadata/>'
       item.descMetadata.content    = mods
-      item.rightsMetadata.content  = rights
       allow_any_instance_of(Publish::PublicDescMetadataService).to receive(:ng_xml).and_return(Nokogiri::XML(mods)) # calls Item.find and not needed in general tests
       allow(OpenURI).to receive(:open_uri).with('https://purl-test.stanford.edu/bc123df4567.xml').and_return('<xml/>')
       WebMock.disable_net_connect!
