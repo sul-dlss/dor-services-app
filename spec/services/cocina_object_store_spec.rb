@@ -221,7 +221,7 @@ RSpec.describe CocinaObjectStore do
         allow(Cocina::ObjectCreator).to receive(:create).and_return(item)
         allow(cocina_object_store).to receive(:merge_access_for).and_return(requested_cocina_object)
         allow(cocina_object_store).to receive(:add_tags_for_create)
-        allow(Dor::SuriService).to receive(:mint_id).and_return(druid)
+        allow(SuriService).to receive(:mint_id).and_return(druid)
         allow(Cocina::Mapper).to receive(:build).and_return(created_cocina_object)
         allow(SynchronousIndexer).to receive(:reindex_remotely)
         allow(EventFactory).to receive(:create)
