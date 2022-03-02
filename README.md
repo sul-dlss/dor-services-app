@@ -214,7 +214,6 @@ $ bin/validate-to-desc-cocina -h
 Usage: bin/validate-to-desc-cocina [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
     -u, --unique-filename            Result file named for branch and runtime
-    -a, --apo                        Include APO in report (slower).
     -i, --input FILENAME             File containing list of druids (instead of druids.txt).
     -d, --druids DRUIDS              List of druids (instead of druids.txt).
     -h, --help                       Displays help.
