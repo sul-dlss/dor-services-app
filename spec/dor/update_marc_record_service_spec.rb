@@ -870,15 +870,18 @@ RSpec.describe Dor::UpdateMarcRecordService do
                 {
                   value: '2011',
                   type: 'part number'
-                },
-                {
-                  value: '123',
-                  type: 'date/sequential designation'
                 }
               ]
             }
           ],
-          purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+          purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}",
+          note: [
+            {
+              value: '123',
+              type: 'date/sequential designation'
+            }
+          ]
+
         }
       end
       let(:cocina_object) do

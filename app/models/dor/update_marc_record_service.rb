@@ -180,12 +180,14 @@ module Dor
 
       part_label = part_parts.filter_map(&:value).join(parts_delimiter(part_parts))
 
-      part_sort = title_info.structuredValue.select { |part| 'date/sequential designation'.include? part.type }
-
       str = ''
       str += "|xlabel:#{part_label}" unless part_label.empty?
-      str += "|xsort:#{part_sort.first.value}" unless part_sort.empty?
 
+      part_sort_from_title = title_info.structuredValue.find { |part| 'date/sequential designation'.include? part.type }
+      part_sort_from_note = @cocina_object.description.note.find { |note| 'date/sequential designation'.include? note.type }
+      return str unless part_sort_from_title || part_sort_from_note
+
+      str += "|xsort:#{[part_sort_from_note, part_sort_from_title].flatten.compact.first.value}"
       str
     end
 
