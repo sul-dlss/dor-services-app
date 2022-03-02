@@ -7,6 +7,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
   let(:apo_druid) { 'druid:pp000pp0000' }
   let(:druid) { 'druid:bc123dg9393' }
+  let(:bare_druid) { druid.delete_prefix('druid:') }
   let(:collection_druid) { 'druid:cc111cc1111' }
   let(:dro_object_label) { 'A generic label' }
   let(:collection_label) { 'Collection label' }
@@ -17,7 +18,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   let(:descriptive_metadata_basic) do
     {
       title: [{ value: 'Constituent label & A Special character' }],
-      purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+      purl: "https://purl.stanford.edu/#{bare_druid}"
     }
   end
   let(:identity_metadata_basic) do
@@ -792,7 +793,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
               ]
             }
           ],
-          purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+          purl: "https://purl.stanford.edu/#{bare_druid}"
         }
       end
       let(:cocina_object) do
@@ -833,7 +834,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
               ]
             }
           ],
-          purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+          purl: "https://purl.stanford.edu/#{bare_druid}"
         }
       end
       let(:cocina_object) do
@@ -874,7 +875,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
               ]
             }
           ],
-          purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}",
+          purl: "https://purl.stanford.edu/#{bare_druid}",
           note: [
             {
               value: '123',
@@ -926,7 +927,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
               ]
             }
           ],
-          purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+          purl: "https://purl.stanford.edu/#{bare_druid}"
         }
       end
       let(:cocina_object) do
@@ -981,7 +982,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
               ]
             }
           ],
-          purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+          purl: "https://purl.stanford.edu/#{bare_druid}"
         }
       end
       let(:cocina_object) do
@@ -1036,7 +1037,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
               ]
             }
           ],
-          purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+          purl: "https://purl.stanford.edu/#{bare_druid}"
         }
       end
       let(:cocina_object) do

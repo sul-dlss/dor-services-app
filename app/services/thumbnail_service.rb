@@ -20,7 +20,7 @@ class ThumbnailService
       file_set.structural.contains.each do |file|
         next unless file.hasMimeType.include?(MIME_TYPE)
 
-        return "#{Dor::PidUtils.remove_druid_prefix(object.externalIdentifier)}/#{file.filename}"
+        return "#{object.externalIdentifier.delete_prefix('druid:')}/#{file.filename}"
       end
     end
 

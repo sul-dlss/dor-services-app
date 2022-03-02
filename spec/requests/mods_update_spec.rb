@@ -4,11 +4,12 @@ require 'rails_helper'
 
 RSpec.describe 'Update MODS' do
   let(:druid) { 'druid:mk420bs7601' }
+  let(:bare_druid) { druid.delete_prefix('druid:') }
   let(:apo_druid) { 'druid:dd999df4567' }
   let(:description) do
     {
       title: [{ value: 'Dummy Title' }],
-      purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+      purl: "https://purl.stanford.edu/#{bare_druid}"
     }
   end
   let(:object) do
@@ -65,7 +66,7 @@ RSpec.describe 'Update MODS' do
                               version: 1,
                               description: {
                                 title: [{ value: 'Hello' }],
-                                purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+                                purl: "https://purl.stanford.edu/#{bare_druid}"
                               },
                               identification: { sourceId: 'sul:50807230' },
                               access: {},

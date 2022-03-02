@@ -15,7 +15,7 @@ module Dor
 
     def initialize(cocina_object, thumbnail_service:)
       @cocina_object = cocina_object
-      @druid_id = Dor::PidUtils.remove_druid_prefix(cocina_object.externalIdentifier)
+      @druid_id = cocina_object.externalIdentifier.delete_prefix('druid:')
       @access = cocina_object.access if cocina_object.respond_to?(:access)
       @thumbnail_service = thumbnail_service
     end
