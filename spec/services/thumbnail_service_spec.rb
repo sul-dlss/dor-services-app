@@ -8,7 +8,7 @@ RSpec.describe ThumbnailService do
   let(:description) do
     {
       title: [{ value: 'Constituent label &amp; A Special character' }],
-      purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+      purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
     }
   end
 
