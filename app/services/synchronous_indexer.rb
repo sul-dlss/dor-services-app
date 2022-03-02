@@ -17,7 +17,7 @@ class SynchronousIndexer
       conn.headers[:user_agent] = 'dor-services-app'
       conn.request(:retry, max: 3,
                            methods: [:post],
-                           exceptions: Faraday::Request::Retry::DEFAULT_EXCEPTIONS + [Faraday::ConnectionFailed])
+                           exceptions: Faraday::Retry::Middleware::DEFAULT_EXCEPTIONS + [Faraday::ConnectionFailed])
       conn.adapter(:net_http) # NB: Last middleware must be the adapter
     end
   end
