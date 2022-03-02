@@ -304,7 +304,7 @@ class TestTitleBuilder
   # @param [Cocina::FromFedora::DataErrorNotifier] notifier
   # @return [Hash] a hash that can be mapped to a cocina model
   def self.build(resource_element:, notifier:, require_title:)
-    titles = resource_element.xpath('mods:titleInfo', mods: Dor::DescMetadataDS::MODS_NS)
+    titles = resource_element.xpath('mods:titleInfo', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
     if titles.empty?
       [{ value: 'Placeholder title for specs' }]
     else

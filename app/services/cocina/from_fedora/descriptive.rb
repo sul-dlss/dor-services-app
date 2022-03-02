@@ -4,7 +4,7 @@ module Cocina
   module FromFedora
     # Creates Cocina Descriptive objects from Fedora objects
     class Descriptive
-      DESC_METADATA_NS = Dor::DescMetadataDS::MODS_NS
+      DESC_METADATA_NS = 'http://www.loc.gov/mods/v3'
       XLINK_NS = 'http://www.w3.org/1999/xlink'
 
       # @param [#build] title_builder
