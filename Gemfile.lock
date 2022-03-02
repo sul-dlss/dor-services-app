@@ -562,7 +562,6 @@ DEPENDENCIES
   faraday (~> 2.0)
   faraday-retry
   honeybadger
-  iso-639 (~> 0.2.8)
   jbuilder
   jwt
   listen (~> 3.0.5)
