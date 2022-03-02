@@ -84,14 +84,10 @@ module Publish
     # @return[Array<Dor::Item>]
     def find_virtual_object
       query = "has_constituents_ssim:#{cocina_object.externalIdentifier.sub(':', '\:')}"
-      response = solr_conn.get('select', params: { q: query, fl: 'id sw_display_title_tesim' })
+      response = SolrService.get(query, { fl: 'id sw_display_title_tesim' })
       response.fetch('response').fetch('docs').map do |row|
         { id: row.fetch('id'), title: row.fetch('sw_display_title_tesim').first }
       end
-    end
-
-    def solr_conn
-      ActiveFedora::SolrService.instance.conn
     end
 
     def purl_url(druid)

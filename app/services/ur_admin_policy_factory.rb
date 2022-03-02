@@ -15,9 +15,9 @@ class UrAdminPolicyFactory
 
     # Solves an odd bootstrapping problem, where the dor-indexing-app can only index cocina-models,
     # but cocina-model can't be built unless the AdminPolicy is found in Solr
-    ActiveFedora::SolrService.add(id: Settings.ur_admin_policy.druid,
-                                  objectType_ssim: ['adminPolicy'],
-                                  has_model_ssim: 'info:fedora/afmodel:Dor_AdminPolicyObject')
-    ActiveFedora::SolrService.commit
+    SolrService.add(id: Settings.ur_admin_policy.druid,
+                    objectType_ssim: ['adminPolicy'],
+                    has_model_ssim: 'info:fedora/afmodel:Dor_AdminPolicyObject')
+    SolrService.commit
   end
 end
