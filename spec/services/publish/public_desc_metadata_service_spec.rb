@@ -32,7 +32,7 @@ RSpec.describe Publish::PublicDescMetadataService do
   let(:solr_client) { instance_double(RSolr::Client, get: solr_response) }
 
   before do
-    allow(ActiveFedora::SolrService.instance).to receive(:conn).and_return(solr_client)
+    allow(SolrService.instance).to receive(:conn).and_return(solr_client)
   end
 
   describe '#ng_xml' do
@@ -92,7 +92,8 @@ RSpec.describe Publish::PublicDescMetadataService do
         expect(solr_client).to have_received(:get)
           .with('select', params: {
                   q: 'has_constituents_ssim:druid\:bc123df4567',
-                  fl: 'id sw_display_title_tesim'
+                  fl: 'id sw_display_title_tesim',
+                  wt: :json
                 })
       end
     end

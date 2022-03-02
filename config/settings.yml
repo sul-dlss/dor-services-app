@@ -52,6 +52,8 @@ version_service:
 # URLs
 fedora_url: 'https://user:password@fedora.example.com:1000/fedora'
 solr:
+  select_path: 'select'
+  timeout: 120
   url: 'https://solr.example.com/solr/collection'
 dor_indexing:
   url: 'https://dor-indexing-app.example.edu/dor'

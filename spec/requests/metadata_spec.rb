@@ -28,7 +28,7 @@ RSpec.describe 'Display metadata' do
 
   describe 'dublin core' do
     before do
-      allow(ActiveFedora::SolrService.instance).to receive(:conn).and_return(solr_client)
+      allow(SolrService.instance).to receive(:conn).and_return(solr_client)
     end
 
     let(:solr_client) { instance_double(RSolr::Client, get: solr_response) }
@@ -67,7 +67,7 @@ RSpec.describe 'Display metadata' do
 
   describe 'descriptive' do
     before do
-      allow(ActiveFedora::SolrService.instance).to receive(:conn).and_return(solr_client)
+      allow(SolrService.instance).to receive(:conn).and_return(solr_client)
     end
 
     let(:solr_client) { instance_double(RSolr::Client, get: solr_response) }
@@ -120,7 +120,7 @@ RSpec.describe 'Display metadata' do
     let(:virtual_object_solr_docs) { [] }
 
     before do
-      allow(ActiveFedora::SolrService.instance).to receive(:conn).and_return(solr_client)
+      allow(SolrService.instance).to receive(:conn).and_return(solr_client)
 
       allow(ReleaseTags).to receive(:for).and_return(
         'SearchWorks' => { 'release' => true },

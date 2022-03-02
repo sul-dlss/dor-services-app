@@ -4,13 +4,11 @@
 class MembersController < ApplicationController
   # Return the published members of this collection
   def index
-    solr_params = {
-      q: "is_member_of_collection_ssim:\"info:fedora/#{params[:object_id]}\" published_dttsim:[* TO *]",
-      wt: :json,
+    query = "is_member_of_collection_ssim:\"info:fedora/#{params[:object_id]}\" published_dttsim:[* TO *]"
+    args = {
       fl: 'id,objectType_ssim',
       rows: 100_000_000
     }
-    response = ActiveFedora::SolrService.instance.conn.get 'select', params: solr_params
-    @members = response['response']['docs']
+    @members = SolrService.query query, args
   end
 end
