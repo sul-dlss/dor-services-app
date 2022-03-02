@@ -15,7 +15,7 @@ class EmbargoReleaseService
   def self.release_items(query, &release_block)
     # Find objects to process
     Rails.logger.info("***** Querying solr: #{query}")
-    solr = Dor::SearchService.query(query, 'rows' => '5000', 'fl' => 'id')
+    solr = SolrService.get(query, 'rows' => '5000', 'fl' => 'id')
 
     num_found = solr['response']['numFound'].to_i
     if num_found.zero?
@@ -36,7 +36,7 @@ class EmbargoReleaseService
   def self.release_all
     # Find objects to process
     Rails.logger.info("***** Querying solr: #{RELEASEABLE_NOW_QUERY}")
-    solr = Dor::SearchService.query(RELEASEABLE_NOW_QUERY, 'rows' => '5000', 'fl' => 'id')
+    solr = SolrService.get(RELEASEABLE_NOW_QUERY, 'rows' => '5000', 'fl' => 'id')
 
     num_found = solr['response']['numFound'].to_i
     if num_found.zero?

@@ -27,14 +27,16 @@ RSpec.describe 'Create object' do
   end
   let(:data) { item.to_json }
   let(:druid) { 'druid:gg777gg7777' }
-  let(:search_result) { [] }
+  let(:matching_result) { { 'response' => { 'numFound' => 1, 'docs' => [{ 'id' => 'druid:abc123' }] } } }
+  let(:no_result) { { 'response' => { 'numFound' => 0, 'docs' => [] } } }
+  let(:search_result) { no_result }
 
   before do
     allow(Dor::SuriService).to receive(:mint_id).and_return(druid)
     allow_any_instance_of(CocinaObjectStore).to receive(:find).with('druid:dd999df4567').and_return(apo)
     allow(Cocina::ActiveFedoraPersister).to receive(:store)
     stub_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')
-    allow(Dor::SearchService).to receive(:query_by_id).and_return(search_result)
+    allow(SolrService).to receive(:get).and_return(search_result)
   end
 
   context 'when a DRO is provided' do
@@ -98,7 +100,7 @@ RSpec.describe 'Create object' do
         allow(Settings.enabled_features).to receive(:registration).and_return(false)
       end
 
-      let(:search_result) { ['druid:abc123'] }
+      let(:search_result) { matching_result }
 
       it 'returns a 503 error' do
         post '/v1/objects',
@@ -110,7 +112,7 @@ RSpec.describe 'Create object' do
     end
 
     context 'when an object already exists' do
-      let(:search_result) { ['druid:abc123'] }
+      let(:search_result) { matching_result }
 
       it 'returns a 409 error' do
         post '/v1/objects',
@@ -707,7 +709,7 @@ RSpec.describe 'Create object' do
     end
 
     before do
-      allow(Dor::SearchService).to receive(:query_by_id).and_return([])
+      allow(SolrService).to receive(:get).and_return(no_result)
     end
 
     it 'registers the book and sets the viewing direction' do
@@ -923,7 +925,7 @@ RSpec.describe 'Create object' do
     end
 
     before do
-      allow(Dor::SearchService).to receive(:query_by_id).and_return([])
+      allow(SolrService).to receive(:get).and_return(no_result)
     end
 
     it 'registers the book and sets the rights' do
@@ -984,7 +986,7 @@ RSpec.describe 'Create object' do
     end
 
     before do
-      allow(Dor::SearchService).to receive(:query_by_id).and_return([])
+      allow(SolrService).to receive(:get).and_return(no_result)
     end
 
     it 'registers the book and sets the rights' do
@@ -1042,7 +1044,7 @@ RSpec.describe 'Create object' do
     end
 
     before do
-      allow(Dor::SearchService).to receive(:query_by_id).and_return([])
+      allow(SolrService).to receive(:get).and_return(no_result)
     end
 
     it 'registers the book and sets the rights' do
@@ -1058,7 +1060,7 @@ RSpec.describe 'Create object' do
 
   context 'when no description is provided (registration use case)' do
     before do
-      allow(Dor::SearchService).to receive(:query_by_id).and_return([])
+      allow(SolrService).to receive(:get).and_return(no_result)
     end
 
     context 'when structural is provided' do
@@ -1200,7 +1202,7 @@ RSpec.describe 'Create object' do
 
   context 'when type does not have a process tag (e.g., webarchive-binary)' do
     before do
-      allow(Dor::SearchService).to receive(:query_by_id).and_return([])
+      allow(SolrService).to receive(:get).and_return(no_result)
       allow(AdministrativeTags).to receive(:create)
     end
 
@@ -1251,7 +1253,7 @@ RSpec.describe 'Create object' do
 
   context 'when type does have a process tag' do
     before do
-      allow(Dor::SearchService).to receive(:query_by_id).and_return([])
+      allow(SolrService).to receive(:get).and_return(no_result)
       allow(AdministrativeTags).to receive(:create)
     end
 
