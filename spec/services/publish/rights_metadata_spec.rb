@@ -42,13 +42,6 @@ RSpec.describe Publish::RightsMetadata do
                 <none />
               </machine>
             </access>
-            <use>
-              <human type="useAndReproduction"/>
-              <license />
-            </use>
-            <copyright>
-              <human/>
-            </copyright>
           </rightsMetadata>
         XML
       end
@@ -86,13 +79,6 @@ RSpec.describe Publish::RightsMetadata do
                 <world />
               </machine>
             </access>
-            <use>
-              <human type="useAndReproduction"/>
-              <license />
-            </use>
-            <copyright>
-              <human/>
-            </copyright>
           </rightsMetadata>
         XML
       end
@@ -177,13 +163,6 @@ RSpec.describe Publish::RightsMetadata do
                 <none />
               </machine>
             </access>
-            <use>
-              <human type="useAndReproduction"/>
-              <license />
-            </use>
-            <copyright>
-              <human/>
-            </copyright>
           </rightsMetadata>
         XML
       end
@@ -231,13 +210,6 @@ RSpec.describe Publish::RightsMetadata do
                 <world rule="no-download" />
               </machine>
             </access>
-            <use>
-              <human type="useAndReproduction"/>
-              <license />
-            </use>
-            <copyright>
-              <human/>
-            </copyright>
           </rightsMetadata>
         XML
       end
@@ -276,13 +248,6 @@ RSpec.describe Publish::RightsMetadata do
                 <location>art</location>
               </machine>
             </access>
-            <use>
-              <human type="useAndReproduction"/>
-              <license />
-            </use>
-            <copyright>
-              <human/>
-            </copyright>
           </rightsMetadata>
         XML
       end
@@ -321,13 +286,6 @@ RSpec.describe Publish::RightsMetadata do
                 <location rule="no-download">art</location>
               </machine>
             </access>
-            <use>
-              <human type="useAndReproduction"/>
-              <license />
-            </use>
-            <copyright>
-              <human/>
-            </copyright>
           </rightsMetadata>
         XML
       end
@@ -371,13 +329,6 @@ RSpec.describe Publish::RightsMetadata do
                 <group rule="no-download">stanford</group>
               </machine>
             </access>
-            <use>
-              <human type="useAndReproduction"/>
-              <license />
-            </use>
-            <copyright>
-              <human/>
-            </copyright>
           </rightsMetadata>
         XML
       end
@@ -421,13 +372,6 @@ RSpec.describe Publish::RightsMetadata do
                 <world rule="no-download" />
               </machine>
             </access>
-            <use>
-              <human type="useAndReproduction"/>
-              <license />
-            </use>
-            <copyright>
-              <human/>
-            </copyright>
           </rightsMetadata>
         XML
       end
@@ -464,13 +408,6 @@ RSpec.describe Publish::RightsMetadata do
                 <none />
               </machine>
             </access>
-            <use>
-              <human type="useAndReproduction"/>
-              <license />
-            </use>
-            <copyright>
-              <human/>
-            </copyright>
           </rightsMetadata>
         XML
       end
@@ -510,13 +447,6 @@ RSpec.describe Publish::RightsMetadata do
                 </cdl>
               </machine>
             </access>
-            <use>
-              <human type="useAndReproduction"/>
-              <license />
-            </use>
-            <copyright>
-              <human/>
-            </copyright>
           </rightsMetadata>
         XML
       end
@@ -554,13 +484,6 @@ RSpec.describe Publish::RightsMetadata do
                 <group rule="no-download">stanford</group>
               </machine>
             </access>
-            <use>
-              <human type="useAndReproduction"/>
-              <license />
-            </use>
-            <copyright>
-              <human/>
-            </copyright>
           </rightsMetadata>
         XML
       end
@@ -602,13 +525,6 @@ RSpec.describe Publish::RightsMetadata do
                 <world rule="no-download" />
               </machine>
             </access>
-            <use>
-              <human type="useAndReproduction"/>
-              <license />
-            </use>
-            <copyright>
-              <human/>
-            </copyright>
           </rightsMetadata>
         XML
       end
@@ -645,13 +561,6 @@ RSpec.describe Publish::RightsMetadata do
                 <group>stanford</group>
               </machine>
             </access>
-            <use>
-              <human type="useAndReproduction"/>
-              <license />
-            </use>
-            <copyright>
-              <human/>
-            </copyright>
           </rightsMetadata>
         XML
       end
@@ -688,13 +597,6 @@ RSpec.describe Publish::RightsMetadata do
                 <world />
               </machine>
             </access>
-            <use>
-              <human type="useAndReproduction"/>
-              <license />
-            </use>
-            <copyright>
-              <human/>
-            </copyright>
           </rightsMetadata>
         XML
       end
@@ -731,13 +633,6 @@ RSpec.describe Publish::RightsMetadata do
                 <none />
               </machine>
             </access>
-            <use>
-              <human type="useAndReproduction"/>
-              <license />
-            </use>
-            <copyright>
-              <human/>
-            </copyright>
           </rightsMetadata>
         XML
       end

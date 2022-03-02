@@ -134,29 +134,25 @@ module Publish
     end
 
     def use
+      return unless use_statement || license
+
       "<use>#{use_statement}#{license}</use>"
     end
 
     def use_statement
-      return '<human type="useAndReproduction" />' unless cocina_object.access.useAndReproductionStatement
-
-      "<human type=\"useAndReproduction\">#{cocina_object.access.useAndReproductionStatement}</human>"
+      "<human type=\"useAndReproduction\">#{cocina_object.access.useAndReproductionStatement}</human>" if cocina_object.access.useAndReproductionStatement
     end
 
     def license
-      return '<license />' unless cocina_object.access.license
-
-      "<license>#{cocina_object.access.license}</license>"
+      "<license>#{cocina_object.access.license}</license>" if cocina_object.access.license
     end
 
     def copyright
-      "<copyright>#{copyright_statement}</copyright>"
+      "<copyright>#{copyright_statement}</copyright>" if copyright_statement
     end
 
     def copyright_statement
-      return '<human />' unless cocina_object.access.copyright
-
-      "<human>#{cocina_object.access.copyright}</human>"
+      "<human>#{cocina_object.access.copyright}</human>" if cocina_object.access.copyright
     end
   end
 end
