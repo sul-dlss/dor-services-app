@@ -17,13 +17,14 @@ RSpec.describe ApplyAdminPolicyDefaults do
       version: 1,
       type: Cocina::Models::Vocab.object,
       label: 'Dummy DRO',
-      access: {},
+      access: access_props,
       administrative: { hasAdminPolicy: apo_druid }
     )
   end
   let(:workflow_state) { 'Registered' }
   let(:workflow_client) { instance_double(Dor::Workflow::Client, status: status_client) }
   let(:status_client) { instance_double(Dor::Workflow::Client::Status, display_simplified: workflow_state) }
+  let(:access_props) { {} }
 
   before do
     allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
@@ -138,10 +139,28 @@ RSpec.describe ApplyAdminPolicyDefaults do
     end
 
     context 'with a DRO that lack structural metadata' do
-      it 'copies APO defaultAccess to item access' do
-        expect(CocinaObjectStore).to have_received(:save)
-          .once
-          .with(cocina_object_with(access: default_access))
+      context 'with dark access' do
+        it 'copies APO defaultAccess to item access' do
+          expect(CocinaObjectStore).to have_received(:save)
+            .once
+            .with(cocina_object_with(access: default_access))
+        end
+      end
+
+      context 'with location-based access' do
+        let(:access_props) do
+          {
+            access: 'location-based',
+            download: 'location-based',
+            readLocation: 'spec'
+          }
+        end
+
+        it 'copies APO defaultAccess to item access' do
+          expect(CocinaObjectStore).to have_received(:save)
+            .once
+            .with(cocina_object_with(access: default_access))
+        end
       end
     end
 
@@ -276,7 +295,8 @@ RSpec.describe ApplyAdminPolicyDefaults do
                 },
                 access: {
                   access: 'stanford',
-                  download: 'stanford'
+                  download: 'location-based',
+                  readLocation: 'spec'
                 },
                 hasMessageDigests: []
               }

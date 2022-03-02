@@ -67,7 +67,8 @@ class ApplyAdminPolicyDefaults
 
   def updated_cocina_object
     access_updated = @cocina_object.new(
-      access: @cocina_object.access.new(access_properties_for(type: cocina_type))
+      # Note that this is a replace, not a merge.
+      access: access_properties_for(type: cocina_type)
     )
     return access_updated unless access_updated.dro? && access_updated.structural&.contains&.any?
 
