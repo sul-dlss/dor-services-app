@@ -122,7 +122,7 @@ RSpec.describe CleanupService do
         local_export_home: export_dir,
         local_assembly_root: assembly_dir
       )
-      allow(Dor::Config.stacks).to receive(:local_stacks_root).and_return(stacks_dir)
+      allow(Settings.stacks).to receive(:local_stacks_root).and_return(stacks_dir)
 
       FileUtils.mkdir fixture_dir
       FileUtils.mkdir workspace_dir

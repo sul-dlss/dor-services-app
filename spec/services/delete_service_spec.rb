@@ -23,10 +23,10 @@ RSpec.describe DeleteService do
     let(:fixture_dir) { '/tmp/cleanup-spec' }
     let(:stacks_dir) { File.join(fixture_dir, 'stacks') }
     let(:druid) { 'druid:cd456ef7890' }
-    let(:stacks_druid) { DruidTools::StacksDruid.new(druid, Dor::Config.stacks.local_stacks_root) }
+    let(:stacks_druid) { DruidTools::StacksDruid.new(druid, Settings.stacks.local_stacks_root) }
 
     before do
-      allow(Dor::Config.stacks).to receive(:local_stacks_root).and_return(stacks_dir)
+      allow(Settings.stacks).to receive(:local_stacks_root).and_return(stacks_dir)
       FileUtils.mkdir fixture_dir
       FileUtils.mkdir stacks_dir
 

@@ -33,7 +33,7 @@ class DeleteService
   attr_reader :druid
 
   def cleanup_stacks
-    stacks_druid = DruidTools::StacksDruid.new(druid, Dor::Config.stacks.local_stacks_root)
+    stacks_druid = DruidTools::StacksDruid.new(druid, Settings.stacks.local_stacks_root)
     PruneService.new(druid: stacks_druid).prune!
   end
 
