@@ -460,12 +460,12 @@ RSpec.describe 'Create object' do
           { contains: [
             {
               type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
-              externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/gg777gg7777/123-456-789', label: 'Page 1', version: 1,
+              externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/gg777gg7777-123-456-789', label: 'Page 1', version: 1,
               structural: {
                 contains: [
                   {
                     type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
-                    externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777/123-456-789/00001.html',
+                    externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00001.html',
                     label: '00001.html',
                     filename: '00001.html',
                     size: 0,
@@ -483,7 +483,7 @@ RSpec.describe 'Create object' do
                     administrative: { publish: false, sdrPreserve: true, shelve: false }
                   }, {
                     type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
-                    externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777/123-456-789/00001.jp2',
+                    externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00001.jp2',
                     label: '00001.jp2',
                     filename: '00001.jp2',
                     size: 0, version: 1,
@@ -495,13 +495,13 @@ RSpec.describe 'Create object' do
               }
             }, {
               type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
-              externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/gg777gg7777/123-456-789',
+              externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/gg777gg7777-123-456-789',
               label: 'Page 2', version: 1,
               structural: {
                 contains: [
                   {
                     type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
-                    externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777/123-456-789/00002.html',
+                    externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00002.html',
                     label: '00002.html', filename: '00002.html', size: 0,
                     version: 1, hasMimeType: 'text/html',
                     hasMessageDigests: [],
@@ -509,7 +509,7 @@ RSpec.describe 'Create object' do
                     administrative: { publish: false, sdrPreserve: true, shelve: false }
                   }, {
                     type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
-                    externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777/123-456-789/00002.jp2',
+                    externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00002.jp2',
                     label: '00002.jp2',
                     filename: '00002.jp2',
                     size: 0, version: 1,
