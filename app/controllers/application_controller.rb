@@ -66,10 +66,6 @@ class ApplicationController < ActionController::API
     request.headers[TOKEN_HEADER].split.last
   end
 
-  def load_item
-    @item = Dor.find(params[:object_id] || params[:id])
-  end
-
   # @raise [CocinaObjectStore::CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
   def load_cocina_object
     @cocina_object = CocinaObjectStore.find(params[:object_id] || params[:id])
