@@ -12,7 +12,7 @@ RSpec.describe 'Get the members' do
   let(:solr_params) do
     {
       fl: 'id,objectType_ssim',
-      q: "is_member_of_collection_ssim:\"#{ActiveFedora::Base.internal_uri(druid)}\" published_dttsim:[* TO *]",
+      q: "is_member_of_collection_ssim:\"info:fedora/#{druid}\" published_dttsim:[* TO *]",
       rows: 100_000_000,
       wt: :json
     }
