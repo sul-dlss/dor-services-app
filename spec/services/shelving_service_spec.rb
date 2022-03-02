@@ -56,7 +56,7 @@ RSpec.describe ShelvingService do
 
   before do
     allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
-    allow(Dor::Config.stacks).to receive_messages(local_stacks_root: stacks_root, local_workspace_root: workspace_root)
+    allow(Settings.stacks).to receive_messages(local_stacks_root: stacks_root, local_workspace_root: workspace_root)
     allow(Cocina::ToFedora::ContentMetadataGenerator).to receive(:generate).and_return(content_metadata)
     allow(Preservation::Client.objects).to receive(:shelve_content_diff).and_return(mock_diff)
     allow(ShelvableFilesStager).to receive(:stage)

@@ -3,12 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe ResetWorkspaceService do
-  let(:workspace_root) { Dor::Config.stacks.local_workspace_root }
+  let(:workspace_root) { Settings.stacks.local_workspace_root }
   let(:export_root) { Settings.sdr.local_export_home }
   let(:export_pathname) { Pathname(export_root) }
 
   before do
-    allow(Dor::Config.stacks).to receive(:local_workspace_root).and_return(File.join(fixture_dir, 'workspace'))
+    allow(Settings.stacks).to receive(:local_workspace_root).and_return(File.join(fixture_dir, 'workspace'))
     allow(Settings.sdr).to receive(:local_export_home).and_return(File.join(fixture_dir, 'export'))
   end
 

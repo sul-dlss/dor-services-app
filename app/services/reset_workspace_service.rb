@@ -10,7 +10,7 @@ class ResetWorkspaceService
   # @raise [BagAlreadyExists] if the bag for this version already exists
   # @raise [Errno::ENOENT] if the directory doesn't exist
   def self.reset(druid:, version:)
-    reset_workspace_druid_tree(druid: druid, version: version, workspace_root: Dor::Config.stacks.local_workspace_root)
+    reset_workspace_druid_tree(druid: druid, version: version, workspace_root: Settings.stacks.local_workspace_root)
     reset_export_bag(druid: druid, version: version, export_root: Settings.sdr.local_export_home)
   end
 

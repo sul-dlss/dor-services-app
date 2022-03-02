@@ -9,7 +9,7 @@ class ShelvingService
   end
 
   def initialize(cocina_object)
-    raise ConfigurationError, 'Missing configuration Dor::Config.stacks.local_workspace_root' if Dor::Config.stacks.local_workspace_root.nil?
+    raise ConfigurationError, 'Missing configuration Settings.stacks.local_workspace_root' if Settings.stacks.local_workspace_root.nil?
     raise Dor::Exception, 'Missing structural' if cocina_object.structural.nil?
 
     @cocina_object = cocina_object
@@ -20,7 +20,7 @@ class ShelvingService
     stacks_druid = DruidTools::StacksDruid.new(cocina_object.externalIdentifier, stacks_location)
     stacks_object_pathname = Pathname(stacks_druid.path)
     # determine the location of the object's content files in the workspace area
-    workspace_druid = DruidTools::Druid.new(cocina_object.externalIdentifier, Dor::Config.stacks.local_workspace_root)
+    workspace_druid = DruidTools::Druid.new(cocina_object.externalIdentifier, Settings.stacks.local_workspace_root)
 
     workspace_content_pathname = Pathname(workspace_druid.content_dir(true))
     ShelvableFilesStager.stage(cocina_object.externalIdentifier, content_metadata, shelve_diff, workspace_content_pathname)
@@ -52,7 +52,7 @@ class ShelvingService
     # If this condition is met, then shelf to /web-archiving-stacks/data/collections/<collection_id>, where collection_id is the unnamespaced druid of the (first) collection.
     return was_stack_location if was?
 
-    Dor::Config.stacks.local_stacks_root
+    Settings.stacks.local_stacks_root
   end
 
   def was?
