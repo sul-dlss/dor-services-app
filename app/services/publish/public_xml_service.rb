@@ -60,7 +60,7 @@ module Publish
     end
 
     def public_relationships
-      PublishedRelationshipsFilter.new(fedora_object).xml
+      Nokogiri::XML(PublishedRelationshipsFilter.new(public_cocina).xml)
     end
 
     def public_rights_metadata
