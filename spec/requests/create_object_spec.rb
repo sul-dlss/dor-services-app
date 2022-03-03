@@ -60,8 +60,7 @@ RSpec.describe 'Create object' do
                                 purl: 'https://purl.stanford.edu/gg777gg7777'
                               },
                               administrative: {
-                                hasAdminPolicy: 'druid:dd999df4567',
-                                partOfProject: 'Google Books'
+                                hasAdminPolicy: 'druid:dd999df4567'
                               },
                               identification: expected_identification,
                               externalIdentifier: druid,

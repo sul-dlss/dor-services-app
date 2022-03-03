@@ -80,8 +80,7 @@ RSpec.describe 'Update object' do
                             }.merge(cocina_access.to_h),
                             description: description,
                             administrative: {
-                              hasAdminPolicy: apo_druid,
-                              partOfProject: 'Google Books'
+                              hasAdminPolicy: apo_druid
                             },
                             identification: identification,
                             structural: structural)
@@ -135,7 +134,6 @@ RSpec.describe 'Update object' do
     expect(response.status).to eq(200)
     expect(response.body).to equal_cocina_model(expected)
     expect(item).to have_received(:save!)
-    expect(item).to have_received(:admin_policy_object_id=).with(apo_druid)
     expect(Cocina::ObjectValidator).to have_received(:validate)
     expect(EventFactory).to have_received(:create).with(druid: druid, data: hash_including(:request, success: true), event_type: 'update')
   end
@@ -169,8 +167,7 @@ RSpec.describe 'Update object' do
                               },
                               description: description,
                               administrative: {
-                                hasAdminPolicy: apo_druid,
-                                partOfProject: 'Google Books'
+                                hasAdminPolicy: apo_druid
                               },
                               identification: identification,
                               structural: structural)
@@ -299,8 +296,7 @@ RSpec.describe 'Update object' do
                                 purl: 'https://purl.stanford.edu/gg777gg7777'
                               },
                               administrative: {
-                                hasAdminPolicy: apo_druid,
-                                partOfProject: 'Google Books'
+                                hasAdminPolicy: apo_druid
                               },
                               identification: identification,
                               structural: structural)
@@ -318,7 +314,7 @@ RSpec.describe 'Update object' do
             "copyright":"All rights reserved unless otherwise indicated.",
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{
             "title":[{"structuredValue":[{"value":"#{title}","type":"main title"},{"value":"(repeat)","type":"subtitle"}]}],
             "purl":"https://purl.stanford.edu/gg777gg7777"
@@ -533,8 +529,7 @@ RSpec.describe 'Update object' do
                                 purl: 'https://purl.stanford.edu/gg777gg7777'
                               },
                               administrative: {
-                                hasAdminPolicy: 'druid:dd999df4567',
-                                partOfProject: 'Google Books'
+                                hasAdminPolicy: 'druid:dd999df4567'
                               },
                               identification: identification,
                               structural: structural)
@@ -552,7 +547,7 @@ RSpec.describe 'Update object' do
             "copyright":"All rights reserved unless otherwise indicated.",
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{
             "title":[{"value":"#{title}"}],
             "purl":"https://purl.stanford.edu/gg777gg7777"
@@ -739,7 +734,7 @@ RSpec.describe 'Update object' do
               "copyright":"All rights reserved unless otherwise indicated.",
               "useAndReproductionStatement":"Property rights reside with the repository..."
             },
-            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
+            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
             "description":{
               "title":[{"value":"#{title}"}],
               "purl":"https://purl.stanford.edu/gg777gg7777"
@@ -864,7 +859,7 @@ RSpec.describe 'Update object' do
               "copyright":"All rights reserved unless otherwise indicated.",
               "useAndReproductionStatement":"Property rights reside with the repository..."
             },
-            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
+            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
             "description":{
               "title":[{"value":"#{title}"}],
               "purl":"https://purl.stanford.edu/gg777gg7777"

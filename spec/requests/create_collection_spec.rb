@@ -112,8 +112,7 @@ RSpec.describe 'Create object' do
                                        sourceId: 'hydrus:collection-456'
                                      },
                                      administrative: {
-                                       hasAdminPolicy: 'druid:dd999df4567',
-                                       partOfProject: 'Hydrus'
+                                       hasAdminPolicy: 'druid:dd999df4567'
                                      },
                                      externalIdentifier: druid,
                                      access: {

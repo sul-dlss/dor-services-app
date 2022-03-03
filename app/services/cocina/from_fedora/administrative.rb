@@ -19,8 +19,8 @@ module Cocina
           admin[:hasAdminPolicy] = fedora_object.admin_policy_object_id if fedora_object.admin_policy_object_id
           release_tags = build_release_tags
           admin[:releaseTags] = release_tags unless release_tags.empty?
-          projects = AdministrativeTags.project(pid: fedora_object.id)
-          admin[:partOfProject] = projects.first if projects.any?
+          # projects = AdministrativeTags.project(pid: fedora_object.id)
+          # admin[:partOfProject] = projects.first if projects.any?
         end
       end
 
