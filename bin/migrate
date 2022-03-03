@@ -1,8 +1,11 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# Use "export RUBYOPT='-W:no-deprecated -W:no-experimental'" in the shell to silence warnings when script starts
+
 require_relative '../config/environment'
 require 'optparse'
+require 'tty-progressbar'
 
 options = { druids: [], input: 'druids.txt' }
 parser = OptionParser.new do |option_parser|
@@ -17,6 +20,22 @@ parser = OptionParser.new do |option_parser|
   end
 end
 parser.parse!(into: options)
+
+# how many druids to process as a single advance of the progress bar
+def num_for_progress_advance(count)
+  return 1 if count < 100
+
+  count / 100
+end
+
+def tty_progress_bar(count)
+  TTY::ProgressBar.new(
+    'Migrating fedora objects to postgres [:bar] (:current/:total, ETA: :eta_time)',
+    bar_format: :crate,
+    advance: num_for_progress_advance(count),
+    total: count
+  )
+end
 
 def migrate(druid)
   fedora_obj = CocinaObjectStore.new.fedora_find(druid)
@@ -34,16 +53,22 @@ rescue StandardError => e
   'error'
 end
 
-if options[:druids].empty?
-  druids = File.read(options[:input]).split
-  druids = druids.take(options[:sample]) if options[:sample]
-else
-  druids = options[:druids]
+def druids
+  @druids ||=
+    if options[:druids].empty?
+      File.read(options[:input]).split
+      druids.take(options[:sample]) if options[:sample]
+    else
+      options[:druids]
+    end
 end
 
 File.open('migration_results.txt', 'w') do |file|
+  progress_bar = tty_progress_bar(druids.count)
+  progress_bar.start
   druids.each_with_index do |druid, index|
     print "Migrating #{druid} #{index + 1} of #{druids.size}: "
+    progress_bar.advance(druid: druid)
     result = migrate(druid)
     puts result
     file.write("#{druid}=#{result}\n")
