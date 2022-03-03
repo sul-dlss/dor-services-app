@@ -183,8 +183,8 @@ module Dor
       str = ''
       str += "|xlabel:#{part_label}" unless part_label.empty?
 
-      part_sort_from_title = title_info.structuredValue.find { |part| 'date/sequential designation'.include? part.type }
-      part_sort_from_note = @cocina_object.description.note.find { |note| 'date/sequential designation'.include? note.type }
+      part_sort_from_title = title_info.structuredValue.find { |part| part.type == 'date/sequential designation' }
+      part_sort_from_note = @cocina_object.description.note.find { |note| note.type == 'date/sequential designation' }
       return str unless part_sort_from_title || part_sort_from_note
 
       str += "|xsort:#{[part_sort_from_note, part_sort_from_title].flatten.compact.first.value}"

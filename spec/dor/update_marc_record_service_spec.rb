@@ -902,6 +902,47 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
     end
 
+    context 'with descMetadata does not include a note' do
+      let(:description) do
+        {
+          title: [
+            {
+              structuredValue: [
+                {
+                  value: 'Some label',
+                  type: 'main title'
+                },
+                {
+                  value: 'Issue #3',
+                  type: 'part name'
+                },
+                {
+                  value: '2011',
+                  type: 'part number'
+                }
+              ]
+            }
+          ],
+          purl: "https://purl.stanford.edu/#{bare_druid}"
+        }
+      end
+      let(:cocina_object) do
+        Cocina::Models::DRO.new(externalIdentifier: druid,
+                                type: Cocina::Models::Vocab.object,
+                                label: dro_object_label,
+                                version: 1,
+                                description: description,
+                                identification: {},
+                                access: {},
+                                administrative: { hasAdminPolicy: apo_druid },
+                                structural: structural_metadata)
+      end
+
+      it 'returns both the label and part number' do
+        expect(umrs.get_x2_part_info).to eq '|xlabel:Issue #3. 2011'
+      end
+    end
+
     context 'with descMetadata with a sequential designation on a part number' do
       let(:description) do
         {
