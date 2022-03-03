@@ -581,6 +581,10 @@ RSpec.describe 'Create object' do
                                        label: 'Collection of new maps of Africa',
                                        version: 1,
                                        cocinaVersion: '0.0.1',
+                                       description: {
+                                         title: [{ value: 'Collection of new maps of Africa' }],
+                                         purl: 'https://purl.stanford.edu/xx888xx7777'
+                                       },
                                        access: {})
       end
 
@@ -855,7 +859,8 @@ RSpec.describe 'Create object' do
           "label":"Hydrus","version":1,
           "administrative":{
             "hasAdminPolicy":"druid:dd999df4567",
-            "hasAgreement":"druid:bc753qt7345"}
+            "hasAgreement":"druid:bc753qt7345",
+            "defaultAccess":{"access":"world","download":"world"}}
           }
       JSON
     end

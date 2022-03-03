@@ -17,12 +17,13 @@ RSpec.describe Cocina::Mapper do
     let(:content_type) { '3d' }
     let(:agreement) { 'druid:666' }
     let(:source_id) { 'whaever:8888' }
+    let(:set_title) { true }
 
     before do
       allow(fedora_object).to receive(:collection_ids).and_return([])
       fedora_object.identityMetadata.agreementId = [agreement]
       fedora_object.identityMetadata.barcode = '36105036289127'
-      fedora_object.descMetadata.title_info.main_title = 'Hello'
+      fedora_object.descMetadata.title_info.main_title = 'Hello' if set_title
       fedora_object.contentMetadata.contentType = [content_type]
       allow(Cocina::FromFedora::Label).to receive(:for).and_return('object label')
 
@@ -158,19 +159,6 @@ RSpec.describe Cocina::Mapper do
       end
     end
 
-    context 'when item has a cocina model error' do
-      before do
-        fedora_object.descMetadata.title_info.main_title = nil
-        allow(Honeybadger).to receive(:notify)
-      end
-
-      it 'raises and Honeybadger notifies' do
-        expect { cocina_model }.to raise_error(Cocina::Mapper::UnexpectedBuildError)
-        expect(Honeybadger).to have_received(:notify).with('[DATA ERROR] Missing title', { tags: 'data_error', context: { druid: 'druid:mx000xm0000' } })
-        expect(Honeybadger).to have_received(:notify).with(Cocina::Models::ValidationError)
-      end
-    end
-
     context 'when item has a build error' do
       let(:error) { StandardError.new('Mapping mixup') }
 
@@ -182,6 +170,14 @@ RSpec.describe Cocina::Mapper do
       it 'raises and Honeybadger notifies' do
         expect { cocina_model }.to raise_error(Cocina::Mapper::UnexpectedBuildError)
         expect(Honeybadger).to have_received(:notify).with(error)
+      end
+    end
+
+    context 'when item has no descriptive metadata' do
+      let(:set_title) { false }
+
+      it 'uses label for descriptive title' do
+        expect(cocina_model.description.title.first.value).to eq('object label')
       end
     end
   end
@@ -316,9 +312,10 @@ RSpec.describe Cocina::Mapper do
         </identityMetadata>
       XML
     end
+    let(:set_title) { true }
 
     before do
-      fedora_object.descMetadata.title_info.main_title = 'Hello'
+      fedora_object.descMetadata.title_info.main_title = 'Hello' if set_title
       allow(fedora_object).to receive(:identityMetadata).and_return(Dor::IdentityMetadataDS.from_xml(identity_metadata_xml))
       allow(Cocina::FromFedora::Label).to receive(:for).and_return('object label')
     end
@@ -338,6 +335,14 @@ RSpec.describe Cocina::Mapper do
     it 'maps label' do
       expect(cocina_model.label).to eq('object label')
       expect(Cocina::FromFedora::Label).to have_received(:for).with(fedora_object)
+    end
+
+    context 'when collection has no descriptive metadata' do
+      let(:set_title) { false }
+
+      it 'uses label for descriptive title' do
+        expect(cocina_model.description.title.first.value).to eq('object label')
+      end
     end
   end
 

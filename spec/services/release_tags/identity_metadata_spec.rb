@@ -11,6 +11,10 @@ RSpec.describe ReleaseTags::IdentityMetadata do
                             type: Cocina::Models::Vocab.object,
                             label: 'Bryar 250 Trans-American: July 9-10',
                             version: 1,
+                            description: {
+                              title: [{ value: 'Bryar 250 Trans-American: July 9-10' }],
+                              purl: "https://purl.stanford.edu/#{pid.delete_prefix('druid:')}"
+                            },
                             identification: {},
                             access: {},
                             structural: { isMemberOf: [collection_pid] },
@@ -141,6 +145,10 @@ RSpec.describe ReleaseTags::IdentityMetadata do
                                 type: Cocina::Models::Vocab.object,
                                 label: 'Bryar 250 Trans-American: July 9-10',
                                 version: 1,
+                                description: {
+                                  title: [{ value: 'Bryar 250 Trans-American: July 9-10' }],
+                                  purl: "https://purl.stanford.edu/#{pid.delete_prefix('druid:')}"
+                                },
                                 identification: {},
                                 access: {},
                                 structural: {},
@@ -168,6 +176,10 @@ RSpec.describe ReleaseTags::IdentityMetadata do
       Cocina::Models::Collection.new(externalIdentifier: collection_pid,
                                      label: 'Some collection',
                                      version: 1,
+                                     description: {
+                                       title: [{ value: 'Some collection' }],
+                                       purl: "https://purl.stanford.edu/#{collection_pid.delete_prefix('druid:')}"
+                                     },
                                      access: {},
                                      type: Cocina::Models::Vocab.collection)
     end

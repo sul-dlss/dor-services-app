@@ -9,6 +9,10 @@ RSpec.describe ReleaseTags do
                               type: Cocina::Models::Vocab.object,
                               label: 'Some Label',
                               version: 1,
+                              description: {
+                                title: [{ value: 'Some Label' }],
+                                purl: 'https://purl.stanford.edu/bc123df4567'
+                              },
                               identification: {},
                               access: {},
                               structural: {},

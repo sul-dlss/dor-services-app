@@ -25,6 +25,8 @@ RSpec.describe Cocina::ObjectUpdater do
 
   let(:version_metadata) { instance_double(Dor::VersionMetadataDS, increment_version: nil) }
 
+  let(:default_object_rights) { Dor::DefaultObjectRightsDS.new }
+
   before do
     allow(Cocina::Mapper).to receive(:build).and_return(orig_cocina_object)
     allow(Cocina::ApoExistenceValidator).to receive(:new).and_return(instance_double(Cocina::ApoExistenceValidator, valid?: true))
@@ -36,6 +38,7 @@ RSpec.describe Cocina::ObjectUpdater do
     let(:item) do
       instance_double(Dor::AdminPolicyObject, pid: 'druid:bc123df4567',
                                               save!: nil,
+                                              defaultObjectRights: default_object_rights,
                                               administrativeMetadata: double,
                                               descMetadata: desc_metadata,
                                               versionMetadata: version_metadata)
@@ -49,7 +52,11 @@ RSpec.describe Cocina::ObjectUpdater do
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
         version: 1,
-        administrative: { hasAdminPolicy: 'druid:dd999df4567', hasAgreement: 'druid:jt959wc5586' },
+        administrative: {
+          hasAdminPolicy: 'druid:dd999df4567',
+          hasAgreement: 'druid:jt959wc5586',
+          defaultAccess: { access: 'world', download: 'world' }
+        },
         description: { title: [{ value: 'orig title' }], purl: 'https://purl.stanford.edu/bc123df4567' }
       }
     end
@@ -199,6 +206,10 @@ RSpec.describe Cocina::ObjectUpdater do
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
         version: 1,
+        description: {
+          title: [{ value: 'orig label' }],
+          purl: 'https://purl.stanford.edu/bc123df4567'
+        },
         access: { access: 'world' }
       }
     end
@@ -393,6 +404,10 @@ RSpec.describe Cocina::ObjectUpdater do
         type: 'http://cocina.sul.stanford.edu/models/media.jsonld',
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
+        description: {
+          title: [{ value: 'orig label' }],
+          purl: 'https://purl.stanford.edu/bc123df4567'
+        },
         version: 1,
         access: {},
         administrative: { hasAdminPolicy: 'druid:dd999df4567' }
@@ -742,6 +757,10 @@ RSpec.describe Cocina::ObjectUpdater do
         type: 'http://cocina.sul.stanford.edu/models/media.jsonld',
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
+        description: {
+          title: [{ value: 'orig label' }],
+          purl: 'https://purl.stanford.edu/bc123df4567'
+        },
         version: 1,
         access: {},
         administrative: { hasAdminPolicy: 'druid:dd999df4567' },

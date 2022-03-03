@@ -20,6 +20,10 @@ RSpec.describe ThumbnailService do
         Cocina::Models::Collection.new(externalIdentifier: 'druid:bc123df4567',
                                        type: Cocina::Models::Vocab.collection,
                                        label: 'Collection of new maps of Africa',
+                                       description: {
+                                         title: [{ value: 'Collection of new maps of Africa' }],
+                                         purl: 'https://purl.stanford.edu/bc123df4567'
+                                       },
                                        version: 1,
                                        cocinaVersion: '0.0.1',
                                        access: {})

@@ -26,6 +26,14 @@ module Cocina
       end
 
       # @param [Nokogiri::Document] mods_ng_xml MODS to be normalized
+      # @param [String] druid
+      # @param [String] label
+      # @return [Nokogiri::Document] normalized MODS
+      def self.normalize_purl_and_missing_title(mods_ng_xml:, druid:, label:)
+        new(mods_ng_xml: mods_ng_xml, druid: druid, label: label).normalize_purl_and_missing_title
+      end
+
+      # @param [Nokogiri::Document] mods_ng_xml MODS to be normalized
       # @return [Nokogiri::Document] normalized MODS
       def self.normalize_identifier_type(mods_ng_xml:)
         new(mods_ng_xml: mods_ng_xml, druid: nil).normalize_identifier_type
@@ -72,6 +80,12 @@ module Cocina
 
       def normalize_purl
         normalize_purl_location
+        ng_xml
+      end
+
+      def normalize_purl_and_missing_title
+        normalize_purl_location
+        @ng_xml = Cocina::Normalizers::Mods::TitleNormalizer.normalize_missing_title(mods_ng_xml: ng_xml, label: label)
         ng_xml
       end
 

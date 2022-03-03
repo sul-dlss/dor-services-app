@@ -17,6 +17,10 @@ RSpec.describe Cocina::ValidateDarkService do
       label: 'The Structure of Scientific Revolutions',
       type: 'http://cocina.sul.stanford.edu/models/book.jsonld',
       version: 1,
+      description: {
+        title: [{ value: 'The Structure of Scientific Revolutions' }],
+        purl: 'https://purl.stanford.edu/bc123df4567'
+      },
       administrative: {
         hasAdminPolicy: 'druid:df123cd4567'
       },
@@ -98,6 +102,10 @@ RSpec.describe Cocina::ValidateDarkService do
         externalIdentifier: 'druid:bc123df4567',
         label: 'The Structure of Scientific Revolutions',
         type: Cocina::Models::Vocab.collection,
+        description: {
+          title: [{ value: 'The Structure of Scientific Revolutions' }],
+          purl: 'https://purl.stanford.edu/bc123df4567'
+        },
         version: 1,
         access: { access: access }
       )

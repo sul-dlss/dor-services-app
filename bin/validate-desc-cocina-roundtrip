@@ -32,7 +32,7 @@ end
 
 def cocina_props(ng_xml, druid, label, notifier)
   title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: label)
-  Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: ng_xml, druid: druid, notifier: notifier)
+  Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: ng_xml, druid: druid, notifier: notifier, label: label)
 end
 
 def node_count_match?(ng_xml1, ng_xml2)

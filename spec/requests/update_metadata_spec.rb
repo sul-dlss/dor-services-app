@@ -31,7 +31,11 @@ RSpec.describe 'Update object' do
                                       type: Cocina::Models::Vocab.admin_policy,
                                       label: 'Test Admin Policy',
                                       version: 1,
-                                      administrative: { hasAdminPolicy: 'druid:hy787xj5878', hasAgreement: 'druid:bb033gt0615' }
+                                      administrative: {
+                                        hasAdminPolicy: 'druid:hy787xj5878',
+                                        hasAgreement: 'druid:bb033gt0615',
+                                        defaultAccess: { access: 'world', download: 'world' }
+                                      }
                                     })
   end
   let!(:item) do

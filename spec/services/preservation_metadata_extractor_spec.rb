@@ -13,6 +13,10 @@ RSpec.describe PreservationMetadataExtractor do
                               externalIdentifier: druid,
                               type: Cocina::Models::Vocab.book,
                               label: 'Test DRO',
+                              description: {
+                                title: [{ value: 'Test DRO' }],
+                                purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+                              },
                               version: 1,
                               access: { access: 'world', download: 'world' },
                               administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
@@ -139,6 +143,10 @@ RSpec.describe PreservationMetadataExtractor do
                                   type: Cocina::Models::Vocab.book,
                                   label: 'Test DRO',
                                   version: 1,
+                                  description: {
+                                    title: [{ value: 'Test DRO' }],
+                                    purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+                                  },
                                   access: { access: 'world', download: 'world' },
                                   administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
                                   structural: structural
@@ -173,6 +181,10 @@ RSpec.describe PreservationMetadataExtractor do
                                            type: Cocina::Models::Vocab.collection,
                                            label: 'Test Collection',
                                            version: 1,
+                                           description: {
+                                             title: [{ value: 'Test Collection' }],
+                                             purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+                                           },
                                            access: { access: 'world' },
                                            administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
                                          })
@@ -222,7 +234,7 @@ RSpec.describe PreservationMetadataExtractor do
     it 'serializes json' do
       instance.send(:extract_cocina)
       expect(metadata_dir).to have_received(:join).with('cocina.json')
-      expect(file).to have_received(:<<).with("{\n  \"cocinaVersion\": \"0.0.1\",\n  \"type\": \"http://cocina.sul.stanford.edu/models/book.jsonld\",\n  \"externalIdentifier\": \"druid:nc893zj8956\",\n  \"label\": \"Test DRO\",\n  \"version\": 1,\n  \"access\": {\n    \"access\": \"world\",\n    \"download\": \"world\"\n  },\n  \"administrative\": {\n    \"hasAdminPolicy\": \"druid:hy787xj5878\",\n    \"releaseTags\": [\n\n    ]\n  }\n}")
+      expect(file).to have_received(:<<).with("{\n  \"cocinaVersion\": \"0.0.1\",\n  \"type\": \"http://cocina.sul.stanford.edu/models/book.jsonld\",\n  \"externalIdentifier\": \"druid:nc893zj8956\",\n  \"label\": \"Test DRO\",\n  \"version\": 1,\n  \"access\": {\n    \"access\": \"world\",\n    \"download\": \"world\"\n  },\n  \"administrative\": {\n    \"hasAdminPolicy\": \"druid:hy787xj5878\",\n    \"releaseTags\": [\n\n    ]\n  },\n  \"description\": {\n    \"title\": [\n      {\n        \"structuredValue\": [\n\n        ],\n        \"parallelValue\": [\n\n        ],\n        \"groupedValue\": [\n\n        ],\n        \"value\": \"Test DRO\",\n        \"identifier\": [\n\n        ],\n        \"note\": [\n\n        ],\n        \"appliesTo\": [\n\n        ]\n      }\n    ],\n    \"contributor\": [\n\n    ],\n    \"event\": [\n\n    ],\n    \"form\": [\n\n    ],\n    \"geographic\": [\n\n    ],\n    \"language\": [\n\n    ],\n    \"note\": [\n\n    ],\n    \"identifier\": [\n\n    ],\n    \"subject\": [\n\n    ],\n    \"relatedResource\": [\n\n    ],\n    \"marcEncodedData\": [\n\n    ],\n    \"purl\": \"https://purl.stanford.edu/nc893zj8956\"\n  }\n}")
     end
     # rubocop:enable Layout/LineLength
   end

@@ -395,8 +395,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                       },
                                       administrative: {
                                         hasAdminPolicy: apo_druid,
-                                        hasAgreement: 'druid:bb423sd6663'
-
+                                        hasAgreement: 'druid:bb423sd6663',
+                                        defaultAccess: { access: 'world', download: 'world' }
                                       })
     end
 

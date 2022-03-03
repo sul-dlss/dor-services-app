@@ -12,7 +12,11 @@ RSpec.describe Cocina::ApoExistenceValidator do
                                       type: Cocina::Models::Vocab.admin_policy,
                                       label: 'Test Admin Policy',
                                       version: 1,
-                                      administrative: { hasAdminPolicy: 'druid:hy787xj5878', hasAgreement: 'druid:bb033gt0615' },
+                                      administrative: {
+                                        hasAdminPolicy: 'druid:hy787xj5878',
+                                        hasAgreement: 'druid:bb033gt0615',
+                                        defaultAccess: { access: 'world', download: 'world' }
+                                      },
                                       description: {
                                         title: [{ value: 'Test Admin Policy' }],
                                         purl: 'https://purl.stanford.edu/jt959wc5586'
@@ -30,6 +34,10 @@ RSpec.describe Cocina::ApoExistenceValidator do
         label: 'The Structure of Scientific Revolutions',
         type: 'http://cocina.sul.stanford.edu/models/book.jsonld',
         version: 1,
+        description: {
+          title: [{ value: 'The Structure of Scientific Revolutions' }],
+          purl: 'https://purl.stanford.edu/bc123df4567'
+        },
         administrative: {
           hasAdminPolicy: apo_druid
         },
@@ -49,6 +57,10 @@ RSpec.describe Cocina::ApoExistenceValidator do
         label: 'The Structure of Scientific Revolutions',
         type: 'http://cocina.sul.stanford.edu/models/book.jsonld',
         version: 1,
+        description: {
+          title: [{ value: 'The Structure of Scientific Revolutions' }],
+          purl: 'https://purl.stanford.edu/bc123df4567'
+        },
         administrative: {
           hasAdminPolicy: 'druid:df123cd4567'
         },
@@ -68,6 +80,10 @@ RSpec.describe Cocina::ApoExistenceValidator do
       Cocina::Models::Collection.new(externalIdentifier: collection_druid,
                                      type: Cocina::Models::Vocab.collection,
                                      label: 'Collection of new maps of Africa',
+                                     description: {
+                                       title: [{ value: 'Collection of new maps of Africa' }],
+                                       purl: "https://purl.stanford.edu/#{collection_druid.delete_prefix('druid:')}"
+                                     },
                                      version: 1,
                                      cocinaVersion: '0.0.1',
                                      access: {})
@@ -78,6 +94,10 @@ RSpec.describe Cocina::ApoExistenceValidator do
         label: 'The Structure of Scientific Revolutions',
         type: 'http://cocina.sul.stanford.edu/models/book.jsonld',
         version: 1,
+        description: {
+          title: [{ value: 'The Structure of Scientific Revolutions' }],
+          purl: 'https://purl.stanford.edu/bc123df4567'
+        },
         administrative: {
           hasAdminPolicy: collection_druid
         },

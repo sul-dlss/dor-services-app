@@ -39,7 +39,8 @@ RSpec.describe Notifications::ObjectCreated do
         Cocina::Models::AdminPolicy.new(externalIdentifier: 'druid:bc123dg9393',
                                         administrative: {
                                           hasAdminPolicy: 'druid:gg123vx9393',
-                                          hasAgreement: 'druid:bb008zm4587'
+                                          hasAgreement: 'druid:bb008zm4587',
+                                          defaultAccess: { access: 'world', download: 'world' }
                                         },
                                         version: 1,
                                         label: 'just an apo',

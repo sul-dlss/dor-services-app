@@ -26,7 +26,7 @@ module Cocina
 
       # Map MODS back to Cocina.
       title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: cocina_object.label)
-      roundtrip_description_props = FromFedora::Descriptive.props(title_builder: title_builder, mods: descriptive_ng_xml, druid: druid)
+      roundtrip_description_props = FromFedora::Descriptive.props(title_builder: title_builder, mods: descriptive_ng_xml, druid: druid, label: cocina_object.label)
       roundtrip_description = description_class.new(roundtrip_description_props)
 
       # Compare original description against roundtripped Cocina.
@@ -45,7 +45,8 @@ module Cocina
     # @return [Dry::Monads::Result]
     def self.valid_from_fedora?(fedora_object)
       title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: fedora_object.label)
-      description_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: fedora_object.descMetadata.ng_xml, druid: fedora_object.pid)
+      description_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: fedora_object.descMetadata.ng_xml, druid: fedora_object.pid,
+                                                                label: FromFedora::Label.for(fedora_object))
       cocina_description = Cocina::Models::Description.new(description_props)
 
       roundtrip_mods_ng_xml = Cocina::ToFedora::Descriptive.transform(cocina_description, fedora_object.pid)

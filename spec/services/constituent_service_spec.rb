@@ -14,6 +14,10 @@ RSpec.describe ConstituentService do
         version: 1,
         administrative: { hasAdminPolicy: 'druid:dd999df2345' },
         access: {},
+        description: {
+          title: [{ value: 'Dummy' }],
+          purl: 'https://purl.stanford.edu/kh875jg9754'
+        },
         externalIdentifier: 'druid:kh875jg9754'
       )
     end
@@ -26,6 +30,10 @@ RSpec.describe ConstituentService do
         version: 1,
         administrative: { hasAdminPolicy: 'druid:dd999df2345' },
         access: {},
+        description: {
+          title: [{ value: 'Dummy' }],
+          purl: "https://purl.stanford.edu/#{virtual_object_druid.delete_prefix('druid:')}"
+        },
         externalIdentifier: virtual_object_druid
       )
     end
@@ -99,6 +107,10 @@ RSpec.describe ConstituentService do
           administrative: { hasAdminPolicy: 'druid:dd999df2345' },
           access: {},
           externalIdentifier: 'druid:kh875jg9754',
+          description: {
+            title: [{ value: 'Dummy' }],
+            purl: 'https://purl.stanford.edu/kh875jg9754'
+          },
           identification: {
             catalogLinks: [
               {

@@ -7,7 +7,11 @@ FactoryBot.define do
     label { 'Test Admin Policy' }
     version { 1 }
     administrative do
-      { hasAdminPolicy: 'druid:hy787xj5878', hasAgreement: 'druid:bb033gt0615' }
+      {
+        hasAdminPolicy: 'druid:hy787xj5878',
+        hasAgreement: 'druid:bb033gt0615',
+        defaultAccess: { access: 'world', download: 'world' }
+      }
     end
   end
 

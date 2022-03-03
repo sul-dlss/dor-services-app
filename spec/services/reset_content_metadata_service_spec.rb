@@ -10,6 +10,10 @@ RSpec.describe ResetContentMetadataService do
       version: 1,
       type: Cocina::Models::Vocab.object,
       label: 'Dummy DRO',
+      description: {
+        title: [{ value: 'Dummy DRO' }],
+        purl: "https://purl.stanford.edu/#{item_druid.delete_prefix('druid:')}"
+      },
       access: {},
       administrative: { hasAdminPolicy: 'druid:df123cd4567' },
       **structural_kwargs

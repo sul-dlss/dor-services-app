@@ -13,20 +13,17 @@ FactoryBot.define do
     administrative do
       { hasAdminPolicy: 'druid:hy787xj5878' }
     end
-  end
-
-  trait :with_dro_identification do
-    identification do
-      { sourceId: 'googlebooks:999999' }
-    end
-  end
-
-  trait :with_dro_description do
     description do
       {
         title: [{ value: 'Test DRO' }],
         purl: 'https://purl.stanford.edu/xz456jk0987'
       }
+    end
+  end
+
+  trait :with_dro_identification do
+    identification do
+      { sourceId: 'googlebooks:999999' }
     end
   end
 

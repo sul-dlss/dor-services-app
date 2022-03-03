@@ -10,6 +10,12 @@ FactoryBot.define do
     access do
       { access: 'world' }
     end
+    description do
+      {
+        title: [{ value: 'Test Collection' }],
+        purl: 'https://purl.stanford.edu/hp308wm0436'
+      }
+    end
   end
 
   trait :with_collection_identification do
@@ -21,15 +27,6 @@ FactoryBot.define do
   trait :with_administrative do
     administrative do
       { hasAdminPolicy: 'druid:hy787xj5878' }
-    end
-  end
-
-  trait :with_collection_description do
-    description do
-      {
-        title: [{ value: 'Test Collection' }],
-        purl: 'https://purl.stanford.edu/hp308wm0436'
-      }
     end
   end
 end

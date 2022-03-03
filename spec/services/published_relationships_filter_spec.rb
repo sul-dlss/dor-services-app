@@ -21,6 +21,10 @@ RSpec.describe PublishedRelationshipsFilter do
             label: 'foo',
             version: 1,
             access: {},
+            description: {
+              title: [{ value: 'foo' }],
+              purl: 'https://purl.stanford.edu/bc123df4567'
+            },
             administrative: {
               hasAdminPolicy: 'druid:df123cd4567'
             },
@@ -52,6 +56,10 @@ RSpec.describe PublishedRelationshipsFilter do
             type: 'http://cocina.sul.stanford.edu/models/collection.jsonld',
             label: 'foo',
             version: 1,
+            description: {
+              title: [{ value: 'foo' }],
+              purl: 'https://purl.stanford.edu/bc123df4567'
+            },
             access: {},
             administrative: {
               hasAdminPolicy: 'druid:df123cd4567'

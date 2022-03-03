@@ -20,12 +20,12 @@ module Cocina
         {
           externalIdentifier: fedora_apo.pid,
           type: Cocina::Models::Vocab.admin_policy,
-          label: Label.for(fedora_apo),
+          label: cocina_label,
           version: fedora_apo.current_version.to_i,
           administrative: build_apo_administrative
         }.tap do |props|
           title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: fedora_apo.label)
-          description = FromFedora::Descriptive.props(title_builder: title_builder, mods: fedora_apo.descMetadata.ng_xml, druid: fedora_apo.pid, notifier: notifier)
+          description = FromFedora::Descriptive.props(title_builder: title_builder, mods: fedora_apo.descMetadata.ng_xml, druid: fedora_apo.pid, label: cocina_label, notifier: notifier)
           props[:description] = description unless description.nil?
         end
       end
@@ -33,6 +33,10 @@ module Cocina
       private
 
       attr_reader :fedora_apo, :notifier
+
+      def cocina_label
+        @cocina_label ||= Label.for(fedora_apo)
+      end
 
       def build_apo_administrative
         {}.tap do |admin|

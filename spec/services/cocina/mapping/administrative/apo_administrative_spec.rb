@@ -39,6 +39,7 @@ RSpec.shared_examples 'valid APO mappings' do
       label: apo_label,
       version: 1,
       description: {
+        title: [{ value: apo_label }],
         purl: "#{Settings.release.purl_base_url}/apo_druid"
       }
     }

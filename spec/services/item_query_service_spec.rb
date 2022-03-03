@@ -13,6 +13,10 @@ RSpec.describe ItemQueryService do
       version: 1,
       type: Cocina::Models::Vocab.object,
       label: 'Dummy DRO',
+      description: {
+        title: [{ value: 'Dummy DRO' }],
+        purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+      },
       access: { download: 'none' }.merge(access),
       administrative: { hasAdminPolicy: 'druid:df123cd4567' }
     )
@@ -136,7 +140,11 @@ RSpec.describe ItemQueryService do
           externalIdentifier: druid,
           version: 1,
           type: Cocina::Models::Vocab.collection,
-          label: 'Dummy DRO',
+          label: 'Dummy Collection',
+          description: {
+            title: [{ value: 'Dummy Collection' }],
+            purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+          },
           access: access,
           administrative: { hasAdminPolicy: 'druid:df123cd4567' }
         )
@@ -157,7 +165,11 @@ RSpec.describe ItemQueryService do
           version: 1,
           type: Cocina::Models::Vocab.admin_policy,
           label: 'Dummy DRO',
-          administrative: { hasAdminPolicy: 'druid:df123cd4567', hasAgreement: 'druid:mg978jy9754' }
+          administrative: {
+            hasAdminPolicy: 'druid:df123cd4567',
+            hasAgreement: 'druid:mg978jy9754',
+            defaultAccess: { access: 'world', download: 'world' }
+          }
         )
       end
 
@@ -176,6 +188,10 @@ RSpec.describe ItemQueryService do
           version: 1,
           type: Cocina::Models::Vocab.object,
           label: 'Dummy DRO',
+          description: {
+            title: [{ value: 'Dummy DRO' }],
+            purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+          },
           access: { download: 'none' }.merge(access),
           administrative: { hasAdminPolicy: 'druid:df123cd4567' },
           structural: {
@@ -203,6 +219,10 @@ RSpec.describe ItemQueryService do
           version: 1,
           type: Cocina::Models::Vocab.object,
           label: 'Dummy DRO',
+          description: {
+            title: [{ value: 'Dummy Collection' }],
+            purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+          },
           access: { download: 'none' }.merge(access),
           administrative: { hasAdminPolicy: 'druid:df123cd4567' },
           structural: {

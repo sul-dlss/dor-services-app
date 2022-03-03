@@ -87,6 +87,10 @@ RSpec.describe EmbargoReleaseService do
                                 externalIdentifier: druid,
                                 type: Cocina::Models::Vocab.book,
                                 label: 'Test DRO',
+                                description: {
+                                  title: [{ value: 'Test DRO' }],
+                                  purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+                                },
                                 version: 1,
                                 access: access,
                                 structural: structural,
@@ -217,6 +221,10 @@ RSpec.describe EmbargoReleaseService do
                                   type: Cocina::Models::Vocab.book,
                                   label: 'Test DRO',
                                   version: 1,
+                                  description: {
+                                    title: [{ value: 'Test DRO' }],
+                                    purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+                                  },
                                   access: access,
                                   administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
                                 })
