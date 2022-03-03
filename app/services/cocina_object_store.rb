@@ -122,7 +122,7 @@ class CocinaObjectStore
     ensure_ur_admin_policy_exists(cocina_request_object)
     validate(cocina_request_object)
     updated_cocina_request_object = merge_access_for(cocina_request_object)
-    druid = Dor::SuriService.mint_id
+    druid = SuriService.mint_id
 
     # This saves the Fedora object.
     fedora_object = fedora_create(updated_cocina_request_object, druid: druid, assign_doi: assign_doi)
