@@ -23,13 +23,18 @@ module Cocina
       end
 
       descriptive_ng_xml = ToFedora::Descriptive.transform(cocina_object.description, druid)
+
       # Map MODS back to Cocina.
       title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: cocina_object.label)
-      roundtrip_description = FromFedora::Descriptive.props(title_builder: title_builder, mods: descriptive_ng_xml, druid: druid)
+      roundtrip_description_props = FromFedora::Descriptive.props(title_builder: title_builder, mods: descriptive_ng_xml, druid: druid)
+      roundtrip_description = description_class.new(roundtrip_description_props)
 
       # Compare original description against roundtripped Cocina.
-      unless DeepEqual.match?(description_class.new(roundtrip_description).to_h, cocina_object.description.to_h)
-        return Failure("Roundtripping of descriptive metadata unsuccessful. Expected #{JSON.generate(cocina_object.description.to_h)} but received #{JSON.generate(roundtrip_description)}.")
+      # Ignoring identifier since roundtripping is problematic due type mapping.
+      unless DeepEqual.match?(roundtrip_description.to_h.except(:identifier), cocina_object.description.to_h.except(:identifier))
+        expected = JSON.generate(cocina_object.description.to_h)
+        received = JSON.generate(roundtrip_description.to_h)
+        return Failure("Roundtripping of descriptive metadata unsuccessful. Expected #{expected} but received #{received}.")
       end
 
       Success()
