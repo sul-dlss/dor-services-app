@@ -35,7 +35,7 @@ module Cocina
     end
 
     def lookup_duplicate
-      solr_response = SolrService.get("identifier_tesim:\"#{@cocina_dro.identification.sourceId}\"", rows: 100, fl: 'id')
+      solr_response = SolrService.get("{!term f=identifier_ssim}#{@cocina_dro.identification.sourceId}", rows: 100, fl: 'id', defType: 'lucene')
 
       return if solr_response['response']['numFound'].zero?
 
