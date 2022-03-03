@@ -29,7 +29,8 @@ def migrate(druid)
   'success'
 rescue CocinaObjectStore::CocinaObjectNotFoundError
   'missing'
-rescue StandardError
+rescue StandardError => e
+  puts "ERROR ON #{druid}: #{e}"
   'error'
 end
 
