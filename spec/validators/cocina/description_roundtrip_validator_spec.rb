@@ -110,6 +110,21 @@ RSpec.describe Cocina::DescriptionRoundtripValidator do
         expect(result.success?).to be true
       end
     end
+
+    context 'when has an identifier type that does not roundtrip' do
+      let(:cocina_object) do
+        new_cocina_hash = cocina_hash.dup
+        new_cocina_hash[:description][:identifier] = [{
+          value: 'GM 132. Amadeus.',
+          type: 'music publisher'
+        }]
+        Cocina::Models::DRO.new(new_cocina_hash)
+      end
+
+      it 'returns success (ignoring identifier)' do
+        expect(result.success?).to be true
+      end
+    end
   end
 
   describe '.valid_from_fedora?' do
