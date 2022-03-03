@@ -35,7 +35,11 @@ module Cocina
     end
 
     def lookup_duplicate
-      Dor::SearchService.query_by_id(cocina_dro.identification.sourceId).first
+      solr_response = SolrService.get("identifier_tesim:\"#{@cocina_dro.identification.sourceId}\"", rows: 100, fl: 'id')
+
+      return if solr_response['response']['numFound'].zero?
+
+      solr_response['response']['docs'].map { |doc| doc['id'] }
     end
 
     def meets_preconditions?

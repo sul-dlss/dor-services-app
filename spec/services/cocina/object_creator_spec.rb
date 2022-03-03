@@ -22,9 +22,10 @@ RSpec.describe Cocina::ObjectCreator do
   let(:request) { Cocina::Models.build_request(params) }
   let(:druid) { 'druid:mb046vj7485' }
   let(:assign_doi) { false }
+  let(:no_result) { { 'response' => { 'numFound' => 0, 'docs' => [] } } }
 
   before do
-    allow(Dor::SearchService).to receive(:query_by_id).and_return([])
+    allow(SolrService).to receive(:get).and_return(no_result)
     allow(Dor).to receive(:find).with(apo).and_return(Dor::AdminPolicyObject.new)
     allow(CocinaObjectStore).to receive(:find).with('druid:bz845pv2292').and_return(minimal_cocina_admin_policy)
     allow(RefreshMetadataAction).to receive(:run) do |args|

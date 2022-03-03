@@ -7,36 +7,10 @@
 class EmbargoReleaseService
   RELEASEABLE_NOW_QUERY = 'embargo_status_ssim:"embargoed" AND embargo_release_dtsim:[* TO NOW]'
 
-  # Finds druids from solr based on the passed in query
-  # It will then load each item from Dor, and call the block with the item
-  # @param [String] query used to locate druids of items to release from solr
-  # @yield [Cocina::Models::DRO] gets executed after loading the object from DOR and opening new version
-  #  Steps needed to release the particular embargo from the item
-  def self.release_items(query, &release_block)
-    # Find objects to process
-    Rails.logger.info("***** Querying solr: #{query}")
-    solr = Dor::SearchService.query(query, 'rows' => '5000', 'fl' => 'id')
-
-    num_found = solr['response']['numFound'].to_i
-    if num_found.zero?
-      Rails.logger.info('No objects to process')
-      return
-    end
-    Rails.logger.info("Found #{num_found} objects")
-
-    count = 0
-    solr['response']['docs'].each do |doc|
-      release_item(doc['id'], &release_block)
-      count += 1
-    end
-
-    Rails.logger.info("Done! Processed #{count} objects out of #{num_found}")
-  end
-
   def self.release_all
     # Find objects to process
     Rails.logger.info("***** Querying solr: #{RELEASEABLE_NOW_QUERY}")
-    solr = Dor::SearchService.query(RELEASEABLE_NOW_QUERY, 'rows' => '5000', 'fl' => 'id')
+    solr = SolrService.get(RELEASEABLE_NOW_QUERY, 'rows' => '5000', 'fl' => 'id')
 
     num_found = solr['response']['numFound'].to_i
     if num_found.zero?

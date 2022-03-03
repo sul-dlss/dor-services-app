@@ -258,7 +258,7 @@ RSpec.describe EmbargoReleaseService do
     end
 
     before do
-      allow(Dor::SearchService).to receive(:query).and_return(response)
+      allow(SolrService).to receive(:get).and_return(response)
       allow(described_class).to receive(:release)
     end
 
