@@ -307,15 +307,12 @@ class CocinaObjectStore
   end
 
   def add_tags_for_update(cocina_object)
-    if cocina_object.dro?
-      # This is necessary so that the content type tag for a book can get updated
-      # to reflect the new direction if the direction hash changed in the structural metadata.
-      tag = Cocina::ToFedora::ProcessTag.map(cocina_object.type, cocina_object.structural&.hasMemberOrders&.first&.viewingDirection)
-      add_tag_for_update(cocina_object.externalIdentifier, tag, 'Process : Content Type') if tag
-    end
-    return unless (cocina_object.dro? || cocina_object.collection?) && cocina_object.administrative.partOfProject
+    return unless cocina_object.dro?
 
-    add_tag_for_update(cocina_object.externalIdentifier, "Project : #{cocina_object.administrative.partOfProject}", 'Project')
+    # This is necessary so that the content type tag for a book can get updated
+    # to reflect the new direction if the direction hash changed in the structural metadata.
+    tag = Cocina::ToFedora::ProcessTag.map(cocina_object.type, cocina_object.structural&.hasMemberOrders&.first&.viewingDirection)
+    add_tag_for_update(cocina_object.externalIdentifier, tag, 'Process : Content Type') if tag
   end
 
   def add_tag_for_update(druid, new_tag, prefix)

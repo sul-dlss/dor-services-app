@@ -109,7 +109,7 @@ RSpec.describe 'Update object' do
           "copyright":"All rights reserved unless otherwise indicated.",
           "useAndReproductionStatement":"Property rights reside with the repository..."
         },
-        "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"EEMS"},
+        "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
         "description":#{description.to_json},
         "identification":#{identification.to_json},
         "structural":{
@@ -137,9 +137,6 @@ RSpec.describe 'Update object' do
     expect(item).to have_received(:save!)
     expect(item).to have_received(:admin_policy_object_id=).with(apo_druid)
     expect(Cocina::ObjectValidator).to have_received(:validate)
-
-    # Tags are created.
-    expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : EEMS'])
     expect(EventFactory).to have_received(:create).with(druid: druid, data: hash_including(:request, success: true), event_type: 'update')
   end
 
@@ -403,11 +400,9 @@ RSpec.describe 'Update object' do
     end
   end
 
-  context 'when tags change' do
-    # In other tests, viewing direction starts at and remains right-to-left.
-    # For this test, starting at left-to-right and changing to right-to-left.
+  context 'when viewingDirection changes from left-to-right to right-to-left' do
     before do
-      allow(AdministrativeTags).to receive(:for).and_return(['Project : Tom Swift', 'Process : Content Type : Book (ltr)'])
+      allow(AdministrativeTags).to receive(:for).and_return(['Process : Content Type : Book (ltr)'])
       allow(AdministrativeTags).to receive(:content_type).and_return(['Book (ltr)'], ['Book (rtl)'])
       allow(AdministrativeTags).to receive(:update)
     end
@@ -423,7 +418,6 @@ RSpec.describe 'Update object' do
       # Tags are updated.
       expect(AdministrativeTags).not_to have_received(:create)
       expect(AdministrativeTags).to have_received(:update).with(pid: druid, current: 'Process : Content Type : Book (ltr)', new: 'Process : Content Type : Book (rtl)')
-      expect(AdministrativeTags).to have_received(:update).with(pid: druid, current: 'Project : Tom Swift', new: 'Project : EEMS')
     end
   end
 

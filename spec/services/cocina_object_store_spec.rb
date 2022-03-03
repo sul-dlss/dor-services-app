@@ -355,44 +355,6 @@ RSpec.describe CocinaObjectStore do
         end
       end
     end
-
-    describe '#add_tags_for_update' do
-      let(:cocina_object_store) { described_class.new }
-      let(:cocina_object) { instance_double(Cocina::Models::Collection, dro?: false, collection?: true, administrative: administrative, externalIdentifier: druid) }
-      let(:administrative) { instance_double(Cocina::Models::Administrative, partOfProject: 'Google Books') }
-
-      before do
-        allow(AdministrativeTags).to receive(:create)
-      end
-
-      context 'when creating a new project tag' do
-        it 'creates tag' do
-          cocina_object_store.send(:add_tags_for_update, cocina_object)
-          expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : Google Books'])
-        end
-      end
-
-      context 'when multiple project tags already exists' do
-        before do
-          allow(AdministrativeTags).to receive(:for).and_return(['Project : Phoenix', 'Project : Google Books'])
-        end
-
-        it 'raises' do
-          expect { cocina_object_store.send(:add_tags_for_update, cocina_object) }.to raise_error(/Too many tags for prefix/)
-        end
-      end
-
-      context 'when creating a new project tag with an existing project subtag' do
-        before do
-          allow(AdministrativeTags).to receive(:for).and_return(['Project : Google Books : Special'])
-        end
-
-        it 'creates tag' do
-          cocina_object_store.send(:add_tags_for_update, cocina_object)
-          expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : Google Books'])
-        end
-      end
-    end
   end
 
   describe 'to ActiveRecord' do
