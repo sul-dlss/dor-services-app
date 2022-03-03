@@ -123,6 +123,7 @@ class CocinaObjectStore
     validate(cocina_request_object)
     updated_cocina_request_object = merge_access_for(cocina_request_object)
     druid = SuriService.mint_id
+    updated_cocina_request_object = sync_from_symphony(updated_cocina_request_object, druid)
 
     # This saves the Fedora object.
     fedora_object = fedora_create(updated_cocina_request_object, druid: druid, assign_doi: assign_doi)
@@ -336,6 +337,28 @@ class CocinaObjectStore
     AdministrativeTags.for(pid: druid).select do |tag|
       tag.start_with?(prefix) && tag.count(':') == prefix_count
     end
+  end
+
+  # Synch from symphony if a catkey is present
+  def sync_from_symphony(cocina_request_object, druid)
+    return cocina_request_object if cocina_request_object.admin_policy?
+
+    catkeys = catkeys_for(cocina_request_object)
+
+    return cocina_request_object if catkeys.blank?
+
+    result = RefreshMetadataAction.run(identifiers: catkeys, cocina_object: cocina_request_object, druid: druid)
+    return if result.failure?
+
+    description_props = result.value!.description_props
+    # Remove PURL since this is still a request
+    description_props.delete(:purl)
+    label = MetadataService.label_from_mods(result.value!.mods_ng_xml)
+    cocina_request_object.new(label: label, description: description_props)
+  end
+
+  def catkeys_for(cocina_request_object)
+    cocina_request_object.identification&.catalogLinks&.filter_map { |clink| "catkey:#{clink.catalogRecordId}" if clink.catalog == 'symphony' }
   end
 end
 # rubocop:enable Metrics/ClassLength

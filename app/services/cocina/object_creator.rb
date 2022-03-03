@@ -142,21 +142,14 @@ module Cocina
     # @param [Boolean] trial
     # @raises SymphonyReader::ResponseError if symphony connection failed
     def add_description(fedora_object, cocina_object, trial:)
-      # Synch from symphony if a catkey is present
-      if fedora_object.catkey && !trial
-        LegacyRefreshMetadataAction.run(identifiers: ["catkey:#{fedora_object.catkey}"], fedora_object: fedora_object)
-        label = MetadataService.label_from_mods(fedora_object.descMetadata.ng_xml)
-        fedora_object.objectLabel = label
-        Cocina::ToFedora::Identity.apply_label(fedora_object, label: label)
-      elsif cocina_object.description
+      if cocina_object.description
         description = AddPurlToDescription.call(cocina_object.description, fedora_object.pid)
         fedora_object.descMetadata.content = Cocina::ToFedora::Descriptive.transform(description, fedora_object.pid).to_xml
         fedora_object.descMetadata.content_will_change!
-        Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label)
       else
         fedora_object.descMetadata.mods_title = cocina_object.label
-        Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label)
       end
+      Cocina::ToFedora::Identity.apply_label(fedora_object, label: cocina_object.label)
     end
 
     def validate(cocina_object)

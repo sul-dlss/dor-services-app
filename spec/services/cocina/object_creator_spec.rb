@@ -28,36 +28,10 @@ RSpec.describe Cocina::ObjectCreator do
     allow(SolrService).to receive(:get).and_return(no_result)
     allow(Dor).to receive(:find).with(apo).and_return(Dor::AdminPolicyObject.new)
     allow(CocinaObjectStore).to receive(:find).with('druid:bz845pv2292').and_return(minimal_cocina_admin_policy)
-    allow(LegacyRefreshMetadataAction).to receive(:run) do |args|
-      args[:fedora_object].descMetadata.mods_title = 'foo'
-    end
     allow(Settings.datacite).to receive(:prefix).and_return('10.25740')
   end
 
   context 'when Cocina::Models::RequestDRO is received' do
-    context 'when no description is supplied but there is a identification.catalogLink' do
-      let(:params) do
-        {
-          'type' => 'http://cocina.sul.stanford.edu/models/media.jsonld',
-          'label' => ':auto',
-          'access' => {},
-          'version' => 1,
-          'structural' => {},
-          'administrative' => {
-            'hasAdminPolicy' => apo
-          },
-          'identification' => {
-            'sourceId' => 'sul:8.559351',
-            'catalogLinks' => [{ 'catalog' => 'symphony', 'catalogRecordId' => '10121797' }]
-          }
-        }
-      end
-
-      it 'title is set to result of RefreshMetadataAction when there is a catalogLink' do
-        expect(created_cocina_object.description.title.first.value).to eq 'foo'
-      end
-    end
-
     context 'when no description is supplied (no title, but label)' do
       let(:params) do
         {
