@@ -72,20 +72,27 @@ module Publish
       'world'
     end
 
-    def read(object_access, filename = nil)
-      return read_location(object_access, filename) if location_based?(object_access)
-
-      file = filename ? "<file>#{filename}</file>" : nil
+    def read(object_access)
+      return read_location(object_access) if location_based?(object_access)
 
       <<~XML
         <access type="read">
-          #{file}
           <machine>
             #{download(object_access)}
             #{release_date}
           </machine>
         </access>
-        #{read_location(object_access, filename) if object_access.download == 'location-based'}
+        #{read_location(object_access) if object_access.download == 'location-based'}
+      XML
+    end
+
+    def read_file(object_access, filename)
+      <<~XML
+        <access type="read">
+          <file>#{filename}</file>
+          #{file_download(object_access)}
+          #{file_location(object_access) if object_access.download == 'location-based'}
+        </access>
       XML
     end
 
@@ -96,12 +103,9 @@ module Publish
       false
     end
 
-    def read_location(object_access, filename)
-      file = filename ? "<file>#{filename}</file>" : nil
-
+    def read_location(object_access)
       <<~XML
         <access type="read">
-          #{file}
           <machine>
             #{read_location_based(object_access)}
           </machine>
@@ -129,20 +133,34 @@ module Publish
         next unless file_set.structural
 
         file_set.structural.contains.each do |file|
-          next if file.access.download == 'world'
-
-          access_nodes.push(read(file.access, file.filename))
+          access_nodes.push(read_file(file.access, file.filename))
         end
       end
 
       access_nodes.join("\n")
     end
 
+    def file_download(object_access)
+      <<~XML
+        <machine>
+          #{download(object_access)}
+        </machine>
+      XML
+    end
+
+    def file_location(object_access)
+      <<~XML
+        <machine>
+          #{read_location_based(object_access)}
+        </machine>
+      XML
+    end
+
     def download(object_access)
       return cdl if object_access.controlledDigitalLending
       return '<group>stanford</group>' if object_access.download == 'stanford'
-      return '<group rule="no-download">stanford</stanford>' if object_access.access == 'stanford' && object_access.download != 'stanford'
-      return '<world rule="no-download" />' if object_access.access == 'world' && object_access.download == 'none'
+      return '<group rule="no-download">stanford</group>' if object_access.access == 'stanford' && object_access.download != 'stanford'
+      return '<world rule="no-download" />' if object_access.access == 'world' && object_access.download != 'world'
 
       "<#{object_access.download} />"
     end
