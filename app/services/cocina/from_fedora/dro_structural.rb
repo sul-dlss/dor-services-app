@@ -36,6 +36,9 @@ module Cocina
           rescue RSolr::Error::ConnectionRefused
             # ActiveFedora calls RSolr to lookup collections, but sometimes that call fails.
             raise SolrConnectionError, 'unable to connect to solr to resolve collections'
+          rescue StandardError => e
+            new_message = "unable to map item's collecion ids - #{e.message}"
+            raise e.class.exception(new_message)
           end
         end
       end
