@@ -65,8 +65,9 @@ class FedoraMigrator
     'success'
   rescue CocinaObjectStore::CocinaObjectNotFoundError
     'missing'
-  rescue StandardError => e
-    Rails.logger.error("#{druid} errored during migration: #{e} - #{ e.backtrace}")
+  rescue Rubydora::FedoraInvalidRequest, StandardError => e
+    Rails.logger.error("#{druid} errored during migration: #{e.inspect}")
+    Rails.logger.error(e.backtrace)
     "ERROR: #{e}"
   end
 end

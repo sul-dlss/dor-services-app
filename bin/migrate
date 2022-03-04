@@ -19,12 +19,6 @@ parser = OptionParser.new do |option_parser|
     exit
   end
 end
-#
-# Rails.logger = ActiveSupport::Logger.new('fedora-migrator.log')
-# Rails.logger.formatter = proc do |severity, time, _, msg|
-#   "#{time.strftime('%Y-%m-%d %H:%M:%S')} - #{severity} - #{msg}\n"
-# end
-# Rails.logger.datetime_format = '%Y-%m-%d %H:%M:%S'
 
 parser.parse!(into: options)
 
