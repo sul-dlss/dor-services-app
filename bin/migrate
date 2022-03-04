@@ -21,6 +21,22 @@ parser = OptionParser.new do |option_parser|
 end
 parser.parse!(into: options)
 
+results_folder = 'results_migrate'
+FileUtils.rm_rf(results_folder)
+FileUtils.mkdir_p(results_folder)
+@result_file = File.open("#{results_folder}/migrate_results.txt", 'w')
+
+@druids ||= if options[:druids].empty?
+              file_druids = File.read(options[:input]).split
+              if options[:sample]
+                file_druids.take(options[:sample])
+              else
+                file_druids
+              end
+            else
+              options[:druids]
+            end
+
 # how many druids to process as a single advance of the progress bar
 def num_for_progress_advance(count)
   return 1 if count < 100
@@ -53,24 +69,14 @@ rescue StandardError => e
   'error'
 end
 
-def druids
-  @druids ||=
-    if options[:druids].empty?
-      File.read(options[:input]).split
-      druids.take(options[:sample]) if options[:sample]
-    else
-      options[:druids]
-    end
-end
-
 File.open('migration_results.txt', 'w') do |file|
-  progress_bar = tty_progress_bar(druids.count)
+  progress_bar = tty_progress_bar(@druids.size)
   progress_bar.start
-  druids.each_with_index do |druid, index|
-    print "Migrating #{druid} #{index + 1} of #{druids.size}: "
+  @druids.each_with_index do |druid, index|
     progress_bar.advance(druid: druid)
     result = migrate(druid)
-    puts result
+    @result_file.write("#{druid}=#{result}\n")
+
     file.write("#{druid}=#{result}\n")
   end
 end
