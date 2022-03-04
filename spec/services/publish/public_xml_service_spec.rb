@@ -60,25 +60,6 @@ RSpec.describe Publish::PublicXmlService do
 
     let(:ng_xml) { Nokogiri::XML(xml) }
 
-    let(:rights) do
-      <<~XML
-        <rightsMetadata objectId="druid:bc123df4567">
-          <copyright>
-            <human>(c) Copyright 2010 by Sebastian Jeremias Osterfeld</human>
-          </copyright>
-          <access type="read">
-            <machine>
-              <group>stanford:stanford</group>
-            </machine>
-          </access>
-          <use>
-            <machine type="creativeCommons">by-sa</machine>
-            <human type="creativeCommons">CC Attribution Share Alike license</human>
-          </use>
-        </rightsMetadata>
-      XML
-    end
-
     before do
       mods = <<-EOXML
         <mods:mods xmlns:mods="http://www.loc.gov/mods/v3"
@@ -92,7 +73,6 @@ RSpec.describe Publish::PublicXmlService do
       allow(VirtualObject).to receive(:for).and_return([{ id: 'druid:hj097bm8879' }])
       item.contentMetadata.content = '<contentMetadata/>'
       item.descMetadata.content    = mods
-      item.rightsMetadata.content  = rights
       allow_any_instance_of(Publish::PublicDescMetadataService).to receive(:ng_xml).and_return(Nokogiri::XML(mods)) # calls Item.find and not needed in general tests
       allow(OpenURI).to receive(:open_uri).with('https://purl-test.stanford.edu/bc123df4567.xml').and_return('<xml/>')
       WebMock.disable_net_connect!
@@ -126,8 +106,10 @@ RSpec.describe Publish::PublicXmlService do
                                 description: description,
                                 identification: {},
                                 access: {
+                                  access: 'world',
+                                  download: 'world',
                                   embargo: {
-                                    releaseDate: DateTime.parse('2050-05-31')
+                                    releaseDate: '2021-10-08T00:00:00Z'
                                   }
                                 },
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
@@ -138,7 +120,32 @@ RSpec.describe Publish::PublicXmlService do
       end
 
       it 'adds embargo to the rights' do
-        expect(result).to eq '2050-05-31T00:00:00Z'
+        expect(result).to eq '2021-10-08T00:00:00Z'
+      end
+    end
+
+    context 'with an problematic location code' do
+      let(:cocina_object) do
+        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+                                type: Cocina::Models::Vocab.object,
+                                label: 'A generic label',
+                                version: 1,
+                                description: description,
+                                identification: {},
+                                access: {
+                                  access: 'location-based',
+                                  download: 'location-based',
+                                  readLocation: 'm&m'
+                                },
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+      end
+
+      let(:result) do
+        ng_xml.at_xpath('/publicObject/rightsMetadata/access[@type="read"]/machine/location').text
+      end
+
+      it 'does not munge the location code' do
+        expect(result).to eq 'm&m'
       end
     end
 

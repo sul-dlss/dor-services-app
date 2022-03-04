@@ -22,7 +22,7 @@ module Publish
       pub['publishVersion'] = "dor-services/#{Dor::VERSION}"
       pub.add_child(public_identity_metadata.root) # add in modified identityMetadata datastream
       pub.add_child(public_content_metadata.root) if public_content_metadata.xpath('//resource').any?
-      pub.add_child(public_rights_metadata.root)
+      pub.add_child(public_rights_metadata)
       pub.add_child(public_relationships.root)
       desc_md_xml = Publish::PublicDescMetadataService.new(public_cocina).ng_xml(include_access_conditions: false)
       pub.add_child(DublinCoreService.new(desc_md_xml).ng_xml.root)
@@ -33,7 +33,6 @@ module Publish
 
       thumb = @thumbnail_service.thumb
       pub.add_child(Nokogiri("<thumb>#{thumb}</thumb>").root) unless thumb.nil?
-
       new_pub = Nokogiri::XML(pub.to_xml, &:noblanks)
       new_pub.encoding = 'UTF-8'
       new_pub.to_xml
@@ -64,7 +63,7 @@ module Publish
     end
 
     def public_rights_metadata
-      @public_rights_metadata ||= RightsMetadata.new(fedora_object.rightsMetadata.ng_xml, release_date: release_date).create
+      @public_rights_metadata ||= RightsMetadata.new(public_cocina, release_date).create
     end
 
     def release_date
