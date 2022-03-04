@@ -12,6 +12,10 @@ RSpec.describe Dor::Goobi do
       version: 1,
       type: Cocina::Models::Vocab.document,
       label: 'Object Title & A Special character',
+      description: {
+        title: [{ value: 'Object Title & A Special character' }],
+        purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+      },
       identification: {
         barcode: barcode,
         catalogLinks: [
@@ -74,6 +78,10 @@ RSpec.describe Dor::Goobi do
                                        version: 1,
                                        type: Cocina::Models::Vocab.collection,
                                        label: 'Collection label',
+                                       description: {
+                                         title: [{ value: 'Collection label' }],
+                                         purl: "https://purl.stanford.edu/#{collection_druid.delete_prefix('druid:')}"
+                                       },
                                        access: {}
                                      })
     end

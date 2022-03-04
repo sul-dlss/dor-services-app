@@ -17,6 +17,10 @@ RSpec.describe ApplyAdminPolicyDefaults do
       version: 1,
       type: Cocina::Models::Vocab.object,
       label: 'Dummy DRO',
+      description: {
+        title: [{ value: 'Dummy DRO' }],
+        purl: "https://purl.stanford.edu/#{object_druid.delete_prefix('druid:')}"
+      },
       access: access_props,
       administrative: { hasAdminPolicy: apo_druid }
     )
@@ -51,6 +55,10 @@ RSpec.describe ApplyAdminPolicyDefaults do
           version: 1,
           type: Cocina::Models::Vocab.collection,
           label: 'Dummy Collection',
+          description: {
+            title: [{ value: 'Dummy Collection' }],
+            purl: "https://purl.stanford.edu/#{object_druid.delete_prefix('druid:')}"
+          },
           access: {},
           administrative: { hasAdminPolicy: apo_druid }
         )
@@ -171,6 +179,10 @@ RSpec.describe ApplyAdminPolicyDefaults do
           version: 1,
           type: Cocina::Models::Vocab.collection,
           label: 'Dummy Collection',
+          description: {
+            title: [{ value: 'Dummy Collection' }],
+            purl: "https://purl.stanford.edu/#{object_druid.delete_prefix('druid:')}"
+          },
           access: {},
           administrative: { hasAdminPolicy: apo_druid }
         )
@@ -266,6 +278,10 @@ RSpec.describe ApplyAdminPolicyDefaults do
           version: 1,
           type: Cocina::Models::Vocab.object,
           label: 'Dummy Object',
+          description: {
+            title: [{ value: 'Dummy Object' }],
+            purl: "https://purl.stanford.edu/#{object_druid.delete_prefix('druid:')}"
+          },
           access: {},
           administrative: { hasAdminPolicy: apo_druid },
           structural: {

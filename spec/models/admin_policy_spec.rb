@@ -10,7 +10,11 @@ RSpec.describe AdminPolicy do
                                       type: Cocina::Models::Vocab.admin_policy,
                                       label: 'Test Admin Policy',
                                       version: 1,
-                                      administrative: { hasAdminPolicy: 'druid:hy787xj5878', hasAgreement: 'druid:bb033gt0615' }
+                                      administrative: {
+                                        hasAdminPolicy: 'druid:hy787xj5878',
+                                        hasAgreement: 'druid:bb033gt0615',
+                                        defaultAccess: { access: 'world', download: 'world' }
+                                      }
                                     })
   end
 
@@ -21,7 +25,11 @@ RSpec.describe AdminPolicy do
                                       type: Cocina::Models::Vocab.admin_policy,
                                       label: 'Test Admin Policy',
                                       version: 1,
-                                      administrative: { hasAdminPolicy: 'druid:hy787xj5878', hasAgreement: 'druid:bb033gt0615' },
+                                      administrative: {
+                                        hasAdminPolicy: 'druid:hy787xj5878',
+                                        hasAgreement: 'druid:bb033gt0615',
+                                        defaultAccess: { access: 'world', download: 'world' }
+                                      },
                                       description: {
                                         title: [{ value: 'Test Admin Policy' }],
                                         purl: 'https://purl.stanford.edu/jt959wc5586'

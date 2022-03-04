@@ -409,7 +409,11 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                         type: Cocina::Models::Vocab.admin_policy,
                                         label: collection_label,
                                         version: 1,
-                                        administrative: { hasAdminPolicy: apo_druid, hasAgreement: apo_druid })
+                                        administrative: {
+                                          hasAdminPolicy: apo_druid,
+                                          hasAgreement: apo_druid,
+                                          defaultAccess: { access: 'world', download: 'world' }
+                                        })
       end
 
       it 'generates a single symphony record' do
@@ -701,6 +705,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       Cocina::Models::Collection.new(externalIdentifier: collection_druid,
                                      type: Cocina::Models::Vocab.collection,
                                      label: collection_label,
+                                     description: descriptive_metadata_basic,
                                      version: 1,
                                      access: {},
                                      identification: identity_metadata_collection)
@@ -737,23 +742,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
 
   describe '#get_x2_part_info' do
-    context 'without descMetadata' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
-                                label: dro_object_label,
-                                version: 1,
-                                identification: {},
-                                access: {},
-                                administrative: { hasAdminPolicy: apo_druid },
-                                structural: structural_metadata)
-      end
-
-      it 'returns nil for objects with part information' do
-        expect(umrs.get_x2_part_info).to be_nil
-      end
-    end
-
     context 'with descMetadata without part information' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,

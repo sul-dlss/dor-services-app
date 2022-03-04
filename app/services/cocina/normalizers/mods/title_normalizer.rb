@@ -12,6 +12,10 @@ module Cocina
           new(mods_ng_xml: mods_ng_xml, label: label).normalize
         end
 
+        def self.normalize_missing_title(mods_ng_xml:, label:)
+          new(mods_ng_xml: mods_ng_xml, label: label).normalize_missing_title
+        end
+
         def initialize(mods_ng_xml:, label:)
           @ng_xml = mods_ng_xml.dup
           @ng_xml.encoding = 'UTF-8'
@@ -20,9 +24,15 @@ module Cocina
 
         def normalize
           normalize_hydrus_title
-          normalize_empty_titles
+          clean_empty_titles
           normalize_title_type
           normalize_title_trailing
+          normalize_title_as_label
+          ng_xml
+        end
+
+        def normalize_missing_title
+          normalize_title_as_label
           ng_xml
         end
 
@@ -34,14 +44,10 @@ module Cocina
           titles = ng_xml.root.xpath('mods:titleInfo/mods:title[string-length() > 0]', mods: ModsNormalizer::MODS_NS)
           return if titles.present? || label != 'Hydrus'
 
-          new_title_info = Nokogiri::XML::Node.new('titleInfo', Nokogiri::XML(nil))
-          new_title = Nokogiri::XML::Node.new('title', Nokogiri::XML(nil))
-          new_title.content = 'Hydrus'
-          new_title_info << new_title
-          ng_xml.root << new_title_info
+          add_title('Hydrus')
         end
 
-        def normalize_empty_titles
+        def clean_empty_titles
           ng_xml.root.xpath('//mods:title[not(text())]', mods: ModsNormalizer::MODS_NS).each(&:remove)
           ng_xml.root.xpath('//mods:subTitle[not(text())]', mods: ModsNormalizer::MODS_NS).each(&:remove)
           ng_xml.root.xpath('//mods:titleInfo[not(mods:*) and not(@xlink:href)]',
@@ -58,6 +64,22 @@ module Cocina
           ng_xml.root.xpath('//mods:titleInfo[not(@type="abbreviated")]/mods:title', mods: ModsNormalizer::MODS_NS).each do |title_node|
             title_node.content = title_node.content.delete_suffix(',')
           end
+        end
+
+        def normalize_title_as_label
+          return if ng_xml.root.xpath('mods:titleInfo/mods:title',
+                                      mods: ModsNormalizer::MODS_NS).present? || ng_xml.root.xpath('mods:titleInfo[@xlink:href]', mods: ModsNormalizer::MODS_NS,
+                                                                                                                                  xlink: ModsNormalizer::XLINK_NS).present?
+
+          add_title(label)
+        end
+
+        def add_title(content)
+          new_title_info = Nokogiri::XML::Node.new('titleInfo', Nokogiri::XML(nil))
+          new_title = Nokogiri::XML::Node.new('title', Nokogiri::XML(nil))
+          new_title.content = content
+          new_title_info << new_title
+          ng_xml.root << new_title_info
         end
       end
     end

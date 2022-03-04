@@ -5,8 +5,11 @@ MODS_ATTRIBUTES = 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd"'
 
-def add_purl(cocina, druid)
-  cocina.merge(purl: cocina.fetch(:purl, Purl.for(druid: druid)))
+def add_purl_and_title(cocina, druid)
+  cocina.merge({
+    purl: cocina.fetch(:purl, Purl.for(druid: druid)),
+    title: cocina.key?(:title) ? nil : [{ value: label }]
+  }.compact)
 end
 
 RSpec.shared_examples 'cocina to MODS' do |expected_xml|
@@ -40,7 +43,7 @@ RSpec.shared_examples 'MODS cocina mapping' do
   # Optional: druid, roundtrip_mods, warnings, errors, mods_attributes, skip_normalization, label
 
   # NOTE: Because we haven't necessarily set a title in this Cocina::Models::Description, it may not validate against the openapi.
-  let(:orig_cocina_description) { Cocina::Models::Description.new(add_purl(cocina, local_druid), false, false) }
+  let(:orig_cocina_description) { Cocina::Models::Description.new(add_purl_and_title(cocina, local_druid), false, false) }
 
   let(:orig_mods_ng) { ng_mods_for(mods, mods_attributes) }
 
@@ -56,12 +59,12 @@ RSpec.shared_examples 'MODS cocina mapping' do
 
   let(:skip_normalization) { false }
 
-  let(:label) { nil }
+  let(:label) { 'Test title' }
 
   context 'when mapping from MODS (to cocina)' do
     let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
-    let(:actual_cocina_props) { Cocina::FromFedora::Descriptive.props(mods: orig_mods_ng, druid: local_druid, notifier: notifier) }
+    let(:actual_cocina_props) { Cocina::FromFedora::Descriptive.props(mods: orig_mods_ng, druid: local_druid, notifier: notifier, label: label) }
 
     before do
       allow(notifier).to receive(:warn)
@@ -74,19 +77,17 @@ RSpec.shared_examples 'MODS cocina mapping' do
     end
 
     it 'cocina hash produces valid cocina Description' do
-      # TODO: support testing with no title
       cocina_props = actual_cocina_props.deep_dup
-      cocina_props[:title] = [{ value: 'Test title' }] if cocina_props[:title].nil?
       expect { Cocina::Models::Description.new(cocina_props) }.not_to raise_error
     end
 
     it 'MODS maps to expected cocina' do
-      expect(actual_cocina_props).to be_deep_equal(add_purl(cocina, local_druid))
+      expect(actual_cocina_props).to be_deep_equal(add_purl_and_title(cocina, local_druid))
     end
 
     it 'notifier receives warning and/or error messages as specified' do
       # TODO: support testing with no title
-      Cocina::FromFedora::Descriptive.props(mods: orig_mods_ng, druid: local_druid, notifier: notifier, title_builder: TestTitleBuilder)
+      Cocina::FromFedora::Descriptive.props(mods: orig_mods_ng, druid: local_druid, notifier: notifier, title_builder: TestTitleBuilder, label: label)
       if local_warnings.empty?
         expect(notifier).not_to have_received(:warn)
       else
@@ -114,7 +115,7 @@ RSpec.shared_examples 'MODS cocina mapping' do
   end
 
   context 'when mapping to MODS (from cocina)' do
-    let(:expected_mods_ng) { Cocina::Normalizers::ModsNormalizer.normalize_purl(mods_ng_xml: (roundtrip_mods_ng || orig_mods_ng), druid: local_druid) }
+    let(:expected_mods_ng) { Cocina::Normalizers::ModsNormalizer.normalize_purl_and_missing_title(mods_ng_xml: (roundtrip_mods_ng || orig_mods_ng), druid: local_druid, label: label) }
 
     let(:actual_mods_ng) { Cocina::ToFedora::Descriptive.transform(orig_cocina_description, local_druid) }
 
@@ -135,9 +136,11 @@ RSpec.shared_examples 'MODS cocina mapping' do
   context 'when mapping from roundtrip MODS (to cocina)' do
     let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
-    let(:roundtrip_mods_xml) { Cocina::Normalizers::ModsNormalizer.normalize_purl(mods_ng_xml: roundtrip_mods_ng, druid: local_druid).to_xml if defined?(roundtrip_mods) }
+    let(:roundtrip_mods_xml) do
+      Cocina::Normalizers::ModsNormalizer.normalize_purl_and_missing_title(mods_ng_xml: roundtrip_mods_ng, druid: local_druid, label: label).to_xml if defined?(roundtrip_mods)
+    end
 
-    let(:roundtrip_cocina_props) { Cocina::FromFedora::Descriptive.props(mods: roundtrip_mods_ng, druid: local_druid, notifier: notifier) }
+    let(:roundtrip_cocina_props) { Cocina::FromFedora::Descriptive.props(mods: roundtrip_mods_ng, druid: local_druid, notifier: notifier, label: label) }
 
     let(:roundtrip_cocina_description) { Cocina::Models::Description.new(roundtrip_cocina_props, false, false) }
 
@@ -149,7 +152,7 @@ RSpec.shared_examples 'MODS cocina mapping' do
     end
 
     it 'roundtrip MODS maps to expected cocina' do
-      expect(roundtrip_cocina_props).to be_deep_equal(add_purl(cocina, local_druid)) if defined?(roundtrip_mods)
+      expect(roundtrip_cocina_props).to be_deep_equal(add_purl_and_title(cocina, local_druid)) if defined?(roundtrip_mods)
     end
 
     it 'roundtrip cocina maps to roundtrip MODS' do
@@ -175,7 +178,7 @@ RSpec.shared_examples 'cocina MODS mapping' do
   # Optional: druid, roundtrip_cocina, warnings, errors, mods_attributes, label
 
   # NOTE: Because we haven't necessarily set a title in this Cocina::Models::Description, it may not validate against the openapi.
-  let(:orig_cocina_description) { Cocina::Models::Description.new(add_purl(cocina, local_druid), false, false) }
+  let(:orig_cocina_description) { Cocina::Models::Description.new(add_purl_and_title(cocina, local_druid), false, false) }
 
   let(:mods_attributes) { MODS_ATTRIBUTES }
 
@@ -189,7 +192,7 @@ RSpec.shared_examples 'cocina MODS mapping' do
 
   let(:local_errors) { defined?(errors) ? errors : [] }
 
-  let(:label) { nil }
+  let(:label) { 'Test title' }
 
   context 'when mapping from cocina (to MODS)' do
     let(:actual_mods_ng) { Cocina::ToFedora::Descriptive.transform(orig_cocina_description, local_druid) }
@@ -203,14 +206,14 @@ RSpec.shared_examples 'cocina MODS mapping' do
     # as we are starting with a cocina representation, there may be empty cocina values
     # which could result in empty MODS elements from the transform.  The empty elements are correct at this point.
     it 'cocina Description maps to expected MODS' do
-      expect(actual_xml).to be_equivalent_to Cocina::Normalizers::ModsNormalizer.normalize_purl(mods_ng_xml: mods_ng, druid: local_druid).to_xml
+      expect(actual_xml).to be_equivalent_to Cocina::Normalizers::ModsNormalizer.normalize_purl_and_missing_title(mods_ng_xml: mods_ng, druid: local_druid, label: label).to_xml
     end
   end
 
   context 'when mapping to cocina (from MODS)' do
     let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
-    let(:actual_cocina_props) { Cocina::FromFedora::Descriptive.props(mods: mods_ng, druid: local_druid, notifier: notifier) }
+    let(:actual_cocina_props) { Cocina::FromFedora::Descriptive.props(mods: mods_ng, druid: local_druid, notifier: notifier, label: label) }
 
     let(:expected_cocina) { defined?(roundtrip_cocina) ? roundtrip_cocina : cocina }
 
@@ -226,11 +229,11 @@ RSpec.shared_examples 'cocina MODS mapping' do
     end
 
     it 'MODS maps to expected cocina' do
-      expect(actual_cocina_props).to eq(add_purl(expected_cocina, local_druid))
+      expect(actual_cocina_props).to eq(add_purl_and_title(expected_cocina, local_druid))
     end
 
     it 'notifier receives warning and/or error messages as specified' do
-      Cocina::FromFedora::Descriptive.props(mods: mods_ng, druid: local_druid, notifier: notifier, title_builder: TestTitleBuilder)
+      Cocina::FromFedora::Descriptive.props(mods: mods_ng, druid: local_druid, notifier: notifier, title_builder: TestTitleBuilder, label: label)
       if local_warnings.empty?
         expect(notifier).not_to have_received(:warn)
       else
@@ -262,13 +265,13 @@ RSpec.shared_examples 'cocina MODS mapping' do
 
     let(:my_roundtrip_cocina) { defined?(roundtrip_cocina) ? roundtrip_cocina : cocina }
 
-    let(:roundtrip_cocina_description) { Cocina::Models::Description.new(add_purl(my_roundtrip_cocina, local_druid), false, false) }
+    let(:roundtrip_cocina_description) { Cocina::Models::Description.new(add_purl_and_title(my_roundtrip_cocina, local_druid), false, false) }
 
     let(:roundtrip_mods_ng) { Cocina::ToFedora::Descriptive.transform(roundtrip_cocina_description, local_druid) }
 
     let(:roundtrip_mods_xml) { roundtrip_mods_ng.to_xml }
 
-    let(:re_roundtrip_cocina_props) { Cocina::FromFedora::Descriptive.props(mods: roundtrip_mods_ng, druid: local_druid, notifier: notifier) }
+    let(:re_roundtrip_cocina_props) { Cocina::FromFedora::Descriptive.props(mods: roundtrip_mods_ng, druid: local_druid, notifier: notifier, label: label) }
 
     before do
       allow(notifier).to receive(:warn)
@@ -282,7 +285,7 @@ RSpec.shared_examples 'cocina MODS mapping' do
     end
 
     it 'roundtrip MODS maps to roundtrip cocina' do
-      expect(re_roundtrip_cocina_props).to eq(add_purl(roundtrip_cocina, local_druid)) if defined?(roundtrip_cocina)
+      expect(re_roundtrip_cocina_props).to eq(add_purl_and_title(roundtrip_cocina, local_druid)) if defined?(roundtrip_cocina)
     end
   end
 end

@@ -12,6 +12,10 @@ RSpec.describe Cocina::CollectionExistenceValidator do
                                    label: 'Collection of new maps of Africa',
                                    version: 1,
                                    cocinaVersion: '0.0.1',
+                                   description: {
+                                     title: [{ value: 'Collection of new maps of Africa' }],
+                                     purl: "https://purl.stanford.edu/#{collection_druid.delete_prefix('druid:')}"
+                                   },
                                    access: {})
   end
 
@@ -26,6 +30,10 @@ RSpec.describe Cocina::CollectionExistenceValidator do
         label: 'The Structure of Scientific Revolutions',
         type: 'http://cocina.sul.stanford.edu/models/book.jsonld',
         version: 1,
+        description: {
+          title: [{ value: 'The Structure of Scientific Revolutions' }],
+          purl: 'https://purl.stanford.edu/bc123df4567'
+        },
         administrative: {
           hasAdminPolicy: 'druid:df123cd4567'
         },
@@ -45,6 +53,10 @@ RSpec.describe Cocina::CollectionExistenceValidator do
         label: 'The Structure of Scientific Revolutions',
         type: 'http://cocina.sul.stanford.edu/models/book.jsonld',
         version: 1,
+        description: {
+          title: [{ value: 'The Structure of Scientific Revolutions' }],
+          purl: 'https://purl.stanford.edu/bc123df4567'
+        },
         administrative: {
           hasAdminPolicy: 'druid:df123cd4567'
         },
@@ -68,6 +80,10 @@ RSpec.describe Cocina::CollectionExistenceValidator do
         label: 'The Structure of Scientific Revolutions',
         type: 'http://cocina.sul.stanford.edu/models/book.jsonld',
         version: 1,
+        description: {
+          title: [{ value: 'The Structure of Scientific Revolutions' }],
+          purl: 'https://purl.stanford.edu/bc123df4567'
+        },
         administrative: {
           hasAdminPolicy: 'druid:df123cd4567'
         },

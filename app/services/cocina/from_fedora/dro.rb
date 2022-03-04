@@ -56,7 +56,7 @@ module Cocina
         {
           externalIdentifier: fedora_item.pid,
           type: type,
-          label: Label.for(fedora_item),
+          label: cocina_label,
           version: fedora_item.current_version.to_i,
           administrative: FromFedora::Administrative.props(fedora_item),
           access: DROAccess.props(fedora_item.rightsMetadata, fedora_item.embargoMetadata),
@@ -66,8 +66,9 @@ module Cocina
           description = FromFedora::Descriptive.props(title_builder: title_builder,
                                                       mods: fedora_item.descMetadata.ng_xml,
                                                       druid: fedora_item.pid,
+                                                      label: cocina_label,
                                                       notifier: notifier)
-          props[:description] = description unless description.nil?
+          props[:description] = description
           props[:geographic] = { iso19139: fedora_item.geoMetadata.content } if type == Cocina::Models::Vocab.geo
           identification = FromFedora::Identification.props(fedora_item)
           props[:identification] = identification unless identification.empty?
@@ -78,6 +79,10 @@ module Cocina
       private
 
       attr_reader :fedora_item, :notifier
+
+      def cocina_label
+        @cocina_label ||= Label.for(fedora_item)
+      end
     end
   end
 end

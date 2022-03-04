@@ -679,6 +679,10 @@ RSpec.describe CocinaObjectStore do
                                     type: Cocina::Models::Vocab.book,
                                     label: 'Test DRO',
                                     version: 1,
+                                    description: {
+                                      title: [{ value: 'Test DRO' }],
+                                      purl: 'https://purl.stanford.edu/xz456jk0987'
+                                    },
                                     access: { access: 'world', download: 'world' },
                                     administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
                                   })
@@ -699,7 +703,11 @@ RSpec.describe CocinaObjectStore do
                                             type: Cocina::Models::Vocab.admin_policy,
                                             label: 'Test Admin Policy',
                                             version: 1,
-                                            administrative: { hasAdminPolicy: 'druid:hy787xj5878', hasAgreement: 'druid:bb033gt0615' }
+                                            administrative: {
+                                              hasAdminPolicy: 'druid:hy787xj5878',
+                                              hasAgreement: 'druid:bb033gt0615',
+                                              defaultAccess: { access: 'world', download: 'world' }
+                                            }
                                           })
         end
 
@@ -717,6 +725,10 @@ RSpec.describe CocinaObjectStore do
                                            externalIdentifier: 'druid:hp308wm0436',
                                            type: Cocina::Models::Vocab.collection,
                                            label: 'Test Collection',
+                                           description: {
+                                             title: [{ value: 'Test Collection' }],
+                                             purl: 'https://purl.stanford.edu/hp308wm0436'
+                                           },
                                            version: 1,
                                            access: { access: 'world' }
                                          })

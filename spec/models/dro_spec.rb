@@ -12,6 +12,10 @@ RSpec.describe Dro do
                               type: Cocina::Models::Vocab.book,
                               label: 'Test DRO',
                               version: 1,
+                              description: {
+                                title: [{ value: 'Test DRO' }],
+                                purl: 'https://purl.stanford.edu/xz456jk0987'
+                              },
                               access: { access: 'world', download: 'world' },
                               administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
                             })
@@ -76,7 +80,7 @@ RSpec.describe Dro do
     end
 
     context 'with complete DRO' do
-      let(:dro) { create(:dro, :with_dro_description, :with_dro_identification, :with_structural, :with_geographic, external_identifier: druid) }
+      let(:dro) { create(:dro, :with_dro_identification, :with_structural, :with_geographic, external_identifier: druid) }
 
       it 'returns a Cocina::Model::DRO' do
         expect(dro.to_cocina).to eq(cocina_dro)
@@ -97,7 +101,7 @@ RSpec.describe Dro do
         expect(dro.version).to eq(minimal_cocina_dro.version)
         expect(dro.access).to eq(minimal_cocina_dro.access.to_h.with_indifferent_access)
         expect(dro.administrative).to eq(minimal_cocina_dro.administrative.to_h.with_indifferent_access)
-        expect(dro.description).to be_nil
+        expect(dro.description).to eq(cocina_dro.description.to_h.with_indifferent_access)
         expect(dro.identification).to be_nil
         expect(dro.structural).to be_nil
         expect(dro.geographic).to be_nil

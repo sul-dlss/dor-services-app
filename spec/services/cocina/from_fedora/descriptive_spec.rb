@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Cocina::FromFedora::Descriptive do
   subject(:descriptive) do
-    described_class.props(mods: Nokogiri::XML(desc_metadata), druid: 'druid:bb196dd3409', notifier: notifier)
+    described_class.props(mods: Nokogiri::XML(desc_metadata), druid: 'druid:bb196dd3409', notifier: notifier, label: 'test label')
   end
 
   let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }

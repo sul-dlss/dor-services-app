@@ -11,6 +11,10 @@ RSpec.describe Collection do
                                      type: Cocina::Models::Vocab.collection,
                                      label: 'Test Collection',
                                      version: 1,
+                                     description: {
+                                       title: [{ value: 'Test Collection' }],
+                                       purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+                                     },
                                      access: { access: 'world' }
                                    })
   end
@@ -23,11 +27,11 @@ RSpec.describe Collection do
                                      label: 'Test Collection',
                                      version: 1,
                                      access: { access: 'world' },
-                                     administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
                                      description: {
                                        title: [{ value: 'Test Collection' }],
-                                       purl: 'https://purl.stanford.edu/hp308wm0436'
+                                       purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
                                      },
+                                     administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
                                      identification: { sourceId: 'googlebooks:999999' }
                                    })
   end
@@ -42,7 +46,7 @@ RSpec.describe Collection do
     end
 
     context 'with complete Collection' do
-      let(:collection) { create(:collection, :with_administrative, :with_collection_description, :with_collection_identification, external_identifier: druid) }
+      let(:collection) { create(:collection, :with_administrative, :with_collection_identification, external_identifier: druid) }
 
       it 'returns a Cocina::Model::Collection' do
         expect(collection.to_cocina).to eq(cocina_collection)
@@ -63,7 +67,7 @@ RSpec.describe Collection do
         expect(collection.version).to eq(minimal_cocina_collection.version)
         expect(collection.access).to eq(minimal_cocina_collection.access.to_h.with_indifferent_access)
         expect(collection.administrative).to be_nil
-        expect(collection.description).to be_nil
+        expect(collection.description).to eq(cocina_collection.description.to_h.with_indifferent_access)
         expect(collection.identification).to be_nil
       end
     end

@@ -15,7 +15,11 @@ RSpec.describe Cocina::ObjectCreator do
                                       type: Cocina::Models::Vocab.admin_policy,
                                       label: 'Test Admin Policy',
                                       version: 1,
-                                      administrative: { hasAdminPolicy: 'druid:hy787xj5878', hasAgreement: 'druid:bb033gt0615' }
+                                      administrative: {
+                                        hasAdminPolicy: 'druid:hy787xj5878',
+                                        hasAgreement: 'druid:bb033gt0615',
+                                        defaultAccess: { access: 'world', download: 'world' }
+                                      }
                                     })
   end
   let(:persister) { class_double(Cocina::ActiveFedoraPersister, store: nil) }
@@ -138,7 +142,11 @@ RSpec.describe Cocina::ObjectCreator do
         {
           'type' => 'http://cocina.sul.stanford.edu/models/media.jsonld',
           'externalIdentifier' => druid,
-          'label' => 'Rockhounding Utah',
+          'label' => 'Kayaking the Maine Coast',
+          'description' => {
+            'title' => [{ 'value' => 'Kayaking the Maine Coast' }],
+            'purl' => "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+          },
           'access' => { 'access' => 'dark', 'download' => 'none' },
           'version' => 1,
           'structural' => {},
@@ -149,10 +157,6 @@ RSpec.describe Cocina::ObjectCreator do
           'identification' => {
             'sourceId' => 'sul:8.559351',
             'catalogLinks' => [{ 'catalog' => 'symphony', 'catalogRecordId' => '10121797' }]
-          },
-          'description' => {
-            'title' => [{ 'value' => 'Rockhounding Utah' }],
-            'purl' => Purl.for(druid: druid)
           }
         }
       end
@@ -168,6 +172,10 @@ RSpec.describe Cocina::ObjectCreator do
           'type' => 'http://cocina.sul.stanford.edu/models/agreement.jsonld',
           'externalIdentifier' => druid,
           'label' => 'My Agreement',
+          'description' => {
+            'title' => [{ 'value' => 'My Agreement' }],
+            'purl' => "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+          },
           'access' => {},
           'version' => 1,
           'administrative' => {
@@ -175,10 +183,6 @@ RSpec.describe Cocina::ObjectCreator do
           },
           'identification' => {
             'sourceId' => 'identifier:1'
-          },
-          'description' => {
-            'title' => [{ 'value' => 'My Agreement' }],
-            'purl' => Purl.for(druid: druid)
           }
         }
       end
@@ -195,8 +199,8 @@ RSpec.describe Cocina::ObjectCreator do
       let(:params) do
         {
           'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
-          'externalIdentifier' => druid,
           'label' => 'Mountain Biking Utah',
+          'externalIdentifier' => 'druid:bb010dx6027',
           'access' => {},
           'version' => 1,
           'structural' => {},

@@ -10,18 +10,20 @@ module Cocina
       # @param [#build] title_builder
       # @param [Nokogiri::XML] mods
       # @param [String] druid
+      # @oaram [String] label
       # @param [Cocina::FromFedora::DataErrorNotifier] notifier
       # @return [Hash] a hash that can be mapped to a cocina descriptive model
       # @raises [Cocina::Mapper::InvalidDescMetadata] if some assumption about descMetadata is violated
-      def self.props(mods:, druid:, title_builder: Titles, notifier: nil)
-        new(title_builder: title_builder, mods: mods, druid: druid, notifier: notifier).props
+      def self.props(mods:, druid:, label:, title_builder: Titles, notifier: nil)
+        new(title_builder: title_builder, mods: mods, druid: druid, label: label, notifier: notifier).props
       end
 
-      def initialize(title_builder:, mods:, druid:, notifier:)
+      def initialize(title_builder:, mods:, label:, druid:, notifier:)
         @title_builder = title_builder
         @ng_xml = mods
         @notifier = notifier || DataErrorNotifier.new(druid: druid)
         @druid = druid
+        @label = label
       end
 
       # @return [Hash] a hash that can be mapped to a cocina descriptive model
@@ -31,15 +33,17 @@ module Cocina
 
         check_altrepgroups
         check_version
-        DescriptiveBuilder.build(title_builder: title_builder,
-                                 resource_element: ng_xml.root,
-                                 notifier: notifier,
-                                 purl: druid ? ::Purl.for(druid: druid) : nil)
+        props = DescriptiveBuilder.build(title_builder: title_builder,
+                                         resource_element: ng_xml.root,
+                                         notifier: notifier,
+                                         purl: druid ? ::Purl.for(druid: druid) : nil)
+        props[:title] = [{ value: label }] unless props.key?(:title)
+        props
       end
 
       private
 
-      attr_reader :title_builder, :ng_xml, :notifier, :druid
+      attr_reader :title_builder, :ng_xml, :notifier, :druid, :label
 
       def check_altrepgroups
         ng_xml.xpath('//mods:*[@altRepGroup]', mods: DESC_METADATA_NS)

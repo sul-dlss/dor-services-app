@@ -32,7 +32,8 @@ RSpec.describe 'Update MODS' do
     Cocina::Models::AdminPolicy.new(externalIdentifier: apo_druid,
                                     administrative: {
                                       hasAdminPolicy: 'druid:gg123vx9393',
-                                      hasAgreement: 'druid:bb008zm4587'
+                                      hasAgreement: 'druid:bb008zm4587',
+                                      defaultAccess: { access: 'world', download: 'world' }
                                     },
                                     version: 1,
                                     label: 'just an apo',
@@ -91,11 +92,11 @@ RSpec.describe 'Update MODS' do
       XML
     end
 
-    it 'returns bad request' do
+    it 'returns no content' do
       put '/v1/objects/druid:mk420bs7601/metadata/mods',
           params: xml,
           headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response).to have_http_status(:bad_request)
+      expect(response).to have_http_status(:no_content)
     end
   end
 end
