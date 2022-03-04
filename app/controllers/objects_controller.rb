@@ -58,9 +58,17 @@ class ObjectsController < ApplicationController
   end
 
   def update
+    if request.headers['If-Match'] && (computed_etag(CocinaObjectStore.find(params[:id])) != request.headers['If-Match'])
+      return json_api_error(status: :precondition_failed,
+                            title: 'ETag mismatch',
+                            message: 'You are attempting to update a stale copy of the record. Refetch the record and attempt your change again.')
+    end
+
     cocina_object = Cocina::Models.build(params.except(:action, :controller, :id).to_unsafe_h)
     updated_cocina_object = CocinaObjectStore.save(cocina_object)
 
+    # Casting the Cocina object to a hash makes the etag stable.
+    fresh_when(etag: cocina_object.to_h, last_modified: DateTime.now)
     render json: updated_cocina_object
   # This rescue will no longer be necessary when remove Fedora.
   rescue Cocina::RoundtripValidationError => e
@@ -73,8 +81,8 @@ class ObjectsController < ApplicationController
   def show
     (@cocina_object, created_at, modified_at) = CocinaObjectStore.find_with_timestamps(params[:id])
     headers['X-Created-At'] = created_at.httpdate
-    headers['Last-Modified'] = modified_at.httpdate
-    render json: @cocina_object
+    # Casting the Cocina object to a hash makes the etag stable.
+    render json: @cocina_object if stale?(etag: @cocina_object.to_h, last_modified: modified_at)
   end
 
   # Initialize specified workflow (assemblyWF by default), and also version if needed
@@ -183,6 +191,10 @@ class ObjectsController < ApplicationController
   end
 
   private
+
+  def computed_etag(existing_record)
+    response.send(:generate_weak_etag, existing_record)
+  end
 
   def workflow_client
     WorkflowClientFactory.build

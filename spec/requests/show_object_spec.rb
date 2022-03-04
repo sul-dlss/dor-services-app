@@ -59,6 +59,7 @@ RSpec.describe 'Get the object' do
         expect(response).to have_http_status(:ok)
         expect(response.headers['Last-Modified']).to end_with 'GMT'
         expect(response.headers['X-Created-At']).to end_with 'GMT'
+        expect(response.headers['ETag']).to be_present
         expect(response.body).to equal_cocina_model(expected)
       end
     end

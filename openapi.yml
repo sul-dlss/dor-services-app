@@ -1195,6 +1195,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '412':
+          description: Provided ETag didn't match the previous version.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Server error
     get:
@@ -1220,6 +1226,8 @@ paths:
             X-Created-At:
               schema:
                 type: string
+        '304':
+          description: No change. The client provided an ETag that matches the current state of the item.
         '422':
           description: Unprocessable Entity
           content:

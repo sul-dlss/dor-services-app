@@ -148,6 +148,43 @@ RSpec.describe 'Update object' do
     expect(EventFactory).to have_received(:create).with(druid: druid, data: hash_including(:request, success: true), event_type: 'update')
   end
 
+  context 'when If-Match is provided' do
+    let(:existing_record) { {} } # this will produce ETag: W/"d41d8cd98f00b204e9800998ecf8427e"
+
+    before do
+      allow(CocinaObjectStore).to receive(:find).with(druid).and_return(existing_record)
+    end
+
+    context 'when the etag matches' do
+      it 'updates the object' do
+        patch "/v1/objects/#{druid}",
+              params: data,
+              headers: {
+                'Authorization' => "Bearer #{jwt}",
+                'If-Match' => 'W/"d41d8cd98f00b204e9800998ecf8427e"',
+                'Content-Type' => 'application/json'
+              }
+        expect(response.status).to eq(200)
+        expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+        expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
+        expect(item).to have_received(:save!)
+      end
+    end
+
+    context 'when the etag does not match' do
+      it 'returns a precondition failed' do
+        patch "/v1/objects/#{druid}",
+              params: data,
+              headers: {
+                'Authorization' => "Bearer #{jwt}",
+                'If-Match' => 'W/"92bc06dd43c01d1f42e5e664e6434de0"',
+                'Content-Type' => 'application/json'
+              }
+        expect(response).to have_http_status(:precondition_failed)
+      end
+    end
+  end
+
   context 'when update_descriptive is true' do
     let(:description) do
       {
