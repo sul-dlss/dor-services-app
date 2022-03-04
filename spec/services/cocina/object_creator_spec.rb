@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ObjectCreator do
-  subject(:result) { described_class.create(request, druid: druid, persister: persister, assign_doi: assign_doi) }
+  subject(:result) { described_class.create(request, druid: druid, persister: persister) }
 
   let(:created_cocina_object) { Cocina::Mapper.build(result) }
 
@@ -19,7 +19,7 @@ RSpec.describe Cocina::ObjectCreator do
                                     })
   end
   let(:persister) { class_double(Cocina::ActiveFedoraPersister, store: nil) }
-  let(:request) { Cocina::Models.build_request(params) }
+  let(:request) { Cocina::Models.build(params) }
   let(:druid) { 'druid:mb046vj7485' }
   let(:assign_doi) { false }
   let(:no_result) { { 'response' => { 'numFound' => 0, 'docs' => [] } } }
@@ -31,11 +31,12 @@ RSpec.describe Cocina::ObjectCreator do
     allow(Settings.datacite).to receive(:prefix).and_return('10.25740')
   end
 
-  context 'when Cocina::Models::RequestDRO is received' do
+  context 'when Cocina::Models::DRO is received' do
     context 'when no description is supplied (no title, but label)' do
       let(:params) do
         {
           'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
+          'externalIdentifier' => druid,
           'label' => 'label value',
           'access' => {},
           'version' => 1,
@@ -58,6 +59,7 @@ RSpec.describe Cocina::ObjectCreator do
       let(:params) do
         {
           'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
+          'externalIdentifier' => druid,
           'label' => 'contributor mapping test',
           'access' => {},
           'version' => 1,
@@ -69,6 +71,7 @@ RSpec.describe Cocina::ObjectCreator do
             'sourceId' => 'donot:care'
           },
           description: {
+            purl: Purl.for(druid: druid),
             note: [
               {
                 type: 'abstract',
@@ -157,6 +160,7 @@ RSpec.describe Cocina::ObjectCreator do
       let(:params) do
         {
           'type' => 'http://cocina.sul.stanford.edu/models/media.jsonld',
+          'externalIdentifier' => druid,
           'label' => ':auto',
           'access' => { 'access' => 'dark', 'download' => 'none' },
           'version' => 1,
@@ -181,6 +185,7 @@ RSpec.describe Cocina::ObjectCreator do
       let(:params) do
         {
           'type' => 'http://cocina.sul.stanford.edu/models/agreement.jsonld',
+          'externalIdentifier' => druid,
           'label' => 'My Agreement',
           'access' => {},
           'version' => 1,
@@ -198,32 +203,6 @@ RSpec.describe Cocina::ObjectCreator do
       end
     end
 
-    context 'when assigning DOI' do
-      let(:assign_doi) { true }
-
-      let(:params) do
-        {
-          'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
-          'label' => ':auto',
-          'access' => {},
-          'version' => 1,
-          'structural' => {},
-          'administrative' => {
-            'partOfProject' => 'Naxos : 2009',
-            'hasAdminPolicy' => apo
-          },
-          'identification' => {
-            'sourceId' => 'sul:8.559351',
-            'catalogLinks' => [{ 'catalog' => 'symphony', 'catalogRecordId' => '10121797' }]
-          }
-        }
-      end
-
-      it 'adds DOI' do
-        expect(created_cocina_object.identification.doi).to eq '10.25740/mb046vj7485'
-      end
-    end
-
     context 'when retaining DOI for trial' do
       subject(:result) { described_class.trial_create(request, cocina_object_store: nil, notifier: nil) }
 
@@ -231,8 +210,8 @@ RSpec.describe Cocina::ObjectCreator do
       let(:params) do
         {
           'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
+          'externalIdentifier' => druid,
           'label' => ':auto',
-          'externalIdentifier' => 'druid:bb010dx6027',
           'access' => {},
           'version' => 1,
           'structural' => {},
@@ -255,12 +234,13 @@ RSpec.describe Cocina::ObjectCreator do
   end
 
   context 'when Cocina::Models::RequestCollection is received' do
-    let(:request) { Cocina::Models.build_request(params) }
+    let(:request) { Cocina::Models.build(params) }
 
     context 'when there is a note of type summary' do
       let(:params) do
         {
           'type' => 'http://cocina.sul.stanford.edu/models/collection.jsonld',
+          'externalIdentifier' => druid,
           'label' => 'collection label',
           'version' => 1,
           'access' => {},
@@ -268,6 +248,7 @@ RSpec.describe Cocina::ObjectCreator do
             'hasAdminPolicy' => apo
           },
           'description' => {
+            'purl' => Purl.for(druid: druid),
             'title' => [
               {
                 'value' => 'collection title'
@@ -305,6 +286,7 @@ RSpec.describe Cocina::ObjectCreator do
     let(:params) do
       {
         'type' => Cocina::Models::Vocab.geo,
+        'externalIdentifier' => druid,
         'label' => ':auto',
         'access' => {},
         'version' => 1,
@@ -316,6 +298,7 @@ RSpec.describe Cocina::ObjectCreator do
           'sourceId' => 'sul:8.559351'
         },
         description: {
+          purl: Purl.for(druid: druid),
           title: [
             {
               value: 'a map'

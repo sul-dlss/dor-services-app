@@ -125,9 +125,10 @@ class CocinaObjectStore
     druid = SuriService.mint_id
     updated_cocina_request_object = sync_from_symphony(updated_cocina_request_object, druid)
     cocina_object = cocina_from_request(updated_cocina_request_object, druid)
+    cocina_object = assign_doi(cocina_object) if assign_doi
 
     # This saves the Fedora object.
-    fedora_object = fedora_create(cocina_object, druid: druid, assign_doi: assign_doi)
+    fedora_object = fedora_create(cocina_object, druid: druid)
     add_tags_for_create(druid, cocina_object)
     # This creates version 1.0.0 (Initial Version)
     ObjectVersion.increment_version(druid)
@@ -209,13 +210,12 @@ class CocinaObjectStore
     fedora_find(druid).destroy
   end
 
-  # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object
+  # @param [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy] cocina_object
   # @param [String] druid
-  # @param [boolean] assign_doi
   # @return [Dor::Abstract] Fedora item
   # @raises SymphonyReader::ResponseError if symphony connection failed
-  def fedora_create(cocina_request_object, druid:, assign_doi: false)
-    Cocina::ObjectCreator.create(cocina_request_object, druid: druid, assign_doi: assign_doi)
+  def fedora_create(cocina_object, druid:)
+    Cocina::ObjectCreator.create(cocina_object, druid: druid)
   end
 
   # The *ar* methods are private. In later steps in the migration, the *ar* methods will be invoked by the
@@ -389,6 +389,13 @@ class CocinaObjectStore
     end
 
     Cocina::Models.build(props)
+  end
+
+  def assign_doi(cocina_object)
+    return cocina_object unless cocina_object.dro?
+
+    identification = cocina_object.identification || Cocina::Models::Identification.new
+    cocina_object.new(identification: identification.new(doi: Doi.for(druid: cocina_object.externalIdentifier)))
   end
 end
 # rubocop:enable Metrics/ClassLength
