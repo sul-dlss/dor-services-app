@@ -10,6 +10,9 @@ module Cocina
 
       def initialize(default_object_rights_ds)
         @rights_metadata_ds = Dor::RightsMetadataDS.from_xml(default_object_rights_ds.content)
+      rescue StandardError => e
+        new_message = "unable to get DefaultObjectRights contents - is DS empty? #{e.message}"
+        raise e.class.exception(new_message)
       end
 
       def props
