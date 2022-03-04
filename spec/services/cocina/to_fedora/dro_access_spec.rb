@@ -167,4 +167,52 @@ RSpec.describe Cocina::ToFedora::DROAccess do
       XML
     end
   end
+
+  context 'when clearing an existing use statement' do
+    let(:item) do
+      Dor::Item.new
+    end
+    let(:access) do
+      Cocina::Models::DROAccess.new
+    end
+
+    before do
+      item.rightsMetadata.content = <<~XML
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <none/>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <none/>
+            </machine>
+          </access>
+          <use>
+            <human type="useAndReproduction">New Use Statement</human>
+          </use>
+          <copyright/>
+        </rightsMetadata>
+      XML
+    end
+
+    it 'clears out the license' do
+      apply
+      expect(item.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <none/>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <none/>
+            </machine>
+          </access>
+        </rightsMetadata>
+      XML
+    end
+  end
 end

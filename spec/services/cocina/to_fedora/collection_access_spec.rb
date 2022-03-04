@@ -29,16 +29,6 @@ RSpec.describe Cocina::ToFedora::CollectionAccess do
               <world/>
             </machine>
           </access>
-          <use>
-            <human type="useAndReproduction"/>
-            <human type="creativeCommons"/>
-            <machine type="creativeCommons" uri=""/>
-            <human type="openDataCommons"/>
-            <machine type="openDataCommons" uri=""/>
-          </use>
-          <copyright>
-            <human/>
-          </copyright>
         </rightsMetadata>
       XML
     end
@@ -92,12 +82,57 @@ RSpec.describe Cocina::ToFedora::CollectionAccess do
             </machine>
           </access>
           <use>
-            <human type="useAndReproduction"/>
             <license>https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode</license>
+          </use>
+        </rightsMetadata>
+      XML
+    end
+  end
+
+  context 'with an existing use statement' do
+    let(:access) do
+      Cocina::Models::CollectionAccess.new
+    end
+
+    before do
+      collection.rightsMetadata.content = <<~XML
+        <?xml version="1.0"?>
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <none/>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <none/>
+            </machine>
+          </access>
+          <use>
+            <human type="useAndReproduction">A Really Cool Use Statement</human>
           </use>
           <copyright>
             <human/>
           </copyright>
+        </rightsMetadata>
+      XML
+    end
+
+    it 'builds the xml, blanking the existing license' do
+      apply
+      expect(collection.rightsMetadata.ng_xml).to be_equivalent_to <<-XML
+        <?xml version="1.0"?>
+        <rightsMetadata>
+          <access type="discover">
+            <machine>
+              <none/>
+            </machine>
+          </access>
+          <access type="read">
+            <machine>
+              <none/>
+            </machine>
+          </access>
         </rightsMetadata>
       XML
     end

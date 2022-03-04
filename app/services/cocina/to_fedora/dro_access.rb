@@ -35,7 +35,7 @@ module Cocina
         item.rightsMetadata.copyright = access.copyright
         # now remove any empty copyright elements
         item.rightsMetadata.ng_xml.root.xpath('//copyright[count(*) = 0]').each(&:remove)
-        item.rightsMetadata.use_statement = access.useAndReproductionStatement if access.useAndReproductionStatement
+        item.rightsMetadata.use_statement = access.useAndReproductionStatement
         License.update(item.rightsMetadata, access.license)
         item.rightsMetadata.ng_xml_will_change!
       end

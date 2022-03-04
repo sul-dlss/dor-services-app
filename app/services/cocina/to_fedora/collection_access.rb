@@ -20,9 +20,11 @@ module Cocina
         return if access.nil?
 
         AccessGenerator.generate(root: collection.rightsMetadata.ng_xml.root, access: access)
-        collection.rightsMetadata.copyright = access.copyright if access.copyright
-        collection.rightsMetadata.use_statement = access.useAndReproductionStatement if access.useAndReproductionStatement
-        License.update(collection.rightsMetadata, access.license) if access.license
+        collection.rightsMetadata.copyright = access.copyright
+        # now remove any empty copyright elements
+        collection.rightsMetadata.ng_xml.root.xpath('//copyright[count(*) = 0]').each(&:remove)
+        collection.rightsMetadata.use_statement = access.useAndReproductionStatement
+        License.update(collection.rightsMetadata, access.license)
         collection.rightsMetadata.ng_xml_will_change!
       end
 
