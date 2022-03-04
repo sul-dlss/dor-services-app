@@ -89,7 +89,7 @@ class CocinaObjectStore
 
   # @return [Array] a tuple consisting of cocina object, created date and modified date
   def find_with_timestamps(druid)
-    if Settings.enabled_features.postgres.ar_find && ar_exists?(druid)
+    if Settings.enabled_features.postgres && ar_exists?(druid)
       ar_to_cocina_find(druid)
     else
       fedora_to_cocina_find(druid)
@@ -98,21 +98,16 @@ class CocinaObjectStore
 
   def save(cocina_object)
     validate(cocina_object)
-    (fedora_object, created_at, modified_at) = cocina_to_fedora_save(cocina_object)
+    (created_at, modified_at) = cocina_to_fedora_save(cocina_object)
+    # Only update if already exists in PG (i.e., added by create or migration).
+    (created_at, modified_at) = cocina_to_ar_save(cocina_object) if Settings.enabled_features.postgres && ar_exists?(cocina_object.externalIdentifier)
     add_tags_for_update(cocina_object)
 
-    # Doing late mapping so that can add tags first.
-    updated_cocina_object = Cocina::Mapper.build(fedora_object)
-
-    # Only want to update if already exists in PG (i.e., added by create or migration).
-    # This will make sure gets correct create/update dates.
-    cocina_to_ar_save(updated_cocina_object) if Settings.enabled_features.postgres.update && ar_exists?(cocina_object.externalIdentifier)
-
-    event_factory.create(druid: updated_cocina_object.externalIdentifier, event_type: 'update', data: { success: true, request: updated_cocina_object.to_h })
+    event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update', data: { success: true, request: cocina_object.to_h })
 
     # Broadcast this update action to a topic
-    Notifications::ObjectUpdated.publish(model: updated_cocina_object, created_at: created_at, modified_at: modified_at)
-    updated_cocina_object
+    Notifications::ObjectUpdated.publish(model: cocina_object, created_at: created_at, modified_at: modified_at)
+    cocina_object
   rescue Cocina::ValidationError => e
     event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update', data: { success: false, error: e.message, request: cocina_object.to_h })
     raise
@@ -129,7 +124,8 @@ class CocinaObjectStore
     cocina_object = assign_doi(cocina_object) if assign_doi
 
     # This saves the Fedora object.
-    fedora_object = fedora_create(cocina_object, druid: druid)
+    fedora_create(cocina_object, druid: druid)
+    cocina_to_ar_save(cocina_object) if Settings.enabled_features.postgres
     add_tags_for_create(druid, cocina_object)
     # This creates version 1.0.0 (Initial Version)
     ObjectVersion.increment_version(druid)
@@ -137,10 +133,6 @@ class CocinaObjectStore
     # Fedora 3 has no unique constrains, so
     # index right away to reduce the likelyhood of duplicate sourceIds
     SynchronousIndexer.reindex_remotely(druid)
-
-    # Doing late mapping so that can add tags first.
-    cocina_object = Cocina::Mapper.build(fedora_object)
-    cocina_to_ar_save(cocina_object) if Settings.enabled_features.postgres.create
 
     event_factory.create(druid: druid, event_type: 'registration', data: cocina_object.to_h)
 
@@ -172,7 +164,7 @@ class CocinaObjectStore
     cocina_object = CocinaObjectStore.find(druid)
     fedora_destroy(druid)
 
-    ar_destroy(druid) if Settings.enabled_features.postgres.destroy && ar_exists?(druid)
+    ar_destroy(druid) if Settings.enabled_features.postgres && ar_exists?(druid)
 
     Notifications::ObjectDeleted.publish(model: cocina_object, deleted_at: Time.zone.now)
   end
@@ -189,12 +181,13 @@ class CocinaObjectStore
     [Cocina::Mapper.build(fedora_object), fedora_object.create_date.to_datetime, fedora_object.modified_date.to_datetime]
   end
 
+  # @return [Array] array consisting of created date and modified date
   def cocina_to_fedora_save(cocina_object)
     # Currently this only supports an update, not a save.
     fedora_object = fedora_find(cocina_object.externalIdentifier)
     # Updating produces a different Cocina object than it was provided.
     Cocina::ObjectUpdater.run(fedora_object, cocina_object)
-    [fedora_object, fedora_object.create_date, fedora_object.modified_date]
+    [fedora_object.create_date, fedora_object.modified_date]
   rescue Cocina::Mapper::MapperError, Cocina::ObjectUpdater::NotImplemented => e
     event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update', data: { success: false, error: e.message, request: cocina_object.to_h })
     raise
@@ -224,7 +217,7 @@ class CocinaObjectStore
 
   # Persist a Cocina object with ActiveRecord.
   # @param [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy] cocina_object
-  # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
+  # @return [Array] array consisting of created date and modified date
   def cocina_to_ar_save(cocina_object)
     model_clazz = case cocina_object
                   when Cocina::Models::AdminPolicy
@@ -236,8 +229,8 @@ class CocinaObjectStore
                   else
                     raise CocinaObjectStoreError, "unsupported type #{cocina_object&.type}"
                   end
-    model_clazz.upsert_cocina(cocina_object)
-    cocina_object
+    ar_cocina_object = model_clazz.upsert_cocina(cocina_object)
+    [ar_cocina_object.created_at, ar_cocina_object.updated_at]
   end
 
   # Find a Cocina object persisted by ActiveRecord.

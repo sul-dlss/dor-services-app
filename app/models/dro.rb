@@ -46,5 +46,6 @@ class Dro < ApplicationRecord
     dro = Dro.find_or_initialize_by(external_identifier: cocina_dro.externalIdentifier)
     dro.update(to_model_hash(cocina_dro).except(:external_identifier))
     dro.save!
+    dro
   end
 end

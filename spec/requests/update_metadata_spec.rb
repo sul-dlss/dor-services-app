@@ -137,7 +137,8 @@ RSpec.describe 'Update object' do
           params: data,
           headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
     expect(response.status).to eq(200)
-    expect(response.body).to equal_cocina_model(expected)
+    expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+    expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
     expect(item).to have_received(:save!)
     expect(item).to have_received(:admin_policy_object_id=).with(apo_druid)
     expect(Cocina::ObjectValidator).to have_received(:validate)
@@ -193,8 +194,9 @@ RSpec.describe 'Update object' do
               params: data,
               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.status).to eq(200)
+        expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+        expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
         expect(item).to have_received(:save!)
-        expect(response.body).to equal_cocina_model(expected)
       end
     end
 
@@ -365,8 +367,9 @@ RSpec.describe 'Update object' do
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.status).to eq(200)
+      expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+      expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
       expect(item).to have_received(:save!)
-      expect(response.body).to equal_cocina_model(expected)
     end
   end
 
@@ -402,8 +405,9 @@ RSpec.describe 'Update object' do
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.status).to eq(200)
+      expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+      expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
       expect(item).to have_received(:save!)
-      expect(response.body).to equal_cocina_model(expected)
     end
   end
 
@@ -421,8 +425,9 @@ RSpec.describe 'Update object' do
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.status).to eq(200)
+      expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+      expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
       expect(item).to have_received(:save!)
-      expect(response.body).to equal_cocina_model(expected)
 
       # Tags are updated.
       expect(AdministrativeTags).not_to have_received(:create)
@@ -441,8 +446,9 @@ RSpec.describe 'Update object' do
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.status).to eq(200)
+      expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+      expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
       expect(item).to have_received(:save!)
-      expect(response.body).to equal_cocina_model(expected)
 
       # Tags are not updated or created.
       expect(AdministrativeTags).not_to have_received(:create)
@@ -594,8 +600,9 @@ RSpec.describe 'Update object' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq 200
+        expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+        expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
 
         # Identity metadata set correctly.
         expect(item.objectLabel.first).to eq(expected_label)
@@ -611,8 +618,9 @@ RSpec.describe 'Update object' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(200)
+        expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+        expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
       end
     end
     # rubocop:enable Layout/LineLength
@@ -839,8 +847,9 @@ RSpec.describe 'Update object' do
           patch "/v1/objects/#{druid}",
                 params: data,
                 headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(response.body).to equal_cocina_model(expected)
           expect(response.status).to eq(200)
+          expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+          expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
           expect(item.contentMetadata.resource.file.count).to eq 4
         end
       end
@@ -888,8 +897,9 @@ RSpec.describe 'Update object' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(200)
+        expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+        expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
       end
     end
   end
@@ -951,8 +961,9 @@ RSpec.describe 'Update object' do
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
 
-      expect(response.body).to equal_cocina_model(expected)
       expect(response.status).to eq(200)
+      expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+      expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
     end
   end
 
@@ -1016,8 +1027,9 @@ RSpec.describe 'Update object' do
       patch "/v1/objects/#{druid}",
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-      expect(response.body).to equal_cocina_model(expected)
       expect(response.status).to eq(200)
+      expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+      expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
     end
   end
 
@@ -1109,8 +1121,9 @@ RSpec.describe 'Update object' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(200)
+        expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+        expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
       end
     end
 
@@ -1138,9 +1151,9 @@ RSpec.describe 'Update object' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to equal_cocina_model(expected)
-
         expect(response.status).to eq(200)
+        expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+        expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
       end
     end
   end
@@ -1205,8 +1218,9 @@ RSpec.describe 'Update object' do
       patch "/v1/objects/#{druid}",
             params: data,
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-      expect(response.body).to equal_cocina_model(expected)
       expect(response.status).to eq(200)
+      expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+      expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
     end
   end
 end

@@ -39,5 +39,6 @@ class AdminPolicy < ApplicationRecord
     admin_policy = AdminPolicy.find_or_initialize_by(external_identifier: cocina_admin_policy.externalIdentifier)
     admin_policy.update(to_model_hash(cocina_admin_policy).except(:external_identifier))
     admin_policy.save!
+    admin_policy
   end
 end

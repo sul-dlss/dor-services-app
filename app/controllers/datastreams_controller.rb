@@ -6,7 +6,7 @@
 class DatastreamsController < ApplicationController
   def index
     druid = params[:object_id]
-    result = if Settings.enabled_features.postgres.ar_find && CocinaObjectStore.new.ar_exists?(druid)
+    result = if Settings.enabled_features.postgres && CocinaObjectStore.new.ar_exists?(druid)
                # By returning an empty array for objects that are retrieved from postgres, this allows
                # editing to continue on objects that are retrieved from Fedora.
                # The empty array serves to disable datastream editing in Argo for the object without

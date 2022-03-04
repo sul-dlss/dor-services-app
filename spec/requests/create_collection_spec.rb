@@ -37,7 +37,7 @@ RSpec.describe 'Create object' do
     let(:data) do
       <<~JSON
         {
-          "cocinaVersion":"0.0.1",
+          "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
           "label":"#{label}","version":1,"access":{"access":"world"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
@@ -124,7 +124,7 @@ RSpec.describe 'Create object' do
     let(:data) do
       <<~JSON
         {
-          "cocinaVersion":"0.0.1",
+          "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
           "label":"#{label}","version":1,"access":{"access":"world"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Hydrus"},
@@ -148,7 +148,7 @@ RSpec.describe 'Create object' do
     let(:data) do
       <<~JSON
         {
-          "cocinaVersion":"0.0.1",
+          "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
           "label":"#{label}",
           "version":1,
@@ -191,7 +191,7 @@ RSpec.describe 'Create object' do
     let(:data) do
       <<~JSON
         {
-          "cocinaVersion":"0.0.1",
+          "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
           "label":"#{label}",
           "version":1,
