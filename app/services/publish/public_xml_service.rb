@@ -33,7 +33,6 @@ module Publish
 
       thumb = @thumbnail_service.thumb
       pub.add_child(Nokogiri("<thumb>#{thumb}</thumb>").root) unless thumb.nil?
-
       new_pub = Nokogiri::XML(pub.to_xml, &:noblanks)
       new_pub.encoding = 'UTF-8'
       new_pub.to_xml
@@ -64,7 +63,7 @@ module Publish
     end
 
     def public_rights_metadata
-      @public_rights_metadata ||= RightsMetadata.new(public_cocina).create
+      @public_rights_metadata ||= RightsMetadata.new(public_cocina, release_date).create
     end
 
     def release_date

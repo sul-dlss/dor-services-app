@@ -5,11 +5,12 @@ require 'rails_helper'
 # rights objects for testing can be found at:
 # https://argo-stage.stanford.edu/catalog?f%5Bnonhydrus_collection_title_ssim%5D%5B%5D=rights+examples
 RSpec.describe Publish::RightsMetadata do
-  subject(:service) { described_class.new(cocina_object) }
+  subject(:service) { described_class.new(cocina_object, release_date) }
 
   describe '#create' do
     subject(:result) { service.create }
 
+    let(:release_date) { nil }
     let(:description) do
       {
         title: [{ value: 'Constituent label &amp; A Special character' }],
@@ -34,12 +35,12 @@ RSpec.describe Publish::RightsMetadata do
           <rightsMetadata>
             <access type="discover">
               <machine>
-                <none />
+                <none/>
               </machine>
             </access>
             <access type="read">
               <machine>
-                <none />
+                <none/>
               </machine>
             </access>
           </rightsMetadata>
@@ -47,7 +48,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'outputs dark rights metadata' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -84,7 +85,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'adds discover world and read world' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -119,10 +120,7 @@ RSpec.describe Publish::RightsMetadata do
                 <world />
               </machine>
             </access>
-            <use>
-              <human type="useAndReproduction">Temporary use statement</human
-              <license>https://creativecommons.org/licenses/by/4.0/legalcode</license>
-            </use>
+            <use><human type="useAndReproduction">Temporary use statement</human<license>https://creativecommons.org/licenses/by/4.0/legalcode</license></use>
             <copyright>
               <human>Temporary copyright</human>
             </copyright>
@@ -131,7 +129,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'adds discover world and read world with use and license' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(Nokogiri::XML(expected).to_xml)
       end
     end
 
@@ -168,7 +166,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'adds discover none and read none' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -202,12 +200,12 @@ RSpec.describe Publish::RightsMetadata do
             <access type="read">
               <machine>
                 <group>stanford</group>
-                <embargoReleaseDate>2020-02-26T00:00:00Z</embargoReleaseDate>
               </machine>
             </access>
             <access type="read">
               <machine>
                 <world rule="no-download" />
+                <embargoReleaseDate>2020-02-26T00:00:00+00:00</embargoReleaseDate>
               </machine>
             </access>
           </rightsMetadata>
@@ -215,7 +213,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'adds the embargo release date' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -253,7 +251,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'includes the location based access node' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -291,7 +289,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'adds the embargo release date' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -334,7 +332,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'outputs read blocks for stanford and the location' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -377,7 +375,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'outputs read blocks for world and the location' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -413,7 +411,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'returns the appropriate rights metadata xml' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -452,7 +450,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'returns the appropriate rights metadata xml' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -489,7 +487,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'returns the appropriate rights metadata xml' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -530,7 +528,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'returns the appropriate rights metadata xml' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -566,7 +564,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'returns the appropriate rights metadata xml' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -640,7 +638,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'returns the appropriate rights metadata xml' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -719,7 +717,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'outputs read blocks for stanford and the location' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -744,7 +742,7 @@ RSpec.describe Publish::RightsMetadata do
                 access: {
                   access: 'world',
                   download: 'location-based',
-                  readLocation: 'art'
+                  readLocation: 'm&m'
                 },
                 administrative: {
                   publish: true,
@@ -787,7 +785,7 @@ RSpec.describe Publish::RightsMetadata do
             <access type="read">
               <file>placeholder.jp2</file>
               <machine>
-                <location>art</location>
+                <location>m&amp;m</location>
               </machine>
               <machine>
                 <world rule="no-download" />
@@ -798,7 +796,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'outputs read blocks for stanford and the location' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -834,7 +832,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'adds discover world and read world' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
 
@@ -870,7 +868,7 @@ RSpec.describe Publish::RightsMetadata do
       end
 
       it 'adds discover none and read none' do
-        expect(result).to be_equivalent_to(expected)
+        expect(result.to_xml).to be_equivalent_to(expected)
       end
     end
   end

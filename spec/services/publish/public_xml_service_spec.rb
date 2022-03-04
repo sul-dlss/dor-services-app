@@ -124,6 +124,31 @@ RSpec.describe Publish::PublicXmlService do
       end
     end
 
+    context 'with an problematic location code' do
+      let(:cocina_object) do
+        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
+                                type: Cocina::Models::Vocab.object,
+                                label: 'A generic label',
+                                version: 1,
+                                description: description,
+                                identification: {},
+                                access: {
+                                  access: 'location-based',
+                                  download: 'location-based',
+                                  readLocation: 'm&m'
+                                },
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+      end
+
+      let(:result) do
+        ng_xml.at_xpath('/publicObject/rightsMetadata/access[@type="read"]/machine/location').text
+      end
+
+      it 'does not munge the location code' do
+        expect(result).to eq 'm&m'
+      end
+    end
+
     context 'produces xml with' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
