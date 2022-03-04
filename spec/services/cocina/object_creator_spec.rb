@@ -78,10 +78,6 @@ RSpec.describe Cocina::ObjectCreator do
                 type: 'email',
                 value: 'marypoppins@umbrellas.org',
                 displayLabel: 'Contact'
-              },
-              {
-                type: 'preferred citation',
-                value: 'Zappa, F. (2013) :link:'
               }
             ],
             title: [
@@ -154,11 +150,6 @@ RSpec.describe Cocina::ObjectCreator do
         contact_note = created_cocina_object.description.note.find { |note| note.type == 'email' }
         expect(contact_note.value).to eq 'marypoppins@umbrellas.org'
         expect(contact_note.displayLabel).to eq 'Contact'
-      end
-
-      it 'preferred citation is set with the link placeholder replaced' do
-        contact_note = created_cocina_object.description.note.find { |note| note.type == 'preferred citation' }
-        expect(contact_note.value).to eq 'Zappa, F. (2013) https://purl.stanford.edu/mb046vj7485'
       end
     end
 
