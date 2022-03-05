@@ -39,18 +39,31 @@ module Cocina
       end
 
       def build_apo_administrative
-        {}.tap do |admin|
-          registration_workflows = fedora_apo.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/registration/workflow/@id').map(&:value)
-          registration_collections = fedora_apo.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/registration/collection/@id').map(&:value)
-          dissemination_workflow = fedora_apo.administrativeMetadata.ng_xml.xpath('//administrativeMetadata/dissemination/workflow/@id').text
-          admin[:defaultAccess] = APOAccess.props(fedora_apo.defaultObjectRights)
-          admin[:disseminationWorkflow] = dissemination_workflow if dissemination_workflow.present?
-          admin[:registrationWorkflow] = registration_workflows if registration_workflows.present?
-          admin[:collectionsForRegistration] = registration_collections if registration_collections.present?
-          admin[:hasAdminPolicy] = fedora_apo.admin_policy_object_id
-          admin[:hasAgreement] = fedora_apo.agreement_object_id if fedora_apo.agreement_object_id.present?
-          admin[:roles] = build_roles
-        end
+        {
+          disseminationWorkflow: dissemination_workflow,
+          registrationWorkflow: registration_workflows,
+          collectionsForRegistration: registration_collections,
+          defaultAccess: APOAccess.props(fedora_apo.defaultObjectRights),
+          hasAdminPolicy: fedora_apo.admin_policy_object_id,
+          hasAgreement: fedora_apo.agreement_object_id,
+          roles: build_roles
+        }.compact
+      end
+
+      def registration_workflows
+        administrative_ng.xpath('//administrativeMetadata/registration/workflow/@id').map(&:value).presence
+      end
+
+      def registration_collections
+        administrative_ng.xpath('//administrativeMetadata/registration/collection/@id').map(&:value).presence
+      end
+
+      def dissemination_workflow
+        administrative_ng.xpath('//administrativeMetadata/dissemination/workflow/@id').text.presence
+      end
+
+      def administrative_ng
+        fedora_apo.administrativeMetadata.ng_xml
       end
 
       # @return [Array<Hash>] the list of name and members
