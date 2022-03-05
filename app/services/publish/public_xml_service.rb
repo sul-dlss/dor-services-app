@@ -104,9 +104,5 @@ module Publish
         )
       )
     end
-
-    def fedora_object
-      @fedora_object = Dor.find(public_cocina.externalIdentifier)
-    end
   end
 end

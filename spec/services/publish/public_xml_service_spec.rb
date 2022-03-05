@@ -49,11 +49,6 @@ RSpec.describe Publish::PublicXmlService do
   let(:release_tags) { {} }
 
   let(:druid) { 'druid:bc123df4567' }
-  let(:item) { instantiate_fixture('druid:bc123df4567', Dor::Item) }
-
-  before do
-    allow(Dor).to receive(:find).with(druid).and_return(item)
-  end
 
   describe '#to_xml' do
     subject(:xml) { service.to_xml }
@@ -71,8 +66,6 @@ RSpec.describe Publish::PublicXmlService do
       EOXML
 
       allow(VirtualObject).to receive(:for).and_return([{ id: 'druid:hj097bm8879' }])
-      item.contentMetadata.content = '<contentMetadata/>'
-      item.descMetadata.content    = mods
       allow_any_instance_of(Publish::PublicDescMetadataService).to receive(:ng_xml).and_return(Nokogiri::XML(mods)) # calls Item.find and not needed in general tests
       allow(OpenURI).to receive(:open_uri).with('https://purl-test.stanford.edu/bc123df4567.xml').and_return('<xml/>')
       WebMock.disable_net_connect!
@@ -273,17 +266,6 @@ RSpec.describe Publish::PublicXmlService do
       end
 
       it 'include a thumb node if a thumb is present' do
-        item.contentMetadata.content = <<-XML
-          <?xml version="1.0"?>
-          <contentMetadata objectId="druid:bc123df4567" type="map">
-            <resource id="0001" sequence="1" type="image">
-              <file id="bc123df4567_05_0001.jp2" mimetype="image/jp2"/>
-            </resource>
-            <resource id="0002" sequence="2" thumb="yes" type="image">
-              <file id="bc123df4567_05_0002.jp2" mimetype="image/jp2"/>
-            </resource>
-          </contentMetadata>
-        XML
         expect(ng_xml.at_xpath('/publicObject/thumb').to_xml).to be_equivalent_to('<thumb>bc123df4567/wt183gy6220_00_0001.jp2</thumb>')
       end
 
@@ -519,7 +501,6 @@ RSpec.describe Publish::PublicXmlService do
 
       it 'handles externalFile references' do
         correct_content_md = Nokogiri::XML(read_fixture('hj097bm8879_publicObject.xml')).at_xpath('/publicObject/contentMetadata').to_xml
-        item.contentMetadata.content = read_fixture('hj097bm8879_contentMetadata.xml')
 
         allow(CocinaObjectStore).to receive(:find).with(cover_item.externalIdentifier).and_return(cover_item)
         allow(CocinaObjectStore).to receive(:find).with(title_item.externalIdentifier).and_return(title_item)
