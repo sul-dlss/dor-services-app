@@ -45,13 +45,13 @@ class CocinaObjectStore
   # @param [#create] event_factory creates events
   # @raise [Cocina::RoundtripValidationError] raised when validating roundtrip mapping fails. This error will no longer be raised when Fedora is removed.
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
-  # @raise [CocinaObjectNotFoundError] raised if the cocina object does not already exist in the datastore. This error will no longer be raised when support create.
+  # @raise [CocinaObjectNotFoundError] raised if the cocina object does not already exist in the datastore.
   # @return [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] normalized cocina object
   def self.save(cocina_object, event_factory: EventFactory)
     new(event_factory: event_factory).save(cocina_object)
   end
 
-  # Removes a Cocina object from the   datastore.
+  # Removes a Cocina object from the datastore.
   # @param [String] druid
   # @raise [CocinaObjectNotFoundError] raised when the Cocina object is not found.
   def self.destroy(druid)
