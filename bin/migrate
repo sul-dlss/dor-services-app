@@ -1,7 +1,12 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Use "export RUBYOPT='-W:no-deprecated -W:no-experimental'" in the shell to silence warnings when script starts
+# shared/log/migration_results/migration-results-(timestamp).txt - shows druid migrated, with success / missing / ERROR, etc.
+# shared/log/fedora-migrator.log contains details of ERRORS (e.g. stacktrace)
+#
+# Use "export RUBYOPT='-W:no-deprecated -W:no-experimental'" in the shell to silence warnings when script starts, if desired
+#
+# For more on running scripts such as this one, see: https://docs.google.com/document/d/18gAZlMNcnKGYoegw34kBvqx2TLjaQEZelC_C_Myp2h8
 
 require_relative '../config/environment'
 require_relative '../lib/fedora_migrator'
@@ -33,4 +38,4 @@ druids ||= if options[:druids].empty?
              options[:druids]
            end
 
-FedoraMigrator.new(druids: druids, results_folder: 'log/migration_results' ).run
+FedoraMigrator.new(druids: druids, results_folder: 'log/migration_results').run

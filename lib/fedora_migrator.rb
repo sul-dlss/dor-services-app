@@ -3,11 +3,17 @@
 require 'tty-progressbar'
 
 # Migrate Fedora objects to cocina JSON and xml datastreams stored in Postgres
+#
+# shared/log/migration_results/migration-results-(timestamp).txt - shows druid migrated, with success / missing / ERROR, etc.
+# shared/log/fedora-migrator.log contains details of ERRORS (e.g. stacktrace)
 class FedoraMigrator
   def initialize(druids: [], results_folder: 'migration_results')
     @druids = druids
     @results_folder = results_folder
+    # rubocop:disable Rails/TimeZone
+    # empirically proven to work, while a couple other approaches did not
     @results_file_name = "migration-results-#{Time.now.strftime('%Y-%m-%dT%H:%M:%S')}.txt"
+    # rubocop:enable Rails/TimeZone
 
     return if Dir.exist?(results_folder)
 
