@@ -18,7 +18,7 @@ module Cocina
 
         case fedora_item.contentMetadata.contentType.first
         when 'image'
-          if /^Manuscript/.match?(AdministrativeTags.content_type(pid: fedora_item.pid).first)
+          if /^Manuscript/.match?(AdministrativeTags.content_type(identifier: fedora_item.pid).first)
             Cocina::Models::Vocab.manuscript
           else
             Cocina::Models::Vocab.image

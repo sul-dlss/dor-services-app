@@ -73,7 +73,7 @@ class FedoraLoader
 
     raise BadCache unless datastreams.key?('RELS-EXT')
 
-    AdministrativeTags.cache(pid: druid, tags: tags) if tags
+    AdministrativeTags.cache(identifier: druid, tags: tags) if tags
 
     obj = fedora_class(datastreams['RELS-EXT']).new(pid: druid, label: label)
     FedoraCache::DATASTREAMS.each do |dsid|

@@ -306,7 +306,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
 
     context "when bookData doesn't exist" do
       before do
-        allow(AdministrativeTags).to receive(:content_type).with(pid: item.id).and_return(content_type_tag)
+        allow(AdministrativeTags).to receive(:content_type).with(identifier: item.id).and_return(content_type_tag)
       end
 
       let(:book_data) { nil }

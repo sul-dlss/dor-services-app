@@ -39,7 +39,7 @@ RSpec.describe Dor::Goobi do
   let(:description) { nil }
 
   before do
-    allow(AdministrativeTags).to receive(:content_type).with(pid: druid).and_return(['book'])
+    allow(AdministrativeTags).to receive(:content_type).with(identifier: druid).and_return(['book'])
   end
 
   describe '#title_or_label' do

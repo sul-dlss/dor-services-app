@@ -292,13 +292,13 @@ class CocinaObjectStore
     process_tag = Cocina::ToFedora::ProcessTag.map(cocina_request_object.type, cocina_request_object.structural&.hasMemberOrders&.first&.viewingDirection)
     tags << process_tag if process_tag
     tags << "Project : #{cocina_request_object.administrative.partOfProject}" if cocina_request_object.administrative.partOfProject
-    AdministrativeTags.create(pid: druid, tags: tags) if tags.any?
+    AdministrativeTags.create(identifier: druid, tags: tags) if tags.any?
   end
 
   def add_collection_tags_for_create(druid, cocina_request_object)
     return unless cocina_request_object.administrative.partOfProject
 
-    AdministrativeTags.create(pid: druid, tags: ["Project : #{cocina_request_object.administrative.partOfProject}"])
+    AdministrativeTags.create(identifier: druid, tags: ["Project : #{cocina_request_object.administrative.partOfProject}"])
   end
 
   def add_tags_for_update(cocina_object)
@@ -318,18 +318,18 @@ class CocinaObjectStore
 
     existing_tags = tags_starting_with(druid, prefix)
     if existing_tags.empty?
-      AdministrativeTags.create(pid: druid, tags: [new_tag])
+      AdministrativeTags.create(identifier: druid, tags: [new_tag])
     elsif existing_tags.size > 1
       raise "Too many tags for prefix #{prefix}. Expected one."
     elsif existing_tags.first != new_tag
-      AdministrativeTags.update(pid: druid, current: existing_tags.first, new: new_tag)
+      AdministrativeTags.update(identifier: druid, current: existing_tags.first, new: new_tag)
     end
   end
 
   def tags_starting_with(druid, prefix)
     # This lets us find tags like "Project : Hydrus" when "Project" is the prefix, but will not match on tags like "Project : Hydrus : IR : data"
     prefix_count = prefix.count(':') + 1
-    AdministrativeTags.for(pid: druid).select do |tag|
+    AdministrativeTags.for(identifier: druid).select do |tag|
       tag.start_with?(prefix) && tag.count(':') == prefix_count
     end
   end

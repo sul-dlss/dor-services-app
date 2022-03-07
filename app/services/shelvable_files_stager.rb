@@ -6,14 +6,14 @@
 class ShelvableFilesStager
   class FileNotFound < RuntimeError; end
 
-  def self.stage(pid, content_metadata, shelve_diff, content_dir)
-    new(pid, content_metadata, shelve_diff, content_dir).stage
+  def self.stage(identifier, content_metadata, shelve_diff, content_dir)
+    new(identifier, content_metadata, shelve_diff, content_dir).stage
   end
 
-  def initialize(pid, content_metadata, shelve_diff, content_dir)
+  def initialize(identifier, content_metadata, shelve_diff, content_dir)
     @shelve_diff = shelve_diff
     @content_dir = content_dir
-    @pid = pid
+    @identifier = identifier
     @content_metadata = content_metadata
   end
 
@@ -36,7 +36,7 @@ class ShelvableFilesStager
 
   private
 
-  attr_reader :shelve_diff, :content_dir, :pid, :content_metadata
+  attr_reader :shelve_diff, :content_dir, :identifier, :content_metadata
 
   delegate :file_deltas, to: :shelve_diff
 
@@ -62,7 +62,7 @@ class ShelvableFilesStager
       writer = proc do |chunk, _overall_received_bytes|
         streamed.write chunk
       end
-      Preservation::Client.objects.content(druid: pid, filepath: file, on_data: writer)
+      Preservation::Client.objects.content(druid: identifier, filepath: file, on_data: writer)
     end
   end
 
@@ -73,7 +73,7 @@ class ShelvableFilesStager
   # @raise [Dor::Exception] if something went wrong.
   def preserve_diff
     @preserve_diff ||= begin
-      inventory_diff = Preservation::Client.objects.content_inventory_diff(druid: pid, content_metadata: content_metadata, subset: 'preserve')
+      inventory_diff = Preservation::Client.objects.content_inventory_diff(druid: identifier, content_metadata: content_metadata, subset: 'preserve')
       inventory_diff.group_difference('content')
     end
   rescue Preservation::Client::Error => e

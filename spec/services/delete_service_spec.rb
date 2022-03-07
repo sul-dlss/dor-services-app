@@ -52,7 +52,7 @@ RSpec.describe DeleteService do
 
     before do
       allow(CocinaObjectStore).to receive(:destroy)
-      AdministrativeTags.create(pid: druid, tags: ['test : tag'])
+      AdministrativeTags.create(identifier: druid, tags: ['test : tag'])
       Event.create!(druid: druid, event_type: 'version_close', data: { version: '4' })
       ObjectVersion.create(druid: druid, version: 4)
     end
@@ -60,7 +60,7 @@ RSpec.describe DeleteService do
     it 'deletes from datastore and Solr' do
       service.send(:delete_from_dor)
       expect(CocinaObjectStore).to have_received(:destroy).with(druid)
-      expect(AdministrativeTags.for(pid: druid)).to be_empty
+      expect(AdministrativeTags.for(identifier: druid)).to be_empty
       expect(Event.exists?(druid: druid)).to be(false)
       expect(ObjectVersion.exists?(druid: druid)).to be(false)
     end

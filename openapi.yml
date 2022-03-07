@@ -1086,9 +1086,6 @@ paths:
         - objects
       summary: Register a new object
       description: |-
-        If 'pid' is provided, this value will be used as the object
-        id, otherwise a new identifier will be minted.
-
         If 'collection' is provided, the object will be a member of the provided
         collection.
 

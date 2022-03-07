@@ -144,7 +144,7 @@ RSpec.describe 'Update object' do
     expect(Cocina::ObjectValidator).to have_received(:validate)
 
     # Tags are created.
-    expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : EEMS'])
+    expect(AdministrativeTags).to have_received(:create).with(identifier: druid, tags: ['Project : EEMS'])
     expect(EventFactory).to have_received(:create).with(druid: druid, data: hash_including(:request, success: true), event_type: 'update')
   end
 
@@ -431,8 +431,8 @@ RSpec.describe 'Update object' do
 
       # Tags are updated.
       expect(AdministrativeTags).not_to have_received(:create)
-      expect(AdministrativeTags).to have_received(:update).with(pid: druid, current: 'Process : Content Type : Book (ltr)', new: 'Process : Content Type : Book (rtl)')
-      expect(AdministrativeTags).to have_received(:update).with(pid: druid, current: 'Project : Tom Swift', new: 'Project : EEMS')
+      expect(AdministrativeTags).to have_received(:update).with(identifier: druid, current: 'Process : Content Type : Book (ltr)', new: 'Process : Content Type : Book (rtl)')
+      expect(AdministrativeTags).to have_received(:update).with(identifier: druid, current: 'Project : Tom Swift', new: 'Project : EEMS')
     end
   end
 

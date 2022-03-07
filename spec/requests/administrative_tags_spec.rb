@@ -26,7 +26,7 @@ RSpec.describe 'Administrative tags' do
     it 'returns a 200' do
       get "/v1/objects/#{druid}/administrative_tags",
           headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(AdministrativeTags).to have_received(:for).with(pid: druid).once
+      expect(AdministrativeTags).to have_received(:for).with(identifier: druid).once
       expect(response.status).to eq(200)
       expect(response.body).to eq(tags.to_json)
     end
@@ -43,7 +43,7 @@ RSpec.describe 'Administrative tags' do
              params: %( {"administrative_tags":#{tags.to_json}} ),
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(AdministrativeTags).to have_received(:create)
-          .with(pid: druid, tags: tags, replace: nil)
+          .with(identifier: druid, tags: tags, replace: nil)
         expect(response.status).to eq(201)
       end
     end
@@ -54,7 +54,7 @@ RSpec.describe 'Administrative tags' do
              params: %( {"administrative_tags":#{tags.to_json},"replace":true} ),
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(AdministrativeTags).to have_received(:create)
-          .with(pid: druid, tags: tags, replace: true)
+          .with(identifier: druid, tags: tags, replace: true)
         expect(response.status).to eq(201)
       end
     end
@@ -123,7 +123,7 @@ RSpec.describe 'Administrative tags' do
             params: %( {"administrative_tag":"#{new_tag}"} ),
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(AdministrativeTags).to have_received(:update)
-          .with(pid: druid, current: current_tag, new: new_tag)
+          .with(identifier: druid, current: current_tag, new: new_tag)
         expect(response.status).to eq(204)
       end
     end
@@ -137,7 +137,7 @@ RSpec.describe 'Administrative tags' do
             params: %( {"administrative_tag":"#{new_tag}"} ),
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(AdministrativeTags).to have_received(:update)
-          .with(pid: druid, current: current_tag, new: new_tag)
+          .with(identifier: druid, current: current_tag, new: new_tag)
         expect(response.status).to eq(204)
       end
     end
@@ -254,7 +254,7 @@ RSpec.describe 'Administrative tags' do
         delete "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(tag)}",
                headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(AdministrativeTags).to have_received(:destroy)
-          .with(pid: druid, tag: tag)
+          .with(identifier: druid, tag: tag)
         expect(response.status).to eq(204)
       end
     end
@@ -266,7 +266,7 @@ RSpec.describe 'Administrative tags' do
         delete "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(tag)}",
                headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(AdministrativeTags).to have_received(:destroy)
-          .with(pid: druid, tag: tag)
+          .with(identifier: druid, tag: tag)
         expect(response.status).to eq(204)
       end
     end

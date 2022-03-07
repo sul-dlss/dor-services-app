@@ -3,18 +3,18 @@
 require 'rails_helper'
 
 RSpec.describe Publish::MetadataTransferService do
-  let(:pid) { 'bc123df4567' }
+  let(:druid) { 'bc123df4567' }
   let(:description) do
     {
       title: [{ value: 'Constituent label &amp; A Special character' }],
-      purl: "https://purl.stanford.edu/#{pid}"
+      purl: "https://purl.stanford.edu/#{druid}"
     }
   end
 
   let(:access) { {} }
 
   let(:cocina_object) do
-    Cocina::Models::DRO.new(externalIdentifier: "druid:#{pid}",
+    Cocina::Models::DRO.new(externalIdentifier: "druid:#{druid}",
                             type: Cocina::Models::Vocab.object,
                             label: 'google download barcode 36105049267078',
                             version: 1,
@@ -56,8 +56,8 @@ RSpec.describe Publish::MetadataTransferService do
 
   describe '#publish' do
     before do
-      allow(OpenURI).to receive(:open_uri).with("https://purl-test.stanford.edu/#{pid}.xml").and_return('<xml/>')
-      allow(CocinaObjectStore).to receive(:find).with("druid:#{pid}").and_return(cocina_object)
+      allow(OpenURI).to receive(:open_uri).with("https://purl-test.stanford.edu/#{druid}.xml").and_return('<xml/>')
+      allow(CocinaObjectStore).to receive(:find).with("druid:#{druid}").and_return(cocina_object)
       allow(CocinaObjectStore).to receive(:find).with('druid:xh235dd9059').and_return(cocina_collection) # collection object
       allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
     end
@@ -69,7 +69,7 @@ RSpec.describe Publish::MetadataTransferService do
         allow(Settings).to receive(:purl_services_url).and_return('http://example.com/purl')
         allow(Settings.stacks).to receive(:local_document_cache_root).and_return(purl_root)
 
-        stub_request(:delete, "example.com/purl/purls/#{pid}")
+        stub_request(:delete, "example.com/purl/purls/#{druid}")
       end
 
       after do
@@ -83,7 +83,7 @@ RSpec.describe Publish::MetadataTransferService do
         File.write(File.join(druid1.path, 'tmpfile'), 'junk')
         service.publish
         expect(File).not_to exist(druid1.path) # it should now be gone
-        expect(WebMock).to have_requested(:delete, "example.com/purl/purls/#{pid}")
+        expect(WebMock).to have_requested(:delete, "example.com/purl/purls/#{druid}")
       end
     end
 
@@ -164,19 +164,19 @@ RSpec.describe Publish::MetadataTransferService do
         allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
         allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
 
-        stub_request(:post, "example.com/purl/purls/#{pid}")
+        stub_request(:post, "example.com/purl/purls/#{druid}")
       end
 
       it 'notifies the purl service of the update' do
         notify
-        expect(WebMock).to have_requested(:post, "example.com/purl/purls/#{pid}")
+        expect(WebMock).to have_requested(:post, "example.com/purl/purls/#{druid}")
       end
     end
 
     context 'when purl-fetcher is not configured' do
       let(:purl_root) { Dir.mktmpdir }
       let(:changes_dir) { Dir.mktmpdir }
-      let(:changes_file) { File.join(changes_dir, pid) }
+      let(:changes_file) { File.join(changes_dir, druid) }
 
       before do
         allow(Settings).to receive(:purl_services_url).and_return(nil)

@@ -1305,7 +1305,7 @@ RSpec.describe 'Create object' do
       expect(response.body).to equal_cocina_model(expected)
       expect(response.status).to eq(201)
       expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
-      expect(AdministrativeTags).to have_received(:create).with(pid: 'druid:gg777gg7777',
+      expect(AdministrativeTags).to have_received(:create).with(identifier: 'druid:gg777gg7777',
                                                                 tags: ['Process : Content Type : File'])
     end
   end

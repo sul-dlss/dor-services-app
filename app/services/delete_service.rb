@@ -47,11 +47,9 @@ class DeleteService
   end
 
   # Delete an object from DOR.
-  #
-  # @param [string] pid the druid
   def delete_from_dor
     CocinaObjectStore.destroy(druid)
-    AdministrativeTags.destroy_all(pid: druid)
+    AdministrativeTags.destroy_all(identifier: druid)
     ObjectVersion.where(druid: druid).destroy_all
     Event.where(druid: druid).destroy_all
   end
