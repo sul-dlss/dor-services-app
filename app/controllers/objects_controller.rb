@@ -33,11 +33,6 @@ class ObjectsController < ApplicationController
                    message: e.message)
   end
 
-  # No longer be necessary when remove Fedora.
-  rescue_from(ActiveFedora::ObjectNotFoundError) do |e|
-    json_api_error(status: :not_found, message: e.message)
-  end
-
   def create
     return json_api_error(status: :service_unavailable, message: 'Registration is temporarily disabled') unless Settings.enabled_features.registration
 
