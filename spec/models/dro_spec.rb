@@ -127,4 +127,32 @@ RSpec.describe Dro do
       end
     end
   end
+
+  describe 'sourceId uniqueness' do
+    let(:cocina_object1) do
+      minimal_cocina_dro.new(identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0031' })
+    end
+
+    context 'when sourceId is unique' do
+      let(:cocina_object2) do
+        minimal_cocina_dro.new(externalIdentifier: 'druid:dd645sg2172', identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0032' })
+      end
+
+      it 'does not raise' do
+        described_class.upsert_cocina(cocina_object1)
+        described_class.upsert_cocina(cocina_object2)
+      end
+    end
+
+    context 'when sourceId is not unique' do
+      let(:cocina_object2) do
+        minimal_cocina_dro.new(externalIdentifier: 'druid:dd645sg2172', identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0031' })
+      end
+
+      it 'raises' do
+        described_class.upsert_cocina(cocina_object1)
+        expect { described_class.upsert_cocina(cocina_object2) }.to raise_error(ActiveRecord::RecordNotUnique)
+      end
+    end
+  end
 end
