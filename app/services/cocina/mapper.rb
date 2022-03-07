@@ -49,8 +49,9 @@ module Cocina
               end
       klass.new(props)
     rescue StandardError => e
-      Honeybadger.notify(e)
-      raise UnexpectedBuildError, e # wrap unexpected StandardError, caller will probably want to look at #cause
+      new_message = "Unable to build cocina props - #{e.message}"
+      Honeybadger.notify(new_message)
+      raise UnexpectedBuildError, new_message # wrap unexpected StandardError, caller will probably want to look at #cause
     end
 
     private

@@ -169,7 +169,7 @@ RSpec.describe Cocina::Mapper do
 
       it 'raises and Honeybadger notifies' do
         expect { cocina_model }.to raise_error(Cocina::Mapper::UnexpectedBuildError)
-        expect(Honeybadger).to have_received(:notify).with(error)
+        expect(Honeybadger).to have_received(:notify).with('Unable to build cocina props - Mapping mixup')
       end
     end
 
