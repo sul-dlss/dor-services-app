@@ -153,6 +153,9 @@ class CocinaObjectStore
     item
   rescue ActiveFedora::ObjectNotFoundError
     raise CocinaObjectNotFoundError
+  rescue Rubydora::FedoraInvalidRequest, StandardError => e
+    new_message = "unable to find Fedora object or map to cmodel (is identityMetadata empty?) - #{e.message}"
+    raise e.class.exception(new_message)
   end
 
   # This is only public for migration use.
