@@ -564,7 +564,7 @@ RSpec.describe CocinaObjectStore do
       context 'when creating a new project tag' do
         it 'creates tag' do
           cocina_object_store.send(:add_tags_for_update, cocina_object)
-          expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : Google Books'])
+          expect(AdministrativeTags).to have_received(:create).with(identifier: druid, tags: ['Project : Google Books'])
         end
       end
 
@@ -585,7 +585,7 @@ RSpec.describe CocinaObjectStore do
 
         it 'creates tag' do
           cocina_object_store.send(:add_tags_for_update, cocina_object)
-          expect(AdministrativeTags).to have_received(:create).with(pid: druid, tags: ['Project : Google Books'])
+          expect(AdministrativeTags).to have_received(:create).with(identifier: druid, tags: ['Project : Google Books'])
         end
       end
     end

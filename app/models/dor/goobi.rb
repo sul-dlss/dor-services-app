@@ -64,7 +64,7 @@ module Dor
     def goobi_workflow_name
       @goobi_workflow_name ||= begin
         dpg_workflow_tag_id = 'DPG : Workflow : '
-        content_tag = AdministrativeTags.for(pid: cocina_obj.externalIdentifier).select { |tag| tag.include?(dpg_workflow_tag_id) }
+        content_tag = AdministrativeTags.for(identifier: cocina_obj.externalIdentifier).select { |tag| tag.include?(dpg_workflow_tag_id) }
         content_tag.empty? ? Settings.goobi.default_goobi_workflow_name : content_tag[0].split(':').last.strip
       end
     end
@@ -85,10 +85,10 @@ module Dor
     # note, the content_type tag comes from value of the tag called "Process : Content Type"
     # @return [String] first collection name the item is in (blank if none)
     def content_type
-      if AdministrativeTags.content_type(pid: cocina_obj.externalIdentifier).empty?
+      if AdministrativeTags.content_type(identifier: cocina_obj.externalIdentifier).empty?
         Cocina::ToFedora::ContentType.map(cocina_obj.type)
       else
-        AdministrativeTags.content_type(pid: cocina_obj.externalIdentifier).first
+        AdministrativeTags.content_type(identifier: cocina_obj.externalIdentifier).first
       end
     end
 
@@ -96,7 +96,7 @@ module Dor
     # @return [String] first project tag value if one exists (blank if none)
     def project_name
       project_tag_id = 'Project : '
-      content_tag = AdministrativeTags.for(pid: cocina_obj.externalIdentifier).select { |tag| tag.include?(project_tag_id) }
+      content_tag = AdministrativeTags.for(identifier: cocina_obj.externalIdentifier).select { |tag| tag.include?(project_tag_id) }
       content_tag.empty? ? '' : content_tag[0].gsub(project_tag_id, '').strip
     end
 
@@ -104,7 +104,7 @@ module Dor
     # the name of the tag is the first namespace part of the tag (before first colon), value of the tag is everything after this
     # @return [Array] of GoobiTag objects
     def goobi_tag_list
-      AdministrativeTags.for(pid: cocina_obj.externalIdentifier).map do |tag|
+      AdministrativeTags.for(identifier: cocina_obj.externalIdentifier).map do |tag|
         tag_split = tag.split(':', 2).map(&:strip) # only split on the first colon
         GoobiTag.new(name: tag_split[0], value: tag_split[1])
       end
@@ -115,7 +115,7 @@ module Dor
     def goobi_ocr_tag_present?
       @goobi_ocr_tag_present ||= begin
         dpg_goobi_ocr_tag = 'DPG : OCR : TRUE'
-        AdministrativeTags.for(pid: cocina_obj.externalIdentifier).any? { |tag| tag.casecmp(dpg_goobi_ocr_tag).zero? } # case insensitive compare
+        AdministrativeTags.for(identifier: cocina_obj.externalIdentifier).any? { |tag| tag.casecmp(dpg_goobi_ocr_tag).zero? } # case insensitive compare
       end
     end
 

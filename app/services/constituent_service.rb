@@ -15,7 +15,7 @@ class ConstituentService
   end
 
   # This resets the structural metadata of the virtual object and then adds the constituent resources.
-  # Typically this is only called one time (with a list of all the pids) because
+  # Typically this is only called one time (with a list of all the identifiers) because
   # subsequent calls will erase the previous changes.
   # @param [Array<String>] constituent_druids the identifiers of the constituent objects
   # @raise [ItemQueryService::UncombinableItemError] if a constituent object cannot be added to a virtual object

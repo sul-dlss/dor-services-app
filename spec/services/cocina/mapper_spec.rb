@@ -54,7 +54,7 @@ RSpec.describe Cocina::Mapper do
       let(:content_type) { 'book' }
 
       before do
-        allow(AdministrativeTags).to receive(:content_type).with(pid: fedora_object.id).and_return(['Book (rtl)'])
+        allow(AdministrativeTags).to receive(:content_type).with(identifier: fedora_object.id).and_return(['Book (rtl)'])
       end
 
       it 'builds the object with type book' do

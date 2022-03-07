@@ -25,7 +25,7 @@ module Cocina
           if use_tags
             # Fallback to using tags.  Some books don't have bookData nodes in contentMetadata XML.
             # When we migrate from Fedora 3, we don't need to look this up from AdministrativeTags
-            content_type = AdministrativeTags.content_type(pid: druid).first
+            content_type = AdministrativeTags.content_type(identifier: druid).first
             VIEWING_DIRECTION_FOR_CONTENT_TYPE[content_type]
           end
         end

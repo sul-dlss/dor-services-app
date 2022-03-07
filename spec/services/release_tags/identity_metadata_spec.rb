@@ -44,7 +44,7 @@ RSpec.describe ReleaseTags::IdentityMetadata do
                                               ] })
   end
   let(:releases) { described_class.for(cocina_item) }
-  let(:bryar_trans_am_admin_tags) { AdministrativeTags.for(pid: pid) }
+  let(:bryar_trans_am_admin_tags) { AdministrativeTags.for(identifier: pid) }
   let(:array_of_times) do
     ['2015-01-06 23:33:47Z', '2015-01-07 23:33:47Z', '2015-01-08 23:33:47Z', '2015-01-09 23:33:47Z'].map { |x| Time.parse(x).iso8601 }
   end
