@@ -36,6 +36,9 @@ class VersionMigrationService
 
   def current_version
     @current_version ||= version_md.current_version_id.to_i
+  rescue Rubydora::FedoraInvalidRequest => e
+    new_message = "unable to get current version - #{e.message}"
+    raise e.class.exception(new_message)
   end
 
   def tag_for(version)
