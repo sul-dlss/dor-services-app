@@ -17,6 +17,7 @@ module Cocina
 
     # @raises [ValidationError] if not valid
     def validate
+      # This can be removed once Fedora migration is complete, as it will be performed by DB constraint.
       if request?
         validator = Cocina::UniqueSourceIdValidator.new(cocina_object)
         raise ValidationError.new(validator.error, status: :conflict) unless validator.valid?

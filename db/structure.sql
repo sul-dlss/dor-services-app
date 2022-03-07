@@ -457,6 +457,20 @@ ALTER TABLE ONLY public.tag_labels
 
 
 --
+-- Name: collection_source_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX collection_source_id_idx ON public.collections USING btree (((identification ->> 'sourceId'::text)));
+
+
+--
+-- Name: dro_source_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX dro_source_id_idx ON public.dros USING btree (((identification ->> 'sourceId'::text)));
+
+
+--
 -- Name: index_admin_policies_on_external_identifier; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -566,6 +580,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220131194025'),
 ('20220131194359'),
 ('20220131194912'),
-('20220203155057');
+('20220203155057'),
+('20220307201030'),
+('20220307201420');
 
 

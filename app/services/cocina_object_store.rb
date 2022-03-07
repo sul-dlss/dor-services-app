@@ -218,6 +218,7 @@ class CocinaObjectStore
   # Persist a Cocina object with ActiveRecord.
   # @param [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy] cocina_object
   # @return [Array] array consisting of created date and modified date
+  # @raise [Cocina::ValidationError] if externalIdentifier or sourceId not unique
   def cocina_to_ar_save(cocina_object)
     model_clazz = case cocina_object
                   when Cocina::Models::AdminPolicy
@@ -231,6 +232,8 @@ class CocinaObjectStore
                   end
     ar_cocina_object = model_clazz.upsert_cocina(cocina_object)
     [ar_cocina_object.created_at, ar_cocina_object.updated_at]
+  rescue ActiveRecord::RecordNotUnique
+    raise Cocina::ValidationError.new('ExternalIdentifier or sourceId is not unique.', status: :conflict)
   end
 
   # Find a Cocina object persisted by ActiveRecord.

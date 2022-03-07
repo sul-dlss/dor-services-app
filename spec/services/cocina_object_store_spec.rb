@@ -730,6 +730,32 @@ RSpec.describe CocinaObjectStore do
           expect(Collection.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
         end
       end
+
+      context 'when sourceId is not unique' do
+        let(:cocina_object) do
+          Cocina::Models::Collection.new({
+                                           cocinaVersion: '0.0.1',
+                                           externalIdentifier: 'druid:hp308wm0436',
+                                           type: Cocina::Models::Vocab.collection,
+                                           label: 'Test Collection',
+                                           description: {
+                                             title: [{ value: 'Test Collection' }],
+                                             purl: 'https://purl.stanford.edu/hp308wm0436'
+                                           },
+                                           version: 1,
+                                           access: { access: 'world' },
+                                           identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0031' }
+                                         })
+        end
+
+        before do
+          store.send(:cocina_to_ar_save, cocina_object.new(externalIdentifier: 'druid:dd645sg2172'))
+        end
+
+        it 'raises' do
+          expect { store.send(:cocina_to_ar_save, cocina_object) }.to raise_error(Cocina::ValidationError)
+        end
+      end
     end
   end
 end
