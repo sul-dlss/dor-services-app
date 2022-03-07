@@ -46,9 +46,8 @@ class PreservationMetadataExtractor
   end
 
   def version_xml
-    fedora_object = Dor.find(cocina_object.externalIdentifier)
     # This can be removed after migration.
-    VersionMigrationService.migrate(fedora_object)
+    VersionMigrationService.find_and_migrate(cocina_object.externalIdentifier)
 
     ObjectVersion.version_xml(cocina_object.externalIdentifier)
   end

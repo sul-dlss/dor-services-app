@@ -22,10 +22,6 @@ RSpec.describe PreservationMetadataExtractor do
                             })
   end
 
-  before do
-    allow(Dor).to receive(:find).and_return(instance_double(Dor::Item, pid: druid))
-  end
-
   describe '.extract' do
     subject(:extract) { instance.extract }
 
@@ -52,7 +48,7 @@ RSpec.describe PreservationMetadataExtractor do
 
       stub_request(:get, 'https://workflow.example.com/workflow/objects/druid:nc893zj8956/workflows')
         .to_return(status: 200, body: '<workflow-stuff />', headers: {})
-      allow(VersionMigrationService).to receive(:migrate)
+      allow(VersionMigrationService).to receive(:find_and_migrate)
     end
 
     it 'extracts the metadata' do
