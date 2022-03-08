@@ -34,6 +34,8 @@ module Cocina
         remove_resource_data_attribute
         remove_external_resource_id
         remove_external_image_data
+        remove_external_resource_type
+        remove_external_type
         remove_resource_sequence_attribute
         remove_location
         remove_file_format_and_data_type_attributes
@@ -68,6 +70,8 @@ module Cocina
         remove_resource_id_attribute
         remove_external_resource_id
         remove_external_image_data
+        remove_external_resource_type
+        remove_external_type
         remove_resource_sequence_attribute
 
         regenerate_ng_xml(ng_xml.to_s)
@@ -242,7 +246,7 @@ module Cocina
 
       # set the type attribute on the contentMetadata node when it's missing
       def missing_type_attribute_assigned_file
-        ng_xml.xpath('//contentMetadata[not(@type)]').each do |node|
+        ng_xml.xpath('//contentMetadata[not(@type)][not(//externalFile)]').each do |node|
           node['type'] = 'file'
         end
       end
@@ -258,8 +262,16 @@ module Cocina
         ng_xml.root.xpath('//externalFile/preceding-sibling::label').each(&:remove)
       end
 
+      def remove_external_resource_type
+        ng_xml.root.xpath('//resource[externalFile]/@type').each(&:remove)
+      end
+
+      def remove_external_type
+        ng_xml.xpath('//contentMetadata[//externalFile]/@type').each(&:remove)
+      end
+
       def normalize_relationship
-        ng_xml.root.xpath('//relationship[not(@type)]').each do |node|
+        ng_xml.root.xpath('//relationship[not(@type="alsoAvailableAs")]').each do |node|
           node['type'] = 'alsoAvailableAs'
         end
       end
