@@ -7,33 +7,33 @@ require 'active_fedora/solr_service'
 class AdministrativeTags
   @@tag_cache = {} # rubocop:disable Style/ClassVars
 
-  def self.project(pid:)
-    tag = self.for(pid: pid).find { |check_tag| check_tag.start_with?('Project :') }
+  def self.project(identifier:)
+    tag = self.for(identifier: identifier).find { |check_tag| check_tag.start_with?('Project :') }
 
     return [] unless tag
 
     [tag.split(' : ', 2).last]
   end
 
-  def self.content_type(pid:)
-    tag = self.for(pid: pid).find { |check_tag| check_tag.start_with?('Process : Content Type :') }
+  def self.content_type(identifier:)
+    tag = self.for(identifier: identifier).find { |check_tag| check_tag.start_with?('Process : Content Type :') }
 
     return [] unless tag
 
     [tag.split(' : ').last]
   end
 
-  def self.for(pid:)
-    cached_tags = @@tag_cache[pid]
+  def self.for(identifier:)
+    cached_tags = @@tag_cache[identifier]
     return cached_tags if cached_tags
 
-    tags = Dor::Services::Client.object(pid).administrative_tags.list
-    @@tag_cache[pid] = tags
+    tags = Dor::Services::Client.object(identifier).administrative_tags.list
+    @@tag_cache[identifier] = tags
     tags
   end
 
-  def self.cache(pid:, tags:)
-    @@tag_cache[pid] = tags
+  def self.cache(identifier:, tags:)
+    @@tag_cache[identifier] = tags
   end
 end
 
