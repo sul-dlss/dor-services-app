@@ -40,6 +40,7 @@ gem 'rsolr'
 gem 'ruby-cache', '~> 0.3.0'
 gem 'sidekiq', '~> 6.0'
 gem 'sidekiq-statistic'
+gem 'tty-progressbar' # to show progress when running migration script
 gem 'uuidtools', '~> 2.1.4'
 gem 'whenever', require: false
 

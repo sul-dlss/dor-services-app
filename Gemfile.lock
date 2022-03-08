@@ -501,6 +501,7 @@ GEM
     stanford-mods-normalizer (0.1.0)
       nokogiri (~> 1.8)
     stomp (1.4.10)
+    strings-ansi (0.2.0)
     super_diff (0.8.0)
       attr_extras (>= 6.2.4)
       diff-lcs
@@ -509,6 +510,13 @@ GEM
     thor (1.2.1)
     thread_safe (0.3.6)
     tilt (2.0.10)
+    tty-cursor (0.7.1)
+    tty-progressbar (0.18.2)
+      strings-ansi (~> 0.2)
+      tty-cursor (~> 0.7)
+      tty-screen (~> 0.8)
+      unicode-display_width (>= 1.6, < 3.0)
+    tty-screen (0.8.1)
     tzinfo (1.2.9)
       thread_safe (~> 0.1)
     uber (0.0.15)
@@ -595,6 +603,7 @@ DEPENDENCIES
   spring-watcher-listen (~> 2.0.0)
   stanford-mods (~> 2.6)
   super_diff
+  tty-progressbar
   uuidtools (~> 2.1.4)
   webmock
   whenever

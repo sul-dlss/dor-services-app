@@ -1,7 +1,15 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# shared/log/migration_results/migration-results-(timestamp).txt - shows druid migrated, with success / missing / ERROR, etc.
+# shared/log/fedora-migrator.log contains details of ERRORS (e.g. stacktrace)
+#
+# Use "export RUBYOPT='-W:no-deprecated -W:no-experimental'" in the shell to silence warnings when script starts, if desired
+#
+# For more on running scripts such as this one, see: https://docs.google.com/document/d/18gAZlMNcnKGYoegw34kBvqx2TLjaQEZelC_C_Myp2h8
+
 require_relative '../config/environment'
+require_relative '../lib/fedora_migrator'
 require 'optparse'
 
 options = { druids: [], input: 'druids.txt' }
@@ -16,35 +24,18 @@ parser = OptionParser.new do |option_parser|
     exit
   end
 end
+
 parser.parse!(into: options)
 
-def migrate(druid)
-  fedora_obj = CocinaObjectStore.new.fedora_find(druid)
+druids ||= if options[:druids].empty?
+             file_druids = File.read(options[:input]).split
+             if options[:sample]
+               file_druids.take(options[:sample])
+             else
+               file_druids
+             end
+           else
+             options[:druids]
+           end
 
-  return 'skipped' unless MigrationFilter.migrate?(Nokogiri::XML(fedora_obj.rels_ext.to_rels_ext))
-
-  EventsMigrationService.migrate(fedora_obj)
-  VersionMigrationService.migrate(fedora_obj)
-  CocinaMigrationService.migrate(fedora_obj)
-  'success'
-rescue CocinaObjectStore::CocinaObjectNotFoundError
-  'missing'
-rescue StandardError
-  'error'
-end
-
-if options[:druids].empty?
-  druids = File.read(options[:input]).split
-  druids = druids.take(options[:sample]) if options[:sample]
-else
-  druids = options[:druids]
-end
-
-File.open('migration_results.txt', 'w') do |file|
-  druids.each_with_index do |druid, index|
-    print "Migrating #{druid} #{index + 1} of #{druids.size}: "
-    result = migrate(druid)
-    puts result
-    file.write("#{druid}=#{result}\n")
-  end
-end
+FedoraMigrator.new(druids: druids, results_folder: 'log/migration_results').run

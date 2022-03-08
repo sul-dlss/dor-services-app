@@ -43,6 +43,17 @@ RSpec.describe CocinaObjectStore do
           expect { described_class.find(druid) }.to raise_error(CocinaObjectStore::CocinaObjectNotFoundError)
         end
       end
+
+      context 'when some other error raised' do
+        before do
+          allow(Dor).to receive(:find).and_raise(Rubydora::FedoraInvalidRequest)
+        end
+
+        it 're-raises with more info' do
+          prefix = 'Unable to find Fedora object or map to cmodel - is identityMetadata DS empty?'
+          expect { described_class.find(druid) }.to raise_error(Rubydora::FedoraInvalidRequest, a_string_starting_with(prefix))
+        end
+      end
     end
 
     describe '#find_with_timestamps' do

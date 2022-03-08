@@ -13,6 +13,7 @@ module Cocina
 
       # @param [Dor::Item,Dor::Etd,Dor::Agreement] fedora_item
       # @return [String] fedora_item's type
+      # rubocop:disable Metrics/CyclomaticComplexity
       def self.dro_type(fedora_item)
         return Cocina::Models::Vocab.agreement if fedora_item.is_a? Dor::Agreement
 
@@ -42,7 +43,11 @@ module Cocina
         else
           raise "Unknown content type #{fedora_item.contentMetadata.contentType.first}"
         end
+      rescue Rubydora::FedoraInvalidRequest, StandardError => e
+        new_message = "Unable to get contentType - is contentMetadata DS empty? #{e.message}"
+        raise e.class, new_message, e.backtrace
       end
+      # rubocop:enable Metrics/CyclomaticComplexity
 
       def initialize(fedora_item, notifier: nil)
         @fedora_item = fedora_item
