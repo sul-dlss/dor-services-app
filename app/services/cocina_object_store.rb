@@ -125,14 +125,16 @@ class CocinaObjectStore
 
     # This saves the Fedora object.
     fedora_create(cocina_object, druid: druid)
-    cocina_to_ar_save(cocina_object) if Settings.enabled_features.postgres
+    (created_at, updated_at) = cocina_to_ar_save(cocina_object) if Settings.enabled_features.postgres
     add_tags_for_create(druid, cocina_request_object)
     # This creates version 1.0.0 (Initial Version)
     ObjectVersion.increment_version(druid)
 
+    created_at ||= Time.zone.now
+    updated_at ||= created_at
     # Fedora 3 has no unique constrains, so
     # index right away to reduce the likelyhood of duplicate sourceIds
-    SynchronousIndexer.reindex_remotely(druid)
+    SynchronousIndexer.reindex_remotely_from_cocina(druid, cocina_object: cocina_object, created_at: created_at, updated_at: updated_at)
 
     event_factory.create(druid: druid, event_type: 'registration', data: cocina_object.to_h)
 
