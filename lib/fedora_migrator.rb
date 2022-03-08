@@ -34,7 +34,7 @@ class FedoraMigrator
       druids.each do |druid|
         progress_bar.advance(druid: druid)
         result = migrate(druid)
-        file.write("#{druid}=#{result}\n")
+        file.write("#{druid}=#{result} (#{Time.zone.now.strftime('%Y-%m-%d %H:%M:%S')})\n")
       end
     end
   end
