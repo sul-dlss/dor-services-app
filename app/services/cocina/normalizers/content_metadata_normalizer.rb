@@ -35,7 +35,6 @@ module Cocina
         remove_external_resource_id
         remove_external_image_data
         remove_external_resource_type
-        remove_external_type
         remove_resource_sequence_attribute
         remove_location
         remove_file_format_and_data_type_attributes
@@ -60,6 +59,7 @@ module Cocina
         normalize_image_data_to_integers
         normalize_file_directives
         normalize_relationship
+        remove_external_type # Near bottom, as other normalizers use type.
         normalize_empty_resources
 
         regenerate_ng_xml(ng_xml.to_s)

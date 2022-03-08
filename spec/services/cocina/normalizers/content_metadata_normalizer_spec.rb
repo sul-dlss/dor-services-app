@@ -279,6 +279,34 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
       end
     end
 
+    context 'when a virtual object image and reading order already exists' do
+      let(:original_xml) do
+        <<~XML
+          <contentMetadata objectId="druid:bb035tg0974" type="image">
+            <bookData readingOrder="rtl"/>
+            <resource id="dv137rh0690_1" sequence="1" type="image">
+              <externalFile fileId="24-jan-1.jp2" mimetype="image/jp2" objectId="druid:sf548ym8677"/>
+              <relationship objectId="druid:sf548ym8677" type="alsoAvailableAs"/>
+            </resource>
+          </contentMetadata>
+        XML
+      end
+
+      it 'does nothing' do
+        expect(normalized_ng_xml).to be_equivalent_to(<<~XML
+          <?xml version="1.0" encoding="UTF-8"?>
+          <contentMetadata objectId="druid:bb035tg0974">
+            <bookData readingOrder="rtl"/>
+            <resource>
+              <externalFile fileId="24-jan-1.jp2" mimetype="image/jp2" objectId="druid:sf548ym8677"/>
+              <relationship objectId="druid:sf548ym8677" type="alsoAvailableAs"/>
+            </resource>
+          </contentMetadata>
+        XML
+                                                     )
+      end
+    end
+
     context 'when reading order already exists' do
       let(:original_xml) do
         <<~XML
