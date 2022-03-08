@@ -45,14 +45,14 @@ RSpec.describe ResetContentMetadataService do
             isMemberOf: ['druid:fd234jh8769'],
             contains: [
               {
-                externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/234-567-890',
+                externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/234-567-890',
                 version: 1,
                 type: Cocina::Models::Vocab::Resources.file,
                 label: 'Page 1',
                 structural: {
                   contains: [
                     {
-                      externalIdentifier: 'http://cocina.sul.stanford.edu/file/223-456-789',
+                      externalIdentifier: 'https://cocina.sul.stanford.edu/file/223-456-789',
                       version: 1,
                       type: Cocina::Models::Vocab.file,
                       filename: '00001.jp2',
@@ -182,14 +182,14 @@ RSpec.describe ResetContentMetadataService do
             isMemberOf: ['druid:fd234jh8769'],
             contains: [
               {
-                externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/234-567-890',
+                externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/234-567-890',
                 version: 1,
                 type: Cocina::Models::Vocab::Resources.file,
                 label: 'Page 1',
                 structural: {
                   contains: [
                     {
-                      externalIdentifier: 'http://cocina.sul.stanford.edu/file/223-456-789',
+                      externalIdentifier: 'https://cocina.sul.stanford.edu/file/223-456-789',
                       version: 1,
                       type: Cocina::Models::Vocab.file,
                       filename: '00001.jp2',
@@ -224,14 +224,14 @@ RSpec.describe ResetContentMetadataService do
               ],
               contains: [
                 {
-                  externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/234-567-890',
+                  externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/234-567-890',
                   version: 1,
                   type: Cocina::Models::Vocab::Resources.file,
                   label: 'Page 1',
                   structural: {
                     contains: [
                       {
-                        externalIdentifier: 'http://cocina.sul.stanford.edu/file/223-456-789',
+                        externalIdentifier: 'https://cocina.sul.stanford.edu/file/223-456-789',
                         version: 1,
                         type: Cocina::Models::Vocab.file,
                         filename: '00001.jp2',

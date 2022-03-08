@@ -11,10 +11,10 @@ RSpec.describe ShelvingService do
 
   let(:structural) do
     Cocina::Models::DROStructural.new(
-      { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
+      { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
                      type: Cocina::Models::Vocab::Resources.file,
                      version: 1,
-                     structural: { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                     structural: { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
                                                 type: Cocina::Models::Vocab.file,
                                                 label: 'folder1PuSu/story1u.txt',
                                                 filename: 'folder1PuSu/story1u.txt',

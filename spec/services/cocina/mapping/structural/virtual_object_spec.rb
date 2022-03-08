@@ -50,13 +50,13 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
         Cocina::Models::DROStructural.new({
                                             contains: [{
                                               type: Cocina::Models::Vocab::Resources.image,
-                                              externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/13c6b4ac-70d8-4389-beef-a1768f37bb68',
+                                              externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/13c6b4ac-70d8-4389-beef-a1768f37bb68',
                                               label: 'Image 1',
                                               version: 6,
                                               structural: {
                                                 contains: [{
                                                   type: Cocina::Models::Vocab.file,
-                                                  externalIdentifier: 'http://cocina.sul.stanford.edu/file/bd5bb755-ae47-4309-bfa9-5ac7b57a27d1',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/bd5bb755-ae47-4309-bfa9-5ac7b57a27d1',
                                                   label: 'PC0170_s1_B_0539.tif',
                                                   filename: 'PC0170_s1_B_0539.tif',
                                                   size: 182_111_284,
@@ -84,7 +84,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
                                                   }
                                                 }, {
                                                   type: Cocina::Models::Vocab.file,
-                                                  externalIdentifier: 'http://cocina.sul.stanford.edu/file/8d9960c8-7249-422c-8cfd-c486edeb47ba',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/8d9960c8-7249-422c-8cfd-c486edeb47ba',
                                                   label: 'PC0170_s1_B_0539.jp2',
                                                   filename: 'PC0170_s1_B_0539.jp2',
                                                   size: 5_730_422,
@@ -122,13 +122,13 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
         Cocina::Models::DROStructural.new({
                                             contains: [{
                                               type: Cocina::Models::Vocab::Resources.image,
-                                              externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/725a5c09-8689-47f5-a80b-d39d5f4d0f7b',
+                                              externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/725a5c09-8689-47f5-a80b-d39d5f4d0f7b',
                                               label: 'Image 1',
                                               version: 6,
                                               structural: {
                                                 contains: [{
                                                   type: Cocina::Models::Vocab.file,
-                                                  externalIdentifier: 'http://cocina.sul.stanford.edu/file/f477946d-9f73-44f7-90de-2ca448995701',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/f477946d-9f73-44f7-90de-2ca448995701',
                                                   label: 'PC0170_s1_B_0540.tif',
                                                   filename: 'PC0170_s1_B_0540.tif',
                                                   size: 181_303_012,
@@ -156,7 +156,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
                                                   }
                                                 }, {
                                                   type: Cocina::Models::Vocab.file,
-                                                  externalIdentifier: 'http://cocina.sul.stanford.edu/file/86d5bc2c-e5d5-44aa-80a9-8a2fb5b4584a',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/86d5bc2c-e5d5-44aa-80a9-8a2fb5b4584a',
                                                   label: 'PC0170_s1_B_0540.jp2',
                                                   filename: 'PC0170_s1_B_0540.jp2',
                                                   size: 5_705_291,
@@ -211,11 +211,11 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
         <<~XML
           <contentMetadata objectId="#{druid}" type="image">
             <resource id="bc426tg5901_1" sequence="1" type="image">
-              <externalFile fileId="PC0170_s1_B_0539.jp2" mimetype="image/jp2" objectId="druid:gj047zn0886" resourceId="http://cocina.sul.stanford.edu/fileSet/13c6b4ac-70d8-4389-beef-a1768f37bb68"/>
+              <externalFile fileId="PC0170_s1_B_0539.jp2" mimetype="image/jp2" objectId="druid:gj047zn0886" resourceId="https://cocina.sul.stanford.edu/fileSet/13c6b4ac-70d8-4389-beef-a1768f37bb68"/>
               <relationship objectId="druid:gj047zn0886" type="alsoAvailableAs"/>
             </resource>
             <resource id="bc426tg5901_2" sequence="2" type="image">
-              <externalFile fileId="PC0170_s1_B_0540.jp2" mimetype="image/jp2" objectId="druid:tm207xk5096" resourceId="http://cocina.sul.stanford.edu/fileSet/725a5c09-8689-47f5-a80b-d39d5f4d0f7b"/>
+              <externalFile fileId="PC0170_s1_B_0540.jp2" mimetype="image/jp2" objectId="druid:tm207xk5096" resourceId="https://cocina.sul.stanford.edu/fileSet/725a5c09-8689-47f5-a80b-d39d5f4d0f7b"/>
               <relationship objectId="druid:tm207xk5096" type="alsoAvailableAs"/>
             </resource>
           </contentMetadata>

@@ -23,7 +23,7 @@ RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
   let(:content_xml) do
     <<~XML
       <contentMetadata objectId="druid:db708qz9486" type="file">
-        <resource id="http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f" sequence="1" type="file">
+        <resource id="https://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f" sequence="1" type="file">
           <label/>
           <file id="sul-logo.png" mimetype="image/png" size="19823" publish="yes" shelve="yes" preserve="yes">
             <checksum type="sha1">b5f3221455c8994afb85214576bc2905d6b15418</checksum>
@@ -39,13 +39,13 @@ RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
     {
       contains: [
         {
-          externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
+          externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
           type: Cocina::Models::Vocab::Resources.file,
           version: 1,
           structural: {
             contains: [
               {
-                externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
                 type: Cocina::Models::Vocab.file,
                 label: 'sul-logo.png',
                 filename: 'sul-logo.png',
@@ -90,8 +90,8 @@ RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
     end
     content_metadata_ds = Dor::ContentMetadataDS.from_xml(content_xml)
     allow(fedora_item).to receive(:contentMetadata).and_return(content_metadata_ds)
-    allow(Cocina::IdGenerator).to receive(:generate_or_existing_fileset_id).and_return('http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f')
-    allow(Cocina::IdGenerator).to receive(:generate_or_existing_file_id).and_return('http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181')
+    allow(Cocina::IdGenerator).to receive(:generate_or_existing_fileset_id).and_return('https://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f')
+    allow(Cocina::IdGenerator).to receive(:generate_or_existing_file_id).and_return('https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181')
   end
 
   context 'when mapping from Fedora to Cocina' do

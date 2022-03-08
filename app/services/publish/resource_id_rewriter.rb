@@ -22,11 +22,11 @@ module Publish
     # @return [Nokogiri::XML::Document] xml doc that has URI identifiers rewritten
     def generate
       result.xpath('/contentMetadata/resource').each do |resource|
-        resource['id'] = resource['id'].sub('http://cocina.sul.stanford.edu/fileSet/', 'cocina-fileSet-')
+        resource['id'] = resource['id'].sub('https://cocina.sul.stanford.edu/fileSet/', 'cocina-fileSet-')
       end
 
       result.xpath('/contentMetadata/resource/externalFile').each do |external_file|
-        external_file['resourceId'] = external_file['resourceId'].sub('http://cocina.sul.stanford.edu/fileSet/', 'cocina-fileSet-')
+        external_file['resourceId'] = external_file['resourceId'].sub('https://cocina.sul.stanford.edu/fileSet/', 'cocina-fileSet-')
       end
 
       result

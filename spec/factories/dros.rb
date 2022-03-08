@@ -36,12 +36,12 @@ FactoryBot.define do
       { contains: [
         {
           type: Cocina::Models::Vocab::Resources.file,
-          externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/123-456-789', label: 'Page 1', version: 1,
+          externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/123-456-789', label: 'Page 1', version: 1,
           structural: {
             contains: [
               {
                 type: Cocina::Models::Vocab.file,
-                externalIdentifier: 'http://cocina.sul.stanford.edu/file/123-456-789',
+                externalIdentifier: 'https://cocina.sul.stanford.edu/file/123-456-789',
                 label: '00001.html',
                 filename: '00001.html',
                 size: 0,

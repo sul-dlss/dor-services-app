@@ -51,10 +51,10 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
       end
 
       let(:cocina_structural_props) do
-        { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
+        { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
                        type: Cocina::Models::Vocab::Resources.file,
                        version: 1,
-                       structural: { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                       structural: { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
                                                   type: Cocina::Models::Vocab.file,
                                                   label: 'folder1PuSu/story1u.txt',
                                                   filename: 'folder1PuSu/story1u.txt',
@@ -66,7 +66,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
                                                   access: { access: 'world', download: 'world' },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true },
                                                   hasMimeType: 'text/plain' },
-                                                { externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                                                { externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
                                                   type: Cocina::Models::Vocab.file,
                                                   label: 'folder1PuSu/story2r.txt',
                                                   filename: 'folder1PuSu/story2r.txt',
@@ -78,7 +78,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
                                                   access: { access: 'world', download: 'world' },
                                                   administrative: { publish: false, sdrPreserve: true, shelve: false },
                                                   hasMimeType: 'text/plain' },
-                                                { externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                                                { externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
                                                   type: Cocina::Models::Vocab.file,
                                                   label: 'folder1PuSu/story3m.txt',
                                                   filename: 'folder1PuSu/story3m.txt',
@@ -90,7 +90,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
                                                   access: { access: 'world', download: 'world' },
                                                   administrative: { publish: true, sdrPreserve: true, shelve: true },
                                                   hasMimeType: 'text/plain' },
-                                                { externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                                                { externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
                                                   type: Cocina::Models::Vocab.file,
                                                   label: 'folder1PuSu/story4d.txt',
                                                   filename: 'folder1PuSu/story4d.txt',
@@ -103,10 +103,10 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
                                                   administrative: { publish: true, sdrPreserve: true, shelve: true },
                                                   hasMimeType: 'text/plain' }] },
                        label: 'Folder 1' },
-                     { externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
+                     { externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
                        type: Cocina::Models::Vocab::Resources.file,
                        version: 1,
-                       structural: { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                       structural: { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
                                                   type: Cocina::Models::Vocab.file,
                                                   label: 'folder2PdSa/story6u.txt',
                                                   filename: 'folder2PdSa/story6u.txt',
@@ -118,7 +118,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
                                                   access: { access: 'world', download: 'world' },
                                                   administrative: { publish: true, sdrPreserve: true, shelve: false },
                                                   hasMimeType: 'text/plain' },
-                                                { externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                                                { externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
                                                   type: Cocina::Models::Vocab.file,
                                                   label: 'folder2PdSa/story7r.txt',
                                                   filename: 'folder2PdSa/story7r.txt',
@@ -130,7 +130,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
                                                   access: { access: 'world', download: 'world' },
                                                   administrative: { publish: true, sdrPreserve: true, shelve: false },
                                                   hasMimeType: 'text/plain' },
-                                                { externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                                                { externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
                                                   type: Cocina::Models::Vocab.file,
                                                   label: 'folder2PdSa/story8m.txt',
                                                   filename: 'folder2PdSa/story8m.txt',
@@ -142,7 +142,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
                                                   access: { access: 'world', download: 'world' },
                                                   administrative: { publish: true, sdrPreserve: true, shelve: false },
                                                   hasMimeType: 'text/plain' },
-                                                { externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                                                { externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
                                                   type: Cocina::Models::Vocab.file,
                                                   label: 'folder2PdSa/story9d.txt',
                                                   filename: 'folder2PdSa/story9d.txt',
@@ -193,10 +193,10 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
       end
 
       let(:cocina_structural_props) do
-        { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
+        { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
                        type: Cocina::Models::Vocab::Resources.file,
                        version: 1,
-                       structural: { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                       structural: { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
                                                   type: Cocina::Models::Vocab.file,
                                                   label: 'folder1PuSu/story1u.txt',
                                                   filename: 'folder1PuSu/story1u.txt',
@@ -231,10 +231,10 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
       end
 
       let(:cocina_structural_props) do
-        { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
+        { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
                        type: Cocina::Models::Vocab::Resources.file,
                        version: 1,
-                       structural: { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                       structural: { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
                                                   type: Cocina::Models::Vocab.file,
                                                   label: 'folder1PuSu/story1u.txt',
                                                   filename: 'folder1PuSu/story1u.txt',
@@ -282,10 +282,10 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
       end
 
       let(:cocina_structural_props) do
-        { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
+        { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
                        type: Cocina::Models::Vocab::Resources.file,
                        version: 1,
-                       structural: { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                       structural: { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
                                                   type: Cocina::Models::Vocab.file,
                                                   label: 'folder1PuSu/story1u.txt',
                                                   filename: 'folder1PuSu/story1u.txt',
@@ -339,10 +339,10 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
       end
 
       let(:cocina_structural_props) do
-        { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
+        { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
                        type: Cocina::Models::Vocab::Resources.image,
                        version: 1,
-                       structural: { contains: [{ externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                       structural: { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
                                                   type: Cocina::Models::Vocab.file,
                                                   label: 'foo.tif',
                                                   filename: 'foo.tif',

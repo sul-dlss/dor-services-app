@@ -593,13 +593,13 @@ RSpec.describe Cocina::ObjectUpdater do
             contains: [
               {
                 'type' => Cocina::Models::Vocab::Resources.file,
-                'externalIdentifier' => 'http://cocina.sul.stanford.edu/fileSet/e4c2b834-90ce-4be8-b9fa-445df89f5f10',
+                'externalIdentifier' => 'https://cocina.sul.stanford.edu/fileSet/e4c2b834-90ce-4be8-b9fa-445df89f5f10',
                 'label' => '', 'version' => 1,
                 'structural' => {
                   'contains' => [
                     {
                       'type' => Cocina::Models::Vocab.file,
-                      'externalIdentifier' => 'http://cocina.sul.stanford.edu/file/8ee2d21b-9183-4df6-9813-c0a104b329ce',
+                      'externalIdentifier' => 'https://cocina.sul.stanford.edu/file/8ee2d21b-9183-4df6-9813-c0a104b329ce',
                       'label' => 'sul-logo.png',
                       'filename' => 'sul-logo.png',
                       'size' => 19823,

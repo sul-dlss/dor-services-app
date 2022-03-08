@@ -11,7 +11,7 @@ module Cocina
       new(druid: druid, resource_id: resource_id, file_id: file_id).generate_or_existing_file_id
     end
 
-    ID_NAMESPACE = 'http://cocina.sul.stanford.edu'
+    ID_NAMESPACE = 'https://cocina.sul.stanford.edu'
 
     def initialize(druid:, file_id: nil, resource_id: nil)
       @druid = druid.delete_prefix('druid:')

@@ -128,7 +128,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
               <checksum type="sha1">87fc2454991de4f60f26c1f6fa4b51b4e7c913f3</checksum>
             </file>
           </resource>
-          <resource id="http://cocina.sul.stanford.edu/fileSet/18dabbd3-16fb-42be-9833-5da5401129a1" sequence="1" type="file">
+          <resource id="https://cocina.sul.stanford.edu/fileSet/18dabbd3-16fb-42be-9833-5da5401129a1" sequence="1" type="file">
             <label/>
             <file id="2021 March Off Highway Vehicles.pdf" mimetype="application/pdf" size="75211" publish="yes" shelve="yes" preserve="yes">
               <checksum type="sha1">f715cfa0f2a2cdd0fc14aa73a3e75326babe9ec4</checksum>
