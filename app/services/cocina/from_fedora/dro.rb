@@ -44,8 +44,8 @@ module Cocina
           raise "Unknown content type #{fedora_item.contentMetadata.contentType.first}"
         end
       rescue Rubydora::FedoraInvalidRequest, StandardError => e
-        new_message = "unable to get contentType - is contentMetadata DS empty? - #{e.message}"
-        raise e.class.exception(new_message)
+        new_message = "Unable to get contentType - is contentMetadata DS empty? #{e.message}"
+        raise e.class, new_message, e.backtrace
       end
       # rubocop:enable Metrics/CyclomaticComplexity
 

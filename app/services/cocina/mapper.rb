@@ -49,7 +49,7 @@ module Cocina
               end
       klass.new(props)
     rescue StandardError => e
-      new_message = "Unable to build cocina props - #{e.message}"
+      new_message = "Unable to build cocina props - #{e.inspect}"
       Honeybadger.notify(new_message) # is this redundant?
       raise UnexpectedBuildError, new_message, e.backtrace # wrap StandardError, caller will probably want to look at #cause
     end

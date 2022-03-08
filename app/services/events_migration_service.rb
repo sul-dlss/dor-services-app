@@ -16,9 +16,9 @@ class EventsMigrationService
     fedora_object.events.each_event do |event_type, who, timestamp, message|
       migrate_event(event_type, who, timestamp, message)
     end
-  rescue StandardError => e
-    new_message = "unable to migrate events - is DS empty? #{e.message}"
-    raise e.class.exception(new_message)
+  rescue Rubydora::FedoraInvalidRequest, StandardError => e
+    new_message = "Unable to migrate events - is events DS empty? #{e.message}"
+    raise e.class, new_message, e.backtrace
   end
 
   private
