@@ -271,7 +271,7 @@ module Cocina
       end
 
       def normalize_relationship
-        ng_xml.root.xpath('//relationship[not(@type)]').each do |node|
+        ng_xml.root.xpath('//relationship[not(@type="alsoAvailableAs")]').each do |node|
           node['type'] = 'alsoAvailableAs'
         end
       end
