@@ -20,7 +20,7 @@ RSpec.describe 'Shelve object' do
       post "/v1/objects/#{druid}/shelve", headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to have_http_status(:unprocessable_entity)
       json = JSON.parse(response.body)
-      expect(json['errors'].first['detail']).to eq "A DRO is required but you provided 'http://cocina.sul.stanford.edu/models/collection.jsonld'"
+      expect(json['errors'].first['detail']).to eq "A DRO is required but you provided '#{Cocina::Models::Vocab.collection}'"
       expect(job).not_to have_received(:perform_later)
     end
   end

@@ -39,7 +39,7 @@ RSpec.describe Cocina::ObjectCreator do
     context 'when description is supplied' do
       let(:params) do
         {
-          'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
+          'type' => Cocina::Models::Vocab.object,
           'externalIdentifier' => druid,
           'label' => 'contributor mapping test',
           'access' => {},
@@ -140,7 +140,7 @@ RSpec.describe Cocina::ObjectCreator do
     context 'when the access is dark' do
       let(:params) do
         {
-          'type' => 'http://cocina.sul.stanford.edu/models/media.jsonld',
+          'type' => Cocina::Models::Vocab.media,
           'externalIdentifier' => druid,
           'label' => 'Kayaking the Maine Coast',
           'description' => {
@@ -169,7 +169,7 @@ RSpec.describe Cocina::ObjectCreator do
     context 'when the type is agreement' do
       let(:params) do
         {
-          'type' => 'http://cocina.sul.stanford.edu/models/agreement.jsonld',
+          'type' => Cocina::Models::Vocab.agreement,
           'externalIdentifier' => druid,
           'label' => 'My Agreement',
           'description' => {
@@ -198,7 +198,7 @@ RSpec.describe Cocina::ObjectCreator do
       let(:request) { Cocina::Models.build(params) }
       let(:params) do
         {
-          'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
+          'type' => Cocina::Models::Vocab.object,
           'label' => 'Mountain Biking Utah',
           'externalIdentifier' => 'druid:bb010dx6027',
           'access' => {},
@@ -232,7 +232,7 @@ RSpec.describe Cocina::ObjectCreator do
     context 'when there is a note of type summary' do
       let(:params) do
         {
-          'type' => 'http://cocina.sul.stanford.edu/models/collection.jsonld',
+          'type' => Cocina::Models::Vocab.collection,
           'externalIdentifier' => druid,
           'label' => 'collection label',
           'version' => 1,

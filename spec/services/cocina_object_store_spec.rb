@@ -361,12 +361,12 @@ RSpec.describe CocinaObjectStore do
             structural: {
               contains: [
                 {
-                  type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                  type: Cocina::Models::Vocab::Resources.file,
                   label: 'Page 1', version: 1,
                   structural: {
                     contains: [
                       {
-                        type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                        type: Cocina::Models::Vocab.file,
                         label: '00001.html',
                         filename: '00001.html',
                         size: 0,
@@ -388,13 +388,13 @@ RSpec.describe CocinaObjectStore do
                 },
                 # Already has identifiers
                 {
-                  type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                  type: Cocina::Models::Vocab::Resources.file,
                   externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/gg777gg7777/334-567-890',
                   label: 'Page 2', version: 1,
                   structural: {
                     contains: [
                       {
-                        type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                        type: Cocina::Models::Vocab.file,
                         externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777/334-567-890/00002.html',
                         label: '00002.html', filename: '00002.html', size: 0,
                         version: 1, hasMimeType: 'text/html',
@@ -421,13 +421,13 @@ RSpec.describe CocinaObjectStore do
                                                                  structural: {
                                                                    contains: [
                                                                      {
-                                                                       type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                                                                       type: Cocina::Models::Vocab::Resources.file,
                                                                        externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/bc123df4567-abc123',
                                                                        label: 'Page 1', version: 1,
                                                                        structural: {
                                                                          contains: [
                                                                            {
-                                                                             type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                                                                             type: Cocina::Models::Vocab.file,
                                                                              externalIdentifier: 'http://cocina.sul.stanford.edu/file/bc123df4567-abc123/00001.html',
                                                                              label: '00001.html',
                                                                              filename: '00001.html',
@@ -449,13 +449,13 @@ RSpec.describe CocinaObjectStore do
                                                                        }
                                                                      },
                                                                      {
-                                                                       type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                                                                       type: Cocina::Models::Vocab::Resources.file,
                                                                        externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/gg777gg7777/334-567-890',
                                                                        label: 'Page 2', version: 1,
                                                                        structural: {
                                                                          contains: [
                                                                            {
-                                                                             type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                                                                             type: Cocina::Models::Vocab.file,
                                                                              externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777/334-567-890/00002.html',
                                                                              label: '00002.html', filename: '00002.html', size: 0,
                                                                              version: 1, hasMimeType: 'text/html',

@@ -293,14 +293,14 @@ RSpec.describe ApplyAdminPolicyDefaults do
         {
           externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/234-567-890',
           version: 1,
-          type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+          type: Cocina::Models::Vocab::Resources.file,
           label: 'Page 1',
           structural: {
             contains: [
               {
                 externalIdentifier: 'http://cocina.sul.stanford.edu/file/223-456-789',
                 version: 1,
-                type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                type: Cocina::Models::Vocab.file,
                 filename: '00001.jp2',
                 label: '00001.jp2',
                 hasMimeType: 'image/jp2',
@@ -326,14 +326,14 @@ RSpec.describe ApplyAdminPolicyDefaults do
           {
             externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/234-567-890',
             version: 1,
-            type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+            type: Cocina::Models::Vocab::Resources.file,
             label: 'Page 1',
             structural: {
               contains: [
                 {
                   externalIdentifier: 'http://cocina.sul.stanford.edu/file/223-456-789',
                   version: 1,
-                  type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                  type: Cocina::Models::Vocab.file,
                   filename: '00001.jp2',
                   label: '00001.jp2',
                   hasMimeType: 'image/jp2',
@@ -370,14 +370,14 @@ RSpec.describe ApplyAdminPolicyDefaults do
           {
             externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/234-567-890',
             version: 1,
-            type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+            type: Cocina::Models::Vocab::Resources.file,
             label: 'Page 1',
             structural: {
               contains: [
                 {
                   externalIdentifier: 'http://cocina.sul.stanford.edu/file/223-456-789',
                   version: 1,
-                  type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                  type: Cocina::Models::Vocab.file,
                   filename: '00001.jp2',
                   label: '00001.jp2',
                   hasMimeType: 'image/jp2',

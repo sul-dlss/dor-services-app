@@ -15,7 +15,7 @@ RSpec.describe Cocina::ValidateDarkService do
     Cocina::Models::DRO.new(
       externalIdentifier: 'druid:bc123df4567',
       label: 'The Structure of Scientific Revolutions',
-      type: 'http://cocina.sul.stanford.edu/models/book.jsonld',
+      type: Cocina::Models::Vocab.book,
       version: 1,
       description: {
         title: [{ value: 'The Structure of Scientific Revolutions' }],
@@ -30,13 +30,13 @@ RSpec.describe Cocina::ValidateDarkService do
           {
             externalIdentifier: 'bc123df4567_1',
             label: 'Fileset 1',
-            type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+            type: Cocina::Models::Vocab::Resources.file,
             version: 1,
             structural: {
               contains: [
                 { externalIdentifier: 'bc123df4567_1',
                   label: 'Page 1',
-                  type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                  type: Cocina::Models::Vocab.file,
                   version: 1,
                   access: { access: file_access, download: 'none' },
                   administrative: {

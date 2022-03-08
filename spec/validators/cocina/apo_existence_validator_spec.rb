@@ -32,7 +32,7 @@ RSpec.describe Cocina::ApoExistenceValidator do
       Cocina::Models::DRO.new(
         externalIdentifier: 'druid:bc123df4567',
         label: 'The Structure of Scientific Revolutions',
-        type: 'http://cocina.sul.stanford.edu/models/book.jsonld',
+        type: Cocina::Models::Vocab.book,
         version: 1,
         description: {
           title: [{ value: 'The Structure of Scientific Revolutions' }],
@@ -55,7 +55,7 @@ RSpec.describe Cocina::ApoExistenceValidator do
       Cocina::Models::DRO.new(
         externalIdentifier: 'druid:bc123df4567',
         label: 'The Structure of Scientific Revolutions',
-        type: 'http://cocina.sul.stanford.edu/models/book.jsonld',
+        type: Cocina::Models::Vocab.book,
         version: 1,
         description: {
           title: [{ value: 'The Structure of Scientific Revolutions' }],
@@ -92,7 +92,7 @@ RSpec.describe Cocina::ApoExistenceValidator do
       Cocina::Models::DRO.new(
         externalIdentifier: 'druid:bc123df4567',
         label: 'The Structure of Scientific Revolutions',
-        type: 'http://cocina.sul.stanford.edu/models/book.jsonld',
+        type: Cocina::Models::Vocab.book,
         version: 1,
         description: {
           title: [{ value: 'The Structure of Scientific Revolutions' }],
