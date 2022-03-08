@@ -34,6 +34,7 @@ module Cocina
         remove_resource_data_attribute
         remove_external_resource_id
         remove_external_image_data
+        remove_external_resource_type
         remove_resource_sequence_attribute
         remove_location
         remove_file_format_and_data_type_attributes
@@ -68,6 +69,7 @@ module Cocina
         remove_resource_id_attribute
         remove_external_resource_id
         remove_external_image_data
+        remove_external_resource_type
         remove_resource_sequence_attribute
 
         regenerate_ng_xml(ng_xml.to_s)
@@ -256,6 +258,10 @@ module Cocina
       def remove_external_image_data
         ng_xml.root.xpath('//externalFile/imageData').each(&:remove)
         ng_xml.root.xpath('//externalFile/preceding-sibling::label').each(&:remove)
+      end
+
+      def remove_external_resource_type
+        ng_xml.root.xpath('//resource[externalFile]/@type').each(&:remove)
       end
 
       def normalize_relationship
