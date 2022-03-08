@@ -319,7 +319,7 @@ RSpec.describe 'Update object' do
         {
           "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
-          "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
+          "type":"#{Cocina::Models::Vocab.book}",
           "label":"#{label}","version":1,
           "access":{
             "access":"#{access}",
@@ -560,7 +560,7 @@ RSpec.describe 'Update object' do
         {
           "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
-          "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
+          "type":"#{Cocina::Models::Vocab.image}",
           "label":"#{expected_label}","version":1,
           "access":{
             "access":"#{access}",
@@ -630,7 +630,7 @@ RSpec.describe 'Update object' do
         {
           'externalIdentifier' => 'http://cocina.sul.stanford.edu/file/123-456-789',
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+          'type' => Cocina::Models::Vocab.file,
           'filename' => '00001.html',
           'label' => '00001.html',
           'hasMimeType' => 'text/html',
@@ -661,7 +661,7 @@ RSpec.describe 'Update object' do
         {
           'externalIdentifier' => 'http://cocina.sul.stanford.edu/file/223-456-789',
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+          'type' => Cocina::Models::Vocab.file,
           'filename' => '00001.jp2',
           'label' => '00001.jp2',
           'hasMimeType' => 'image/jp2',
@@ -682,7 +682,7 @@ RSpec.describe 'Update object' do
         {
           'externalIdentifier' => 'http://cocina.sul.stanford.edu/file/323-456-789',
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+          'type' => Cocina::Models::Vocab.file,
           'filename' => '00002.html',
           'label' => '00002.html',
           'hasMimeType' => 'text/html',
@@ -703,7 +703,7 @@ RSpec.describe 'Update object' do
         {
           'externalIdentifier' => 'http://cocina.sul.stanford.edu/file/423-456-789',
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+          'type' => Cocina::Models::Vocab.file,
           'filename' => '00002.jp2',
           'label' => '00002.jp2',
           'hasMimeType' => 'image/jp2',
@@ -725,14 +725,14 @@ RSpec.describe 'Update object' do
           {
             'externalIdentifier' => 'http://cocina.sul.stanford.edu/fileSet/234-567-890',
             'version' => 1,
-            'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+            'type' => Cocina::Models::Vocab::Resources.file,
             'label' => 'Page 1',
             'structural' => { 'contains' => [file1, file2] }
           },
           {
             'externalIdentifier' => 'http://cocina.sul.stanford.edu/fileSet/334-567-890',
             'version' => 1,
-            'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+            'type' => Cocina::Models::Vocab::Resources.file,
             'label' => 'Page 2',
             'structural' => { 'contains' => [file3, file4] }
           }
@@ -741,7 +741,7 @@ RSpec.describe 'Update object' do
 
       let(:fs1) do
         {
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld'
+          'type' => Cocina::Models::Vocab::Resources.file
         }
       end
       let(:data) do
@@ -749,7 +749,7 @@ RSpec.describe 'Update object' do
           {
             "cocinaVersion": "0.0.1",
             "externalIdentifier": "#{druid}",
-            "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
+            "type":"#{Cocina::Models::Vocab.image}",
             "label":"#{label}","version":1,
             "access":{
               "access":"#{access}",
@@ -777,12 +777,12 @@ RSpec.describe 'Update object' do
             isMemberOf: ['druid:xx888xx7777'],
             contains: [
               {
-                type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                type: Cocina::Models::Vocab::Resources.file,
                 externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/gg777gg7777-234-567-890', label: 'Page 1', version: 1,
                 structural: {
                   contains: [
                     {
-                      type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                      type: Cocina::Models::Vocab.file,
                       externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777-234-567-890/00001.html',
                       label: '00001.html',
                       filename: '00001.html',
@@ -800,7 +800,7 @@ RSpec.describe 'Update object' do
                       access: { access: 'dark', download: 'none' },
                       administrative: { publish: false, sdrPreserve: true, shelve: false }
                     }, {
-                      type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                      type: Cocina::Models::Vocab.file,
                       externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777-234-567-890/00001.jp2',
                       label: '00001.jp2',
                       filename: '00001.jp2',
@@ -812,13 +812,13 @@ RSpec.describe 'Update object' do
                   ]
                 }
               }, {
-                type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                type: Cocina::Models::Vocab::Resources.file,
                 externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/gg777gg7777-334-567-890',
                 label: 'Page 2', version: 1,
                 structural: {
                   contains: [
                     {
-                      type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                      type: Cocina::Models::Vocab.file,
                       externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777-334-567-890/00002.html',
                       label: '00002.html', filename: '00002.html', size: 0,
                       version: 1, hasMimeType: 'text/html',
@@ -826,7 +826,7 @@ RSpec.describe 'Update object' do
                       access: { access: 'dark', download: 'none' },
                       administrative: { publish: false, sdrPreserve: true, shelve: false }
                     }, {
-                      type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                      type: Cocina::Models::Vocab.file,
                       externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777-334-567-890/00002.jp2',
                       label: '00002.jp2',
                       filename: '00002.jp2',
@@ -875,7 +875,7 @@ RSpec.describe 'Update object' do
           {
             "cocinaVersion":"0.0.1",
             "externalIdentifier": "#{druid}",
-            "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
+            "type":"#{Cocina::Models::Vocab.image}",
             "label":"#{label}","version":1,
             "access":{
               "access":"#{access}",
@@ -933,7 +933,7 @@ RSpec.describe 'Update object' do
         {
           "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
-          "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
+          "type":"#{Cocina::Models::Vocab.book}",
           "label":"#{label}","version":1,
           "access":{
             "access":"world",
@@ -1006,7 +1006,7 @@ RSpec.describe 'Update object' do
         {
           "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
-          "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
+          "type":"#{Cocina::Models::Vocab.collection}",
           "label":"#{label}","version":1,
           "access":{},
           "identification":#{identification.to_json},
@@ -1091,7 +1091,7 @@ RSpec.describe 'Update object' do
         {
           "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
-          "type":"http://cocina.sul.stanford.edu/models/admin_policy.jsonld",
+          "type":"#{Cocina::Models::Vocab.admin_policy}",
           "label":"This is my label","version":1,
           "administrative":{
             "disseminationWorkflow":"assemblyWF",
@@ -1193,7 +1193,7 @@ RSpec.describe 'Update object' do
         {
           "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
-          "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
+          "type":"#{Cocina::Models::Vocab.book}",
           "label":"This is my label","version":1,
           "access":{"access":"stanford","download":"stanford",
             "embargo":{"access":"world","download":"world","releaseDate":"2020-02-29"}

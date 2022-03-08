@@ -37,12 +37,12 @@ RSpec.describe Dro do
                               identification: { sourceId: 'googlebooks:999999' },
                               structural: { contains: [
                                 {
-                                  type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                                  type: Cocina::Models::Vocab::Resources.file,
                                   externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/123-456-789', label: 'Page 1', version: 1,
                                   structural: {
                                     contains: [
                                       {
-                                        type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                                        type: Cocina::Models::Vocab.file,
                                         externalIdentifier: 'http://cocina.sul.stanford.edu/file/123-456-789',
                                         label: '00001.html',
                                         filename: '00001.html',

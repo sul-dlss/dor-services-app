@@ -71,7 +71,7 @@ RSpec.describe 'Create object' do
       <<~JSON
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
+          "type":"#{Cocina::Models::Vocab.image}",
           "label":"#{label}","version":1,
           "access":{
             "access":"#{access}",
@@ -333,7 +333,7 @@ RSpec.describe 'Create object' do
       let(:file1) do
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+          'type' => Cocina::Models::Vocab.file,
           'filename' => '00001.html',
           'label' => '00001.html',
           'hasMimeType' => 'text/html',
@@ -362,7 +362,7 @@ RSpec.describe 'Create object' do
       let(:file2) do
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+          'type' => Cocina::Models::Vocab.file,
           'filename' => '00001.jp2',
           'label' => '00001.jp2',
           'hasMimeType' => 'image/jp2',
@@ -382,7 +382,7 @@ RSpec.describe 'Create object' do
       let(:file3) do
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+          'type' => Cocina::Models::Vocab.file,
           'filename' => '00002.html',
           'label' => '00002.html',
           'hasMimeType' => 'text/html',
@@ -401,7 +401,7 @@ RSpec.describe 'Create object' do
       let(:file4) do
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+          'type' => Cocina::Models::Vocab.file,
           'filename' => '00002.jp2',
           'label' => '00002.jp2',
           'hasMimeType' => 'image/jp2',
@@ -422,13 +422,13 @@ RSpec.describe 'Create object' do
         [
           {
             'version' => 1,
-            'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+            'type' => Cocina::Models::Vocab::Resources.file,
             'label' => 'Page 1',
             'structural' => { 'contains' => [file1, file2] }
           },
           {
             'version' => 1,
-            'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+            'type' => Cocina::Models::Vocab::Resources.file,
             'label' => 'Page 2',
             'structural' => { 'contains' => [file3, file4] }
           }
@@ -462,12 +462,12 @@ RSpec.describe 'Create object' do
         let(:expected_structural) do
           { contains: [
             {
-              type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+              type: Cocina::Models::Vocab::Resources.file,
               externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/gg777gg7777-123-456-789', label: 'Page 1', version: 1,
               structural: {
                 contains: [
                   {
-                    type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                    type: Cocina::Models::Vocab.file,
                     externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00001.html',
                     label: '00001.html',
                     filename: '00001.html',
@@ -484,7 +484,7 @@ RSpec.describe 'Create object' do
                     access: { access: 'dark' },
                     administrative: { publish: false, sdrPreserve: true, shelve: false }
                   }, {
-                    type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                    type: Cocina::Models::Vocab.file,
                     externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00001.jp2',
                     label: '00001.jp2',
                     filename: '00001.jp2',
@@ -496,13 +496,13 @@ RSpec.describe 'Create object' do
                 ]
               }
             }, {
-              type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+              type: Cocina::Models::Vocab::Resources.file,
               externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/gg777gg7777-123-456-789',
               label: 'Page 2', version: 1,
               structural: {
                 contains: [
                   {
-                    type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                    type: Cocina::Models::Vocab.file,
                     externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00002.html',
                     label: '00002.html', filename: '00002.html',
                     version: 1, hasMimeType: 'text/html',
@@ -510,7 +510,7 @@ RSpec.describe 'Create object' do
                     access: { access: 'dark' },
                     administrative: { publish: false, sdrPreserve: true, shelve: false }
                   }, {
-                    type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                    type: Cocina::Models::Vocab.file,
                     externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00002.jp2',
                     label: '00002.jp2',
                     filename: '00002.jp2',
@@ -620,7 +620,7 @@ RSpec.describe 'Create object' do
         <<~JSON
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
-            "type":"http://cocina.sul.stanford.edu/models/image.jsonld",
+            "type":"#{Cocina::Models::Vocab.image}",
             "label":"#{label}","version":1,
             "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
             "description":{"title":[{"value":"#{title}"}]},
@@ -697,7 +697,7 @@ RSpec.describe 'Create object' do
       <<~JSON
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
+          "type":"#{Cocina::Models::Vocab.book}",
           "label":"#{label}","version":1,"access":{"access":"world","download":"world"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"value":"#{title}"}]},
@@ -768,7 +768,7 @@ RSpec.describe 'Create object' do
       <<~JSON
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"http://cocina.sul.stanford.edu/models/admin_policy.jsonld",
+          "type":"#{Cocina::Models::Vocab.admin_policy}",
           "label":"This is my label","version":1,
           "administrative":{
             "defaultAccess":{
@@ -854,7 +854,7 @@ RSpec.describe 'Create object' do
       <<~JSON
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"http://cocina.sul.stanford.edu/models/admin_policy.jsonld",
+          "type":"#{Cocina::Models::Vocab.admin_policy}",
           "label":"Hydrus","version":1,
           "administrative":{
             "hasAdminPolicy":"druid:dd999df4567",
@@ -915,7 +915,7 @@ RSpec.describe 'Create object' do
       <<~JSON
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
+          "type":"#{Cocina::Models::Vocab.book}",
           "label":"This is my label","version":1,"access":{"access":"stanford","download":"none","controlledDigitalLending":false,
           "embargo":{"access":"world","download":"world","releaseDate":"2020-02-29"}},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
@@ -976,7 +976,7 @@ RSpec.describe 'Create object' do
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
+          "type":"#{Cocina::Models::Vocab.book}",
           "label":"This is my label","version":1,
           "access":{"access":"location-based","download":"location-based","readLocation":"m&m"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
@@ -1035,7 +1035,7 @@ RSpec.describe 'Create object' do
       <<~JSON
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"http://cocina.sul.stanford.edu/models/book.jsonld",
+          "type":"#{Cocina::Models::Vocab.book}",
           "label":"This is my label","version":1,
           "access":{"access":"world","download":"none"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
@@ -1092,7 +1092,7 @@ RSpec.describe 'Create object' do
         <<~JSON
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
-            "type":"http://cocina.sul.stanford.edu/models/object.jsonld",
+            "type":"#{Cocina::Models::Vocab.object}",
             "label":"This is my label","version":1,"access":{},
             "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
             "identification":{"sourceId":"googlebooks:999999"},
@@ -1136,7 +1136,7 @@ RSpec.describe 'Create object' do
         <<~JSON
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
-            "type":"http://cocina.sul.stanford.edu/models/object.jsonld",
+            "type":"#{Cocina::Models::Vocab.object}",
             "label":"This is my label","version":1,"access":{},
             "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
             "identification":{"sourceId":"googlebooks:999999"}}
@@ -1181,7 +1181,7 @@ RSpec.describe 'Create object' do
         <<~JSON
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
-            "type":"http://cocina.sul.stanford.edu/models/object.jsonld",
+            "type":"#{Cocina::Models::Vocab.object}",
             "label":"This is my label","version":1,
             "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
             "access":{},
@@ -1233,7 +1233,7 @@ RSpec.describe 'Create object' do
       <<~JSON
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"http://cocina.sul.stanford.edu/models/webarchive-binary.jsonld",
+          "type":"#{Cocina::Models::Vocab.webarchive_binary}",
           "label":"This is my label","version":1,"access":{},
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "identification":{"sourceId":"warc:999999"},
@@ -1284,7 +1284,7 @@ RSpec.describe 'Create object' do
       <<~JSON
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"http://cocina.sul.stanford.edu/models/object.jsonld",
+          "type":"#{Cocina::Models::Vocab.object}",
           "label":"This is my label","version":1,"access":{},
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "identification":{"sourceId":"warc:999999"},

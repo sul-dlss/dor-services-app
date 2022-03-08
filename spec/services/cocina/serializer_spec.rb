@@ -8,7 +8,7 @@ RSpec.describe Cocina::Serializer do
   let(:dro) do
     Cocina::Models.build(
       {
-        'type' => 'http://cocina.sul.stanford.edu/models/object.jsonld',
+        'type' => Cocina::Models::Vocab.object,
         'externalIdentifier' => 'druid:ft609gr4031',
         'label' => 'SUL Logo for golden_wonder_millet',
         'version' => 1,
@@ -36,13 +36,13 @@ RSpec.describe Cocina::Serializer do
         'structural' => {
           'contains' => [
             {
-              'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+              'type' => Cocina::Models::Vocab::Resources.file,
               'externalIdentifier' => 'http://cocina.sul.stanford.edu/fileSet/e4c2b834-90ce-4be8-b9fa-445df89f5f10',
               'label' => '', 'version' => 1,
               'structural' => {
                 'contains' => [
                   {
-                    'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                    'type' => Cocina::Models::Vocab.file,
                     'externalIdentifier' => 'http://cocina.sul.stanford.edu/file/8ee2d21b-9183-4df6-9813-c0a104b329ce',
                     'label' => 'sul-logo.png',
                     'filename' => 'sul-logo.png',
@@ -69,7 +69,7 @@ RSpec.describe Cocina::Serializer do
   let(:json) do
     {
       cocinaVersion: Cocina::Models::VERSION,
-      type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
+      type: Cocina::Models::Vocab.object,
       externalIdentifier: 'druid:ft609gr4031',
       label: 'SUL Logo for golden_wonder_millet',
       version: 1,
@@ -113,13 +113,13 @@ RSpec.describe Cocina::Serializer do
       },
       structural: {
         contains: [{
-          type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+          type: Cocina::Models::Vocab::Resources.file,
           externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/e4c2b834-90ce-4be8-b9fa-445df89f5f10',
           label: '',
           version: 1,
           structural: {
             contains: [{
-              type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+              type: Cocina::Models::Vocab.file,
               externalIdentifier: 'http://cocina.sul.stanford.edu/file/8ee2d21b-9183-4df6-9813-c0a104b329ce',
               label: 'sul-logo.png',
               filename: 'sul-logo.png',

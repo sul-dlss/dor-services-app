@@ -27,7 +27,7 @@ RSpec.describe 'Get the object' do
         Cocina::Models::DRO.new(
           {
             externalIdentifier: 'druid:bc123df4567',
-            type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
+            type: Cocina::Models::Vocab.object,
             label: 'foo',
             version: 1,
             access: {
@@ -84,7 +84,7 @@ RSpec.describe 'Get the object' do
         Cocina::Models::DRO.new(
           {
             externalIdentifier: 'druid:bc123df4567',
-            type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
+            type: Cocina::Models::Vocab.object,
             label: 'foo',
             version: 1,
             access: {
@@ -144,7 +144,7 @@ RSpec.describe 'Get the object' do
       let(:expected) do
         Cocina::Models::DRO.new({
                                   externalIdentifier: 'druid:bc123df4567',
-                                  type: 'http://cocina.sul.stanford.edu/models/object.jsonld',
+                                  type: Cocina::Models::Vocab.object,
                                   label: 'foo',
                                   version: 1,
                                   access: {
@@ -234,7 +234,7 @@ RSpec.describe 'Get the object' do
       let(:expected) do
         Cocina::Models::DRO.new({
                                   externalIdentifier: 'druid:bc123df4567',
-                                  type: 'http://cocina.sul.stanford.edu/models/image.jsonld',
+                                  type: Cocina::Models::Vocab.image,
                                   label: 'foo',
                                   version: 1,
                                   access: {
@@ -421,7 +421,7 @@ RSpec.describe 'Get the object' do
     let(:expected) do
       Cocina::Models::Collection.new(
         externalIdentifier: 'druid:bc123df4567',
-        type: 'http://cocina.sul.stanford.edu/models/collection.jsonld',
+        type: Cocina::Models::Vocab.collection,
         label: 'foo',
         version: 1,
         access: {
@@ -465,7 +465,7 @@ RSpec.describe 'Get the object' do
         json = JSON.parse(response.body)
 
         expect(json['externalIdentifier']).to eq 'druid:bc123df4567'
-        expect(json['type']).to eq 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld'
+        expect(json['type']).to eq Cocina::Models::Vocab.admin_policy
         expect(json['label']).to eq 'bar'
         expect(json['version']).to eq 1
         expect(json['administrative']['registrationWorkflow']).to eq []
@@ -518,7 +518,7 @@ RSpec.describe 'Get the object' do
         json = JSON.parse(response.body)
 
         expect(json['externalIdentifier']).to eq 'druid:bc123df4567'
-        expect(json['type']).to eq 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld'
+        expect(json['type']).to eq Cocina::Models::Vocab.admin_policy
         expect(json['label']).to eq 'bar'
         expect(json['version']).to eq 1
         expect(json['administrative']['registrationWorkflow']).to eq %w[registrationWF goobiWF]
@@ -567,7 +567,7 @@ RSpec.describe 'Get the object' do
       json = JSON.parse(response.body)
 
       expect(json['externalIdentifier']).to eq 'druid:bc123df4567'
-      expect(json['type']).to eq 'http://cocina.sul.stanford.edu/models/object.jsonld'
+      expect(json['type']).to eq Cocina::Models::Vocab.object
       expect(json['label']).to eq 'foo'
       expect(json['version']).to eq 1
       expect(json['access']).to eq('access' => 'dark', 'download' => 'none')

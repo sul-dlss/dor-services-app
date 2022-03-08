@@ -73,13 +73,13 @@ RSpec.describe Cocina::FromFedora::FileSets do
     context 'when type is main-augmented (ETDs)' do
       let(:type) { 'main-augmented' }
 
-      it { is_expected.to eq 'http://cocina.sul.stanford.edu/models/resources/main-augmented.jsonld' }
+      it { is_expected.to eq Cocina::Models::Vocab::Resources.main_augmented }
     end
 
     context 'when type is 3d' do
       let(:type) { '3d' }
 
-      it { is_expected.to eq 'http://cocina.sul.stanford.edu/models/resources/3d.jsonld' }
+      it { is_expected.to eq Cocina::Models::Vocab::Resources.three_dimensional }
     end
 
     context 'when the resource type is invalid' do

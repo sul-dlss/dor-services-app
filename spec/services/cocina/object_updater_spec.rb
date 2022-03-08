@@ -48,7 +48,7 @@ RSpec.describe Cocina::ObjectUpdater do
 
     let(:orig_cocina_attrs) do
       {
-        type: 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld',
+        type: Cocina::Models::Vocab.admin_policy,
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
         version: 1,
@@ -202,7 +202,7 @@ RSpec.describe Cocina::ObjectUpdater do
 
     let(:orig_cocina_attrs) do
       {
-        type: 'http://cocina.sul.stanford.edu/models/collection.jsonld',
+        type: Cocina::Models::Vocab.collection,
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
         version: 1,
@@ -401,7 +401,7 @@ RSpec.describe Cocina::ObjectUpdater do
 
     let(:orig_cocina_attrs) do
       {
-        type: 'http://cocina.sul.stanford.edu/models/media.jsonld',
+        type: Cocina::Models::Vocab.media,
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
         description: {
@@ -592,13 +592,13 @@ RSpec.describe Cocina::ObjectUpdater do
           attrs[:structural] = {
             contains: [
               {
-                'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+                'type' => Cocina::Models::Vocab::Resources.file,
                 'externalIdentifier' => 'http://cocina.sul.stanford.edu/fileSet/e4c2b834-90ce-4be8-b9fa-445df89f5f10',
                 'label' => '', 'version' => 1,
                 'structural' => {
                   'contains' => [
                     {
-                      'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                      'type' => Cocina::Models::Vocab.file,
                       'externalIdentifier' => 'http://cocina.sul.stanford.edu/file/8ee2d21b-9183-4df6-9813-c0a104b329ce',
                       'label' => 'sul-logo.png',
                       'filename' => 'sul-logo.png',
@@ -672,7 +672,7 @@ RSpec.describe Cocina::ObjectUpdater do
       context 'when type has changed to object' do
         let(:cocina_attrs) do
           orig_cocina_attrs.tap do |attrs|
-            attrs[:type] = 'http://cocina.sul.stanford.edu/models/object.jsonld'
+            attrs[:type] = Cocina::Models::Vocab.object
           end
         end
 
@@ -754,7 +754,7 @@ RSpec.describe Cocina::ObjectUpdater do
 
     let(:orig_cocina_attrs) do
       {
-        type: 'http://cocina.sul.stanford.edu/models/media.jsonld',
+        type: Cocina::Models::Vocab.media,
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
         description: {

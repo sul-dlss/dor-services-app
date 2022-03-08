@@ -104,13 +104,13 @@ RSpec.describe EmbargoReleaseService do
           contains: [
             {
               version: 1,
-              type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+              type: Cocina::Models::Vocab::Resources.file,
               label: 'Page 1',
               externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/gg777gg7777/123-456-789',
               structural: { contains: [
                 {
                   version: 1,
-                  type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                  type: Cocina::Models::Vocab.file,
                   externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777/123-456-789/00001.html',
                   filename: '00001.html',
                   label: '00001.html',

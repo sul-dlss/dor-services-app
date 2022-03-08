@@ -40,13 +40,13 @@ RSpec.shared_examples 'DRO Access Fedora Cocina mapping' do
       contains: [
         {
           externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
-          type: 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+          type: Cocina::Models::Vocab::Resources.file,
           version: 1,
           structural: {
             contains: [
               {
                 externalIdentifier: 'http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
-                type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                type: Cocina::Models::Vocab.file,
                 label: 'sul-logo.png',
                 filename: 'sul-logo.png',
                 size: 19823,

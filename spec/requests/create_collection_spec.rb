@@ -38,7 +38,7 @@ RSpec.describe 'Create object' do
       <<~JSON
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
+          "type":"#{Cocina::Models::Vocab.collection}",
           "label":"#{label}","version":1,"access":{"access":"world"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"value":"#{title}"}]},
@@ -125,7 +125,7 @@ RSpec.describe 'Create object' do
       <<~JSON
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
+          "type":"#{Cocina::Models::Vocab.collection}",
           "label":"#{label}","version":1,"access":{"access":"world"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Hydrus"},
           "identification":{"sourceId":"hydrus:collection-456"},
@@ -149,7 +149,7 @@ RSpec.describe 'Create object' do
       <<~JSON
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
+          "type":"#{Cocina::Models::Vocab.collection}",
           "label":"#{label}",
           "version":1,
           "access":{"access":"world"},
@@ -192,7 +192,7 @@ RSpec.describe 'Create object' do
       <<~JSON
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"http://cocina.sul.stanford.edu/models/collection.jsonld",
+          "type":"#{Cocina::Models::Vocab.collection}",
           "label":"#{label}",
           "version":1,
           "access":{ "access": "world" },

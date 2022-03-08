@@ -9,7 +9,7 @@ RSpec.describe Publish::PublicCocinaService do
 
   let(:cocina_item) do
     Cocina::Models::DRO.new(
-      { cocinaVersion: '0.65.1', type: 'http://cocina.sul.stanford.edu/models/book.jsonld',
+      { cocinaVersion: '0.65.1', type: Cocina::Models::Vocab.book,
         externalIdentifier: 'druid:hz651dj0129',
         label: 'Census of India 1931',
         version: 1,
@@ -21,13 +21,13 @@ RSpec.describe Publish::PublicCocinaService do
         structural: {
           contains: [
             {
-              type: 'http://cocina.sul.stanford.edu/models/resources/page.jsonld',
+              type: Cocina::Models::Vocab::Resources.page,
               externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/63a5295e-356e-428c-8ec7-894643efdeda',
               label: 'Page 1', version: 1,
               structural: {
                 contains: [
                   {
-                    type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                    type: Cocina::Models::Vocab.file,
                     externalIdentifier: 'http://cocina.sul.stanford.edu/file/f44c645d-c469-4345-b9b6-38eeb7f15dd3',
                     label: '50807230_0001.tif', filename: '50807230_0001.tif', size: 56_987_913,
                     version: 1, hasMimeType: 'image/tiff',
@@ -39,7 +39,7 @@ RSpec.describe Publish::PublicCocinaService do
                     administrative: { publish: false, sdrPreserve: true, shelve: false },
                     presentation: { height: 5360, width: 3544 }
                   }, {
-                    type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                    type: Cocina::Models::Vocab.file,
                     externalIdentifier: 'http://cocina.sul.stanford.edu/file/8861aa09-416f-4890-8786-1dd45d2b6297',
                     label: '50807230_0001.jp2', filename: '50807230_0001.jp2', size: 3_575_822,
                     version: 1,
@@ -55,12 +55,12 @@ RSpec.describe Publish::PublicCocinaService do
                 ]
               }
             }, {
-              type: 'http://cocina.sul.stanford.edu/models/resources/page.jsonld',
+              type: Cocina::Models::Vocab::Resources.page,
               externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/fdd60abb-76c0-4450-8276-0b6fb145dcc5',
               label: 'Page 2', version: 1,
               structural: {
                 contains: [
-                  { type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                  { type: Cocina::Models::Vocab.file,
                     externalIdentifier: 'http://cocina.sul.stanford.edu/file/4c53e83b-6d45-435a-8323-299ded33800f',
                     label: '50807230_0002.tif', filename: '50807230_0002.tif', size: 31_525_443, version: 1,
                     hasMimeType: 'image/tiff',
@@ -71,7 +71,7 @@ RSpec.describe Publish::PublicCocinaService do
                     access: { access: 'dark', download: 'none' },
                     administrative: { publish: false, sdrPreserve: true, shelve: false },
                     presentation: { height: 5496, width: 5736 } }, {
-                      type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                      type: Cocina::Models::Vocab.file,
                       externalIdentifier: 'http://cocina.sul.stanford.edu/file/bf2dd98c-8c9e-4802-ae28-8f60bb31b360',
                       label: '50807230_0002.jp2', filename: '50807230_0002.jp2', size: 5_920_056, version: 1,
                       hasMimeType: 'image/jp2',
@@ -86,13 +86,13 @@ RSpec.describe Publish::PublicCocinaService do
                 ]
               }
             }, {
-              type: 'http://cocina.sul.stanford.edu/models/resources/page.jsonld',
+              type: Cocina::Models::Vocab::Resources.page,
               externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/0b7db5f1-e12d-446c-acbc-a46361f5a06d',
               label: 'Page 3', version: 1,
               structural: {
                 contains: [
                   {
-                    type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                    type: Cocina::Models::Vocab.file,
                     externalIdentifier: 'http://cocina.sul.stanford.edu/file/8bbfdff7-1765-475a-a858-3b138c2eb31a',
                     label: '50807230_0003.tif', filename: '50807230_0003.tif', size: 31_525_443, version: 1,
                     hasMimeType: 'image/tiff',
@@ -104,7 +104,7 @@ RSpec.describe Publish::PublicCocinaService do
                     administrative: { publish: false, sdrPreserve: true, shelve: false },
                     presentation: { height: 5496, width: 5736 }
                   }, {
-                    type: 'http://cocina.sul.stanford.edu/models/file.jsonld',
+                    type: Cocina::Models::Vocab.file,
                     externalIdentifier: 'http://cocina.sul.stanford.edu/file/0a532f3b-e473-4b68-b2fc-93436eb41240',
                     label: '50807230_0003.jp2', filename: '50807230_0003.jp2', size: 5_920_374, version: 1,
                     hasMimeType: 'image/jp2',

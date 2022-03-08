@@ -16,7 +16,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   let(:file1) do
     {
       'version' => 1,
-      'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+      'type' => Cocina::Models::Vocab.file,
       'filename' => '00001.html',
       'label' => '00001.html',
       'hasMimeType' => 'text/html',
@@ -48,7 +48,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   let(:file2) do
     {
       'version' => 1,
-      'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+      'type' => Cocina::Models::Vocab.file,
       'filename' => '00001.jp2',
       'label' => '00001.jp2',
       'hasMimeType' => 'image/jp2',
@@ -73,7 +73,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   let(:file3) do
     {
       'version' => 1,
-      'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+      'type' => Cocina::Models::Vocab.file,
       'filename' => '00002.html',
       'label' => '00002.html',
       'hasMimeType' => 'text/html',
@@ -94,7 +94,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   let(:file4) do
     {
       'version' => 1,
-      'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+      'type' => Cocina::Models::Vocab.file,
       'filename' => '00002.jp2',
       'label' => '00002.jp2',
       'hasMimeType' => 'image/jp2',
@@ -115,7 +115,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   let(:file5) do
     {
       'version' => 1,
-      'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+      'type' => Cocina::Models::Vocab.file,
       'filename' => 'checksum.txt',
       'label' => 'checksum.txt',
       'hasMimeType' => 'text/plain',
@@ -137,13 +137,13 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     [
       {
         'version' => 1,
-        'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+        'type' => Cocina::Models::Vocab::Resources.file,
         'label' => 'Page 1',
         'structural' => { 'contains' => [file1, file2] }
       },
       {
         'version' => 1,
-        'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+        'type' => Cocina::Models::Vocab::Resources.file,
         'label' => '', # Some fileset have blank labels
         'structural' => { 'contains' => [file3, file4] }
       }
@@ -183,19 +183,19 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       [
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/page.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.page,
           'label' => 'Page 1',
           'structural' => { 'contains' => [file1, file2] }
         },
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/page.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.page,
           'label' => 'Page 2',
           'structural' => { 'contains' => [file3, file4] }
         },
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/object.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.object,
           'label' => 'Object 1',
           'structural' => { 'contains' => [file5] }
         }
@@ -288,7 +288,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     let(:file1) do
       {
         'version' => 1,
-        'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+        'type' => Cocina::Models::Vocab.file,
         'filename' => '00001.zip',
         'label' => '00001.zip',
         'hasMimeType' => 'application/zip',
@@ -319,7 +319,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     let(:file3) do
       {
         'version' => 1,
-        'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+        'type' => Cocina::Models::Vocab.file,
         'filename' => '00002.xml',
         'label' => '00002.xml',
         'hasMimeType' => 'text/xml',
@@ -341,19 +341,19 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       [
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/object.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.object,
           'label' => 'Data',
           'structural' => { 'contains' => [file1] }
         },
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.file,
           'label' => 'Preview',
           'structural' => { 'contains' => [file2, file4] }
         },
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.file,
           'label' => 'Attachment',
           'structural' => { 'contains' => [file3] }
         }
@@ -396,7 +396,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         {
           'version' => 1,
           'label' => 'Preview',
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/image.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.image,
           'structural' => { 'contains' => [file2] }
         }
       ]
@@ -448,13 +448,13 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       [
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/video.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.video,
           'label' => 'Page 1',
           'structural' => { 'contains' => [file1] }
         },
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.file,
           'label' => 'Page 2',
           'structural' => { 'contains' => [file3, file4] }
         }
@@ -464,7 +464,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     let(:file1) do
       {
         'version' => 1,
-        'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+        'type' => Cocina::Models::Vocab.file,
         'filename' => 'bb012xz4244_pm.mpeg',
         'label' => 'bb012xz4244_pm.mpeg',
         'hasMimeType' => 'video/mpeg',
@@ -518,13 +518,13 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       [
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/video.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.video,
           'label' => 'Page 1',
           'structural' => { 'contains' => [file1, file2] }
         },
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.file,
           'label' => 'Page 2',
           'structural' => { 'contains' => [file3, file4] }
         }
@@ -534,7 +534,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     let(:file1) do
       {
         'version' => 1,
-        'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+        'type' => Cocina::Models::Vocab.file,
         'filename' => 'bb012xz4244_pm.mpeg',
         'label' => 'bb012xz4244_pm.mpeg',
         'hasMimeType' => 'video/mpeg',
@@ -590,13 +590,13 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       [
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/audio.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.audio,
           'label' => 'Page 1',
           'structural' => { 'contains' => [file1, file2] }
         },
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.file,
           'label' => 'Page 2',
           'structural' => { 'contains' => [file3, file4] }
         }
@@ -606,7 +606,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     let(:file1) do
       {
         'version' => 1,
-        'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+        'type' => Cocina::Models::Vocab.file,
         'filename' => 'bb015cf9132_ars0021_201006112000_11_01_sl.m4a',
         'label' => 'bb015cf9132_ars0021_201006112000_11_01_sl.m4a',
         'hasMimeType' => 'audio/mp4',
@@ -667,14 +667,14 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       [
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.file,
           'label' => 'Page 1',
           'structural' => { 'contains' => [file1, file2] },
           'externalIdentifier' => 'http://cocina.sul.stanford.edu/fileSet/bc123df5678/012-345-678' # Existing id should be retained.
         },
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/file.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.file,
           'label' => 'Page 2',
           'structural' => { 'contains' => [file3, file4] },
           'externalIdentifier' => 'page_2' # Retain segment and form cocina file URL based on it
@@ -738,14 +738,14 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       [
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/image.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.image,
           'label' => 'Page 1',
           'structural' => { 'contains' => [file1, file2] },
           'externalIdentifier' => "#{constituent_druid}_1"
         },
         {
           'version' => 1,
-          'type' => 'http://cocina.sul.stanford.edu/models/resources/image.jsonld',
+          'type' => Cocina::Models::Vocab::Resources.image,
           'label' => 'Page 2',
           'structural' => { 'contains' => [file3, file4] },
           'externalIdentifier' => "#{constituent_druid}_2"
@@ -798,7 +798,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       {
         'externalIdentifier' => '00001.html',
         'version' => 1,
-        'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+        'type' => Cocina::Models::Vocab.file,
         'filename' => '00001.html',
         'label' => '00001.html',
         'hasMimeType' => 'text/html',
@@ -831,7 +831,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       {
         'externalIdentifier' => '00001.jp2',
         'version' => 1,
-        'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+        'type' => Cocina::Models::Vocab.file,
         'filename' => '00001.jp2',
         'label' => '00001.jp2',
         'hasMimeType' => 'image/jp2',
@@ -857,7 +857,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       {
         'externalIdentifier' => '00002.html',
         'version' => 1,
-        'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+        'type' => Cocina::Models::Vocab.file,
         'filename' => '00002.html',
         'label' => '00002.html',
         'hasMimeType' => 'text/html',
@@ -879,7 +879,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       {
         'externalIdentifier' => '00002.jp2',
         'version' => 1,
-        'type' => 'http://cocina.sul.stanford.edu/models/file.jsonld',
+        'type' => Cocina::Models::Vocab.file,
         'filename' => '00002.jp2',
         'label' => '00002.jp2',
         'hasMimeType' => 'image/jp2',
