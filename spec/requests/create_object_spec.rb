@@ -463,12 +463,12 @@ RSpec.describe 'Create object' do
           { contains: [
             {
               type: Cocina::Models::Vocab::Resources.file,
-              externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/gg777gg7777-123-456-789', label: 'Page 1', version: 1,
+              externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/gg777gg7777-123-456-789', label: 'Page 1', version: 1,
               structural: {
                 contains: [
                   {
                     type: Cocina::Models::Vocab.file,
-                    externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00001.html',
+                    externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00001.html',
                     label: '00001.html',
                     filename: '00001.html',
                     version: 1,
@@ -485,7 +485,7 @@ RSpec.describe 'Create object' do
                     administrative: { publish: false, sdrPreserve: true, shelve: false }
                   }, {
                     type: Cocina::Models::Vocab.file,
-                    externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00001.jp2',
+                    externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00001.jp2',
                     label: '00001.jp2',
                     filename: '00001.jp2',
                     version: 1,
@@ -497,13 +497,13 @@ RSpec.describe 'Create object' do
               }
             }, {
               type: Cocina::Models::Vocab::Resources.file,
-              externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/gg777gg7777-123-456-789',
+              externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/gg777gg7777-123-456-789',
               label: 'Page 2', version: 1,
               structural: {
                 contains: [
                   {
                     type: Cocina::Models::Vocab.file,
-                    externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00002.html',
+                    externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00002.html',
                     label: '00002.html', filename: '00002.html',
                     version: 1, hasMimeType: 'text/html',
                     hasMessageDigests: [],
@@ -511,7 +511,7 @@ RSpec.describe 'Create object' do
                     administrative: { publish: false, sdrPreserve: true, shelve: false }
                   }, {
                     type: Cocina::Models::Vocab.file,
-                    externalIdentifier: 'http://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00002.jp2',
+                    externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00002.jp2',
                     label: '00002.jp2',
                     filename: '00002.jp2',
                     version: 1,

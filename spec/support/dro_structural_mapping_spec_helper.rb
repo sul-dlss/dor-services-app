@@ -42,8 +42,8 @@ RSpec.shared_examples 'DRO Structural Fedora Cocina mapping' do
     allow(fedora_item).to receive(:rightsMetadata).and_return(rights_metadata_ds)
     content_metadata_ds = Dor::ContentMetadataDS.from_xml(content_xml)
     allow(fedora_item).to receive(:contentMetadata).and_return(content_metadata_ds)
-    allow(Cocina::IdGenerator).to receive(:generate_or_existing_fileset_id).and_return('http://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f')
-    allow(Cocina::IdGenerator).to receive(:generate_or_existing_file_id).and_return('http://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181')
+    allow(Cocina::IdGenerator).to receive(:generate_or_existing_fileset_id).and_return('https://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f')
+    allow(Cocina::IdGenerator).to receive(:generate_or_existing_file_id).and_return('https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181')
   end
 
   context 'when mapping from Fedora to Cocina' do

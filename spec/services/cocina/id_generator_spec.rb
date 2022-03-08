@@ -15,10 +15,10 @@ RSpec.describe Cocina::IdGenerator do
     subject(:file_set_id) { described_class.generate_or_existing_fileset_id(druid: druid, resource_id: resource_id) }
 
     context 'with a fully-qualified Cocina resource ID' do
-      let(:resource_id) { "http://cocina.sul.stanford.edu/fileSet/#{bare_druid}/resource123" }
+      let(:resource_id) { "https://cocina.sul.stanford.edu/fileSet/#{bare_druid}/resource123" }
 
       it 'returns the ID with the druid-resource slash replaced with a hyphen' do
-        expect(file_set_id).to eq("http://cocina.sul.stanford.edu/fileSet/#{bare_druid}-resource123")
+        expect(file_set_id).to eq("https://cocina.sul.stanford.edu/fileSet/#{bare_druid}-resource123")
       end
     end
 
@@ -26,15 +26,15 @@ RSpec.describe Cocina::IdGenerator do
       let(:resource_id) { nil }
 
       it 'generates an ID with a UUID' do
-        expect(file_set_id).to eq("http://cocina.sul.stanford.edu/fileSet/#{bare_druid}-#{uuid}")
+        expect(file_set_id).to eq("https://cocina.sul.stanford.edu/fileSet/#{bare_druid}-#{uuid}")
       end
     end
 
     context 'with a non-standard Cocina URI resource ID' do
-      let(:resource_id) { 'http://cocina.sul.stanford.edu/fileSet/resource123' }
+      let(:resource_id) { 'https://cocina.sul.stanford.edu/fileSet/resource123' }
 
       it 'generates an ID with the last segment picked off the ID' do
-        expect(file_set_id).to eq("http://cocina.sul.stanford.edu/fileSet/#{bare_druid}-resource123")
+        expect(file_set_id).to eq("https://cocina.sul.stanford.edu/fileSet/#{bare_druid}-resource123")
       end
     end
 
@@ -42,7 +42,7 @@ RSpec.describe Cocina::IdGenerator do
       let(:resource_id) { 'resource123' }
 
       it 'generates an ID with the prior string' do
-        expect(file_set_id).to eq("http://cocina.sul.stanford.edu/fileSet/#{bare_druid}-resource123")
+        expect(file_set_id).to eq("https://cocina.sul.stanford.edu/fileSet/#{bare_druid}-resource123")
       end
     end
   end
@@ -53,11 +53,11 @@ RSpec.describe Cocina::IdGenerator do
     let(:given_file_id) { 'file123.txt' }
 
     context 'with a fully-qualified Cocina file ID' do
-      let(:given_file_id) { "http://cocina.sul.stanford.edu/file/#{bare_druid}/resource123/file123.txt" }
+      let(:given_file_id) { "https://cocina.sul.stanford.edu/file/#{bare_druid}/resource123/file123.txt" }
       let(:resource_id) { nil }
 
       it 'returns the ID with the druid-resource slash replaced with a hyphen' do
-        expect(file_id).to eq("http://cocina.sul.stanford.edu/file/#{bare_druid}-resource123/file123.txt")
+        expect(file_id).to eq("https://cocina.sul.stanford.edu/file/#{bare_druid}-resource123/file123.txt")
       end
     end
 
@@ -65,15 +65,15 @@ RSpec.describe Cocina::IdGenerator do
       let(:resource_id) { nil }
 
       it 'generates an ID with a UUID resource ID' do
-        expect(file_id).to eq("http://cocina.sul.stanford.edu/file/#{bare_druid}-#{uuid}/#{given_file_id}")
+        expect(file_id).to eq("https://cocina.sul.stanford.edu/file/#{bare_druid}-#{uuid}/#{given_file_id}")
       end
     end
 
     context 'with a non-standard Cocina URI resource ID' do
-      let(:resource_id) { 'http://cocina.sul.stanford.edu/fileSet/resource123' }
+      let(:resource_id) { 'https://cocina.sul.stanford.edu/fileSet/resource123' }
 
       it 'generates an ID with the UUID picked off the resource ID' do
-        expect(file_id).to eq("http://cocina.sul.stanford.edu/file/#{bare_druid}-resource123/#{given_file_id}")
+        expect(file_id).to eq("https://cocina.sul.stanford.edu/file/#{bare_druid}-resource123/#{given_file_id}")
       end
     end
 
@@ -81,7 +81,7 @@ RSpec.describe Cocina::IdGenerator do
       let(:resource_id) { 'resource123' }
 
       it 'generates an ID with the prior string' do
-        expect(file_id).to eq("http://cocina.sul.stanford.edu/file/#{bare_druid}-resource123/#{given_file_id}")
+        expect(file_id).to eq("https://cocina.sul.stanford.edu/file/#{bare_druid}-resource123/#{given_file_id}")
       end
     end
 
@@ -90,7 +90,7 @@ RSpec.describe Cocina::IdGenerator do
       let(:resource_id) { 'resource123' }
 
       it 'generates a file ID with a UUID' do
-        expect(file_id).to eq("http://cocina.sul.stanford.edu/file/#{bare_druid}-resource123/#{uuid}")
+        expect(file_id).to eq("https://cocina.sul.stanford.edu/file/#{bare_druid}-resource123/#{uuid}")
       end
     end
   end

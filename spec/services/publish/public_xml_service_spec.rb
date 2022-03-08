@@ -21,13 +21,13 @@ RSpec.describe Publish::PublicXmlService do
     {
       contains: [{
         type: Cocina::Models::Vocab::Resources.image,
-        externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/9475bc2c-7552-43d8-b8ab-8cd2212d5873',
+        externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/9475bc2c-7552-43d8-b8ab-8cd2212d5873',
         label: 'Image 1',
         version: 1,
         structural: {
           contains: [{
             type: Cocina::Models::Vocab.file,
-            externalIdentifier: 'http://cocina.sul.stanford.edu/file/15e6e501-d22c-4f96-a824-8a88dd312937',
+            externalIdentifier: 'https://cocina.sul.stanford.edu/file/15e6e501-d22c-4f96-a824-8a88dd312937',
             label: 'Image 1',
             filename: 'wt183gy6220_00_0001.jp2',
             hasMimeType: 'image/jp2',
@@ -201,13 +201,13 @@ RSpec.describe Publish::PublicXmlService do
           {
             contains: [{
               type: Cocina::Models::Vocab::Resources.image,
-              externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/9475bc2c-7552-43d8-b8ab-8cd2212d5873',
+              externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/9475bc2c-7552-43d8-b8ab-8cd2212d5873',
               label: 'Image 1',
               version: 1,
               structural: {
                 contains: [{
                   type: Cocina::Models::Vocab.file,
-                  externalIdentifier: 'http://cocina.sul.stanford.edu/file/15e6e501-d22c-4f96-a824-8a88dd312937',
+                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/15e6e501-d22c-4f96-a824-8a88dd312937',
                   label: 'Image 1',
                   filename: 'wt183gy6220_00_0001.jp2',
                   hasMimeType: 'image/jp2',
@@ -362,13 +362,13 @@ RSpec.describe Publish::PublicXmlService do
               contains: [
                 {
                   type: Cocina::Models::Vocab::Resources.image,
-                  externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/9475bc2c-7552-43d8-b8ab-8cd2212d5873',
+                  externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/9475bc2c-7552-43d8-b8ab-8cd2212d5873',
                   label: 'Image 1',
                   version: 3,
                   structural: {
                     contains: [
                       { type: Cocina::Models::Vocab.file,
-                        externalIdentifier: 'http://cocina.sul.stanford.edu/file/15e6e501-d22c-4f96-a824-8a88dd312937',
+                        externalIdentifier: 'https://cocina.sul.stanford.edu/file/15e6e501-d22c-4f96-a824-8a88dd312937',
                         label: '2542A.tif',
                         filename: '2542A.tif',
                         size: 92_217_124,
@@ -388,7 +388,7 @@ RSpec.describe Publish::PublicXmlService do
                         presentation: { height: 4747,
                                         width: 6475 } },
                       { type: Cocina::Models::Vocab.file,
-                        externalIdentifier: 'http://cocina.sul.stanford.edu/file/c59ada47-489b-4d0b-ab28-136b824d3904',
+                        externalIdentifier: 'https://cocina.sul.stanford.edu/file/c59ada47-489b-4d0b-ab28-136b824d3904',
                         label: '2542A.jp2',
                         filename: '2542A.jp2',
                         size: 5_789_764,
@@ -445,14 +445,14 @@ RSpec.describe Publish::PublicXmlService do
               contains: [
                 {
                   type: Cocina::Models::Vocab::Resources.image,
-                  externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/929604b0-00bc-40b1-af71-5c17f066e2fd',
+                  externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/929604b0-00bc-40b1-af71-5c17f066e2fd',
                   label: 'Image 1',
                   version: 3,
                   structural: {
                     contains: [
                       {
                         type: Cocina::Models::Vocab.file,
-                        externalIdentifier: 'http://cocina.sul.stanford.edu/file/787afaca-ba6e-4998-84bd-1bb43f9182cf',
+                        externalIdentifier: 'https://cocina.sul.stanford.edu/file/787afaca-ba6e-4998-84bd-1bb43f9182cf',
                         label: '2542B.tif',
                         filename: '2542B.tif',
                         size: 44_028_890,
@@ -471,7 +471,7 @@ RSpec.describe Publish::PublicXmlService do
                       },
                       {
                         type: Cocina::Models::Vocab.file,
-                        externalIdentifier: 'http://cocina.sul.stanford.edu/file/72880460-6865-4aa9-85c7-ac26002aebc5',
+                        externalIdentifier: 'https://cocina.sul.stanford.edu/file/72880460-6865-4aa9-85c7-ac26002aebc5',
                         label: '2542B.jp2',
                         filename: '2542B.jp2',
                         size: 2_762_668,

@@ -573,13 +573,13 @@ RSpec.describe Publish::RightsMetadata do
         {
           contains: [{
             type: Cocina::Models::Vocab::Resources.file,
-            externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/wf816pb3072/8043b03b-9ec3-44e9-8a93-00be030a5f65',
+            externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/wf816pb3072/8043b03b-9ec3-44e9-8a93-00be030a5f65',
             label: 'Image 1',
             version: 7,
             structural: {
               contains: [{
                 type: Cocina::Models::Vocab.file,
-                externalIdentifier: 'http://cocina.sul.stanford.edu/file/wf816pb3072/8043b03b-9ec3-44e9-8a93-00be030a5f65/placeholder.jp2',
+                externalIdentifier: 'https://cocina.sul.stanford.edu/file/wf816pb3072/8043b03b-9ec3-44e9-8a93-00be030a5f65/placeholder.jp2',
                 label: 'placeholder.jp2',
                 filename: 'placeholder.jp2',
                 size: 111_541_144,
@@ -647,13 +647,13 @@ RSpec.describe Publish::RightsMetadata do
         {
           contains: [{
             type: Cocina::Models::Vocab::Resources.file,
-            externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/wf816pb3072/8043b03b-9ec3-44e9-8a93-00be030a5f65',
+            externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/wf816pb3072/8043b03b-9ec3-44e9-8a93-00be030a5f65',
             label: 'Image 1',
             version: 7,
             structural: {
               contains: [{
                 type: Cocina::Models::Vocab.file,
-                externalIdentifier: 'http://cocina.sul.stanford.edu/file/wf816pb3072/8043b03b-9ec3-44e9-8a93-00be030a5f65/placeholder.jp2',
+                externalIdentifier: 'https://cocina.sul.stanford.edu/file/wf816pb3072/8043b03b-9ec3-44e9-8a93-00be030a5f65/placeholder.jp2',
                 label: 'placeholder.jp2',
                 filename: 'placeholder.jp2',
                 size: 111_541_144,
@@ -726,13 +726,13 @@ RSpec.describe Publish::RightsMetadata do
         {
           contains: [{
             type: Cocina::Models::Vocab::Resources.file,
-            externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/wf816pb3072/8043b03b-9ec3-44e9-8a93-00be030a5f65',
+            externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/wf816pb3072/8043b03b-9ec3-44e9-8a93-00be030a5f65',
             label: 'Image 1',
             version: 7,
             structural: {
               contains: [{
                 type: Cocina::Models::Vocab.file,
-                externalIdentifier: 'http://cocina.sul.stanford.edu/file/wf816pb3072/8043b03b-9ec3-44e9-8a93-00be030a5f65/placeholder.jp2',
+                externalIdentifier: 'https://cocina.sul.stanford.edu/file/wf816pb3072/8043b03b-9ec3-44e9-8a93-00be030a5f65/placeholder.jp2',
                 label: 'placeholder.jp2',
                 filename: 'placeholder.jp2',
                 size: 111_541_144,

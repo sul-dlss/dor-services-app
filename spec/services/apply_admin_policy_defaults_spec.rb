@@ -291,14 +291,14 @@ RSpec.describe ApplyAdminPolicyDefaults do
       end
       let(:before_file_set) do
         {
-          externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/234-567-890',
+          externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/234-567-890',
           version: 1,
           type: Cocina::Models::Vocab::Resources.file,
           label: 'Page 1',
           structural: {
             contains: [
               {
-                externalIdentifier: 'http://cocina.sul.stanford.edu/file/223-456-789',
+                externalIdentifier: 'https://cocina.sul.stanford.edu/file/223-456-789',
                 version: 1,
                 type: Cocina::Models::Vocab.file,
                 filename: '00001.jp2',
@@ -324,14 +324,14 @@ RSpec.describe ApplyAdminPolicyDefaults do
       context 'when APO uses default default rights' do
         let(:file_set_with_default_access) do
           {
-            externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/234-567-890',
+            externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/234-567-890',
             version: 1,
             type: Cocina::Models::Vocab::Resources.file,
             label: 'Page 1',
             structural: {
               contains: [
                 {
-                  externalIdentifier: 'http://cocina.sul.stanford.edu/file/223-456-789',
+                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/223-456-789',
                   version: 1,
                   type: Cocina::Models::Vocab.file,
                   filename: '00001.jp2',
@@ -368,14 +368,14 @@ RSpec.describe ApplyAdminPolicyDefaults do
         end
         let(:file_set_with_custom_access) do
           {
-            externalIdentifier: 'http://cocina.sul.stanford.edu/fileSet/234-567-890',
+            externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/234-567-890',
             version: 1,
             type: Cocina::Models::Vocab::Resources.file,
             label: 'Page 1',
             structural: {
               contains: [
                 {
-                  externalIdentifier: 'http://cocina.sul.stanford.edu/file/223-456-789',
+                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/223-456-789',
                   version: 1,
                   type: Cocina::Models::Vocab.file,
                   filename: '00001.jp2',

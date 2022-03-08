@@ -428,13 +428,13 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       <<~JSON
         [
           {
-            "externalIdentifier": "http://cocina.sul.stanford.edu/fileSet/c8fc22e3-ba0b-4532-8536-f010d117415d",
+            "externalIdentifier": "https://cocina.sul.stanford.edu/fileSet/c8fc22e3-ba0b-4532-8536-f010d117415d",
             "type": "#{Cocina::Models::Vocab::Resources.audio}",
             "version": 1,
             "structural": {
               "contains": [
                 {
-                  "externalIdentifier": "http://cocina.sul.stanford.edu/file/260a7c04-be8f-43cb-a1ae-2c6082563daf",
+                  "externalIdentifier": "https://cocina.sul.stanford.edu/file/260a7c04-be8f-43cb-a1ae-2c6082563daf",
                   "type": "#{Cocina::Models::Vocab.file}",
                   "label": "gs491bt1345_sample_01_00_pm.wav",
                   "filename": "gs491bt1345_sample_01_00_pm.wav",
@@ -462,7 +462,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
                   "hasMimeType": "audio/x-wav"
                 },
                 {
-                  "externalIdentifier": "http://cocina.sul.stanford.edu/file/7420f933-5be0-4462-bbe0-d2f8ddba08e1",
+                  "externalIdentifier": "https://cocina.sul.stanford.edu/file/7420f933-5be0-4462-bbe0-d2f8ddba08e1",
                   "type": "#{Cocina::Models::Vocab.file}",
                   "label": "gs491bt1345_sample_01_00_sh.wav",
                   "filename": "gs491bt1345_sample_01_00_sh.wav",
@@ -490,7 +490,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
                   "hasMimeType": "audio/x-wav"
                 },
                 {
-                  "externalIdentifier": "http://cocina.sul.stanford.edu/file/70c2f617-1235-46a4-a015-ab788a4847ee",
+                  "externalIdentifier": "https://cocina.sul.stanford.edu/file/70c2f617-1235-46a4-a015-ab788a4847ee",
                   "type": "#{Cocina::Models::Vocab.file}",
                   "label": "gs491bt1345_sample_01_00_sl.m4a",
                   "filename": "gs491bt1345_sample_01_00_sl.m4a",
@@ -522,13 +522,13 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
            "label": "Audio file"
           },
           {
-            "externalIdentifier": "http://cocina.sul.stanford.edu/fileSet/91df0a5b-093b-458e-a30a-9874a57d8313",
+            "externalIdentifier": "https://cocina.sul.stanford.edu/fileSet/91df0a5b-093b-458e-a30a-9874a57d8313",
             "type": "#{Cocina::Models::Vocab::Resources.file}",
             "version": 1,
             "structural": {
               "contains": [
                 {
-                  "externalIdentifier": "http://cocina.sul.stanford.edu/file/3be6c06c-453d-4291-ae44-59cec2da33e1",
+                  "externalIdentifier": "https://cocina.sul.stanford.edu/file/3be6c06c-453d-4291-ae44-59cec2da33e1",
                   "type": "#{Cocina::Models::Vocab.file}",
                   "label": "gs491bt1345_sample_md.pdf",
                   "filename": "gs491bt1345_sample_md.pdf",
