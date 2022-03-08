@@ -975,7 +975,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
   context 'when normalizing contentMetadata virtual object relationship with missing type' do
     let(:original_xml) do
       <<~XML
-        <contentMetadata type="file" objectId="druid:bb035tg0974">
+        <contentMetadata objectId="druid:bb035tg0974">
           <resource sequence="1" id="bb035tg0974_1">
             <externalFile objectId="druid:fn851rw5684" resourceId="fn851rw5684_1" fileId="PC0170_s3_Oregon_State_2008-08-28_154120_0001.jp2" mimetype="image/jp2"/>
             <relationship objectId="druid:fn851rw5684"/>
@@ -987,7 +987,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     it 'adds a type' do
       expect(normalized_ng_xml).to be_equivalent_to(
         <<~XML
-          <contentMetadata type="file" objectId="druid:bb035tg0974">
+          <contentMetadata objectId="druid:bb035tg0974">
             <resource>
               <externalFile objectId="druid:fn851rw5684" fileId="PC0170_s3_Oregon_State_2008-08-28_154120_0001.jp2" mimetype="image/jp2"/>
               <relationship objectId="druid:fn851rw5684" type="alsoAvailableAs"/>
@@ -1001,7 +1001,7 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
   context 'when normalizing virtual object resource type' do
     let(:original_xml) do
       <<~XML
-        <contentMetadata type="file" objectId="druid:bb035tg0974">
+        <contentMetadata objectId="druid:bb035tg0974">
           <resource type="image">
             <externalFile fileId="PC0170_s3_San_Jose_State_2009-09-19_100544_0001.jp2" mimetype="image/jp2" objectId="druid:mq130hw5269"/>
             <relationship objectId="druid:mq130hw5269" type="alsoAvailableAs"/>
@@ -1013,12 +1013,38 @@ RSpec.describe Cocina::Normalizers::ContentMetadataNormalizer do
     it 'removes type' do
       expect(normalized_ng_xml).to be_equivalent_to(
         <<~XML
-        <contentMetadata type="file" objectId="druid:bb035tg0974">
+          <contentMetadata objectId="druid:bb035tg0974">
+            <resource>
+              <externalFile fileId="PC0170_s3_San_Jose_State_2009-09-19_100544_0001.jp2" mimetype="image/jp2" objectId="druid:mq130hw5269"/>
+              <relationship objectId="druid:mq130hw5269" type="alsoAvailableAs"/>
+            </resource>
+          </contentMetadata>
+        XML
+      )
+    end
+  end
+
+  context 'when normalizing virtual object type' do
+    let(:original_xml) do
+      <<~XML
+        <contentMetadata type="image" objectId="druid:bb035tg0974">
           <resource>
             <externalFile fileId="PC0170_s3_San_Jose_State_2009-09-19_100544_0001.jp2" mimetype="image/jp2" objectId="druid:mq130hw5269"/>
             <relationship objectId="druid:mq130hw5269" type="alsoAvailableAs"/>
           </resource>
         </contentMetadata>
+      XML
+    end
+
+    it 'removes type' do
+      expect(normalized_ng_xml).to be_equivalent_to(
+        <<~XML
+          <contentMetadata objectId="druid:bb035tg0974">
+            <resource>
+              <externalFile fileId="PC0170_s3_San_Jose_State_2009-09-19_100544_0001.jp2" mimetype="image/jp2" objectId="druid:mq130hw5269"/>
+              <relationship objectId="druid:mq130hw5269" type="alsoAvailableAs"/>
+            </resource>
+          </contentMetadata>
         XML
       )
     end
