@@ -71,7 +71,7 @@ module Cocina
       def build_sequence(content_metadata_ds)
         content_metadata_ds.ng_xml.xpath('//resource/externalFile').map do |resource_node|
           resource_node['objectId']
-        end
+        end.uniq
       end
     end
   end
