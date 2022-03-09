@@ -80,4 +80,5 @@ group :deployment do
   gem 'capistrano-rails'
   gem 'capistrano-shared_configs'
   gem 'dlss-capistrano', require: false
+  gem 'capistrano-rvm'
 end
