@@ -3,6 +3,7 @@
 
 require_relative '../config/environment'
 require_relative '../lib/fedora_archiver'
+require 'tty-progressbar'
 
 options = { input: 'druids.txt', archive: 'archive' }
 
@@ -27,10 +28,18 @@ Rails.logger.datetime_format = '%Y-%m-%d %H:%M:%S'
 parser.parse!(into: options)
 druids = options[:druids] || File.read(options[:input]).split
 
+bar = TTY::ProgressBar.new(
+  'Archiving [:bar] (:percent (:current/:total), rate: :rate/s, :elapsed total, ETA: :eta_time)',
+  bar_format: :burger,
+  total: druids.length
+)
+
 archiver = FedoraArchiver.new(
   druids: druids,
   archive_dir: options[:archive],
   lenient: options[:lenient]
 )
 
-archiver.run
+archiver.run do
+  bar.advance
+end
