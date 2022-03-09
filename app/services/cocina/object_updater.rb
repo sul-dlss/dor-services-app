@@ -180,7 +180,13 @@ module Cocina
 
       fedora_object.versionMetadata.increment_version
 
-      raise "Incremented version of #{fedora_object.current_version} is not expected version #{cocina_object.version}" unless version_match?
+      return if version_match?
+
+      if fedora_object.current_version.to_i > cocina_object.version
+        raise "Incremented version of #{fedora_object.current_version} is greater than expected version #{cocina_object.version} - it appears you are trying to update an old version."
+      end
+
+      raise "Incremented version of #{fedora_object.current_version} is less than the expected version #{cocina_object.version}"
     end
 
     def version_match?

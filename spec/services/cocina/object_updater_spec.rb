@@ -181,7 +181,7 @@ RSpec.describe Cocina::ObjectUpdater do
         end
       end
 
-      context 'when a version mismatch' do
+      context 'when a version mismatch (incremented less than expected)' do
         let(:cocina_attrs) do
           orig_cocina_attrs.tap do |attrs|
             attrs[:version] = 3
@@ -189,7 +189,23 @@ RSpec.describe Cocina::ObjectUpdater do
         end
 
         it 'raises' do
-          expect { update }.to raise_error('Incremented version of 2 is not expected version 3')
+          expect { update }.to raise_error('Incremented version of 2 is less than the expected version 3')
+        end
+      end
+
+      context 'when a version mismatch (incremented more than expected)' do
+        before do
+          allow(item).to receive(:current_version).and_return('4')
+        end
+
+        let(:cocina_attrs) do
+          orig_cocina_attrs.tap do |attrs|
+            attrs[:version] = 3
+          end
+        end
+
+        it 'raises' do
+          expect { update }.to raise_error('Incremented version of 4 is greater than expected version 3 - it appears you are trying to update an old version.')
         end
       end
     end
@@ -361,7 +377,7 @@ RSpec.describe Cocina::ObjectUpdater do
         end
       end
 
-      context 'when a version mismatch' do
+      context 'when a version mismatch (incremented less than expected)' do
         let(:cocina_attrs) do
           orig_cocina_attrs.tap do |attrs|
             attrs[:version] = 3
@@ -369,7 +385,7 @@ RSpec.describe Cocina::ObjectUpdater do
         end
 
         it 'raises' do
-          expect { update }.to raise_error('Incremented version of 2 is not expected version 3')
+          expect { update }.to raise_error('Incremented version of 2 is less than the expected version 3')
         end
       end
     end
@@ -718,7 +734,7 @@ RSpec.describe Cocina::ObjectUpdater do
         end
       end
 
-      context 'when a version mismatch' do
+      context 'when a version mismatch (incremented less than expected)' do
         let(:cocina_attrs) do
           orig_cocina_attrs.tap do |attrs|
             attrs[:version] = 3
@@ -726,7 +742,7 @@ RSpec.describe Cocina::ObjectUpdater do
         end
 
         it 'raises' do
-          expect { update }.to raise_error('Incremented version of 2 is not expected version 3')
+          expect { update }.to raise_error('Incremented version of 2 is less than the expected version 3')
         end
       end
     end
