@@ -184,7 +184,72 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
                                                   }
                                                 }]
                                               }
-                                            }],
+                                            },
+                                                       {
+                                                         type: Cocina::Models::Vocab::Resources.image,
+                                                         externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/725a5c09-8689-47f5-a80b-d39d5f4d0f7c',
+                                                         label: 'Image 2',
+                                                         version: 6,
+                                                         structural: {
+                                                           contains: [{
+                                                             type: Cocina::Models::Vocab.file,
+                                                             externalIdentifier: 'https://cocina.sul.stanford.edu/file/f477946d-9f73-44f7-90de-2ca448995702',
+                                                             label: 'PC0170_s1_B_0540_2.tif',
+                                                             filename: 'PC0170_s1_B_0540_2.tif',
+                                                             size: 181_303_012,
+                                                             version: 6,
+                                                             hasMimeType: 'image/tiff',
+                                                             hasMessageDigests: [{
+                                                               type: 'sha1',
+                                                               digest: '3803d4c9da953d970cc2557880172d58055f5aaf'
+                                                             }, {
+                                                               type: 'md5',
+                                                               digest: 'a988f5b9a57a0f3a5ae68e000cca01e4'
+                                                             }],
+                                                             access: {
+                                                               access: 'world',
+                                                               download: 'world'
+                                                             },
+                                                             administrative: {
+                                                               publish: false,
+                                                               sdrPreserve: true,
+                                                               shelve: false
+                                                             },
+                                                             presentation: {
+                                                               height: 6714,
+                                                               width: 4500
+                                                             }
+                                                           }, {
+                                                             type: Cocina::Models::Vocab.file,
+                                                             externalIdentifier: 'https://cocina.sul.stanford.edu/file/86d5bc2c-e5d5-44aa-80a9-8a2fb5b4584b',
+                                                             label: 'PC0170_s1_B_0540_2.jp2',
+                                                             filename: 'PC0170_s1_B_0540_2.jp2',
+                                                             size: 5_705_291,
+                                                             version: 6,
+                                                             hasMimeType: 'image/jp2',
+                                                             hasMessageDigests: [{
+                                                               type: 'sha1',
+                                                               digest: 'eaabb02b7fb4bd743c60305e51b43904a85a1a3a'
+                                                             }, {
+                                                               type: 'md5',
+                                                               digest: '5f163c001ddb2eed8639f749c1d07f09'
+                                                             }],
+                                                             access: {
+                                                               access: 'world',
+                                                               download: 'world'
+                                                             },
+                                                             administrative: {
+                                                               publish: true,
+                                                               sdrPreserve: false,
+                                                               shelve: true
+                                                             },
+                                                             presentation: {
+                                                               height: 6714,
+                                                               width: 4500
+                                                             }
+                                                           }]
+                                                         }
+                                                       }],
                                             hasMemberOrders: [],
                                             isMemberOf: ['druid:gh795jd5965']
                                           })
@@ -203,6 +268,10 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
               <externalFile fileId="PC0170_s1_B_0540.jp2" mimetype="image/jp2" objectId="druid:tm207xk5096" resourceId="tm207xk5096_1"/>
               <relationship objectId="druid:tm207xk5096" type="alsoAvailableAs"/>
             </resource>
+            <resource id="bc426tg5901_3" sequence="3" type="image">
+              <externalFile fileId="PC0170_s1_B_0540_2.jp2" mimetype="image/jp2" objectId="druid:tm207xk5096" resourceId="tm207xk5096_1"/>
+              <relationship objectId="druid:tm207xk5096" type="alsoAvailableAs"/>
+            </resource>
           </contentMetadata>
         XML
       end
@@ -216,6 +285,10 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
             </resource>
             <resource id="bc426tg5901_2" sequence="2" type="image">
               <externalFile fileId="PC0170_s1_B_0540.jp2" mimetype="image/jp2" objectId="druid:tm207xk5096" resourceId="https://cocina.sul.stanford.edu/fileSet/725a5c09-8689-47f5-a80b-d39d5f4d0f7b"/>
+              <relationship objectId="druid:tm207xk5096" type="alsoAvailableAs"/>
+            </resource>
+            <resource id="bc426tg5901_3" sequence="3" type="image">
+              <externalFile fileId="PC0170_s1_B_0540_2.jp2" mimetype="image/jp2" objectId="druid:tm207xk5096" resourceId="tm207xk5096_1"/>
               <relationship objectId="druid:tm207xk5096" type="alsoAvailableAs"/>
             </resource>
           </contentMetadata>
