@@ -32,7 +32,7 @@ RSpec.describe Cocina::FromFedora::DROAccess do
     let(:embargo_metadata_ds) do
       datastream = Dor::EmbargoMetadataDS.new
       embargo = Cocina::Models::Embargo.new(releaseDate: DateTime.parse('2029-02-28'),
-                                            access: 'world',
+                                            view: 'world',
                                             download: 'none',
                                             useAndReproductionStatement: 'in public domain')
       Cocina::ToFedora::EmbargoMetadataGenerator.generate(embargo_metadata: datastream, embargo: embargo)
@@ -40,7 +40,7 @@ RSpec.describe Cocina::FromFedora::DROAccess do
     end
 
     it 'has embargo' do
-      expect(access).to include(embargo: { access: 'world', download: 'none', releaseDate: '2029-02-28T00:00:00Z', useAndReproductionStatement: 'in public domain' })
+      expect(access).to include(embargo: { view: 'world', download: 'none', releaseDate: '2029-02-28T00:00:00Z', useAndReproductionStatement: 'in public domain' })
     end
   end
 
@@ -58,7 +58,7 @@ RSpec.describe Cocina::FromFedora::DROAccess do
       end
 
       it 'builds the hash' do
-        expect(access).to eq(access: 'dark', download: 'none', license: 'https://opendatacommons.org/licenses/by/1-0/')
+        expect(access).to eq(view: 'dark', download: 'none', license: 'https://opendatacommons.org/licenses/by/1-0/')
       end
     end
 
@@ -74,7 +74,7 @@ RSpec.describe Cocina::FromFedora::DROAccess do
       end
 
       it 'builds the hash' do
-        expect(access).to eq(access: 'dark', download: 'none', useAndReproductionStatement: 'User agrees that, where applicable, stuff.')
+        expect(access).to eq(view: 'dark', download: 'none', useAndReproductionStatement: 'User agrees that, where applicable, stuff.')
       end
     end
 
@@ -90,7 +90,7 @@ RSpec.describe Cocina::FromFedora::DROAccess do
       end
 
       it 'builds the hash' do
-        expect(access).to eq(access: 'dark', download: 'none', copyright: 'User agrees that, where applicable, stuff.')
+        expect(access).to eq(view: 'dark', download: 'none', copyright: 'User agrees that, where applicable, stuff.')
       end
     end
   end

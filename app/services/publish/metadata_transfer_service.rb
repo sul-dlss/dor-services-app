@@ -45,7 +45,7 @@ module Publish
     end
 
     def discoverable?
-      cocina_object.access.access != 'dark'
+      cocina_object.access.view != 'dark'
     end
 
     # Create a file inside the content directory under the stacks.local_document_cache_root

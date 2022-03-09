@@ -70,7 +70,7 @@ module Cocina
                                  label: cocina_admin_policy.label).tap do |fedora_apo|
         add_description(fedora_apo, cocina_admin_policy, trial: trial)
 
-        Cocina::ToFedora::DefaultRights.write(fedora_apo.defaultObjectRights, cocina_admin_policy.administrative.defaultAccess) if cocina_admin_policy.administrative.defaultAccess
+        Cocina::ToFedora::DefaultRights.write(fedora_apo.defaultObjectRights, cocina_admin_policy.administrative.accessTemplate) if cocina_admin_policy.administrative.accessTemplate
         Cocina::ToFedora::AdministrativeMetadata.write(fedora_apo.administrativeMetadata, cocina_admin_policy.administrative)
         Cocina::ToFedora::Roles.write(fedora_apo, Array(cocina_admin_policy.administrative.roles))
         Cocina::ToFedora::Identity.initialize_identity(fedora_apo)
@@ -85,7 +85,7 @@ module Cocina
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/CyclomaticComplexity
     def create_dro(cocina_item, druid:, trial:)
-      klass = cocina_item.type == Cocina::Models::Vocab.agreement ? Dor::Agreement : Dor::Item
+      klass = cocina_item.type == Cocina::Models::ObjectType.agreement ? Dor::Agreement : Dor::Item
       klass.new(pid: druid,
                 admin_policy_object_id: cocina_item.administrative.hasAdminPolicy,
                 source_id: cocina_item.identification.sourceId,

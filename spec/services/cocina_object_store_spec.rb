@@ -247,7 +247,7 @@ RSpec.describe CocinaObjectStore do
         expect(Notifications::ObjectCreated).to have_received(:publish).with(model: cocina_object, created_at: kind_of(Time), modified_at: kind_of(Time))
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
         expect(cocina_object_store).to have_received(:merge_access_for).with(requested_cocina_object)
-        expect(cocina_object_store).to have_received(:add_tags_for_create).with(druid, cocina_object)
+        expect(cocina_object_store).to have_received(:add_tags_for_create).with(druid, requested_cocina_object)
         expect(SynchronousIndexer).to have_received(:reindex_remotely).with(druid)
         expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
         expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'registration', data: cocina_hash)
@@ -372,12 +372,12 @@ RSpec.describe CocinaObjectStore do
             structural: {
               contains: [
                 {
-                  type: Cocina::Models::Vocab::Resources.file,
+                  type: Cocina::Models::FileSetType.file,
                   label: 'Page 1', version: 1,
                   structural: {
                     contains: [
                       {
-                        type: Cocina::Models::Vocab.file,
+                        type: Cocina::Models::ObjectType.file,
                         label: '00001.html',
                         filename: '00001.html',
                         size: 0,
@@ -391,7 +391,7 @@ RSpec.describe CocinaObjectStore do
                             type: 'md5', digest: 'e6d52da47a5ade91ae31227b978fb023'
                           }
                         ],
-                        access: { access: 'dark', download: 'none' },
+                        access: { view: 'dark', download: 'none' },
                         administrative: { publish: false, sdrPreserve: true, shelve: false }
                       }
                     ]
@@ -399,18 +399,18 @@ RSpec.describe CocinaObjectStore do
                 },
                 # Already has identifiers
                 {
-                  type: Cocina::Models::Vocab::Resources.file,
+                  type: Cocina::Models::FileSetType.file,
                   externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/gg777gg7777/334-567-890',
                   label: 'Page 2', version: 1,
                   structural: {
                     contains: [
                       {
-                        type: Cocina::Models::Vocab.file,
+                        type: Cocina::Models::ObjectType.file,
                         externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777/334-567-890/00002.html',
                         label: '00002.html', filename: '00002.html', size: 0,
                         version: 1, hasMimeType: 'text/html',
                         hasMessageDigests: [],
-                        access: { access: 'dark', download: 'none' },
+                        access: { view: 'dark', download: 'none' },
                         administrative: { publish: false, sdrPreserve: true, shelve: false }
                       }
                     ]
@@ -432,13 +432,13 @@ RSpec.describe CocinaObjectStore do
                                                                  structural: {
                                                                    contains: [
                                                                      {
-                                                                       type: Cocina::Models::Vocab::Resources.file,
+                                                                       type: Cocina::Models::FileSetType.file,
                                                                        externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/bc123df4567-abc123',
                                                                        label: 'Page 1', version: 1,
                                                                        structural: {
                                                                          contains: [
                                                                            {
-                                                                             type: Cocina::Models::Vocab.file,
+                                                                             type: Cocina::Models::ObjectType.file,
                                                                              externalIdentifier: 'https://cocina.sul.stanford.edu/file/bc123df4567-abc123/00001.html',
                                                                              label: '00001.html',
                                                                              filename: '00001.html',
@@ -453,25 +453,25 @@ RSpec.describe CocinaObjectStore do
                                                                                  type: 'md5', digest: 'e6d52da47a5ade91ae31227b978fb023'
                                                                                }
                                                                              ],
-                                                                             access: { access: 'dark', download: 'none' },
+                                                                             access: { view: 'dark', download: 'none' },
                                                                              administrative: { publish: false, sdrPreserve: true, shelve: false }
                                                                            }
                                                                          ]
                                                                        }
                                                                      },
                                                                      {
-                                                                       type: Cocina::Models::Vocab::Resources.file,
+                                                                       type: Cocina::Models::FileSetType.file,
                                                                        externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/gg777gg7777/334-567-890',
                                                                        label: 'Page 2', version: 1,
                                                                        structural: {
                                                                          contains: [
                                                                            {
-                                                                             type: Cocina::Models::Vocab.file,
+                                                                             type: Cocina::Models::ObjectType.file,
                                                                              externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777/334-567-890/00002.html',
                                                                              label: '00002.html', filename: '00002.html', size: 0,
                                                                              version: 1, hasMimeType: 'text/html',
                                                                              hasMessageDigests: [],
-                                                                             access: { access: 'dark', download: 'none' },
+                                                                             access: { view: 'dark', download: 'none' },
                                                                              administrative: { publish: false, sdrPreserve: true, shelve: false }
                                                                            }
                                                                          ]
@@ -562,44 +562,6 @@ RSpec.describe CocinaObjectStore do
         end
       end
     end
-
-    describe '#add_tags_for_update' do
-      let(:cocina_object_store) { described_class.new }
-      let(:cocina_object) { instance_double(Cocina::Models::Collection, dro?: false, collection?: true, administrative: administrative, externalIdentifier: druid) }
-      let(:administrative) { instance_double(Cocina::Models::Administrative, partOfProject: 'Google Books') }
-
-      before do
-        allow(AdministrativeTags).to receive(:create)
-      end
-
-      context 'when creating a new project tag' do
-        it 'creates tag' do
-          cocina_object_store.send(:add_tags_for_update, cocina_object)
-          expect(AdministrativeTags).to have_received(:create).with(identifier: druid, tags: ['Project : Google Books'])
-        end
-      end
-
-      context 'when multiple project tags already exists' do
-        before do
-          allow(AdministrativeTags).to receive(:for).and_return(['Project : Phoenix', 'Project : Google Books'])
-        end
-
-        it 'raises' do
-          expect { cocina_object_store.send(:add_tags_for_update, cocina_object) }.to raise_error(/Too many tags for prefix/)
-        end
-      end
-
-      context 'when creating a new project tag with an existing project subtag' do
-        before do
-          allow(AdministrativeTags).to receive(:for).and_return(['Project : Google Books : Special'])
-        end
-
-        it 'creates tag' do
-          cocina_object_store.send(:add_tags_for_update, cocina_object)
-          expect(AdministrativeTags).to have_received(:create).with(identifier: druid, tags: ['Project : Google Books'])
-        end
-      end
-    end
   end
 
   describe 'to ActiveRecord' do
@@ -677,14 +639,14 @@ RSpec.describe CocinaObjectStore do
           Cocina::Models::DRO.new({
                                     cocinaVersion: '0.0.1',
                                     externalIdentifier: 'druid:xz456jk0987',
-                                    type: Cocina::Models::Vocab.book,
+                                    type: Cocina::Models::ObjectType.book,
                                     label: 'Test DRO',
                                     version: 1,
                                     description: {
                                       title: [{ value: 'Test DRO' }],
                                       purl: 'https://purl.stanford.edu/xz456jk0987'
                                     },
-                                    access: { access: 'world', download: 'world' },
+                                    access: { view: 'world', download: 'world' },
                                     administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
                                   })
         end
@@ -701,13 +663,13 @@ RSpec.describe CocinaObjectStore do
           Cocina::Models::AdminPolicy.new({
                                             cocinaVersion: '0.0.1',
                                             externalIdentifier: 'druid:jt959wc5586',
-                                            type: Cocina::Models::Vocab.admin_policy,
+                                            type: Cocina::Models::ObjectType.admin_policy,
                                             label: 'Test Admin Policy',
                                             version: 1,
                                             administrative: {
                                               hasAdminPolicy: 'druid:hy787xj5878',
                                               hasAgreement: 'druid:bb033gt0615',
-                                              defaultAccess: { access: 'world', download: 'world' }
+                                              accessTemplate: { view: 'world', download: 'world' }
                                             }
                                           })
         end
@@ -724,14 +686,14 @@ RSpec.describe CocinaObjectStore do
           Cocina::Models::Collection.new({
                                            cocinaVersion: '0.0.1',
                                            externalIdentifier: 'druid:hp308wm0436',
-                                           type: Cocina::Models::Vocab.collection,
+                                           type: Cocina::Models::ObjectType.collection,
                                            label: 'Test Collection',
                                            description: {
                                              title: [{ value: 'Test Collection' }],
                                              purl: 'https://purl.stanford.edu/hp308wm0436'
                                            },
                                            version: 1,
-                                           access: { access: 'world' }
+                                           access: { view: 'world' }
                                          })
         end
 
@@ -747,14 +709,14 @@ RSpec.describe CocinaObjectStore do
           Cocina::Models::Collection.new({
                                            cocinaVersion: '0.0.1',
                                            externalIdentifier: 'druid:hp308wm0436',
-                                           type: Cocina::Models::Vocab.collection,
+                                           type: Cocina::Models::ObjectType.collection,
                                            label: 'Test Collection',
                                            description: {
                                              title: [{ value: 'Test Collection' }],
                                              purl: 'https://purl.stanford.edu/hp308wm0436'
                                            },
                                            version: 1,
-                                           access: { access: 'world' },
+                                           access: { view: 'world' },
                                            identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0031' }
                                          })
         end

@@ -7,7 +7,7 @@ RSpec.describe 'Update MARC record' do
   let(:object) { Dor::Item.new(pid: druid) }
   let(:cocina_object) do
     Cocina::Models::DRO.new(externalIdentifier: druid,
-                            type: Cocina::Models::Vocab.object,
+                            type: Cocina::Models::ObjectType.object,
                             label: 'A generic label',
                             version: 1,
                             description: {

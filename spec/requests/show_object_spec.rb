@@ -27,11 +27,11 @@ RSpec.describe 'Get the object' do
         Cocina::Models::DRO.new(
           {
             externalIdentifier: 'druid:bc123df4567',
-            type: Cocina::Models::Vocab.object,
+            type: Cocina::Models::ObjectType.object,
             label: 'foo',
             version: 1,
             access: {
-              access: 'world',
+              view: 'world',
               copyright: 'All rights reserved unless otherwise indicated.',
               download: 'world',
               useAndReproductionStatement: 'Property rights reside with the repository...'
@@ -67,7 +67,7 @@ RSpec.describe 'Get the object' do
       before do
         allow(object).to receive(:collections).and_return([collection])
 
-        embargo = Cocina::Models::Embargo.new(releaseDate: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world', download: 'world')
+        embargo = Cocina::Models::Embargo.new(releaseDate: DateTime.parse('2019-09-26T07:00:00Z'), view: 'world', download: 'world')
         Cocina::ToFedora::EmbargoMetadataGenerator.generate(embargo_metadata: object.embargoMetadata, embargo: embargo)
         # add a release tag to our fedora object for this test
         object.identityMetadata.add_value(:release, true, {
@@ -84,16 +84,16 @@ RSpec.describe 'Get the object' do
         Cocina::Models::DRO.new(
           {
             externalIdentifier: 'druid:bc123df4567',
-            type: Cocina::Models::Vocab.object,
+            type: Cocina::Models::ObjectType.object,
             label: 'foo',
             version: 1,
             access: {
-              access: 'world',
+              view: 'world',
               copyright: 'All rights reserved unless otherwise indicated.',
               download: 'world',
               embargo: {
                 releaseDate: '2019-09-26T07:00:00.000+00:00',
-                access: 'world',
+                view: 'world',
                 download: 'world'
               },
               useAndReproductionStatement: 'Property rights reside with the repository...'
@@ -136,7 +136,7 @@ RSpec.describe 'Get the object' do
 
     context 'when the object has a released embargo' do
       before do
-        embargo = Cocina::Models::Embargo.new(releaseDate: DateTime.parse('2019-09-26T07:00:00Z'), access: 'world', download: 'world')
+        embargo = Cocina::Models::Embargo.new(releaseDate: DateTime.parse('2019-09-26T07:00:00Z'), view: 'world', download: 'world')
         Cocina::ToFedora::EmbargoMetadataGenerator.generate(embargo_metadata: object.embargoMetadata, embargo: embargo)
         object.embargoMetadata.status = 'released'
       end
@@ -144,11 +144,11 @@ RSpec.describe 'Get the object' do
       let(:expected) do
         Cocina::Models::DRO.new({
                                   externalIdentifier: 'druid:bc123df4567',
-                                  type: Cocina::Models::Vocab.object,
+                                  type: Cocina::Models::ObjectType.object,
                                   label: 'foo',
                                   version: 1,
                                   access: {
-                                    access: 'world',
+                                    view: 'world',
                                     copyright: 'All rights reserved unless otherwise indicated.',
                                     download: 'world',
                                     useAndReproductionStatement: 'Property rights reside with the repository...'
@@ -234,11 +234,11 @@ RSpec.describe 'Get the object' do
       let(:expected) do
         Cocina::Models::DRO.new({
                                   externalIdentifier: 'druid:bc123df4567',
-                                  type: Cocina::Models::Vocab.image,
+                                  type: Cocina::Models::ObjectType.image,
                                   label: 'foo',
                                   version: 1,
                                   access: {
-                                    access: 'world',
+                                    view: 'world',
                                     copyright: 'All rights reserved unless otherwise indicated.',
                                     download: 'world',
                                     useAndReproductionStatement: 'Property rights reside with the repository...'
@@ -421,11 +421,11 @@ RSpec.describe 'Get the object' do
     let(:expected) do
       Cocina::Models::Collection.new(
         externalIdentifier: 'druid:bc123df4567',
-        type: Cocina::Models::Vocab.collection,
+        type: Cocina::Models::ObjectType.collection,
         label: 'foo',
         version: 1,
         access: {
-          access: 'world'
+          view: 'world'
         },
         administrative: {
           hasAdminPolicy: 'druid:df123cd4567'
@@ -465,7 +465,7 @@ RSpec.describe 'Get the object' do
         json = JSON.parse(response.body)
 
         expect(json['externalIdentifier']).to eq 'druid:bc123df4567'
-        expect(json['type']).to eq Cocina::Models::Vocab.admin_policy
+        expect(json['type']).to eq Cocina::Models::ObjectType.admin_policy
         expect(json['label']).to eq 'bar'
         expect(json['version']).to eq 1
         expect(json['administrative']['registrationWorkflow']).to eq []
@@ -518,7 +518,7 @@ RSpec.describe 'Get the object' do
         json = JSON.parse(response.body)
 
         expect(json['externalIdentifier']).to eq 'druid:bc123df4567'
-        expect(json['type']).to eq Cocina::Models::Vocab.admin_policy
+        expect(json['type']).to eq Cocina::Models::ObjectType.admin_policy
         expect(json['label']).to eq 'bar'
         expect(json['version']).to eq 1
         expect(json['administrative']['registrationWorkflow']).to eq %w[registrationWF goobiWF]
@@ -567,10 +567,10 @@ RSpec.describe 'Get the object' do
       json = JSON.parse(response.body)
 
       expect(json['externalIdentifier']).to eq 'druid:bc123df4567'
-      expect(json['type']).to eq Cocina::Models::Vocab.object
+      expect(json['type']).to eq Cocina::Models::ObjectType.object
       expect(json['label']).to eq 'foo'
       expect(json['version']).to eq 1
-      expect(json['access']).to eq('access' => 'dark', 'download' => 'none')
+      expect(json['access']).to eq('view' => 'dark', 'download' => 'none')
       expect(json['identification']).to eq({ 'catalogLinks' => [], 'sourceId' => 'dissertationid:00000123' })
       expect(json['structural']).to eq({ 'contains' => [], 'hasMemberOrders' => [], 'isMemberOf' => [] })
     end

@@ -8,39 +8,39 @@ RSpec.describe Cocina::ToFedora::ProcessTag do
   let(:direction) { nil }
 
   describe 'with map' do
-    let(:type) { Cocina::Models::Vocab.map }
+    let(:type) { Cocina::Models::ObjectType.map }
 
     it { is_expected.to eq 'Process : Content Type : Map' }
   end
 
   describe 'with webarchive_seed' do
-    let(:type) { Cocina::Models::Vocab.webarchive_seed }
+    let(:type) { Cocina::Models::ObjectType.webarchive_seed }
 
     it { is_expected.to eq 'Process : Content Type : Webarchive Seed' }
   end
 
   describe 'with book RTL' do
-    let(:type) { Cocina::Models::Vocab.book }
+    let(:type) { Cocina::Models::ObjectType.book }
     let(:direction) { 'right-to-left' }
 
     it { is_expected.to eq 'Process : Content Type : Book (rtl)' }
   end
 
   describe 'with book LTR' do
-    let(:type) { Cocina::Models::Vocab.book }
+    let(:type) { Cocina::Models::ObjectType.book }
     let(:direction) { 'left-to-right' }
 
     it { is_expected.to eq 'Process : Content Type : Book (ltr)' }
   end
 
   describe 'with agreement' do
-    let(:type) { Cocina::Models::Vocab.agreement }
+    let(:type) { Cocina::Models::ObjectType.agreement }
 
     it { is_expected.to be_nil }
   end
 
   describe 'with webarchive-binary' do
-    let(:type) { Cocina::Models::Vocab.webarchive_binary }
+    let(:type) { Cocina::Models::ObjectType.webarchive_binary }
 
     it { is_expected.to be_nil }
   end

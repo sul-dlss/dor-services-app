@@ -7,7 +7,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
 
   let(:notifier) { instance_double(Cocina::FromFedora::DataErrorNotifier) }
 
-  let(:type) { Cocina::Models::Vocab.book }
+  let(:type) { Cocina::Models::ObjectType.book }
 
   let(:item) do
     Dor::Item.new(pid: 'druid:hx013yf6680')
@@ -201,7 +201,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
       expect(file2[:administrative][:shelve]).to be false
       expect(file2[:administrative][:sdrPreserve]).to be true
       expect(file2[:administrative][:publish]).to be false
-      expect(file2[:access][:access]).to eq('dark')
+      expect(file2[:access][:view]).to eq('dark')
     end
   end
 
@@ -344,7 +344,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
       context 'when content type is image' do
         let(:content_type) { 'image' }
         let(:content_type_tag) { [] }
-        let(:type) { Cocina::Models::Vocab.image }
+        let(:type) { Cocina::Models::ObjectType.image }
 
         it "doesn't have hasMemberOrders" do
           expect(structural[:hasMemberOrders]).to be_nil
@@ -354,7 +354,7 @@ RSpec.describe Cocina::FromFedora::DroStructural do
 
     context 'when content type is image' do
       let(:content_type) { 'image' }
-      let(:type) { Cocina::Models::Vocab.image }
+      let(:type) { Cocina::Models::ObjectType.image }
       let(:reading_direction) { 'rtl' }
 
       it { is_expected.to eq 'right-to-left' }

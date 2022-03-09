@@ -126,7 +126,7 @@ class CocinaObjectStore
     # This saves the Fedora object.
     fedora_create(cocina_object, druid: druid)
     cocina_to_ar_save(cocina_object) if Settings.enabled_features.postgres
-    add_tags_for_create(druid, cocina_object)
+    add_tags_for_create(druid, cocina_request_object)
     # This creates version 1.0.0 (Initial Version)
     ObjectVersion.increment_version(druid)
 
@@ -308,15 +308,12 @@ class CocinaObjectStore
   end
 
   def add_tags_for_update(cocina_object)
-    if cocina_object.dro?
-      # This is necessary so that the content type tag for a book can get updated
-      # to reflect the new direction if the direction hash changed in the structural metadata.
-      tag = Cocina::ToFedora::ProcessTag.map(cocina_object.type, cocina_object.structural&.hasMemberOrders&.first&.viewingDirection)
-      add_tag_for_update(cocina_object.externalIdentifier, tag, 'Process : Content Type') if tag
-    end
-    return unless (cocina_object.dro? || cocina_object.collection?) && cocina_object.administrative.partOfProject
+    return unless cocina_object.dro?
 
-    add_tag_for_update(cocina_object.externalIdentifier, "Project : #{cocina_object.administrative.partOfProject}", 'Project')
+    # This is necessary so that the content type tag for a book can get updated
+    # to reflect the new direction if the direction hash changed in the structural metadata.
+    tag = Cocina::ToFedora::ProcessTag.map(cocina_object.type, cocina_object.structural&.hasMemberOrders&.first&.viewingDirection)
+    add_tag_for_update(cocina_object.externalIdentifier, tag, 'Process : Content Type') if tag
   end
 
   def add_tag_for_update(druid, new_tag, prefix)
@@ -387,6 +384,9 @@ class CocinaObjectStore
         file_props[:externalIdentifier] = file_id
       end
     end
+
+    # Remove partOfProject
+    props[:administrative].delete(:partOfProject) if props[:administrative].present?
 
     Cocina::Models.build(props)
   end

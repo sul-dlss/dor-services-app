@@ -17,7 +17,7 @@ RSpec.describe RefreshMetadataAction do
   end
   let(:cocina_object) do
     Cocina::Models::DRO.new(externalIdentifier: druid,
-                            type: Cocina::Models::Vocab.object,
+                            type: Cocina::Models::ObjectType.object,
                             label: 'A new map of Africa',
                             version: 1,
                             description: description,

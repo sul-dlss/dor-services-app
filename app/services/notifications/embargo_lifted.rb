@@ -32,7 +32,7 @@ module Notifications
 
     # Using the project as a routing key because listeners may only care about their projects.
     def routing_key
-      model.is_a?(Cocina::Models::AdminPolicy) ? 'SDR' : model.administrative.partOfProject
+      model.is_a?(Cocina::Models::AdminPolicy) ? 'SDR' : AdministrativeTags.project(identifier: model.externalIdentifier).first
     end
   end
 end

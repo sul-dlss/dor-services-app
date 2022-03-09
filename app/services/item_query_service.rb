@@ -27,8 +27,8 @@ class ItemQueryService
   def self.find_combinable_item(druid)
     new(id: druid).item do |item|
       raise UncombinableItemError, "Item #{item.externalIdentifier} is not an item" unless item.dro?
-      raise UncombinableItemError, "Item #{item.externalIdentifier} is dark" if item.access.access == 'dark'
-      raise UncombinableItemError, "Item #{item.externalIdentifier} is citation-only" if item.access.access == 'citation-only'
+      raise UncombinableItemError, "Item #{item.externalIdentifier} is dark" if item.access.view == 'dark'
+      raise UncombinableItemError, "Item #{item.externalIdentifier} is citation-only" if item.access.view == 'citation-only'
       raise UncombinableItemError, "Item #{item.externalIdentifier} is itself a virtual object" if item.structural&.hasMemberOrders&.any? { |order| order.members.any? }
       raise UncombinableItemError, "Item #{item.externalIdentifier} is not in the accessioned or opened workflow state" unless current_workflow_state(item).in?(ALLOWED_WORKFLOW_STATES)
     end

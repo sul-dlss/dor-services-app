@@ -12,13 +12,13 @@ RSpec.describe Cocina::ObjectCreator do
     Cocina::Models::AdminPolicy.new({
                                       cocinaVersion: '0.0.1',
                                       externalIdentifier: 'druid:bz845pv2292',
-                                      type: Cocina::Models::Vocab.admin_policy,
+                                      type: Cocina::Models::ObjectType.admin_policy,
                                       label: 'Test Admin Policy',
                                       version: 1,
                                       administrative: {
                                         hasAdminPolicy: 'druid:hy787xj5878',
                                         hasAgreement: 'druid:bb033gt0615',
-                                        defaultAccess: { access: 'world', download: 'world' }
+                                        accessTemplate: { view: 'world', download: 'world' }
                                       }
                                     })
   end
@@ -39,7 +39,7 @@ RSpec.describe Cocina::ObjectCreator do
     context 'when description is supplied' do
       let(:params) do
         {
-          'type' => Cocina::Models::Vocab.object,
+          'type' => Cocina::Models::ObjectType.object,
           'externalIdentifier' => druid,
           'label' => 'contributor mapping test',
           'access' => {},
@@ -140,18 +140,17 @@ RSpec.describe Cocina::ObjectCreator do
     context 'when the access is dark' do
       let(:params) do
         {
-          'type' => Cocina::Models::Vocab.media,
+          'type' => Cocina::Models::ObjectType.media,
           'externalIdentifier' => druid,
           'label' => 'Kayaking the Maine Coast',
           'description' => {
             'title' => [{ 'value' => 'Kayaking the Maine Coast' }],
             'purl' => "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
           },
-          'access' => { 'access' => 'dark', 'download' => 'none' },
+          'access' => { 'view' => 'dark', 'download' => 'none' },
           'version' => 1,
           'structural' => {},
           'administrative' => {
-            'partOfProject' => 'Naxos : 2009',
             'hasAdminPolicy' => apo
           },
           'identification' => {
@@ -162,14 +161,14 @@ RSpec.describe Cocina::ObjectCreator do
       end
 
       it 'creates dark access' do
-        expect(created_cocina_object.access.access).to eq 'dark'
+        expect(created_cocina_object.access.view).to eq 'dark'
       end
     end
 
     context 'when the type is agreement' do
       let(:params) do
         {
-          'type' => Cocina::Models::Vocab.agreement,
+          'type' => Cocina::Models::ObjectType.agreement,
           'externalIdentifier' => druid,
           'label' => 'My Agreement',
           'description' => {
@@ -188,7 +187,7 @@ RSpec.describe Cocina::ObjectCreator do
       end
 
       it 'creates an agreement' do
-        expect(created_cocina_object.type).to eq Cocina::Models::Vocab.agreement
+        expect(created_cocina_object.type).to eq Cocina::Models::ObjectType.agreement
       end
     end
 
@@ -198,14 +197,13 @@ RSpec.describe Cocina::ObjectCreator do
       let(:request) { Cocina::Models.build(params) }
       let(:params) do
         {
-          'type' => Cocina::Models::Vocab.object,
+          'type' => Cocina::Models::ObjectType.object,
           'label' => 'Mountain Biking Utah',
           'externalIdentifier' => 'druid:bb010dx6027',
           'access' => {},
           'version' => 1,
           'structural' => {},
           'administrative' => {
-            'partOfProject' => 'Naxos : 2009',
             'hasAdminPolicy' => apo
           },
           'identification' => {
@@ -232,7 +230,7 @@ RSpec.describe Cocina::ObjectCreator do
     context 'when there is a note of type summary' do
       let(:params) do
         {
-          'type' => Cocina::Models::Vocab.collection,
+          'type' => Cocina::Models::ObjectType.collection,
           'externalIdentifier' => druid,
           'label' => 'collection label',
           'version' => 1,
@@ -278,7 +276,7 @@ RSpec.describe Cocina::ObjectCreator do
 
     let(:params) do
       {
-        'type' => Cocina::Models::Vocab.geo,
+        'type' => Cocina::Models::ObjectType.geo,
         'externalIdentifier' => druid,
         'label' => ':auto',
         'access' => {},

@@ -10,7 +10,7 @@ FactoryBot.define do
       {
         hasAdminPolicy: 'druid:hy787xj5878',
         hasAgreement: 'druid:bb033gt0615',
-        defaultAccess: { access: 'world', download: 'world' }
+        accessTemplate: { view: 'world', download: 'world' }
       }
     end
   end

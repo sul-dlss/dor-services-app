@@ -9,7 +9,7 @@ RSpec.shared_examples 'DRO Structural Fedora Cocina mapping' do
   let(:fedora_item) { Dor::Item.new }
   let(:druid) { 'druid:hv992ry2431' }
   let(:notifier) { Cocina::FromFedora::DataErrorNotifier.new(druid: druid) }
-  let(:object_type) { Cocina::Models::Vocab.book }
+  let(:object_type) { Cocina::Models::ObjectType.book }
   let(:mapped_structural_props) { Cocina::FromFedora::DroStructural.props(fedora_item, type: object_type, notifier: notifier) }
   let(:roundtrip_content_metadata_xml) { defined?(roundtrip_content_xml) ? roundtrip_content_xml : content_xml }
   let(:normalized_roundtrip_content_metadata_xml) { Cocina::Normalizers::ContentMetadataNormalizer.normalize_roundtrip(content_ng_xml: Nokogiri::XML(roundtrip_content_metadata_xml)).to_xml }

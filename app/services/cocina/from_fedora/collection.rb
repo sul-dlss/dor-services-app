@@ -19,7 +19,7 @@ module Cocina
       def props
         {
           externalIdentifier: fedora_collection.pid,
-          type: Cocina::Models::Vocab.collection,
+          type: Cocina::Models::ObjectType.collection,
           label: cocina_label,
           version: fedora_collection.current_version.to_i,
           administrative: FromFedora::Administrative.props(fedora_collection),

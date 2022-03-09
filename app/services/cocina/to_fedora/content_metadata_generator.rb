@@ -182,7 +182,7 @@ module Cocina
       end
 
       def type_for(cocina_fileset)
-        cocina_fileset.type.delete_prefix('http://cocina.sul.stanford.edu/models/resources/').delete_suffix('.jsonld')
+        cocina_fileset.type.delete_prefix('https://cocina.sul.stanford.edu/models/resources/').delete_suffix('.jsonld')
       end
 
       def create_file_nodes(resource, cocina_fileset)

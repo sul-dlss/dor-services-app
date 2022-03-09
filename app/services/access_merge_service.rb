@@ -25,8 +25,8 @@ class AccessMergeService
 
     # Note for below: For cocina, an omitted value will not have a key in the hash.
 
-    # Add rights (access, cdl, download, readLocation) if not present.
-    props.merge!(rights) unless props.key?(:access)
+    # Add rights (access, cdl, download, location) if not present.
+    props.merge!(rights) unless props.key?(:view)
 
     # Add others
     props[:copyright] = default_access.copyright unless props.key?(:copyright)
@@ -41,7 +41,7 @@ class AccessMergeService
   attr_reader :cocina_object, :apo_object
 
   def default_access
-    @default_access ||= apo_object.administrative.defaultAccess
+    @default_access ||= apo_object.administrative.accessTemplate
   end
 
   def rights
@@ -50,12 +50,12 @@ class AccessMergeService
 
   def collection_rights
     {
-      access: default_access.access == 'dark' ? 'dark' : 'world'
+      view: default_access.view == 'dark' ? 'dark' : 'world'
     }
   end
 
   def dro_rights
-    default_access.to_h.slice(:access, :controlledDigitalLending, :download, :readLocation)
+    default_access.to_h.slice(:view, :controlledDigitalLending, :download, :location)
   end
 
   def access_class

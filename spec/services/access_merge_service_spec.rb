@@ -6,7 +6,7 @@ RSpec.describe AccessMergeService do
   let(:merged_access) { described_class.merge(cocina_object, apo_object) }
 
   let(:apo_object) { instance_double(Cocina::Models::AdminPolicy, administrative: apo_administrative) }
-  let(:apo_administrative) { instance_double(Cocina::Models::AdminPolicyAdministrative, defaultAccess: default_access) }
+  let(:apo_administrative) { instance_double(Cocina::Models::AdminPolicyAdministrative, accessTemplate: default_access) }
 
   context 'when a RequestDRO' do
     let(:cocina_object) { instance_double(Cocina::Models::RequestDRO, access: access, collection?: false) }
@@ -15,18 +15,18 @@ RSpec.describe AccessMergeService do
       let(:access) { nil }
 
       let(:default_access) do
-        Cocina::Models::AdminPolicyDefaultAccess.new(
-          access: 'location-based',
+        Cocina::Models::AdminPolicyAccessTemplate.new(
+          view: 'location-based',
           download: 'none',
-          readLocation: 'spec'
+          location: 'spec'
         )
       end
 
       it 'uses APO access' do
         expect(merged_access).to eq(Cocina::Models::DROAccess.new(
-                                      access: 'location-based',
+                                      view: 'location-based',
                                       download: 'none',
-                                      readLocation: 'spec'
+                                      location: 'spec'
                                     ))
       end
     end
@@ -44,17 +44,17 @@ RSpec.describe AccessMergeService do
     context 'when access already has rights' do
       let(:access) do
         Cocina::Models::DROAccess.new(
-          access: 'stanford',
+          view: 'stanford',
           download: 'none',
           controlledDigitalLending: true
         )
       end
 
       let(:default_access) do
-        Cocina::Models::AdminPolicyDefaultAccess.new(
-          access: 'location-based',
+        Cocina::Models::AdminPolicyAccessTemplate.new(
+          view: 'location-based',
           download: 'none',
-          readLocation: 'spec'
+          location: 'spec'
         )
       end
 
@@ -66,7 +66,7 @@ RSpec.describe AccessMergeService do
     context 'when access has copyright, useAndReproductionStatement, license' do
       let(:access) do
         Cocina::Models::DROAccess.new(
-          access: 'world',
+          view: 'world',
           download: 'world',
           copyright: 'dro copyright',
           useAndReproductionStatement: 'dro use and reproduction statement',
@@ -75,8 +75,8 @@ RSpec.describe AccessMergeService do
       end
 
       let(:default_access) do
-        Cocina::Models::AdminPolicyDefaultAccess.new(
-          access: 'dark',
+        Cocina::Models::AdminPolicyAccessTemplate.new(
+          view: 'dark',
           download: 'none',
           copyright: 'apo copyright',
           useAndReproductionStatement: 'apo use and reproduction statement',
@@ -92,16 +92,16 @@ RSpec.describe AccessMergeService do
     context 'when access does not have copyright, useAndReproductionStatement, license' do
       let(:access) do
         Cocina::Models::DROAccess.new(
-          access: 'world',
+          view: 'world',
           download: 'world'
         )
       end
 
       let(:default_access) do
-        Cocina::Models::AdminPolicyDefaultAccess.new(
-          access: 'location-based',
+        Cocina::Models::AdminPolicyAccessTemplate.new(
+          view: 'location-based',
           download: 'none',
-          readLocation: 'spec',
+          location: 'spec',
           copyright: 'apo copyright',
           useAndReproductionStatement: 'apo use and reproduction statement',
           license: 'https://www.apache.org/licenses/LICENSE-2.0'
@@ -110,7 +110,7 @@ RSpec.describe AccessMergeService do
 
       it 'inherits' do
         expect(merged_access).to eq(Cocina::Models::DROAccess.new(
-                                      access: 'world',
+                                      view: 'world',
                                       download: 'world',
                                       copyright: 'apo copyright',
                                       useAndReproductionStatement: 'apo use and reproduction statement',
@@ -127,16 +127,16 @@ RSpec.describe AccessMergeService do
       let(:access) { nil }
 
       let(:default_access) do
-        Cocina::Models::AdminPolicyDefaultAccess.new(
-          access: 'dark',
+        Cocina::Models::AdminPolicyAccessTemplate.new(
+          view: 'dark',
           download: 'none',
-          readLocation: 'spec'
+          location: 'spec'
         )
       end
 
       it 'uses APO access' do
         expect(merged_access).to eq(Cocina::Models::CollectionAccess.new(
-                                      access: 'dark'
+                                      view: 'dark'
                                     ))
       end
     end
@@ -145,16 +145,16 @@ RSpec.describe AccessMergeService do
       let(:access) { nil }
 
       let(:default_access) do
-        Cocina::Models::AdminPolicyDefaultAccess.new(
-          access: 'stanford',
+        Cocina::Models::AdminPolicyAccessTemplate.new(
+          view: 'stanford',
           download: 'none',
-          readLocation: 'spec'
+          location: 'spec'
         )
       end
 
       it 'uses world access' do
         expect(merged_access).to eq(Cocina::Models::CollectionAccess.new(
-                                      access: 'world'
+                                      view: 'world'
                                     ))
       end
     end
@@ -172,13 +172,13 @@ RSpec.describe AccessMergeService do
     context 'when access already has rights' do
       let(:access) do
         Cocina::Models::CollectionAccess.new(
-          access: 'world'
+          view: 'world'
         )
       end
 
       let(:default_access) do
-        Cocina::Models::AdminPolicyDefaultAccess.new(
-          access: 'dark'
+        Cocina::Models::AdminPolicyAccessTemplate.new(
+          view: 'dark'
         )
       end
 
@@ -190,7 +190,7 @@ RSpec.describe AccessMergeService do
     context 'when access has copyright, useAndReproductionStatement, license' do
       let(:access) do
         Cocina::Models::CollectionAccess.new(
-          access: 'world',
+          view: 'world',
           copyright: 'collection copyright',
           useAndReproductionStatement: 'collection use and reproduction statement',
           license: 'https://www.gnu.org/licenses/agpl.txt'
@@ -198,10 +198,10 @@ RSpec.describe AccessMergeService do
       end
 
       let(:default_access) do
-        Cocina::Models::AdminPolicyDefaultAccess.new(
-          access: 'location-based',
+        Cocina::Models::AdminPolicyAccessTemplate.new(
+          view: 'location-based',
           download: 'none',
-          readLocation: 'spec',
+          location: 'spec',
           copyright: 'apo copyright',
           useAndReproductionStatement: 'apo use and reproduction statement',
           license: 'https://www.apache.org/licenses/LICENSE-2.0'
@@ -216,15 +216,15 @@ RSpec.describe AccessMergeService do
     context 'when access does not have copyright, useAndReproductionStatement, license' do
       let(:access) do
         Cocina::Models::CollectionAccess.new(
-          access: 'dark'
+          view: 'dark'
         )
       end
 
       let(:default_access) do
-        Cocina::Models::AdminPolicyDefaultAccess.new(
-          access: 'location-based',
+        Cocina::Models::AdminPolicyAccessTemplate.new(
+          view: 'location-based',
           download: 'none',
-          readLocation: 'spec',
+          location: 'spec',
           copyright: 'apo copyright',
           useAndReproductionStatement: 'apo use and reproduction statement',
           license: 'https://www.apache.org/licenses/LICENSE-2.0'
@@ -233,7 +233,7 @@ RSpec.describe AccessMergeService do
 
       it 'inherits' do
         expect(merged_access).to eq(Cocina::Models::CollectionAccess.new(
-                                      access: 'dark',
+                                      view: 'dark',
                                       copyright: 'apo copyright',
                                       useAndReproductionStatement: 'apo use and reproduction statement',
                                       license: 'https://www.apache.org/licenses/LICENSE-2.0'

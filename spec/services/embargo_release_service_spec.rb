@@ -85,7 +85,7 @@ RSpec.describe EmbargoReleaseService do
       Cocina::Models::DRO.new({
                                 cocinaVersion: '0.0.1',
                                 externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.book,
+                                type: Cocina::Models::ObjectType.book,
                                 label: 'Test DRO',
                                 description: {
                                   title: [{ value: 'Test DRO' }],
@@ -104,13 +104,13 @@ RSpec.describe EmbargoReleaseService do
           contains: [
             {
               version: 1,
-              type: Cocina::Models::Vocab::Resources.file,
+              type: Cocina::Models::FileSetType.file,
               label: 'Page 1',
               externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/gg777gg7777/123-456-789',
               structural: { contains: [
                 {
                   version: 1,
-                  type: Cocina::Models::Vocab.file,
+                  type: Cocina::Models::ObjectType.file,
                   externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777/123-456-789/00001.html',
                   filename: '00001.html',
                   label: '00001.html',
@@ -122,7 +122,7 @@ RSpec.describe EmbargoReleaseService do
                     shelve: false
                   },
                   access: {
-                    access: 'dark'
+                    view: 'dark'
                   },
                   hasMessageDigests: [
                     {
@@ -150,11 +150,11 @@ RSpec.describe EmbargoReleaseService do
     context 'when embargo access is world' do
       let(:access) do
         Cocina::Models::DROAccess.new({
-                                        access: 'citation-only',
+                                        view: 'citation-only',
                                         download: 'none',
                                         embargo: {
                                           releaseDate: DateTime.parse('2029-02-28'),
-                                          access: 'world',
+                                          view: 'world',
                                           download: 'world',
                                           useAndReproductionStatement: 'Free!'
                                         }
@@ -165,14 +165,14 @@ RSpec.describe EmbargoReleaseService do
         released_cocina_object = service.send(:release_cocina_object, embargoed_cocina_object)
         expect(released_cocina_object.access.to_h).to eq(
           {
-            access: 'world',
+            view: 'world',
             download: 'world',
             useAndReproductionStatement: 'Free!'
           }
         )
         expect(released_cocina_object.structural.contains.first.structural.contains.first.access.to_h).to eq(
           {
-            access: 'world',
+            view: 'world',
             download: 'world'
           }
         )
@@ -183,11 +183,11 @@ RSpec.describe EmbargoReleaseService do
     context 'when embargo access is citation-only' do
       let(:access) do
         Cocina::Models::DROAccess.new({
-                                        access: 'citation-only',
+                                        view: 'citation-only',
                                         download: 'none',
                                         embargo: {
                                           releaseDate: DateTime.parse('2029-02-28'),
-                                          access: 'citation-only',
+                                          view: 'citation-only',
                                           download: 'none',
                                           useAndReproductionStatement: 'Free!'
                                         }
@@ -198,14 +198,14 @@ RSpec.describe EmbargoReleaseService do
         released_cocina_object = service.send(:release_cocina_object, embargoed_cocina_object)
         expect(released_cocina_object.access.to_h).to eq(
           {
-            access: 'citation-only',
+            view: 'citation-only',
             download: 'none',
             useAndReproductionStatement: 'Free!'
           }
         )
         expect(released_cocina_object.structural.contains.first.structural.contains.first.access.to_h).to eq(
           {
-            access: 'dark',
+            view: 'dark',
             download: 'none'
           }
         )
@@ -218,7 +218,7 @@ RSpec.describe EmbargoReleaseService do
         Cocina::Models::DRO.new({
                                   cocinaVersion: '0.0.1',
                                   externalIdentifier: druid,
-                                  type: Cocina::Models::Vocab.book,
+                                  type: Cocina::Models::ObjectType.book,
                                   label: 'Test DRO',
                                   version: 1,
                                   description: {
@@ -232,11 +232,11 @@ RSpec.describe EmbargoReleaseService do
 
       let(:access) do
         Cocina::Models::DROAccess.new({
-                                        access: 'citation-only',
+                                        view: 'citation-only',
                                         download: 'none',
                                         embargo: {
                                           releaseDate: DateTime.parse('2029-02-28'),
-                                          access: 'citation-only',
+                                          view: 'citation-only',
                                           download: 'none',
                                           useAndReproductionStatement: 'Free!'
                                         }
@@ -249,7 +249,7 @@ RSpec.describe EmbargoReleaseService do
         released_cocina_object = service.send(:release_cocina_object, embargoed_cocina_object)
         expect(released_cocina_object.access.to_h).to eq(
           {
-            access: 'citation-only',
+            view: 'citation-only',
             download: 'none',
             useAndReproductionStatement: 'Free!'
           }

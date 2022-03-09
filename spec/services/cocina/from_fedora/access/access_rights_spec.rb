@@ -28,7 +28,7 @@ RSpec.describe Cocina::FromFedora::Access::AccessRights do
       end
 
       it 'specifies access as citation-only' do
-        expect(access).to eq(access: 'citation-only', download: 'none')
+        expect(access).to eq(view: 'citation-only', download: 'none')
       end
     end
 
@@ -54,7 +54,7 @@ RSpec.describe Cocina::FromFedora::Access::AccessRights do
       end
 
       it 'specifies access as stanford with cdl = true' do
-        expect(access).to eq(access: 'stanford', download: 'none', controlledDigitalLending: true)
+        expect(access).to eq(view: 'stanford', download: 'none', controlledDigitalLending: true)
       end
     end
 
@@ -78,7 +78,7 @@ RSpec.describe Cocina::FromFedora::Access::AccessRights do
       end
 
       it 'specifies access as dark' do
-        expect(access).to eq(access: 'dark', download: 'none')
+        expect(access).to eq(view: 'dark', download: 'none')
       end
     end
 
@@ -102,7 +102,7 @@ RSpec.describe Cocina::FromFedora::Access::AccessRights do
       end
 
       it 'specifies access as stanford' do
-        expect(access).to eq(access: 'stanford', download: 'stanford')
+        expect(access).to eq(view: 'stanford', download: 'stanford')
       end
     end
 
@@ -131,7 +131,7 @@ RSpec.describe Cocina::FromFedora::Access::AccessRights do
       end
 
       it 'specifies access as stanford' do
-        expect(access).to eq(access: 'stanford', download: 'none', controlledDigitalLending: false)
+        expect(access).to eq(view: 'stanford', download: 'none', controlledDigitalLending: false)
       end
     end
 
@@ -159,7 +159,7 @@ RSpec.describe Cocina::FromFedora::Access::AccessRights do
       end
 
       it 'specifies access as world' do
-        expect(access).to eq(access: 'world', download: 'stanford')
+        expect(access).to eq(view: 'world', download: 'stanford')
       end
     end
 
@@ -183,7 +183,7 @@ RSpec.describe Cocina::FromFedora::Access::AccessRights do
       end
 
       it 'specifies access as world' do
-        expect(access).to eq(access: 'world', download: 'world')
+        expect(access).to eq(view: 'world', download: 'world')
       end
     end
 
@@ -212,7 +212,7 @@ RSpec.describe Cocina::FromFedora::Access::AccessRights do
       end
 
       it 'specifies access as world' do
-        expect(access).to eq(access: 'world', download: 'none')
+        expect(access).to eq(view: 'world', download: 'none')
       end
     end
 
@@ -237,7 +237,7 @@ RSpec.describe Cocina::FromFedora::Access::AccessRights do
         end
 
         it "specifies access as location-based for #{location}" do
-          expect(access).to eq(access: 'location-based', download: 'location-based', readLocation: location)
+          expect(access).to eq(view: 'location-based', download: 'location-based', location: location)
         end
       end
 
@@ -261,7 +261,7 @@ RSpec.describe Cocina::FromFedora::Access::AccessRights do
         end
 
         it "specifies access as location-based for #{location}" do
-          expect(access).to eq(access: 'location-based', download: 'none', readLocation: location)
+          expect(access).to eq(view: 'location-based', download: 'none', location: location)
         end
       end
 
@@ -290,7 +290,7 @@ RSpec.describe Cocina::FromFedora::Access::AccessRights do
         end
 
         it "specifies access as stanford for #{location}" do
-          expect(access).to eq(access: 'stanford', download: 'location-based', readLocation: location)
+          expect(access).to eq(view: 'stanford', download: 'location-based', location: location)
         end
       end
 
@@ -319,7 +319,7 @@ RSpec.describe Cocina::FromFedora::Access::AccessRights do
         end
 
         it "specifies access as world for #{location}" do
-          expect(access).to eq(access: 'world', download: 'location-based', readLocation: location)
+          expect(access).to eq(view: 'world', download: 'location-based', location: location)
         end
       end
     end

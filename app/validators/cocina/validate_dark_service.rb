@@ -24,7 +24,7 @@ module Cocina
     attr_reader :cocina_object
 
     def meets_preconditions?
-      cocina_object.dro? && cocina_object.access&.access == 'dark'
+      cocina_object.dro? && cocina_object.access&.view == 'dark'
     end
 
     def invalid_files
@@ -45,7 +45,7 @@ module Cocina
       return false if file.hasMimeType == 'application/warc'
 
       return true if file.administrative.shelve
-      return true if file.access.access != 'dark'
+      return true if file.access.view != 'dark'
 
       false
     end

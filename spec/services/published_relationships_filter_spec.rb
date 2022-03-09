@@ -17,7 +17,7 @@ RSpec.describe PublishedRelationshipsFilter do
         Cocina::Models::DRO.new(
           {
             externalIdentifier: 'druid:bc123df4567',
-            type: Cocina::Models::Vocab.object,
+            type: Cocina::Models::ObjectType.object,
             label: 'foo',
             version: 1,
             access: {},
@@ -53,7 +53,7 @@ RSpec.describe PublishedRelationshipsFilter do
         Cocina::Models::Collection.new(
           {
             externalIdentifier: 'druid:bc123df4567',
-            type: Cocina::Models::Vocab.collection,
+            type: Cocina::Models::ObjectType.collection,
             label: 'foo',
             version: 1,
             description: {

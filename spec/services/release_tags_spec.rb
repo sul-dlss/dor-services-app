@@ -6,7 +6,7 @@ RSpec.describe ReleaseTags do
   describe '.for' do
     let(:cocina_item) do
       Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: 'Some Label',
                               version: 1,
                               description: {

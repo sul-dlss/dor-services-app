@@ -10,7 +10,7 @@ RSpec.describe Cocina::ToDatacite::Event do
     Cocina::Models::Description.new(cocina)
   end
   let(:cocina_item) do
-    Cocina::Models::DRO.new(type: Cocina::Models::Vocab.object,
+    Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.object,
                             label: 'This is my label',
                             version: 1,
                             administrative: { hasAdminPolicy: 'druid:dd999df4567' },
@@ -153,7 +153,7 @@ RSpec.describe Cocina::ToDatacite::Event do
         {
           embargo:
             {
-              access: 'world',
+              view: 'world',
               download: 'world',
               releaseDate: DateTime.parse('2022-01-01'),
               useAndReproductionStatement: 'in public domain'
@@ -222,7 +222,7 @@ RSpec.describe Cocina::ToDatacite::Event do
         {
           embargo:
             {
-              access: 'world',
+              view: 'world',
               download: 'world',
               releaseDate: DateTime.parse('2022-01-01'),
               useAndReproductionStatement: 'in public domain'
@@ -744,7 +744,7 @@ RSpec.describe Cocina::ToDatacite::Event do
         {
           embargo:
             {
-              access: 'world',
+              view: 'world',
               download: 'world',
               releaseDate: DateTime.parse('2023-01-01'),
               useAndReproductionStatement: 'in public domain'

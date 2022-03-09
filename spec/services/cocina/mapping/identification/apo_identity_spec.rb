@@ -139,7 +139,7 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
   # NOTE: tested in mapping/administrative/apo_administrative_spec.rb
   let(:default_access_props) do
     {
-      access: 'dark',
+      view: 'dark',
       download: 'none'
     }
   end
@@ -190,13 +190,13 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
       let(:cocina_props) do
         {
           externalIdentifier: pid,
-          type: Cocina::Models::Vocab.admin_policy,
+          type: Cocina::Models::ObjectType.admin_policy,
           label: label,
           version: 1,
           administrative: {
             hasAdminPolicy: admin_policy_id,
             hasAgreement: agreement_object_id,
-            defaultAccess: default_access_props,
+            accessTemplate: default_access_props,
             roles: []
           },
           description: description_props
@@ -241,13 +241,13 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
       let(:cocina_props) do
         {
           externalIdentifier: pid,
-          type: Cocina::Models::Vocab.admin_policy,
+          type: Cocina::Models::ObjectType.admin_policy,
           label: label,
           version: 1,
           administrative: {
             hasAdminPolicy: admin_policy_id,
             hasAgreement: agreement_object_id,
-            defaultAccess: default_access_props,
+            accessTemplate: default_access_props,
             roles: []
           },
           description: description_props
@@ -294,13 +294,13 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
       let(:cocina_props) do
         {
           externalIdentifier: pid,
-          type: Cocina::Models::Vocab.admin_policy,
+          type: Cocina::Models::ObjectType.admin_policy,
           label: label,
           version: 1,
           administrative: {
             hasAdminPolicy: admin_policy_id,
             hasAgreement: agreement_object_id,
-            defaultAccess: default_access_props,
+            accessTemplate: default_access_props,
             roles: []
           },
           description: description_props
@@ -340,13 +340,13 @@ RSpec.describe 'Fedora APO identityMetadata <--> Cocina AdminPolicy Identificati
       let(:cocina_props) do
         {
           externalIdentifier: pid,
-          type: Cocina::Models::Vocab.admin_policy,
+          type: Cocina::Models::ObjectType.admin_policy,
           label: label,
           version: 1,
           administrative: {
             hasAdminPolicy: admin_policy_id,
             hasAgreement: agreement_object_id,
-            defaultAccess: default_access_props,
+            accessTemplate: default_access_props,
             roles: []
           },
           description: description_props

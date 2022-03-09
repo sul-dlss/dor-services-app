@@ -28,13 +28,13 @@ RSpec.describe 'Update object' do
     Cocina::Models::AdminPolicy.new({
                                       cocinaVersion: '0.0.1',
                                       externalIdentifier: apo_druid,
-                                      type: Cocina::Models::Vocab.admin_policy,
+                                      type: Cocina::Models::ObjectType.admin_policy,
                                       label: 'Test Admin Policy',
                                       version: 1,
                                       administrative: {
                                         hasAdminPolicy: 'druid:hy787xj5878',
                                         hasAgreement: 'druid:bb033gt0615',
-                                        defaultAccess: { access: 'world', download: 'world' }
+                                        accessTemplate: { view: 'world', download: 'world' }
                                       }
                                     })
   end
@@ -68,14 +68,14 @@ RSpec.describe 'Update object' do
     }
   end
   let(:cocina_structural) { Cocina::Models::DROStructural.new(structural) }
-  let(:access) { 'world' }
+  let(:view) { 'world' }
   let(:download) { 'world' }
   let(:cocina_access) do
-    Cocina::Models::DROAccess.new(access: access, download: download)
+    Cocina::Models::DROAccess.new(view: view, download: download)
   end
   let(:expected) do
     Cocina::Models::DRO.new(externalIdentifier: druid,
-                            type: Cocina::Models::Vocab.book,
+                            type: Cocina::Models::ObjectType.book,
                             label: label,
                             version: 1,
                             access: {
@@ -84,8 +84,7 @@ RSpec.describe 'Update object' do
                             }.merge(cocina_access.to_h),
                             description: description,
                             administrative: {
-                              hasAdminPolicy: apo_druid,
-                              partOfProject: 'Google Books'
+                              hasAdminPolicy: apo_druid
                             },
                             identification: identification,
                             structural: structural)
@@ -98,7 +97,7 @@ RSpec.describe 'Update object' do
     }
   end
 
-  let(:content_type) { Cocina::Models::Vocab.book }
+  let(:content_type) { Cocina::Models::ObjectType.book }
 
   let(:data) do
     <<~JSON
@@ -108,12 +107,12 @@ RSpec.describe 'Update object' do
         "type":"#{content_type}",
         "label":"#{label}","version":1,
         "access":{
-          "access":"#{access}",
-          "download":"#{access}",
+          "view":"#{view}",
+          "download":"#{view}",
           "copyright":"All rights reserved unless otherwise indicated.",
           "useAndReproductionStatement":"Property rights reside with the repository..."
         },
-        "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"EEMS"},
+        "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4568"},
         "description":#{description.to_json},
         "identification":#{identification.to_json},
         "structural":{
@@ -140,11 +139,9 @@ RSpec.describe 'Update object' do
     expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
     expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
     expect(item).to have_received(:save!)
-    expect(item).to have_received(:admin_policy_object_id=).with(apo_druid)
+    expect(item).to have_received(:admin_policy_object_id=).with('druid:dd999df4568')
     expect(Cocina::ObjectValidator).to have_received(:validate)
 
-    # Tags are created.
-    expect(AdministrativeTags).to have_received(:create).with(identifier: druid, tags: ['Project : EEMS'])
     expect(EventFactory).to have_received(:create).with(druid: druid, data: hash_including(:request, success: true), event_type: 'update')
   end
 
@@ -166,19 +163,18 @@ RSpec.describe 'Update object' do
 
     let(:expected) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.book,
+                              type: Cocina::Models::ObjectType.book,
                               label: label,
                               version: 1,
                               access: {
-                                access: access,
+                                view: view,
                                 download: 'world',
                                 copyright: 'All rights reserved unless otherwise indicated.',
                                 useAndReproductionStatement: 'Property rights reside with the repository...'
                               },
                               description: description,
                               administrative: {
-                                hasAdminPolicy: apo_druid,
-                                partOfProject: 'Google Books'
+                                hasAdminPolicy: apo_druid
                               },
                               identification: identification,
                               structural: structural)
@@ -276,16 +272,16 @@ RSpec.describe 'Update object' do
 
   context 'with a structured title' do
     let(:cocina_access) do
-      Cocina::Models::DROAccess.new(access: access, download: access)
+      Cocina::Models::DROAccess.new(view: view, download: view)
     end
 
     let(:expected) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.book,
+                              type: Cocina::Models::ObjectType.book,
                               label: label,
                               version: 1,
                               access: {
-                                access: access,
+                                view: view,
                                 download: 'world',
                                 copyright: 'All rights reserved unless otherwise indicated.',
                                 useAndReproductionStatement: 'Property rights reside with the repository...'
@@ -308,8 +304,7 @@ RSpec.describe 'Update object' do
                                 purl: 'https://purl.stanford.edu/gg777gg7777'
                               },
                               administrative: {
-                                hasAdminPolicy: apo_druid,
-                                partOfProject: 'Google Books'
+                                hasAdminPolicy: apo_druid
                               },
                               identification: identification,
                               structural: structural)
@@ -319,15 +314,15 @@ RSpec.describe 'Update object' do
         {
           "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
-          "type":"#{Cocina::Models::Vocab.book}",
+          "type":"#{Cocina::Models::ObjectType.book}",
           "label":"#{label}","version":1,
           "access":{
-            "access":"#{access}",
+            "view":"#{view}",
             "download":"world",
             "copyright":"All rights reserved unless otherwise indicated.",
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{
             "title":[{"structuredValue":[{"value":"#{title}","type":"main title"},{"value":"(repeat)","type":"subtitle"}]}],
             "purl":"https://purl.stanford.edu/gg777gg7777"
@@ -432,7 +427,6 @@ RSpec.describe 'Update object' do
       # Tags are updated.
       expect(AdministrativeTags).not_to have_received(:create)
       expect(AdministrativeTags).to have_received(:update).with(identifier: druid, current: 'Process : Content Type : Book (ltr)', new: 'Process : Content Type : Book (rtl)')
-      expect(AdministrativeTags).to have_received(:update).with(identifier: druid, current: 'Project : Tom Swift', new: 'Project : EEMS')
     end
   end
 
@@ -481,7 +475,7 @@ RSpec.describe 'Update object' do
 
   context 'when updated cocina cannot be mapped' do
     # Geo content type without geographic.
-    let(:content_type) { Cocina::Models::Vocab.geo }
+    let(:content_type) { Cocina::Models::ObjectType.geo }
 
     it 'is a bad request and does not save' do
       patch "/v1/objects/#{druid}",
@@ -532,14 +526,14 @@ RSpec.describe 'Update object' do
         isMemberOf: ['druid:xx888xx7777']
       }
     end
-    let(:access) { 'world' }
+    let(:view) { 'world' }
     let(:expected) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.image,
+                              type: Cocina::Models::ObjectType.image,
                               label: expected_label,
                               version: 1,
                               access: {
-                                access: access,
+                                view: view,
                                 download: 'world',
                                 copyright: 'All rights reserved unless otherwise indicated.',
                                 useAndReproductionStatement: 'Property rights reside with the repository...'
@@ -549,8 +543,7 @@ RSpec.describe 'Update object' do
                                 purl: 'https://purl.stanford.edu/gg777gg7777'
                               },
                               administrative: {
-                                hasAdminPolicy: 'druid:dd999df4567',
-                                partOfProject: 'Google Books'
+                                hasAdminPolicy: 'druid:dd999df4567'
                               },
                               identification: identification,
                               structural: structural)
@@ -560,15 +553,15 @@ RSpec.describe 'Update object' do
         {
           "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
-          "type":"#{Cocina::Models::Vocab.image}",
+          "type":"#{Cocina::Models::ObjectType.image}",
           "label":"#{expected_label}","version":1,
           "access":{
-            "access":"#{access}",
+            "view":"#{view}",
             "download":"world",
             "copyright":"All rights reserved unless otherwise indicated.",
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{
             "title":[{"value":"#{title}"}],
             "purl":"https://purl.stanford.edu/gg777gg7777"
@@ -630,7 +623,7 @@ RSpec.describe 'Update object' do
         {
           'externalIdentifier' => 'https://cocina.sul.stanford.edu/file/123-456-789',
           'version' => 1,
-          'type' => Cocina::Models::Vocab.file,
+          'type' => Cocina::Models::ObjectType.file,
           'filename' => '00001.html',
           'label' => '00001.html',
           'hasMimeType' => 'text/html',
@@ -641,7 +634,7 @@ RSpec.describe 'Update object' do
             'shelve' => false
           },
           'access' => {
-            'access' => 'dark'
+            'view' => 'dark'
           },
           'hasMessageDigests' => [
             {
@@ -661,7 +654,7 @@ RSpec.describe 'Update object' do
         {
           'externalIdentifier' => 'https://cocina.sul.stanford.edu/file/223-456-789',
           'version' => 1,
-          'type' => Cocina::Models::Vocab.file,
+          'type' => Cocina::Models::ObjectType.file,
           'filename' => '00001.jp2',
           'label' => '00001.jp2',
           'hasMimeType' => 'image/jp2',
@@ -671,7 +664,7 @@ RSpec.describe 'Update object' do
             'shelve' => true
           },
           'access' => {
-            'access' => 'stanford',
+            'view' => 'stanford',
             'download' => 'stanford'
           },
           'hasMessageDigests' => []
@@ -682,7 +675,7 @@ RSpec.describe 'Update object' do
         {
           'externalIdentifier' => 'https://cocina.sul.stanford.edu/file/323-456-789',
           'version' => 1,
-          'type' => Cocina::Models::Vocab.file,
+          'type' => Cocina::Models::ObjectType.file,
           'filename' => '00002.html',
           'label' => '00002.html',
           'hasMimeType' => 'text/html',
@@ -692,7 +685,7 @@ RSpec.describe 'Update object' do
             'shelve' => false
           },
           'access' => {
-            'access' => 'world',
+            'view' => 'world',
             'download' => 'world'
           },
           'hasMessageDigests' => []
@@ -703,7 +696,7 @@ RSpec.describe 'Update object' do
         {
           'externalIdentifier' => 'https://cocina.sul.stanford.edu/file/423-456-789',
           'version' => 1,
-          'type' => Cocina::Models::Vocab.file,
+          'type' => Cocina::Models::ObjectType.file,
           'filename' => '00002.jp2',
           'label' => '00002.jp2',
           'hasMimeType' => 'image/jp2',
@@ -713,7 +706,7 @@ RSpec.describe 'Update object' do
             'shelve' => true
           },
           'access' => {
-            'access' => 'world',
+            'view' => 'world',
             'download' => 'world'
           },
           'hasMessageDigests' => []
@@ -725,14 +718,14 @@ RSpec.describe 'Update object' do
           {
             'externalIdentifier' => 'https://cocina.sul.stanford.edu/fileSet/234-567-890',
             'version' => 1,
-            'type' => Cocina::Models::Vocab::Resources.file,
+            'type' => Cocina::Models::FileSetType.file,
             'label' => 'Page 1',
             'structural' => { 'contains' => [file1, file2] }
           },
           {
             'externalIdentifier' => 'https://cocina.sul.stanford.edu/fileSet/334-567-890',
             'version' => 1,
-            'type' => Cocina::Models::Vocab::Resources.file,
+            'type' => Cocina::Models::FileSetType.file,
             'label' => 'Page 2',
             'structural' => { 'contains' => [file3, file4] }
           }
@@ -741,7 +734,7 @@ RSpec.describe 'Update object' do
 
       let(:fs1) do
         {
-          'type' => Cocina::Models::Vocab::Resources.file
+          'type' => Cocina::Models::FileSetType.file
         }
       end
       let(:data) do
@@ -749,15 +742,15 @@ RSpec.describe 'Update object' do
           {
             "cocinaVersion": "0.0.1",
             "externalIdentifier": "#{druid}",
-            "type":"#{Cocina::Models::Vocab.image}",
+            "type":"#{Cocina::Models::ObjectType.image}",
             "label":"#{label}","version":1,
             "access":{
-              "access":"#{access}",
+              "view":"#{view}",
               "download":"world",
               "copyright":"All rights reserved unless otherwise indicated.",
               "useAndReproductionStatement":"Property rights reside with the repository..."
             },
-            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
+            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
             "description":{
               "title":[{"value":"#{title}"}],
               "purl":"https://purl.stanford.edu/gg777gg7777"
@@ -777,12 +770,12 @@ RSpec.describe 'Update object' do
             isMemberOf: ['druid:xx888xx7777'],
             contains: [
               {
-                type: Cocina::Models::Vocab::Resources.file,
+                type: Cocina::Models::FileSetType.file,
                 externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/gg777gg7777-234-567-890', label: 'Page 1', version: 1,
                 structural: {
                   contains: [
                     {
-                      type: Cocina::Models::Vocab.file,
+                      type: Cocina::Models::ObjectType.file,
                       externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777-234-567-890/00001.html',
                       label: '00001.html',
                       filename: '00001.html',
@@ -797,43 +790,43 @@ RSpec.describe 'Update object' do
                           type: 'md5', digest: 'e6d52da47a5ade91ae31227b978fb023'
                         }
                       ],
-                      access: { access: 'dark', download: 'none' },
+                      access: { view: 'dark', download: 'none' },
                       administrative: { publish: false, sdrPreserve: true, shelve: false }
                     }, {
-                      type: Cocina::Models::Vocab.file,
+                      type: Cocina::Models::ObjectType.file,
                       externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777-234-567-890/00001.jp2',
                       label: '00001.jp2',
                       filename: '00001.jp2',
                       size: 0, version: 1,
                       hasMimeType: 'image/jp2', hasMessageDigests: [],
-                      access: { access: 'world', download: 'world' },
+                      access: { view: 'world', download: 'world' },
                       administrative: { publish: true, sdrPreserve: true, shelve: true }
                     }
                   ]
                 }
               }, {
-                type: Cocina::Models::Vocab::Resources.file,
+                type: Cocina::Models::FileSetType.file,
                 externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/gg777gg7777-334-567-890',
                 label: 'Page 2', version: 1,
                 structural: {
                   contains: [
                     {
-                      type: Cocina::Models::Vocab.file,
+                      type: Cocina::Models::ObjectType.file,
                       externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777-334-567-890/00002.html',
                       label: '00002.html', filename: '00002.html', size: 0,
                       version: 1, hasMimeType: 'text/html',
                       hasMessageDigests: [],
-                      access: { access: 'dark', download: 'none' },
+                      access: { view: 'dark', download: 'none' },
                       administrative: { publish: false, sdrPreserve: true, shelve: false }
                     }, {
-                      type: Cocina::Models::Vocab.file,
+                      type: Cocina::Models::ObjectType.file,
                       externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777-334-567-890/00002.jp2',
                       label: '00002.jp2',
                       filename: '00002.jp2',
                       size: 0, version: 1,
                       hasMimeType: 'image/jp2',
                       hasMessageDigests: [],
-                      access: { access: 'world', download: 'world' },
+                      access: { view: 'world', download: 'world' },
                       administrative: { publish: true, sdrPreserve: true, shelve: true }
                     }
                   ]
@@ -855,7 +848,7 @@ RSpec.describe 'Update object' do
       end
 
       context 'when access mismatch' do
-        let(:access) { 'dark' }
+        let(:view) { 'dark' }
         let(:download) { 'none' }
 
         it 'returns 400' do
@@ -875,15 +868,15 @@ RSpec.describe 'Update object' do
           {
             "cocinaVersion":"0.0.1",
             "externalIdentifier": "#{druid}",
-            "type":"#{Cocina::Models::Vocab.image}",
+            "type":"#{Cocina::Models::ObjectType.image}",
             "label":"#{label}","version":1,
             "access":{
-              "access":"#{access}",
+              "view":"#{view}",
               "download":"world",
               "copyright":"All rights reserved unless otherwise indicated.",
               "useAndReproductionStatement":"Property rights reside with the repository..."
             },
-            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
+            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
             "description":{
               "title":[{"value":"#{title}"}],
               "purl":"https://purl.stanford.edu/gg777gg7777"
@@ -908,7 +901,7 @@ RSpec.describe 'Update object' do
     let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
     let(:expected) do
-      Cocina::Models::DRO.new(type: Cocina::Models::Vocab.book,
+      Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.book,
                               label: label,
                               version: 1,
                               description: {
@@ -926,17 +919,17 @@ RSpec.describe 'Update object' do
                                 ],
                                 isMemberOf: ['druid:xx888xx7777']
                               },
-                              access: { access: 'world', download: 'world' })
+                              access: { view: 'world', download: 'world' })
     end
     let(:data) do
       <<~JSON
         {
           "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
-          "type":"#{Cocina::Models::Vocab.book}",
+          "type":"#{Cocina::Models::ObjectType.book}",
           "label":"#{label}","version":1,
           "access":{
-            "access":"world",
+            "view":"world",
             "download":"world"
           },
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
@@ -979,7 +972,7 @@ RSpec.describe 'Update object' do
     let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
     let(:expected) do
-      Cocina::Models::Collection.new(type: Cocina::Models::Vocab.collection,
+      Cocina::Models::Collection.new(type: Cocina::Models::ObjectType.collection,
                                      label: label,
                                      version: 1,
                                      description: {
@@ -1006,7 +999,7 @@ RSpec.describe 'Update object' do
         {
           "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
-          "type":"#{Cocina::Models::Vocab.collection}",
+          "type":"#{Cocina::Models::ObjectType.collection}",
           "label":"#{label}","version":1,
           "access":{},
           "identification":#{identification.to_json},
@@ -1045,7 +1038,7 @@ RSpec.describe 'Update object' do
     end
 
     let(:expected) do
-      Cocina::Models::AdminPolicy.new(type: Cocina::Models::Vocab.admin_policy,
+      Cocina::Models::AdminPolicy.new(type: Cocina::Models::ObjectType.admin_policy,
                                       label: 'This is my label',
                                       version: 1,
                                       description: {
@@ -1053,7 +1046,7 @@ RSpec.describe 'Update object' do
                                         purl: 'https://purl.stanford.edu/gg777gg7777'
                                       },
                                       administrative: {
-                                        defaultAccess: default_access_expected,
+                                        accessTemplate: default_access_expected,
                                         hasAdminPolicy: 'druid:dd999df4567',
                                         hasAgreement: 'druid:bc123df4567',
                                         disseminationWorkflow: 'assemblyWF',
@@ -1076,9 +1069,9 @@ RSpec.describe 'Update object' do
 
     let(:default_access) do
       {
-        access: 'location-based',
+        view: 'location-based',
         download: 'location-based',
-        readLocation: 'ars',
+        location: 'ars',
         copyright: 'My copyright statement',
         license: 'http://opendatacommons.org/licenses/by/1.0/',
         useAndReproductionStatement: 'Whatever makes you happy'
@@ -1091,7 +1084,7 @@ RSpec.describe 'Update object' do
         {
           "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
-          "type":"#{Cocina::Models::Vocab.admin_policy}",
+          "type":"#{Cocina::Models::ObjectType.admin_policy}",
           "label":"This is my label","version":1,
           "administrative":{
             "disseminationWorkflow":"assemblyWF",
@@ -1099,7 +1092,7 @@ RSpec.describe 'Update object' do
             "collectionsForRegistration":["druid:gg888df4567","druid:bb888gg4444"],
             "hasAdminPolicy":"druid:dd999df4567",
             "hasAgreement":"druid:bc123df4567",
-            "defaultAccess":#{default_access.to_json},
+            "accessTemplate":#{default_access.to_json},
             "roles":[{"name":"dor-apo-manager","members":[{"type":"workgroup","identifier":"sdr:psm-staff"}]}]
           },
           "description":{
@@ -1130,9 +1123,9 @@ RSpec.describe 'Update object' do
     context 'when the request clears out some values' do
       let(:default_access) do
         {
-          access: 'world',
+          view: 'world',
           download: 'world',
-          readLocation: nil,
+          location: nil,
           copyright: nil,
           license: nil,
           useAndReproductionStatement: nil
@@ -1160,7 +1153,7 @@ RSpec.describe 'Update object' do
 
   context 'when an embargo is provided' do
     let(:expected) do
-      Cocina::Models::DRO.new(type: Cocina::Models::Vocab.book,
+      Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.book,
                               label: 'This is my label',
                               version: 1,
                               description: {
@@ -1179,10 +1172,10 @@ RSpec.describe 'Update object' do
                                 isMemberOf: ['druid:xx888xx7777']
                               },
                               access: {
-                                access: 'stanford',
+                                view: 'stanford',
                                 download: 'stanford',
                                 embargo: {
-                                  access: 'world',
+                                  view: 'world',
                                   download: 'world',
                                   releaseDate: '2020-02-29'
                                 }
@@ -1193,10 +1186,10 @@ RSpec.describe 'Update object' do
         {
           "cocinaVersion": "0.0.1",
           "externalIdentifier": "#{druid}",
-          "type":"#{Cocina::Models::Vocab.book}",
+          "type":"#{Cocina::Models::ObjectType.book}",
           "label":"This is my label","version":1,
-          "access":{"access":"stanford","download":"stanford",
-            "embargo":{"access":"world","download":"world","releaseDate":"2020-02-29"}
+          "access":{"view":"stanford","download":"stanford",
+            "embargo":{"view":"world","download":"world","releaseDate":"2020-02-29"}
           },
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{
@@ -1207,7 +1200,7 @@ RSpec.describe 'Update object' do
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
     end
-    let(:access) { 'stanford' }
+    let(:view) { 'stanford' }
     let(:download) { 'stanford' }
 
     before do

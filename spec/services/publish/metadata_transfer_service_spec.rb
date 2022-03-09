@@ -15,7 +15,7 @@ RSpec.describe Publish::MetadataTransferService do
 
   let(:cocina_object) do
     Cocina::Models::DRO.new(externalIdentifier: "druid:#{druid}",
-                            type: Cocina::Models::Vocab.object,
+                            type: Cocina::Models::ObjectType.object,
                             label: 'google download barcode 36105049267078',
                             version: 1,
                             description: description,
@@ -42,7 +42,7 @@ RSpec.describe Publish::MetadataTransferService do
   end
   let(:cocina_collection) do
     Cocina::Models::Collection.new(externalIdentifier: 'druid:xh235dd9059',
-                                   type: Cocina::Models::Vocab.collection,
+                                   type: Cocina::Models::ObjectType.collection,
                                    label: 'some collection object',
                                    version: 1,
                                    description: description,
@@ -120,7 +120,7 @@ RSpec.describe Publish::MetadataTransferService do
           { 'Searchworks' => { 'release' => true }, 'Some_special_place' => { 'release' => true } }
         end
 
-        let(:access) { { access: 'citation-only', download: 'none' } }
+        let(:access) { { view: 'citation-only', download: 'none' } }
 
         it 'identityMetadta, contentMetadata, rightsMetadata, generated dublin core, and public xml' do
           service.publish
@@ -132,12 +132,12 @@ RSpec.describe Publish::MetadataTransferService do
       context 'with a collection object' do
         let(:cocina_object) do
           Cocina::Models::Collection.new(externalIdentifier: 'druid:xh235dd9059',
-                                         type: Cocina::Models::Vocab.collection,
+                                         type: Cocina::Models::ObjectType.collection,
                                          label: 'some collection object',
                                          version: 1,
                                          description: description,
                                          identification: {},
-                                         access: { access: 'world' },
+                                         access: { view: 'world' },
                                          administrative: { hasAdminPolicy: 'druid:fg890hx1234' })
         end
 

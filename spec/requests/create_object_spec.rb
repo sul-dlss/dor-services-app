@@ -7,19 +7,19 @@ RSpec.describe 'Create object' do
     Cocina::Models::AdminPolicy.new({
                                       cocinaVersion: Cocina::Models::VERSION,
                                       externalIdentifier: 'druid:dd999df4567',
-                                      type: Cocina::Models::Vocab.admin_policy,
+                                      type: Cocina::Models::ObjectType.admin_policy,
                                       label: 'Test Admin Policy',
                                       version: 1,
                                       administrative: {
                                         hasAdminPolicy: 'druid:hy787xj5878',
                                         hasAgreement: 'druid:bb033gt0615',
-                                        defaultAccess: default_access
+                                        accessTemplate: default_access
                                       }
                                     })
   end
   let(:default_access) do
     {
-      access: 'world',
+      view: 'world',
       download: 'none',
       copyright: 'All rights reserved unless otherwise indicated.',
       useAndReproductionStatement: 'Property rights reside with the repository...'
@@ -44,13 +44,13 @@ RSpec.describe 'Create object' do
     let(:title) { 'This is my title' }
     let(:expected_label) { label }
     let(:expected_structural) { {} }
-    let(:access) { 'world' }
+    let(:view) { 'world' }
     let(:expected) do
-      Cocina::Models::DRO.new(type: Cocina::Models::Vocab.image,
+      Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.image,
                               label: expected_label,
                               version: 1,
                               access: {
-                                access: access,
+                                view: view,
                                 download: 'none',
                                 copyright: 'All rights reserved unless otherwise indicated.',
                                 useAndReproductionStatement: 'Property rights reside with the repository...'
@@ -60,8 +60,7 @@ RSpec.describe 'Create object' do
                                 purl: 'https://purl.stanford.edu/gg777gg7777'
                               },
                               administrative: {
-                                hasAdminPolicy: 'druid:dd999df4567',
-                                partOfProject: 'Google Books'
+                                hasAdminPolicy: 'druid:dd999df4567'
                               },
                               identification: expected_identification,
                               externalIdentifier: druid,
@@ -71,10 +70,10 @@ RSpec.describe 'Create object' do
       <<~JSON
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"#{Cocina::Models::Vocab.image}",
+          "type":"#{Cocina::Models::ObjectType.image}",
           "label":"#{label}","version":1,
           "access":{
-            "access":"#{access}",
+            "view":"#{view}",
             "download":"none",
             "copyright":"All rights reserved unless otherwise indicated.",
             "useAndReproductionStatement":"Property rights reside with the repository..."
@@ -333,7 +332,7 @@ RSpec.describe 'Create object' do
       let(:file1) do
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab.file,
+          'type' => Cocina::Models::ObjectType.file,
           'filename' => '00001.html',
           'label' => '00001.html',
           'hasMimeType' => 'text/html',
@@ -344,7 +343,7 @@ RSpec.describe 'Create object' do
             'shelve' => false
           },
           'access' => {
-            'access' => 'dark'
+            'view' => 'dark'
           },
           'hasMessageDigests' => [
             {
@@ -362,7 +361,7 @@ RSpec.describe 'Create object' do
       let(:file2) do
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab.file,
+          'type' => Cocina::Models::ObjectType.file,
           'filename' => '00001.jp2',
           'label' => '00001.jp2',
           'hasMimeType' => 'image/jp2',
@@ -372,7 +371,7 @@ RSpec.describe 'Create object' do
             'shelve' => true
           },
           'access' => {
-            'access' => 'stanford',
+            'view' => 'stanford',
             'download' => 'stanford'
           },
           'hasMessageDigests' => []
@@ -382,7 +381,7 @@ RSpec.describe 'Create object' do
       let(:file3) do
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab.file,
+          'type' => Cocina::Models::ObjectType.file,
           'filename' => '00002.html',
           'label' => '00002.html',
           'hasMimeType' => 'text/html',
@@ -392,7 +391,7 @@ RSpec.describe 'Create object' do
             'shelve' => false
           },
           'access' => {
-            'access' => 'dark'
+            'view' => 'dark'
           },
           'hasMessageDigests' => []
         }
@@ -401,7 +400,7 @@ RSpec.describe 'Create object' do
       let(:file4) do
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab.file,
+          'type' => Cocina::Models::ObjectType.file,
           'filename' => '00002.jp2',
           'label' => '00002.jp2',
           'hasMimeType' => 'image/jp2',
@@ -411,7 +410,7 @@ RSpec.describe 'Create object' do
             'shelve' => true
           },
           'access' => {
-            'access' => 'world',
+            'view' => 'world',
             'download' => 'world'
           },
           'hasMessageDigests' => []
@@ -422,13 +421,13 @@ RSpec.describe 'Create object' do
         [
           {
             'version' => 1,
-            'type' => Cocina::Models::Vocab::Resources.file,
+            'type' => Cocina::Models::FileSetType.file,
             'label' => 'Page 1',
             'structural' => { 'contains' => [file1, file2] }
           },
           {
             'version' => 1,
-            'type' => Cocina::Models::Vocab::Resources.file,
+            'type' => Cocina::Models::FileSetType.file,
             'label' => 'Page 2',
             'structural' => { 'contains' => [file3, file4] }
           }
@@ -462,12 +461,12 @@ RSpec.describe 'Create object' do
         let(:expected_structural) do
           { contains: [
             {
-              type: Cocina::Models::Vocab::Resources.file,
+              type: Cocina::Models::FileSetType.file,
               externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/gg777gg7777-123-456-789', label: 'Page 1', version: 1,
               structural: {
                 contains: [
                   {
-                    type: Cocina::Models::Vocab.file,
+                    type: Cocina::Models::ObjectType.file,
                     externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00001.html',
                     label: '00001.html',
                     filename: '00001.html',
@@ -481,43 +480,43 @@ RSpec.describe 'Create object' do
                         type: 'md5', digest: 'e6d52da47a5ade91ae31227b978fb023'
                       }
                     ],
-                    access: { access: 'dark' },
+                    access: { view: 'dark' },
                     administrative: { publish: false, sdrPreserve: true, shelve: false }
                   }, {
-                    type: Cocina::Models::Vocab.file,
+                    type: Cocina::Models::ObjectType.file,
                     externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00001.jp2',
                     label: '00001.jp2',
                     filename: '00001.jp2',
                     version: 1,
                     hasMimeType: 'image/jp2', hasMessageDigests: [],
-                    access: { access: 'stanford', download: 'stanford' },
+                    access: { view: 'stanford', download: 'stanford' },
                     administrative: { publish: true, sdrPreserve: true, shelve: true }
                   }
                 ]
               }
             }, {
-              type: Cocina::Models::Vocab::Resources.file,
+              type: Cocina::Models::FileSetType.file,
               externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/gg777gg7777-123-456-789',
               label: 'Page 2', version: 1,
               structural: {
                 contains: [
                   {
-                    type: Cocina::Models::Vocab.file,
+                    type: Cocina::Models::ObjectType.file,
                     externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00002.html',
                     label: '00002.html', filename: '00002.html',
                     version: 1, hasMimeType: 'text/html',
                     hasMessageDigests: [],
-                    access: { access: 'dark' },
+                    access: { view: 'dark' },
                     administrative: { publish: false, sdrPreserve: true, shelve: false }
                   }, {
-                    type: Cocina::Models::Vocab.file,
+                    type: Cocina::Models::ObjectType.file,
                     externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777-123-456-789/00002.jp2',
                     label: '00002.jp2',
                     filename: '00002.jp2',
                     version: 1,
                     hasMimeType: 'image/jp2',
                     hasMessageDigests: [],
-                    access: { access: 'world', download: 'world' },
+                    access: { view: 'world', download: 'world' },
                     administrative: { publish: true, sdrPreserve: true, shelve: true }
                   }
                 ]
@@ -544,7 +543,7 @@ RSpec.describe 'Create object' do
       end
 
       context 'when access mismatch' do
-        let(:access) { 'dark' }
+        let(:view) { 'dark' }
 
         it 'returns 400' do
           post '/v1/objects',
@@ -576,7 +575,7 @@ RSpec.describe 'Create object' do
       let(:dor_collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }
       let(:collection) do
         Cocina::Models::Collection.new(externalIdentifier: 'druid:xx888xx7777',
-                                       type: Cocina::Models::Vocab.collection,
+                                       type: Cocina::Models::ObjectType.collection,
                                        label: 'Collection of new maps of Africa',
                                        description: {
                                          title: [{ value: 'Collection of new maps of Africa' }],
@@ -620,7 +619,7 @@ RSpec.describe 'Create object' do
         <<~JSON
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
-            "type":"#{Cocina::Models::Vocab.image}",
+            "type":"#{Cocina::Models::ObjectType.image}",
             "label":"#{label}","version":1,
             "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
             "description":{"title":[{"value":"#{title}"}]},
@@ -638,7 +637,7 @@ RSpec.describe 'Create object' do
 
       let(:collection) do
         Cocina::Models::Collection.new(externalIdentifier: 'druid:xx888xx7777',
-                                       type: Cocina::Models::Vocab.collection,
+                                       type: Cocina::Models::ObjectType.collection,
                                        label: 'Collection of new maps of Africa',
                                        version: 1,
                                        cocinaVersion: Cocina::Models::VERSION)
@@ -671,7 +670,7 @@ RSpec.describe 'Create object' do
     let(:title) { 'This is my title' }
     let(:expected_label) { label }
     let(:expected) do
-      Cocina::Models::DRO.new(type: Cocina::Models::Vocab.book,
+      Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.book,
                               label: expected_label,
                               version: 1,
                               description: {
@@ -689,7 +688,7 @@ RSpec.describe 'Create object' do
                                 ]
                               },
                               access: {
-                                access: 'world',
+                                view: 'world',
                                 download: 'world'
                               })
     end
@@ -697,8 +696,8 @@ RSpec.describe 'Create object' do
       <<~JSON
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"#{Cocina::Models::Vocab.book}",
-          "label":"#{label}","version":1,"access":{"access":"world","download":"world"},
+          "type":"#{Cocina::Models::ObjectType.book}",
+          "label":"#{label}","version":1,"access":{"view":"world","download":"world"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"value":"#{title}"}]},
           "identification":{"sourceId":"googlebooks:999999"},
@@ -707,7 +706,7 @@ RSpec.describe 'Create object' do
     end
     let(:default_access) do
       {
-        access: 'world',
+        view: 'world',
         download: 'world'
       }
     end
@@ -728,7 +727,7 @@ RSpec.describe 'Create object' do
 
   context 'when an APO is provided' do
     let(:expected) do
-      Cocina::Models::AdminPolicy.new(type: Cocina::Models::Vocab.admin_policy,
+      Cocina::Models::AdminPolicy.new(type: Cocina::Models::ObjectType.admin_policy,
                                       label: 'This is my label',
                                       version: 1,
                                       description: {
@@ -736,10 +735,10 @@ RSpec.describe 'Create object' do
                                         purl: 'https://purl.stanford.edu/gg777gg7777'
                                       },
                                       administrative: {
-                                        defaultAccess: {
-                                          access: 'location-based',
+                                        accessTemplate: {
+                                          view: 'location-based',
                                           download: 'location-based',
-                                          readLocation: 'ars',
+                                          location: 'ars',
                                           copyright: 'My copyright statement',
                                           license: 'http://opendatacommons.org/licenses/by/1.0/',
                                           useAndReproductionStatement: 'Whatever makes you happy'
@@ -768,13 +767,13 @@ RSpec.describe 'Create object' do
       <<~JSON
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"#{Cocina::Models::Vocab.admin_policy}",
+          "type":"#{Cocina::Models::ObjectType.admin_policy}",
           "label":"This is my label","version":1,
           "administrative":{
-            "defaultAccess":{
-              "access":"location-based",
+            "accessTemplate":{
+              "view":"location-based",
               "download":"location-based",
-              "readLocation":"ars",
+              "location":"ars",
               "copyright":"My copyright statement",
               "license":"http://opendatacommons.org/licenses/by/1.0/",
               "useAndReproductionStatement":"Whatever makes you happy"
@@ -831,7 +830,7 @@ RSpec.describe 'Create object' do
 
   context 'when a Hydrus APO is provided' do
     let(:expected) do
-      Cocina::Models::AdminPolicy.new(type: Cocina::Models::Vocab.admin_policy,
+      Cocina::Models::AdminPolicy.new(type: Cocina::Models::ObjectType.admin_policy,
                                       label: 'Hydrus',
                                       version: 1,
                                       description: {
@@ -839,8 +838,8 @@ RSpec.describe 'Create object' do
                                         purl: 'https://purl.stanford.edu/gg777gg7777'
                                       },
                                       administrative: {
-                                        defaultAccess: {
-                                          access: 'world',
+                                        accessTemplate: {
+                                          view: 'world',
                                           download: 'world'
                                         },
                                         hasAdminPolicy: 'druid:dd999df4567',
@@ -854,13 +853,13 @@ RSpec.describe 'Create object' do
       <<~JSON
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"#{Cocina::Models::Vocab.admin_policy}",
+          "type":"#{Cocina::Models::ObjectType.admin_policy}",
           "label":"Hydrus","version":1,
           "administrative":{
             "hasAdminPolicy":"druid:dd999df4567",
             "hasAgreement":"druid:bc753qt7345",
-            "defaultAccess":{
-              "access":"world",
+            "accessTemplate":{
+              "view":"world",
               "download":"world"
             }}
           }
@@ -887,7 +886,7 @@ RSpec.describe 'Create object' do
 
   context 'when an embargo is provided' do
     let(:expected) do
-      Cocina::Models::DRO.new(type: Cocina::Models::Vocab.book,
+      Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.book,
                               label: 'This is my label',
                               version: 1,
                               description: {
@@ -905,19 +904,19 @@ RSpec.describe 'Create object' do
                                 ]
                               },
                               access: {
-                                access: 'stanford',
+                                view: 'stanford',
                                 download: 'none',
                                 controlledDigitalLending: false,
-                                embargo: { access: 'world', download: 'world', releaseDate: '2020-02-29' }
+                                embargo: { view: 'world', download: 'world', releaseDate: '2020-02-29' }
                               })
     end
     let(:data) do
       <<~JSON
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"#{Cocina::Models::Vocab.book}",
-          "label":"This is my label","version":1,"access":{"access":"stanford","download":"none","controlledDigitalLending":false,
-          "embargo":{"access":"world","download":"world","releaseDate":"2020-02-29"}},
+          "type":"#{Cocina::Models::ObjectType.book}",
+          "label":"This is my label","version":1,"access":{"view":"stanford","download":"none","controlledDigitalLending":false,
+          "embargo":{"view":"world","download":"world","releaseDate":"2020-02-29"}},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"value":"This is my title"}]},
           "identification":{"sourceId":"googlebooks:999999"},
@@ -926,7 +925,7 @@ RSpec.describe 'Create object' do
     end
     let(:default_access) do
       {
-        access: 'stanford',
+        view: 'stanford',
         download: 'none',
         controlledDigitalLending: false
       }
@@ -948,7 +947,7 @@ RSpec.describe 'Create object' do
 
   context 'when location access is specified' do
     let(:expected) do
-      Cocina::Models::DRO.new(type: Cocina::Models::Vocab.book,
+      Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.book,
                               label: 'This is my label',
                               version: 1,
                               description: {
@@ -966,9 +965,9 @@ RSpec.describe 'Create object' do
                                 ]
                               },
                               access: {
-                                access: 'location-based',
+                                view: 'location-based',
                                 download: 'location-based',
-                                readLocation: 'm&m'
+                                location: 'm&m'
                               })
     end
     let(:data) do
@@ -976,9 +975,9 @@ RSpec.describe 'Create object' do
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"#{Cocina::Models::Vocab.book}",
+          "type":"#{Cocina::Models::ObjectType.book}",
           "label":"This is my label","version":1,
-          "access":{"access":"location-based","download":"location-based","readLocation":"m&m"},
+          "access":{"view":"location-based","download":"location-based","location":"m&m"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"value":"This is my title"}]},
           "identification":{"sourceId":"googlebooks:999999"},
@@ -987,9 +986,9 @@ RSpec.describe 'Create object' do
     end
     let(:default_access) do
       {
-        access: 'location-based',
+        view: 'location-based',
         download: 'location-based',
-        readLocation: 'm&m'
+        location: 'm&m'
       }
     end
 
@@ -1009,7 +1008,7 @@ RSpec.describe 'Create object' do
 
   context 'when no-download access is specified' do
     let(:expected) do
-      Cocina::Models::DRO.new(type: Cocina::Models::Vocab.book,
+      Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.book,
                               label: 'This is my label',
                               version: 1,
                               description: {
@@ -1027,7 +1026,7 @@ RSpec.describe 'Create object' do
                                 ]
                               },
                               access: {
-                                access: 'world',
+                                view: 'world',
                                 download: 'none'
                               })
     end
@@ -1035,9 +1034,9 @@ RSpec.describe 'Create object' do
       <<~JSON
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"#{Cocina::Models::Vocab.book}",
+          "type":"#{Cocina::Models::ObjectType.book}",
           "label":"This is my label","version":1,
-          "access":{"access":"world","download":"none"},
+          "access":{"view":"world","download":"none"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"value":"This is my title"}]},
           "identification":{"sourceId":"googlebooks:999999"},
@@ -1046,7 +1045,7 @@ RSpec.describe 'Create object' do
     end
     let(:default_access) do
       {
-        access: 'world',
+        view: 'world',
         download: 'none'
       }
     end
@@ -1073,7 +1072,7 @@ RSpec.describe 'Create object' do
 
     context 'when structural is provided' do
       let(:expected) do
-        Cocina::Models::DRO.new(type: Cocina::Models::Vocab.object,
+        Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.object,
                                 label: 'This is my label',
                                 version: 1,
                                 administrative: { hasAdminPolicy: 'druid:dd999df4567' },
@@ -1092,7 +1091,7 @@ RSpec.describe 'Create object' do
         <<~JSON
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
-            "type":"#{Cocina::Models::Vocab.object}",
+            "type":"#{Cocina::Models::ObjectType.object}",
             "label":"This is my label","version":1,"access":{},
             "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
             "identification":{"sourceId":"googlebooks:999999"},
@@ -1101,7 +1100,7 @@ RSpec.describe 'Create object' do
       end
       let(:default_access) do
         {
-          access: 'dark',
+          view: 'dark',
           download: 'none'
         }
       end
@@ -1118,7 +1117,7 @@ RSpec.describe 'Create object' do
 
     context 'when structural is not provided' do
       let(:expected) do
-        Cocina::Models::DRO.new(type: Cocina::Models::Vocab.object,
+        Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.object,
                                 label: 'This is my label',
                                 version: 1,
                                 administrative: { hasAdminPolicy: 'druid:dd999df4567' },
@@ -1136,7 +1135,7 @@ RSpec.describe 'Create object' do
         <<~JSON
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
-            "type":"#{Cocina::Models::Vocab.object}",
+            "type":"#{Cocina::Models::ObjectType.object}",
             "label":"This is my label","version":1,"access":{},
             "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
             "identification":{"sourceId":"googlebooks:999999"}}
@@ -1144,7 +1143,7 @@ RSpec.describe 'Create object' do
       end
       let(:default_access) do
         {
-          access: 'dark',
+          view: 'dark',
           download: 'none'
         }
       end
@@ -1161,7 +1160,7 @@ RSpec.describe 'Create object' do
 
     context 'when access is not provided' do
       let(:expected) do
-        Cocina::Models::DRO.new(type: Cocina::Models::Vocab.object,
+        Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.object,
                                 label: 'This is my label',
                                 version: 1,
                                 access: {},
@@ -1181,7 +1180,7 @@ RSpec.describe 'Create object' do
         <<~JSON
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
-            "type":"#{Cocina::Models::Vocab.object}",
+            "type":"#{Cocina::Models::ObjectType.object}",
             "label":"This is my label","version":1,
             "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
             "access":{},
@@ -1191,7 +1190,7 @@ RSpec.describe 'Create object' do
       end
       let(:default_access) do
         {
-          access: 'dark',
+          view: 'dark',
           download: 'none'
         }
       end
@@ -1214,7 +1213,7 @@ RSpec.describe 'Create object' do
     end
 
     let(:expected) do
-      Cocina::Models::DRO.new(type: Cocina::Models::Vocab.webarchive_binary,
+      Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.webarchive_binary,
                               label: 'This is my label',
                               version: 1,
                               administrative: { hasAdminPolicy: 'druid:dd999df4567' },
@@ -1233,7 +1232,7 @@ RSpec.describe 'Create object' do
       <<~JSON
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"#{Cocina::Models::Vocab.webarchive_binary}",
+          "type":"#{Cocina::Models::ObjectType.webarchive_binary}",
           "label":"This is my label","version":1,"access":{},
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "identification":{"sourceId":"warc:999999"},
@@ -1242,7 +1241,7 @@ RSpec.describe 'Create object' do
     end
     let(:default_access) do
       {
-        access: 'dark',
+        view: 'dark',
         download: 'none'
       }
     end
@@ -1265,7 +1264,7 @@ RSpec.describe 'Create object' do
     end
 
     let(:expected) do
-      Cocina::Models::DRO.new(type: Cocina::Models::Vocab.object,
+      Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.object,
                               label: 'This is my label',
                               version: 1,
                               administrative: { hasAdminPolicy: 'druid:dd999df4567' },
@@ -1284,7 +1283,7 @@ RSpec.describe 'Create object' do
       <<~JSON
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"#{Cocina::Models::Vocab.object}",
+          "type":"#{Cocina::Models::ObjectType.object}",
           "label":"This is my label","version":1,"access":{},
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "identification":{"sourceId":"warc:999999"},
@@ -1293,7 +1292,7 @@ RSpec.describe 'Create object' do
     end
     let(:default_access) do
       {
-        access: 'dark',
+        view: 'dark',
         download: 'none'
       }
     end

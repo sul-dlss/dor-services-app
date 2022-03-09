@@ -5,8 +5,8 @@ require 'rails_helper'
 RSpec.describe Cocina::ValidateDarkService do
   let(:validator) { described_class.new(item) }
 
-  let(:access) { 'dark' }
-  let(:file_access) { 'dark' }
+  let(:view) { 'dark' }
+  let(:file_view) { 'dark' }
   let(:publish) { false }
   let(:shelve) { false }
   let(:mime_type) { 'text/plain' }
@@ -15,7 +15,7 @@ RSpec.describe Cocina::ValidateDarkService do
     Cocina::Models::DRO.new(
       externalIdentifier: 'druid:bc123df4567',
       label: 'The Structure of Scientific Revolutions',
-      type: Cocina::Models::Vocab.book,
+      type: Cocina::Models::ObjectType.book,
       version: 1,
       description: {
         title: [{ value: 'The Structure of Scientific Revolutions' }],
@@ -24,21 +24,21 @@ RSpec.describe Cocina::ValidateDarkService do
       administrative: {
         hasAdminPolicy: 'druid:df123cd4567'
       },
-      access: { access: access, download: 'none' },
+      access: { view: view, download: 'none' },
       structural: {
         contains: [
           {
             externalIdentifier: 'bc123df4567_1',
             label: 'Fileset 1',
-            type: Cocina::Models::Vocab::Resources.file,
+            type: Cocina::Models::FileSetType.file,
             version: 1,
             structural: {
               contains: [
                 { externalIdentifier: 'bc123df4567_1',
                   label: 'Page 1',
-                  type: Cocina::Models::Vocab.file,
+                  type: Cocina::Models::ObjectType.file,
                   version: 1,
-                  access: { access: file_access, download: 'none' },
+                  access: { view: file_view, download: 'none' },
                   administrative: {
                     publish: publish,
                     shelve: shelve,
@@ -62,7 +62,7 @@ RSpec.describe Cocina::ValidateDarkService do
   end
 
   context 'when not dark' do
-    let(:access) { 'world' }
+    let(:view) { 'world' }
 
     it 'is valid' do
       expect(validator.valid?).to be true
@@ -101,13 +101,13 @@ RSpec.describe Cocina::ValidateDarkService do
       Cocina::Models::Collection.new(
         externalIdentifier: 'druid:bc123df4567',
         label: 'The Structure of Scientific Revolutions',
-        type: Cocina::Models::Vocab.collection,
+        type: Cocina::Models::ObjectType.collection,
         description: {
           title: [{ value: 'The Structure of Scientific Revolutions' }],
           purl: 'https://purl.stanford.edu/bc123df4567'
         },
         version: 1,
-        access: { access: access }
+        access: { view: view }
       )
     end
 

@@ -9,7 +9,7 @@ RSpec.describe Notifications::ObjectUpdated do
   let(:created_at) { '04 Feb 2022' }
   let(:modified_at) { '04 Feb 2022' }
   let(:administrative) do
-    instance_double(Cocina::Models::Administrative, partOfProject: 'h2')
+    instance_double(Cocina::Models::RequestAdministrative, partOfProject: 'h2')
   end
 
   let(:channel) { instance_double(Notifications::RabbitChannel, topic: topic) }
@@ -40,11 +40,11 @@ RSpec.describe Notifications::ObjectUpdated do
                                         administrative: {
                                           hasAdminPolicy: 'druid:gg123vx9393',
                                           hasAgreement: 'druid:bb008zm4587',
-                                          defaultAccess: { access: 'world', download: 'world' }
+                                          accessTemplate: { view: 'world', download: 'world' }
                                         },
                                         version: 1,
                                         label: 'just an apo',
-                                        type: Cocina::Models::Vocab.admin_policy)
+                                        type: Cocina::Models::ObjectType.admin_policy)
       end
 
       before do

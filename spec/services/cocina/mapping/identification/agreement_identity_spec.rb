@@ -177,7 +177,7 @@ RSpec.describe 'Fedora Agreement Object identityMetadata <--> Cocina Identificat
   # NOTE: access tested in mapping/access/dro_access_spec.rb
   let(:access_props) do
     {
-      access: 'dark',
+      view: 'dark',
       download: 'none'
     }
   end
@@ -226,7 +226,7 @@ RSpec.describe 'Fedora Agreement Object identityMetadata <--> Cocina Identificat
       let(:cocina_props) do
         {
           externalIdentifier: agreement_id,
-          type: Cocina::Models::Vocab.agreement,
+          type: Cocina::Models::ObjectType.agreement,
           label: label,
           version: 1,
           identification: {

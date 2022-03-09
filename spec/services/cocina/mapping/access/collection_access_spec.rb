@@ -88,7 +88,7 @@ RSpec.describe 'Fedora collection rights <--> Cocina Collection access mappings'
 
       let(:cocina_access_props) do
         {
-          access: 'world'
+          view: 'world'
         }
       end
     end
@@ -115,7 +115,7 @@ RSpec.describe 'Fedora collection rights <--> Cocina Collection access mappings'
 
       let(:cocina_access_props) do
         {
-          access: 'dark'
+          view: 'dark'
         }
       end
     end
@@ -167,7 +167,7 @@ RSpec.describe 'Fedora collection rights <--> Cocina Collection access mappings'
 
         let(:cocina_access_props) do
           {
-            access: 'dark',
+            view: 'dark',
             license: 'https://opendatacommons.org/licenses/by/1-0/'
           }
         end
@@ -219,7 +219,7 @@ RSpec.describe 'Fedora collection rights <--> Cocina Collection access mappings'
 
         let(:cocina_access_props) do
           {
-            access: 'world',
+            view: 'world',
             license: 'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode'
           }
         end
@@ -253,7 +253,7 @@ RSpec.describe 'Fedora collection rights <--> Cocina Collection access mappings'
           <<~XML
             <rightsMetadata>
               <use>
-                <license>http://cocina.sul.stanford.edu/licenses/none</license>
+                <license>https://cocina.sul.stanford.edu/licenses/none</license>
               </use>
               <access type="discover">
                 <machine>
@@ -271,8 +271,8 @@ RSpec.describe 'Fedora collection rights <--> Cocina Collection access mappings'
 
         let(:cocina_access_props) do
           {
-            access: 'dark',
-            license: 'http://cocina.sul.stanford.edu/licenses/none'
+            view: 'dark',
+            license: 'https://cocina.sul.stanford.edu/licenses/none'
           }
         end
       end
@@ -323,7 +323,7 @@ RSpec.describe 'Fedora collection rights <--> Cocina Collection access mappings'
 
       let(:cocina_access_props) do
         {
-          access: 'dark',
+          view: 'dark',
           useAndReproductionStatement: 'User agrees that, where applicable, stuff.'
         }
       end
@@ -354,7 +354,7 @@ RSpec.describe 'Fedora collection rights <--> Cocina Collection access mappings'
 
       let(:cocina_access_props) do
         {
-          access: 'world',
+          view: 'world',
           copyright: '©2021 Wingnut and Vinsky publishing'
         }
       end

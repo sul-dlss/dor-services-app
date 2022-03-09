@@ -77,9 +77,9 @@ class EmbargoReleaseService
   end
 
   def access_props_for(cocina_object)
-    # Copy access > embargo > useAndReproductionStatement, access, download, readLocation, controlledDigitalLending to access >
+    # Copy access > embargo > useAndReproductionStatement, view, download, location, controlledDigitalLending to access >
     # Remove access > embargo
-    access_props = cocina_object.access.to_h.except(:access, :download, :readLocation, :controlledDigitalLending, :useAndReproductionStatement)
+    access_props = cocina_object.access.to_h.except(:view, :download, :location, :controlledDigitalLending, :useAndReproductionStatement)
     access_props.merge!(access_props[:embargo].except(:releaseDate))
     # Remove embargo
     access_props.delete(:embargo)
@@ -90,8 +90,8 @@ class EmbargoReleaseService
     return nil if cocina_object.structural.nil?
 
     # Apply access to files
-    file_access_props = access_props.slice(:access, :download, :readLocation, :controlledDigitalLending)
-    file_access_props[:access] = 'dark' if file_access_props[:access] == 'citation-only'
+    file_access_props = access_props.slice(:view, :download, :location, :controlledDigitalLending)
+    file_access_props[:view] = 'dark' if file_access_props[:view] == 'citation-only'
 
     structural_props = cocina_object.structural.to_h
     Array(structural_props[:contains]).each do |file_set_props|

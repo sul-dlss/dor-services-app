@@ -48,14 +48,14 @@ RSpec.describe Cocina::ObjectUpdater do
 
     let(:orig_cocina_attrs) do
       {
-        type: Cocina::Models::Vocab.admin_policy,
+        type: Cocina::Models::ObjectType.admin_policy,
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
         version: 1,
         administrative: {
           hasAdminPolicy: 'druid:dd999df4567',
           hasAgreement: 'druid:jt959wc5586',
-          defaultAccess: { access: 'world', download: 'world' }
+          accessTemplate: { view: 'world', download: 'world' }
         },
         description: { title: [{ value: 'orig title' }], purl: 'https://purl.stanford.edu/bc123df4567' }
       }
@@ -202,7 +202,7 @@ RSpec.describe Cocina::ObjectUpdater do
 
     let(:orig_cocina_attrs) do
       {
-        type: Cocina::Models::Vocab.collection,
+        type: Cocina::Models::ObjectType.collection,
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
         version: 1,
@@ -210,7 +210,7 @@ RSpec.describe Cocina::ObjectUpdater do
           title: [{ value: 'orig label' }],
           purl: 'https://purl.stanford.edu/bc123df4567'
         },
-        access: { access: 'world' }
+        access: { view: 'world' }
       }
     end
 
@@ -317,7 +317,7 @@ RSpec.describe Cocina::ObjectUpdater do
         let(:cocina_attrs) do
           orig_cocina_attrs.tap do |attrs|
             attrs[:access] = {
-              access: 'dark'
+              view: 'dark'
             }
           end
         end
@@ -401,7 +401,7 @@ RSpec.describe Cocina::ObjectUpdater do
 
     let(:orig_cocina_attrs) do
       {
-        type: Cocina::Models::Vocab.media,
+        type: Cocina::Models::ObjectType.media,
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
         description: {
@@ -592,13 +592,13 @@ RSpec.describe Cocina::ObjectUpdater do
           attrs[:structural] = {
             contains: [
               {
-                'type' => Cocina::Models::Vocab::Resources.file,
+                'type' => Cocina::Models::FileSetType.file,
                 'externalIdentifier' => 'https://cocina.sul.stanford.edu/fileSet/e4c2b834-90ce-4be8-b9fa-445df89f5f10',
                 'label' => '', 'version' => 1,
                 'structural' => {
                   'contains' => [
                     {
-                      'type' => Cocina::Models::Vocab.file,
+                      'type' => Cocina::Models::ObjectType.file,
                       'externalIdentifier' => 'https://cocina.sul.stanford.edu/file/8ee2d21b-9183-4df6-9813-c0a104b329ce',
                       'label' => 'sul-logo.png',
                       'filename' => 'sul-logo.png',
@@ -607,7 +607,7 @@ RSpec.describe Cocina::ObjectUpdater do
                       'hasMimeType' => 'image/png',
                       'hasMessageDigests' => [{ 'type' => 'sha1', 'digest' => 'b5f3221455c8994afb85214576bc2905d6b15418' },
                                               { 'type' => 'md5', 'digest' => '7142ce948827c16120cc9e19b05acd49' }],
-                      'access' => { 'access' => 'dark', 'download' => 'none' },
+                      'access' => { 'view' => 'dark', 'download' => 'none' },
                       'administrative' => {
                         'publish' => true,
                         'sdrPreserve' => true,
@@ -641,7 +641,7 @@ RSpec.describe Cocina::ObjectUpdater do
         let(:cocina_attrs) do
           orig_cocina_attrs.tap do |attrs|
             attrs[:access] = {
-              access: 'stanford',
+              view: 'stanford',
               download: 'stanford'
             }
           end
@@ -672,7 +672,7 @@ RSpec.describe Cocina::ObjectUpdater do
       context 'when type has changed to object' do
         let(:cocina_attrs) do
           orig_cocina_attrs.tap do |attrs|
-            attrs[:type] = Cocina::Models::Vocab.object
+            attrs[:type] = Cocina::Models::ObjectType.object
           end
         end
 
@@ -754,7 +754,7 @@ RSpec.describe Cocina::ObjectUpdater do
 
     let(:orig_cocina_attrs) do
       {
-        type: Cocina::Models::Vocab.media,
+        type: Cocina::Models::ObjectType.media,
         externalIdentifier: 'druid:bc123df4567',
         label: 'orig label',
         description: {

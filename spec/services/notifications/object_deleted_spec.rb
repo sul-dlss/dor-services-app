@@ -6,9 +6,6 @@ RSpec.describe Notifications::ObjectDeleted do
   subject(:publish) { described_class.publish(model: model, deleted_at: deleted_at) }
 
   let(:deleted_at) { Time.zone.now }
-  let(:administrative) do
-    instance_double(Cocina::Models::Administrative, partOfProject: 'h2')
-  end
 
   let(:channel) { instance_double(Notifications::RabbitChannel, topic: topic) }
   let(:topic) { instance_double(Bunny::Exchange, publish: true) }
@@ -21,14 +18,19 @@ RSpec.describe Notifications::ObjectDeleted do
     end
 
     context 'when called with a DRO' do
+      before do
+        allow(AdministrativeTags).to receive(:project).and_return(['h2'])
+      end
+
       let(:model) do
         instance_double(Cocina::Models::DRO,
-                        externalIdentifier: 'druid:123', administrative: administrative)
+                        externalIdentifier: 'druid:123')
       end
 
       it 'is successful' do
         publish
         expect(topic).to have_received(:publish).with(message, routing_key: 'h2')
+        expect(AdministrativeTags).to have_received(:project).with(identifier: 'druid:123')
       end
     end
 
@@ -50,12 +52,12 @@ RSpec.describe Notifications::ObjectDeleted do
     context 'when called with a DRO' do
       let(:model) do
         instance_double(Cocina::Models::DRO,
-                        externalIdentifier: 'druid:123', administrative: administrative)
+                        externalIdentifier: 'druid:123')
       end
 
       it 'does not receive a message' do
         publish
-        expect(topic).not_to have_received(:publish).with(message, routing_key: 'h2')
+        expect(topic).not_to have_received(:publish)
       end
     end
   end

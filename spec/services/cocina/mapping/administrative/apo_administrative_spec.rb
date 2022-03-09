@@ -35,7 +35,7 @@ RSpec.shared_examples 'valid APO mappings' do
     {
       administrative: cocina.deep_dup,
       externalIdentifier: apo_druid,
-      type: Cocina::Models::Vocab.admin_policy,
+      type: Cocina::Models::ObjectType.admin_policy,
       label: apo_label,
       version: 1,
       description: {
@@ -88,7 +88,7 @@ RSpec.shared_examples 'valid APO mappings' do
       end
 
       before do
-        Cocina::ToFedora::DefaultRights.write(orig_fedora_apo_mock.defaultObjectRights, actual_cocina_apo_admin.defaultAccess)
+        Cocina::ToFedora::DefaultRights.write(orig_fedora_apo_mock.defaultObjectRights, actual_cocina_apo_admin.accessTemplate)
       end
 
       it 'roundtrips to expected defaultObjectRights.xml' do
@@ -220,8 +220,8 @@ RSpec.describe 'APO administrative mappings' do
       let(:agreement_druid) { 'druid:yr951qr4199' }
       let(:cocina) do
         {
-          defaultAccess: {
-            access: 'world',
+          accessTemplate: {
+            view: 'world',
             download: 'world',
             useAndReproductionStatement: 'Blah blah'
           },
@@ -303,8 +303,8 @@ RSpec.describe 'APO administrative mappings' do
       let(:agreement_druid) { 'druid:wn586st0695' }
       let(:cocina) do
         {
-          defaultAccess: {
-            access: 'world',
+          accessTemplate: {
+            view: 'world',
             download: 'world'
           },
           registrationWorkflow: [
@@ -393,8 +393,8 @@ RSpec.describe 'APO administrative mappings' do
       let(:agreement_druid) { 'druid:zh747vq3919' }
       let(:cocina) do
         {
-          defaultAccess: {
-            access: 'world',
+          accessTemplate: {
+            view: 'world',
             download: 'none',
             copyright: 'HOOMANS',
             useAndReproductionStatement: 'Use at will.'
@@ -517,8 +517,8 @@ RSpec.describe 'APO administrative mappings' do
       let(:agreement_druid) { 'druid:xf765cv5573' }
       let(:cocina) do
         {
-          defaultAccess: {
-            access: 'world',
+          accessTemplate: {
+            view: 'world',
             download: 'none',
             license: 'https://creativecommons.org/licenses/by-nc/3.0/legalcode',
             useAndReproductionStatement: 'Use at will.'
@@ -665,8 +665,8 @@ RSpec.describe 'APO administrative mappings' do
       let(:agreement_druid) { 'druid:xf765cv5573' }
       let(:cocina) do
         {
-          defaultAccess: {
-            access: 'world',
+          accessTemplate: {
+            view: 'world',
             download: 'none',
             license: 'https://creativecommons.org/licenses/by-nc/3.0/legalcode',
             useAndReproductionStatement: 'Use at will.'
@@ -788,8 +788,8 @@ RSpec.describe 'APO administrative mappings' do
       let(:agreement_druid) { 'druid:dd327qr3670' }
       let(:cocina) do
         {
-          defaultAccess: {
-            access: 'dark',
+          accessTemplate: {
+            view: 'dark',
             download: 'none',
             license: 'https://creativecommons.org/licenses/by-nc/3.0/legalcode',
             useAndReproductionStatement: 'Use at will.'
@@ -906,8 +906,8 @@ RSpec.describe 'APO administrative mappings' do
       let(:agreement_druid) { 'druid:dd327qr3670' }
       let(:cocina) do
         {
-          defaultAccess: {
-            access: 'dark',
+          accessTemplate: {
+            view: 'dark',
             download: 'none',
             license: 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
           },
@@ -999,8 +999,8 @@ RSpec.describe 'APO administrative mappings' do
       let(:agreement_druid) { 'druid:yr951qr4199' }
       let(:cocina) do
         {
-          defaultAccess: {
-            access: 'world',
+          accessTemplate: {
+            view: 'world',
             download: 'world',
             useAndReproductionStatement: 'Blah blah'
           },

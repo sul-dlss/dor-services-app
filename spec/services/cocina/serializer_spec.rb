@@ -8,15 +8,15 @@ RSpec.describe Cocina::Serializer do
   let(:dro) do
     Cocina::Models.build(
       {
-        'type' => Cocina::Models::Vocab.object,
+        'type' => Cocina::Models::ObjectType.object,
         'externalIdentifier' => 'druid:ft609gr4031',
         'label' => 'SUL Logo for golden_wonder_millet',
         'version' => 1,
         'access' => {
-          'access' => 'citation-only',
+          'view' => 'citation-only',
           'download' => 'none',
           'embargo' => {
-            'access' => 'world',
+            'view' => 'world',
             'download' => 'world',
             'releaseDate' => DateTime.parse('2022-02-25T00:00:00.000+00:00')
           },
@@ -24,8 +24,7 @@ RSpec.describe Cocina::Serializer do
           'license' => 'https://creativecommons.org/publicdomain/zero/1.0/legalcode'
         },
         'administrative' => {
-          'hasAdminPolicy' => 'druid:zw306xn5593',
-          'partOfProject' => 'H2'
+          'hasAdminPolicy' => 'druid:zw306xn5593'
         },
         'description' => {
           'title' => [
@@ -36,13 +35,13 @@ RSpec.describe Cocina::Serializer do
         'structural' => {
           'contains' => [
             {
-              'type' => Cocina::Models::Vocab::Resources.file,
+              'type' => Cocina::Models::FileSetType.file,
               'externalIdentifier' => 'https://cocina.sul.stanford.edu/fileSet/e4c2b834-90ce-4be8-b9fa-445df89f5f10',
               'label' => '', 'version' => 1,
               'structural' => {
                 'contains' => [
                   {
-                    'type' => Cocina::Models::Vocab.file,
+                    'type' => Cocina::Models::ObjectType.file,
                     'externalIdentifier' => 'https://cocina.sul.stanford.edu/file/8ee2d21b-9183-4df6-9813-c0a104b329ce',
                     'label' => 'sul-logo.png',
                     'filename' => 'sul-logo.png',
@@ -50,7 +49,7 @@ RSpec.describe Cocina::Serializer do
                     'version' => 1,
                     'hasMimeType' => 'image/png',
                     'hasMessageDigests' => [{ 'type' => 'sha1', 'digest' => 'b5f3221455c8994afb85214576bc2905d6b15418' }, { 'type' => 'md5', 'digest' => '7142ce948827c16120cc9e19b05acd49' }],
-                    'access' => { 'access' => 'world', 'download' => 'world' },
+                    'access' => { 'view' => 'world', 'download' => 'world' },
                     'administrative' => {
                       'publish' => true,
                       'sdrPreserve' => true,
@@ -69,15 +68,15 @@ RSpec.describe Cocina::Serializer do
   let(:json) do
     {
       cocinaVersion: Cocina::Models::VERSION,
-      type: Cocina::Models::Vocab.object,
+      type: Cocina::Models::ObjectType.object,
       externalIdentifier: 'druid:ft609gr4031',
       label: 'SUL Logo for golden_wonder_millet',
       version: 1,
       access: {
-        access: 'citation-only',
+        view: 'citation-only',
         download: 'none',
         embargo: {
-          access: 'world',
+          view: 'world',
           download: 'world',
           releaseDate: '2022-02-25T00:00:00.000+00:00'
         },
@@ -86,8 +85,7 @@ RSpec.describe Cocina::Serializer do
       },
       administrative: {
         hasAdminPolicy: 'druid:zw306xn5593',
-        releaseTags: [],
-        partOfProject: 'H2'
+        releaseTags: []
       },
       description: {
         title: [{
@@ -113,13 +111,13 @@ RSpec.describe Cocina::Serializer do
       },
       structural: {
         contains: [{
-          type: Cocina::Models::Vocab::Resources.file,
+          type: Cocina::Models::FileSetType.file,
           externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/e4c2b834-90ce-4be8-b9fa-445df89f5f10',
           label: '',
           version: 1,
           structural: {
             contains: [{
-              type: Cocina::Models::Vocab.file,
+              type: Cocina::Models::ObjectType.file,
               externalIdentifier: 'https://cocina.sul.stanford.edu/file/8ee2d21b-9183-4df6-9813-c0a104b329ce',
               label: 'sul-logo.png',
               filename: 'sul-logo.png',
@@ -134,7 +132,7 @@ RSpec.describe Cocina::Serializer do
                 digest: '7142ce948827c16120cc9e19b05acd49'
               }],
               access: {
-                access: 'world',
+                view: 'world',
                 download: 'world'
               },
               administrative: {

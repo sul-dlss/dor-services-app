@@ -8,14 +8,14 @@ RSpec.describe Collection do
     Cocina::Models::Collection.new({
                                      cocinaVersion: '0.0.1',
                                      externalIdentifier: druid,
-                                     type: Cocina::Models::Vocab.collection,
+                                     type: Cocina::Models::ObjectType.collection,
                                      label: 'Test Collection',
                                      version: 1,
                                      description: {
                                        title: [{ value: 'Test Collection' }],
                                        purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
                                      },
-                                     access: { access: 'world' }
+                                     access: { view: 'world' }
                                    })
   end
 
@@ -23,10 +23,10 @@ RSpec.describe Collection do
     Cocina::Models::Collection.new({
                                      cocinaVersion: '0.0.1',
                                      externalIdentifier: druid,
-                                     type: Cocina::Models::Vocab.collection,
+                                     type: Cocina::Models::ObjectType.collection,
                                      label: 'Test Collection',
                                      version: 1,
-                                     access: { access: 'world' },
+                                     access: { view: 'world' },
                                      description: {
                                        title: [{ value: 'Test Collection' }],
                                        purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"

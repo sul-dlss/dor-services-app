@@ -17,7 +17,7 @@ module Cocina
           license: Access::License.find(rights_metadata_ds),
           copyright: Access::Copyright.find(rights_metadata_ds),
           useAndReproductionStatement: Access::UseStatement.find(rights_metadata_ds),
-          access: access
+          view: view
         }.compact
       end
 
@@ -25,9 +25,9 @@ module Cocina
 
       attr_reader :rights_metadata_ds
 
-      def access
+      def view
         access_props = Access::AccessRights.props(rights_metadata_ds.dra_object, rights_xml: rights_metadata_ds.to_xml)
-        access_props[:access] == 'dark' ? 'dark' : 'world'
+        access_props[:view] == 'dark' ? 'dark' : 'world'
       end
     end
   end
