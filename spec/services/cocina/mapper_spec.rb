@@ -46,7 +46,7 @@ RSpec.describe Cocina::Mapper do
 
       it 'builds the object with type manuscript' do
         expect(cocina_model).to be_kind_of Cocina::Models::DRO
-        expect(cocina_model.type).to eq Cocina::Models::Vocab.manuscript
+        expect(cocina_model.type).to eq Cocina::Models::ObjectType.manuscript
       end
     end
 
@@ -59,7 +59,7 @@ RSpec.describe Cocina::Mapper do
 
       it 'builds the object with type book' do
         expect(cocina_model).to be_kind_of Cocina::Models::DRO
-        expect(cocina_model.type).to eq Cocina::Models::Vocab.book
+        expect(cocina_model.type).to eq Cocina::Models::ObjectType.book
       end
     end
 
@@ -68,7 +68,7 @@ RSpec.describe Cocina::Mapper do
 
       it 'builds the object with type three_dimensional' do
         expect(cocina_model).to be_kind_of Cocina::Models::DRO
-        expect(cocina_model.type).to eq Cocina::Models::Vocab.three_dimensional
+        expect(cocina_model.type).to eq Cocina::Models::ObjectType.three_dimensional
       end
     end
 
@@ -104,7 +104,7 @@ RSpec.describe Cocina::Mapper do
 
       it 'builds the object with type image' do
         expect(cocina_model).to be_kind_of Cocina::Models::DRO
-        expect(cocina_model.type).to eq Cocina::Models::Vocab.image
+        expect(cocina_model.type).to eq Cocina::Models::ObjectType.image
         expect(cocina_model.structural.contains.first).to be_file_set
         expect(fileSet1.label).to eq 'Image 1'
       end
@@ -198,7 +198,7 @@ RSpec.describe Cocina::Mapper do
 
     it 'builds the object with type object, a sourceId, and correct admin policy' do
       expect(cocina_model).to be_kind_of Cocina::Models::DRO
-      expect(cocina_model.type).to eq Cocina::Models::Vocab.object
+      expect(cocina_model.type).to eq Cocina::Models::ObjectType.object
 
       expect(cocina_model.administrative.hasAdminPolicy).to eq 'druid:sc012gz0974'
       expect(cocina_model.identification.sourceId).to eq 'dissertationid:0000005037'
@@ -258,7 +258,7 @@ RSpec.describe Cocina::Mapper do
 
       it 'builds the object with filesets and files' do
         expect(cocina_model).to be_kind_of Cocina::Models::DRO
-        expect(cocina_model.type).to eq Cocina::Models::Vocab.object
+        expect(cocina_model.type).to eq Cocina::Models::ObjectType.object
 
         expect(cocina_model.administrative.hasAdminPolicy).to eq 'druid:sc012gz0974'
 

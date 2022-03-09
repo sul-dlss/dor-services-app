@@ -9,13 +9,13 @@ RSpec.describe Cocina::ApoExistenceValidator do
   let(:apo) do
     Cocina::Models::AdminPolicy.new({ cocinaVersion: '0.0.1',
                                       externalIdentifier: apo_druid,
-                                      type: Cocina::Models::Vocab.admin_policy,
+                                      type: Cocina::Models::ObjectType.admin_policy,
                                       label: 'Test Admin Policy',
                                       version: 1,
                                       administrative: {
                                         hasAdminPolicy: 'druid:hy787xj5878',
                                         hasAgreement: 'druid:bb033gt0615',
-                                        defaultAccess: { access: 'world', download: 'world' }
+                                        accessTemplate: { view: 'world', download: 'world' }
                                       },
                                       description: {
                                         title: [{ value: 'Test Admin Policy' }],
@@ -32,7 +32,7 @@ RSpec.describe Cocina::ApoExistenceValidator do
       Cocina::Models::DRO.new(
         externalIdentifier: 'druid:bc123df4567',
         label: 'The Structure of Scientific Revolutions',
-        type: Cocina::Models::Vocab.book,
+        type: Cocina::Models::ObjectType.book,
         version: 1,
         description: {
           title: [{ value: 'The Structure of Scientific Revolutions' }],
@@ -55,7 +55,7 @@ RSpec.describe Cocina::ApoExistenceValidator do
       Cocina::Models::DRO.new(
         externalIdentifier: 'druid:bc123df4567',
         label: 'The Structure of Scientific Revolutions',
-        type: Cocina::Models::Vocab.book,
+        type: Cocina::Models::ObjectType.book,
         version: 1,
         description: {
           title: [{ value: 'The Structure of Scientific Revolutions' }],
@@ -78,7 +78,7 @@ RSpec.describe Cocina::ApoExistenceValidator do
     let(:collection_druid) { 'druid:cc111cc1111' }
     let(:collection) do
       Cocina::Models::Collection.new(externalIdentifier: collection_druid,
-                                     type: Cocina::Models::Vocab.collection,
+                                     type: Cocina::Models::ObjectType.collection,
                                      label: 'Collection of new maps of Africa',
                                      description: {
                                        title: [{ value: 'Collection of new maps of Africa' }],
@@ -92,7 +92,7 @@ RSpec.describe Cocina::ApoExistenceValidator do
       Cocina::Models::DRO.new(
         externalIdentifier: 'druid:bc123df4567',
         label: 'The Structure of Scientific Revolutions',
-        type: Cocina::Models::Vocab.book,
+        type: Cocina::Models::ObjectType.book,
         version: 1,
         description: {
           title: [{ value: 'The Structure of Scientific Revolutions' }],

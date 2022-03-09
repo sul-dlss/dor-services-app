@@ -8,11 +8,11 @@ RSpec.describe CocinaMigrationService do
     let(:fedora_object) { instance_double(Dor::Item, pid: druid, create_date: '2021-05-24T21:55:33.337Z', modified_date: '2022-05-24T21:55:33.337Z') }
 
     let(:cocina_object) do
-      Cocina::Models::DRO.new(type: Cocina::Models::Vocab.image,
+      Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.image,
                               label: 'Test image',
                               version: 1,
                               access: {
-                                access: 'world',
+                                view: 'world',
                                 download: 'none',
                                 copyright: 'All rights reserved unless otherwise indicated.',
                                 useAndReproductionStatement: 'Property rights reside with the repository...'
@@ -22,8 +22,7 @@ RSpec.describe CocinaMigrationService do
                                 purl: 'https://purl.stanford.edu/hv992ry2431'
                               },
                               administrative: {
-                                hasAdminPolicy: 'druid:dd999df4567',
-                                partOfProject: 'Google Books'
+                                hasAdminPolicy: 'druid:dd999df4567'
                               },
                               identification: {
                                 sourceId: 'googlebooks:999999',

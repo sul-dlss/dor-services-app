@@ -10,7 +10,7 @@ RSpec.describe UpdateDoiMetadataJob, type: :job do
   let(:cocina_item) do
     Cocina::Models.build(
       'externalIdentifier' => 'druid:bc123df4567',
-      'type' => Cocina::Models::Vocab.image,
+      'type' => Cocina::Models::ObjectType.image,
       'version' => 1,
       'label' => 'testing',
       'access' => {},

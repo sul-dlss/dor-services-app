@@ -9,14 +9,14 @@ RSpec.describe Dro do
     Cocina::Models::DRO.new({
                               cocinaVersion: '0.0.1',
                               externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.book,
+                              type: Cocina::Models::ObjectType.book,
                               label: 'Test DRO',
                               version: 1,
                               description: {
                                 title: [{ value: 'Test DRO' }],
                                 purl: 'https://purl.stanford.edu/xz456jk0987'
                               },
-                              access: { access: 'world', download: 'world' },
+                              access: { view: 'world', download: 'world' },
                               administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
                             })
   end
@@ -25,10 +25,10 @@ RSpec.describe Dro do
     Cocina::Models::DRO.new({
                               cocinaVersion: '0.0.1',
                               externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.book,
+                              type: Cocina::Models::ObjectType.book,
                               label: 'Test DRO',
                               version: 1,
-                              access: { access: 'world', download: 'world' },
+                              access: { view: 'world', download: 'world' },
                               administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
                               description: {
                                 title: [{ value: 'Test DRO' }],
@@ -37,12 +37,12 @@ RSpec.describe Dro do
                               identification: { sourceId: 'googlebooks:999999' },
                               structural: { contains: [
                                 {
-                                  type: Cocina::Models::Vocab::Resources.file,
+                                  type: Cocina::Models::FileSetType.file,
                                   externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/123-456-789', label: 'Page 1', version: 1,
                                   structural: {
                                     contains: [
                                       {
-                                        type: Cocina::Models::Vocab.file,
+                                        type: Cocina::Models::ObjectType.file,
                                         externalIdentifier: 'https://cocina.sul.stanford.edu/file/123-456-789',
                                         label: '00001.html',
                                         filename: '00001.html',
@@ -57,7 +57,7 @@ RSpec.describe Dro do
                                             type: 'md5', digest: 'e6d52da47a5ade91ae31227b978fb023'
                                           }
                                         ],
-                                        access: { access: 'dark' },
+                                        access: { view: 'dark' },
                                         administrative: { publish: false, sdrPreserve: true, shelve: false }
                                       }
                                     ]

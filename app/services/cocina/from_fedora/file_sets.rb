@@ -52,12 +52,12 @@ module Cocina
       def resource_type(resource_node)
         val = resource_node['type']&.underscore
         val = 'three_dimensional' if val == '3d'
-        if val && Cocina::Models::Vocab::Resources.respond_to?(val)
-          Cocina::Models::Vocab::Resources.public_send(val)
+        if val && Cocina::Models::FileSetType.respond_to?(val)
+          Cocina::Models::FileSetType.public_send(val)
         else
           # skip sending alerts for Project Phoenix (old Google books) which are known to have bad resource types
           notifier.error("Invalid resource type: '#{val}'") unless ignore_resource_type_errors
-          Cocina::Models::Vocab::Resources.file
+          Cocina::Models::FileSetType.file
         end
       end
 
@@ -80,7 +80,7 @@ module Cocina
           use = node.xpath('@role').text.presence
           {
             externalIdentifier: IdGenerator.generate_or_existing_file_id(file_id: node['id'], resource_id: resource_id, druid: druid),
-            type: Cocina::Models::Vocab.file,
+            type: Cocina::Models::ObjectType.file,
             label: node['id'],
             filename: node['id'],
             size: node['size'].to_i,
@@ -113,7 +113,7 @@ module Cocina
         rights = Access::AccessRights.props(rights_object, rights_xml: rights_metadata.ng_xml.to_xml)
 
         # File rights can't be citation-only, so if they are make dark.
-        rights[:access] = 'dark' if rights[:access] == 'citation-only'
+        rights[:view] = 'dark' if rights[:view] == 'citation-only'
         rights
       end
     end

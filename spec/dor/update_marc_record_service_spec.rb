@@ -66,7 +66,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
   let(:attachment1) do
     {
-      type: Cocina::Models::Vocab.file,
+      type: Cocina::Models::ObjectType.file,
       externalIdentifier: 'wt183gy6220_1',
       label: 'Image 1',
       filename: 'wt183gy6220_00_0001.jp2',
@@ -85,7 +85,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   let(:structural_metadata) do
     {
       contains: [{
-        type: Cocina::Models::Vocab::Resources.image,
+        type: Cocina::Models::FileSetType.image,
         externalIdentifier: 'wt183gy6220',
         label: 'Image 1',
         version: 1,
@@ -98,21 +98,21 @@ RSpec.describe Dor::UpdateMarcRecordService do
   end
   let(:access_word) do
     {
-      access: 'world',
+      view: 'world',
       download: 'world'
     }
   end
   let(:access_stanford_only) do
     {
-      access: 'stanford',
+      view: 'stanford',
       download: 'stanford'
     }
   end
   let(:access_location) do
     {
-      access: 'location-based',
+      view: 'location-based',
       download: 'location-based',
-      readLocation: 'spec'
+      location: 'spec'
     }
   end
 
@@ -125,7 +125,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     let(:instance) { described_class.new(cocina_object, thumbnail_service: thumbnail_service) }
     let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
@@ -148,7 +148,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   context 'for a druid without a catkey' do
     let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
@@ -166,7 +166,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   context 'for a druid with a catkey' do
     let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
@@ -185,7 +185,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   describe '.push_symphony_records' do
     let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
@@ -206,7 +206,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
     let(:collection) do
       Cocina::Models::Collection.new(externalIdentifier: collection_druid,
-                                     type: Cocina::Models::Vocab.collection,
+                                     type: Cocina::Models::ObjectType.collection,
                                      label: collection_label,
                                      version: 1,
                                      description: descriptive_metadata_basic,
@@ -222,7 +222,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context "when the druid object doesn't have catkey or previous catkeys" do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -240,7 +240,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'when an item object has a catkey' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -261,7 +261,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'when an object is stanford only and has a catkey' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -281,7 +281,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'when an object has both previous and current catkeys' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -319,7 +319,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -336,12 +336,12 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'when an collection object has a catkey' do
       let(:access) do
         {
-          access: 'world'
+          view: 'world'
         }
       end
       let(:cocina_object) do
         Cocina::Models::Collection.new(externalIdentifier: collection_druid,
-                                       type: Cocina::Models::Vocab.collection,
+                                       type: Cocina::Models::ObjectType.collection,
                                        label: collection_label,
                                        version: 1,
                                        description: descriptive_metadata_basic,
@@ -358,12 +358,12 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'when an collection object does not include idenfitication' do
       let(:access) do
         {
-          access: 'world'
+          view: 'world'
         }
       end
       let(:cocina_object) do
         Cocina::Models::Collection.new(externalIdentifier: collection_druid,
-                                       type: Cocina::Models::Vocab.collection,
+                                       type: Cocina::Models::ObjectType.collection,
                                        label: collection_label,
                                        version: 1,
                                        description: descriptive_metadata_basic,
@@ -379,12 +379,12 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'when an collection object includes empty idenfitication' do
       let(:access) do
         {
-          access: 'world'
+          view: 'world'
         }
       end
       let(:cocina_object) do
         Cocina::Models::Collection.new(externalIdentifier: collection_druid,
-                                       type: Cocina::Models::Vocab.collection,
+                                       type: Cocina::Models::ObjectType.collection,
                                        label: collection_label,
                                        version: 1,
                                        description: descriptive_metadata_basic,
@@ -401,18 +401,18 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'when an APO object is passed' do
       let(:access) do
         {
-          access: 'world'
+          view: 'world'
         }
       end
       let(:cocina_object) do
         Cocina::Models::AdminPolicy.new(externalIdentifier: collection_druid,
-                                        type: Cocina::Models::Vocab.admin_policy,
+                                        type: Cocina::Models::ObjectType.admin_policy,
                                         label: collection_label,
                                         version: 1,
                                         administrative: {
                                           hasAdminPolicy: apo_druid,
                                           hasAgreement: apo_druid,
-                                          defaultAccess: { access: 'world', download: 'world' }
+                                          accessTemplate: { view: 'world', download: 'world' }
                                         })
       end
 
@@ -428,7 +428,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     let(:fixtures) { './spec/fixtures' }
     let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
@@ -514,7 +514,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'with rights metadata world' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -532,7 +532,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'for a stanford only object' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -550,7 +550,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'for a location restricted object' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -569,7 +569,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   describe '.get_856_cons' do
     let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
@@ -587,7 +587,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   describe '.get_1st_indicator' do
     let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
@@ -606,7 +606,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'with a non born digital APO' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -624,7 +624,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'with a born digital APO' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -643,7 +643,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   describe '.get_u_field' do
     let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
@@ -661,7 +661,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   describe '.get_x1_sdrpurl_marker' do
     let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
@@ -680,7 +680,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     let(:structural_metadata_no_collection) do
       {
         contains: [{
-          type: Cocina::Models::Vocab::Resources.image,
+          type: Cocina::Models::FileSetType.image,
           externalIdentifier: 'wt183gy6220',
           label: 'Image 1',
           version: 1,
@@ -692,7 +692,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     end
     let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
@@ -703,7 +703,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     end
     let(:collection) do
       Cocina::Models::Collection.new(externalIdentifier: collection_druid,
-                                     type: Cocina::Models::Vocab.collection,
+                                     type: Cocina::Models::ObjectType.collection,
                                      label: collection_label,
                                      description: descriptive_metadata_basic,
                                      version: 1,
@@ -724,7 +724,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'for an object with a collection' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -745,7 +745,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'with descMetadata without part information' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -786,7 +786,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: description,
@@ -827,7 +827,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: description,
@@ -875,7 +875,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: description,
@@ -916,7 +916,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: description,
@@ -961,7 +961,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: description,
@@ -1016,7 +1016,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: description,
@@ -1071,7 +1071,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: description,
@@ -1093,7 +1093,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'world rights' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -1109,7 +1109,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'stanford-only rights' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -1125,13 +1125,13 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'CDL rights' do
       let(:access) do
         {
-          access: 'world',
+          view: 'world',
           download: 'stanford'
         }
       end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -1147,7 +1147,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'location rights' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -1163,13 +1163,13 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'citation rights' do
       let(:access) do
         {
-          access: 'world',
+          view: 'world',
           download: 'none'
         }
       end
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -1185,7 +1185,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'no rights' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -1202,7 +1202,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   describe 'Released to Searchworks' do
     let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
@@ -1273,7 +1273,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'when not a member of any collection' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -1290,7 +1290,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'when a member of a collection' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -1311,7 +1311,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
     let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
@@ -1324,7 +1324,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'with valid structural metadata' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -1342,7 +1342,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'with no structural metadata' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -1363,7 +1363,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'when previous_catkeys exists' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
@@ -1381,7 +1381,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     context 'when previous_catkeys are empty' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,

@@ -6,15 +6,15 @@ module Cocina
     class ProcessTag
       # TODO: add Software
       MAPPING = {
-        Cocina::Models::Vocab.image => 'Image',
-        Cocina::Models::Vocab.three_dimensional => '3D',
-        Cocina::Models::Vocab.map => 'Map',
-        Cocina::Models::Vocab.media => 'Media',
-        Cocina::Models::Vocab.manuscript => 'Manuscript',
-        Cocina::Models::Vocab.document => 'Document',
-        Cocina::Models::Vocab.book => 'Book',
-        Cocina::Models::Vocab.object => 'File',
-        Cocina::Models::Vocab.webarchive_seed => 'Webarchive Seed'
+        Cocina::Models::ObjectType.image => 'Image',
+        Cocina::Models::ObjectType.three_dimensional => '3D',
+        Cocina::Models::ObjectType.map => 'Map',
+        Cocina::Models::ObjectType.media => 'Media',
+        Cocina::Models::ObjectType.manuscript => 'Manuscript',
+        Cocina::Models::ObjectType.document => 'Document',
+        Cocina::Models::ObjectType.book => 'Book',
+        Cocina::Models::ObjectType.object => 'File',
+        Cocina::Models::ObjectType.webarchive_seed => 'Webarchive Seed'
       }.freeze
 
       def self.map(type, direction)
@@ -22,7 +22,7 @@ module Cocina
 
         return unless tag
 
-        if type == Cocina::Models::Vocab.book
+        if type == Cocina::Models::ObjectType.book
           short_dir = direction == 'right-to-left' ? 'rtl' : 'ltr'
           tag += " (#{short_dir})"
         end

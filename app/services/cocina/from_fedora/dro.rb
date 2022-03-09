@@ -15,31 +15,31 @@ module Cocina
       # @return [String] fedora_item's type
       # rubocop:disable Metrics/CyclomaticComplexity
       def self.dro_type(fedora_item)
-        return Cocina::Models::Vocab.agreement if fedora_item.is_a? Dor::Agreement
+        return Cocina::Models::ObjectType.agreement if fedora_item.is_a? Dor::Agreement
 
         case fedora_item.contentMetadata.contentType.first
         when 'image'
           if /^Manuscript/.match?(AdministrativeTags.content_type(identifier: fedora_item.pid).first)
-            Cocina::Models::Vocab.manuscript
+            Cocina::Models::ObjectType.manuscript
           else
-            Cocina::Models::Vocab.image
+            Cocina::Models::ObjectType.image
           end
         when 'book'
-          Cocina::Models::Vocab.book
+          Cocina::Models::ObjectType.book
         when 'media'
-          Cocina::Models::Vocab.media
+          Cocina::Models::ObjectType.media
         when 'map'
-          Cocina::Models::Vocab.map
+          Cocina::Models::ObjectType.map
         when 'geo'
-          Cocina::Models::Vocab.geo
+          Cocina::Models::ObjectType.geo
         when 'webarchive-seed'
-          Cocina::Models::Vocab.webarchive_seed
+          Cocina::Models::ObjectType.webarchive_seed
         when '3d'
-          Cocina::Models::Vocab.three_dimensional
+          Cocina::Models::ObjectType.three_dimensional
         when 'document'
-          Cocina::Models::Vocab.document
+          Cocina::Models::ObjectType.document
         when 'file', nil
-          Cocina::Models::Vocab.object
+          Cocina::Models::ObjectType.object
         else
           raise "Unknown content type #{fedora_item.contentMetadata.contentType.first}"
         end
@@ -74,7 +74,7 @@ module Cocina
                                                       label: cocina_label,
                                                       notifier: notifier)
           props[:description] = description
-          props[:geographic] = { iso19139: fedora_item.geoMetadata.content } if type == Cocina::Models::Vocab.geo
+          props[:geographic] = { iso19139: fedora_item.geoMetadata.content } if type == Cocina::Models::ObjectType.geo
           identification = FromFedora::Identification.props(fedora_item)
           props[:identification] = identification unless identification.empty?
         end

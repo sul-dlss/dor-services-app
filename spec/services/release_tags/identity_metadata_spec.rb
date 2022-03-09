@@ -8,7 +8,7 @@ RSpec.describe ReleaseTags::IdentityMetadata do
   let(:apo_id) { 'druid:qv648vd4392' }
   let(:cocina_item) do
     Cocina::Models::DRO.new(externalIdentifier: pid,
-                            type: Cocina::Models::Vocab.object,
+                            type: Cocina::Models::ObjectType.object,
                             label: 'Bryar 250 Trans-American: July 9-10',
                             version: 1,
                             description: {
@@ -142,7 +142,7 @@ RSpec.describe ReleaseTags::IdentityMetadata do
     context 'for an item that does not have any release tags' do
       let(:cocina_item) do
         Cocina::Models::DRO.new(externalIdentifier: pid,
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: 'Bryar 250 Trans-American: July 9-10',
                                 version: 1,
                                 description: {
@@ -181,7 +181,7 @@ RSpec.describe ReleaseTags::IdentityMetadata do
                                        purl: "https://purl.stanford.edu/#{collection_pid.delete_prefix('druid:')}"
                                      },
                                      access: {},
-                                     type: Cocina::Models::Vocab.collection)
+                                     type: Cocina::Models::ObjectType.collection)
     end
     let(:collection_release_tags) do
       {

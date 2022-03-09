@@ -7,14 +7,14 @@ RSpec.describe 'Create object' do
     Cocina::Models::AdminPolicy.new({
                                       cocinaVersion: '0.0.1',
                                       externalIdentifier: 'druid:dd999df4567',
-                                      type: Cocina::Models::Vocab.admin_policy,
+                                      type: Cocina::Models::ObjectType.admin_policy,
                                       label: 'Test Admin Policy',
                                       version: 1,
                                       administrative: {
                                         hasAdminPolicy: 'druid:hy787xj5878',
                                         hasAgreement: 'druid:bb033gt0615',
-                                        defaultAccess: {
-                                          access: 'world',
+                                        accessTemplate: {
+                                          view: 'world',
                                           download: 'world'
                                         }
                                       }
@@ -38,8 +38,8 @@ RSpec.describe 'Create object' do
       <<~JSON
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"#{Cocina::Models::Vocab.collection}",
-          "label":"#{label}","version":1,"access":{"access":"world"},
+          "type":"#{Cocina::Models::ObjectType.collection}",
+          "label":"#{label}","version":1,"access":{"view":"world"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"value":"#{title}"}]},
           "identification":#{identification.to_json}}
@@ -47,7 +47,7 @@ RSpec.describe 'Create object' do
     end
 
     let(:expected) do
-      Cocina::Models::Collection.new(type: Cocina::Models::Vocab.collection,
+      Cocina::Models::Collection.new(type: Cocina::Models::ObjectType.collection,
                                      label: expected_label,
                                      version: 1,
                                      description: {
@@ -60,7 +60,7 @@ RSpec.describe 'Create object' do
                                      identification: identification,
                                      externalIdentifier: druid,
                                      access: {
-                                       access: 'world'
+                                       view: 'world'
                                      })
     end
 
@@ -101,7 +101,7 @@ RSpec.describe 'Create object' do
 
   context 'when the catkey is not provided and save is successful' do
     let(:expected) do
-      Cocina::Models::Collection.new(type: Cocina::Models::Vocab.collection,
+      Cocina::Models::Collection.new(type: Cocina::Models::ObjectType.collection,
                                      label: expected_label,
                                      version: 1,
                                      description: {
@@ -112,12 +112,11 @@ RSpec.describe 'Create object' do
                                        sourceId: 'hydrus:collection-456'
                                      },
                                      administrative: {
-                                       hasAdminPolicy: 'druid:dd999df4567',
-                                       partOfProject: 'Hydrus'
+                                       hasAdminPolicy: 'druid:dd999df4567'
                                      },
                                      externalIdentifier: druid,
                                      access: {
-                                       access: 'world'
+                                       view: 'world'
                                      })
     end
 
@@ -125,8 +124,8 @@ RSpec.describe 'Create object' do
       <<~JSON
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"#{Cocina::Models::Vocab.collection}",
-          "label":"#{label}","version":1,"access":{"access":"world"},
+          "type":"#{Cocina::Models::ObjectType.collection}",
+          "label":"#{label}","version":1,"access":{"view":"world"},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Hydrus"},
           "identification":{"sourceId":"hydrus:collection-456"},
           "description":{"title":[{"value":"#{title}"}]}
@@ -149,10 +148,10 @@ RSpec.describe 'Create object' do
       <<~JSON
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"#{Cocina::Models::Vocab.collection}",
+          "type":"#{Cocina::Models::ObjectType.collection}",
           "label":"#{label}",
           "version":1,
-          "access":{"access":"world"},
+          "access":{"view":"world"},
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "description":{
             "title":[{"value":"#{title}"}],
@@ -162,10 +161,10 @@ RSpec.describe 'Create object' do
       JSON
     end
     let(:expected) do
-      Cocina::Models::Collection.new(type: Cocina::Models::Vocab.collection,
+      Cocina::Models::Collection.new(type: Cocina::Models::ObjectType.collection,
                                      label: expected_label,
                                      version: 1,
-                                     access: { access: 'world' },
+                                     access: { view: 'world' },
                                      administrative: {
                                        hasAdminPolicy: 'druid:dd999df4567'
                                      },
@@ -192,19 +191,19 @@ RSpec.describe 'Create object' do
       <<~JSON
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"#{Cocina::Models::Vocab.collection}",
+          "type":"#{Cocina::Models::ObjectType.collection}",
           "label":"#{label}",
           "version":1,
-          "access":{ "access": "world" },
+          "access":{ "view": "world" },
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"}
           }
       JSON
     end
     let(:expected) do
-      Cocina::Models::Collection.new(type: Cocina::Models::Vocab.collection,
+      Cocina::Models::Collection.new(type: Cocina::Models::ObjectType.collection,
                                      label: expected_label,
                                      version: 1,
-                                     access: { access: 'world' },
+                                     access: { view: 'world' },
                                      administrative: {
                                        hasAdminPolicy: 'druid:dd999df4567'
                                      },

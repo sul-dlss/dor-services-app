@@ -8,7 +8,7 @@ module Cocina
       # If that is not found, try the open_data_commons/creative_commons accessor
       class License
         # Only used in some legacy ETDs and not actually permitted per the Project Chimera docs.
-        NONE_LICENSE_URI = 'http://cocina.sul.stanford.edu/licenses/none'
+        NONE_LICENSE_URI = 'https://cocina.sul.stanford.edu/licenses/none'
         OPENDATA_URIS = {
           'pddl' => 'https://opendatacommons.org/licenses/pddl/1-0/',
           'odc-by' => 'https://opendatacommons.org/licenses/by/1-0/',

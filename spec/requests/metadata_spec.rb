@@ -12,7 +12,7 @@ RSpec.describe 'Display metadata' do
   end
   let(:cocina_object) do
     Cocina::Models::DRO.new(externalIdentifier: 'druid:mk420bs7601',
-                            type: Cocina::Models::Vocab.object,
+                            type: Cocina::Models::ObjectType.object,
                             label: 'A generic label',
                             version: 1,
                             description: description,
@@ -105,7 +105,7 @@ RSpec.describe 'Display metadata' do
     end
     let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: 'druid:mk420bs7601',
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: 'A generic label',
                               version: 1,
                               description: description,

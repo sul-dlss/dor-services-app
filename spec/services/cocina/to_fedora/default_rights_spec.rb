@@ -16,8 +16,8 @@ RSpec.describe Cocina::ToFedora::DefaultRights do
 
     context 'when license is not present' do
       let(:default_access) do
-        Cocina::Models::AdminPolicyDefaultAccess.new(
-          access: 'world',
+        Cocina::Models::AdminPolicyAccessTemplate.new(
+          view: 'world',
           download: 'world'
         )
       end
@@ -30,8 +30,8 @@ RSpec.describe Cocina::ToFedora::DefaultRights do
 
     context 'when license is public domain' do
       let(:default_access) do
-        Cocina::Models::AdminPolicyDefaultAccess.new(
-          access: 'world',
+        Cocina::Models::AdminPolicyAccessTemplate.new(
+          view: 'world',
           download: 'world',
           license: 'https://creativecommons.org/publicdomain/mark/1.0/'
         )
@@ -45,8 +45,8 @@ RSpec.describe Cocina::ToFedora::DefaultRights do
 
     context 'when license is an open data license' do
       let(:default_access) do
-        Cocina::Models::AdminPolicyDefaultAccess.new(
-          access: 'world',
+        Cocina::Models::AdminPolicyAccessTemplate.new(
+          view: 'world',
           download: 'world',
           license: 'http://opendatacommons.org/licenses/pddl/1.0/'
         )

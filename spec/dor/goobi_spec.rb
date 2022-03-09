@@ -10,7 +10,7 @@ RSpec.describe Dor::Goobi do
     {
       externalIdentifier: druid,
       version: 1,
-      type: Cocina::Models::Vocab.document,
+      type: Cocina::Models::ObjectType.document,
       label: 'Object Title & A Special character',
       description: {
         title: [{ value: 'Object Title & A Special character' }],
@@ -76,7 +76,7 @@ RSpec.describe Dor::Goobi do
       Cocina::Models::Collection.new({
                                        externalIdentifier: collection_druid,
                                        version: 1,
-                                       type: Cocina::Models::Vocab.collection,
+                                       type: Cocina::Models::ObjectType.collection,
                                        label: 'Collection label',
                                        description: {
                                          title: [{ value: 'Collection label' }],

@@ -8,7 +8,7 @@ RSpec.describe ResetContentMetadataService do
     Cocina::Models::DRO.new(
       externalIdentifier: item_druid,
       version: 1,
-      type: Cocina::Models::Vocab.object,
+      type: Cocina::Models::ObjectType.object,
       label: 'Dummy DRO',
       description: {
         title: [{ value: 'Dummy DRO' }],
@@ -47,14 +47,14 @@ RSpec.describe ResetContentMetadataService do
               {
                 externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/234-567-890',
                 version: 1,
-                type: Cocina::Models::Vocab::Resources.file,
+                type: Cocina::Models::FileSetType.file,
                 label: 'Page 1',
                 structural: {
                   contains: [
                     {
                       externalIdentifier: 'https://cocina.sul.stanford.edu/file/223-456-789',
                       version: 1,
-                      type: Cocina::Models::Vocab.file,
+                      type: Cocina::Models::ObjectType.file,
                       filename: '00001.jp2',
                       label: '00001.jp2',
                       hasMimeType: 'image/jp2',
@@ -64,7 +64,7 @@ RSpec.describe ResetContentMetadataService do
                         shelve: true
                       },
                       access: {
-                        access: 'stanford',
+                        view: 'stanford',
                         download: 'stanford'
                       },
                       hasMessageDigests: []
@@ -184,14 +184,14 @@ RSpec.describe ResetContentMetadataService do
               {
                 externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/234-567-890',
                 version: 1,
-                type: Cocina::Models::Vocab::Resources.file,
+                type: Cocina::Models::FileSetType.file,
                 label: 'Page 1',
                 structural: {
                   contains: [
                     {
                       externalIdentifier: 'https://cocina.sul.stanford.edu/file/223-456-789',
                       version: 1,
-                      type: Cocina::Models::Vocab.file,
+                      type: Cocina::Models::ObjectType.file,
                       filename: '00001.jp2',
                       label: '00001.jp2',
                       hasMimeType: 'image/jp2',
@@ -201,7 +201,7 @@ RSpec.describe ResetContentMetadataService do
                         shelve: true
                       },
                       access: {
-                        access: 'stanford',
+                        view: 'stanford',
                         download: 'stanford'
                       },
                       hasMessageDigests: []
@@ -226,14 +226,14 @@ RSpec.describe ResetContentMetadataService do
                 {
                   externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/234-567-890',
                   version: 1,
-                  type: Cocina::Models::Vocab::Resources.file,
+                  type: Cocina::Models::FileSetType.file,
                   label: 'Page 1',
                   structural: {
                     contains: [
                       {
                         externalIdentifier: 'https://cocina.sul.stanford.edu/file/223-456-789',
                         version: 1,
-                        type: Cocina::Models::Vocab.file,
+                        type: Cocina::Models::ObjectType.file,
                         filename: '00001.jp2',
                         label: '00001.jp2',
                         hasMimeType: 'image/jp2',
@@ -243,7 +243,7 @@ RSpec.describe ResetContentMetadataService do
                           shelve: true
                         },
                         access: {
-                          access: 'stanford',
+                          view: 'stanford',
                           download: 'stanford'
                         },
                         hasMessageDigests: []

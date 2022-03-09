@@ -13,7 +13,7 @@ class ApplyAdminPolicyDefaults
     'stanford' => 'world',
     'world' => 'world'
   }.freeze
-  COLLECTION_ACCESS_PROPS = %i[access copyright license useAndReproductionStatement].freeze
+  COLLECTION_ACCESS_PROPS = %i[view copyright license useAndReproductionStatement].freeze
   FILE_ACCESS = {
     'citation-only' => 'dark',
     'dark' => 'dark',
@@ -21,7 +21,7 @@ class ApplyAdminPolicyDefaults
     'stanford' => 'stanford',
     'world' => 'world'
   }.freeze
-  FILE_ACCESS_PROPS = %i[access controlledDigitalLending download readLocation].freeze
+  FILE_ACCESS_PROPS = %i[view controlledDigitalLending download location].freeze
 
   def self.apply(cocina_object:)
     new(cocina_object: cocina_object).apply
@@ -91,7 +91,7 @@ class ApplyAdminPolicyDefaults
     updated_file_access = access_properties_for(type: :file)
 
     { access: updated_file_access }.tap do |props|
-      next if updated_file_access[:access] != 'dark'
+      next if updated_file_access[:view] != 'dark'
 
       props[:administrative] = file.administrative.new(shelve: false)
     end
@@ -108,9 +108,9 @@ class ApplyAdminPolicyDefaults
   def access_properties_for(type:)
     case type
     when :file
-      default_access_from_apo.slice(*FILE_ACCESS_PROPS).tap { |access| access[:access] = FILE_ACCESS[access[:access]] }
+      default_access_from_apo.slice(*FILE_ACCESS_PROPS).tap { |access| access[:view] = FILE_ACCESS[access[:view]] }
     when :collection
-      default_access_from_apo.slice(*COLLECTION_ACCESS_PROPS).tap { |access| access[:access] = COLLECTION_ACCESS[access[:access]] }
+      default_access_from_apo.slice(*COLLECTION_ACCESS_PROPS).tap { |access| access[:view] = COLLECTION_ACCESS[access[:view]] }
     when :dro
       default_access_from_apo
     end
@@ -120,7 +120,7 @@ class ApplyAdminPolicyDefaults
     CocinaObjectStore
       .find(@cocina_object.administrative.hasAdminPolicy)
       .administrative
-      .defaultAccess
+      .accessTemplate
       .to_h
       .with_indifferent_access
   end

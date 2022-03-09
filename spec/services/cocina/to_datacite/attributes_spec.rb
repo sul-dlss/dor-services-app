@@ -19,7 +19,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   context 'with a minimal description' do
     let(:cocina_item) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: label,
                               version: 1,
                               description: {
@@ -62,7 +62,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   context 'with an embargo' do
     let(:cocina_item) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: label,
                               version: 1,
                               description: {
@@ -109,7 +109,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   context 'with a fully described object' do
     let(:cocina_item) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: label,
                               version: 1,
                               description: {
@@ -364,7 +364,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   context 'when cocina type is collection' do
     let(:cocina_item) do
       Cocina::Models::Collection.new(externalIdentifier: druid,
-                                     type: Cocina::Models::Vocab.collection,
+                                     type: Cocina::Models::ObjectType.collection,
                                      label: label,
                                      version: 1,
                                      description: {
@@ -386,7 +386,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   context 'when cocina type is APO' do
     let(:cocina_item) do
       Cocina::Models::AdminPolicy.new(externalIdentifier: druid,
-                                      type: Cocina::Models::Vocab.admin_policy,
+                                      type: Cocina::Models::ObjectType.admin_policy,
                                       label: label,
                                       version: 1,
                                       description: {
@@ -396,7 +396,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                       administrative: {
                                         hasAdminPolicy: apo_druid,
                                         hasAgreement: 'druid:bb423sd6663',
-                                        defaultAccess: { access: 'world', download: 'world' }
+                                        accessTemplate: { view: 'world', download: 'world' }
                                       })
     end
 

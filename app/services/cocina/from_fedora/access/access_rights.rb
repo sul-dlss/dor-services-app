@@ -16,11 +16,11 @@ module Cocina
 
         def props
           {
-            access: access_rights,
+            view: view_rights,
             download: download,
-            readLocation: location
+            location: location
           }.compact.tap do |h|
-            h[:controlledDigitalLending] = controlled_digital_lending? if h[:access] == 'stanford' && h[:download] == 'none'
+            h[:controlledDigitalLending] = controlled_digital_lending? if h[:view] == 'stanford' && h[:download] == 'none'
           end
         end
 
@@ -40,7 +40,7 @@ module Cocina
           return 'location-based' if location_based_download?
 
           # If no specific download rules have been found yet and there are no explicit download rules set, set download to access rights
-          return access_rights if no_world_or_group_download_rules?
+          return view_rights if no_world_or_group_download_rules?
 
           # Finally: the only remaining case is when rights are stanford + world (no-download), so grant download to stanford
           return 'stanford' if stanford_world_no_download?
@@ -132,8 +132,8 @@ module Cocina
         # Map values from dor-services
         # https://github.com/sul-dlss/dor-services/blob/b9b4768eac560ef99b4a8d03475ea31fe4ae2367/lib/dor/datastreams/rights_metadata_ds.rb#L221-L228
         # to https://github.com/sul-dlss/cocina-models/blob/main/docs/maps/DRO.json#L102
-        def access_rights
-          @access_rights ||=
+        def view_rights
+          @view_rights ||=
             if world?
               'world'
             elsif stanford? || controlled_digital_lending?

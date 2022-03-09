@@ -6,12 +6,12 @@ RSpec.describe ItemQueryService do
   subject(:service) { described_class }
 
   let(:druid) { 'druid:bc123df4567' }
-  let(:access) { { access: 'world' } }
+  let(:access) { { view: 'world' } }
   let(:cocina_object) do
     Cocina::Models::DRO.new(
       externalIdentifier: druid,
       version: 1,
-      type: Cocina::Models::Vocab.object,
+      type: Cocina::Models::ObjectType.object,
       label: 'Dummy DRO',
       description: {
         title: [{ value: 'Dummy DRO' }],
@@ -81,7 +81,7 @@ RSpec.describe ItemQueryService do
     end
 
     context 'with dark item' do
-      let(:access) { { access: 'dark' } }
+      let(:access) { { view: 'dark' } }
 
       it 'raises an error' do
         expect { service.find_combinable_item(druid) }.to raise_error(
@@ -92,7 +92,7 @@ RSpec.describe ItemQueryService do
     end
 
     context 'with citation-only item' do
-      let(:access) { { access: 'citation-only' } }
+      let(:access) { { view: 'citation-only' } }
 
       it 'raises an error' do
         expect { service.find_combinable_item(druid) }.to raise_error(
@@ -103,7 +103,7 @@ RSpec.describe ItemQueryService do
     end
 
     context 'with world-accessible item' do
-      let(:access) { { access: 'world' } }
+      let(:access) { { view: 'world' } }
 
       it 'returns the item' do
         expect(service.find_combinable_item(druid)).to eq(cocina_object)
@@ -111,7 +111,7 @@ RSpec.describe ItemQueryService do
     end
 
     context 'with stanford-accessible item' do
-      let(:access) { { access: 'stanford', download: 'stanford' } }
+      let(:access) { { view: 'stanford', download: 'stanford' } }
 
       it 'returns the item' do
         expect(service.find_combinable_item(druid)).to eq(cocina_object)
@@ -119,7 +119,7 @@ RSpec.describe ItemQueryService do
     end
 
     context 'with location-based item' do
-      let(:access) { { access: 'location-based', readLocation: 'music' } }
+      let(:access) { { view: 'location-based', location: 'music' } }
 
       it 'returns the item' do
         expect(service.find_combinable_item(druid)).to eq(cocina_object)
@@ -127,7 +127,7 @@ RSpec.describe ItemQueryService do
     end
 
     context 'with CDL item' do
-      let(:access) { { access: 'stanford', controlledDigitalLending: true } }
+      let(:access) { { view: 'stanford', controlledDigitalLending: true } }
 
       it 'returns the item' do
         expect(service.find_combinable_item(druid)).to eq(cocina_object)
@@ -139,7 +139,7 @@ RSpec.describe ItemQueryService do
         Cocina::Models::Collection.new(
           externalIdentifier: druid,
           version: 1,
-          type: Cocina::Models::Vocab.collection,
+          type: Cocina::Models::ObjectType.collection,
           label: 'Dummy Collection',
           description: {
             title: [{ value: 'Dummy Collection' }],
@@ -163,12 +163,12 @@ RSpec.describe ItemQueryService do
         Cocina::Models::AdminPolicy.new(
           externalIdentifier: druid,
           version: 1,
-          type: Cocina::Models::Vocab.admin_policy,
+          type: Cocina::Models::ObjectType.admin_policy,
           label: 'Dummy DRO',
           administrative: {
             hasAdminPolicy: 'druid:df123cd4567',
             hasAgreement: 'druid:mg978jy9754',
-            defaultAccess: { access: 'world', download: 'world' }
+            accessTemplate: { view: 'world', download: 'world' }
           }
         )
       end
@@ -186,7 +186,7 @@ RSpec.describe ItemQueryService do
         Cocina::Models::DRO.new(
           externalIdentifier: druid,
           version: 1,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: 'Dummy DRO',
           description: {
             title: [{ value: 'Dummy DRO' }],
@@ -217,7 +217,7 @@ RSpec.describe ItemQueryService do
         Cocina::Models::DRO.new(
           externalIdentifier: druid,
           version: 1,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: 'Dummy DRO',
           description: {
             title: [{ value: 'Dummy Collection' }],

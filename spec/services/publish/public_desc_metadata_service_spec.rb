@@ -13,7 +13,7 @@ RSpec.describe Publish::PublicDescMetadataService do
   end
   let(:cocina_object) do
     Cocina::Models.build({
-                           'type' => Cocina::Models::Vocab.object,
+                           'type' => Cocina::Models::ObjectType.object,
                            'label' => 'test',
                            'externalIdentifier' => 'druid:bc123df4567',
                            'access' => access,
@@ -43,7 +43,7 @@ RSpec.describe Publish::PublicDescMetadataService do
 
       let(:collection) do
         Cocina::Models.build({
-                               'type' => Cocina::Models::Vocab.collection,
+                               'type' => Cocina::Models::ObjectType.collection,
                                'label' => 'test',
                                'externalIdentifier' => 'druid:xh235dd9059',
                                'access' => {},
@@ -101,7 +101,7 @@ RSpec.describe Publish::PublicDescMetadataService do
     context 'when the object is a collection' do
       let(:cocina_object) do
         Cocina::Models.build({
-                               'type' => Cocina::Models::Vocab.collection,
+                               'type' => Cocina::Models::ObjectType.collection,
                                'label' => 'test',
                                'externalIdentifier' => 'druid:bc123df4567',
                                'access' => access,
@@ -125,7 +125,7 @@ RSpec.describe Publish::PublicDescMetadataService do
 
     let(:cocina_collection) do
       Cocina::Models.build({
-                             'type' => Cocina::Models::Vocab.collection,
+                             'type' => Cocina::Models::ObjectType.collection,
                              'label' => 'test',
                              'externalIdentifier' => 'druid:zb871zd0767',
                              'access' => {},
@@ -269,7 +269,7 @@ RSpec.describe Publish::PublicDescMetadataService do
 
     let(:collection) do
       Cocina::Models.build({
-                             'type' => Cocina::Models::Vocab.collection,
+                             'type' => Cocina::Models::ObjectType.collection,
                              'label' => 'test',
                              'externalIdentifier' => 'druid:zb871zd0767',
                              'access' => {},

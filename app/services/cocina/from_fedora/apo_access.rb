@@ -2,7 +2,7 @@
 
 module Cocina
   module FromFedora
-    # builds the defaultAccess subschema for APOs
+    # builds the accessTemplate subschema for APOs
     class APOAccess
       def self.props(default_object_rights_ds)
         new(default_object_rights_ds).props

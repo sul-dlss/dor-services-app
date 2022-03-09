@@ -4,11 +4,11 @@ FactoryBot.define do
   factory :dro do
     cocina_version { '0.0.1' }
     external_identifier { generate(:unique_druid) }
-    content_type { Cocina::Models::Vocab.book }
+    content_type { Cocina::Models::ObjectType.book }
     label { 'Test DRO' }
     version { 1 }
     access do
-      { access: 'world', download: 'world' }
+      { view: 'world', download: 'world' }
     end
     administrative do
       { hasAdminPolicy: 'druid:hy787xj5878' }
@@ -35,12 +35,12 @@ FactoryBot.define do
     structural do
       { contains: [
         {
-          type: Cocina::Models::Vocab::Resources.file,
+          type: Cocina::Models::FileSetType.file,
           externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/123-456-789', label: 'Page 1', version: 1,
           structural: {
             contains: [
               {
-                type: Cocina::Models::Vocab.file,
+                type: Cocina::Models::ObjectType.file,
                 externalIdentifier: 'https://cocina.sul.stanford.edu/file/123-456-789',
                 label: '00001.html',
                 filename: '00001.html',
@@ -55,7 +55,7 @@ FactoryBot.define do
                     type: 'md5', digest: 'e6d52da47a5ade91ae31227b978fb023'
                   }
                 ],
-                access: { access: 'dark' },
+                access: { view: 'dark' },
                 administrative: { publish: false, sdrPreserve: true, shelve: false }
               }
             ]

@@ -18,7 +18,7 @@ RSpec.describe ThumbnailService do
     context 'for a collection' do
       let(:object) do
         Cocina::Models::Collection.new(externalIdentifier: 'druid:bc123df4567',
-                                       type: Cocina::Models::Vocab.collection,
+                                       type: Cocina::Models::ObjectType.collection,
                                        label: 'Collection of new maps of Africa',
                                        description: {
                                          title: [{ value: 'Collection of new maps of Africa' }],
@@ -41,7 +41,7 @@ RSpec.describe ThumbnailService do
       context 'with no structural metadata' do
         let(:object) do
           Cocina::Models::DRO.new(externalIdentifier: druid,
-                                  type: Cocina::Models::Vocab.object,
+                                  type: Cocina::Models::ObjectType.object,
                                   label: 'A new map of Africa',
                                   version: 1,
                                   description: description,
@@ -59,13 +59,13 @@ RSpec.describe ThumbnailService do
         let(:structural) do
           {
             contains: [{
-              type: Cocina::Models::Vocab::Resources.image,
+              type: Cocina::Models::FileSetType.image,
               externalIdentifier: 'wt183gy6220',
               label: 'Image 1',
               version: 1,
               structural: {
                 contains: [{
-                  type: Cocina::Models::Vocab.file,
+                  type: Cocina::Models::ObjectType.file,
                   externalIdentifier: 'wt183gy6220_1',
                   label: 'Image 1',
                   filename: 'wt183gy6220_00_0001.jp2',
@@ -86,7 +86,7 @@ RSpec.describe ThumbnailService do
         end
         let(:object) do
           Cocina::Models::DRO.new(externalIdentifier: druid,
-                                  type: Cocina::Models::Vocab.object,
+                                  type: Cocina::Models::ObjectType.object,
                                   label: 'A new map of Africa',
                                   version: 1,
                                   description: description,
@@ -111,7 +111,7 @@ RSpec.describe ThumbnailService do
         end
         let(:object) do
           Cocina::Models::DRO.new(externalIdentifier: druid,
-                                  type: Cocina::Models::Vocab.object,
+                                  type: Cocina::Models::ObjectType.object,
                                   label: 'A new map of Africa',
                                   version: 1,
                                   description: description,
@@ -130,13 +130,13 @@ RSpec.describe ThumbnailService do
         let(:structural) do
           {
             contains: [{
-              type: Cocina::Models::Vocab::Resources.image,
+              type: Cocina::Models::FileSetType.image,
               externalIdentifier: 'wt183gy6220',
               label: 'File 1',
               version: 1,
               structural: {
                 contains: [{
-                  type: Cocina::Models::Vocab.file,
+                  type: Cocina::Models::ObjectType.file,
                   externalIdentifier: 'wt183gy6220_1',
                   label: 'File 1',
                   filename: 'some_file.pdf',
@@ -157,7 +157,7 @@ RSpec.describe ThumbnailService do
         end
         let(:object) do
           Cocina::Models::DRO.new(externalIdentifier: druid,
-                                  type: Cocina::Models::Vocab.object,
+                                  type: Cocina::Models::ObjectType.object,
                                   label: 'A new map of Africa',
                                   version: 1,
                                   description: description,

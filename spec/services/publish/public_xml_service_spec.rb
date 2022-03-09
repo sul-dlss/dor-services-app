@@ -20,13 +20,13 @@ RSpec.describe Publish::PublicXmlService do
   let(:structural) do
     {
       contains: [{
-        type: Cocina::Models::Vocab::Resources.image,
+        type: Cocina::Models::FileSetType.image,
         externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/9475bc2c-7552-43d8-b8ab-8cd2212d5873',
         label: 'Image 1',
         version: 1,
         structural: {
           contains: [{
-            type: Cocina::Models::Vocab.file,
+            type: Cocina::Models::ObjectType.file,
             externalIdentifier: 'https://cocina.sul.stanford.edu/file/15e6e501-d22c-4f96-a824-8a88dd312937',
             label: 'Image 1',
             filename: 'wt183gy6220_00_0001.jp2',
@@ -75,7 +75,7 @@ RSpec.describe Publish::PublicXmlService do
       let(:release_tags) { {} }
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
@@ -93,13 +93,13 @@ RSpec.describe Publish::PublicXmlService do
     context 'with an embargo' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
                                 identification: {},
                                 access: {
-                                  access: 'world',
+                                  view: 'world',
                                   download: 'world',
                                   embargo: {
                                     releaseDate: '2021-10-08T00:00:00Z'
@@ -120,15 +120,15 @@ RSpec.describe Publish::PublicXmlService do
     context 'with an problematic location code' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
                                 identification: {},
                                 access: {
-                                  access: 'location-based',
+                                  view: 'location-based',
                                   download: 'location-based',
-                                  readLocation: 'm&m'
+                                  location: 'm&m'
                                 },
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
       end
@@ -145,7 +145,7 @@ RSpec.describe Publish::PublicXmlService do
     context 'produces xml with' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::Vocab.object,
+                                type: Cocina::Models::ObjectType.object,
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
@@ -200,13 +200,13 @@ RSpec.describe Publish::PublicXmlService do
         let(:structural) do
           {
             contains: [{
-              type: Cocina::Models::Vocab::Resources.image,
+              type: Cocina::Models::FileSetType.image,
               externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/9475bc2c-7552-43d8-b8ab-8cd2212d5873',
               label: 'Image 1',
               version: 1,
               structural: {
                 contains: [{
-                  type: Cocina::Models::Vocab.file,
+                  type: Cocina::Models::ObjectType.file,
                   externalIdentifier: 'https://cocina.sul.stanford.edu/file/15e6e501-d22c-4f96-a824-8a88dd312937',
                   label: 'Image 1',
                   filename: 'wt183gy6220_00_0001.jp2',
@@ -251,7 +251,7 @@ RSpec.describe Publish::PublicXmlService do
       context 'when no thumb is present' do
         let(:cocina_object) do
           Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                  type: Cocina::Models::Vocab.object,
+                                  type: Cocina::Models::ObjectType.object,
                                   label: 'A generic label',
                                   version: 1,
                                   description: description,
@@ -289,7 +289,7 @@ RSpec.describe Publish::PublicXmlService do
     context 'with a collection' do
       let(:cocina_object) do
         Cocina::Models::Collection.new(externalIdentifier: 'druid:bc123df4567',
-                                       type: Cocina::Models::Vocab.collection,
+                                       type: Cocina::Models::ObjectType.collection,
                                        label: 'A generic label',
                                        version: 1,
                                        description: description,
@@ -311,7 +311,7 @@ RSpec.describe Publish::PublicXmlService do
       let(:druid) { 'druid:hj097bm8879' }
       let(:cocina_object) do
         Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::Vocab.map,
+                                type: Cocina::Models::ObjectType.map,
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
@@ -333,11 +333,11 @@ RSpec.describe Publish::PublicXmlService do
       let(:cover_item) do
         Cocina::Models::DRO.new(
           { cocinaVersion: '0.65.1',
-            type: Cocina::Models::Vocab.image,
+            type: Cocina::Models::ObjectType.image,
             externalIdentifier: 'druid:cg767mn6478',
             label: "Cover: Carey's American atlas.",
             version: 3,
-            access: { access: 'world',
+            access: { view: 'world',
                       download: 'world',
                       copyright: 'Property rights reside with the repository, Copyright © Stanford University.',
                       useAndReproductionStatement: 'To obtain permission to publish or reproduce commercially, please contact the Digital & Rare Map Librarian',
@@ -361,13 +361,13 @@ RSpec.describe Publish::PublicXmlService do
             structural: {
               contains: [
                 {
-                  type: Cocina::Models::Vocab::Resources.image,
+                  type: Cocina::Models::FileSetType.image,
                   externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/9475bc2c-7552-43d8-b8ab-8cd2212d5873',
                   label: 'Image 1',
                   version: 3,
                   structural: {
                     contains: [
-                      { type: Cocina::Models::Vocab.file,
+                      { type: Cocina::Models::ObjectType.file,
                         externalIdentifier: 'https://cocina.sul.stanford.edu/file/15e6e501-d22c-4f96-a824-8a88dd312937',
                         label: '2542A.tif',
                         filename: '2542A.tif',
@@ -380,14 +380,14 @@ RSpec.describe Publish::PublicXmlService do
                           { type: 'md5',
                             digest: '5b79c8570b7ef582735f912aa24ce5f2' }
                         ],
-                        access: { access: 'world',
+                        access: { view: 'world',
                                   download: 'world' },
                         administrative: { publish: false,
                                           sdrPreserve: true,
                                           shelve: false },
                         presentation: { height: 4747,
                                         width: 6475 } },
-                      { type: Cocina::Models::Vocab.file,
+                      { type: Cocina::Models::ObjectType.file,
                         externalIdentifier: 'https://cocina.sul.stanford.edu/file/c59ada47-489b-4d0b-ab28-136b824d3904',
                         label: '2542A.jp2',
                         filename: '2542A.jp2',
@@ -397,7 +397,7 @@ RSpec.describe Publish::PublicXmlService do
                         hasMessageDigests: [{ type: 'sha1',
                                               digest: '39feed6ee1b734cab2d6a446e909a9fc7ac6fd01' }, { type: 'md5',
                                                                                                       digest: 'cd5ca5c4666cfd5ce0e9dc8c83461d7a' }],
-                        access: { access: 'world',
+                        access: { view: 'world',
                                   download: 'world' },
                         administrative: { publish: true,
                                           sdrPreserve: false,
@@ -415,11 +415,11 @@ RSpec.describe Publish::PublicXmlService do
       let(:title_item) do
         Cocina::Models::DRO.new(
           { cocinaVersion: '0.65.1',
-            type: Cocina::Models::Vocab.image,
+            type: Cocina::Models::ObjectType.image,
             externalIdentifier: 'druid:jw923xn5254',
             label: "Title Page: Carey's American atlas.",
             version: 3,
-            access: { access: 'world',
+            access: { view: 'world',
                       download: 'world',
                       copyright: 'Property rights reside with the repository, Copyright © Stanford University.',
                       useAndReproductionStatement: 'To obtain permission to publish or reproduce commercially, please contact the Digital & Rare Map Librarian',
@@ -444,14 +444,14 @@ RSpec.describe Publish::PublicXmlService do
             structural: {
               contains: [
                 {
-                  type: Cocina::Models::Vocab::Resources.image,
+                  type: Cocina::Models::FileSetType.image,
                   externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/929604b0-00bc-40b1-af71-5c17f066e2fd',
                   label: 'Image 1',
                   version: 3,
                   structural: {
                     contains: [
                       {
-                        type: Cocina::Models::Vocab.file,
+                        type: Cocina::Models::ObjectType.file,
                         externalIdentifier: 'https://cocina.sul.stanford.edu/file/787afaca-ba6e-4998-84bd-1bb43f9182cf',
                         label: '2542B.tif',
                         filename: '2542B.tif',
@@ -461,7 +461,7 @@ RSpec.describe Publish::PublicXmlService do
                         hasMessageDigests: [{ type: 'sha1',
                                               digest: 'a90aea983620238d8e1384d9a5cb683c6acd6984' }, { type: 'md5',
                                                                                                       digest: 'b5f6fcd6eb0ad02800aeb82cba6d0eed' }],
-                        access: { access: 'world',
+                        access: { view: 'world',
                                   download: 'world' },
                         administrative: { publish: false,
                                           sdrPreserve: true,
@@ -470,7 +470,7 @@ RSpec.describe Publish::PublicXmlService do
                                         width: 3139 }
                       },
                       {
-                        type: Cocina::Models::Vocab.file,
+                        type: Cocina::Models::ObjectType.file,
                         externalIdentifier: 'https://cocina.sul.stanford.edu/file/72880460-6865-4aa9-85c7-ac26002aebc5',
                         label: '2542B.jp2',
                         filename: '2542B.jp2',
@@ -483,7 +483,7 @@ RSpec.describe Publish::PublicXmlService do
                           { type: 'md5',
                             digest: 'bccdbb2500bb139d6d622321bfd2aa57' }
                         ],
-                        access: { access: 'world',
+                        access: { view: 'world',
                                   download: 'world' },
                         administrative: { publish: true,
                                           sdrPreserve: false,

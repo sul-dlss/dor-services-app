@@ -73,13 +73,13 @@ RSpec.describe Cocina::FromFedora::FileSets do
     context 'when type is main-augmented (ETDs)' do
       let(:type) { 'main-augmented' }
 
-      it { is_expected.to eq Cocina::Models::Vocab::Resources.main_augmented }
+      it { is_expected.to eq Cocina::Models::FileSetType.main_augmented }
     end
 
     context 'when type is 3d' do
       let(:type) { '3d' }
 
-      it { is_expected.to eq Cocina::Models::Vocab::Resources.three_dimensional }
+      it { is_expected.to eq Cocina::Models::FileSetType.three_dimensional }
     end
 
     context 'when the resource type is invalid' do
@@ -156,11 +156,11 @@ RSpec.describe Cocina::FromFedora::FileSets do
     end
     let(:item_cocina_rights) do
       {
-        access: 'world',
+        view: 'world',
         download: 'world'
       }
     end
-    let(:type) { Cocina::Models::Vocab.media }
+    let(:type) { Cocina::Models::ObjectType.media }
     let(:structural) { instance.build }
     let(:audio_fileset) { structural[0][:structural][:contains] }
     let(:text_fileset) { structural[1][:structural][:contains] }
@@ -184,7 +184,7 @@ RSpec.describe Cocina::FromFedora::FileSets do
       end
 
       it 'generates file-level access metadata for files with their own rights' do
-        expect(text_fileset.pluck(:access)).to include(access: 'stanford', controlledDigitalLending: true, download: 'none')
+        expect(text_fileset.pluck(:access)).to include(view: 'stanford', controlledDigitalLending: true, download: 'none')
       end
     end
 
@@ -205,7 +205,7 @@ RSpec.describe Cocina::FromFedora::FileSets do
       end
 
       it 'generates file-level access metadata for files with their own rights' do
-        expect(text_fileset.pluck(:access)).to include(access: 'dark', download: 'none')
+        expect(text_fileset.pluck(:access)).to include(view: 'dark', download: 'none')
       end
     end
 
@@ -226,7 +226,7 @@ RSpec.describe Cocina::FromFedora::FileSets do
       end
 
       it 'generates file-level access metadata for files with their own rights' do
-        expect(text_fileset.pluck(:access)).to include(access: 'stanford', download: 'stanford')
+        expect(text_fileset.pluck(:access)).to include(view: 'stanford', download: 'stanford')
       end
     end
 
@@ -247,7 +247,7 @@ RSpec.describe Cocina::FromFedora::FileSets do
       end
 
       it 'generates file-level access metadata for files with their own rights' do
-        expect(text_fileset.pluck(:access)).to include(access: 'stanford', download: 'none', controlledDigitalLending: false)
+        expect(text_fileset.pluck(:access)).to include(view: 'stanford', download: 'none', controlledDigitalLending: false)
       end
     end
 
@@ -271,7 +271,7 @@ RSpec.describe Cocina::FromFedora::FileSets do
       end
 
       it 'generates file-level access metadata for files with their own rights' do
-        expect(text_fileset.pluck(:access)).to include(access: 'world', download: 'stanford')
+        expect(text_fileset.pluck(:access)).to include(view: 'world', download: 'stanford')
       end
     end
 
@@ -292,7 +292,7 @@ RSpec.describe Cocina::FromFedora::FileSets do
       end
 
       it 'generates file-level access metadata for files with their own rights' do
-        expect(text_fileset.pluck(:access)).to include(access: 'world', download: 'world')
+        expect(text_fileset.pluck(:access)).to include(view: 'world', download: 'world')
       end
     end
 
@@ -313,7 +313,7 @@ RSpec.describe Cocina::FromFedora::FileSets do
       end
 
       it 'generates file-level access metadata for files with their own rights' do
-        expect(text_fileset.pluck(:access)).to include(access: 'world', download: 'none')
+        expect(text_fileset.pluck(:access)).to include(view: 'world', download: 'none')
       end
     end
 
@@ -335,7 +335,7 @@ RSpec.describe Cocina::FromFedora::FileSets do
         end
 
         it 'generates file-level access metadata for files with their own rights' do
-          expect(text_fileset.pluck(:access)).to include(access: 'location-based', download: 'location-based', readLocation: location)
+          expect(text_fileset.pluck(:access)).to include(view: 'location-based', download: 'location-based', location: location)
         end
       end
 
@@ -356,7 +356,7 @@ RSpec.describe Cocina::FromFedora::FileSets do
         end
 
         it 'generates file-level access metadata for files with their own rights' do
-          expect(text_fileset.pluck(:access)).to include(access: 'location-based', download: 'none', readLocation: location)
+          expect(text_fileset.pluck(:access)).to include(view: 'location-based', download: 'none', location: location)
         end
       end
 
@@ -380,7 +380,7 @@ RSpec.describe Cocina::FromFedora::FileSets do
         end
 
         it 'generates file-level access metadata for files with their own rights' do
-          expect(text_fileset.pluck(:access)).to include(access: 'stanford', download: 'location-based', readLocation: location)
+          expect(text_fileset.pluck(:access)).to include(view: 'stanford', download: 'location-based', location: location)
         end
       end
 
@@ -404,7 +404,7 @@ RSpec.describe Cocina::FromFedora::FileSets do
         end
 
         it 'generates file-level access metadata for files with their own rights' do
-          expect(text_fileset.pluck(:access)).to include(access: 'world', download: 'location-based', readLocation: location)
+          expect(text_fileset.pluck(:access)).to include(view: 'world', download: 'location-based', location: location)
         end
       end
     end
@@ -422,7 +422,7 @@ RSpec.describe Cocina::FromFedora::FileSets do
 
       let(:item_cocina_rights) do
         {
-          access: 'dark',
+          view: 'dark',
           download: 'none'
         }
       end
@@ -451,7 +451,7 @@ RSpec.describe Cocina::FromFedora::FileSets do
       end
 
       it 'generates file-level access metadata for files with their own rights' do
-        expect(text_fileset.pluck(:access)).to include(access: 'world', download: 'world')
+        expect(text_fileset.pluck(:access)).to include(view: 'world', download: 'world')
       end
     end
   end

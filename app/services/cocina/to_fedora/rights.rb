@@ -8,15 +8,15 @@ module Cocina
         # DROAccess responds to controlledDigitalLending, but Access (for Collections) does not.
         return 'cdl-stanford-nd' if access.respond_to?(:controlledDigitalLending) && access.controlledDigitalLending
 
-        case access.access
+        case access.view
         when 'location-based'
-          "loc:#{access.readLocation}"
+          "loc:#{access.location}"
         when 'citation-only'
           'none'
         when 'dark'
           'dark'
         else
-          access.respond_to?(:download) && access.download == 'none' ? "#{access.access}-nd" : access.access
+          access.respond_to?(:download) && access.download == 'none' ? "#{access.view}-nd" : access.view
         end
       end
     end

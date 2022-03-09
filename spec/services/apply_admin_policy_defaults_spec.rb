@@ -7,7 +7,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
   let(:object_druid) { 'druid:bc123df4567' }
   let(:default_access) do
     {
-      access: 'world',
+      view: 'world',
       download: 'world'
     }
   end
@@ -15,7 +15,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
     Cocina::Models::DRO.new(
       externalIdentifier: object_druid,
       version: 1,
-      type: Cocina::Models::Vocab.object,
+      type: Cocina::Models::ObjectType.object,
       label: 'Dummy DRO',
       description: {
         title: [{ value: 'Dummy DRO' }],
@@ -53,7 +53,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         Cocina::Models::Collection.new(
           externalIdentifier: object_druid,
           version: 1,
-          type: Cocina::Models::Vocab.collection,
+          type: Cocina::Models::ObjectType.collection,
           label: 'Dummy Collection',
           description: {
             title: [{ value: 'Dummy Collection' }],
@@ -80,12 +80,12 @@ RSpec.describe ApplyAdminPolicyDefaults do
         Cocina::Models::AdminPolicy.new(
           externalIdentifier: object_druid,
           version: 1,
-          type: Cocina::Models::Vocab.admin_policy,
+          type: Cocina::Models::ObjectType.admin_policy,
           label: 'Dummy APO',
           administrative: {
             hasAdminPolicy: 'druid:hv992ry2431',
             hasAgreement: 'druid:bc753qt7345',
-            defaultAccess: default_access
+            accessTemplate: default_access
           }
         )
       end
@@ -129,12 +129,12 @@ RSpec.describe ApplyAdminPolicyDefaults do
       Cocina::Models::AdminPolicy.new(
         externalIdentifier: apo_druid,
         version: 1,
-        type: Cocina::Models::Vocab.admin_policy,
+        type: Cocina::Models::ObjectType.admin_policy,
         label: 'Dummy APO',
         administrative: {
           hasAdminPolicy: 'druid:hv992ry2431',
           hasAgreement: 'druid:bc753qt7345',
-          defaultAccess: default_access
+          accessTemplate: default_access
         }
       )
     end
@@ -148,7 +148,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
 
     context 'with a DRO that lack structural metadata' do
       context 'with dark access' do
-        it 'copies APO defaultAccess to item access' do
+        it 'copies APO accessTemplate to item access' do
           expect(CocinaObjectStore).to have_received(:save)
             .once
             .with(cocina_object_with(access: default_access))
@@ -158,13 +158,13 @@ RSpec.describe ApplyAdminPolicyDefaults do
       context 'with location-based access' do
         let(:access_props) do
           {
-            access: 'location-based',
+            view: 'location-based',
             download: 'location-based',
-            readLocation: 'spec'
+            location: 'spec'
           }
         end
 
-        it 'copies APO defaultAccess to item access' do
+        it 'copies APO accessTemplate to item access' do
           expect(CocinaObjectStore).to have_received(:save)
             .once
             .with(cocina_object_with(access: default_access))
@@ -177,7 +177,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         Cocina::Models::Collection.new(
           externalIdentifier: object_druid,
           version: 1,
-          type: Cocina::Models::Vocab.collection,
+          type: Cocina::Models::ObjectType.collection,
           label: 'Dummy Collection',
           description: {
             title: [{ value: 'Dummy Collection' }],
@@ -188,16 +188,16 @@ RSpec.describe ApplyAdminPolicyDefaults do
         )
       end
 
-      context 'when APO specifies citation-only defaultAccess' do
+      context 'when APO specifies citation-only accessTemplate' do
         let(:default_access) do
           {
-            access: 'citation-only',
+            view: 'citation-only',
             download: 'none'
           }
         end
         let(:expected_access) do
           {
-            access: 'world'
+            view: 'world'
           }
         end
 
@@ -208,17 +208,17 @@ RSpec.describe ApplyAdminPolicyDefaults do
         end
       end
 
-      context 'when APO specifies location-based defaultAccess' do
+      context 'when APO specifies location-based accessTemplate' do
         let(:default_access) do
           {
-            access: 'location-based',
+            view: 'location-based',
             download: 'none',
-            readLocation: 'music'
+            location: 'music'
           }
         end
         let(:expected_access) do
           {
-            access: 'world'
+            view: 'world'
           }
         end
 
@@ -229,17 +229,17 @@ RSpec.describe ApplyAdminPolicyDefaults do
         end
       end
 
-      context 'when APO specifies Stanford (or CDL) defaultAccess' do
+      context 'when APO specifies Stanford (or CDL) accessTemplate' do
         let(:default_access) do
           {
-            access: 'stanford',
+            view: 'stanford',
             download: 'none',
             controlledDigitalLending: true
           }
         end
         let(:expected_access) do
           {
-            access: 'world'
+            view: 'world'
           }
         end
 
@@ -250,16 +250,16 @@ RSpec.describe ApplyAdminPolicyDefaults do
         end
       end
 
-      context 'when APO specifies dark defaultAccess' do
+      context 'when APO specifies dark accessTemplate' do
         let(:default_access) do
           {
-            access: 'dark',
+            view: 'dark',
             download: 'none'
           }
         end
         let(:expected_access) do
           {
-            access: 'dark'
+            view: 'dark'
           }
         end
 
@@ -276,7 +276,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         Cocina::Models::DRO.new(
           externalIdentifier: object_druid,
           version: 1,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: 'Dummy Object',
           description: {
             title: [{ value: 'Dummy Object' }],
@@ -293,14 +293,14 @@ RSpec.describe ApplyAdminPolicyDefaults do
         {
           externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/234-567-890',
           version: 1,
-          type: Cocina::Models::Vocab::Resources.file,
+          type: Cocina::Models::FileSetType.file,
           label: 'Page 1',
           structural: {
             contains: [
               {
                 externalIdentifier: 'https://cocina.sul.stanford.edu/file/223-456-789',
                 version: 1,
-                type: Cocina::Models::Vocab.file,
+                type: Cocina::Models::ObjectType.file,
                 filename: '00001.jp2',
                 label: '00001.jp2',
                 hasMimeType: 'image/jp2',
@@ -310,9 +310,9 @@ RSpec.describe ApplyAdminPolicyDefaults do
                   shelve: true
                 },
                 access: {
-                  access: 'stanford',
+                  view: 'stanford',
                   download: 'location-based',
-                  readLocation: 'spec'
+                  location: 'spec'
                 },
                 hasMessageDigests: []
               }
@@ -326,14 +326,14 @@ RSpec.describe ApplyAdminPolicyDefaults do
           {
             externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/234-567-890',
             version: 1,
-            type: Cocina::Models::Vocab::Resources.file,
+            type: Cocina::Models::FileSetType.file,
             label: 'Page 1',
             structural: {
               contains: [
                 {
                   externalIdentifier: 'https://cocina.sul.stanford.edu/file/223-456-789',
                   version: 1,
-                  type: Cocina::Models::Vocab.file,
+                  type: Cocina::Models::ObjectType.file,
                   filename: '00001.jp2',
                   label: '00001.jp2',
                   hasMimeType: 'image/jp2',
@@ -350,7 +350,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
           }
         end
 
-        it 'copies APO defaultAccess to item access' do
+        it 'copies APO accessTemplate to item access' do
           expect(CocinaObjectStore).to have_received(:save)
             .once
             .with(cocina_object_with(access: default_access, structural: { contains: [file_set_with_default_access] }))
@@ -360,7 +360,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
       context 'when APO specifies custom default object rights' do
         let(:default_access) do
           {
-            access: 'dark',
+            view: 'dark',
             download: 'none',
             useAndReproductionStatement: 'Use at will.',
             license: 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
@@ -370,14 +370,14 @@ RSpec.describe ApplyAdminPolicyDefaults do
           {
             externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/234-567-890',
             version: 1,
-            type: Cocina::Models::Vocab::Resources.file,
+            type: Cocina::Models::FileSetType.file,
             label: 'Page 1',
             structural: {
               contains: [
                 {
                   externalIdentifier: 'https://cocina.sul.stanford.edu/file/223-456-789',
                   version: 1,
-                  type: Cocina::Models::Vocab.file,
+                  type: Cocina::Models::ObjectType.file,
                   filename: '00001.jp2',
                   label: '00001.jp2',
                   hasMimeType: 'image/jp2',
@@ -386,7 +386,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
                     sdrPreserve: true,
                     shelve: false
                   },
-                  access: default_access.slice(:access, :download),
+                  access: default_access.slice(:view, :download),
                   hasMessageDigests: []
                 }
               ]
@@ -394,7 +394,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
           }
         end
 
-        it 'copies APO defaultAccess to item access' do
+        it 'copies APO accessTemplate to item access' do
           expect(CocinaObjectStore).to have_received(:save)
             .once
             .with(cocina_object_with(access: default_access, structural: { contains: [file_set_with_custom_access] }))

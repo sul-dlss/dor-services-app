@@ -20,7 +20,7 @@ RSpec.describe 'Update MODS' do
   end
   let(:cocina_object) do
     Cocina::Models::DRO.new(externalIdentifier: druid,
-                            type: Cocina::Models::Vocab.object,
+                            type: Cocina::Models::ObjectType.object,
                             label: 'A new map of Africa',
                             version: 1,
                             description: description,
@@ -33,11 +33,11 @@ RSpec.describe 'Update MODS' do
                                     administrative: {
                                       hasAdminPolicy: 'druid:gg123vx9393',
                                       hasAgreement: 'druid:bb008zm4587',
-                                      defaultAccess: { access: 'world', download: 'world' }
+                                      accessTemplate: { view: 'world', download: 'world' }
                                     },
                                     version: 1,
                                     label: 'just an apo',
-                                    type: Cocina::Models::Vocab.admin_policy)
+                                    type: Cocina::Models::ObjectType.admin_policy)
   end
 
   let(:xml) do
@@ -62,7 +62,7 @@ RSpec.describe 'Update MODS' do
   context 'with valid xml' do
     let(:new_cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::Vocab.object,
+                              type: Cocina::Models::ObjectType.object,
                               label: 'A new map of Africa',
                               version: 1,
                               description: {

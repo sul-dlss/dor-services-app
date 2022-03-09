@@ -28,7 +28,7 @@ RSpec.describe Cocina::FromFedora::CollectionAccess do
       end
 
       it 'specifies access as world' do
-        expect(collection_access).to eq(access: 'world')
+        expect(collection_access).to eq(view: 'world')
       end
     end
 
@@ -52,7 +52,7 @@ RSpec.describe Cocina::FromFedora::CollectionAccess do
       end
 
       it 'specifies access as dark' do
-        expect(collection_access).to eq(access: 'dark')
+        expect(collection_access).to eq(view: 'dark')
       end
     end
 
@@ -76,7 +76,7 @@ RSpec.describe Cocina::FromFedora::CollectionAccess do
       end
 
       it 'specifies access as world' do
-        expect(collection_access).to eq(access: 'world')
+        expect(collection_access).to eq(view: 'world')
       end
     end
   end
@@ -95,7 +95,7 @@ RSpec.describe Cocina::FromFedora::CollectionAccess do
       end
 
       it 'builds the hash' do
-        expect(collection_access).to eq(access: 'dark', license: 'https://opendatacommons.org/licenses/by/1-0/')
+        expect(collection_access).to eq(view: 'dark', license: 'https://opendatacommons.org/licenses/by/1-0/')
       end
     end
 
@@ -111,7 +111,7 @@ RSpec.describe Cocina::FromFedora::CollectionAccess do
       end
 
       it 'builds the hash' do
-        expect(collection_access).to eq(access: 'dark', useAndReproductionStatement: 'User agrees that, where applicable, stuff.')
+        expect(collection_access).to eq(view: 'dark', useAndReproductionStatement: 'User agrees that, where applicable, stuff.')
       end
     end
 
@@ -127,7 +127,7 @@ RSpec.describe Cocina::FromFedora::CollectionAccess do
       end
 
       it 'builds the hash' do
-        expect(collection_access).to eq(access: 'dark', copyright: 'User agrees that, where applicable, stuff.')
+        expect(collection_access).to eq(view: 'dark', copyright: 'User agrees that, where applicable, stuff.')
       end
     end
   end

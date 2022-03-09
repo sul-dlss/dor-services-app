@@ -1329,11 +1329,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ReleaseTag'
-        partOfProject:
-          description: Administrative or Internal project this resource is a part of
-          example: Google Books
-          type: string
-          nullable: true
       required:
         - hasAdminPolicy
     AdminPolicy:
@@ -1345,7 +1340,7 @@ components:
         type:
           type: string
           enum:
-            - 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld'
+            - 'https://cocina.sul.stanford.edu/models/admin_policy'
         externalIdentifier:
           $ref: '#/components/schemas/Druid'
         label:
@@ -1368,8 +1363,8 @@ components:
       type: object
       additionalProperties: false
       properties:
-        defaultAccess:
-          $ref: '#/components/schemas/AdminPolicyDefaultAccess'
+        accessTemplate:
+          $ref: '#/components/schemas/AdminPolicyAccessTemplate'
         registrationWorkflow:
           description: When you register an item with this admin policy, these are the workflows that are available.
           type: array
@@ -1396,13 +1391,13 @@ components:
       required:
         - hasAdminPolicy
         - hasAgreement
-        - defaultAccess
-    AdminPolicyDefaultAccess:
-      description: 'Provides the default access settings for an AdminPolicy. This is almost the same as DROAccess, but it provides no defaults.'
+        - accessTemplate
+    AdminPolicyAccessTemplate:
+      description: 'Provides the template of access settings that is copied to the items goverend by an AdminPolicy. This is almost the same as DROAccess, but it provides no defaults and has no embargo.'
       type: object
       additionalProperties: false
       properties:
-        access:
+        view:
           type: string
           enum:
             - 'world'
@@ -1430,11 +1425,12 @@ components:
             - 'stanford'
             - 'location-based'
             - 'none'
-        readLocation:
+        location:
           description: >
-            If access is "location-based", which location should have access.
-            This is used in the transition from Fedora as a way to set a default
-            readLocation at registration that is copied down to all the files.
+            If access or download is "location-based", this indicates which
+            location should have access. This is used in the transition from
+            Fedora as a way to set a default location at registration that is
+            copied down to all the files.
 
           type: string
           nullable: true
@@ -1504,7 +1500,7 @@ components:
     CitationOnlyAccess:
       type: object
       properties:
-        access:
+        view:
           description: Access level.
           type: string
           enum:
@@ -1514,8 +1510,8 @@ components:
           type: string
           enum:
             - 'none'
-        readLocation:
-          description: If access is "location-based", which location should have access.
+        location:
+          description: Not used for this access type, must be null.
           type: string
           nullable: true
           enum:
@@ -1526,7 +1522,7 @@ components:
           enum:
             - false
       required:
-        - access
+        - view
         - download
     CocinaVersion:
       description: The version of Cocina with which this object conforms.
@@ -1544,11 +1540,11 @@ components:
           description: The content type of the Collection. Selected from an established set of values.
           type: string
           enum:
-            - 'http://cocina.sul.stanford.edu/models/collection.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/curated-collection.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/user-collection.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/exhibit.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/series.jsonld'
+            - 'https://cocina.sul.stanford.edu/models/collection'
+            - 'https://cocina.sul.stanford.edu/models/curated-collection'
+            - 'https://cocina.sul.stanford.edu/models/user-collection'
+            - 'https://cocina.sul.stanford.edu/models/exhibit'
+            - 'https://cocina.sul.stanford.edu/models/series'
         externalIdentifier:
           $ref: '#/components/schemas/Druid'
         label:
@@ -1578,7 +1574,7 @@ components:
       type: object
       additionalProperties: false
       properties:
-        access:
+        view:
           description: Access level
           type: string
           enum:
@@ -1654,7 +1650,7 @@ components:
     ControlledDigitalLendingAccess:
       type: object
       properties:
-        access:
+        view:
           description: Access level.
           type: string
           enum:
@@ -1664,8 +1660,8 @@ components:
           type: string
           enum:
             - none
-        readLocation:
-          description: If access is "location-based", which location should have access.
+        location:
+          description: Not used for this access type, must be null.
           type: string
           nullable: true
           enum:
@@ -1675,13 +1671,13 @@ components:
           type: boolean
           default: false
       required:
-        - access
+        - view
         - download
         - controlledDigitalLending
     DarkAccess:
       type: object
       properties:
-        access:
+        view:
           description: Access level.
           type: string
           default: 'dark'
@@ -1693,7 +1689,7 @@ components:
           default: 'none'
           enum:
             - 'none'
-        readLocation:
+        location:
           description: If access is "location-based", which location should have access.
           type: string
           nullable: true
@@ -2008,21 +2004,21 @@ components:
           description: The content type of the DRO. Selected from an established set of values.
           type: string
           enum:
-            - 'http://cocina.sul.stanford.edu/models/object.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/3d.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/agreement.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/book.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/document.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/geo.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/image.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/page.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/photograph.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/manuscript.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/map.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/media.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/track.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/webarchive-binary.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/webarchive-seed.jsonld'
+            - 'https://cocina.sul.stanford.edu/models/object'
+            - 'https://cocina.sul.stanford.edu/models/3d'
+            - 'https://cocina.sul.stanford.edu/models/agreement'
+            - 'https://cocina.sul.stanford.edu/models/book'
+            - 'https://cocina.sul.stanford.edu/models/document'
+            - 'https://cocina.sul.stanford.edu/models/geo'
+            - 'https://cocina.sul.stanford.edu/models/image'
+            - 'https://cocina.sul.stanford.edu/models/page'
+            - 'https://cocina.sul.stanford.edu/models/photograph'
+            - 'https://cocina.sul.stanford.edu/models/manuscript'
+            - 'https://cocina.sul.stanford.edu/models/map'
+            - 'https://cocina.sul.stanford.edu/models/media'
+            - 'https://cocina.sul.stanford.edu/models/track'
+            - 'https://cocina.sul.stanford.edu/models/webarchive-binary'
+            - 'https://cocina.sul.stanford.edu/models/webarchive-seed'
         externalIdentifier:
           $ref: '#/components/schemas/Druid'
         label:
@@ -2105,7 +2101,7 @@ components:
                 - 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
                 - 'https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode'
                 - 'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode'
-                - 'http://cocina.sul.stanford.edu/licenses/none' # Only used in some legacy ETDs and not actually permitted per the Project Chimera docs.
+                - 'https://cocina.sul.stanford.edu/licenses/none' # Only used in some legacy ETDs and not actually permitted per the Project Chimera docs.
     DROStructural:
       description: Structural metadata
       type: object
@@ -2206,7 +2202,7 @@ components:
           description: The content type of the File.
           type: string
           enum:
-            - 'http://cocina.sul.stanford.edu/models/file.jsonld'
+            - 'https://cocina.sul.stanford.edu/models/file'
         externalIdentifier:
           description: Identifier for the resource within the SDR architecture but outside of the repository. UUID. Constant across resource versions. What clients will use calling the repository.
           type: string
@@ -2285,22 +2281,22 @@ components:
           description: The content type of the Fileset.
           type: string
           enum:
-            - 'http://cocina.sul.stanford.edu/models/resources/audio.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/attachment.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/document.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/file.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/image.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/main-augmented.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/main-original.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/media.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/object.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/page.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/permissions.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/preview.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/supplement.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/3d.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/thumb.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/video.jsonld'
+            - 'https://cocina.sul.stanford.edu/models/resources/audio'
+            - 'https://cocina.sul.stanford.edu/models/resources/attachment'
+            - 'https://cocina.sul.stanford.edu/models/resources/document'
+            - 'https://cocina.sul.stanford.edu/models/resources/file'
+            - 'https://cocina.sul.stanford.edu/models/resources/image'
+            - 'https://cocina.sul.stanford.edu/models/resources/main-augmented'
+            - 'https://cocina.sul.stanford.edu/models/resources/main-original'
+            - 'https://cocina.sul.stanford.edu/models/resources/media'
+            - 'https://cocina.sul.stanford.edu/models/resources/object'
+            - 'https://cocina.sul.stanford.edu/models/resources/page'
+            - 'https://cocina.sul.stanford.edu/models/resources/permissions'
+            - 'https://cocina.sul.stanford.edu/models/resources/preview'
+            - 'https://cocina.sul.stanford.edu/models/resources/supplement'
+            - 'https://cocina.sul.stanford.edu/models/resources/3d'
+            - 'https://cocina.sul.stanford.edu/models/resources/thumb'
+            - 'https://cocina.sul.stanford.edu/models/resources/video'
         externalIdentifier:
           type: string
         label:
@@ -2421,7 +2417,7 @@ components:
     LocationBasedAccess:
       type: object
       properties:
-        access:
+        view:
           description: Access level.
           type: string
           enum:
@@ -2432,8 +2428,8 @@ components:
           enum:
             - location-based
             - none
-        readLocation:
-          description: If access is "location-based", which location should have access.
+        location:
+          description: If access or download is "location-based", which location should have access.
           type: string
           enum:
             - 'spec'
@@ -2448,13 +2444,13 @@ components:
           enum:
             - false
       required:
-        - access
+        - view
         - download
-        - readLocation
+        - location
     LocationBasedDownloadAccess:
       type: object
       properties:
-        access:
+        view:
           description: Access level.
           type: string
           enum:
@@ -2465,8 +2461,8 @@ components:
           type: string
           enum:
             - location-based
-        readLocation:
-          description: If access is "location-based", which location should have access.
+        location:
+          description: Which location should have download access.
           type: string
           enum:
             - 'spec'
@@ -2481,9 +2477,9 @@ components:
           enum:
             - false
       required:
-        - access
+        - view
         - download
-        - readLocation
+        - location
     MessageDigest:
       description: The output of the message digest algorithm.
       type: object
@@ -2623,6 +2619,18 @@ components:
           example: Searchworks
         release:
           type: boolean
+    RequestAdministrative:
+      type: object
+      additionalProperties: false
+      allOf:
+        - $ref: "#/components/schemas/Administrative"
+        - type: object
+          additionalProperties: false
+          properties:
+            partOfProject:
+              description: Internal project this resource is a part of. This governs routing of messages about this object.
+              example: Google Books
+              type: string          
     RequestAdminPolicy:
       description: Same as an AdminPolicy, but doesn't have an externalIdentifier as one will be created
       type: object
@@ -2633,7 +2641,7 @@ components:
         type:
           type: string
           enum:
-            - 'http://cocina.sul.stanford.edu/models/admin_policy.jsonld'
+            - 'https://cocina.sul.stanford.edu/models/admin_policy'
         label:
           type: string
         version:
@@ -2661,11 +2669,11 @@ components:
         type:
           type: string
           enum:
-            - 'http://cocina.sul.stanford.edu/models/collection.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/curated-collection.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/user-collection.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/exhibit.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/series.jsonld'
+            - 'https://cocina.sul.stanford.edu/models/collection'
+            - 'https://cocina.sul.stanford.edu/models/curated-collection'
+            - 'https://cocina.sul.stanford.edu/models/user-collection'
+            - 'https://cocina.sul.stanford.edu/models/exhibit'
+            - 'https://cocina.sul.stanford.edu/models/series'
         label:
           type: string
         version:
@@ -2676,7 +2684,7 @@ components:
         access:
           $ref: '#/components/schemas/CollectionAccess'
         administrative:
-          $ref: '#/components/schemas/Administrative'
+          $ref: '#/components/schemas/RequestAdministrative'
         description:
           $ref: '#/components/schemas/RequestDescription'
         identification:
@@ -2774,21 +2782,21 @@ components:
         type:
           type: string
           enum:
-            - 'http://cocina.sul.stanford.edu/models/object.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/3d.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/agreement.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/book.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/document.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/geo.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/image.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/page.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/photograph.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/manuscript.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/map.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/media.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/track.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/webarchive-binary.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/webarchive-seed.jsonld'
+            - 'https://cocina.sul.stanford.edu/models/object'
+            - 'https://cocina.sul.stanford.edu/models/3d'
+            - 'https://cocina.sul.stanford.edu/models/agreement'
+            - 'https://cocina.sul.stanford.edu/models/book'
+            - 'https://cocina.sul.stanford.edu/models/document'
+            - 'https://cocina.sul.stanford.edu/models/geo'
+            - 'https://cocina.sul.stanford.edu/models/image'
+            - 'https://cocina.sul.stanford.edu/models/page'
+            - 'https://cocina.sul.stanford.edu/models/photograph'
+            - 'https://cocina.sul.stanford.edu/models/manuscript'
+            - 'https://cocina.sul.stanford.edu/models/map'
+            - 'https://cocina.sul.stanford.edu/models/media'
+            - 'https://cocina.sul.stanford.edu/models/track'
+            - 'https://cocina.sul.stanford.edu/models/webarchive-binary'
+            - 'https://cocina.sul.stanford.edu/models/webarchive-seed'
         label:
           type: string
         version:
@@ -2799,7 +2807,7 @@ components:
         access:
           $ref: '#/components/schemas/DROAccess'
         administrative:
-          $ref: '#/components/schemas/Administrative'
+          $ref: '#/components/schemas/RequestAdministrative'
         description:
           $ref: '#/components/schemas/RequestDescription'
         identification:
@@ -2840,7 +2848,7 @@ components:
         type:
           type: string
           enum:
-            - 'http://cocina.sul.stanford.edu/models/file.jsonld'
+            - 'https://cocina.sul.stanford.edu/models/file'
         label:
           type: string
         filename:
@@ -2880,22 +2888,22 @@ components:
         type:
           type: string
           enum:
-            - 'http://cocina.sul.stanford.edu/models/resources/audio.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/attachment.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/document.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/file.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/image.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/main-augmented.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/main-original.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/media.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/object.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/page.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/permissions.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/preview.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/supplement.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/3d.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/thumb.jsonld'
-            - 'http://cocina.sul.stanford.edu/models/resources/video.jsonld'
+            - 'https://cocina.sul.stanford.edu/models/resources/audio'
+            - 'https://cocina.sul.stanford.edu/models/resources/attachment'
+            - 'https://cocina.sul.stanford.edu/models/resources/document'
+            - 'https://cocina.sul.stanford.edu/models/resources/file'
+            - 'https://cocina.sul.stanford.edu/models/resources/image'
+            - 'https://cocina.sul.stanford.edu/models/resources/main-augmented'
+            - 'https://cocina.sul.stanford.edu/models/resources/main-original'
+            - 'https://cocina.sul.stanford.edu/models/resources/media'
+            - 'https://cocina.sul.stanford.edu/models/resources/object'
+            - 'https://cocina.sul.stanford.edu/models/resources/page'
+            - 'https://cocina.sul.stanford.edu/models/resources/permissions'
+            - 'https://cocina.sul.stanford.edu/models/resources/preview'
+            - 'https://cocina.sul.stanford.edu/models/resources/supplement'
+            - 'https://cocina.sul.stanford.edu/models/resources/3d'
+            - 'https://cocina.sul.stanford.edu/models/resources/thumb'
+            - 'https://cocina.sul.stanford.edu/models/resources/video'
         label:
           type: string
         version:
@@ -3017,7 +3025,7 @@ components:
     StanfordAccess:
       type: object
       properties:
-        access:
+        view:
           description: Access level.
           type: string
           enum:
@@ -3027,8 +3035,8 @@ components:
           type: string
           enum:
             - stanford
-        readLocation:
-          description: If access is "location-based", which location should have access.
+        location:
+          description: Not used for this access type, must be null.
           type: string
           nullable: true
           enum:
@@ -3039,7 +3047,7 @@ components:
           enum:
             - false
       required:
-        - access
+        - view
         - download
     Title:
       type: object
@@ -3065,7 +3073,7 @@ components:
     WorldAccess:
       type: object
       properties:
-        access:
+        view:
           description: Access level.
           type: string
           enum:
@@ -3077,8 +3085,8 @@ components:
             - none
             - stanford
             - world
-        readLocation:
-          description: If access is "location-based", which location should have access.
+        location:
+          description: Not used for this access type, must be null.
           type: string
           nullable: true
           enum:
@@ -3089,7 +3097,7 @@ components:
           enum:
             - false
       required:
-        - access
+        - view
         - download
     AdministrativeTag:
       type: string

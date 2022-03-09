@@ -78,7 +78,7 @@ RSpec.describe Cocina::FromFedora::Access::License do
     end
 
     it 'finds the license' do
-      expect(license).to eq 'http://cocina.sul.stanford.edu/licenses/none'
+      expect(license).to eq 'https://cocina.sul.stanford.edu/licenses/none'
     end
   end
 end

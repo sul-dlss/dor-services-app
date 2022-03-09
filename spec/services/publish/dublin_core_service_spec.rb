@@ -7,7 +7,7 @@ RSpec.describe Publish::DublinCoreService do
 
   let(:cocina_object) do
     Cocina::Models.build({
-                           'type' => Cocina::Models::Vocab.object,
+                           'type' => Cocina::Models::ObjectType.object,
                            'label' => 'test',
                            'externalIdentifier' => 'druid:bc123df4567',
                            'access' => {},

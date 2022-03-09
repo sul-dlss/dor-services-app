@@ -57,12 +57,12 @@ module Cocina
       # Books MUST have a viewing direction, images MAY have a viewing direction.
       # @return [Array<Hash>] an array representing a list of Cocina::Models::Sequences
       def create_member_order
-        return [{}] unless [Cocina::Models::Vocab.book, Cocina::Models::Vocab.image].include?(type)
+        return [{}] unless [Cocina::Models::ObjectType.book, Cocina::Models::ObjectType.image].include?(type)
 
         viewing_direction = ViewingDirectionHelper.viewing_direction(druid: fedora_item.pid,
                                                                      content_ng_xml: fedora_item.contentMetadata.ng_xml,
-                                                                     use_tags: Cocina::Models::Vocab.book == type)
-        viewing_direction ||= 'left-to-right' if type == Cocina::Models::Vocab.book
+                                                                     use_tags: Cocina::Models::ObjectType.book == type)
+        viewing_direction ||= 'left-to-right' if type == Cocina::Models::ObjectType.book
 
         [{ viewingDirection: viewing_direction }.compact]
       end

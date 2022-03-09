@@ -9,7 +9,7 @@ RSpec.describe ConstituentService do
     let(:item_errors) { {} }
     let(:mock_item) do
       Cocina::Models::DRO.new(
-        type: Cocina::Models::Vocab.object,
+        type: Cocina::Models::ObjectType.object,
         label: 'Dummy',
         version: 1,
         administrative: { hasAdminPolicy: 'druid:dd999df2345' },
@@ -25,7 +25,7 @@ RSpec.describe ConstituentService do
     let(:service) { described_class.new(virtual_object_druid: virtual_object_druid, event_factory: event_factory) }
     let(:virtual_object) do
       Cocina::Models::DRO.new(
-        type: Cocina::Models::Vocab.object,
+        type: Cocina::Models::ObjectType.object,
         label: 'Dummy',
         version: 1,
         administrative: { hasAdminPolicy: 'druid:dd999df2345' },
@@ -101,7 +101,7 @@ RSpec.describe ConstituentService do
     context 'when constituents have catkeys' do
       let(:mock_item) do
         Cocina::Models::DRO.new(
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: 'Dummy',
           version: 1,
           administrative: { hasAdminPolicy: 'druid:dd999df2345' },

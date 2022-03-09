@@ -6,16 +6,16 @@ RSpec.describe ShelvingService do
   let(:druid) { 'druid:ng782rw8378' }
 
   let(:cocina_object) do
-    instance_double(Cocina::Models::DRO, externalIdentifier: druid, structural: structural, type: Cocina::Models::Vocab.book)
+    instance_double(Cocina::Models::DRO, externalIdentifier: druid, structural: structural, type: Cocina::Models::ObjectType.book)
   end
 
   let(:structural) do
     Cocina::Models::DROStructural.new(
       { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
-                     type: Cocina::Models::Vocab::Resources.file,
+                     type: Cocina::Models::FileSetType.file,
                      version: 1,
                      structural: { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
-                                                type: Cocina::Models::Vocab.file,
+                                                type: Cocina::Models::ObjectType.file,
                                                 label: 'folder1PuSu/story1u.txt',
                                                 filename: 'folder1PuSu/story1u.txt',
                                                 size: 7888,
@@ -23,7 +23,7 @@ RSpec.describe ShelvingService do
                                                 hasMessageDigests: [{ type: 'sha1',
                                                                       digest: '61dfac472b7904e1413e0cbf4de432bda2a97627' },
                                                                     { type: 'md5', digest: 'e2837b9f02e0b0b76f526eeb81c7aa7b' }],
-                                                access: { access: 'world', download: 'world' },
+                                                access: { view: 'world', download: 'world' },
                                                 administrative: { publish: true, sdrPreserve: false, shelve: true },
                                                 hasMimeType: 'text/plain' }] },
                      label: 'Folder 1' }],
@@ -80,7 +80,7 @@ RSpec.describe ShelvingService do
       expect(DigitalStacksService).to have_received(:remove_from_stacks).with(stacks_object_pathname, mock_diff)
       expect(DigitalStacksService).to have_received(:rename_in_stacks).with(stacks_object_pathname, mock_diff)
       expect(DigitalStacksService).to have_received(:shelve_to_stacks).with(Pathname, stacks_object_pathname, mock_diff)
-      expect(Cocina::ToFedora::ContentMetadataGenerator).to have_received(:generate).with(druid: druid, structural: structural, type: Cocina::Models::Vocab.book)
+      expect(Cocina::ToFedora::ContentMetadataGenerator).to have_received(:generate).with(druid: druid, structural: structural, type: Cocina::Models::ObjectType.book)
     end
   end
 
@@ -104,7 +104,7 @@ RSpec.describe ShelvingService do
       expect(DigitalStacksService).to have_received(:remove_from_stacks).with(stacks_object_pathname, mock_diff)
       expect(DigitalStacksService).to have_received(:rename_in_stacks).with(stacks_object_pathname, mock_diff)
       expect(DigitalStacksService).to have_received(:shelve_to_stacks).with(Pathname, stacks_object_pathname, mock_diff)
-      expect(Cocina::ToFedora::ContentMetadataGenerator).to have_received(:generate).with(druid: druid, structural: structural, type: Cocina::Models::Vocab.book)
+      expect(Cocina::ToFedora::ContentMetadataGenerator).to have_received(:generate).with(druid: druid, structural: structural, type: Cocina::Models::ObjectType.book)
     end
   end
 

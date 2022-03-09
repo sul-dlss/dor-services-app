@@ -8,11 +8,11 @@ RSpec.describe Cocina::DescriptionRoundtripValidator do
 
     let(:cocina_hash) do
       {
-        type: Cocina::Models::Vocab.book,
+        type: Cocina::Models::ObjectType.book,
         label: 'Born to Run',
         version: 1,
         access: {
-          access: 'world',
+          view: 'world',
           download: 'none'
         },
         description: {
@@ -61,11 +61,11 @@ RSpec.describe Cocina::DescriptionRoundtripValidator do
     context 'with request' do
       let(:request_cocina_hash) do
         {
-          type: Cocina::Models::Vocab.book,
+          type: Cocina::Models::ObjectType.book,
           label: 'Born to Run',
           version: 1,
           access: {
-            access: 'world',
+            view: 'world',
             download: 'none'
           },
           description: {

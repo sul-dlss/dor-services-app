@@ -29,7 +29,7 @@ module Notifications
         modified_at: modified_at.to_datetime.httpdate
       }
       # Using the project as a routing key because listeners may only care about their projects.
-      exchange.publish(message.to_json, routing_key: model.administrative.partOfProject)
+      exchange.publish(message.to_json, routing_key: AdministrativeTags.project(identifier: model.externalIdentifier).first)
     end
 
     private

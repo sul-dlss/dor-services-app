@@ -14,13 +14,13 @@ RSpec.describe 'Shelve object' do
   end
 
   context 'with a collection' do
-    let(:object) { instance_double(Cocina::Models::Collection, dro?: false, type: Cocina::Models::Vocab.collection) }
+    let(:object) { instance_double(Cocina::Models::Collection, dro?: false, type: Cocina::Models::ObjectType.collection) }
 
     it 'returns a 422 error' do
       post "/v1/objects/#{druid}/shelve", headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to have_http_status(:unprocessable_entity)
       json = JSON.parse(response.body)
-      expect(json['errors'].first['detail']).to eq "A DRO is required but you provided '#{Cocina::Models::Vocab.collection}'"
+      expect(json['errors'].first['detail']).to eq "A DRO is required but you provided '#{Cocina::Models::ObjectType.collection}'"
       expect(job).not_to have_received(:perform_later)
     end
   end

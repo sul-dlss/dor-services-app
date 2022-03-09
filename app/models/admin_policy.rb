@@ -6,7 +6,7 @@ class AdminPolicy < ApplicationRecord
   def to_cocina
     Cocina::Models::AdminPolicy.new({
       cocinaVersion: cocina_version,
-      type: Cocina::Models::Vocab.admin_policy,
+      type: Cocina::Models::ObjectType.admin_policy,
       externalIdentifier: external_identifier,
       label: label,
       version: version,

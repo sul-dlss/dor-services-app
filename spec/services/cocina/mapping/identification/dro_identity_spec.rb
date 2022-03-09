@@ -198,7 +198,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
   # NOTE: access tested in mapping/access/dro_access_spec.rb
   let(:access_props) do
     {
-      access: 'dark',
+      view: 'dark',
       download: 'none'
     }
   end
@@ -235,7 +235,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -279,7 +279,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -329,7 +329,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -383,7 +383,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -436,7 +436,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -490,7 +490,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -553,7 +553,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -599,7 +599,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -691,7 +691,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -762,7 +762,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: '',
           version: 1,
           identification: {
@@ -840,7 +840,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: '',
           version: 1,
           identification: {
@@ -916,7 +916,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: '',
           version: 1,
           identification: {
@@ -987,7 +987,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -1049,7 +1049,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -1111,7 +1111,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -1171,7 +1171,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -1239,7 +1239,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -1298,7 +1298,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -1365,7 +1365,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -1435,7 +1435,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -1522,7 +1522,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {
@@ -1574,7 +1574,7 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
       let(:cocina_props) do
         {
           externalIdentifier: item_id,
-          type: Cocina::Models::Vocab.object,
+          type: Cocina::Models::ObjectType.object,
           label: label,
           version: 1,
           identification: {

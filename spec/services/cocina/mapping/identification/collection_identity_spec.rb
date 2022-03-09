@@ -157,7 +157,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
   # NOTE: access tested in mapping/access/collection_access_spec.rb
   let(:access_props) do
     {
-      access: 'dark'
+      view: 'dark'
     }
   end
   # NOTE: description tested in mapping/descriptive/mods
@@ -218,7 +218,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
         let(:cocina_props) do
           {
             externalIdentifier: collection_id,
-            type: Cocina::Models::Vocab.collection,
+            type: Cocina::Models::ObjectType.collection,
             label: label,
             version: 1,
             identification: {
@@ -297,7 +297,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
         let(:cocina_props) do
           {
             externalIdentifier: collection_id,
-            type: Cocina::Models::Vocab.collection,
+            type: Cocina::Models::ObjectType.collection,
             label: label,
             version: 1,
             identification: {
@@ -351,7 +351,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
         let(:cocina_props) do
           {
             externalIdentifier: collection_id,
-            type: Cocina::Models::Vocab.collection,
+            type: Cocina::Models::ObjectType.collection,
             label: label,
             version: 1,
             identification: {
@@ -409,7 +409,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
         let(:cocina_props) do
           {
             externalIdentifier: collection_id,
-            type: Cocina::Models::Vocab.collection,
+            type: Cocina::Models::ObjectType.collection,
             label: label,
             version: 1,
             identification: {
@@ -472,7 +472,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
       let(:cocina_props) do
         {
           externalIdentifier: collection_id,
-          type: Cocina::Models::Vocab.collection,
+          type: Cocina::Models::ObjectType.collection,
           label: label,
           version: 1,
           identification: {
@@ -523,7 +523,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
       let(:cocina_props) do
         {
           externalIdentifier: collection_id,
-          type: Cocina::Models::Vocab.collection,
+          type: Cocina::Models::ObjectType.collection,
           label: label,
           version: 1,
           identification: {
@@ -572,7 +572,7 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
       let(:cocina_props) do
         {
           externalIdentifier: collection_id,
-          type: Cocina::Models::Vocab.collection,
+          type: Cocina::Models::ObjectType.collection,
           label: label,
           version: 1,
           access: access_props,

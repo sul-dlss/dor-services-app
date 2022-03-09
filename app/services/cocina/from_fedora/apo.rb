@@ -19,7 +19,7 @@ module Cocina
       def props
         {
           externalIdentifier: fedora_apo.pid,
-          type: Cocina::Models::Vocab.admin_policy,
+          type: Cocina::Models::ObjectType.admin_policy,
           label: cocina_label,
           version: fedora_apo.current_version.to_i,
           administrative: build_apo_administrative
@@ -43,7 +43,7 @@ module Cocina
           disseminationWorkflow: dissemination_workflow,
           registrationWorkflow: registration_workflows,
           collectionsForRegistration: registration_collections,
-          defaultAccess: APOAccess.props(fedora_apo.defaultObjectRights),
+          accessTemplate: APOAccess.props(fedora_apo.defaultObjectRights),
           hasAdminPolicy: fedora_apo.admin_policy_object_id,
           hasAgreement: fedora_apo.agreement_object_id,
           roles: build_roles

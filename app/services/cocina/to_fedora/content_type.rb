@@ -7,21 +7,21 @@ module Cocina
     class ContentType
       def self.map(object_type)
         case object_type
-        when Cocina::Models::Vocab.image, Cocina::Models::Vocab.manuscript
+        when Cocina::Models::ObjectType.image, Cocina::Models::ObjectType.manuscript
           'image'
-        when Cocina::Models::Vocab.book
+        when Cocina::Models::ObjectType.book
           'book'
-        when Cocina::Models::Vocab.map
+        when Cocina::Models::ObjectType.map
           'map'
-        when Cocina::Models::Vocab.three_dimensional
+        when Cocina::Models::ObjectType.three_dimensional
           '3d'
-        when Cocina::Models::Vocab.media
+        when Cocina::Models::ObjectType.media
           'media'
-        when Cocina::Models::Vocab.webarchive_seed
+        when Cocina::Models::ObjectType.webarchive_seed
           'webarchive-seed'
-        when Cocina::Models::Vocab.geo
+        when Cocina::Models::ObjectType.geo
           'geo'
-        when Cocina::Models::Vocab.document
+        when Cocina::Models::ObjectType.document
           'document'
         else
           'file'

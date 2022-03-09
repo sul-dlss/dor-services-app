@@ -98,7 +98,7 @@ GEM
       sshkit (~> 1.2)
     capistrano-shared_configs (0.2.2)
     chronic (0.10.2)
-    cocina-models (0.67.1)
+    cocina-models (0.68.0)
       activesupport
       dry-struct (~> 1.0)
       dry-types (~> 1.1)
@@ -156,9 +156,9 @@ GEM
       solrizer (~> 3.0)
       stanford-mods (>= 2.3.1)
       stanford-mods-normalizer (~> 0.1)
-    dor-services-client (8.1.1)
+    dor-services-client (8.2.0)
       activesupport (>= 4.2, < 8)
-      cocina-models (~> 0.67.1)
+      cocina-models (~> 0.68.0)
       deprecation
       faraday (~> 2.0)
       faraday-retry
@@ -556,7 +556,7 @@ DEPENDENCIES
   capistrano-rails
   capistrano-rvm
   capistrano-shared_configs
-  cocina-models (~> 0.67.1)
+  cocina-models (~> 0.68.0)
   committee (~> 4.4)
   config
   datacite (~> 0.3.0)

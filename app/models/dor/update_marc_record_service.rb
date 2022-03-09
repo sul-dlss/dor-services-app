@@ -126,7 +126,7 @@ module Dor
 
     # returns text in the z field based on permissions
     def get_z_field
-      if @access.access == 'stanford' || (@access.respond_to?(:readLocation) && @access.readLocation)
+      if @access.view == 'stanford' || (@access.respond_to?(:location) && @access.location)
         '|zAvailable to Stanford-affiliated users.'
       else
         ''
@@ -196,22 +196,22 @@ module Dor
 
       values = []
 
-      values << 'rights:dark' if @access.access == 'dark'
+      values << 'rights:dark' if @access.view == 'dark'
 
-      if @access.access == 'world'
+      if @access.view == 'world'
         values << 'rights:cdl' if @access.download == 'stanford'
         values << 'rights:world' if @access.download == 'world'
         values << 'rights:citation' if @access.download == 'none'
       end
 
-      values << 'rights:group=stanford' if @access.access == 'stanford' && @access.download == 'stanford'
-      values << "rights:location=#{@access.readLocation}" if @access.readLocation
+      values << 'rights:group=stanford' if @access.view == 'stanford' && @access.download == 'stanford'
+      values << "rights:location=#{@access.location}" if @access.location
 
       values.map { |value| "|x#{value}" }.join
     end
 
     def get_x2_collection_rights_info
-      "|xrights:#{@access.access}"
+      "|xrights:#{@access.view}"
     end
 
     def born_digital?

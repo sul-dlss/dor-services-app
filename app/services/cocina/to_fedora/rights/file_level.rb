@@ -19,7 +19,7 @@ module Cocina
         def initialize(root:, access:, structural:)
           @root = root
           # citation-only (object level) gets mapped to dark (file level)
-          @access = access.access == 'citation-only' ? Cocina::Models::DROAccess.new(access: 'dark', download: 'none') : access
+          @access = access.view == 'citation-only' ? Cocina::Models::DROAccess.new(view: 'dark', download: 'none') : access
           @structural = structural
         end
 
@@ -58,15 +58,15 @@ module Cocina
         end
 
         def file_access_different_than_item_access?(file_access)
-          file_access.access != access.access ||
+          file_access.view != access.view ||
             file_access.download != access.download ||
-            file_access.readLocation != access.readLocation ||
+            file_access.location != access.location ||
             # Nil should be treated same as false
             (file_access.controlledDigitalLending || false) != (access.controlledDigitalLending || false)
         end
 
         def file_access_props
-          %i[access controlledDigitalLending download readLocation]
+          %i[view controlledDigitalLending download location]
         end
 
         def read_machine_node(file_access)
@@ -90,7 +90,7 @@ module Cocina
                 group_node
               elsif location_based_access?(file_access)
                 loc_node = Nokogiri::XML::Node.new('location', document)
-                loc_node.content = file_access.readLocation
+                loc_node.content = file_access.location
                 loc_node.set_attribute('rule', 'no-download') if no_download?(file_access)
                 loc_node
               else # we know it is citation-only or dark at this point
@@ -108,7 +108,7 @@ module Cocina
             download_access_level_node =
               if location_based_download?(file_access)
                 loc_node = Nokogiri::XML::Node.new('location', document)
-                loc_node.content = file_access.readLocation
+                loc_node.content = file_access.location
                 loc_node
               elsif stanford_download?(file_access)
                 group_node = Nokogiri::XML::Node.new('group', document)
@@ -121,11 +121,11 @@ module Cocina
         end
 
         def world_read_access?(file_access)
-          file_access.access == 'world'
+          file_access.view == 'world'
         end
 
         def stanford_read_access?(file_access)
-          file_access.access == 'stanford'
+          file_access.view == 'stanford'
         end
 
         def cdl_access?(file_access)
@@ -133,7 +133,7 @@ module Cocina
         end
 
         def location_based_access?(file_access)
-          file_access.access == 'location-based' && file_access.try(:readLocation)
+          file_access.view == 'location-based' && file_access.try(:location)
         end
 
         def no_download?(file_access)
@@ -145,7 +145,7 @@ module Cocina
         end
 
         def location_based_download?(file_access)
-          file_access.try(:download) == 'location-based' && file_access.try(:readLocation)
+          file_access.try(:download) == 'location-based' && file_access.try(:location)
         end
 
         def document

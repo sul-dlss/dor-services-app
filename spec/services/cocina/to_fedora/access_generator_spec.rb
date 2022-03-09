@@ -32,7 +32,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_access) do
         <<~JSON
           {
-            "access": "citation-only",
+            "view": "citation-only",
             "download": "none"
           }
         JSON
@@ -62,7 +62,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_access) do
         <<~JSON
           {
-            "access": "stanford",
+            "view": "stanford",
             "controlledDigitalLending": true,
             "download": "none"
           }
@@ -95,7 +95,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_access) do
         <<~JSON
           {
-            "access": "dark",
+            "view": "dark",
             "download": "none"
           }
         JSON
@@ -125,7 +125,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_access) do
         <<~JSON
           {
-            "access": "stanford",
+            "view": "stanford",
             "download": "stanford"
           }
         JSON
@@ -155,7 +155,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_access) do
         <<~JSON
           {
-            "access": "stanford",
+            "view": "stanford",
             "download": "none"
           }
         JSON
@@ -185,7 +185,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_access) do
         <<~JSON
           {
-            "access": "world",
+            "view": "world",
             "download": "stanford"
           }
         JSON
@@ -220,7 +220,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_access) do
         <<~JSON
           {
-            "access": "world",
+            "view": "world",
             "download": "world"
           }
         JSON
@@ -250,7 +250,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_access) do
         <<~JSON
           {
-            "access": "world",
+            "view": "world",
             "download": "none"
           }
         JSON
@@ -281,9 +281,9 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
         let(:cocina_access) do
           <<~JSON
             {
-              "access": "location-based",
+              "view": "location-based",
               "download": "location-based",
-              "readLocation": "#{location}"
+              "location": "#{location}"
             }
           JSON
         end
@@ -312,9 +312,9 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
         let(:cocina_access) do
           <<~JSON
             {
-              "access": "location-based",
+              "view": "location-based",
               "download": "none",
-              "readLocation": "#{location}"
+              "location": "#{location}"
             }
           JSON
         end
@@ -343,9 +343,9 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
         let(:cocina_access) do
           <<~JSON
             {
-              "access": "stanford",
+              "view": "stanford",
               "download": "location-based",
-              "readLocation": "#{location}"
+              "location": "#{location}"
             }
           JSON
         end
@@ -379,9 +379,9 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
         let(:cocina_access) do
           <<~JSON
             {
-              "access": "world",
+              "view": "world",
               "download": "location-based",
-              "readLocation": "#{location}"
+              "location": "#{location}"
             }
           JSON
         end
@@ -417,7 +417,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
     let(:cocina_access) do
       <<~JSON
         {
-          "access": "world",
+          "view": "world",
           "download": "world"
         }
       JSON
@@ -429,13 +429,13 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
         [
           {
             "externalIdentifier": "https://cocina.sul.stanford.edu/fileSet/c8fc22e3-ba0b-4532-8536-f010d117415d",
-            "type": "#{Cocina::Models::Vocab::Resources.audio}",
+            "type": "#{Cocina::Models::FileSetType.audio}",
             "version": 1,
             "structural": {
               "contains": [
                 {
                   "externalIdentifier": "https://cocina.sul.stanford.edu/file/260a7c04-be8f-43cb-a1ae-2c6082563daf",
-                  "type": "#{Cocina::Models::Vocab.file}",
+                  "type": "#{Cocina::Models::ObjectType.file}",
                   "label": "gs491bt1345_sample_01_00_pm.wav",
                   "filename": "gs491bt1345_sample_01_00_pm.wav",
                   "size": 299569842,
@@ -451,7 +451,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
                     }
                   ],
                   "access": {
-                    "access": "world",
+                    "view": "world",
                     "download": "world"
                   },
                   "administrative": {
@@ -463,7 +463,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
                 },
                 {
                   "externalIdentifier": "https://cocina.sul.stanford.edu/file/7420f933-5be0-4462-bbe0-d2f8ddba08e1",
-                  "type": "#{Cocina::Models::Vocab.file}",
+                  "type": "#{Cocina::Models::ObjectType.file}",
                   "label": "gs491bt1345_sample_01_00_sh.wav",
                   "filename": "gs491bt1345_sample_01_00_sh.wav",
                   "size": 91743738,
@@ -479,7 +479,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
                     }
                   ],
                   "access": {
-                    "access": "world",
+                    "view": "world",
                     "download": "world"
                   },
                   "administrative": {
@@ -491,7 +491,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
                 },
                 {
                   "externalIdentifier": "https://cocina.sul.stanford.edu/file/70c2f617-1235-46a4-a015-ab788a4847ee",
-                  "type": "#{Cocina::Models::Vocab.file}",
+                  "type": "#{Cocina::Models::ObjectType.file}",
                   "label": "gs491bt1345_sample_01_00_sl.m4a",
                   "filename": "gs491bt1345_sample_01_00_sl.m4a",
                   "size": 16798755,
@@ -507,7 +507,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
                     }
                   ],
                   "access": {
-                    "access": "world",
+                    "view": "world",
                     "download": "world"
                   },
                   "administrative": {
@@ -523,13 +523,13 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
           },
           {
             "externalIdentifier": "https://cocina.sul.stanford.edu/fileSet/91df0a5b-093b-458e-a30a-9874a57d8313",
-            "type": "#{Cocina::Models::Vocab::Resources.file}",
+            "type": "#{Cocina::Models::FileSetType.file}",
             "version": 1,
             "structural": {
               "contains": [
                 {
                   "externalIdentifier": "https://cocina.sul.stanford.edu/file/3be6c06c-453d-4291-ae44-59cec2da33e1",
-                  "type": "#{Cocina::Models::Vocab.file}",
+                  "type": "#{Cocina::Models::ObjectType.file}",
                   "label": "gs491bt1345_sample_md.pdf",
                   "filename": "gs491bt1345_sample_md.pdf",
                   "size": 930089,
@@ -565,7 +565,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_file_access) do
         <<~JSON
           {
-            "access": "stanford",
+            "view": "stanford",
             "controlledDigitalLending": true,
             "download": "none"
           }
@@ -604,7 +604,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_file_access) do
         <<~JSON
           {
-            "access": "dark",
+            "view": "dark",
             "download": "none"
           }
         JSON
@@ -640,7 +640,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_file_access) do
         <<~JSON
           {
-            "access": "stanford",
+            "view": "stanford",
             "download": "stanford"
           }
         JSON
@@ -676,7 +676,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_file_access) do
         <<~JSON
           {
-            "access": "stanford",
+            "view": "stanford",
             "download": "none"
           }
         JSON
@@ -712,7 +712,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_file_access) do
         <<~JSON
           {
-            "access": "world",
+            "view": "world",
             "download": "stanford"
           }
         JSON
@@ -752,7 +752,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_access) do
         <<~JSON
           {
-            "access": "stanford",
+            "view": "stanford",
             "download": "stanford"
           }
         JSON
@@ -760,7 +760,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_file_access) do
         <<~JSON
           {
-            "access": "world",
+            "view": "world",
             "download": "world"
           }
         JSON
@@ -814,7 +814,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_file_access) do
         <<~JSON
           {
-            "access": "world",
+            "view": "world",
             "download": "none"
           }
         JSON
@@ -851,9 +851,9 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
         let(:cocina_file_access) do
           <<~JSON
             {
-              "access": "location-based",
+              "view": "location-based",
               "download": "location-based",
-              "readLocation": "#{location}"
+              "location": "#{location}"
             }
           JSON
         end
@@ -888,9 +888,9 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
         let(:cocina_file_access) do
           <<~JSON
             {
-              "access": "location-based",
+              "view": "location-based",
               "download": "none",
-              "readLocation": "#{location}"
+              "location": "#{location}"
             }
           JSON
         end
@@ -925,9 +925,9 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
         let(:cocina_file_access) do
           <<~JSON
             {
-              "access": "stanford",
+              "view": "stanford",
               "download": "location-based",
-              "readLocation": "#{location}"
+              "location": "#{location}"
             }
           JSON
         end
@@ -965,9 +965,9 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
         let(:cocina_file_access) do
           <<~JSON
             {
-              "access": "world",
+              "view": "world",
               "download": "location-based",
-              "readLocation": "#{location}"
+              "location": "#{location}"
             }
           JSON
         end
@@ -1006,7 +1006,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_access) do
         <<~JSON
           {
-            "access": "citation-only",
+            "view": "citation-only",
             "download": "none",
             "controlledDigitalLending": false
           }
@@ -1016,7 +1016,7 @@ RSpec.describe Cocina::ToFedora::AccessGenerator do
       let(:cocina_file_access) do
         <<~JSON
           {
-            "access": "dark",
+            "view": "dark",
             "download": "none",
             "controlledDigitalLending": false
           }

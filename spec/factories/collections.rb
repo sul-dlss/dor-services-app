@@ -4,11 +4,11 @@ FactoryBot.define do
   factory :collection do
     cocina_version { '0.0.1' }
     external_identifier { generate(:unique_druid) }
-    collection_type { Cocina::Models::Vocab.collection }
+    collection_type { Cocina::Models::ObjectType.collection }
     label { 'Test Collection' }
     version { 1 }
     access do
-      { access: 'world' }
+      { view: 'world' }
     end
     description do
       {

@@ -16,7 +16,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   let(:file1) do
     {
       'version' => 1,
-      'type' => Cocina::Models::Vocab.file,
+      'type' => Cocina::Models::ObjectType.file,
       'filename' => '00001.html',
       'label' => '00001.html',
       'hasMimeType' => 'text/html',
@@ -28,7 +28,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         'shelve' => false
       },
       'access' => {
-        'access' => 'dark',
+        'view' => 'dark',
         'download' => 'none'
       },
       'hasMessageDigests' => [
@@ -48,7 +48,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   let(:file2) do
     {
       'version' => 1,
-      'type' => Cocina::Models::Vocab.file,
+      'type' => Cocina::Models::ObjectType.file,
       'filename' => '00001.jp2',
       'label' => '00001.jp2',
       'hasMimeType' => 'image/jp2',
@@ -59,7 +59,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         'shelve' => true
       },
       'access' => {
-        'access' => 'stanford',
+        'view' => 'stanford',
         'download' => 'stanford'
       },
       'hasMessageDigests' => [],
@@ -73,7 +73,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   let(:file3) do
     {
       'version' => 1,
-      'type' => Cocina::Models::Vocab.file,
+      'type' => Cocina::Models::ObjectType.file,
       'filename' => '00002.html',
       'label' => '00002.html',
       'hasMimeType' => 'text/html',
@@ -84,7 +84,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         'shelve' => false
       },
       'access' => {
-        'access' => 'world',
+        'view' => 'world',
         'download' => 'world'
       },
       'hasMessageDigests' => []
@@ -94,7 +94,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   let(:file4) do
     {
       'version' => 1,
-      'type' => Cocina::Models::Vocab.file,
+      'type' => Cocina::Models::ObjectType.file,
       'filename' => '00002.jp2',
       'label' => '00002.jp2',
       'hasMimeType' => 'image/jp2',
@@ -105,7 +105,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         'shelve' => true
       },
       'access' => {
-        'access' => 'world',
+        'view' => 'world',
         'download' => 'world'
       },
       'hasMessageDigests' => []
@@ -115,7 +115,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   let(:file5) do
     {
       'version' => 1,
-      'type' => Cocina::Models::Vocab.file,
+      'type' => Cocina::Models::ObjectType.file,
       'filename' => 'checksum.txt',
       'label' => 'checksum.txt',
       'hasMimeType' => 'text/plain',
@@ -126,7 +126,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         'shelve' => true
       },
       'access' => {
-        'access' => 'world',
+        'view' => 'world',
         'download' => 'world'
       },
       'hasMessageDigests' => []
@@ -137,13 +137,13 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     [
       {
         'version' => 1,
-        'type' => Cocina::Models::Vocab::Resources.file,
+        'type' => Cocina::Models::FileSetType.file,
         'label' => 'Page 1',
         'structural' => { 'contains' => [file1, file2] }
       },
       {
         'version' => 1,
-        'type' => Cocina::Models::Vocab::Resources.file,
+        'type' => Cocina::Models::FileSetType.file,
         'label' => '', # Some fileset have blank labels
         'structural' => { 'contains' => [file3, file4] }
       }
@@ -171,7 +171,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   end
 
   context 'with a book' do
-    let(:object_type) { Cocina::Models::Vocab.book }
+    let(:object_type) { Cocina::Models::ObjectType.book }
     let(:structural) do
       {
         contains: filesets,
@@ -183,19 +183,19 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       [
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab::Resources.page,
+          'type' => Cocina::Models::FileSetType.page,
           'label' => 'Page 1',
           'structural' => { 'contains' => [file1, file2] }
         },
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab::Resources.page,
+          'type' => Cocina::Models::FileSetType.page,
           'label' => 'Page 2',
           'structural' => { 'contains' => [file3, file4] }
         },
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab::Resources.object,
+          'type' => Cocina::Models::FileSetType.object,
           'label' => 'Object 1',
           'structural' => { 'contains' => [file5] }
         }
@@ -232,7 +232,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   end
 
   context 'with an image' do
-    let(:object_type) { Cocina::Models::Vocab.image }
+    let(:object_type) { Cocina::Models::ObjectType.image }
 
     it 'generates contentMetadata.xml' do
       expect(generate).to be_equivalent_to <<~XML
@@ -257,7 +257,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   end
 
   context 'with an manuscript' do
-    let(:object_type) { Cocina::Models::Vocab.manuscript }
+    let(:object_type) { Cocina::Models::ObjectType.manuscript }
 
     it 'generates contentMetadata.xml' do
       expect(generate).to be_equivalent_to <<~XML
@@ -283,12 +283,12 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
 
   context 'with a geo' do
     # https://argo.stanford.edu/view/druid:bb033gt0615
-    let(:object_type) { Cocina::Models::Vocab.geo }
+    let(:object_type) { Cocina::Models::ObjectType.geo }
 
     let(:file1) do
       {
         'version' => 1,
-        'type' => Cocina::Models::Vocab.file,
+        'type' => Cocina::Models::ObjectType.file,
         'filename' => '00001.zip',
         'label' => '00001.zip',
         'hasMimeType' => 'application/zip',
@@ -299,7 +299,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
           'shelve' => false
         },
         'access' => {
-          'access' => 'dark',
+          'view' => 'dark',
           'download' => 'none'
         },
         'hasMessageDigests' => [
@@ -319,7 +319,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     let(:file3) do
       {
         'version' => 1,
-        'type' => Cocina::Models::Vocab.file,
+        'type' => Cocina::Models::ObjectType.file,
         'filename' => '00002.xml',
         'label' => '00002.xml',
         'hasMimeType' => 'text/xml',
@@ -330,7 +330,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
           'shelve' => false
         },
         'access' => {
-          'access' => 'world',
+          'view' => 'world',
           'download' => 'world'
         },
         'hasMessageDigests' => []
@@ -341,19 +341,19 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       [
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab::Resources.object,
+          'type' => Cocina::Models::FileSetType.object,
           'label' => 'Data',
           'structural' => { 'contains' => [file1] }
         },
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab::Resources.file,
+          'type' => Cocina::Models::FileSetType.file,
           'label' => 'Preview',
           'structural' => { 'contains' => [file2, file4] }
         },
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab::Resources.file,
+          'type' => Cocina::Models::FileSetType.file,
           'label' => 'Attachment',
           'structural' => { 'contains' => [file3] }
         }
@@ -389,14 +389,14 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   context 'with a webarchive_seed' do
     # https://argo.stanford.edu/view/druid:bb196dd3409
 
-    let(:object_type) { Cocina::Models::Vocab.webarchive_seed }
+    let(:object_type) { Cocina::Models::ObjectType.webarchive_seed }
 
     let(:filesets) do
       [
         {
           'version' => 1,
           'label' => 'Preview',
-          'type' => Cocina::Models::Vocab::Resources.image,
+          'type' => Cocina::Models::FileSetType.image,
           'structural' => { 'contains' => [file2] }
         }
       ]
@@ -417,7 +417,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   end
 
   context 'with a document' do
-    let(:object_type) { Cocina::Models::Vocab.document }
+    let(:object_type) { Cocina::Models::ObjectType.document }
 
     it 'generates contentMetadata.xml' do
       expect(generate).to be_equivalent_to <<~XML
@@ -442,19 +442,19 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   end
 
   context 'with a media (video resource, no thumbnail)' do
-    let(:object_type) { Cocina::Models::Vocab.media }
+    let(:object_type) { Cocina::Models::ObjectType.media }
 
     let(:filesets) do
       [
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab::Resources.video,
+          'type' => Cocina::Models::FileSetType.video,
           'label' => 'Page 1',
           'structural' => { 'contains' => [file1] }
         },
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab::Resources.file,
+          'type' => Cocina::Models::FileSetType.file,
           'label' => 'Page 2',
           'structural' => { 'contains' => [file3, file4] }
         }
@@ -464,7 +464,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     let(:file1) do
       {
         'version' => 1,
-        'type' => Cocina::Models::Vocab.file,
+        'type' => Cocina::Models::ObjectType.file,
         'filename' => 'bb012xz4244_pm.mpeg',
         'label' => 'bb012xz4244_pm.mpeg',
         'hasMimeType' => 'video/mpeg',
@@ -475,7 +475,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
           'shelve' => false
         },
         'access' => {
-          'access' => 'dark'
+          'view' => 'dark'
         },
         'hasMessageDigests' => [
           {
@@ -512,19 +512,19 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   end
 
   context 'with a media (video resource, with thumbnail)' do
-    let(:object_type) { Cocina::Models::Vocab.media }
+    let(:object_type) { Cocina::Models::ObjectType.media }
 
     let(:filesets) do
       [
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab::Resources.video,
+          'type' => Cocina::Models::FileSetType.video,
           'label' => 'Page 1',
           'structural' => { 'contains' => [file1, file2] }
         },
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab::Resources.file,
+          'type' => Cocina::Models::FileSetType.file,
           'label' => 'Page 2',
           'structural' => { 'contains' => [file3, file4] }
         }
@@ -534,7 +534,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     let(:file1) do
       {
         'version' => 1,
-        'type' => Cocina::Models::Vocab.file,
+        'type' => Cocina::Models::ObjectType.file,
         'filename' => 'bb012xz4244_pm.mpeg',
         'label' => 'bb012xz4244_pm.mpeg',
         'hasMimeType' => 'video/mpeg',
@@ -545,7 +545,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
           'shelve' => false
         },
         'access' => {
-          'access' => 'dark'
+          'view' => 'dark'
         },
         'hasMessageDigests' => [
           {
@@ -585,18 +585,18 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
   end
 
   context 'with a media (audio resource, with thumbnail)' do
-    let(:object_type) { Cocina::Models::Vocab.media }
+    let(:object_type) { Cocina::Models::ObjectType.media }
     let(:filesets) do
       [
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab::Resources.audio,
+          'type' => Cocina::Models::FileSetType.audio,
           'label' => 'Page 1',
           'structural' => { 'contains' => [file1, file2] }
         },
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab::Resources.file,
+          'type' => Cocina::Models::FileSetType.file,
           'label' => 'Page 2',
           'structural' => { 'contains' => [file3, file4] }
         }
@@ -606,7 +606,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
     let(:file1) do
       {
         'version' => 1,
-        'type' => Cocina::Models::Vocab.file,
+        'type' => Cocina::Models::ObjectType.file,
         'filename' => 'bb015cf9132_ars0021_201006112000_11_01_sl.m4a',
         'label' => 'bb015cf9132_ars0021_201006112000_11_01_sl.m4a',
         'hasMimeType' => 'audio/mp4',
@@ -617,7 +617,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
           'shelve' => false
         },
         'access' => {
-          'access' => 'dark'
+          'view' => 'dark'
         },
         'hasMessageDigests' => [
           {
@@ -661,20 +661,20 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       Cocina::Models.build(JSON.parse(data))
     end
 
-    let(:object_type) { Cocina::Models::Vocab.book }
+    let(:object_type) { Cocina::Models::ObjectType.book }
 
     let(:filesets) do
       [
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab::Resources.file,
+          'type' => Cocina::Models::FileSetType.file,
           'label' => 'Page 1',
           'structural' => { 'contains' => [file1, file2] },
           'externalIdentifier' => 'https://cocina.sul.stanford.edu/fileSet/bc123df5678/012-345-678' # Existing id should be retained.
         },
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab::Resources.file,
+          'type' => Cocina::Models::FileSetType.file,
           'label' => 'Page 2',
           'structural' => { 'contains' => [file3, file4] },
           'externalIdentifier' => 'page_2' # Retain segment and form cocina file URL based on it
@@ -732,20 +732,20 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       Cocina::Models.build(JSON.parse(data))
     end
 
-    let(:object_type) { Cocina::Models::Vocab.image }
+    let(:object_type) { Cocina::Models::ObjectType.image }
 
     let(:filesets) do
       [
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab::Resources.image,
+          'type' => Cocina::Models::FileSetType.image,
           'label' => 'Page 1',
           'structural' => { 'contains' => [file1, file2] },
           'externalIdentifier' => "#{constituent_druid}_1"
         },
         {
           'version' => 1,
-          'type' => Cocina::Models::Vocab::Resources.image,
+          'type' => Cocina::Models::FileSetType.image,
           'label' => 'Page 2',
           'structural' => { 'contains' => [file3, file4] },
           'externalIdentifier' => "#{constituent_druid}_2"
@@ -780,7 +780,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       Cocina::Models::DRO.new(
         externalIdentifier: constituent_druid,
         version: 1,
-        type: Cocina::Models::Vocab.object,
+        type: Cocina::Models::ObjectType.object,
         label: 'Dummy DRO',
         access: {},
         administrative: { hasAdminPolicy: 'druid:df123cd4567' },
@@ -798,7 +798,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       {
         'externalIdentifier' => '00001.html',
         'version' => 1,
-        'type' => Cocina::Models::Vocab.file,
+        'type' => Cocina::Models::ObjectType.file,
         'filename' => '00001.html',
         'label' => '00001.html',
         'hasMimeType' => 'text/html',
@@ -810,7 +810,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
           'shelve' => false
         },
         'access' => {
-          'access' => 'dark',
+          'view' => 'dark',
           'download' => 'none'
         },
         'hasMessageDigests' => [
@@ -831,7 +831,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       {
         'externalIdentifier' => '00001.jp2',
         'version' => 1,
-        'type' => Cocina::Models::Vocab.file,
+        'type' => Cocina::Models::ObjectType.file,
         'filename' => '00001.jp2',
         'label' => '00001.jp2',
         'hasMimeType' => 'image/jp2',
@@ -842,7 +842,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
           'shelve' => true
         },
         'access' => {
-          'access' => 'stanford',
+          'view' => 'stanford',
           'download' => 'stanford'
         },
         'hasMessageDigests' => [],
@@ -857,7 +857,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       {
         'externalIdentifier' => '00002.html',
         'version' => 1,
-        'type' => Cocina::Models::Vocab.file,
+        'type' => Cocina::Models::ObjectType.file,
         'filename' => '00002.html',
         'label' => '00002.html',
         'hasMimeType' => 'text/html',
@@ -868,7 +868,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
           'shelve' => false
         },
         'access' => {
-          'access' => 'world',
+          'view' => 'world',
           'download' => 'world'
         },
         'hasMessageDigests' => []
@@ -879,7 +879,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
       {
         'externalIdentifier' => '00002.jp2',
         'version' => 1,
-        'type' => Cocina::Models::Vocab.file,
+        'type' => Cocina::Models::ObjectType.file,
         'filename' => '00002.jp2',
         'label' => '00002.jp2',
         'hasMimeType' => 'image/jp2',
@@ -890,7 +890,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
           'shelve' => true
         },
         'access' => {
-          'access' => 'world',
+          'view' => 'world',
           'download' => 'world'
         },
         'hasMessageDigests' => []

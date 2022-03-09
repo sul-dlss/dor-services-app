@@ -11,7 +11,7 @@ RSpec.describe Cocina::ToFedora::CollectionAccess do
 
   context 'with world access' do
     let(:access) do
-      Cocina::Models::CollectionAccess.new(access: 'world')
+      Cocina::Models::CollectionAccess.new(view: 'world')
     end
 
     it 'builds the xml' do
