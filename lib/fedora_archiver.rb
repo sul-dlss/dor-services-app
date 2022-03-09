@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'zlib'
-require 'ruby-progressbar'
 
 # Archive Fedora Objects as FOXML to a druid-tree
 class FedoraArchiver
@@ -14,10 +13,9 @@ class FedoraArchiver
   end
 
   def run
-    bar = ProgressBar.create(title: 'archiving', total: druids.length)
     druids.map do |druid|
       write_foxml(druid, archive_dir)
-      bar.increment
+      yield druid
     end
   end
 
