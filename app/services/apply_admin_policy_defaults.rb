@@ -117,11 +117,11 @@ class ApplyAdminPolicyDefaults
   end
 
   def default_access_from_apo
-    CocinaObjectStore
-      .find(@cocina_object.administrative.hasAdminPolicy)
-      .administrative
-      .accessTemplate
-      .to_h
-      .with_indifferent_access
+    @default_access_from_apo ||= CocinaObjectStore
+                                 .find(@cocina_object.administrative.hasAdminPolicy)
+                                 .administrative
+                                 .accessTemplate
+                                 .to_h
+                                 .with_indifferent_access
   end
 end
