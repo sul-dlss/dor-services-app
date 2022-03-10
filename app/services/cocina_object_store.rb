@@ -191,7 +191,7 @@ class CocinaObjectStore
     # Updating produces a different Cocina object than it was provided.
     Cocina::ObjectUpdater.run(fedora_object, cocina_object)
     [fedora_object.create_date, fedora_object.modified_date]
-  rescue Cocina::Mapper::MapperError, Cocina::ObjectUpdater::NotImplemented => e
+  rescue Cocina::Mapper::MapperError => e
     event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update', data: { success: false, error: e.message, request: cocina_object.to_h })
     raise
   end
