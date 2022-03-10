@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'parallel'
 require 'tty-progressbar'
 
 # Migrate Fedora objects to cocina JSON and xml datastreams stored in Postgres
@@ -7,8 +8,9 @@ require 'tty-progressbar'
 # shared/log/migration_results/migration-results-(timestamp).txt - shows druid migrated, with success / missing / ERROR, etc.
 # shared/log/fedora-migrator.log contains details of ERRORS (e.g. stacktrace)
 class FedoraMigrator
-  def initialize(druids: [], results_folder: 'migration_results')
+  def initialize(processes:, druids: [], results_folder: 'migration_results')
     @druids = druids
+    @processes = processes
     @results_folder = results_folder
     # rubocop:disable Rails/TimeZone
     # empirically proven to work, while a couple other approaches did not
@@ -28,20 +30,26 @@ class FedoraMigrator
     end
     Rails.logger.datetime_format = '%Y-%m-%d %H:%M:%S'
 
+    Rails.logger.info "Using #{processes} processes."
     File.open("#{results_folder}/#{results_file_name}", 'w') do |file|
       progress_bar = tty_progress_bar(druids.size)
       progress_bar.start
-      druids.each do |druid|
-        progress_bar.advance(druid: druid)
-        result = migrate(druid)
-        file.write("#{Time.zone.now.strftime('%Y-%m-%d %H:%M:%S')} #{druid}=#{result}\n")
+      Parallel.map(druids,
+                   in_processes: processes,
+                   finish: ->(druid, _, result) { on_finish(druid, result, progress_bar, file) }) do |druid|
+        migrate(druid)
       end
     end
   end
 
   private
 
-  attr_reader :druids, :results_folder, :results_file_name
+  attr_reader :druids, :results_folder, :results_file_name, :processes
+
+  def on_finish(druid, result, progress_bar, file)
+    progress_bar.advance(druid: druid)
+    file.write("#{Time.zone.now.strftime('%Y-%m-%d %H:%M:%S')} #{druid}=#{result}\n")
+  end
 
   # how many druids to process as a single advance unit of the progress bar
   def num_for_progress_advance(count)
@@ -61,7 +69,10 @@ class FedoraMigrator
 
   def migrate(druid)
     Honeybadger.context(druid: druid, class: FedoraMigrator)
-    fedora_obj = CocinaObjectStore.new.fedora_find(druid)
+    cocina_object_store = CocinaObjectStore.new
+    return 'already migrated' if cocina_object_store.ar_exists?(druid)
+
+    fedora_obj = cocina_object_store.fedora_find(druid)
 
     return 'skipped' unless MigrationFilter.migrate?(Nokogiri::XML(fedora_obj.rels_ext.to_rels_ext))
 
