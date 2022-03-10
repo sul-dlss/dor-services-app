@@ -108,7 +108,7 @@ RSpec.describe Dro do
       let(:source_id) { dro.identification['sourceId'] }
 
       it 'returns a Cocina::Model::DRO' do
-        expect(dro.to_cocina).to eq(minimal_cocina_dro)
+        expect(dro.to_cocina).to cocina_object_with(minimal_cocina_dro)
       end
     end
 
@@ -117,7 +117,7 @@ RSpec.describe Dro do
       let(:source_id) { dro.identification['sourceId'] }
 
       it 'returns a Cocina::Model::DRO' do
-        expect(dro.to_cocina).to eq(cocina_dro)
+        expect(dro.to_cocina).to cocina_object_with(cocina_dro)
       end
     end
   end

@@ -12,24 +12,17 @@ class CocinaObjectStore
   # Cocina object not found in datastore.
   class CocinaObjectNotFoundError < CocinaObjectStoreError; end
 
+  # Cocina object in datastore has been updated since this instance was retrieved.
+  class StaleLockError < CocinaObjectStoreError; end
+
   # Retrieves a Cocina object from the datastore.
   # @param [String] druid
-  # @return [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] cocina_object
+  # @return [Cocina::Models::DROWithMetadata, Cocina::Models::CollectionWithMetadata, Cocina::Models::AdminPolicyWithMetadata] cocina_object
   # @raise [SolrConnectionError] raised when cannot connect to Solr. This error will no longer be raised when Fedora is removed.
   # @raise [Cocina::Mapper::UnexpectedBuildError] raised when an mapping error occurs. This error will no longer be raised when Fedora is removed.
   # @raise [CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
   def self.find(druid)
     new.find(druid)
-  end
-
-  # Retrieves a Cocina object from the datastore and supplies the timestamps
-  # @param [String] druid
-  # @return [Array] a tuple consisting of cocina_object, created date and updated date
-  # @raise [SolrConnectionError] raised when cannot connect to Solr. This error will no longer be raised when Fedora is removed.
-  # @raise [Cocina::Mapper::UnexpectedBuildError] raised when an mapping error occurs. This error will no longer be raised when Fedora is removed.
-  # @raise [CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
-  def self.find_with_timestamps(druid)
-    new.find_with_timestamps(druid)
   end
 
   # Determine if an object exists in the datastore.
@@ -41,14 +34,16 @@ class CocinaObjectStore
 
   # Normalizes, validates, and updates a Cocina object in the datastore.
   # Since normalization is performed, the Cocina object that is returned may differ from the Cocina object that is provided.
-  # @param [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] cocina_object
+  # @param [Cocina::Models::DRO|Collection|AdminPolicy|DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata] cocina_object
   # @param [#create] event_factory creates events
+  # @param [boolean] skip_lock do not perform an optimistic lock check
   # @raise [Cocina::RoundtripValidationError] raised when validating roundtrip mapping fails. This error will no longer be raised when Fedora is removed.
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
   # @raise [CocinaObjectNotFoundError] raised if the cocina object does not already exist in the datastore.
+  # @raise [StateLockError] raised if optimistic lock failed.
   # @return [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] normalized cocina object
-  def self.save(cocina_object, event_factory: EventFactory)
-    new(event_factory: event_factory).save(cocina_object)
+  def self.save(cocina_object, event_factory: EventFactory, skip_lock: false)
+    new(event_factory: event_factory).save(cocina_object, skip_lock: skip_lock)
   end
 
   # Removes a Cocina object from the datastore.
@@ -72,7 +67,7 @@ class CocinaObjectStore
   # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object
   # @param [boolean] assign_doi
   # @param [#create] event_factory creates events
-  # @return [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy]
+  # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
   # @raises [SymphonyReader::ResponseError] if symphony connection failed
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
   def self.create(cocina_request_object, assign_doi: false, event_factory: EventFactory)
@@ -83,12 +78,8 @@ class CocinaObjectStore
     @event_factory = event_factory
   end
 
+  # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
   def find(druid)
-    find_with_timestamps(druid).first
-  end
-
-  # @return [Array] a tuple consisting of cocina object, created date and modified date
-  def find_with_timestamps(druid)
     if Settings.enabled_features.postgres && ar_exists?(druid)
       ar_to_cocina_find(druid)
     else
@@ -96,20 +87,25 @@ class CocinaObjectStore
     end
   end
 
-  def save(cocina_object)
+  def save(cocina_object, skip_lock: false)
     validate(cocina_object)
-    (created_at, modified_at) = cocina_to_fedora_save(cocina_object)
+    ar_save = Settings.enabled_features.postgres && ar_exists?(cocina_object.externalIdentifier)
+    # Skip the lock check for fedora if saving to PG.
+    (created_at, modified_at, lock) = cocina_to_fedora_save(cocina_object, skip_lock: skip_lock || ar_save)
     # Only update if already exists in PG (i.e., added by create or migration).
-    (created_at, modified_at) = cocina_to_ar_save(cocina_object) if Settings.enabled_features.postgres && ar_exists?(cocina_object.externalIdentifier)
+    (created_at, modified_at, lock) = cocina_to_ar_save(cocina_object, skip_lock: skip_lock) if ar_save
     add_tags_for_update(cocina_object)
 
-    event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update', data: { success: true, request: cocina_object.to_h })
+    cocina_object_without_metadata = Cocina::Models.without_metadata(cocina_object)
+
+    event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update', data: { success: true, request: cocina_object_without_metadata.to_h })
 
     # Broadcast this update action to a topic
-    Notifications::ObjectUpdated.publish(model: cocina_object, created_at: created_at, modified_at: modified_at)
-    cocina_object
+    Notifications::ObjectUpdated.publish(model: cocina_object_without_metadata, created_at: created_at, modified_at: modified_at)
+    Cocina::Models.with_metadata(cocina_object, lock, created: created_at, modified: modified_at)
   rescue Cocina::ValidationError => e
-    event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update', data: { success: false, error: e.message, request: cocina_object.to_h })
+    event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update',
+                         data: { success: false, error: e.message, request: Cocina::Models.without_metadata(cocina_object).to_h })
     raise
   end
 
@@ -124,8 +120,8 @@ class CocinaObjectStore
     cocina_object = assign_doi(cocina_object) if assign_doi
 
     # This saves the Fedora object.
-    fedora_create(cocina_object, druid: druid)
-    (created_at, updated_at) = cocina_to_ar_save(cocina_object) if Settings.enabled_features.postgres
+    (created_at, modified_at, lock) = fedora_create(cocina_object, druid: druid)
+    (created_at, modified_at, lock) = cocina_to_ar_save(cocina_object, skip_lock: true) if Settings.enabled_features.postgres
     add_tags_for_create(druid, cocina_request_object)
     # This creates version 1.0.0 (Initial Version)
     ObjectVersion.increment_version(druid)
@@ -139,8 +135,8 @@ class CocinaObjectStore
     event_factory.create(druid: druid, event_type: 'registration', data: cocina_object.to_h)
 
     # Broadcast this to a topic
-    Notifications::ObjectCreated.publish(model: cocina_object, created_at: Time.zone.now, modified_at: Time.zone.now)
-    cocina_object
+    Notifications::ObjectCreated.publish(model: cocina_object, created_at: created_at, modified_at: modified_at)
+    Cocina::Models.with_metadata(cocina_object, lock, created: created_at, modified: modified_at)
   end
 
   def exists?(druid)
@@ -180,22 +176,37 @@ class CocinaObjectStore
 
   # In later steps in the migration, the *fedora* methods will be replaced by the *ar* methods.
 
-  # @return [Array] a tuple consisting of cocina object, created date and modified date
+  # @return [Cocina::Models::DROWithMetadata, Cocina::Models::CollectionWithMetadata, Cocina::Models::AdminPolicyWithMetadata] cocina_object
   def fedora_to_cocina_find(druid)
     fedora_object = fedora_find(druid)
-    [Cocina::Mapper.build(fedora_object), fedora_object.create_date.to_datetime, fedora_object.modified_date.to_datetime]
+    cocina_object = Cocina::Mapper.build(fedora_object)
+    Cocina::Models.with_metadata(cocina_object, fedora_lock_for(fedora_object), created: fedora_object.create_date.to_datetime, modified: fedora_object.modified_date.to_datetime)
+  end
+
+  def fedora_lock_for(fedora_object)
+    fedora_object.modified_date.to_datetime.iso8601
   end
 
   # @return [Array] array consisting of created date and modified date
-  def cocina_to_fedora_save(cocina_object)
+  def cocina_to_fedora_save(cocina_object, skip_lock: false)
     # Currently this only supports an update, not a save.
     fedora_object = fedora_find(cocina_object.externalIdentifier)
+
+    fedora_check_lock(fedora_object, cocina_object) unless skip_lock
+
     # Updating produces a different Cocina object than it was provided.
-    Cocina::ObjectUpdater.run(fedora_object, cocina_object)
-    [fedora_object.create_date, fedora_object.modified_date]
+    Cocina::ObjectUpdater.run(fedora_object, Cocina::Models.without_metadata(cocina_object))
+    [fedora_object.create_date.to_datetime, fedora_object.modified_date.to_datetime, fedora_lock_for(fedora_object)]
   rescue Cocina::Mapper::MapperError => e
-    event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update', data: { success: false, error: e.message, request: cocina_object.to_h })
+    event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update',
+                         data: { success: false, error: e.message, request: Cocina::Models.without_metadata(cocina_object).to_h })
     raise
+  end
+
+  def fedora_check_lock(fedora_object, cocina_object)
+    return if cocina_object.respond_to?(:lock) && fedora_lock_for(fedora_object) == cocina_object.lock
+
+    raise StaleLockError, "Expected lock of #{fedora_lock_for(fedora_object)} but received #{cocina_object.lock}."
   end
 
   def fedora_exists?(druid)
@@ -211,10 +222,11 @@ class CocinaObjectStore
 
   # @param [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy] cocina_object
   # @param [String] druid
-  # @return [Dor::Abstract] Fedora item
+  # @return [Array] array consisting of created date, modified date, and lock
   # @raises SymphonyReader::ResponseError if symphony connection failed
   def fedora_create(cocina_object, druid:)
-    Cocina::ObjectCreator.create(cocina_object, druid: druid)
+    fedora_object = Cocina::ObjectCreator.create(cocina_object, druid: druid)
+    [fedora_object.create_date.to_datetime, fedora_object.modified_date.to_datetime, fedora_lock_for(fedora_object)]
   end
 
   # The *ar* methods are private. In later steps in the migration, the *ar* methods will be invoked by the
@@ -222,31 +234,46 @@ class CocinaObjectStore
 
   # Persist a Cocina object with ActiveRecord.
   # @param [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy] cocina_object
-  # @return [Array] array consisting of created date and modified date
+  # @return [Array] array consisting of created date, modified date, and lock
   # @raise [Cocina::ValidationError] if externalIdentifier or sourceId not unique
-  def cocina_to_ar_save(cocina_object)
+  def cocina_to_ar_save(cocina_object, skip_lock: false)
+    ar_check_lock(cocina_object) unless skip_lock
+
     model_clazz = case cocina_object
-                  when Cocina::Models::AdminPolicy
+                  when Cocina::Models::AdminPolicy, Cocina::Models::AdminPolicyWithMetadata
                     AdminPolicy
-                  when Cocina::Models::DRO
+                  when Cocina::Models::DRO, Cocina::Models::DROWithMetadata
                     Dro
-                  when Cocina::Models::Collection
+                  when Cocina::Models::Collection, Cocina::Models::CollectionWithMetadata
                     Collection
                   else
                     raise CocinaObjectStoreError, "unsupported type #{cocina_object&.type}"
                   end
-    ar_cocina_object = model_clazz.upsert_cocina(cocina_object)
-    [ar_cocina_object.created_at, ar_cocina_object.updated_at]
+    ar_cocina_object = model_clazz.upsert_cocina(Cocina::Models.without_metadata(cocina_object))
+    [ar_cocina_object.created_at.utc, ar_cocina_object.updated_at.utc, ar_lock_for(ar_cocina_object)]
   rescue ActiveRecord::RecordNotUnique
     raise Cocina::ValidationError.new('ExternalIdentifier or sourceId is not unique.', status: :conflict)
   end
 
+  def ar_check_lock(cocina_object)
+    lock = Dro.where(external_identifier: cocina_object.externalIdentifier).limit(1).pluck(:lock).first ||
+           AdminPolicy.where(external_identifier: cocina_object.externalIdentifier).limit(1).pluck(:lock).first ||
+           Collection.where(external_identifier: cocina_object.externalIdentifier).limit(1).pluck(:lock).first
+    return if cocina_object.respond_to?(:lock) && lock&.to_s == cocina_object.lock
+
+    raise StaleLockError, "Expected lock of #{lock&.to_s} but received #{cocina_object.lock}."
+  end
+
   # Find a Cocina object persisted by ActiveRecord.
   # @param [String] druid to find
-  # @return [Array] a tuple consisting of cocina object, created date and modified date
+  # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
   def ar_to_cocina_find(druid)
     ar_cocina_object = ar_find(druid)
-    [ar_cocina_object.to_cocina, ar_cocina_object.created_at, ar_cocina_object.updated_at]
+    Cocina::Models.with_metadata(ar_cocina_object.to_cocina, ar_lock_for(ar_cocina_object), created: ar_cocina_object.created_at.utc, modified: ar_cocina_object.updated_at.utc)
+  end
+
+  def ar_lock_for(ar_cocina_object)
+    ar_cocina_object.lock.to_s
   end
 
   # Find an ActiveRecord Cocina object.

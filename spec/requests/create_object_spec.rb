@@ -166,6 +166,9 @@ RSpec.describe 'Create object' do
                    parsed_body = JSON.parse(req.body).deep_symbolize_keys
                    expect(parsed_body[:cocina_object]).to eq(expected.to_h)
                  end).to have_been_made
+          expect(response.headers['Last-Modified']).to end_with 'GMT'
+          expect(response.headers['X-Created-At']).to end_with 'GMT'
+          expect(response.headers['ETag']).to match(%r{W/".+"})
         end
       end
 

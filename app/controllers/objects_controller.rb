@@ -2,7 +2,7 @@
 
 # rubocop:disable Metrics/ClassLength
 class ObjectsController < ApplicationController
-  before_action :load_cocina_object, only: %i[update_doi_metadata update_marc_record notify_goobi accession destroy]
+  before_action :load_cocina_object, only: %i[update_doi_metadata update_marc_record notify_goobi accession destroy show]
 
   rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
     json_api_error(status: :not_found, message: e.message)
@@ -34,7 +34,8 @@ class ObjectsController < ApplicationController
     model_request = Cocina::Models.build_request(params.except(:action, :controller, :assign_doi).to_unsafe_h)
     cocina_object = CocinaObjectStore.create(model_request, assign_doi: params[:assign_doi])
 
-    render status: :created, location: object_path(cocina_object.externalIdentifier), json: cocina_object
+    add_headers(cocina_object)
+    render status: :created, location: object_path(cocina_object.externalIdentifier), json: Cocina::Models.without_metadata(cocina_object)
   rescue SymphonyReader::ResponseError => e
     Honeybadger.notify(e)
     json_api_error(status: :bad_gateway, title: 'Catalog connection error', message: 'Unable to read descriptive metadata from the catalog')
@@ -49,22 +50,33 @@ class ObjectsController < ApplicationController
 
   def update
     cocina_object = Cocina::Models.build(params.except(:action, :controller, :id).to_unsafe_h)
-    updated_cocina_object = CocinaObjectStore.save(cocina_object)
+    # ETag / optimistic locking is optional.
+    etag = from_etag(request.headers['If-Match'])
+    updated_cocina_object = if etag
+                              CocinaObjectStore.save(Cocina::Models.with_metadata(cocina_object, etag))
+                            else
+                              CocinaObjectStore.save(cocina_object, skip_lock: true)
+                            end
 
-    render json: updated_cocina_object
+    add_headers(updated_cocina_object)
+    render json: Cocina::Models.without_metadata(updated_cocina_object)
   # This rescue will no longer be necessary when remove Fedora.
   rescue Cocina::RoundtripValidationError => e
     Honeybadger.notify(e)
     json_api_error(status: e.status, message: e.message)
   rescue Cocina::ValidationError => e
     json_api_error(status: e.status, message: e.message)
+  rescue CocinaObjectStore::StaleLockError => e
+    json_api_error(status: :precondition_failed,
+                   title: 'ETag mismatch',
+                   message: "You are attempting to update a stale copy of the object: #{e.message} Refetch the object and attempt your change again.")
   end
 
   def show
-    (@cocina_object, created_at, modified_at) = CocinaObjectStore.find_with_timestamps(params[:id])
-    headers['X-Created-At'] = created_at.httpdate
-    headers['Last-Modified'] = modified_at.httpdate
-    render json: @cocina_object
+    return head :not_modified if from_etag(request.headers['If-None-Match']) == @cocina_object.lock
+
+    add_headers(@cocina_object)
+    render json: Cocina::Models.without_metadata(@cocina_object)
   end
 
   # Initialize specified workflow (assemblyWF by default), and also version if needed
@@ -199,6 +211,22 @@ class ObjectsController < ApplicationController
     else
       {}
     end
+  end
+
+  def add_headers(cocina_object)
+    headers['X-Created-At'] = cocina_object.created.httpdate
+    headers['Last-Modified'] = cocina_object.modified.httpdate
+    headers['Etag'] = "W/\"#{cocina_object.lock}\""
+  end
+
+  def from_etag(etag)
+    return nil if etag.nil?
+
+    return etag unless etag.start_with?('W/')
+
+    # Remove leading W/" and trailing "
+    # Delete trailing -gzip added by mod_default. See https://github.com/rails/rails/issues/19056
+    etag[3..-2].delete_suffix('-gzip')
   end
   # rubocop:enable Metrics/ClassLength
 end

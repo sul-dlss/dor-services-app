@@ -411,6 +411,12 @@ paths:
             text/plain:
               schema:
                 type: string
+        '412':
+          description: Provided ETag didn't match the previous version.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       parameters:
         - name: object_id
           in: path
@@ -1107,8 +1113,25 @@ paths:
                 - $ref: '#/components/schemas/RequestCollection'
                 - $ref: '#/components/schemas/RequestAdminPolicy'
       responses:
-        '200':
+        '201':
           description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/DRO'
+                  - $ref: '#/components/schemas/Collection'
+                  - $ref: '#/components/schemas/AdminPolicy'
+          headers:
+            ETag:
+              schema:
+                type: string
+            Last-Modified:
+              schema:
+                type: string
+            X-Created-At:
+              schema:
+                type: string
         '400':
           description: Invalid DOR parameter
           content:
@@ -1184,6 +1207,23 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/DRO'
+                  - $ref: '#/components/schemas/Collection'
+                  - $ref: '#/components/schemas/AdminPolicy'
+          headers:
+            ETag:
+              schema:
+                type: string
+            Last-Modified:
+              schema:
+                type: string
+            X-Created-At:
+              schema:
+                type: string
         '400':
           description: Invalid DOR parameter
           content:
@@ -1223,12 +1263,17 @@ paths:
                   - $ref: '#/components/schemas/Collection'
                   - $ref: '#/components/schemas/AdminPolicy'
           headers:
+            ETag:
+              schema:
+                type: string
             Last-Modified:
               schema:
                 type: string
             X-Created-At:
               schema:
                 type: string
+        '304':
+          description: No change. The client provided an ETag that matches the current state of the item.                
         '422':
           description: Unprocessable Entity
           content:

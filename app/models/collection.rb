@@ -2,6 +2,8 @@
 
 # Model for a Collection.
 class Collection < ApplicationRecord
+  self.locking_column = 'lock'
+
   # @return [Cocina::Models::Collection] Cocina collection
   def to_cocina
     Cocina::Models::Collection.new(to_h)
