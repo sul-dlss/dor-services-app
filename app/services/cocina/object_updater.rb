@@ -5,8 +5,6 @@ module Cocina
   # This should only contain Fedora-specific actions.
   # Actions that should be performed regardless of datastore should be in CocinaObjectStore.
   class ObjectUpdater
-    class NotImplemented < StandardError; end
-
     # @param [ActiveFedora::Base] fedora_object the Fedora object to update
     # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object the cocina model provided by the client
     # @param [boolean] trial do not persist or event; run all mappings regardless of changes

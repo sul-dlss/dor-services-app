@@ -4,11 +4,6 @@
 class ObjectsController < ApplicationController
   before_action :load_cocina_object, only: %i[update_doi_metadata update_marc_record notify_goobi accession destroy]
 
-  # No longer be necessary when remove Fedora.
-  rescue_from(Cocina::ObjectUpdater::NotImplemented) do |e|
-    json_api_error(status: :unprocessable_entity, message: e.message)
-  end
-
   rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
     json_api_error(status: :not_found, message: e.message)
   end
