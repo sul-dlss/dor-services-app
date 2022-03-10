@@ -31,6 +31,7 @@ gem 'jbuilder'
 gem 'jwt' # json web token
 gem 'lograge'
 gem 'okcomputer'
+gem 'parallel' # used for validating cocina tools
 gem 'pg'
 gem 'progressbar' # for the cleaner rake task
 gem 'puma', '~> 5.3' # app server
@@ -59,7 +60,6 @@ group :test, :development do
   gem 'byebug', platform: :mri
   gem 'diffy'
   gem 'factory_bot_rails'
-  gem 'parallel' # used for validating cocina tools
   gem 'pry-byebug'
   gem 'rack-console'
   gem 'rspec_junit_formatter'
