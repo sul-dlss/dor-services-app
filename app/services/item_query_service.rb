@@ -14,8 +14,19 @@ class ItemQueryService
 
     errors[virtual_object] << "Item #{virtual_object} cannot be a constituent of itself" if constituents.include?(virtual_object)
 
-    ([virtual_object] + constituents).each do |druid|
-      find_combinable_item(druid)
+    # check virtual_object for combinability
+    begin
+      find_combinable_item(virtual_object)
+    rescue UncombinableItemError => e
+      errors[virtual_object] << e.message
+    end
+
+    # check constituents for combinability and whether they are already virtual objects
+    begin
+      constituents.each do |druid|
+        check_virtual(druid)
+        find_combinable_item(druid)
+      end
     rescue UncombinableItemError => e
       errors[virtual_object] << e.message
     end
@@ -29,10 +40,17 @@ class ItemQueryService
       raise UncombinableItemError, "Item #{item.externalIdentifier} is not an item" unless item.dro?
       raise UncombinableItemError, "Item #{item.externalIdentifier} is dark" if item.access.view == 'dark'
       raise UncombinableItemError, "Item #{item.externalIdentifier} is citation-only" if item.access.view == 'citation-only'
-      raise UncombinableItemError, "Item #{item.externalIdentifier} is itself a virtual object" if item.structural&.hasMemberOrders&.any? { |order| order.members.any? }
       raise UncombinableItemError, "Item #{item.externalIdentifier} is not in the accessioned or opened workflow state" unless current_workflow_state(item).in?(ALLOWED_WORKFLOW_STATES)
     end
   end
+
+  # @raise [UncombinableItemError] if druid is a virtual object
+  def self.check_virtual(druid)
+    new(id: druid).item do |item|
+      raise UncombinableItemError, "Item #{item.externalIdentifier} is itself a virtual object" if item.structural&.hasMemberOrders&.any? { |order| order.members.any? }
+    end
+  end
+  private_class_method :check_virtual
 
   def self.current_workflow_state(item)
     WorkflowClientFactory
