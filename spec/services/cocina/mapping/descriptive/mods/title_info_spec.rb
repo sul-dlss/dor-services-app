@@ -329,13 +329,13 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Uniform title with authority and primary title' do
-    # How to ID: titleInfo type="uniform"
-    # NOTE: For MODS roundtrip of uniform titles, assign the nameTitleGroup to
-    # 1) name with status "primary" in contributor with status "primary" or
-    # 2) first name in contributor with status "primary" or
-    # 3) if "appliesTo" is present, the title that matches that value
+    # How to ID assign nameTitleGroup to MODS from cocina:
+    #  for cocina title of type "uniform", look for:
+    # 1) name of status "primary" within a contributor of status "primary" or
+    # 2) first name in a contributor with status "primary" or
+    # 3) if "appliesTo" value is present in name, the title that matches that value
     # If none of those criteria are met in Cocina, do not assign nameTitleGroup in MODS
-    xit 'update not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo usage="primary">
@@ -391,7 +391,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Uniform title with multiple namePart subelements' do
-    xit 'update not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo type="uniform" nameTitleGroup="1">
@@ -443,7 +443,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Name-title authority plus additional contributor not part of uniform title' do
-    xit 'update not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
@@ -511,13 +511,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   describe 'Uniform title with repetition of author' do
     # Adapted from kd992vz2371
     # Ignore usage and nameTitleGroup when determining duplication; all subelements of name should be exact duplication
-    let(:warnings) do
-      [
-        Notification.new(msg: 'Duplicate name entry')
-      ]
-    end
-
-    xit 'update not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo type="uniform" nameTitleGroup="1">
@@ -529,6 +523,19 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
             <namePart type="date">active 1230</namePart>
           </name>
           <name type="personal">
+            <namePart>Guillaume</namePart>
+            <namePart type="termsOfAddress">de Lorris</namePart>
+            <namePart type="date">active 1230</namePart>
+          </name>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <titleInfo type="uniform" nameTitleGroup="1">
+            <title>Roman de la Rose. 1878</title>
+          </titleInfo>
+          <name type="personal" usage="primary" nameTitleGroup="1">
             <namePart>Guillaume</namePart>
             <namePart type="termsOfAddress">de Lorris</namePart>
             <namePart type="date">active 1230</namePart>
@@ -566,37 +573,22 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
               ],
               type: 'person',
               status: 'primary'
-            },
-            {
-              name: [
-                {
-                  structuredValue: [
-                    {
-                      value: 'Guillaume',
-                      type: 'name'
-                    },
-                    {
-                      value: 'de Lorris',
-                      type: 'term of address'
-                    },
-                    {
-                      value: 'active 1230',
-                      type: 'activity dates'
-                    }
-                  ]
-                }
-              ],
-              type: 'person'
             }
           ]
         }
+      end
+
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Duplicate name entry')
+        ]
       end
     end
   end
 
   describe 'Uniform title with repetition of author plus role' do
     # Adapted from bf818dg3045
-    xit 'update not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo>
@@ -906,10 +898,105 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
     end
   end
 
+  describe 'Parallel uniform title in nameTitleGroup with parallel contributor NAME' do
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="1">
+            <title>Mishnah berurah. English</title>
+          </titleInfo>
+          <titleInfo type="uniform" nameTitleGroup="2" altRepGroup="1">
+            <title>Mishnah berurah in Hebrew characters</title>
+          </titleInfo>
+          <name type="personal" usage="primary" altRepGroup="2" nameTitleGroup="1">
+            <namePart>Israel Meir</namePart>
+            <namePart type="termsOfAddress">ha-Kohen</namePart>
+          </name>
+          <name type="personal" altRepGroup="2" nameTitleGroup="2">
+            <namePart>Israel Meir in Hebrew characters</namePart>
+            <namePart type="date">1838-1933</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          title: [
+            {
+              parallelValue: [
+                {
+                  value: 'Mishnah berurah. English'
+                },
+                {
+                  value: 'Mishnah berurah in Hebrew characters'
+                }
+              ],
+              type: 'uniform'
+            }
+          ],
+          contributor: [
+            {
+              name: [
+                {
+                  parallelValue: [
+                    {
+                      structuredValue: [
+                        {
+                          value: 'Israel Meir',
+                          type: 'name'
+                        },
+                        {
+                          value: 'ha-Kohen',
+                          type: 'term of address'
+                        }
+                      ],
+                      status: 'primary',
+                      appliesTo: [
+                        {
+                          value: 'Mishnah berurah. English'
+                        }
+                      ]
+                    },
+                    {
+                      structuredValue: [
+                        {
+                          value: 'Israel Meir in Hebrew characters',
+                          type: 'name'
+                        },
+                        {
+                          value: '1838-1933',
+                          type: 'life dates'
+                        }
+                      ],
+                      appliesTo: [
+                        {
+                          value: 'Mishnah berurah in Hebrew characters'
+                        }
+                      ]
+                    }
+                  ],
+                  type: 'person',
+                  status: 'primary'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Multilingual uniform title' do
     # adapted from cv621pf3709
     # NOTE: clunky workaround for MARC data
-    xit 'updated spec not implemented' do
+
+    # How to ID assign nameTitleGroup to MODS from cocina:
+    #  for cocina title of type "uniform", look for:
+    # 1) name of status "primary" within a contributor of status "primary" or
+    # 2) first name in a contributor with status "primary" or
+    # 3) if "appliesTo" value is present in name, the title that matches that value
+    # If none of those criteria are met in Cocina, do not assign nameTitleGroup in MODS
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo>
@@ -1098,7 +1185,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Uniform title with corporate author' do
-    xit 'updated spec not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo type="uniform" nameTitleGroup="1">

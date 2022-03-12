@@ -13,28 +13,37 @@ module Cocina
         # @params [Nokogiri::XML::Builder] xml
         # @params [Cocina::Models::Contributor] contributor
         # @params [IdGenerator] id_generator
-        # @params [String] name_title_group_indexes
-        def self.write(xml:, contributor:, id_generator:, name_title_group_indexes: {})
-          new(xml: xml, contributor: contributor, id_generator: id_generator, name_title_group_indexes: name_title_group_indexes).write
+        # @params [Hash<String=>Hash<String => Integer>>] name_title_vals_index key: contrib_name_val, value: { title_val => name_title_group }
+        #    e.g.  {"Israel Meir"=>{"Mishnah berurah. English"=>1}, "Israel Meir in Hebrew characters"=>{"Mishnah berurah in Hebrew characters"=>2}}
+        def self.write(xml:, contributor:, id_generator:, name_title_vals_index: {})
+          new(xml: xml, contributor: contributor, id_generator: id_generator, name_title_vals_index: name_title_vals_index).write
         end
 
-        def initialize(xml:, contributor:, id_generator:, name_title_group_indexes: {})
+        def initialize(xml:, contributor:, id_generator:, name_title_vals_index: {})
           @xml = xml
           @contributor = contributor
           @id_generator = id_generator
-          @name_title_group_indexes = name_title_group_indexes
+          @name_title_vals_index = name_title_vals_index
         end
 
         def write
           if contributor.type == 'unspecified others'
             write_etal
           elsif contributor.name.present?
-            parallel_values = contributor.name.first.parallelValue
+            contrib_name = contributor.name.first
+            parallel_values = contrib_name.parallelValue
             if parallel_values.present?
               altrepgroup_id = id_generator.next_altrepgroup
-              parallel_values.each_with_index do |parallel_value, index|
-                name_title_group = name_title_group_indexes.dig(0, index)
-                write_parallel_contributor(contributor, contributor.name.first, parallel_value, name_title_group, altrepgroup_id)
+              parallel_values.each do |parallel_contrib_name|
+                title_from_contrib = parallel_contrib_name.appliesTo&.first&.value
+                NameTitleGroup.value_strings(parallel_contrib_name).each do |parallel_contrib_name_val|
+                  if name_title_vals_index[parallel_contrib_name_val] && title_from_contrib
+                    name_title_group = name_title_vals_index[parallel_contrib_name_val][title_from_contrib]
+                    write_parallel_contributor(contributor, contrib_name, parallel_contrib_name, name_title_group, altrepgroup_id)
+                  else
+                    write_parallel_contributor(contributor, contrib_name, parallel_contrib_name, nil, altrepgroup_id)
+                  end
+                end
               end
             else
               write_contributor(contributor)
@@ -44,7 +53,7 @@ module Cocina
 
         private
 
-        attr_reader :xml, :contributor, :name_title_group_indexes, :id_generator
+        attr_reader :xml, :contributor, :name_title_vals_index, :id_generator
 
         def write_etal
           xml.name do
@@ -53,7 +62,22 @@ module Cocina
         end
 
         def write_contributor(contributor)
-          xml.name name_attributes(contributor, contributor.name.first, name_title_group_indexes[0]) do
+          first_contrib_name = contributor.name.first
+          title_from_contrib = first_contrib_name.appliesTo&.first&.value
+          name_title_group = nil
+          NameTitleGroup.value_strings(first_contrib_name)&.detect do |contrib_name_val|
+            name_title_group = if title_from_contrib
+                                 name_title_vals_index[contrib_name_val][title_from_contrib]
+                               else
+                                 # we may have a name_title_group from a primary contributor name, so
+                                 #  name_title_vals_index would look like this:
+                                 #  {"Shakespeare, William, 1564-1616"=>{"Hamlet"=>1}}
+                                 #  and we don't need to worry about WHICH title, because there is only one
+                                 name_title_vals_index[contrib_name_val]&.values&.first
+                               end
+          end
+
+          xml.name name_attributes(contributor, contributor.name.first, name_title_group) do
             contributor.name.each do |name|
               write_name(name)
             end
