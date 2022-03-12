@@ -253,25 +253,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             ]
           },
           {
-            structuredValue: [
-              {
-                type: 'title',
-                value: 'Shaʻare ha-ḳedushah'
-              },
-              {
-                structuredValue: [
-                  {
-                    value: 'Vital, Ḥayyim ben Joseph',
-                    type: 'name'
-                  },
-                  {
-                    value: '1542 or 1543-1620',
-                    type: 'life dates'
-                  }
-                ],
-                type: 'name'
-              }
-            ],
+            value: 'Shaʻare ha-ḳedushah',
             type: 'uniform'
           }
         ]
@@ -302,25 +284,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       it 'creates value from the authority record' do
         expect(build).to eq [
           {
-            structuredValue: [
-              {
-                value: 'Tractatus de intellectus emendatione. German',
-                type: 'title'
-              },
-              {
-                structuredValue: [
-                  {
-                    value: 'Spinoza, Benedictus de',
-                    type: 'name'
-                  },
-                  {
-                    value: '1632-1677',
-                    type: 'life dates'
-                  }
-                ],
-                type: 'name'
-              }
-            ],
+            value: 'Tractatus de intellectus emendatione. German',
             type: 'uniform'
           }
         ]
@@ -340,10 +304,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         XML
       end
 
-      before do
-        allow(notifier).to receive(:warn)
-      end
-
       it 'parses' do
         expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
       end
@@ -351,12 +311,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
       it 'creates value from the authority record and warns' do
         expect(build).to eq [
           {
-            structuredValue: [
-              {
-                value: 'Hamlet',
-                type: 'title'
-              }
-            ],
+            value: 'Hamlet',
             type: 'uniform',
             uri: 'http://id.loc.gov/authorities/names/n80008522',
             source: {
@@ -365,7 +320,6 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             }
           }
         ]
-        expect(notifier).to have_received(:warn).with('Name not found for title group')
       end
     end
 

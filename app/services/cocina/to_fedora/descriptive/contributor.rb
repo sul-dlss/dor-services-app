@@ -9,6 +9,7 @@ module Cocina
         NAME_TYPE = Cocina::FromFedora::Descriptive::Contributor::ROLES.invert.merge('event' => 'corporate').freeze
         NAME_PART = FromFedora::Descriptive::Contributor::NAME_PART.invert.freeze
 
+        # NOTE: contributors in nameTitleGroups are output as part of Title.
         # @params [Nokogiri::XML::Builder] xml
         # @params [Array<Cocina::Models::Contributor>] contributors
         # @params [Array<Cocina::Models::Title>] titles
@@ -24,9 +25,10 @@ module Cocina
           @id_generator = id_generator
         end
 
+        # NOTE: contributors in nameTitleGroups are output as part of Title.
         def write
           Array(contributors)
-            .reject { |contributor| NameTitleGroup.part_of_nametitlegroup?(contributor: contributor, titles: titles) }
+            .reject { |contributor| NameTitleGroup.in_name_title_group?(contributor: contributor, titles: titles) }
             .each { |contributor| ContributorWriter.write(xml: xml, contributor: contributor, id_generator: id_generator) }
         end
 

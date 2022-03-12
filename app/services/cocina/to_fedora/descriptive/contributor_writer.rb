@@ -13,38 +13,55 @@ module Cocina
         # @params [Nokogiri::XML::Builder] xml
         # @params [Cocina::Models::Contributor] contributor
         # @params [IdGenerator] id_generator
-        # @params [String] name_title_group_indexes
-        def self.write(xml:, contributor:, id_generator:, name_title_group_indexes: {})
-          new(xml: xml, contributor: contributor, id_generator: id_generator, name_title_group_indexes: name_title_group_indexes).write
+        # @params [Hash<Hash, Hash<Hash, Integer>>] name_title_vals_index is a Hash
+        #   the key is a hash representing a single contributor name, with a key of :value or :structuredValue
+        #   the value is a hash, where
+        #      the key is a hash representing a single title value, with a key of :value or :structuredValue
+        #      the value is the nameTitleGroup number as an Integer
+        #   e.g. {{:value=>"James Joyce"}=>{:value=>"Portrait of the artist as a young man"}=>1}
+        def self.write(xml:, contributor:, id_generator:, name_title_vals_index: {})
+          new(xml: xml, contributor: contributor, id_generator: id_generator, name_title_vals_index: name_title_vals_index).write
         end
 
-        def initialize(xml:, contributor:, id_generator:, name_title_group_indexes: {})
+        def initialize(xml:, contributor:, id_generator:, name_title_vals_index: {})
           @xml = xml
           @contributor = contributor
           @id_generator = id_generator
-          @name_title_group_indexes = name_title_group_indexes
+          @name_title_vals_index = name_title_vals_index
         end
 
+        # rubocop:disable Metrics/PerceivedComplexity
         def write
           if contributor.type == 'unspecified others'
             write_etal
           elsif contributor.name.present?
-            parallel_values = contributor.name.first.parallelValue
+            contrib_name = contributor.name.first
+            parallel_values = contrib_name.parallelValue
             if parallel_values.present?
               altrepgroup_id = id_generator.next_altrepgroup
-              parallel_values.each_with_index do |parallel_value, index|
-                name_title_group = name_title_group_indexes.dig(0, index)
-                write_parallel_contributor(contributor, contributor.name.first, parallel_value, name_title_group, altrepgroup_id)
+              parallel_values.each do |parallel_contrib_name|
+                NameTitleGroup.value_slices(parallel_contrib_name)&.each do |parallel_contrib_name_slice|
+                  if name_title_vals_index[parallel_contrib_name_slice]
+                    name_title_group = name_title_vals_index[parallel_contrib_name_slice]&.values&.first
+                    write_parallel_contributor(contributor, contrib_name, parallel_contrib_name, name_title_group, altrepgroup_id)
+                  else
+                    # TODO:  want a way to notify that we hit a problem - either notifier or HB error (issue #3751)
+                    #  OR validate for semantic correctness upon creation/update so we can't get here.
+                    #  notifier.warn("For contributor name '#{parallel_contrib_name_val}', no title matching '#{title_from_contrib}'")
+                    write_parallel_contributor(contributor, contrib_name, parallel_contrib_name, nil, altrepgroup_id)
+                  end
+                end
               end
             else
               write_contributor(contributor)
             end
           end
         end
+        # rubocop:enable Metrics/PerceivedComplexity
 
         private
 
-        attr_reader :xml, :contributor, :name_title_group_indexes, :id_generator
+        attr_reader :xml, :contributor, :name_title_vals_index, :id_generator
 
         def write_etal
           xml.name do
@@ -53,8 +70,17 @@ module Cocina
         end
 
         def write_contributor(contributor)
-          attributes = name_attributes(contributor, contributor.name.first, name_title_group_indexes[0])
-          type_attr = NAME_TYPE.fetch(contributor.type, name_title_group_indexes[0] ? 'personal' : nil)
+          name_title_group = nil
+
+          contrib_name_value_slices = NameTitleGroup.contrib_name_value_slices(contributor)
+          contrib_name_value_slices.each do |contrib_name_value_slice|
+            next if name_title_vals_index.blank?
+
+            name_title_group = name_title_vals_index[contrib_name_value_slice]&.values&.first
+          end
+
+          attributes = name_attributes(contributor, contributor.name.first, name_title_group)
+          type_attr = NAME_TYPE.fetch(contributor.type, name_title_group ? 'personal' : nil)
           attributes[:type] = type_attr if type_attr
           xml.name attributes do
             contributor.name.each do |name|

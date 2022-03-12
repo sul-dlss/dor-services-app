@@ -22,6 +22,7 @@ module Cocina
           normalize_role_term
           normalize_role # must be after normalize_role_term
           normalize_name
+          normalize_corporate_needing_primary
           normalize_dupes
           normalize_type
           normalize_name_part_type
@@ -72,6 +73,17 @@ module Cocina
           ng_xml.xpath('//mods:name[@xlink:href and mods:*]', mods: ModsNormalizer::MODS_NS, xlink: ModsNormalizer::XLINK_NS).each do |node|
             node['valueURI'] = node.remove_attribute('href').value
           end
+        end
+
+        # assign usage="primary" to a single corporate name with nameTitleGroup if there is no other "primary" usage designation
+        def normalize_corporate_needing_primary
+          existing_primary_name = ng_xml.root.xpath('//mods:mods/mods:name[@usage="primary"]', mods: ModsNormalizer::MODS_NS)
+          return if existing_primary_name.present?
+
+          name_title_group_names = ng_xml.root.xpath('//mods:mods/mods:name[@nameTitleGroup][@type="corporate"]', mods: ModsNormalizer::MODS_NS)
+          return unless name_title_group_names.size == 1
+
+          name_title_group_names.first['usage'] = 'primary'
         end
 
         def normalize_dupes
