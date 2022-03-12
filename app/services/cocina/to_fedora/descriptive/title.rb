@@ -4,13 +4,15 @@ module Cocina
   module ToFedora
     class Descriptive
       # Maps titles from cocina to MODS XML
+      #   NOTE: contributors from nameTitleGroups are output here as well;
+      #   this allows for consistency of the nameTitleGroup number for the matching title(s) and the contributor(s)
       class Title
         TAG_NAME = FromFedora::Descriptive::Titles::TYPES.invert.merge('activity dates' => 'date').freeze
         NAME_TYPES = ['name', 'forename', 'surname', 'life dates', 'term of address'].freeze
 
         # @params [Nokogiri::XML::Builder] xml
-        # @params [Array<Cocina::Models::DescriptiveValueRequired>] titles
-        # @params [Array<Cocina::Models::DescriptiveValueRequired>] contributors
+        # @params [Array<Cocina::Models::Title>] titles
+        # @params [Array<Cocina::Models::Contributor>] contributors
         # @params [Hash] additional_attrs for title
         # @params [IdGenerator] id_generator
         def self.write(xml:, titles:, id_generator:, contributors: [], additional_attrs: {})
@@ -21,39 +23,55 @@ module Cocina
           @xml = xml
           @titles = titles
           @contributors = contributors
-          @name_title_groups = {}
+          @name_title_vals_index = {}
           @additional_attrs = additional_attrs
           @id_generator = id_generator
         end
 
+        # rubocop:disable Metrics/AbcSize
+        # rubocop:disable Metrics/CyclomaticComplexity
+        # rubocop:disable Metrics/PerceivedComplexity
         def write
           titles.each do |title|
+            # name_title_vals_index is a Hash with contrib name value as key,
+            #   value a Hash with a key of title value and nameTitleGroup number as hash value
+            #   e.g. {"Israel Meir"=>{"Mishnah berurah. English"=>1}, "Israel Meir in Hebrew characters"=>{"Mishnah berurah in Hebrew characters"=>2}}
+            #   this complexity is needed for multilingual titles mapping to multilingual names. :-P
+            name_title_vals_index = name_title_vals_index_for(title)
+
             if title.valueAt
               write_xlink(title: title)
             elsif title.parallelValue.present?
               write_parallel(title: title, title_info_attrs: additional_attrs)
             elsif title.groupedValue.present?
               write_grouped(title: title, title_info_attrs: additional_attrs)
-            else
-              title_info_attrs = {
-                nameTitleGroup: name_title_group_for(title)
-              }.compact.merge(additional_attrs)
-              if title.structuredValue.present?
-                write_structured(title: title, title_info_attrs: title_info_attrs)
-              elsif title.value
-                write_basic(title: title, title_info_attrs: title_info_attrs)
+            elsif title.structuredValue.present?
+              if name_title_vals_index.present?
+                title_vals = NameTitleGroup.value_strings(title)
+                additional_attrs[:nameTitleGroup] = name_title_group_number(title_vals&.first)
+              end
+              write_structured(title: title, title_info_attrs: additional_attrs.compact)
+            elsif title.value
+              additional_attrs[:nameTitleGroup] = name_title_group_number(title.value) if name_title_vals_index.present?
+              write_basic(title: title, title_info_attrs: additional_attrs.compact)
+            end
+
+            next unless title.type == 'uniform'
+
+            contributors.each do |contributor|
+              if NameTitleGroup.in_name_title_group?(contributor: contributor, titles: [title])
+                ContributorWriter.write(xml: xml, contributor: contributor, name_title_vals_index: name_title_vals_index, id_generator: id_generator)
               end
             end
           end
-
-          name_title_groups.each_pair do |contributor, name_title_group_indexes|
-            ContributorWriter.write(xml: xml, contributor: contributor, name_title_group_indexes: name_title_group_indexes, id_generator: id_generator)
-          end
         end
+        # rubocop:enable Metrics/AbcSize
+        # rubocop:enable Metrics/CyclomaticComplexity
+        # rubocop:enable Metrics/PerceivedComplexity
 
         private
 
-        attr_reader :xml, :titles, :contributors, :name_title_groups, :id_generator, :additional_attrs
+        attr_reader :xml, :titles, :contributors, :name_title_vals_index, :id_generator, :additional_attrs
 
         def write_xlink(title:)
           attrs = { 'xlink:href' => title.valueAt }
@@ -68,6 +86,8 @@ module Cocina
           end
         end
 
+        # rubocop:disable Metrics/AbcSize
+        # rubocop:disable Metrics/CyclomaticComplexity
         # rubocop:disable Metrics/PerceivedComplexity
         def write_parallel(title:, title_info_attrs: {})
           title_alt_rep_group = id_generator.next_altrepgroup
@@ -88,42 +108,53 @@ module Cocina
                 parallel_attrs[:type] = 'translated'
               end
             end
-            parallel_attrs[:nameTitleGroup] = name_title_group_for(parallel_title)
 
             if parallel_title.structuredValue.present?
+              if name_title_vals_index.present?
+                title_vals = NameTitleGroup.value_strings(title)
+                parallel_attrs[:nameTitleGroup] = name_title_group_number(title_vals&.first)
+              end
               write_structured(title: parallel_title, title_info_attrs: parallel_attrs.compact)
             elsif parallel_title.value
+              parallel_attrs[:nameTitleGroup] = name_title_group_number(parallel_title.value) if name_title_vals_index.present?
               write_basic(title: parallel_title, title_info_attrs: parallel_attrs.compact)
             end
           end
         end
-
+        # rubocop:enable Metrics/AbcSize
+        # rubocop:enable Metrics/CyclomaticComplexity
         # rubocop:enable Metrics/PerceivedComplexity
+
         def write_grouped(title:, title_info_attrs: {})
           title.groupedValue.each { |grouped_title| write_basic(title: grouped_title, title_info_attrs: title_info_attrs) }
         end
 
-        def name_title_group_for(title)
+        # @return [Hash<String, Hash<String, Integer>] contrib name value as key,
+        #   value a Hash with a key of title value and nameTitleGroup number as hash value
+        #   e.g. {"Israel Meir"=>{"Mishnah berurah. English"=>1}, "Israel Meir in Hebrew characters"=>{"Mishnah berurah in Hebrew characters"=>2}}
+        #   this complexity is needed for multilingual titles mapping to multilingual names. :-P
+        def name_title_vals_index_for(title)
           return nil unless contributors
 
-          contributor, name_index, parallel_index = NameTitleGroup.find_contributor(title: title, contributors: contributors)
+          title_vals_to_contrib_name_vals = NameTitleGroup.title_vals_to_contrib_name_vals(title, contributors)
+          return nil if title_vals_to_contrib_name_vals.blank?
 
-          return nil unless contributor
+          my_title_vals = NameTitleGroup.value_strings(title)
+          my_title_vals&.each do |title_val|
+            contrib_name_val = title_vals_to_contrib_name_vals[title_val]
+            next if contrib_name_val.blank?
 
-          name_title_group = id_generator.next_nametitlegroup
-          name_title_groups[contributor] ||= {}
-          if parallel_index
-            name_title_groups[contributor][name_index] ||= {}
-            name_title_groups[contributor][name_index][parallel_index] = name_title_group
-          else
-            name_title_groups[contributor][name_index] = name_title_group
+            contrib_name_val = contrib_name_val&.first if contrib_name_val.is_a?(Array)
+
+            name_title_group = id_generator.next_nametitlegroup
+            name_title_vals_index[contrib_name_val] = { title_val => name_title_group }
           end
-          name_title_group
+
+          name_title_vals_index
         end
 
         def write_structured(title:, title_info_attrs: {})
           title_info_attrs = title_info_attrs_for(title).merge(title_info_attrs)
-
           xml.titleInfo(with_uri_info(title, title_info_attrs)) do
             title_parts = flatten_structured_value(title)
             title_parts_without_names = title_parts_without_names(title_parts)
@@ -192,6 +223,16 @@ module Cocina
               attrs[:type] = title.type
             end
           end.compact
+        end
+
+        # @return [Integer] the integer to be used for a nameTitleGroup attrbute
+        def name_title_group_number(title_value)
+          # name_title_vals_index is [Hash<String, Hash<String, Integer>]
+          #   with contrib name value as key,
+          #   value a Hash with a key of title value and nameTitleGroup number as hash value
+          #   e.g. {"Israel Meir"=>{"Mishnah berurah. English"=>1}, "Israel Meir in Hebrew characters"=>{"Mishnah berurah in Hebrew characters"=>2}}
+          #   this complexity is needed for multilingual titles mapping to multilingual names. :-P
+          name_title_vals_index.values.detect { |hash| hash.key?(title_value) }&.values&.first
         end
       end
     end

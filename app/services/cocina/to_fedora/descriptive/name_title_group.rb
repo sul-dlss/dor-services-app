@@ -3,79 +3,144 @@
 module Cocina
   module ToFedora
     class Descriptive
-      # Helpers for working with name title groups.
+      # Helpers for MODS nameTitleGroups.
+      #   MODS titles need to know if they match a contributor and thus need a nameTitleGroup
+      #   MODS contributors need to know if they match a title and thus need a nameTitleGroup
+      #     If there is a match, the nameTitleGroup number has to be consistent for the matching title(s) and the contributor(s)
+      #   We address this with these two public class methods:
+      # title_vals_to_contrib_name_vals(title:, contributors:)
+      # in_name_title_group?(contributor:, titles:)
+      #   and with this public utility class method
+      # value_strings(cocina_descriptive_value)
       class NameTitleGroup
+        # When to assign nameTitleGroup to MODS from cocina:
+        #  for cocina title of type "uniform", look for:
+        # 1) name of status "primary" within a contributor of status "primary" or
+        # 2) first name in a contributor with status "primary" or
+        # 3) if "appliesTo" value is present in name, the title that matches that value
+        # If none of those criteria are met in Cocina, do not assign nameTitleGroup in MODS
+        # @params [Cocina::Models::Title] title
         # @params [Array<Cocina::Models::Contributor>] contributors
-        # @params [Cocina::Models::Title] titles
-        # @params [Cocina::Models::Contributor, integer, integer] contributor, name index, parallel index
-        def self.find_contributor(title:, contributors:)
-          title_name_parts = title_name_parts_for(title)
-          return [nil, nil, nil] unless title_name_parts
+        # @return [Hash<String, Cocina::Models::DescriptiveValue] title value as key, value a single contributor.name object
+        #   e.g.  {"Mishnah berurah. English"=>["Israel Meir"], "Mishnah berurah in Hebrew characters"=>["Israel Meir in Hebrew characters"]}
+        #   this complexity is needed for multilingual titles mapping to multilingual names. :-P
+        def self.title_vals_to_contrib_name_vals(title, contributors)
+          result = {}
+          return result if title.blank? || contributors.blank?
 
-          Array(contributors).each do |contributor|
-            Array(contributor.name).each_with_index do |contributor_name, name_index|
-              if contributor_name.parallelValue.present?
-                contributor_name.parallelValue.each_with_index do |parallel_contributor_name, parallel_index|
-                  return [contributor, name_index, parallel_index] if contributor_name_matches?(parallel_contributor_name, title_name_parts)
-                end
-              elsif contributor_name_matches?(contributor_name, title_name_parts)
-                return [contributor, name_index, nil]
+          if title.type == 'uniform'
+            title_vals = Array(value_strings(title))
+
+            # pair title_values with contributor name with status primary
+            primary_contrib_name_vals = Array(value_strings(primary_contributor_name(contributors)))
+            if primary_contrib_name_vals.present?
+              title_vals.each do |title_val|
+                result[title_val] = primary_contrib_name_vals.first
               end
+              return result unless result.empty?
+            end
+
+            # otherwise, pair title_values with contributor name with matching appliesTo property
+            title_vals.each do |title_value|
+              next if title_value.blank?
+
+              contrib_desc_value = contrib_desc_value_applies_to_title_value(contributors, title_value)
+              result[title_value] = Array(value_strings(contrib_desc_value)) if contrib_desc_value.present?
             end
           end
-          [nil, nil, nil]
+          result
         end
 
         # @params [Cocina::Models::Contributor] contributor
         # @params [Array<Cocina::Models::Title>] titles
-        # @params [boolean] true if contributor part of name title group
-        def self.part_of_nametitlegroup?(contributor:, titles:)
-          Array(titles).any? do |title|
-            contributor_match, _name_index, _parallel_index = find_contributor(title: title, contributors: [contributor])
-            contributor_match.present?
-          end
-        end
+        # @return [boolean] true if contributor part of name title group
+        def self.in_name_title_group?(contributor:, titles:)
+          return false if contributor&.name.blank? || titles.blank?
 
-        def self.title_name_parts_for(title)
-          if title.parallelValue.present?
-            title.parallelValue.map { |value| title_name_parts_for_structured_value(value) }.flatten.compact.presence
-          else
-            title_name_parts_for_structured_value(title)
-          end
-        end
-        private_class_method :title_name_parts_for
-
-        def self.title_name_parts_for_structured_value(title)
-          return nil if title.structuredValue.blank?
-
-          structured_title = title.structuredValue.find { |check_structured_title| check_structured_title.type == 'name' }
-          if structured_title.nil?
-            nil
-          elsif structured_title.structuredValue.present?
-            structured_title.structuredValue
-          else
-            [structured_title]
-          end
-        end
-        private_class_method :title_name_parts_for_structured_value
-
-        def self.contributor_name_matches?(contributor_name, title_name_parts)
-          if contributor_name.structuredValue.present?
-            name_matches?(contributor_name.structuredValue, title_name_parts)
-          else
-            name_matches?([contributor_name], title_name_parts)
-          end
-        end
-        private_class_method :contributor_name_matches?
-
-        def self.name_matches?(contributor_name_parts, title_name_parts)
-          contributor_name_parts.all? do |contributor_name_part|
-            title_name_parts.any? do |title_name_part|
-              title_name_part.value == contributor_name_part.value
+          Array(contributor.name).each do |contrib_name|
+            contrib_name_vals = Array(value_strings(contrib_name))
+            Array(titles).each do |title|
+              name_title_group_names = title_vals_to_contrib_name_vals(title, [contributor])&.values&.flatten
+              name_title_group_names.each do |name|
+                return true if contrib_name_vals&.include?(name)
+              end
             end
           end
+          false
         end
-        private_class_method :name_matches?
+
+        # this is also used by Cocina::ToFedora::Descriptive::Title and Cocina::ToFedora::Descriptive::ContributorWriter
+        # @params [Cocina::Models::DescriptiveValue] cocina_descriptive_value, or Array of them.
+        # @return [Array<String>, nil] individual strings assigned from value string properties in (possibly nested) Cocina::Models::DescriptiveValue
+        def self.value_strings(cocina_descriptive_value)
+          return if cocina_descriptive_value.blank?
+
+          values = []
+
+          # handle single values and arrays
+          Array(cocina_descriptive_value).flatten.each do |cocina_desc_val|
+            if cocina_desc_val.value.present?
+              values << cocina_desc_val.value
+            elsif cocina_desc_val.structuredValue.present?
+              values << value_strings(cocina_desc_val.structuredValue.first)
+            elsif cocina_desc_val.parallelValue.present?
+              cocina_desc_val.parallelValue.each { |parallel_val| values << value_strings(parallel_val) }
+            elsif cocina_desc_val.groupedValue.present?
+              values << value_strings(cocina_desc_val.groupedValue)
+            end
+          end
+
+          result = values.flatten.compact
+          result unless result.empty?
+        end
+
+        # ---------------------- private class methods below ---------------------------------------
+
+        # 1) name of status "primary" within a contributor of status "primary" or
+        # 2) first name in (a contributor with status "primary") or
+        def self.primary_contributor_name(contributors)
+          primary_contributor = contributors.detect { |contrib| contrib.status == 'primary' }
+          return unless primary_contributor
+
+          # look for contributor name with status primary within a contributor of status primary
+          Array(primary_contributor.name).each do |contrib_name|
+            if contrib_name.parallelValue.present?
+              contrib_name.parallelValue.each do |parallel_contrib_name|
+                return parallel_contrib_name if parallel_contrib_name.status == 'primary'
+              end
+            elsif contrib_name.status == 'primary' # covers both value and structuredValue cases
+              return contrib_name
+            end
+          end
+
+          primary_contributor.name.first
+        end
+        private_class_method :primary_contributor_name
+
+        # @params [Array<Cocina::Models::Contributor>] contributors
+        # @params [String] title_value to which a contributor.name "appliesTo" should be matched
+        # @return [Cocina::Models::DescriptiveValue] the contributor.name or subpart of contributor.name that applies to the title_value
+        # rubocop:disable Metrics/CyclomaticComplexity
+        # rubocop:disable Metrics/PerceivedComplexity
+        def self.contrib_desc_value_applies_to_title_value(contributors, title_value)
+          contributors.each do |contrib|
+            Array(contrib.name).each do |contrib_name|
+              if contrib_name.parallelValue.present?
+                contrib_name.parallelValue.each do |parallel_contrib_name|
+                  title_for_contrib = parallel_contrib_name.appliesTo&.first&.value
+                  return parallel_contrib_name if title_for_contrib && title_value == title_for_contrib
+                end
+              else
+                title_for_contrib = contrib_name.appliesTo&.first&.value
+                return contrib_name if title_for_contrib && title_value == title_for_contrib
+              end
+            end
+          end
+          nil # when this isn't here an empty Array is returned (?)
+        end
+        # rubocop:enable Metrics/CyclomaticComplexity
+        # rubocop:enable Metrics/PerceivedComplexity
+        private_class_method :contrib_desc_value_applies_to_title_value
       end
     end
   end

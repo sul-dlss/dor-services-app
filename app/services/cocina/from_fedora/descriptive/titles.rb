@@ -77,7 +77,7 @@ module Cocina
 
         def simple_or_structured(node_set, display_types: true)
           node_set.filter_map do |node|
-            if node['nameTitleGroup']
+            if node['primary']
               structured_name(node: node, display_types: display_types)
             else
               attrs = Descriptive::TitleBuilder.build(title_info_element: node, notifier: notifier)
