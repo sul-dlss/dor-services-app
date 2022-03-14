@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 # DLSS/domain-specific dependencies
-gem 'cocina-models', '~> 0.68.0'
+gem 'cocina-models', '~> 0.69.0'
 gem 'datacite', '~> 0.3.0'
 gem 'dor-rights-auth', '>= 1.5.0' # required for new CDL rights
 gem 'dor-services', '~> 9.6'
@@ -69,7 +69,6 @@ group :test, :development do
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
   gem 'simplecov'
-  gem 'super_diff'
   gem 'webmock'
 end
 
