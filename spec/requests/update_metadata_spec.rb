@@ -210,7 +210,7 @@ RSpec.describe 'Update object' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.status).to eq(409)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(item).not_to have_received(:save!)
         expect(Honeybadger).to have_received(:notify)
       end
