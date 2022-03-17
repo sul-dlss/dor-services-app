@@ -14,6 +14,7 @@ module Cocina
     def valid?
       return true unless meets_preconditions?
 
+      # This message is pattern matched by sdr-api to parse out a druid.
       @error = "An object (#{duplicate_druid}) with the source ID '#{cocina_dro.identification.sourceId}' has already been registered." if duplicate_druid
 
       @error.nil?
@@ -39,7 +40,7 @@ module Cocina
 
       return if solr_response['response']['numFound'].zero?
 
-      solr_response['response']['docs'].map { |doc| doc['id'] }
+      solr_response['response']['docs'].first['id']
     end
 
     def meets_preconditions?
