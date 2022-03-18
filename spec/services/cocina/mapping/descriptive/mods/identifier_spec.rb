@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'MODS identifier <--> cocina mappings' do
   describe 'Identifier with type' do
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <identifier type="isbn">1234 5678 9203</identifier>
@@ -17,17 +17,9 @@ RSpec.describe 'MODS identifier <--> cocina mappings' do
             {
               value: '1234 5678 9203',
               type: 'ISBN',
-              note: [
-                {
-                  type: 'type',
-                  value: 'isbn',
-                  uri: 'http://id.loc.gov/vocabulary/identifiers/isbn',
-                  source: {
-                    value: 'Standard Identifier Schemes',
-                    uri: 'http://id.loc.gov/vocabulary/identifiers/'
-                  }
-                }
-              ]
+              source: {
+                code: 'isbn'
+              }
             }
           ]
         }
@@ -36,7 +28,7 @@ RSpec.describe 'MODS identifier <--> cocina mappings' do
   end
 
   describe 'URI as identifier' do
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <identifier type="uri">https://www.wikidata.org/wiki/Q146</identifier>
@@ -47,18 +39,7 @@ RSpec.describe 'MODS identifier <--> cocina mappings' do
         {
           identifier: [
             {
-              uri: 'https://www.wikidata.org/wiki/Q146',
-              note: [
-                {
-                  type: 'type',
-                  value: 'uri',
-                  uri: 'http://id.loc.gov/vocabulary/identifiers/uri',
-                  source: {
-                    value: 'Standard Identifier Schemes',
-                    uri: 'http://id.loc.gov/vocabulary/identifiers/'
-                  }
-                }
-              ]
+              uri: 'https://www.wikidata.org/wiki/Q146'
             }
           ]
         }
@@ -88,7 +69,7 @@ RSpec.describe 'MODS identifier <--> cocina mappings' do
   end
 
   describe 'Invalid identifier' do
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <identifier type="lccn" invalid="yes">sn 87042262</identifier>
@@ -102,17 +83,9 @@ RSpec.describe 'MODS identifier <--> cocina mappings' do
               value: 'sn 87042262',
               type: 'LCCN',
               status: 'invalid',
-              note: [
-                {
-                  type: 'type',
-                  value: 'lccn',
-                  uri: 'http://id.loc.gov/vocabulary/identifiers/lccn',
-                  source: {
-                    value: 'Standard Identifier Schemes',
-                    uri: 'http://id.loc.gov/vocabulary/identifiers/'
-                  }
-                }
-              ]
+              source: {
+                code: 'lccn'
+              }
             }
           ]
         }
@@ -151,7 +124,7 @@ RSpec.describe 'MODS identifier <--> cocina mappings' do
   # dev added specs below
 
   context 'with an identifier that is from Standard Identifier Source Codes' do
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <identifier type="ark">http://bnf.fr/ark:/13030/tf5p30086k</identifier>
@@ -164,15 +137,9 @@ RSpec.describe 'MODS identifier <--> cocina mappings' do
             {
               value: 'http://bnf.fr/ark:/13030/tf5p30086k',
               type: 'ARK',
-              note: [
-                {
-                  type: 'type',
-                  value: 'ark',
-                  source: {
-                    value: 'Standard Identifier Source Codes'
-                  }
-                }
-              ]
+              source: {
+                code: 'ark'
+              }
             }
           ]
         }
