@@ -22,11 +22,9 @@ class ItemQueryService
     end
 
     # check constituents for combinability and whether they are already virtual objects
-    begin
-      constituents.each do |druid|
-        check_virtual(druid)
-        find_combinable_item(druid)
-      end
+    constituents.each do |druid|
+      check_virtual(druid)
+      find_combinable_item(druid)
     rescue UncombinableItemError => e
       errors[virtual_object] << e.message
     end
