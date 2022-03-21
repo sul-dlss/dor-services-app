@@ -181,37 +181,6 @@ RSpec.describe ItemQueryService do
       end
     end
 
-    context 'with an virtual object' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(
-          externalIdentifier: druid,
-          version: 1,
-          type: Cocina::Models::ObjectType.object,
-          label: 'Dummy DRO',
-          description: {
-            title: [{ value: 'Dummy DRO' }],
-            purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
-          },
-          access: { download: 'none' }.merge(access),
-          administrative: { hasAdminPolicy: 'druid:df123cd4567' },
-          structural: {
-            hasMemberOrders: [
-              {
-                members: ['druid:df123cd4567', 'druid:mg978jy9754']
-              }
-            ]
-          }
-        )
-      end
-
-      it 'raises an error' do
-        expect { service.find_combinable_item(druid) }.to raise_error(
-          described_class::UncombinableItemError,
-          "Item #{druid} is itself a virtual object"
-        )
-      end
-    end
-
     context 'with an DRO having memberless member orders' do
       let(:cocina_object) do
         Cocina::Models::DRO.new(
@@ -248,6 +217,7 @@ RSpec.describe ItemQueryService do
       before do
         allow(described_class).to receive(:find_combinable_item)
         allow(described_class).to receive(:find_combinable_item).with(druid).and_raise(described_class::UncombinableItemError, "Item #{druid} is dark")
+        allow(described_class).to receive(:check_virtual)
       end
 
       it 'returns an error' do
@@ -260,6 +230,7 @@ RSpec.describe ItemQueryService do
     context 'when all items are combinable' do
       before do
         allow(described_class).to receive(:find_combinable_item)
+        allow(described_class).to receive(:check_virtual)
       end
 
       it 'returns an empty hash otherwise' do
@@ -272,11 +243,97 @@ RSpec.describe ItemQueryService do
 
       before do
         allow(described_class).to receive(:find_combinable_item)
+        allow(described_class).to receive(:check_virtual)
       end
 
       it 'returns an error' do
         expect(service.validate_combinable_items(virtual_object: druid, constituents: constituent_druids)).to eq(
           druid => ['Item druid:bc123df4567 cannot be a constituent of itself']
+        )
+      end
+    end
+
+    context 'when multiple constituents are uncombinable' do
+      let(:constituent_druids) { ['druid:cc111dd2222', 'druid:bb111cc2222'] }
+      let(:cocina_object_constituent) do
+        Cocina::Models::DRO.new(
+          externalIdentifier: constituent_druids[0],
+          version: 1,
+          type: Cocina::Models::ObjectType.object,
+          label: 'Dummy DRO',
+          description: {
+            title: [{ value: 'Dummy DRO' }],
+            purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+          },
+          access: { view: 'citation-only', download: 'none' },
+          administrative: { hasAdminPolicy: 'druid:df123cd4567' }
+        )
+      end
+      let(:cocina_object_constituent1) do
+        Cocina::Models::DRO.new(
+          externalIdentifier: constituent_druids[1],
+          version: 1,
+          type: Cocina::Models::ObjectType.object,
+          label: 'Dummy DRO',
+          description: {
+            title: [{ value: 'Dummy DRO' }],
+            purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+          },
+          access: { view: 'dark' },
+          administrative: { hasAdminPolicy: 'druid:df123cd4567' }
+        )
+      end
+
+      before do
+        allow(CocinaObjectStore).to receive(:find).with(constituent_druids[0]).and_return(cocina_object_constituent)
+        allow(CocinaObjectStore).to receive(:find).with(constituent_druids[1]).and_return(cocina_object_constituent1)
+        allow(described_class).to receive(:check_virtual)
+      end
+
+      it 'adds both error messages to the errors hash' do
+        expect(service.validate_combinable_items(virtual_object: druid, constituents: constituent_druids)).to eq(
+          'druid:bc123df4567' => ['Item druid:cc111dd2222 is citation-only', 'Item druid:bb111cc2222 is dark']
+        )
+      end
+    end
+  end
+
+  describe '.check_virtual' do
+    context 'when a constituent is virtual_object' do
+      let(:constituent_druid) { 'druid:xh235dd9059' }
+      let(:constituent_druids) { [constituent_druid] }
+      let(:cocina_object_constituent) do
+        Cocina::Models::DRO.new(
+          externalIdentifier: constituent_druid,
+          version: 1,
+          type: Cocina::Models::ObjectType.object,
+          label: 'Dummy DRO',
+          description: {
+            title: [{ value: 'Dummy DRO' }],
+            purl: "https://purl.stanford.edu/#{constituent_druid.delete_prefix('druid:')}"
+          },
+          access: { download: 'world' }.merge(access),
+          administrative: { hasAdminPolicy: 'druid:df123cd4567' },
+          structural: {
+            hasMemberOrders: [
+              {
+                members: ['druid:bj876jy8756']
+              },
+              {
+                members: ['druid:bj776jy8755']
+              }
+            ]
+          }
+        )
+      end
+
+      before do
+        allow(CocinaObjectStore).to receive(:find).with(constituent_druid).and_return(cocina_object_constituent)
+      end
+
+      it 'returns an error' do
+        expect(service.validate_combinable_items(virtual_object: druid, constituents: constituent_druids)).to eq(
+          druid => ["Item #{constituent_druid} is itself a virtual object"]
         )
       end
     end
