@@ -284,17 +284,9 @@ RSpec.describe 'MODS part <--> cocina mappings' do
                 {
                   value: '(FrPBN)42417922',
                   type: 'local',
-                  note: [
-                    {
-                      type: 'type',
-                      value: 'local',
-                      uri: 'http://id.loc.gov/vocabulary/identifiers/local',
-                      source: {
-                        value: 'Standard Identifier Schemes',
-                        uri: 'http://id.loc.gov/vocabulary/identifiers/'
-                      }
-                    }
-                  ]
+                  source: {
+                    code: 'local'
+                  }
                 }
               ],
               note: [
@@ -396,17 +388,9 @@ RSpec.describe 'MODS part <--> cocina mappings' do
                   type: 'local',
                   displayLabel: 'Pub list no.',
                   value: '0411.000',
-                  note: [
-                    {
-                      type: 'type',
-                      value: 'local',
-                      uri: 'http://id.loc.gov/vocabulary/identifiers/local',
-                      source: {
-                        value: 'Standard Identifier Schemes',
-                        uri: 'http://id.loc.gov/vocabulary/identifiers/'
-                      }
-                    }
-                  ]
+                  source: {
+                    code: 'local'
+                  }
                 }
               ],
               note: [

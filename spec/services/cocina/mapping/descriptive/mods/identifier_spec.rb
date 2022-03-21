@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'MODS identifier <--> cocina mappings' do
   describe 'Identifier with type' do
-    xit 'updated MODS cocina mapping' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <identifier type="isbn">1234 5678 9203</identifier>
@@ -28,7 +28,7 @@ RSpec.describe 'MODS identifier <--> cocina mappings' do
   end
 
   describe 'URI as identifier' do
-    xit 'updated MODS cocina mapping' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <identifier type="uri">https://www.wikidata.org/wiki/Q146</identifier>
@@ -69,7 +69,7 @@ RSpec.describe 'MODS identifier <--> cocina mappings' do
   end
 
   describe 'Invalid identifier' do
-    xit 'updated MODS cocina mapping' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <identifier type="lccn" invalid="yes">sn 87042262</identifier>
@@ -124,7 +124,7 @@ RSpec.describe 'MODS identifier <--> cocina mappings' do
   # dev added specs below
 
   context 'with an identifier that is from Standard Identifier Source Codes' do
-    xit 'updated MODS cocina mapping' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <identifier type="ark">http://bnf.fr/ark:/13030/tf5p30086k</identifier>
