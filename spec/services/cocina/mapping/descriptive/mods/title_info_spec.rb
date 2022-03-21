@@ -1297,25 +1297,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
               ]
             },
             {
-              structuredValue: [
-                {
-                  value: 'Shaʻare ha-ḳedushah',
-                  type: 'title'
-                },
-                {
-                  structuredValue: [
-                    {
-                      value: 'Vital, Ḥayyim ben Joseph',
-                      type: 'name'
-                    },
-                    {
-                      value: '1542 or 1543-1620',
-                      type: 'life dates'
-                    }
-                  ],
-                  type: 'name'
-                }
-              ],
+              value: 'Shaʻare ha-ḳedushah',
               type: 'uniform'
             }
           ],
@@ -1341,6 +1323,83 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
           ]
         }
       end
+
+      # let(:cocina) do
+      #   {
+      #     title: [
+      #       {
+      #         parallelValue: [
+      #           {
+      #             structuredValue: [
+      #               {
+      #                 value: 'Sefer Shaʻare ha-ḳedushah in Hebrew',
+      #                 type: 'main title'
+      #               },
+      #               {
+      #                 value: 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo in Hebrew',
+      #                 type: 'subtitle'
+      #               }
+      #             ]
+      #           },
+      #           {
+      #             structuredValue: [
+      #               {
+      #                 value: 'Sefer Shaʻare ha-ḳedushah',
+      #                 type: 'main title'
+      #               },
+      #               {
+      #                 value: 'zeh sefer le-yosher ha-adam la-ʻavodat borʼo',
+      #                 type: 'subtitle'
+      #               }
+      #             ]
+      #           }
+      #         ]
+      #       },
+      #       {
+      #         structuredValue: [
+      #           {
+      #             value: 'Shaʻare ha-ḳedushah',
+      #             type: 'title'
+      #           },
+      #           {
+      #             structuredValue: [
+      #               {
+      #                 value: 'Vital, Ḥayyim ben Joseph',
+      #                 type: 'name'
+      #               },
+      #               {
+      #                 value: '1542 or 1543-1620',
+      #                 type: 'life dates'
+      #               }
+      #             ],
+      #             type: 'name'
+      #           }
+      #         ],
+      #         type: 'uniform'
+      #       }
+      #     ],
+      #     contributor: [
+      #       {
+      #         name: [
+      #           {
+      #             structuredValue: [
+      #               {
+      #                 value: 'Vital, Ḥayyim ben Joseph',
+      #                 type: 'name'
+      #               },
+      #               {
+      #                 value: '1542 or 1543-1620',
+      #                 type: 'life dates'
+      #               }
+      #             ]
+      #           }
+      #         ],
+      #         type: 'person',
+      #         status: 'primary'
+      #       }
+      #     ]
+      #   }
+      # end
     end
   end
 
