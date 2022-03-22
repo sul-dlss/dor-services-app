@@ -222,7 +222,8 @@ RSpec.describe CocinaObjectStore do
     describe '#create' do
       let(:cocina_object_store) { described_class.new }
       let(:requested_cocina_object) do
-        instance_double(Cocina::Models::RequestDRO, admin_policy?: false, identification: request_identification, to_h: cocina_hash, description: request_description)
+        instance_double(Cocina::Models::RequestDRO, admin_policy?: false, identification: request_identification, to_h: cocina_hash, description: request_description, dro?: true,
+                                                    collection?: false)
       end
       let(:request_identification) { instance_double(Cocina::Models::RequestIdentification, catalogLinks: catalog_links) }
       let(:request_description) { instance_double(Cocina::Models::RequestDescription) }
@@ -241,20 +242,46 @@ RSpec.describe CocinaObjectStore do
         allow(Cocina::Models).to receive(:build).and_return(cocina_object)
       end
 
-      it 'maps and saves to Fedora' do
-        expect(cocina_object_store.create(requested_cocina_object)).to be cocina_object
-        expect(Cocina::ObjectCreator).to have_received(:create).with(cocina_object, druid: druid)
-        expect(Notifications::ObjectCreated).to have_received(:publish).with(model: cocina_object, created_at: kind_of(Time), modified_at: kind_of(Time))
-        expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
-        expect(cocina_object_store).to have_received(:merge_access_for).with(requested_cocina_object)
-        expect(cocina_object_store).to have_received(:add_tags_for_create).with(druid, requested_cocina_object)
-        expect(SynchronousIndexer).to have_received(:reindex_remotely).with(druid)
-        expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
-        expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'registration', data: cocina_hash)
-        expect(RefreshMetadataAction).not_to have_received(:run)
-        expect(Cocina::Models).to have_received(:build).with({
-                                                               externalIdentifier: druid
-                                                             })
+      context 'when a DRO' do
+        it 'maps and saves to Fedora' do
+          expect(cocina_object_store.create(requested_cocina_object)).to be cocina_object
+          expect(Cocina::ObjectCreator).to have_received(:create).with(cocina_object, druid: druid)
+          expect(Notifications::ObjectCreated).to have_received(:publish).with(model: cocina_object, created_at: kind_of(Time), modified_at: kind_of(Time))
+          expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
+          expect(cocina_object_store).to have_received(:merge_access_for).with(requested_cocina_object)
+          expect(cocina_object_store).to have_received(:add_tags_for_create).with(druid, requested_cocina_object)
+          expect(SynchronousIndexer).to have_received(:reindex_remotely).with(druid)
+          expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
+          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'registration', data: cocina_hash)
+          expect(RefreshMetadataAction).not_to have_received(:run)
+          expect(Cocina::Models).to have_received(:build).with({
+                                                                 externalIdentifier: druid,
+                                                                 structural: {}
+                                                               })
+        end
+      end
+
+      context 'when a Collection' do
+        let(:requested_cocina_object) do
+          instance_double(Cocina::Models::RequestCollection, admin_policy?: false, identification: nil, to_h: cocina_hash, description: request_description, dro?: false, collection?: true)
+        end
+
+        it 'maps and saves to Fedora' do
+          expect(cocina_object_store.create(requested_cocina_object)).to be cocina_object
+          expect(Cocina::ObjectCreator).to have_received(:create).with(cocina_object, druid: druid)
+          expect(Notifications::ObjectCreated).to have_received(:publish).with(model: cocina_object, created_at: kind_of(Time), modified_at: kind_of(Time))
+          expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
+          expect(cocina_object_store).to have_received(:merge_access_for).with(requested_cocina_object)
+          expect(cocina_object_store).to have_received(:add_tags_for_create).with(druid, requested_cocina_object)
+          expect(SynchronousIndexer).to have_received(:reindex_remotely).with(druid)
+          expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
+          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'registration', data: cocina_hash)
+          expect(RefreshMetadataAction).not_to have_received(:run)
+          expect(Cocina::Models).to have_received(:build).with({
+                                                                 externalIdentifier: druid,
+                                                                 identification: {}
+                                                               })
+        end
       end
 
       context 'when refreshing from symphony' do
@@ -347,7 +374,8 @@ RSpec.describe CocinaObjectStore do
                                                                      }
                                                                    ],
                                                                    purl: 'https://purl.stanford.edu/bc123df4567'
-                                                                 }
+                                                                 },
+                                                                 structural: {}
                                                                })
         end
       end
