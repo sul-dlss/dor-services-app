@@ -50,7 +50,7 @@ class ReleaseTags
       return return_tags unless cocina_object.dro? # no need to continue if this is a collection, since they don't nest anymore
 
       # now go through any collections it is a member of and add them
-      cocina_object.structural.isMemberOf.each do |collection_druid|
+      Array(cocina_object.structural&.isMemberOf).each do |collection_druid|
         release_service = self.class.for(CocinaObjectStore.find(collection_druid))
         return_tags = combine_two_release_tag_hashes(return_tags, release_service.release_tags)
       end

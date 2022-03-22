@@ -60,7 +60,7 @@ module Cocina
         index = 0
         members.each do |external_druid|
           cocina_object = cocina_object_store.find(external_druid)
-          Array(cocina_object.structural.contains).each do |cocina_fileset|
+          Array(cocina_object.structural&.contains).each do |cocina_fileset|
             index += 1
             label = cocina_object.description.title.first.value
             @xml_doc.root.add_child create_external_resource_node(cocina_fileset, index, external_druid, label: label)
@@ -147,7 +147,7 @@ module Cocina
         #   <externalFile fileId="PC0170_s1_B_0540.jp2" mimetype="image/jp2" objectId="druid:tm207xk5096" resourceId="tm207xk5096_1"/>
         #     <relationship objectId="druid:tm207xk5096" type="alsoAvailableAs"/>
         # Note: Only creating if published.
-        cocina_fileset.structural.contains.filter { |cocina_file| cocina_file.administrative.publish }.each do |cocina_file|
+        Array(cocina_fileset.structural&.contains).filter { |cocina_file| cocina_file.administrative.publish }.each do |cocina_file|
           resource.add_child(Nokogiri::XML::Node.new('label', @xml_doc).tap { |tag| tag.content = label })
           resource.add_child(create_external_file_node(cocina_file, cocina_fileset.externalIdentifier, external_druid))
           resource.add_child(create_relationship_node(external_druid))

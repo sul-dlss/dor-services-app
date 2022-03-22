@@ -28,7 +28,7 @@ class PublishedRelationshipsFilter
   def collections
     return unless cocina_object.dro?
 
-    cocina_object.structural.isMemberOf.map do |collection_id|
+    Array(cocina_object.structural&.isMemberOf).map do |collection_id|
       "<fedora:isMemberOfCollection rdf:resource=\"info:fedora/#{collection_id}\"/>"
     end.join(INDENT)
   end

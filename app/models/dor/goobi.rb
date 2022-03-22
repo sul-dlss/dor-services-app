@@ -122,7 +122,7 @@ module Dor
     # returns the first collection_id the object is contained in (if any)
     # @return [String] collection druid the item is in (blank if none)
     def collection_id
-      @collection_id ||= cocina_obj.structural&.isMemberOf.present? ? cocina_obj.structural.isMemberOf.first : ''
+      @collection_id ||= Array(cocina_obj.structural&.isMemberOf).first || ''
     end
 
     # returns the name of the first collection the object is contained in (if any)

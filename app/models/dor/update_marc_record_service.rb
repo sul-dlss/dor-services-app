@@ -148,7 +148,7 @@ module Dor
     def get_x2_collection_info
       return unless @cocina_object.respond_to?(:structural) && @cocina_object.structural
 
-      collections = @cocina_object.structural.isMemberOf
+      collections = Array(@cocina_object.structural&.isMemberOf)
       collection_info = ''
 
       collections.each do |collection_druid|
@@ -232,7 +232,7 @@ module Dor
     def dor_items_for_constituents
       return [] unless @cocina_object.respond_to?(:structural) && @cocina_object.structural
 
-      @cocina_object.structural.isMemberOf
+      Array(@cocina_object.structural&.isMemberOf)
     end
 
     # adapted from mods_display
