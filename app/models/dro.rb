@@ -31,10 +31,7 @@ class Dro < ApplicationRecord
     dro_hash = cocina_dro.to_h
     dro_hash[:external_identifier] = dro_hash.delete(:externalIdentifier)
     dro_hash[:cocina_version] = dro_hash.delete(:cocinaVersion)
-    dro_hash[:content_type]  = dro_hash.delete(:type)
-    dro_hash[:description] ||= nil
-    dro_hash[:identification] ||= nil
-    dro_hash[:structural] ||= nil
+    dro_hash[:content_type] = dro_hash.delete(:type)
     dro_hash[:geographic] ||= nil
     dro_hash
   end

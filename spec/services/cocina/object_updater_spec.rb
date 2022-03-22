@@ -226,7 +226,9 @@ RSpec.describe Cocina::ObjectUpdater do
           title: [{ value: 'orig label' }],
           purl: 'https://purl.stanford.edu/bc123df4567'
         },
-        access: { view: 'world' }
+        access: { view: 'world' },
+        administrative: { hasAdminPolicy: 'druid:dd999df4567' },
+        identification: {}
       }
     end
 
@@ -306,13 +308,13 @@ RSpec.describe Cocina::ObjectUpdater do
       context 'when administrative has changed' do
         let(:cocina_attrs) do
           orig_cocina_attrs.tap do |attrs|
-            attrs[:administrative] = { hasAdminPolicy: 'druid:dd999df4567' }
+            attrs[:administrative] = { hasAdminPolicy: 'druid:dd999df4568' }
           end
         end
 
         it 'updates administrative' do
           update
-          expect(item).to have_received(:admin_policy_object_id=).with('druid:dd999df4567')
+          expect(item).to have_received(:admin_policy_object_id=).with('druid:dd999df4568')
         end
       end
 
@@ -426,7 +428,9 @@ RSpec.describe Cocina::ObjectUpdater do
         },
         version: 1,
         access: {},
-        administrative: { hasAdminPolicy: 'druid:dd999df4567' }
+        administrative: { hasAdminPolicy: 'druid:dd999df4567' },
+        structural: {},
+        identification: {}
       }
     end
 
@@ -783,7 +787,8 @@ RSpec.describe Cocina::ObjectUpdater do
         identification: {
           sourceId: 'sul:8.559351',
           catalogLinks: [{ catalog: 'symphony', catalogRecordId: '10121797' }]
-        }
+        },
+        structural: {}
       }
     end
 

@@ -16,15 +16,9 @@ FactoryBot.define do
         purl: 'https://purl.stanford.edu/hp308wm0436'
       }
     end
-  end
-
-  trait :with_collection_identification do
-    identification do
-      { sourceId: 'googlebooks:999999' }
+    sequence(:identification) do |n|
+      { sourceId: "googlebooks:#{n}" }
     end
-  end
-
-  trait :with_administrative do
     administrative do
       { hasAdminPolicy: 'druid:hy787xj5878' }
     end

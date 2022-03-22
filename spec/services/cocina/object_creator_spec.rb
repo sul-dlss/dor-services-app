@@ -182,7 +182,8 @@ RSpec.describe Cocina::ObjectCreator do
           },
           'identification' => {
             'sourceId' => 'identifier:1'
-          }
+          },
+          'structural' => {}
         }
       end
 
@@ -256,7 +257,8 @@ RSpec.describe Cocina::ObjectCreator do
                 'type' => 'other'
               }
             ]
-          }
+          },
+          'identification' => {}
         }
       end
 

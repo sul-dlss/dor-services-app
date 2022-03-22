@@ -131,7 +131,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               description: descriptive_metadata_basic,
                               identification: identity_metadata_basic,
                               access: {},
-                              administrative: { hasAdminPolicy: apo_druid })
+                              administrative: { hasAdminPolicy: apo_druid },
+                              structural: {})
     end
 
     before do
@@ -154,7 +155,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               description: descriptive_metadata_basic,
                               identification: identity_metadata_basic,
                               access: {},
-                              administrative: { hasAdminPolicy: apo_druid })
+                              administrative: { hasAdminPolicy: apo_druid },
+                              structural: {})
     end
 
     it 'does nothing' do
@@ -172,7 +174,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               description: descriptive_metadata_basic,
                               identification: identity_metadata_catkey_barcode,
                               access: {},
-                              administrative: { hasAdminPolicy: apo_druid })
+                              administrative: { hasAdminPolicy: apo_druid },
+                              structural: {})
     end
 
     it 'executes the UpdateMarcRecordService push_symphony_records method' do
@@ -191,7 +194,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               description: descriptive_metadata_basic,
                               identification: identity_metadata_basic,
                               access: {},
-                              administrative: { hasAdminPolicy: apo_druid })
+                              administrative: { hasAdminPolicy: apo_druid },
+                              structural: {})
     end
 
     it 'calls the relevant methods' do
@@ -211,6 +215,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                      version: 1,
                                      description: descriptive_metadata_basic,
                                      access: {},
+                                     administrative: { hasAdminPolicy: apo_druid },
                                      identification: identity_metadata_collection)
     end
     let(:release_data) { { 'Searchworks' => { 'release' => true } } }
@@ -325,7 +330,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 description: descriptive_metadata_basic,
                                 identification: identification,
                                 access: {},
-                                administrative: { hasAdminPolicy: apo_druid })
+                                administrative: { hasAdminPolicy: apo_druid },
+                                structural: {})
       end
 
       it 'generates blank symphony records for an item object' do
@@ -368,7 +374,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                        version: 1,
                                        description: descriptive_metadata_basic,
                                        access: access,
-                                       administrative: { hasAdminPolicy: apo_druid })
+                                       administrative: { hasAdminPolicy: apo_druid },
+                                       identification: {})
       end
 
       it 'generates an empty symphony record' do
@@ -708,6 +715,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                      description: descriptive_metadata_basic,
                                      version: 1,
                                      access: {},
+                                     administrative: { hasAdminPolicy: apo_druid },
                                      identification: identity_metadata_collection)
     end
 
@@ -1279,7 +1287,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 description: descriptive_metadata_basic,
                                 identification: {},
                                 access: {},
-                                administrative: { hasAdminPolicy: apo_druid })
+                                administrative: { hasAdminPolicy: apo_druid },
+                                structural: {})
       end
 
       it 'returns empty array if no relationships' do
@@ -1348,7 +1357,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 description: descriptive_metadata_basic,
                                 identification: {},
                                 access: {},
-                                administrative: { hasAdminPolicy: apo_druid })
+                                administrative: { hasAdminPolicy: apo_druid },
+                                structural: {})
       end
 
       it 'returns nil' do

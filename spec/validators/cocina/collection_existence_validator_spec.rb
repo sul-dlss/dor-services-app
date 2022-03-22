@@ -16,7 +16,11 @@ RSpec.describe Cocina::CollectionExistenceValidator do
                                      title: [{ value: 'Collection of new maps of Africa' }],
                                      purl: "https://purl.stanford.edu/#{collection_druid.delete_prefix('druid:')}"
                                    },
-                                   access: {})
+                                   access: {},
+                                   administrative: {
+                                     hasAdminPolicy: 'druid:df123cd4567'
+                                   },
+                                   identification: {})
   end
 
   before do
@@ -37,7 +41,9 @@ RSpec.describe Cocina::CollectionExistenceValidator do
         administrative: {
           hasAdminPolicy: 'druid:df123cd4567'
         },
-        access: {}
+        access: {},
+        structural: {},
+        identification: {}
       )
     end
 
@@ -64,7 +70,8 @@ RSpec.describe Cocina::CollectionExistenceValidator do
         structural: {
           contains: [],
           isMemberOf: [collection_druid]
-        }
+        },
+        identification: {}
       )
     end
 
@@ -91,7 +98,8 @@ RSpec.describe Cocina::CollectionExistenceValidator do
         structural: {
           contains: [],
           isMemberOf: [collection_druid]
-        }
+        },
+        identification: {}
       )
     end
 

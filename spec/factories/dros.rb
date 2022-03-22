@@ -19,15 +19,9 @@ FactoryBot.define do
         purl: 'https://purl.stanford.edu/xz456jk0987'
       }
     end
-  end
-
-  trait :with_dro_identification do
-    identification do
-      { sourceId: 'googlebooks:999999' }
+    sequence(:identification) do |n|
+      { sourceId: "googlebooks:d#{n}" }
     end
-  end
-
-  trait :with_structural do
     transient do
       isMemberOf { [] }
     end

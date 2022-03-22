@@ -81,7 +81,8 @@ RSpec.describe Publish::PublicXmlService do
                                 description: description,
                                 identification: {},
                                 access: {},
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
 
       it 'does not include a releaseData element and any info in identityMetadata' do
@@ -105,7 +106,8 @@ RSpec.describe Publish::PublicXmlService do
                                     releaseDate: '2021-10-08T00:00:00Z'
                                   }
                                 },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
 
       let(:result) do
@@ -130,7 +132,8 @@ RSpec.describe Publish::PublicXmlService do
                                   download: 'location-based',
                                   location: 'm&m'
                                 },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
 
       let(:result) do
@@ -257,7 +260,8 @@ RSpec.describe Publish::PublicXmlService do
                                   description: description,
                                   identification: {},
                                   access: {},
-                                  administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                  administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                  structural: {})
         end
 
         it 'does not add a thumb node' do

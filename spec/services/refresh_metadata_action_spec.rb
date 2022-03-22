@@ -23,7 +23,8 @@ RSpec.describe RefreshMetadataAction do
                             description: description,
                             identification: {},
                             access: {},
-                            administrative: { hasAdminPolicy: apo_druid })
+                            administrative: { hasAdminPolicy: apo_druid },
+                            structural: {})
   end
 
   let(:mods) do

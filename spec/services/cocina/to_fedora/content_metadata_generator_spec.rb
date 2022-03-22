@@ -790,7 +790,8 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         },
         structural: {
           contains: filesets
-        }
+        },
+        identification: {}
       )
     end
 

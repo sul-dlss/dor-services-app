@@ -22,7 +22,9 @@ RSpec.describe ApplyAdminPolicyDefaults do
         purl: "https://purl.stanford.edu/#{object_druid.delete_prefix('druid:')}"
       },
       access: access_props,
-      administrative: { hasAdminPolicy: apo_druid }
+      administrative: { hasAdminPolicy: apo_druid },
+      structural: {},
+      identification: {}
     )
   end
   let(:workflow_state) { 'Registered' }
@@ -60,7 +62,8 @@ RSpec.describe ApplyAdminPolicyDefaults do
             purl: "https://purl.stanford.edu/#{object_druid.delete_prefix('druid:')}"
           },
           access: {},
-          administrative: { hasAdminPolicy: apo_druid }
+          administrative: { hasAdminPolicy: apo_druid },
+          identification: {}
         )
       end
 
@@ -184,7 +187,8 @@ RSpec.describe ApplyAdminPolicyDefaults do
             purl: "https://purl.stanford.edu/#{object_druid.delete_prefix('druid:')}"
           },
           access: {},
-          administrative: { hasAdminPolicy: apo_druid }
+          administrative: { hasAdminPolicy: apo_druid },
+          identification: {}
         )
       end
 
@@ -286,7 +290,8 @@ RSpec.describe ApplyAdminPolicyDefaults do
           administrative: { hasAdminPolicy: apo_druid },
           structural: {
             contains: [before_file_set]
-          }
+          },
+          identification: {}
         )
       end
       let(:before_file_set) do

@@ -18,7 +18,9 @@ RSpec.describe ItemQueryService do
         purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
       },
       access: { download: 'none' }.merge(access),
-      administrative: { hasAdminPolicy: 'druid:df123cd4567' }
+      administrative: { hasAdminPolicy: 'druid:df123cd4567' },
+      identification: {},
+      structural: {}
     )
   end
   let(:workflow_state) { 'Accessioned' }
@@ -146,7 +148,8 @@ RSpec.describe ItemQueryService do
             purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
           },
           access: access,
-          administrative: { hasAdminPolicy: 'druid:df123cd4567' }
+          administrative: { hasAdminPolicy: 'druid:df123cd4567' },
+          identification: {}
         )
       end
 
@@ -200,7 +203,8 @@ RSpec.describe ItemQueryService do
                 viewingDirection: 'left-to-right'
               }
             ]
-          }
+          },
+          identification: {}
         )
       end
 
@@ -266,7 +270,9 @@ RSpec.describe ItemQueryService do
             purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
           },
           access: { view: 'citation-only', download: 'none' },
-          administrative: { hasAdminPolicy: 'druid:df123cd4567' }
+          administrative: { hasAdminPolicy: 'druid:df123cd4567' },
+          identification: {},
+          structural: {}
         )
       end
       let(:cocina_object_constituent1) do
@@ -280,7 +286,9 @@ RSpec.describe ItemQueryService do
             purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
           },
           access: { view: 'dark' },
-          administrative: { hasAdminPolicy: 'druid:df123cd4567' }
+          administrative: { hasAdminPolicy: 'druid:df123cd4567' },
+          identification: {},
+          structural: {}
         )
       end
 
@@ -323,7 +331,8 @@ RSpec.describe ItemQueryService do
                 members: ['druid:bj776jy8755']
               }
             ]
-          }
+          },
+          identification: {}
         )
       end
 

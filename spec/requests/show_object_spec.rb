@@ -435,7 +435,8 @@ RSpec.describe 'Get the object' do
             { value: 'Hello' }
           ],
           purl: 'https://purl.stanford.edu/bc123df4567'
-        }
+        },
+        identification: {}
       )
     end
 

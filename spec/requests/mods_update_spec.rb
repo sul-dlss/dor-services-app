@@ -26,7 +26,8 @@ RSpec.describe 'Update MODS' do
                             description: description,
                             identification: { sourceId: 'sul:50807230' },
                             access: {},
-                            administrative: { hasAdminPolicy: apo_druid })
+                            administrative: { hasAdminPolicy: apo_druid },
+                            structural: {})
   end
   let(:cocina_apo_object) do
     Cocina::Models::AdminPolicy.new(externalIdentifier: apo_druid,
@@ -71,7 +72,8 @@ RSpec.describe 'Update MODS' do
                               },
                               identification: { sourceId: 'sul:50807230' },
                               access: {},
-                              administrative: { hasAdminPolicy: apo_druid })
+                              administrative: { hasAdminPolicy: apo_druid },
+                              structural: {})
     end
 
     it 'updates the source MODS xml' do

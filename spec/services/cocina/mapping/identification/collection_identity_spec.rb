@@ -579,7 +579,8 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
           administrative: {
             hasAdminPolicy: admin_policy_id
           },
-          description: description_props
+          description: description_props,
+          identification: {}
         }
       end
     end

@@ -30,9 +30,6 @@ class Collection < ApplicationRecord
     collection_hash[:external_identifier] = collection_hash.delete(:externalIdentifier)
     collection_hash[:cocina_version] = collection_hash.delete(:cocinaVersion)
     collection_hash[:collection_type] = collection_hash.delete(:type)
-    collection_hash[:administrative] ||= nil
-    collection_hash[:description] ||= nil
-    collection_hash[:identification] ||= nil
     collection_hash
   end
 

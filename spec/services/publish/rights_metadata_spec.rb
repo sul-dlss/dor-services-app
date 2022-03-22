@@ -27,7 +27,8 @@ RSpec.describe Publish::RightsMetadata do
                                 description: description,
                                 identification: {},
                                 access: {},
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
 
       let(:expected) do
@@ -64,7 +65,8 @@ RSpec.describe Publish::RightsMetadata do
                                   view: 'world',
                                   download: 'world'
                                 },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
 
       let(:expected) do
@@ -104,7 +106,8 @@ RSpec.describe Publish::RightsMetadata do
                                   copyright: 'Temporary copyright',
                                   license: 'https://creativecommons.org/licenses/by/4.0/legalcode'
                                 },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
 
       let(:expected) do
@@ -145,7 +148,8 @@ RSpec.describe Publish::RightsMetadata do
                                   view: 'dark',
                                   download: 'none'
                                 },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
 
       let(:expected) do
@@ -186,7 +190,8 @@ RSpec.describe Publish::RightsMetadata do
                                     releaseDate: release_date
                                   }
                                 },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
 
       let(:expected) do
@@ -230,7 +235,8 @@ RSpec.describe Publish::RightsMetadata do
                                   download: 'location-based',
                                   location: 'art'
                                 },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
 
       let(:expected) do
@@ -268,7 +274,8 @@ RSpec.describe Publish::RightsMetadata do
                                   download: 'none',
                                   location: 'art'
                                 },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
 
       let(:expected) do
@@ -306,7 +313,8 @@ RSpec.describe Publish::RightsMetadata do
                                   download: 'location-based',
                                   location: 'art'
                                 },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
 
       let(:expected) do
@@ -349,7 +357,8 @@ RSpec.describe Publish::RightsMetadata do
                                   download: 'location-based',
                                   location: 'art'
                                 },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
 
       let(:expected) do
@@ -391,7 +400,8 @@ RSpec.describe Publish::RightsMetadata do
                                   view: 'citation-only',
                                   download: 'none'
                                 },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
       let(:expected) do
         <<~XML
@@ -428,7 +438,8 @@ RSpec.describe Publish::RightsMetadata do
                                   download: 'none',
                                   controlledDigitalLending: true
                                 },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
       let(:expected) do
         <<~XML
@@ -467,7 +478,8 @@ RSpec.describe Publish::RightsMetadata do
                                   download: 'none',
                                   controlledDigitalLending: false
                                 },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
       let(:expected) do
         <<~XML
@@ -503,7 +515,8 @@ RSpec.describe Publish::RightsMetadata do
                                   view: 'world',
                                   download: 'stanford'
                                 },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
       let(:expected) do
         <<~XML
@@ -544,7 +557,8 @@ RSpec.describe Publish::RightsMetadata do
                                   view: 'stanford',
                                   download: 'stanford'
                                 },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                                structural: {})
       end
       let(:expected) do
         <<~XML

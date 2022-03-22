@@ -41,7 +41,9 @@ RSpec.describe Cocina::ApoExistenceValidator do
         administrative: {
           hasAdminPolicy: apo_druid
         },
-        access: {}
+        access: {},
+        structural: {},
+        identification: {}
       )
     end
 
@@ -64,7 +66,9 @@ RSpec.describe Cocina::ApoExistenceValidator do
         administrative: {
           hasAdminPolicy: 'druid:df123cd4567'
         },
-        access: {}
+        access: {},
+        structural: {},
+        identification: {}
       )
     end
 
@@ -86,7 +90,11 @@ RSpec.describe Cocina::ApoExistenceValidator do
                                      },
                                      version: 1,
                                      cocinaVersion: '0.0.1',
-                                     access: {})
+                                     access: {},
+                                     administrative: {
+                                       hasAdminPolicy: 'druid:df123cd4567'
+                                     },
+                                     identification: {})
     end
     let(:item) do
       Cocina::Models::DRO.new(
@@ -101,7 +109,9 @@ RSpec.describe Cocina::ApoExistenceValidator do
         administrative: {
           hasAdminPolicy: collection_druid
         },
-        access: {}
+        access: {},
+        identification: {},
+        structural: {}
       )
     end
 

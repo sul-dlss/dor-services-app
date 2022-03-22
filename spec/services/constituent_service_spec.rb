@@ -18,7 +18,9 @@ RSpec.describe ConstituentService do
           title: [{ value: 'Dummy' }],
           purl: 'https://purl.stanford.edu/kh875jg9754'
         },
-        externalIdentifier: 'druid:kh875jg9754'
+        externalIdentifier: 'druid:kh875jg9754',
+        identification: {},
+        structural: {}
       )
     end
     let(:open_for_versioning) { true }
@@ -34,7 +36,9 @@ RSpec.describe ConstituentService do
           title: [{ value: 'Dummy' }],
           purl: "https://purl.stanford.edu/#{virtual_object_druid.delete_prefix('druid:')}"
         },
-        externalIdentifier: virtual_object_druid
+        externalIdentifier: virtual_object_druid,
+        identification: {},
+        structural: {}
       )
     end
     let(:virtual_object_druid) { 'druid:bc123df4567' }
@@ -118,7 +122,8 @@ RSpec.describe ConstituentService do
                 catalogRecordId: '12345'
               }
             ]
-          }
+          },
+          structural: {}
         )
       end
 

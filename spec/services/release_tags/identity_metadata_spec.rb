@@ -181,7 +181,9 @@ RSpec.describe ReleaseTags::IdentityMetadata do
                                        purl: "https://purl.stanford.edu/#{collection_pid.delete_prefix('druid:')}"
                                      },
                                      access: {},
-                                     type: Cocina::Models::ObjectType.collection)
+                                     type: Cocina::Models::ObjectType.collection,
+                                     administrative: { hasAdminPolicy: apo_id },
+                                     identification: {})
     end
     let(:collection_release_tags) do
       {

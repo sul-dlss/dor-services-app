@@ -33,7 +33,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                               access: {},
                               administrative: {
                                 hasAdminPolicy: apo_druid
-                              })
+                              },
+                              structural: {})
     end
 
     it 'creates the attributes hash' do
@@ -80,7 +81,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                               },
                               administrative: {
                                 hasAdminPolicy: apo_druid
-                              })
+                              },
+                              structural: {})
     end
 
     it 'creates the attributes hash' do
@@ -270,7 +272,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                               },
                               administrative: {
                                 hasAdminPolicy: apo_druid
-                              })
+                              },
+                              structural: {})
     end
 
     it 'populates the attributes hash correctly' do

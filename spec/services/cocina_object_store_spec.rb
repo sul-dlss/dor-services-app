@@ -647,7 +647,9 @@ RSpec.describe CocinaObjectStore do
                                       purl: 'https://purl.stanford.edu/xz456jk0987'
                                     },
                                     access: { view: 'world', download: 'world' },
-                                    administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
+                                    administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
+                                    structural: {},
+                                    identification: {}
                                   })
         end
 
@@ -693,7 +695,11 @@ RSpec.describe CocinaObjectStore do
                                              purl: 'https://purl.stanford.edu/hp308wm0436'
                                            },
                                            version: 1,
-                                           access: { view: 'world' }
+                                           access: { view: 'world' },
+                                           administrative: {
+                                             hasAdminPolicy: 'druid:hy787xj5878'
+                                           },
+                                           identification: {}
                                          })
         end
 
@@ -717,7 +723,10 @@ RSpec.describe CocinaObjectStore do
                                            },
                                            version: 1,
                                            access: { view: 'world' },
-                                           identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0031' }
+                                           identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0031' },
+                                           administrative: {
+                                             hasAdminPolicy: 'druid:hy787xj5878'
+                                           }
                                          })
         end
 
