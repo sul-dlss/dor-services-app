@@ -5,6 +5,7 @@ require 'rails_helper'
 RSpec.describe ThumbnailService do
   let(:instance) { described_class.new(object) }
   let(:druid) { 'druid:bc123df4567' }
+  let(:apo_druid) { 'druid:pp000pp0000' }
   let(:description) do
     {
       title: [{ value: 'Constituent label &amp; A Special character' }],
@@ -26,7 +27,9 @@ RSpec.describe ThumbnailService do
                                        },
                                        version: 1,
                                        cocinaVersion: '0.0.1',
-                                       access: {})
+                                       access: {},
+                                       administrative: { hasAdminPolicy: apo_druid },
+                                       identification: {})
       end
 
       it 'returns nil if there is no structural metadata' do
@@ -36,7 +39,6 @@ RSpec.describe ThumbnailService do
 
     context 'for an item' do
       let(:druid) { 'druid:bc123df4567' }
-      let(:apo_druid) { 'druid:pp000pp0000' }
 
       context 'with no structural metadata' do
         let(:object) do
@@ -47,7 +49,8 @@ RSpec.describe ThumbnailService do
                                   description: description,
                                   identification: {},
                                   access: {},
-                                  administrative: { hasAdminPolicy: apo_druid })
+                                  administrative: { hasAdminPolicy: apo_druid },
+                                  structural: {})
         end
 
         it 'returns nil' do

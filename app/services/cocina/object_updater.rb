@@ -140,7 +140,7 @@ module Cocina
       else
         # remove bookData reading order node if no reading direction is specified in the cocina model
         # ...this can happen if the content type is changed from a book type to a non-book type
-        fedora_object.contentMetadata.ng_xml.xpath('//bookData').each(&:remove) unless cocina_object.structural&.hasMemberOrders
+        fedora_object.contentMetadata.ng_xml.xpath('//bookData').each(&:remove) if cocina_object.structural&.hasMemberOrders.blank?
         fedora_object.contentMetadata.contentType = ToFedora::ContentType.map(cocina_object.type)
       end
     end

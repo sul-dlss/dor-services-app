@@ -16,7 +16,8 @@ RSpec.describe 'Update MARC record' do
                             },
                             identification: {},
                             access: {},
-                            administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                            administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                            structural: {})
   end
 
   before do

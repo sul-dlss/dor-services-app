@@ -23,7 +23,8 @@ RSpec.describe Cocina::DescriptionRoundtripValidator do
           hasAdminPolicy: 'druid:dd999df4567'
         },
         identification: { sourceId: 'googlebooks:999999' },
-        externalIdentifier: 'druid:ff111df4567'
+        externalIdentifier: 'druid:ff111df4567',
+        structural: {}
       }
     end
 

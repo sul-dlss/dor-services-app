@@ -28,7 +28,8 @@ RSpec.describe 'Refresh metadata' do
                             description: description,
                             identification: identification,
                             access: {},
-                            administrative: { hasAdminPolicy: apo_druid })
+                            administrative: { hasAdminPolicy: apo_druid },
+                            structural: {})
   end
   let(:updated_cocina_object) do
     Cocina::Models::DRO.new(externalIdentifier: druid,
@@ -41,7 +42,8 @@ RSpec.describe 'Refresh metadata' do
                             },
                             identification: identification,
                             access: {},
-                            administrative: { hasAdminPolicy: apo_druid })
+                            administrative: { hasAdminPolicy: apo_druid },
+                            structural: {})
   end
   let(:cocina_apo_object) do
     Cocina::Models::AdminPolicy.new(externalIdentifier: apo_druid,

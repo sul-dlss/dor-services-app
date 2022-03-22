@@ -51,7 +51,8 @@ RSpec.describe Cocina::ValidateDarkService do
             }
           }
         ]
-      }
+      },
+      identification: {}
     )
   end
 
@@ -107,7 +108,11 @@ RSpec.describe Cocina::ValidateDarkService do
           purl: 'https://purl.stanford.edu/bc123df4567'
         },
         version: 1,
-        access: { view: view }
+        access: { view: view },
+        administrative: {
+          hasAdminPolicy: 'druid:df123cd4567'
+        },
+        identification: {}
       )
     end
 

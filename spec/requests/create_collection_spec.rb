@@ -156,8 +156,10 @@ RSpec.describe 'Create object' do
           "description":{
             "title":[{"value":"#{title}"}],
             "note":[{"value":"coll abstract","type":"abstract"}]
-            }
+            },
+          "identification": {}
           }
+
       JSON
     end
     let(:expected) do
@@ -173,7 +175,8 @@ RSpec.describe 'Create object' do
                                        note: [{ value: 'coll abstract', type: 'abstract' }],
                                        purl: Purl.for(druid: druid)
                                      },
-                                     externalIdentifier: druid)
+                                     externalIdentifier: druid,
+                                     identification: {})
     end
 
     it 'creates the collection with populated description title and note' do
@@ -195,7 +198,8 @@ RSpec.describe 'Create object' do
           "label":"#{label}",
           "version":1,
           "access":{ "view": "world" },
-          "administrative":{"hasAdminPolicy":"druid:dd999df4567"}
+          "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
+          "identification":{}
           }
       JSON
     end
@@ -211,7 +215,8 @@ RSpec.describe 'Create object' do
                                        title: [{ value: expected_label }],
                                        purl: 'https://purl.stanford.edu/gg777gg7777'
                                      },
-                                     externalIdentifier: druid)
+                                     externalIdentifier: druid,
+                                     identification: {})
     end
 
     it 'creates the collection with populated access' do

@@ -18,7 +18,8 @@ RSpec.describe 'Display metadata' do
                             description: description,
                             identification: {},
                             access: {},
-                            administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                            administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                            structural: {})
   end
 
   before do
@@ -111,7 +112,8 @@ RSpec.describe 'Display metadata' do
                               description: description,
                               identification: {},
                               access: {},
-                              administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+                              administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
+                              structural: {})
     end
 
     let(:solr_client) { instance_double(RSolr::Client, get: solr_response) }

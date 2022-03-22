@@ -94,7 +94,8 @@ RSpec.describe EmbargoReleaseService do
                                 version: 1,
                                 access: access,
                                 structural: structural,
-                                administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
+                                administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
+                                identification: {}
                               })
     end
 
@@ -226,7 +227,9 @@ RSpec.describe EmbargoReleaseService do
                                     purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
                                   },
                                   access: access,
-                                  administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
+                                  administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
+                                  structural: {},
+                                  identification: {}
                                 })
       end
 
@@ -243,8 +246,6 @@ RSpec.describe EmbargoReleaseService do
                                       }).to_h
       end
 
-      let(:structural) { nil }
-
       it 'moves embargo to access' do
         released_cocina_object = service.send(:release_cocina_object, embargoed_cocina_object)
         expect(released_cocina_object.access.to_h).to eq(
@@ -254,7 +255,6 @@ RSpec.describe EmbargoReleaseService do
             useAndReproductionStatement: 'Free!'
           }
         )
-        expect(released_cocina_object.structural).to be_nil
         expect(CocinaObjectStore).to have_received(:save)
       end
     end

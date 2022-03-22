@@ -18,7 +18,9 @@ RSpec.describe PreservationMetadataExtractor do
                               },
                               version: 1,
                               access: { view: 'world', download: 'world' },
-                              administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
+                              administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
+                              structural: {},
+                              identification: {}
                             })
   end
 
@@ -75,13 +77,11 @@ RSpec.describe PreservationMetadataExtractor do
       allow(metadata_file).to receive(:open).and_yield(file)
     end
 
-    # rubocop:disable Layout/LineLength
     it 'serializes json' do
       instance.send(:extract_cocina)
       expect(metadata_dir).to have_received(:join).with('cocina.json')
       expect(file).to have_received(:<<)
-        .with("{\n  \"cocinaVersion\": \"0.0.1\",\n  \"type\": \"#{Cocina::Models::ObjectType.book}\",\n  \"externalIdentifier\": \"druid:nc893zj8956\",\n  \"label\": \"Test DRO\",\n  \"version\": 1,\n  \"access\": {\n    \"view\": \"world\",\n    \"download\": \"world\"\n  },\n  \"administrative\": {\n    \"hasAdminPolicy\": \"druid:hy787xj5878\",\n    \"releaseTags\": [\n\n    ]\n  },\n  \"description\": {\n    \"title\": [\n      {\n        \"structuredValue\": [\n\n        ],\n        \"parallelValue\": [\n\n        ],\n        \"groupedValue\": [\n\n        ],\n        \"value\": \"Test DRO\",\n        \"identifier\": [\n\n        ],\n        \"note\": [\n\n        ],\n        \"appliesTo\": [\n\n        ]\n      }\n    ],\n    \"contributor\": [\n\n    ],\n    \"event\": [\n\n    ],\n    \"form\": [\n\n    ],\n    \"geographic\": [\n\n    ],\n    \"language\": [\n\n    ],\n    \"note\": [\n\n    ],\n    \"identifier\": [\n\n    ],\n    \"subject\": [\n\n    ],\n    \"relatedResource\": [\n\n    ],\n    \"marcEncodedData\": [\n\n    ],\n    \"purl\": \"https://purl.stanford.edu/nc893zj8956\"\n  }\n}")
+        .with(/"cocinaVersion": "0.0.1"/)
     end
-    # rubocop:enable Layout/LineLength
   end
 end

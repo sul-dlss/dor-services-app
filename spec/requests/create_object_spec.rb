@@ -583,7 +583,9 @@ RSpec.describe 'Create object' do
                                        },
                                        version: 1,
                                        cocinaVersion: Cocina::Models::VERSION,
-                                       access: {})
+                                       access: {},
+                                       administrative: { hasAdminPolicy: 'druid:dd999df4567' },
+                                       identification: {})
       end
 
       before do
@@ -1129,7 +1131,8 @@ RSpec.describe 'Create object' do
                                 },
                                 identification: { sourceId: 'googlebooks:999999' },
                                 externalIdentifier: 'druid:gg777gg7777',
-                                access: {})
+                                access: {},
+                                structural: {})
       end
       let(:data) do
         <<~JSON
@@ -1138,7 +1141,9 @@ RSpec.describe 'Create object' do
             "type":"#{Cocina::Models::ObjectType.object}",
             "label":"This is my label","version":1,"access":{},
             "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
-            "identification":{"sourceId":"googlebooks:999999"}}
+            "identification":{"sourceId":"googlebooks:999999"},
+            "structural":{}
+          }
         JSON
       end
       let(:default_access) do

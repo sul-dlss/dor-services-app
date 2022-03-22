@@ -29,7 +29,8 @@ RSpec.describe Dor::Goobi do
       access: {},
       administrative: {
         hasAdminPolicy: 'druid:dd999df4567'
-      }
+      },
+      structural: {}
     }.tap do |props|
       props[:description] = description if description
     end
@@ -82,7 +83,11 @@ RSpec.describe Dor::Goobi do
                                          title: [{ value: 'Collection label' }],
                                          purl: "https://purl.stanford.edu/#{collection_druid.delete_prefix('druid:')}"
                                        },
-                                       access: {}
+                                       access: {},
+                                       administrative: {
+                                         hasAdminPolicy: 'druid:dd999df4567'
+                                       },
+                                       identification: {}
                                      })
     end
 

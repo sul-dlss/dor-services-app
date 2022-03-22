@@ -30,7 +30,8 @@ RSpec.describe PublishedRelationshipsFilter do
             },
             structural: {
               isMemberOf: ['druid:xh235dd9059']
-            }
+            },
+            identification: {}
           }
         )
       end
@@ -63,7 +64,8 @@ RSpec.describe PublishedRelationshipsFilter do
             access: {},
             administrative: {
               hasAdminPolicy: 'druid:df123cd4567'
-            }
+            },
+            identification: {}
           }
         )
       end

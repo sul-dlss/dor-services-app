@@ -17,24 +17,8 @@ RSpec.describe Dro do
                                 purl: 'https://purl.stanford.edu/xz456jk0987'
                               },
                               access: { view: 'world', download: 'world' },
-                              administrative: { hasAdminPolicy: 'druid:hy787xj5878' }
-                            })
-  end
-
-  let(:cocina_dro) do
-    Cocina::Models::DRO.new({
-                              cocinaVersion: '0.0.1',
-                              externalIdentifier: druid,
-                              type: Cocina::Models::ObjectType.book,
-                              label: 'Test DRO',
-                              version: 1,
-                              access: { view: 'world', download: 'world' },
                               administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
-                              description: {
-                                title: [{ value: 'Test DRO' }],
-                                purl: 'https://purl.stanford.edu/xz456jk0987'
-                              },
-                              identification: { sourceId: 'googlebooks:999999' },
+                              identification: { sourceId: source_id },
                               structural: { contains: [
                                 {
                                   type: Cocina::Models::FileSetType.file,
@@ -63,16 +47,65 @@ RSpec.describe Dro do
                                     ]
                                   }
                                 }
-                              ] },
-                              geographic: {
-                                iso19139: '<?xml version="1.0"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">...'
-                              }
+                              ] }
                             })
   end
+
+  let(:cocina_dro) do
+    Cocina::Models::DRO.new({
+                              cocinaVersion: '0.0.1',
+                              externalIdentifier: druid,
+                              type: Cocina::Models::ObjectType.book,
+                              label: 'Test DRO',
+                              version: 1,
+                              access: { view: 'world', download: 'world' },
+                              administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
+                              description: {
+                                title: [{ value: 'Test DRO' }],
+                                purl: 'https://purl.stanford.edu/xz456jk0987'
+                              },
+                              geographic: {
+                                iso19139: '<?xml version="1.0"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">...'
+                              },
+                              identification: { sourceId: source_id },
+                              structural: { contains: [
+                                {
+                                  type: Cocina::Models::FileSetType.file,
+                                  externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/123-456-789', label: 'Page 1', version: 1,
+                                  structural: {
+                                    contains: [
+                                      {
+                                        type: Cocina::Models::ObjectType.file,
+                                        externalIdentifier: 'https://cocina.sul.stanford.edu/file/123-456-789',
+                                        label: '00001.html',
+                                        filename: '00001.html',
+                                        size: 0,
+                                        version: 1,
+                                        hasMimeType: 'text/html',
+                                        use: 'transcription',
+                                        hasMessageDigests: [
+                                          {
+                                            type: 'sha1', digest: 'cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7'
+                                          }, {
+                                            type: 'md5', digest: 'e6d52da47a5ade91ae31227b978fb023'
+                                          }
+                                        ],
+                                        access: { view: 'dark' },
+                                        administrative: { publish: false, sdrPreserve: true, shelve: false }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ] }
+                            })
+  end
+
+  let(:source_id) { 'googlebooks:9999999' }
 
   describe 'to_cocina' do
     context 'with minimal DRO' do
       let(:dro) { create(:dro, external_identifier: druid) }
+      let(:source_id) { dro.identification['sourceId'] }
 
       it 'returns a Cocina::Model::DRO' do
         expect(dro.to_cocina).to eq(minimal_cocina_dro)
@@ -80,7 +113,8 @@ RSpec.describe Dro do
     end
 
     context 'with complete DRO' do
-      let(:dro) { create(:dro, :with_dro_identification, :with_structural, :with_geographic, external_identifier: druid) }
+      let(:dro) { create(:dro, :with_geographic, external_identifier: druid) }
+      let(:source_id) { dro.identification['sourceId'] }
 
       it 'returns a Cocina::Model::DRO' do
         expect(dro.to_cocina).to eq(cocina_dro)
@@ -102,8 +136,8 @@ RSpec.describe Dro do
         expect(dro.access).to eq(minimal_cocina_dro.access.to_h.with_indifferent_access)
         expect(dro.administrative).to eq(minimal_cocina_dro.administrative.to_h.with_indifferent_access)
         expect(dro.description).to eq(cocina_dro.description.to_h.with_indifferent_access)
-        expect(dro.identification).to be_nil
-        expect(dro.structural).to be_nil
+        expect(dro.identification).to eq(cocina_dro.identification.to_h.with_indifferent_access)
+        expect(dro.structural).to eq(cocina_dro.structural.to_h.with_indifferent_access)
         expect(dro.geographic).to be_nil
       end
     end

@@ -21,7 +21,7 @@ RSpec.describe 'Get the object' do
     }
   end
 
-  let(:dro_record) { create(:dro, :with_structural, isMemberOf: collections.map(&:externalIdentifier)) }
+  let(:dro_record) { create(:dro, isMemberOf: collections.map(&:externalIdentifier)) }
   let(:dro) { dro_record.to_cocina }
 
   let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
