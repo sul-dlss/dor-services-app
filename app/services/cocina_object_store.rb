@@ -360,6 +360,9 @@ class CocinaObjectStore
   end
 
   # Converts from Cocina::Models::RequestDRO|RequestCollection|RequestAdminPolicy to Cocina::Models::DRO|Collection||AdminPolicy
+  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable Metrics/CyclomaticComplexity
+  # rubocop:disable Metrics/PerceivedComplexity
   def cocina_from_request(cocina_request_object, druid)
     props = cocina_request_object.to_h.with_indifferent_access
     props[:externalIdentifier] = druid
@@ -388,8 +391,15 @@ class CocinaObjectStore
     # Remove partOfProject
     props[:administrative].delete(:partOfProject) if props[:administrative].present?
 
+    # These are not required in requests
+    props[:structural] = {} if cocina_request_object.dro? && props[:structural].nil?
+    props[:identification] = {} if cocina_request_object.collection? && props[:identification].nil?
+
     Cocina::Models.build(props)
   end
+  # rubocop:enable Metrics/AbcSize
+  # rubocop:enable Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/PerceivedComplexity
 
   def assign_doi(cocina_object)
     return cocina_object unless cocina_object.dro?
