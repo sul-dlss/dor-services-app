@@ -9,7 +9,7 @@ RSpec.describe 'Refresh metadata' do
   let(:description) do
     {
       title: [{ value: 'However am I going to be' }],
-      purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+      purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
     }
   end
   let(:identification) do
@@ -38,7 +38,7 @@ RSpec.describe 'Refresh metadata' do
                             version: 1,
                             description: {
                               title: [{ value: 'Paying for College' }],
-                              purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+                              purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
                             },
                             identification: identification,
                             access: {},
@@ -106,6 +106,30 @@ RSpec.describe 'Refresh metadata' do
     end
   end
 
+  context 'with a collection' do
+    let(:cocina_object) do
+      Cocina::Models::Collection.new(externalIdentifier: druid,
+                                     type: Cocina::Models::ObjectType.collection,
+                                     label: 'A new map of Africa',
+                                     version: 1,
+                                     description: description,
+                                     identification: {},
+                                     access: {},
+                                     administrative: { hasAdminPolicy: apo_druid })
+    end
+
+    before do
+      allow(MetadataService).to receive(:fetch).and_return(mods)
+    end
+
+    it 'returns a 422 error' do
+      post '/v1/objects/druid:mk420bs7601/refresh_metadata',
+           headers: { 'Authorization' => "Bearer #{jwt}" }
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to match("#{druid} had no resolvable identifiers")
+    end
+  end
+
   describe 'errors in response from Symphony' do
     let(:marc_url) { Settings.catalog.symphony.base_url + Settings.catalog.symphony.marcxml_path }
     let(:identification) do
@@ -125,7 +149,7 @@ RSpec.describe 'Refresh metadata' do
       it 'returns a 500 error' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
              headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.status).to eq(500)
+        expect(response).to have_http_status(:internal_server_error)
         expect(response.body).to eq('Incomplete response received from Symphony for 666 - expected 0 bytes but got 2')
       end
     end
@@ -135,7 +159,7 @@ RSpec.describe 'Refresh metadata' do
         stub_request(:get, format(marc_url, catkey: '666')).to_return(status: 404)
       end
 
-      it 'returns a mk420bs7601 error' do
+      it 'returns a 400 error' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:bad_request)
@@ -163,7 +187,7 @@ RSpec.describe 'Refresh metadata' do
       it 'returns a 500 error' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
              headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.status).to eq(500)
+        expect(response).to have_http_status(:internal_server_error)
         expect(response.body).to match(%r{^Got HTTP Status-Code 403 calling https://sirsi.example.com/symws/catalog/bib/key/666\?includeFields=bib:.*Something somewhere went wrong.})
       end
     end
