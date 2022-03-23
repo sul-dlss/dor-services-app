@@ -35,9 +35,9 @@ module Cocina
 
         def build_parallel
           names = {
-            parallelValue: name_elements.map { |name_node| build_parallel_name(name_node) },
+            parallelValue: build_parallel_values,
             type: type_for(name_elements.first['type']),
-            status: name_elements.filter_map { |name_element| name_element['usage'] }.first
+            status: name_elements.filter_map { |name_node| name_node['usage'] }.first
           }.compact
           { name: [names] }.tap do |attrs|
             roles = name_elements.flat_map { |name_node| build_roles(name_node) }.compact.uniq
@@ -46,15 +46,16 @@ module Cocina
         end
 
         def build_parallel_name(name_node)
-          name_attrs = {
+          parallel_value = {
             status: name_node['usage']
           }.compact.merge(common_lang_script(name_node))
 
-          name_attrs = name_attrs.merge(common_name(name_node, name_attrs[:name]))
-          name_parts = build_name_parts(name_node)
+          parallel_value = parallel_value.merge(common_name(name_node, parallel_value[:name]))
+          name_parts = build_name_parts(name_node, parallel: true)
+
           notifier.warn('Missing name/namePart element') if name_parts.all?(&:empty?)
-          name_parts.each { |name_part| name_attrs = name_part.merge(name_attrs) }
-          name_attrs.compact
+          name_parts.each { |name_part| parallel_value = name_part.merge(parallel_value) }
+          parallel_value.compact
         end
 
         # build non-parallel, single name
@@ -105,7 +106,17 @@ module Cocina
           end.compact
         end
 
-        def build_name_parts(name_node)
+        def build_parallel_values
+          parallel_values = []
+          name_elements.each do |name_node|
+            parallel_values << build_parallel_name(name_node)
+            display_val = display_value(name_node)
+            parallel_values << display_val if display_val
+          end
+          parallel_values.compact
+        end
+
+        def build_name_parts(name_node, parallel: false)
           name_part_nodes = name_node.xpath('mods:namePart', mods: DESC_METADATA_NS)
           alternative_name_nodes = name_node.xpath('mods:alternativeName', mods: DESC_METADATA_NS)
 
@@ -115,18 +126,62 @@ module Cocina
             parts << { valueAt: name_node['xlink:href'] } if name_node['xlink:href']
             parts << common_authority(name_node) if name_node['valueURI']
           when 1
-            parts << build_name_part(name_node, name_part_nodes.first, default_type: alternative_name_nodes.present?)
-                     .merge(common_authority(name_node)).merge(common_lang_script(name_node)).presence
+            name = build_simple_value_name(name_node, name_part_nodes.first, alternative_name_nodes, parallel)
+            parts << name.merge(common_authority(name_node)).merge(common_lang_script(name_node)).presence
           else
-            vals = name_part_nodes.filter_map { |name_part| build_name_part(name_node, name_part).presence }
-            parts << { structuredValue: vals }.merge(common_authority(name_node)).merge(common_lang_script(name_node))
+            name = build_structured_value_name(name_node, name_part_nodes)
+            parts << name.merge(common_authority(name_node)).merge(common_lang_script(name_node))
           end
 
           parts = build_alternative_name(alternative_name_nodes, parts) if alternative_name_nodes.present?
-
-          display_form = name_node.xpath('mods:displayForm', mods: DESC_METADATA_NS).first
-          parts << { value: display_form.text, type: 'display' } if display_form
           parts.compact
+        end
+
+        def build_simple_value_name(name_node, name_part_node, alternative_name_nodes, parallel)
+          name_value_hash = build_name_part(name_node, name_part_node, default_type: alternative_name_nodes.present?)
+          display_form_node = name_node.xpath('mods:displayForm', mods: DESC_METADATA_NS).first
+          if display_form_node.present? && !parallel
+            cocina_contrib_name =
+              {
+                parallelValue: [
+                  name_value_hash
+                ]
+              }
+            add_display_parallel_value(name_node, cocina_contrib_name)
+          else
+            name_value_hash
+          end
+        end
+
+        def build_structured_value_name(name_node, name_part_nodes)
+          vals = name_part_nodes.filter_map { |name_part_node| build_name_part(name_node, name_part_node).presence }
+          display_form_node = name_node.xpath('mods:displayForm', mods: DESC_METADATA_NS).first
+          if display_form_node.present?
+            cocina_contrib_name =
+              {
+                parallelValue: [
+                  { structuredValue: vals }
+                ]
+              }
+            add_display_parallel_value(name_node, cocina_contrib_name)
+          else
+            { structuredValue: vals }
+          end
+        end
+
+        def add_display_parallel_value(name_node, cocina_contrib_name)
+          display_form = name_node.xpath('mods:displayForm', mods: DESC_METADATA_NS)&.text
+          return cocina_contrib_name if display_form.blank?
+
+          display_parallel_value = display_value(name_node)
+          cocina_contrib_name[:parallelValue] << display_parallel_value if display_parallel_value && cocina_contrib_name[:parallelValue].present?
+
+          cocina_contrib_name
+        end
+
+        def display_value(name_node)
+          display_form = name_node.xpath('mods:displayForm', mods: DESC_METADATA_NS)&.text
+          { value: display_form, type: 'display' } if display_form.present?
         end
 
         def build_name_part(name_node, name_part_node, default_type: true)

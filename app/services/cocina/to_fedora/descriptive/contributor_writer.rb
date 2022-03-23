@@ -34,23 +34,11 @@ module Cocina
           if contributor.type == 'unspecified others'
             write_etal
           elsif contributor.name.present?
+            # we expect contributor to have a single value for name property
             contrib_name = contributor.name.first
-            parallel_values = contrib_name.parallelValue
-            if parallel_values.present?
-              altrepgroup_id = id_generator.next_altrepgroup
-              parallel_values.each do |parallel_contrib_name|
-                NameTitleGroup.value_slices(parallel_contrib_name)&.each do |parallel_contrib_name_slice|
-                  if name_title_vals_index[parallel_contrib_name_slice]
-                    name_title_group = name_title_vals_index[parallel_contrib_name_slice]&.values&.first
-                    write_parallel_contributor(contributor, contrib_name, parallel_contrib_name, name_title_group, altrepgroup_id)
-                  else
-                    # TODO:  want a way to notify that we hit a problem - either notifier or HB error (issue #3751)
-                    #  OR validate for semantic correctness upon creation/update so we can't get here.
-                    #  notifier.warn("For contributor name '#{parallel_contrib_name_val}', no title matching '#{title_from_contrib}'")
-                    write_parallel_contributor(contributor, contrib_name, parallel_contrib_name, nil, altrepgroup_id)
-                  end
-                end
-              end
+            parallel_name_values = contrib_name.parallelValue
+            if parallel_name_values.present?
+              write_contributor_with_parallel_names(parallel_name_values, contrib_name)
             else
               write_contributor(contributor)
             end
@@ -101,7 +89,50 @@ module Cocina
           end
         end
 
-        def write_parallel_contributor(contributor, name, parallel_name, name_title_group, altrepgroup_id)
+        def write_contributor_with_parallel_names(parallel_name_values, contrib_name)
+          display_type_parallel_name = display_type_parallel_name(parallel_name_values)
+          if parallel_name_values.size == 1
+            contrib_name_value_slice = NameTitleGroup.value_slices(parallel_name_values.first)
+            name_title_group = name_title_vals_index[contrib_name_value_slice]&.values&.first
+            write_name_from_parallel(contributor, contributor.name.first, parallel_name_values, name_title_group, nil)
+          elsif parallel_name_values.size == 2 && display_type_parallel_name
+            contrib_name_value_slice = NameTitleGroup.value_slices(parallel_name_values.first)
+            name_title_group = name_title_vals_index[contrib_name_value_slice]&.values&.first
+            write_name_with_display_form(contributor, contributor.name.first, parallel_name_values, 0, name_title_group, nil)
+          else
+            write_multiple_parallel_contributors(parallel_name_values, contrib_name)
+          end
+        end
+
+        def write_multiple_parallel_contributors(parallel_name_values, contrib_name)
+          altrepgroup_id = id_generator.next_altrepgroup
+          parallel_name_values.each_with_index do |parallel_contrib_name, index|
+            display_name_present = parallel_name_values[index + 1].present? && parallel_name_values[index + 1].type == 'display'
+            NameTitleGroup.value_slices(parallel_contrib_name)&.each do |parallel_contrib_name_slice|
+              if name_title_vals_index[parallel_contrib_name_slice]
+                name_title_group = name_title_vals_index[parallel_contrib_name_slice]&.values&.first
+                if display_name_present
+                  # associate type 'display' with the previous value
+                  write_name_with_display_form(contributor, contrib_name, parallel_name_values, index, name_title_group, altrepgroup_id)
+                else
+                  write_name_from_parallel(contributor, contrib_name, parallel_contrib_name, name_title_group, altrepgroup_id)
+                end
+              elsif display_name_present
+                # TODO:  want a way to notify that we hit a problem - either notifier or HB error (issue #3751)
+                #  OR validate for semantic correctness upon creation/update so we can't get here.
+                #  notifier.warn("For contributor name '#{parallel_contrib_name_slice}', no contrib matching")
+                write_name_with_display_form(contributor, contrib_name, parallel_name_values, index, nil, altrepgroup_id)
+              elsif parallel_name_values[index].type == 'display'
+                # we assume we included this as part of a previous name
+                next
+              else
+                write_name_from_parallel(contributor, contrib_name, parallel_contrib_name, nil, altrepgroup_id)
+              end
+            end
+          end
+        end
+
+        def write_name_from_parallel(contributor, name, parallel_name, name_title_group, altrepgroup_id)
           attributes = parallel_name_attributes(name, parallel_name, name_title_group, altrepgroup_id)
           type_attr = NAME_TYPE.fetch(contributor.type, name_title_group ? 'personal' : nil)
           attributes[:type] = type_attr if type_attr
@@ -115,6 +146,35 @@ module Cocina
             write_note(contributor)
             write_roles(contributor)
           end
+        end
+
+        def write_name_with_display_form(contributor, name, parallel_name_values, index, name_title_group, altrepgroup_id)
+          display_type_parallel_name = display_type_parallel_name(parallel_name_values)
+          parallel_name = parallel_name_values[index]
+          return if parallel_name.blank?
+
+          attributes = if altrepgroup_id.present?
+                         parallel_name_attributes(name, parallel_name, name_title_group, altrepgroup_id)
+                       else
+                         name_attributes(contributor, name, nil)
+                       end
+          type_attr = NAME_TYPE.fetch(contributor.type, name_title_group ? 'personal' : nil)
+          attributes[:type] = type_attr if type_attr
+          xml.name attributes do
+            if parallel_name.structuredValue.present?
+              write_structured(parallel_name)
+            else
+              write_basic(parallel_name)
+            end
+            write_display_form(display_type_parallel_name) if display_type_parallel_name.present?
+            write_identifier(contributor) if contributor.identifier.present?
+            write_note(contributor)
+            write_roles(contributor)
+          end
+        end
+
+        def display_type_parallel_name(parallel_name_values)
+          parallel_name_values.detect { |parallel_value| parallel_value.type == 'display' }
         end
 
         def parallel_name_attributes(name, parallel_name, name_title_group, altrepgroup_id)

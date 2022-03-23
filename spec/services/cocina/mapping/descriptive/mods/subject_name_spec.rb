@@ -111,22 +111,7 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
       let(:mods) do
         <<~XML
           <subject>
-            <name type="personal" authority="naf">
-              <namePart type="family">Russell</namePart>
-              <namePart type="given">William</namePart>
-              <namePart type="termsOfAddress">Lord</namePart>
-              <namePart type="date">1639-1683</namePart>
-              <description>bart</description>
-              <displayForm>Russell, William, Lord, 1639-1683, bart</displayForm>
-            </name>
-          </subject>
-        XML
-      end
-
-      let(:roundtrip_mods) do
-        <<~XML
-          <subject authority="lcsh">
-            <name type="personal" authority="naf">
+            <name type="personal">
               <namePart type="family">Russell</namePart>
               <namePart type="given">William</namePart>
               <namePart type="termsOfAddress">Lord</namePart>
@@ -143,9 +128,6 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
           subject: [
             {
               type: 'person',
-              source: {
-                code: 'naf'
-              },
               parallelValue: [
                 {
                   structuredValue: [
@@ -165,10 +147,7 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
                       value: '1639-1683',
                       type: 'life dates'
                     }
-                  ],
-                  source: {
-                    code: 'naf'
-                  }
+                  ]
                 },
                 {
                   value: 'Russell, William, Lord, 1639-1683, bart',
