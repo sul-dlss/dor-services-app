@@ -40,7 +40,7 @@ class ConstituentService
 
     CocinaObjectStore.save(updated_virtual_object)
 
-    SynchronousIndexer.reindex_remotely_from_cocina(virtual_object.externalIdentifier, cocina_object: updated_virtual_object, created_at: created_at, updated_at: updated_at)
+    SynchronousIndexer.reindex_remotely_from_cocina(cocina_object: updated_virtual_object, created_at: created_at, updated_at: updated_at)
 
     publish_constituents!(constituent_druids)
 

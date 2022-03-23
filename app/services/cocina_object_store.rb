@@ -134,7 +134,7 @@ class CocinaObjectStore
     updated_at ||= created_at
     # Fedora 3 has no unique constrains, so
     # index right away to reduce the likelyhood of duplicate sourceIds
-    SynchronousIndexer.reindex_remotely_from_cocina(druid, cocina_object: cocina_object, created_at: created_at, updated_at: updated_at)
+    SynchronousIndexer.reindex_remotely_from_cocina(cocina_object: cocina_object, created_at: created_at, updated_at: updated_at)
 
     event_factory.create(druid: druid, event_type: 'registration', data: cocina_object.to_h)
 
