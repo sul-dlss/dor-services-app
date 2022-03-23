@@ -102,6 +102,16 @@ RSpec.describe Dro do
 
   let(:source_id) { 'googlebooks:9999999' }
 
+  describe 'to_h' do
+    context 'with a DRO lacking structural metadata' do
+      let(:dro) { create(:dro, external_identifier: druid, structural: nil) }
+
+      it 'returns a valid Cocina hash' do
+        expect { Cocina::Models::DRO.new(dro.to_h) }.not_to raise_error(Cocina::Models::ValidationError)
+      end
+    end
+  end
+
   describe 'to_cocina' do
     context 'with minimal DRO' do
       let(:dro) { create(:dro, external_identifier: druid) }

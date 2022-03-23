@@ -4,7 +4,12 @@
 class Dro < ApplicationRecord
   # @return [Cocina::Models::DRO] Cocina Digital Repository Object
   def to_cocina
-    Cocina::Models::DRO.new({
+    Cocina::Models::DRO.new(to_h)
+  end
+
+  # @return [Hash] DRO/item instance as a hash
+  def to_h
+    {
       cocinaVersion: cocina_version,
       type: content_type,
       externalIdentifier: external_identifier,
@@ -14,9 +19,9 @@ class Dro < ApplicationRecord
       administrative: administrative,
       description: description,
       identification: identification,
-      structural: structural,
+      structural: structural || {},
       geographic: geographic
-    }.compact)
+    }.compact
   end
 
   # @param [Cocina::Models::DRO] Cocina Digital Repository Object
