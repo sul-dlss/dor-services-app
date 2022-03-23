@@ -4,7 +4,12 @@
 class Collection < ApplicationRecord
   # @return [Cocina::Models::Collection] Cocina collection
   def to_cocina
-    Cocina::Models::Collection.new({
+    Cocina::Models::Collection.new(to_h)
+  end
+
+  # @return [Hash] collection instance as a hash
+  def to_h
+    {
       cocinaVersion: cocina_version,
       type: collection_type,
       externalIdentifier: external_identifier,
@@ -13,8 +18,8 @@ class Collection < ApplicationRecord
       access: access,
       administrative: administrative,
       description: description,
-      identification: identification
-    }.compact)
+      identification: identification || {}
+    }.compact
   end
 
   # @param [Cocina::Models::Collection] Cocina collection
