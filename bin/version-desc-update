@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../config/environment'
+require 'optparse'
+
+options = { input: 'druids.txt', output: 'druids.version-desc-updated.txt', description: 'programmatically remediated to add version description' }
+parser = OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/version-desc-update [options]'
+
+  option_parser.on('-iFILENAME', '--input FILENAME', String, 'File containing list of druids (instead of druids.txt).')
+  option_parser.on('-oFILENAME', '--output FILENAME', String, 'File to write list of druids (instead of druids.clean.txt).')
+  option_parser.on('-dDESCRIPTION', '--description DESCRIPTION', String, 'description for most recent version')
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
+end
+parser.parse!(into: options)
+
+druids = File.read(options[:input]).split
+
+count = 0
+File.open(options[:output], 'w') do |output_file|
+  druids.each_with_index do |druid, index|
+    puts "Finding #{druid} (#{index + 1})"
+
+    current_version = ObjectVersion.where(druid: druid).order(version: :desc).first
+    current_version.description = options[:description]
+    current_version.save!
+
+    output_file.write("#{druid},#{current_version.version}\n")
+    count += 1
+  end
+end
+
+puts "Original: #{druids.size} druids"
+puts "Updated: #{count} druids"
