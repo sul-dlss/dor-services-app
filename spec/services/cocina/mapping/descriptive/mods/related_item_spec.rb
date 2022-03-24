@@ -594,11 +594,11 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
   end
 
   describe 'Multiple related items with nameTitleGroups' do
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated mapping' do
       let(:mods) do
         <<~XML
           <relatedItem type="constituent">
-            <titleInfo nameTitleGroup="1">
+            <titleInfo type="uniform" nameTitleGroup="1">
               <title>Contradizione</title>
             </titleInfo>
             <name type="personal" nameTitleGroup="1">
@@ -606,7 +606,7 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
             </name>
           </relatedItem>
           <relatedItem type="constituent">
-            <titleInfo nameTitleGroup="1">
+            <titleInfo type="uniform" nameTitleGroup="1">
               <title>Concerto in one movement, marimba, orchestra</title>
             </titleInfo>
             <name type="personal" nameTitleGroup="1">
@@ -616,26 +616,27 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
         XML
       end
 
-      let(:roundtrip_mods) do
-        <<~XML
-          <relatedItem type="constituent">
-            <titleInfo nameTitleGroup="1">
-              <title>Contradizione</title>
-            </titleInfo>
-            <name type="personal" nameTitleGroup="1">
-              <namePart>Bacewicz, Grayna.</namePart>
-            </name>
-          </relatedItem>
-          <relatedItem type="constituent">
-            <titleInfo nameTitleGroup="2">
-              <title>Concerto in one movement, marimba, orchestra</title>
-            </titleInfo>
-            <name type="personal" nameTitleGroup="2">
-              <namePart>Diemer, Emma Lou.</namePart>
-            </name>
-          </relatedItem>
-        XML
-      end
+      # Is this needed? OK to roundtrip back to original.
+      # let(:roundtrip_mods) do
+      #   <<~XML
+      #     <relatedItem type="constituent">
+      #       <titleInfo type="uniform" nameTitleGroup="1">
+      #         <title>Contradizione</title>
+      #       </titleInfo>
+      #       <name usage="primary" type="personal" nameTitleGroup="1">
+      #         <namePart>Bacewicz, Grayna.</namePart>
+      #       </name>
+      #     </relatedItem>
+      #     <relatedItem type="constituent">
+      #       <titleInfo type="uniform" nameTitleGroup="2">
+      #         <title>Concerto in one movement, marimba, orchestra</title>
+      #       </titleInfo>
+      #       <name usage="primary" type="personal" nameTitleGroup="2">
+      #         <namePart>Diemer, Emma Lou.</namePart>
+      #       </name>
+      #     </relatedItem>
+      #   XML
+      # end
 
       # The goal of this test is to have different relatedItems with the same nameTitleGroup ids.
       # However, this won't roundtrip to the normalized MODS, hence skipping.
@@ -647,16 +648,8 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
             {
               title: [
                 {
-                  structuredValue: [
-                    {
-                      type: 'title',
-                      value: 'Contradizione'
-                    },
-                    {
-                      value: 'Bacewicz, Grayna.',
-                      type: 'name'
-                    }
-                  ]
+                  value: 'Contradizione',
+                  type: 'uniform'
                 }
               ],
               contributor: [
@@ -666,7 +659,8 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
                       value: 'Bacewicz, Grayna.'
                     }
                   ],
-                  type: 'person'
+                  type: 'person',
+                  status: 'primary'
                 }
               ],
               type: 'has part'
@@ -674,16 +668,8 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
             {
               title: [
                 {
-                  structuredValue: [
-                    {
-                      type: 'title',
-                      value: 'Concerto in one movement, marimba, orchestra'
-                    },
-                    {
-                      value: 'Diemer, Emma Lou.',
-                      type: 'name'
-                    }
-                  ]
+                  value: 'Concerto in one movement, marimba, orchestra',
+                  type: 'uniform'
                 }
               ],
               contributor: [
@@ -693,7 +679,8 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
                       value: 'Diemer, Emma Lou.'
                     }
                   ],
-                  type: 'person'
+                  type: 'person',
+                  status: 'primary'
                 }
               ],
               type: 'has part'
