@@ -598,39 +598,40 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
       let(:mods) do
         <<~XML
           <relatedItem type="constituent">
-            <titleInfo nameTitleGroup="1">
+            <titleInfo type="uniform" nameTitleGroup="1">
               <title>Contradizione</title>
             </titleInfo>
-            <name type="personal" nameTitleGroup="1">
+            <name type="personal" usage="primary" nameTitleGroup="1">
               <namePart>Bacewicz, Grayna.</namePart>
             </name>
           </relatedItem>
           <relatedItem type="constituent">
-            <titleInfo nameTitleGroup="1">
+            <titleInfo type="uniform" nameTitleGroup="1">
               <title>Concerto in one movement, marimba, orchestra</title>
             </titleInfo>
-            <name type="personal" nameTitleGroup="1">
+            <name type="personal" usage="primary" nameTitleGroup="1">
               <namePart>Diemer, Emma Lou.</namePart>
             </name>
           </relatedItem>
         XML
       end
 
+      # two distinct nameTitleGroups
       let(:roundtrip_mods) do
         <<~XML
           <relatedItem type="constituent">
-            <titleInfo nameTitleGroup="1">
+            <titleInfo type="uniform" nameTitleGroup="1">
               <title>Contradizione</title>
             </titleInfo>
-            <name type="personal" nameTitleGroup="1">
+            <name usage="primary" type="personal" nameTitleGroup="1">
               <namePart>Bacewicz, Grayna.</namePart>
             </name>
           </relatedItem>
           <relatedItem type="constituent">
-            <titleInfo nameTitleGroup="2">
+            <titleInfo type="uniform" nameTitleGroup="2">
               <title>Concerto in one movement, marimba, orchestra</title>
             </titleInfo>
-            <name type="personal" nameTitleGroup="2">
+            <name usage="primary" type="personal" nameTitleGroup="2">
               <namePart>Diemer, Emma Lou.</namePart>
             </name>
           </relatedItem>
@@ -647,16 +648,8 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
             {
               title: [
                 {
-                  structuredValue: [
-                    {
-                      type: 'title',
-                      value: 'Contradizione'
-                    },
-                    {
-                      value: 'Bacewicz, Grayna.',
-                      type: 'name'
-                    }
-                  ]
+                  value: 'Contradizione',
+                  type: 'uniform'
                 }
               ],
               contributor: [
@@ -666,7 +659,8 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
                       value: 'Bacewicz, Grayna.'
                     }
                   ],
-                  type: 'person'
+                  type: 'person',
+                  status: 'primary'
                 }
               ],
               type: 'has part'
@@ -674,16 +668,8 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
             {
               title: [
                 {
-                  structuredValue: [
-                    {
-                      type: 'title',
-                      value: 'Concerto in one movement, marimba, orchestra'
-                    },
-                    {
-                      value: 'Diemer, Emma Lou.',
-                      type: 'name'
-                    }
-                  ]
+                  value: 'Concerto in one movement, marimba, orchestra',
+                  type: 'uniform'
                 }
               ],
               contributor: [
@@ -693,7 +679,8 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
                       value: 'Diemer, Emma Lou.'
                     }
                   ],
-                  type: 'person'
+                  type: 'person',
+                  status: 'primary'
                 }
               ],
               type: 'has part'
