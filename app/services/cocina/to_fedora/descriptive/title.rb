@@ -225,7 +225,7 @@ module Cocina
           end.compact
         end
 
-        # @return [Integer] the integer to be used for a nameTitleGroup attrbute
+        # @return [Integer] the integer to be used for a nameTitleGroup attribute
         def name_title_group_number(title_value)
           # name_title_vals_index is [Hash<String, Hash<String, Integer>]
           #   with contrib name value as key,
