@@ -51,7 +51,10 @@ module Cocina
           }.compact.merge(common_lang_script(name_node))
 
           name_attrs = name_attrs.merge(common_name(name_node, name_attrs[:name]))
-          name_attrs[:appliesTo] = [{ value: matching_title_value(name_node) }] if name_node['nameTitleGroup'].present? && name_node['altRepGroup'].present?
+          if name_node['nameTitleGroup'].present? && name_node['altRepGroup'].present?
+            matching_title_val = matching_title_value(name_node)
+            name_attrs[:appliesTo] = [{ value: matching_title_val }] if matching_title_val
+          end
           name_parts = build_name_parts(name_node)
           notifier.warn('Missing name/namePart element') if name_parts.all?(&:empty?)
           name_parts.each { |name_part| name_attrs = name_part.merge(name_attrs) }
@@ -89,7 +92,12 @@ module Cocina
           desired_name_title_group = name_node['nameTitleGroup']
           xpath_expression = "//mods:titleInfo[@nameTitleGroup='#{desired_name_title_group}']"
           matching_title_elements = name_node.xpath(xpath_expression, mods: DESC_METADATA_NS)
-          matching_title_elements.first&.content&.strip
+          if matching_title_elements.blank?
+            notifier.warn("For name '#{name_node.text.strip}', no title matching nameTitleGroup #{desired_name_title_group}.")
+            nil
+          else
+            matching_title_elements&.first&.content&.strip
+          end
         end
 
         def common_lang_script(name_node)

@@ -26,6 +26,7 @@ module Cocina
           @name_title_vals_index = name_title_vals_index
         end
 
+        # rubocop:disable Metrics/PerceivedComplexity
         def write
           if contributor.type == 'unspecified others'
             write_etal
@@ -41,6 +42,9 @@ module Cocina
                     name_title_group = name_title_vals_index[parallel_contrib_name_val][title_from_contrib]
                     write_parallel_contributor(contributor, contrib_name, parallel_contrib_name, name_title_group, altrepgroup_id)
                   else
+                    # TODO:  want a way to notify that we hit a problem - either notifier or HB error
+                    #  OR validate for semantic correctness upon creation/update so we can't get here.
+                    #  notifier.warn("For contributor name '#{parallel_contrib_name_val}', no title matching '#{title_from_contrib}'")
                     write_parallel_contributor(contributor, contrib_name, parallel_contrib_name, nil, altrepgroup_id)
                   end
                 end
@@ -50,6 +54,7 @@ module Cocina
             end
           end
         end
+        # rubocop:enable Metrics/PerceivedComplexity
 
         private
 
