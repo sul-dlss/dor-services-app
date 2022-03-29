@@ -33,16 +33,6 @@ RSpec.describe Collection do
     end
   end
 
-  describe 'to_h' do
-    context 'with a collection lacking identification metadata' do
-      let(:collection) { create(:collection, external_identifier: druid, identification: nil) }
-
-      it 'returns a valid Cocina hash' do
-        expect { Cocina::Models::Collection.new(collection.to_h) }.not_to raise_error(Cocina::Models::ValidationError)
-      end
-    end
-  end
-
   describe 'from_cocina' do
     let(:collection) { described_class.from_cocina(cocina_collection) }
 
