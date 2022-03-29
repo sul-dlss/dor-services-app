@@ -402,5 +402,63 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         ]
       end
     end
+
+    context 'when there are uniform titles with empty titleInfo' do
+      # From catkey:13876236
+      let(:ng_xml) do
+        Nokogiri::XML <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.loc.gov/mods/v3" version="3.6"
+            xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+            <titleInfo usage="primary">
+              <title>[Ritter Pázmán sketches]</title>
+            </titleInfo>
+            <titleInfo type="uniform" nameTitleGroup="1">
+              <title/>
+            </titleInfo>
+            <name type="personal" usage="primary" nameTitleGroup="1">
+              <namePart>Strauss, Johann</namePart>
+              <namePart type="date">1825-1899</namePart>
+            </name>
+          </mods>
+        XML
+      end
+
+      before do
+        allow(notifier).to receive(:warn)
+      end
+
+      it 'parses' do
+        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
+      end
+
+      it 'ignores and warns' do
+        expect(build).to eq [
+          {
+            value: '[Ritter Pázmán sketches]',
+            status: 'primary'
+          },
+          {
+            structuredValue: [
+              {
+                structuredValue: [
+                  {
+                    value: 'Strauss, Johann',
+                    type: 'name'
+                  },
+                  {
+                    value: '1825-1899',
+                    type: 'life dates'
+                  }
+                ],
+                type: 'name'
+              }
+            ],
+            type: 'uniform'
+          }
+        ]
+        expect(notifier).to have_received(:warn).at_least(:once).with('Empty title node')
+      end
+    end
   end
 end

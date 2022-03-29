@@ -96,11 +96,9 @@ module Cocina
                                 NameBuilder.build(name_elements: [name_node], notifier: notifier)[:name]
                               end
           structured_values.each { |structured_value| structured_value[:type] = 'name' }
-          {
-            structuredValue: [
-              { type: 'title' }.merge(TitleBuilder.build(title_info_element: node, notifier: notifier))
-            ].concat(structured_values)
-          }.merge(common_attributes(node, display_types: display_types))
+          title = TitleBuilder.build(title_info_element: node, notifier: notifier)
+          structured_values.unshift({ type: 'title' }.merge(title)) if title
+          { structuredValue: structured_values }.merge(common_attributes(node, display_types: display_types))
         end
 
         # @param [Hash<Symbol,String>] value
