@@ -146,9 +146,9 @@ CREATE TABLE public.collections (
     label character varying NOT NULL,
     version integer NOT NULL,
     access jsonb NOT NULL,
-    administrative jsonb,
-    description jsonb,
-    identification jsonb,
+    administrative jsonb NOT NULL,
+    description jsonb NOT NULL,
+    identification jsonb NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -186,9 +186,9 @@ CREATE TABLE public.dros (
     version integer NOT NULL,
     access jsonb NOT NULL,
     administrative jsonb NOT NULL,
-    description jsonb,
-    identification jsonb,
-    structural jsonb,
+    description jsonb NOT NULL,
+    identification jsonb NOT NULL,
+    structural jsonb NOT NULL,
     geographic jsonb,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
@@ -582,6 +582,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220131194912'),
 ('20220203155057'),
 ('20220307201030'),
-('20220307201420');
+('20220307201420'),
+('20220329134023');
 
 
