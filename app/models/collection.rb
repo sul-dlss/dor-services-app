@@ -18,7 +18,7 @@ class Collection < ApplicationRecord
       access: access,
       administrative: administrative,
       description: description,
-      identification: identification || {}
+      identification: identification
     }.compact
   end
 

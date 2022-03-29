@@ -19,7 +19,7 @@ class Dro < ApplicationRecord
       administrative: administrative,
       description: description,
       identification: identification,
-      structural: structural || {},
+      structural: structural,
       geographic: geographic
     }.compact
   end
