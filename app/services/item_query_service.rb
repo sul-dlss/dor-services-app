@@ -16,7 +16,7 @@ class ItemQueryService
 
     # check virtual_object for combinability
     begin
-      find_combinable_item(virtual_object)
+      find_combinable_item_with_timestamps(virtual_object)
     rescue UncombinableItemError => e
       errors[virtual_object] << e.message
     end
@@ -24,7 +24,7 @@ class ItemQueryService
     # check constituents for combinability and whether they are already virtual objects
     constituents.each do |druid|
       check_virtual(druid)
-      find_combinable_item(druid)
+      find_combinable_item_with_timestamps(druid)
     rescue UncombinableItemError => e
       errors[virtual_object] << e.message
     end
@@ -33,8 +33,9 @@ class ItemQueryService
   end
 
   # @raise [UncombinableItemError] if the item is dark, citation_only, or not modifiable
-  def self.find_combinable_item(druid)
-    new(id: druid).item do |item|
+  def self.find_combinable_item_with_timestamps(druid)
+    new(id: druid).item_with_timestamps do |item_with_timestamps|
+      item = item_with_timestamps.first
       raise UncombinableItemError, "Item #{item.externalIdentifier} is not an item" unless item.dro?
       raise UncombinableItemError, "Item #{item.externalIdentifier} is dark" if item.access.view == 'dark'
       raise UncombinableItemError, "Item #{item.externalIdentifier} is citation-only" if item.access.view == 'citation-only'
@@ -44,7 +45,8 @@ class ItemQueryService
 
   # @raise [UncombinableItemError] if druid is a virtual object
   def self.check_virtual(druid)
-    new(id: druid).item do |item|
+    new(id: druid).item_with_timestamps do |item_with_timestamps|
+      item = item_with_timestamps.first
       raise UncombinableItemError, "Item #{item.externalIdentifier} is itself a virtual object" if item.structural&.hasMemberOrders&.any? { |order| order.members.any? }
     end
   end
@@ -63,11 +65,11 @@ class ItemQueryService
     @id = id
   end
 
-  def item(&block)
-    @cocina_item ||= CocinaObjectStore.find(id)
-    return @cocina_item unless block
+  def item_with_timestamps(&block)
+    @cocina_item_with_timestamps ||= CocinaObjectStore.find_with_timestamps(id)
+    return @cocina_item_with_timestamps unless block
 
-    @cocina_item.tap(&block)
+    @cocina_item_with_timestamps.tap(&block)
   end
 
   private

@@ -35,7 +35,7 @@ RSpec.describe 'Create object' do
     allow(SuriService).to receive(:mint_id).and_return(druid)
     allow_any_instance_of(CocinaObjectStore).to receive(:find).with('druid:dd999df4567').and_return(apo)
     allow(Cocina::ActiveFedoraPersister).to receive(:store)
-    stub_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')
+    stub_request(:put, 'https://dor-indexing-app.example.edu/dor/reindex_from_cocina')
     allow(SolrService).to receive(:get).and_return(search_result)
   end
 
@@ -162,7 +162,10 @@ RSpec.describe 'Create object' do
           expect(response.status).to eq(201)
           expect(response.location).to eq "/v1/objects/#{druid}"
           expect(MetadataService).to have_received(:fetch).with('catkey:8888')
-          expect(a_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
+          expect(a_request(:put, 'https://dor-indexing-app.example.edu/dor/reindex_from_cocina').with do |req|
+                   parsed_body = JSON.parse(req.body).deep_symbolize_keys
+                   expect(parsed_body[:cocina_object]).to eq(expected.to_h)
+                 end).to have_been_made
         end
       end
 
@@ -216,7 +219,10 @@ RSpec.describe 'Create object' do
           post '/v1/objects',
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(a_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
+          expect(a_request(:put, 'https://dor-indexing-app.example.edu/dor/reindex_from_cocina').with do |req|
+                   parsed_body = JSON.parse(req.body).deep_symbolize_keys
+                   expect(parsed_body[:cocina_object]).to eq(expected.to_h)
+                 end).to have_been_made
           expect(response.body).to equal_cocina_model(expected)
           expect(response.status).to eq(201)
           expect(response.location).to eq "/v1/objects/#{druid}"
@@ -252,7 +258,10 @@ RSpec.describe 'Create object' do
           post '/v1/objects',
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(a_request(:post, 'https://dor-indexing-app.example.edu/dor/reindex/druid:gg777gg7777')).to have_been_made
+          expect(a_request(:put, 'https://dor-indexing-app.example.edu/dor/reindex_from_cocina').with do |req|
+                   parsed_body = JSON.parse(req.body).deep_symbolize_keys
+                   expect(parsed_body[:cocina_object]).to eq(expected.to_h)
+                 end).to have_been_made
           expect(response.body).to equal_cocina_model(expected)
           expect(response.status).to eq(201)
           expect(response.location).to eq "/v1/objects/#{druid}"

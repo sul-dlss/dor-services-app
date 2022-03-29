@@ -26,18 +26,20 @@ RSpec.describe ItemQueryService do
   let(:workflow_state) { 'Accessioned' }
   let(:workflow_client) { instance_double(Dor::Workflow::Client, status: status_client) }
   let(:status_client) { instance_double(Dor::Workflow::Client::Status, display_simplified: workflow_state) }
+  let(:created_at) { Time.zone.now }
+  let(:updated_at) { Time.zone.now }
 
   before do
-    allow(CocinaObjectStore).to receive(:find).with(druid).and_return(cocina_object)
+    allow(CocinaObjectStore).to receive(:find_with_timestamps).with(druid).and_return([cocina_object, created_at, updated_at])
     allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
   end
 
-  describe '.find_combinable_item' do
+  describe '.find_combinable_item_with_timestamps' do
     context 'with item in accessioned state' do
       let(:workflow_state) { 'Accessioned' }
 
       it 'returns the item' do
-        expect(service.find_combinable_item(druid)).to eq(cocina_object)
+        expect(service.find_combinable_item_with_timestamps(druid).first).to eq(cocina_object)
       end
     end
 
@@ -45,7 +47,7 @@ RSpec.describe ItemQueryService do
       let(:workflow_state) { 'Opened' }
 
       it 'returns the item' do
-        expect(service.find_combinable_item(druid)).to eq(cocina_object)
+        expect(service.find_combinable_item_with_timestamps(druid).first).to eq(cocina_object)
       end
     end
 
@@ -53,7 +55,7 @@ RSpec.describe ItemQueryService do
       let(:workflow_state) { 'Registered' }
 
       it 'raises an error' do
-        expect { service.find_combinable_item(druid) }.to raise_error(
+        expect { service.find_combinable_item_with_timestamps(druid) }.to raise_error(
           described_class::UncombinableItemError,
           "Item #{druid} is not in the accessioned or opened workflow state"
         )
@@ -64,7 +66,7 @@ RSpec.describe ItemQueryService do
       let(:workflow_state) { 'In Accessioning' }
 
       it 'raises an error' do
-        expect { service.find_combinable_item(druid) }.to raise_error(
+        expect { service.find_combinable_item_with_timestamps(druid) }.to raise_error(
           described_class::UncombinableItemError,
           "Item #{druid} is not in the accessioned or opened workflow state"
         )
@@ -75,7 +77,7 @@ RSpec.describe ItemQueryService do
       let(:workflow_state) { 'Unknown Status' }
 
       it 'raises an error' do
-        expect { service.find_combinable_item(druid) }.to raise_error(
+        expect { service.find_combinable_item_with_timestamps(druid) }.to raise_error(
           described_class::UncombinableItemError,
           "Item #{druid} is not in the accessioned or opened workflow state"
         )
@@ -86,7 +88,7 @@ RSpec.describe ItemQueryService do
       let(:access) { { view: 'dark' } }
 
       it 'raises an error' do
-        expect { service.find_combinable_item(druid) }.to raise_error(
+        expect { service.find_combinable_item_with_timestamps(druid) }.to raise_error(
           described_class::UncombinableItemError,
           "Item #{druid} is dark"
         )
@@ -97,7 +99,7 @@ RSpec.describe ItemQueryService do
       let(:access) { { view: 'citation-only' } }
 
       it 'raises an error' do
-        expect { service.find_combinable_item(druid) }.to raise_error(
+        expect { service.find_combinable_item_with_timestamps(druid) }.to raise_error(
           described_class::UncombinableItemError,
           "Item #{druid} is citation-only"
         )
@@ -108,7 +110,7 @@ RSpec.describe ItemQueryService do
       let(:access) { { view: 'world' } }
 
       it 'returns the item' do
-        expect(service.find_combinable_item(druid)).to eq(cocina_object)
+        expect(service.find_combinable_item_with_timestamps(druid).first).to eq(cocina_object)
       end
     end
 
@@ -116,7 +118,7 @@ RSpec.describe ItemQueryService do
       let(:access) { { view: 'stanford', download: 'stanford' } }
 
       it 'returns the item' do
-        expect(service.find_combinable_item(druid)).to eq(cocina_object)
+        expect(service.find_combinable_item_with_timestamps(druid).first).to eq(cocina_object)
       end
     end
 
@@ -124,7 +126,7 @@ RSpec.describe ItemQueryService do
       let(:access) { { view: 'location-based', location: 'music' } }
 
       it 'returns the item' do
-        expect(service.find_combinable_item(druid)).to eq(cocina_object)
+        expect(service.find_combinable_item_with_timestamps(druid).first).to eq(cocina_object)
       end
     end
 
@@ -132,7 +134,7 @@ RSpec.describe ItemQueryService do
       let(:access) { { view: 'stanford', controlledDigitalLending: true } }
 
       it 'returns the item' do
-        expect(service.find_combinable_item(druid)).to eq(cocina_object)
+        expect(service.find_combinable_item_with_timestamps(druid).first).to eq(cocina_object)
       end
     end
 
@@ -154,7 +156,7 @@ RSpec.describe ItemQueryService do
       end
 
       it 'raises an error' do
-        expect { service.find_combinable_item(druid) }.to raise_error(
+        expect { service.find_combinable_item_with_timestamps(druid) }.to raise_error(
           described_class::UncombinableItemError,
           "Item #{druid} is not an item"
         )
@@ -177,7 +179,7 @@ RSpec.describe ItemQueryService do
       end
 
       it 'raises an error' do
-        expect { service.find_combinable_item(druid) }.to raise_error(
+        expect { service.find_combinable_item_with_timestamps(druid) }.to raise_error(
           described_class::UncombinableItemError,
           "Item #{druid} is not an item"
         )
@@ -209,7 +211,7 @@ RSpec.describe ItemQueryService do
       end
 
       it 'returns the item' do
-        expect(service.find_combinable_item(druid)).to eq(cocina_object)
+        expect(service.find_combinable_item_with_timestamps(druid).first).to eq(cocina_object)
       end
     end
   end
@@ -219,8 +221,8 @@ RSpec.describe ItemQueryService do
 
     context 'when any items are uncombinable' do
       before do
-        allow(described_class).to receive(:find_combinable_item)
-        allow(described_class).to receive(:find_combinable_item).with(druid).and_raise(described_class::UncombinableItemError, "Item #{druid} is dark")
+        allow(described_class).to receive(:find_combinable_item_with_timestamps)
+        allow(described_class).to receive(:find_combinable_item_with_timestamps).with(druid).and_raise(described_class::UncombinableItemError, "Item #{druid} is dark")
         allow(described_class).to receive(:check_virtual)
       end
 
@@ -233,7 +235,7 @@ RSpec.describe ItemQueryService do
 
     context 'when all items are combinable' do
       before do
-        allow(described_class).to receive(:find_combinable_item)
+        allow(described_class).to receive(:find_combinable_item_with_timestamps)
         allow(described_class).to receive(:check_virtual)
       end
 
@@ -246,7 +248,7 @@ RSpec.describe ItemQueryService do
       let(:constituent_druids) { ['druid:xh235dd9059', druid] }
 
       before do
-        allow(described_class).to receive(:find_combinable_item)
+        allow(described_class).to receive(:find_combinable_item_with_timestamps)
         allow(described_class).to receive(:check_virtual)
       end
 
@@ -293,8 +295,8 @@ RSpec.describe ItemQueryService do
       end
 
       before do
-        allow(CocinaObjectStore).to receive(:find).with(constituent_druids[0]).and_return(cocina_object_constituent)
-        allow(CocinaObjectStore).to receive(:find).with(constituent_druids[1]).and_return(cocina_object_constituent1)
+        allow(CocinaObjectStore).to receive(:find_with_timestamps).with(constituent_druids[0]).and_return([cocina_object_constituent, created_at, updated_at])
+        allow(CocinaObjectStore).to receive(:find_with_timestamps).with(constituent_druids[1]).and_return([cocina_object_constituent1, created_at, updated_at])
         allow(described_class).to receive(:check_virtual)
       end
 
@@ -337,7 +339,7 @@ RSpec.describe ItemQueryService do
       end
 
       before do
-        allow(CocinaObjectStore).to receive(:find).with(constituent_druid).and_return(cocina_object_constituent)
+        allow(CocinaObjectStore).to receive(:find_with_timestamps).with(constituent_druid).and_return([cocina_object_constituent, created_at, updated_at])
       end
 
       it 'returns an error' do

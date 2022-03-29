@@ -40,7 +40,7 @@ class ConstituentService
 
     CocinaObjectStore.save(updated_virtual_object)
 
-    SynchronousIndexer.reindex_remotely(virtual_object.externalIdentifier)
+    SynchronousIndexer.reindex_remotely_from_cocina(cocina_object: updated_virtual_object, created_at: created_at, updated_at: updated_at)
 
     publish_constituents!(constituent_druids)
 
@@ -52,7 +52,19 @@ class ConstituentService
   attr_reader :virtual_object_druid, :event_factory
 
   def virtual_object
-    @virtual_object ||= ItemQueryService.find_combinable_item(virtual_object_druid)
+    virtual_object_with_timestamps.first
+  end
+
+  def created_at
+    virtual_object_with_timestamps.second
+  end
+
+  def updated_at
+    virtual_object_with_timestamps.third
+  end
+
+  def virtual_object_with_timestamps
+    @virtual_object_with_timestamps ||= ItemQueryService.find_combinable_item_with_timestamps(virtual_object_druid)
   end
 
   def publish_constituents!(constituent_druids)

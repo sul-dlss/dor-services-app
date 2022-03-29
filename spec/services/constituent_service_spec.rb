@@ -42,9 +42,11 @@ RSpec.describe ConstituentService do
       )
     end
     let(:virtual_object_druid) { 'druid:bc123df4567' }
+    let(:created_at) { Time.zone.now }
+    let(:updated_at) { Time.zone.now }
 
     before do
-      allow(ItemQueryService).to receive(:find_combinable_item).and_return(virtual_object)
+      allow(ItemQueryService).to receive(:find_combinable_item_with_timestamps).and_return([virtual_object, created_at, updated_at])
       allow(ItemQueryService).to receive(:validate_combinable_items).and_return(item_errors)
       allow(VersionService).to receive(:open?).and_return(open_for_versioning)
       allow(VersionService).to receive(:open)
@@ -52,7 +54,7 @@ RSpec.describe ConstituentService do
       allow(ResetContentMetadataService).to receive(:reset)
       allow(CocinaObjectStore).to receive(:save)
       allow(CocinaObjectStore).to receive(:find).and_return(mock_item)
-      allow(SynchronousIndexer).to receive(:reindex_remotely)
+      allow(SynchronousIndexer).to receive(:reindex_remotely_from_cocina)
       allow(Publish::MetadataTransferService).to receive(:publish)
       allow(Dor::UpdateMarcRecordService).to receive(:update)
     end
@@ -67,7 +69,7 @@ RSpec.describe ConstituentService do
         expect(VersionService).not_to have_received(:close)
         expect(ResetContentMetadataService).not_to have_received(:reset)
         expect(CocinaObjectStore).not_to have_received(:save)
-        expect(SynchronousIndexer).not_to have_received(:reindex_remotely)
+        expect(SynchronousIndexer).not_to have_received(:reindex_remotely_from_cocina)
       end
     end
 
@@ -92,7 +94,7 @@ RSpec.describe ConstituentService do
 
     it 'indexes virtual object synchronously' do
       service.add(constituent_druids: constituent_druids)
-      expect(SynchronousIndexer).to have_received(:reindex_remotely).once
+      expect(SynchronousIndexer).to have_received(:reindex_remotely_from_cocina).once
     end
 
     it 'publishes constituents' do
