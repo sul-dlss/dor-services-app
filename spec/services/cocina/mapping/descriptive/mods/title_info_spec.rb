@@ -1221,6 +1221,80 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
     end
   end
 
+  describe 'Uniform title with multiple corporate authors' do
+    # based on jp357bb8866
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo usage="primary">
+            <title>Primary title</title>
+          </titleInfo>
+          <titleInfo type="uniform" nameTitleGroup="1">
+            <title>Uniform title</title>
+          </titleInfo>
+          <name type="corporate" nameTitleGroup="1">
+            <namePart>nameTitleGroup corp</namePart>
+          </name>
+          <name type="corporate">
+            <namePart>2nd corp</namePart>
+          </name>
+        XML
+      end
+
+      # add status primary to nameTitleGroup name
+      let(:roundtrip_mods) do
+        <<~XML
+          <titleInfo usage="primary">
+            <title>Primary title</title>
+          </titleInfo>
+          <titleInfo type="uniform" nameTitleGroup="1">
+            <title>Uniform title</title>
+          </titleInfo>
+          <name type="corporate" nameTitleGroup="1" usage="primary">
+            <namePart>nameTitleGroup corp</namePart>
+          </name>
+          <name type="corporate">
+            <namePart>2nd corp</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          title: [
+            {
+              value: 'Primary title',
+              status: 'primary'
+            },
+            {
+              value: 'Uniform title',
+              type: 'uniform'
+            }
+          ],
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'nameTitleGroup corp'
+                }
+              ],
+              type: 'organization',
+              status: 'primary'
+            },
+            {
+              name: [
+                {
+                  value: '2nd corp'
+                }
+              ],
+              type: 'organization'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   # Data error handling
 
   describe 'Complex multilingual title' do

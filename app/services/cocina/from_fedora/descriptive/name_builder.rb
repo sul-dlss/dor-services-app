@@ -61,6 +61,7 @@ module Cocina
           name_attrs.compact
         end
 
+        # build non-parallel, single name
         def build_name(name_node)
           return { type: 'unspecified others' } if name_node.xpath('mods:etal', mods: DESC_METADATA_NS).present?
 
@@ -71,11 +72,19 @@ module Cocina
             return {}
           end
 
+          # NOTE:  this lovely "or" clause for 'primary' is brought to you by MARC records for our GoogleBooks
+          #  in a perfect world, it should be sure there is no existing 'usage' attribut of primary on any top level name nodes
+          status = name_node['usage']
+          if status.blank? && name_node[:nameTitleGroup].present? && name_node[:type] == 'corporate'
+            xpath_expression = "//mods:mods/mods:name[@usage='primary']"
+            primary_names = name_node.xpath(xpath_expression, mods: DESC_METADATA_NS)
+            status = 'primary' if primary_names.blank?
+          end
           {
             name: name_parts,
             type: name_type(name_node),
-            status: name_node['usage']
-          }.compact.merge(common_name(name_node, name_parts))
+            status: status
+          }.compact.merge(common_name(name_node, name_parts)).merge
         end
 
         def common_name(name_node, name)
