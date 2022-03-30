@@ -51,20 +51,16 @@ class ConstituentService
 
   attr_reader :virtual_object_druid, :event_factory
 
-  def virtual_object
-    virtual_object_with_timestamps.first
-  end
-
   def created_at
-    virtual_object_with_timestamps.second
+    virtual_object.created
   end
 
   def updated_at
-    virtual_object_with_timestamps.third
+    virtual_object.modified
   end
 
-  def virtual_object_with_timestamps
-    @virtual_object_with_timestamps ||= ItemQueryService.find_combinable_item_with_timestamps(virtual_object_druid)
+  def virtual_object
+    @virtual_object ||= ItemQueryService.find_combinable_item(virtual_object_druid)
   end
 
   def publish_constituents!(constituent_druids)

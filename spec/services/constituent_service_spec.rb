@@ -44,9 +44,10 @@ RSpec.describe ConstituentService do
     let(:virtual_object_druid) { 'druid:bc123df4567' }
     let(:created_at) { Time.zone.now }
     let(:updated_at) { Time.zone.now }
+    let(:virtual_object_with_metadata) { Cocina::Models.with_metadata(virtual_object, '1', created: created_at, modified: updated_at) }
 
     before do
-      allow(ItemQueryService).to receive(:find_combinable_item_with_timestamps).and_return([virtual_object, created_at, updated_at])
+      allow(ItemQueryService).to receive(:find_combinable_item).and_return(virtual_object_with_metadata)
       allow(ItemQueryService).to receive(:validate_combinable_items).and_return(item_errors)
       allow(VersionService).to receive(:open?).and_return(open_for_versioning)
       allow(VersionService).to receive(:open)
