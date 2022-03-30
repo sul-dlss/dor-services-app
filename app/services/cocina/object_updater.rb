@@ -130,7 +130,9 @@ module Cocina
       # Note that a change to a book content type will generate completely new
       # structural metadata, and thus lead to a full replacement of the
       # contentMetadata with the new bookData node.
-      if cocina_object.structural&.contains.present? || cocina_object.structural&.hasMemberOrders&.first&.members&.present?
+      if cocina_object.structural&.contains.present? ||
+         cocina_object.structural&.hasMemberOrders&.first&.members&.present? ||
+         fedora_object.contentMetadata.ng_xml.xpath('//externalFile').present?
         fedora_object.contentMetadata.content = Cocina::ToFedora::ContentMetadataGenerator.generate(
           druid: cocina_object.externalIdentifier,
           type: cocina_object.type,
