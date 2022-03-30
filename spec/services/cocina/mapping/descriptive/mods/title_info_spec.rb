@@ -330,12 +330,9 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
   describe 'Uniform title with authority and primary title' do
     # How to ID assign nameTitleGroup to MODS from cocina:
-    #  for cocina title of type "uniform", look for:
-    # 1) name of status "primary" within a contributor of status "primary" or
-    # 2) first name in a contributor with status "primary" or
-    # 3) if "appliesTo" value is present in name, the title that matches that value
-    # If none of those criteria are met in Cocina, do not assign nameTitleGroup in MODS
-    it_behaves_like 'MODS cocina mapping' do
+    #  Match value or structuredValue in uniform title note with type "associated name"
+    #   to value or structuredValue in contributor name
+    xit 'updated MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo usage="primary">
@@ -366,7 +363,13 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
                 uri: 'http://id.loc.gov/authorities/names/',
                 code: 'naf'
               },
-              uri: 'http://id.loc.gov/authorities/names/n80008522'
+              uri: 'http://id.loc.gov/authorities/names/n80008522',
+              note: [
+                {
+                  value: 'Shakespeare, William, 1564-1616',
+                  type: 'associated name'
+                }
+              ]
             }
           ],
           contributor: [
@@ -390,17 +393,21 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
     end
   end
 
-  describe 'Uniform title with multiple namePart subelements' do
-    it_behaves_like 'MODS cocina mapping' do
+  describe 'Uniform title with multipart name and title' do
+    # bb988jx6754
+    xit 'updated MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo type="uniform" nameTitleGroup="1">
-            <title>Princesse jaune. Vocal score</title>
+            <title>Ballades, piano</title>
+            <partNumber>no. 3, op. 47, A&#x266D; major</partNumber>
           </titleInfo>
           <name type="personal" usage="primary" nameTitleGroup="1">
-            <namePart type="family">Saint-Sa&#xEB;ns</namePart>
-            <namePart type="given">Camille</namePart>
-            <namePart type="date">1835-1921</namePart>
+            <namePart>Chopin, Fr&#xE9;d&#xE9;ric</namePart>
+            <namePart type="date">1810-1849</namePart>
+            <role>
+              <roleTerm type="text">composer</roleTerm>
+            </role>
           </name>
         XML
       end
@@ -409,32 +416,53 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
         {
           title: [
             {
-              value: 'Princesse jaune. Vocal score',
-              type: 'uniform'
+              structuredValue: [
+                {
+                  value: 'Ballades, piano',
+                  type: 'main title'
+                },
+                {
+                  value: 'no. 3, op. 47, A&#x266D; major',
+                  type: 'part number'
+                }
+              ],
+              type: 'uniform',
+              note: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Chopin, Fr&#xE9;d&#xE9;ric',
+                      type: 'name'
+                    },
+                    {
+                      value: '1810-1849',
+                      type: 'life dates'
+                    }
+                  ],
+                  type: 'associated name'
+                }
+              ]
             }
           ],
           contributor: [
             {
               name: [
                 {
-                  structuredValue: [
-                    {
-                      value: 'Saint-Saëns',
-                      type: 'surname'
-                    },
-                    {
-                      value: 'Camille',
-                      type: 'forename'
-                    },
-                    {
-                      value: '1835-1921',
-                      type: 'life dates'
-                    }
-                  ]
+                  value: 'Chopin, Fr&#xE9;d&#xE9;ric',
+                  type: 'name'
+                },
+                {
+                  value: '1810-1849',
+                  type: 'life dates'
                 }
               ],
+              status: 'primary',
               type: 'person',
-              status: 'primary'
+              role: [
+                {
+                  value: 'composer'
+                }
+              ]
             }
           ]
         }
@@ -443,7 +471,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Name-title authority plus additional contributor not part of uniform title' do
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo type="uniform" authority="naf" authorityURI="http://id.loc.gov/authorities/names/"
@@ -471,7 +499,13 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
               source: {
                 uri: 'http://id.loc.gov/authorities/names/',
                 code: 'naf'
-              }
+              },
+              note: [
+                {
+                  value: 'Shakespeare, William, 1564-1616',
+                  type: 'associated name'
+                }
+              ]
             }
           ],
           contributor: [
@@ -511,7 +545,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   describe 'Uniform title with repetition of author' do
     # Adapted from kd992vz2371
     # Ignore usage and nameTitleGroup when determining duplication; all subelements of name should be exact duplication
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo type="uniform" nameTitleGroup="1">
@@ -548,7 +582,26 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
           title: [
             {
               value: 'Roman de la Rose. 1878',
-              type: 'uniform'
+              type: 'uniform',
+              note: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Guillaume',
+                      type: 'name'
+                    },
+                    {
+                      value: 'de Lorris',
+                      type: 'term of address'
+                    },
+                    {
+                      value: 'active 1230',
+                      type: 'activity dates'
+                    }
+                  ],
+                  type: 'associated name'
+                }
+              ]
             }
           ],
           contributor: [
@@ -588,7 +641,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
   describe 'Uniform title with repetition of author plus role' do
     # Adapted from bf818dg3045
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo>
@@ -619,7 +672,22 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
             },
             {
               value: 'Instrumental music. Selections',
-              type: 'uniform'
+              type: 'uniform',
+              note: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Sheng, Bright',
+                      type: 'name'
+                    },
+                    {
+                      value: '1955-',
+                      type: 'life dates'
+                    }
+                  ],
+                  type: 'associated name'
+                }
+              ]
             }
           ],
           contributor: [
@@ -899,7 +967,8 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Parallel uniform title in nameTitleGroup with parallel contributor NAME' do
-    it_behaves_like 'MODS cocina mapping' do
+    # adapted from cv621pf3709
+    xit 'updated MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="1">
@@ -925,10 +994,44 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
             {
               parallelValue: [
                 {
-                  value: 'Mishnah berurah. English'
+                  value: 'Mishnah berurah. English',
+                  note: [
+                    {
+                      structuredValue: [
+                        {
+                          value: 'Israel Meir',
+                          type: 'name'
+                        },
+                        {
+                          value: 'ha-Kohen',
+                          type: 'term of address'
+                        },
+                        {
+                          value: '1838-1933',
+                          type: 'life dates'
+                        }
+                      ],
+                      type: 'associated name'
+                    }
+                  ]
                 },
                 {
-                  value: 'Mishnah berurah in Hebrew characters'
+                  value: 'Mishnah berurah in Hebrew characters',
+                  note: [
+                    {
+                      structuredValue: [
+                        {
+                          value: 'Israel Meir in Hebrew characters',
+                          type: 'name'
+                        },
+                        {
+                          value: '1838-1933',
+                          type: 'life dates'
+                        }
+                      ],
+                      type: 'associated name'
+                    }
+                  ]
                 }
               ],
               type: 'uniform'
@@ -950,12 +1053,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
                           type: 'term of address'
                         }
                       ],
-                      status: 'primary',
-                      appliesTo: [
-                        {
-                          value: 'Mishnah berurah. English'
-                        }
-                      ]
+                      status: 'primary'
                     },
                     {
                       structuredValue: [
@@ -966,11 +1064,6 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
                         {
                           value: '1838-1933',
                           type: 'life dates'
-                        }
-                      ],
-                      appliesTo: [
-                        {
-                          value: 'Mishnah berurah in Hebrew characters'
                         }
                       ]
                     }
@@ -1130,6 +1223,150 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
     end
   end
 
+  describe 'Uniform title with primary name without nameTitleGroup (MARC 7XX)' do
+    # vb586bc9999
+    xit 'new MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo type="uniform">
+            <title>&#xC6;sop's fables. English. Babrius. Babrius</title>
+          </titleInfo>
+          <name type="personal" usage="primary">
+            <namePart>Babrius</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          title: [
+            {
+              value: '&#xC6;sop\'s fables. English. Babrius. Babrius',
+              type: 'uniform'
+            }
+          ],
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Babrius'
+                }
+              ],
+              status: 'primary',
+              type: 'person'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Uniform title same as alternative title' do
+    # dv507gh3920
+    xit 'new MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo altRepGroup="02">
+            <title>Deyo&#x1E33;no shel ha-oman ke-ish tsa&#x2BB;ir</title>
+          </titleInfo>
+          <titleInfo altRepGroup="02">
+            <title>&#x5D3;&#x5D9;&#x5D5;&#x5E7;&#x5E0;&#x5D5; &#x5E9;&#x5DC; &#x5D4;&#x5D0;&#x5DE;&#x5DF; &#x5DB;&#x5D0;&#x5D9;&#x5E9; &#x5E6;&#x5E2;&#x5D9;&#x5E8;</title>
+          </titleInfo>
+          <titleInfo type="uniform" nameTitleGroup="1">
+            <title>Portrait of the artist as a young man</title>
+          </titleInfo>
+          <titleInfo type="alternative">
+            <title>Portrait of the artist as a young man</title>
+          </titleInfo>
+          <name type="personal" usage="primary" altRepGroup="01" nameTitleGroup="1">
+            <namePart>Joyce, James</namePart>
+            <namePart type="date">1882-1941</namePart>
+          </name>
+          <name type="personal" altRepGroup="01">
+            <namePart>&#x5D2;&#x5F3;&#x5D5;&#x5D9;&#x5E1;, &#x5D2;&#x5F3;&#x5D9;&#x5D9;&#x5DE;&#x5E1;</namePart>
+            <namePart type="date">1882&#x5BE;1941</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          title: [
+            {
+              parallelValue: [
+                {
+                  value: 'Deyo&#x1E33;no shel ha-oman ke-ish tsa&#x2BB;ir'
+                },
+                {
+                  value: '&#x5D3;&#x5D9;&#x5D5;&#x5E7;&#x5E0;&#x5D5; &#x5E9;&#x5DC; &#x5D4;&#x5D0;&#x5DE;&#x5DF; &#x5DB;&#x5D0;&#x5D9;&#x5E9; &#x5E6;&#x5E2;&#x5D9;&#x5E8;'
+                }
+              ]
+            },
+            {
+              value: 'Portrait of the artist as a young man',
+              type: 'uniform',
+              note: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Joyce, James',
+                      type: 'name'
+                    },
+                    {
+                      value: '1882-1941',
+                      type: 'life dates'
+                    }
+                  ],
+                  type: 'associated name'
+                }
+              ]
+            },
+            {
+              value: 'Portrait of the artist as a young man',
+              type: 'alternative'
+            }
+          ],
+          contributor: [
+            {
+              name: [
+                {
+                  parallelValue: [
+                    {
+                      structuredValue: [
+                        {
+                          value: 'Joyce, James',
+                          type: 'name'
+                        },
+                        {
+                          value: '1882-1941',
+                          type: 'life dates'
+                        }
+                      ]
+                    },
+                    {
+                      structuredValue: [
+                        {
+                          value: '&#x5D2;&#x5F3;&#x5D5;&#x5D9;&#x5E1;, &#x5D2;&#x5F3;&#x5D9;&#x5D9;&#x5DE;&#x5E1;',
+                          type: 'name'
+                        },
+                        {
+                          value: '1882&#x5BE;1941',
+                          type: 'life dates'
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Title with xml:space="preserve"' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
@@ -1185,7 +1422,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
   end
 
   describe 'Uniform title with corporate author' do
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo type="uniform" nameTitleGroup="1">
@@ -1202,7 +1439,13 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
           title: [
             {
               value: 'Laws, etc. (United States code service)',
-              type: 'uniform'
+              type: 'uniform',
+              note: [
+                {
+                  value: 'United States',
+                  type: 'associated name'
+                }
+              ]
             }
           ],
           contributor: [
@@ -1223,7 +1466,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
   describe 'Uniform title with multiple corporate authors' do
     # based on jp357bb8866
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'updated MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo usage="primary">
@@ -1268,7 +1511,13 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
             },
             {
               value: 'Uniform title',
-              type: 'uniform'
+              type: 'uniform',
+              note: [
+                {
+                  value: 'nameTitleGroup corp',
+                  type: 'associated name'
+                }
+              ]
             }
           ],
           contributor: [
@@ -1487,124 +1736,124 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
     end
   end
 
-  describe 'unmatching appliesTo' do
-    it_behaves_like 'cocina MODS mapping' do
-      let(:cocina) do
-        {
-          title: [
-            {
-              parallelValue: [
-                {
-                  value: 'English title'
-                },
-                {
-                  value: 'Esperanto title'
-                }
-              ],
-              type: 'uniform'
-            }
-          ],
-          contributor: [
-            {
-              name: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Vinsky Cat',
-                      status: 'primary',
-                      appliesTo: [
-                        {
-                          value: 'English title'
-                        }
-                      ]
-                    },
-                    {
-                      value: 'Wingnut Cat in Esperanto',
-                      appliesTo: [
-                        {
-                          value: 'Unmatched value'
-                        }
-                      ]
-                    }
-                  ],
-                  type: 'person',
-                  status: 'primary'
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      # remove unmatched appliesTo value from contributor
-      let(:roundtrip_cocina) do
-        {
-          title: [
-            {
-              parallelValue: [
-                {
-                  value: 'English title'
-                },
-                {
-                  value: 'Esperanto title'
-                }
-              ],
-              type: 'uniform'
-            }
-          ],
-          contributor: [
-            {
-              name: [
-                {
-                  parallelValue: [
-                    {
-                      value: 'Vinsky Cat',
-                      status: 'primary',
-                      appliesTo: [
-                        {
-                          value: 'English title'
-                        }
-                      ]
-                    },
-                    {
-                      value: 'Wingnut Cat in Esperanto'
-                    }
-                  ],
-                  type: 'person',
-                  status: 'primary'
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      let(:mods) do
-        <<~XML
-          <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="1">
-            <title>English title</title>
-          </titleInfo>
-          <titleInfo type="uniform" altRepGroup="1">
-            <title>Esperanto title</title>
-          </titleInfo>
-          <name type="personal" usage="primary" altRepGroup="2" nameTitleGroup="1">
-            <namePart>Vinsky Cat</namePart>
-          </name>
-          <name type="personal" altRepGroup="2">
-            <namePart>Wingnut Cat in Esperanto</namePart>
-          </name>
-        XML
-      end
-
-      # TODO:  want a way to notify that we hit a problem - either notifier or HB error
-      #  OR validate for semantic correctness upon creation/update so we can't get here.
-      # let(:warnings) do
-      #   [
-      #     Notification.new(msg: "For contributor name 'Wingnut Cat in Esperanto', no title matching 'Unmatched value'")
-      #   ]
-      # end
-    end
-  end
+  # describe 'unmatching appliesTo' do
+  #   it_behaves_like 'cocina MODS mapping' do
+  #     let(:cocina) do
+  #       {
+  #         title: [
+  #           {
+  #             parallelValue: [
+  #               {
+  #                 value: 'English title'
+  #               },
+  #               {
+  #                 value: 'Esperanto title'
+  #               }
+  #             ],
+  #             type: 'uniform'
+  #           }
+  #         ],
+  #         contributor: [
+  #           {
+  #             name: [
+  #               {
+  #                 parallelValue: [
+  #                   {
+  #                     value: 'Vinsky Cat',
+  #                     status: 'primary',
+  #                     appliesTo: [
+  #                       {
+  #                         value: 'English title'
+  #                       }
+  #                     ]
+  #                   },
+  #                   {
+  #                     value: 'Wingnut Cat in Esperanto',
+  #                     appliesTo: [
+  #                       {
+  #                         value: 'Unmatched value'
+  #                       }
+  #                     ]
+  #                   }
+  #                 ],
+  #                 type: 'person',
+  #                 status: 'primary'
+  #               }
+  #             ]
+  #           }
+  #         ]
+  #       }
+  #     end
+  #
+  #     # remove unmatched appliesTo value from contributor
+  #     let(:roundtrip_cocina) do
+  #       {
+  #         title: [
+  #           {
+  #             parallelValue: [
+  #               {
+  #                 value: 'English title'
+  #               },
+  #               {
+  #                 value: 'Esperanto title'
+  #               }
+  #             ],
+  #             type: 'uniform'
+  #           }
+  #         ],
+  #         contributor: [
+  #           {
+  #             name: [
+  #               {
+  #                 parallelValue: [
+  #                   {
+  #                     value: 'Vinsky Cat',
+  #                     status: 'primary',
+  #                     appliesTo: [
+  #                       {
+  #                         value: 'English title'
+  #                       }
+  #                     ]
+  #                   },
+  #                   {
+  #                     value: 'Wingnut Cat in Esperanto'
+  #                   }
+  #                 ],
+  #                 type: 'person',
+  #                 status: 'primary'
+  #               }
+  #             ]
+  #           }
+  #         ]
+  #       }
+  #     end
+  #
+  #     let(:mods) do
+  #       <<~XML
+  #         <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="1">
+  #           <title>English title</title>
+  #         </titleInfo>
+  #         <titleInfo type="uniform" altRepGroup="1">
+  #           <title>Esperanto title</title>
+  #         </titleInfo>
+  #         <name type="personal" usage="primary" altRepGroup="2" nameTitleGroup="1">
+  #           <namePart>Vinsky Cat</namePart>
+  #         </name>
+  #         <name type="personal" altRepGroup="2">
+  #           <namePart>Wingnut Cat in Esperanto</namePart>
+  #         </name>
+  #       XML
+  #     end
+  #
+  #     # TODO:  want a way to notify that we hit a problem - either notifier or HB error
+  #     #  OR validate for semantic correctness upon creation/update so we can't get here.
+  #     # let(:warnings) do
+  #     #   [
+  #     #     Notification.new(msg: "For contributor name 'Wingnut Cat in Esperanto', no title matching 'Unmatched value'")
+  #     #   ]
+  #     # end
+  #   end
+  # end
 
   describe 'Multiple titles with primary' do
     it_behaves_like 'MODS cocina mapping' do
