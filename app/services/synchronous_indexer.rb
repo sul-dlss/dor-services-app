@@ -4,7 +4,7 @@
 # When we can't have latency in the indexing, we can use this class to directly call dor-indexing-app
 class SynchronousIndexer
   def self.reindex_remotely_from_cocina(cocina_object:, created_at:, updated_at:)
-    body = { cocina_object: cocina_object, created_at: created_at, updated_at: updated_at }.to_json
+    body = { cocina_object: Cocina::Models.without_metadata(cocina_object), created_at: created_at, updated_at: updated_at }.to_json
     result = connection.put('reindex_from_cocina', body, { 'Content-Type' => 'application/json' })
     return if result.success?
 

@@ -9,7 +9,7 @@ RSpec.describe SynchronousIndexer do
     let(:dro) { create(:dro) }
     let(:cocina_object) { dro.to_cocina }
     let(:created_at) { Time.zone.now }
-    let(:req_body) { { cocina_object: cocina_object, created_at: created_at, updated_at: created_at }.to_json }
+    let(:req_body) { { cocina_object: dro.to_cocina, created_at: created_at, updated_at: created_at }.to_json }
 
     context 'with a successful request' do
       before do
@@ -18,7 +18,15 @@ RSpec.describe SynchronousIndexer do
           .to_return(status: 200, body: '', headers: {})
       end
 
-      it { is_expected.to be_nil }
+      context 'with a DRO' do
+        it { is_expected.to be_nil }
+      end
+
+      context 'with a DROWithMetadata' do
+        let(:cocina_object) { Cocina::Models.with_metadata(dro.to_cocina, '1') }
+
+        it { is_expected.to be_nil }
+      end
     end
 
     context 'with an unsuccessful request' do
