@@ -6,6 +6,6 @@ class QueriesController < ApplicationController
 
   # Returns a list of collections this object is in.
   def collections
-    @collections = CocinaObjectStore.find_collections_for(@cocina_object)
+    @collections = CocinaObjectStore.find_collections_for(@cocina_object).map { |collection_object| Cocina::Models.without_metadata(collection_object) }
   end
 end

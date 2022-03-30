@@ -35,7 +35,8 @@ CREATE TABLE public.admin_policies (
     administrative jsonb NOT NULL,
     description jsonb,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    lock integer
 );
 
 
@@ -150,7 +151,8 @@ CREATE TABLE public.collections (
     description jsonb NOT NULL,
     identification jsonb NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    lock integer
 );
 
 
@@ -191,7 +193,8 @@ CREATE TABLE public.dros (
     structural jsonb NOT NULL,
     geographic jsonb,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    lock integer
 );
 
 
@@ -583,6 +586,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220203155057'),
 ('20220307201030'),
 ('20220307201420'),
+('20220311015318'),
 ('20220329134023');
 
 

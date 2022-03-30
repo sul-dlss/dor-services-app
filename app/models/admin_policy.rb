@@ -2,9 +2,16 @@
 
 # Model for an AdminPolicy.
 class AdminPolicy < ApplicationRecord
+  self.locking_column = 'lock'
+
   # @return [Cocina::Models::AdminPolicy] Cocina Administrative Policy
   def to_cocina
-    Cocina::Models::AdminPolicy.new({
+    Cocina::Models::AdminPolicy.new(to_h)
+  end
+
+  # @return [Hash] Admin policy instance as a hash
+  def to_h
+    {
       cocinaVersion: cocina_version,
       type: Cocina::Models::ObjectType.admin_policy,
       externalIdentifier: external_identifier,
@@ -12,7 +19,7 @@ class AdminPolicy < ApplicationRecord
       version: version,
       administrative: administrative,
       description: description
-    }.compact)
+    }.compact
   end
 
   # @param [Cocina::Models::AdminPolicy] Cocina Administrative Policy

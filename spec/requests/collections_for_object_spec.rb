@@ -13,7 +13,7 @@ RSpec.describe 'Get the object' do
   end
 
   let(:collection_records) { [create(:collection)] }
-  let(:collections) { collection_records.map(&:to_cocina) }
+  let(:collections) { collection_records.map(&:to_cocina).map { |cocina_object| Cocina::Models.without_metadata(cocina_object) } }
 
   let(:expected) do
     {

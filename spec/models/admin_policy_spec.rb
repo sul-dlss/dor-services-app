@@ -42,7 +42,7 @@ RSpec.describe AdminPolicy do
       let(:admin_policy) { create(:admin_policy) }
 
       it 'returns a Cocina::Model::AdminPolicy' do
-        expect(admin_policy.to_cocina).to eq(minimal_cocina_admin_policy)
+        expect(admin_policy.to_cocina).to cocina_object_with(minimal_cocina_admin_policy)
       end
     end
 
@@ -50,7 +50,7 @@ RSpec.describe AdminPolicy do
       let(:admin_policy) { create(:admin_policy, :with_admin_policy_description) }
 
       it 'returns a Cocina::Model::AdminPolicy' do
-        expect(admin_policy.to_cocina).to eq(cocina_admin_policy)
+        expect(admin_policy.to_cocina).to cocina_object_with(cocina_admin_policy)
       end
     end
   end

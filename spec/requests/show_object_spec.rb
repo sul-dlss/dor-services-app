@@ -59,6 +59,8 @@ RSpec.describe 'Get the object' do
         expect(response).to have_http_status(:ok)
         expect(response.headers['Last-Modified']).to end_with 'GMT'
         expect(response.headers['X-Created-At']).to end_with 'GMT'
+        expect(response.headers['ETag']).to match(%r{W/".+"})
+
         expect(response.body).to equal_cocina_model(expected)
       end
     end
@@ -403,6 +405,34 @@ RSpec.describe 'Get the object' do
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:internal_server_error)
         expect(response_model).to eq expected
+      end
+    end
+
+    context 'when the object has not changed and If-None-Match provided' do
+      it 'returns not modified' do
+        get '/v1/objects/druid:bc123df4567',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+
+        expect(response).to have_http_status(:ok)
+
+        get '/v1/objects/druid:bc123df4567',
+            headers: {
+              'Authorization' => "Bearer #{jwt}",
+              # This is testing -gzip stripping.
+              'If-None-Match' => response.headers['ETag'].sub(/"$/, '-gzip"')
+            }
+        expect(response).to have_http_status(:not_modified)
+      end
+    end
+
+    context 'when the object has changed and If-None-Match provided' do
+      it 'returns the object' do
+        get '/v1/objects/druid:bc123df4567',
+            headers: {
+              'Authorization' => "Bearer #{jwt}",
+              'If-None-Match' => 'wrong etag'
+            }
+        expect(response).to have_http_status(:ok)
       end
     end
   end

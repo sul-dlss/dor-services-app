@@ -5,13 +5,34 @@ require 'rails_helper'
 RSpec.describe CocinaObjectStore do
   include Dry::Monads[:result]
 
+  let(:date) { Time.zone.now }
+
+  let(:lock) { date.to_datetime.iso8601 }
+
   describe 'to Fedora' do
-    let(:item) { instance_double(Dor::Item) }
-    let(:date) { Time.zone.now }
-    let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, dro?: true, to_h: cocina_hash) }
+    let(:item) { instance_double(Dor::Item, modified_date: date.to_time) }
+    let(:cocina_object) do
+      Cocina::Models::DRO.new(
+        type: Cocina::Models::ObjectType.book,
+        label: 'The Trails of Virginia',
+        version: 1,
+        administrative: { hasAdminPolicy: 'druid:dd999df2345' },
+        access: {},
+        description: {
+          title: [{ value: 'The Trails of Virginia' }],
+          purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+        },
+        externalIdentifier: druid,
+        identification: {},
+        structural: {}
+      )
+    end
+
+    let(:cocina_object_with_metadata) do
+      Cocina::Models.with_metadata(cocina_object, lock, created: date, modified: date)
+    end
 
     let(:druid) { 'druid:bc123df4567' }
-    let(:cocina_hash) { { fake: 'hash' } }
 
     before do
       allow(ActiveFedora::ContentModel).to receive(:models_asserted_by).and_return(['info:fedora/afmodel:Item'])
@@ -22,13 +43,16 @@ RSpec.describe CocinaObjectStore do
 
     describe '#find' do
       context 'when DRO is found' do
+        let(:found_cocina_object) { described_class.find(druid) }
+
         before do
           allow(Dor).to receive(:find).and_return(item)
           allow(Cocina::Mapper).to receive(:build).and_return(cocina_object)
         end
 
         it 'returns Cocina object' do
-          expect(described_class.find(druid)).to eq cocina_object
+          expect(found_cocina_object).to cocina_object_with cocina_object
+          expect(found_cocina_object).to be_instance_of(Cocina::Models::DROWithMetadata)
           expect(Dor).to have_received(:find).with(druid)
           expect(Cocina::Mapper).to have_received(:build).with(item)
         end
@@ -54,31 +78,6 @@ RSpec.describe CocinaObjectStore do
           expect { described_class.find(druid) }.to raise_error(Rubydora::FedoraInvalidRequest, a_string_starting_with(prefix))
         end
       end
-    end
-
-    describe '#find_with_timestamps' do
-      context 'when DRO is found' do
-        before do
-          allow(Dor).to receive(:find).and_return(item)
-          allow(Cocina::Mapper).to receive(:build).and_return(cocina_object)
-        end
-
-        it 'returns Cocina object adn the timestamps' do
-          expect(described_class.find_with_timestamps(druid)).to eq [cocina_object, date, date]
-          expect(Dor).to have_received(:find).with(druid)
-          expect(Cocina::Mapper).to have_received(:build).with(item)
-        end
-      end
-
-      context 'when DRO is not found' do
-        before do
-          allow(Dor).to receive(:find).and_raise(ActiveFedora::ObjectNotFoundError)
-        end
-
-        it 'returns Cocina object' do
-          expect { described_class.find_with_timestamps(druid) }.to raise_error(CocinaObjectStore::CocinaObjectNotFoundError)
-        end
-      end
 
       context 'when postgres find is enabled' do
         before do
@@ -89,8 +88,7 @@ RSpec.describe CocinaObjectStore do
           let!(:ar_cocina_object) { create(:dro) }
 
           it 'returns from postgres' do
-            expect(described_class.find_with_timestamps(ar_cocina_object.external_identifier)).to match([instance_of(Cocina::Models::DRO), kind_of(Time),
-                                                                                                         kind_of(Time)])
+            expect(described_class.find(ar_cocina_object.external_identifier)).to be_instance_of(Cocina::Models::DROWithMetadata)
           end
         end
 
@@ -101,7 +99,7 @@ RSpec.describe CocinaObjectStore do
           end
 
           it 'returns from fedora' do
-            expect(described_class.find_with_timestamps(druid)).to eq [cocina_object, date, date]
+            expect(described_class.find(druid)).to cocina_object_with cocina_object
             expect(Dor).to have_received(:find).with(druid)
           end
         end
@@ -133,6 +131,7 @@ RSpec.describe CocinaObjectStore do
 
     describe '#save' do
       context 'when object is found in datastore' do
+        let(:saved_cocina_object) { cocina_object_store.save(cocina_object_with_metadata) }
         let(:cocina_object_store) { described_class.new }
 
         before do
@@ -144,13 +143,29 @@ RSpec.describe CocinaObjectStore do
         end
 
         it 'maps and saves to Fedora' do
-          expect(cocina_object_store.save(cocina_object)).to be cocina_object
+          expect(saved_cocina_object).to cocina_object_with cocina_object
+          expect(saved_cocina_object).to be_instance_of(Cocina::Models::DROWithMetadata)
           expect(Dor).to have_received(:find).with(druid)
           expect(Cocina::ObjectUpdater).to have_received(:run).with(item, cocina_object)
           expect(Notifications::ObjectUpdated).to have_received(:publish).with(model: cocina_object, created_at: item.create_date, modified_at: item.modified_date)
-          expect(Cocina::ObjectValidator).to have_received(:validate).with(cocina_object)
-          expect(cocina_object_store).to have_received(:add_tags_for_update).with(cocina_object)
-          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'update', data: { success: true, request: cocina_hash })
+          expect(Cocina::ObjectValidator).to have_received(:validate).with(cocina_object_with_metadata)
+          expect(cocina_object_store).to have_received(:add_tags_for_update).with(cocina_object_with_metadata)
+          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'update', data: { success: true, request: cocina_object.to_h })
+        end
+      end
+
+      context 'when stale lock' do
+        let(:saved_cocina_object) { cocina_object_store.save(cocina_object_with_metadata) }
+        let(:cocina_object_store) { described_class.new }
+
+        let(:lock) { date.utc.iso8601 }
+
+        before do
+          allow(Dor).to receive(:find).and_return(item)
+        end
+
+        it 'maps and saves to Fedora' do
+          expect { cocina_object_store.save(cocina_object_with_metadata) }.to raise_error(CocinaObjectStore::StaleLockError)
         end
       end
 
@@ -165,6 +180,7 @@ RSpec.describe CocinaObjectStore do
       end
 
       context 'when postgres update is enabled' do
+        let(:saved_cocina_object) { cocina_object_store.save(cocina_object_with_metadata) }
         let(:cocina_object_store) { described_class.new }
 
         before do
@@ -172,17 +188,18 @@ RSpec.describe CocinaObjectStore do
           allow(described_class).to receive(:new).and_return(cocina_object_store)
           allow(Dor).to receive(:find).and_return(item)
           allow(Cocina::ObjectUpdater).to receive(:run)
-          allow(cocina_object_store).to receive(:cocina_to_ar_save)
+          allow(cocina_object_store).to receive(:cocina_to_ar_save).and_return([date, date, 'abc123'])
           allow(cocina_object_store).to receive(:ar_exists?).and_return(true)
           allow(cocina_object_store).to receive(:add_tags_for_update)
           allow(EventFactory).to receive(:create)
         end
 
-        it 'maps and saves to Fedora' do
-          expect(described_class.save(cocina_object)).to be cocina_object
+        it 'maps and saves to Fedora and Postgres' do
+          expect(saved_cocina_object).to cocina_object_with(cocina_object)
+          expect(saved_cocina_object).to be_instance_of(Cocina::Models::DROWithMetadata)
           expect(Dor).to have_received(:find).with(druid)
           expect(Cocina::ObjectUpdater).to have_received(:run).with(item, cocina_object)
-          expect(cocina_object_store).to have_received(:cocina_to_ar_save).with(cocina_object)
+          expect(cocina_object_store).to have_received(:cocina_to_ar_save).with(cocina_object_with_metadata, skip_lock: false)
           expect(cocina_object_store).to have_received(:ar_exists?).with(druid)
         end
       end
@@ -193,12 +210,11 @@ RSpec.describe CocinaObjectStore do
         before do
           allow(Cocina::ObjectValidator).to receive(:validate).and_raise(Cocina::ValidationError, 'Ooops.')
           allow(EventFactory).to receive(:create)
-          allow(cocina_object).to receive(:to_h).and_return(cocina_hash)
         end
 
         it 'raises' do
-          expect { cocina_object_store.save(cocina_object) }.to raise_error(Cocina::ValidationError)
-          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'update', data: { success: false, request: cocina_hash, error: 'Ooops.' })
+          expect { cocina_object_store.save(cocina_object_with_metadata) }.to raise_error(Cocina::ValidationError)
+          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'update', data: { success: false, request: cocina_object.to_h, error: 'Ooops.' })
         end
       end
 
@@ -209,12 +225,11 @@ RSpec.describe CocinaObjectStore do
           allow(Dor).to receive(:find).and_return(item)
           allow(Cocina::ObjectUpdater).to receive(:run).and_raise(Cocina::Mapper::MapperError)
           allow(EventFactory).to receive(:create)
-          allow(cocina_object).to receive(:to_h).and_return(cocina_hash)
         end
 
         it 'raises' do
-          expect { cocina_object_store.save(cocina_object) }.to raise_error(Cocina::Mapper::MapperError)
-          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'update', data: { success: false, request: cocina_hash, error: 'Cocina::Mapper::MapperError' })
+          expect { cocina_object_store.save(cocina_object_with_metadata) }.to raise_error(Cocina::Mapper::MapperError)
+          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'update', data: { success: false, request: cocina_object.to_h, error: 'Cocina::Mapper::MapperError' })
         end
       end
     end
@@ -244,15 +259,15 @@ RSpec.describe CocinaObjectStore do
 
       context 'when a DRO' do
         it 'maps and saves to Fedora' do
-          expect(cocina_object_store.create(requested_cocina_object)).to be cocina_object
+          expect(cocina_object_store.create(requested_cocina_object)).to cocina_object_with cocina_object_with_metadata
           expect(Cocina::ObjectCreator).to have_received(:create).with(cocina_object, druid: druid)
-          expect(Notifications::ObjectCreated).to have_received(:publish).with(model: cocina_object, created_at: kind_of(Time), modified_at: kind_of(Time))
+          expect(Notifications::ObjectCreated).to have_received(:publish).with(model: cocina_object, created_at: kind_of(DateTime), modified_at: kind_of(DateTime))
           expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
           expect(cocina_object_store).to have_received(:merge_access_for).with(requested_cocina_object)
           expect(cocina_object_store).to have_received(:add_tags_for_create).with(druid, requested_cocina_object)
-          expect(SynchronousIndexer).to have_received(:reindex_remotely_from_cocina).with(cocina_object: cocina_object, created_at: kind_of(Time), updated_at: kind_of(Time))
+          expect(SynchronousIndexer).to have_received(:reindex_remotely_from_cocina).with(cocina_object: cocina_object, created_at: kind_of(DateTime), updated_at: kind_of(DateTime))
           expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
-          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'registration', data: cocina_hash)
+          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'registration', data: cocina_object.to_h)
           expect(RefreshMetadataAction).not_to have_received(:run)
           expect(Cocina::Models).to have_received(:build).with({
                                                                  externalIdentifier: druid,
@@ -267,15 +282,15 @@ RSpec.describe CocinaObjectStore do
         end
 
         it 'maps and saves to Fedora' do
-          expect(cocina_object_store.create(requested_cocina_object)).to be cocina_object
+          expect(cocina_object_store.create(requested_cocina_object)).to cocina_object_with cocina_object_with_metadata
           expect(Cocina::ObjectCreator).to have_received(:create).with(cocina_object, druid: druid)
-          expect(Notifications::ObjectCreated).to have_received(:publish).with(model: cocina_object, created_at: kind_of(Time), modified_at: kind_of(Time))
+          expect(Notifications::ObjectCreated).to have_received(:publish).with(model: cocina_object, created_at: kind_of(DateTime), modified_at: kind_of(DateTime))
           expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
           expect(cocina_object_store).to have_received(:merge_access_for).with(requested_cocina_object)
           expect(cocina_object_store).to have_received(:add_tags_for_create).with(druid, requested_cocina_object)
-          expect(SynchronousIndexer).to have_received(:reindex_remotely_from_cocina).with(cocina_object: cocina_object, created_at: kind_of(Time), updated_at: kind_of(Time))
+          expect(SynchronousIndexer).to have_received(:reindex_remotely_from_cocina).with(cocina_object: cocina_object, created_at: kind_of(DateTime), updated_at: kind_of(DateTime))
           expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
-          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'registration', data: cocina_hash)
+          expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'registration', data: cocina_object.to_h)
           expect(RefreshMetadataAction).not_to have_received(:run)
           expect(Cocina::Models).to have_received(:build).with({
                                                                  externalIdentifier: druid,
@@ -311,7 +326,7 @@ RSpec.describe CocinaObjectStore do
         end
 
         it 'adds to description' do
-          expect(cocina_object_store.create(requested_cocina_object)).to be cocina_object
+          expect(cocina_object_store.create(requested_cocina_object)).to cocina_object_with cocina_object_with_metadata
           expect(RefreshMetadataAction).to have_received(:run).with(identifiers: ['catkey:abc123'], cocina_object: requested_cocina_object, druid: druid)
           expect(requested_cocina_object).to have_received(:new).with(label: 'The Well-Grounded Rubyist', description: { title: [{ value: 'The Well-Grounded Rubyist' }] })
         end
@@ -325,7 +340,7 @@ RSpec.describe CocinaObjectStore do
         end
 
         it 'does not add to description' do
-          expect(cocina_object_store.create(requested_cocina_object)).to be cocina_object
+          expect(cocina_object_store.create(requested_cocina_object)).to cocina_object_with cocina_object_with_metadata
           expect(RefreshMetadataAction).to have_received(:run).with(identifiers: ['catkey:abc123'], cocina_object: requested_cocina_object, druid: druid)
         end
       end
@@ -354,7 +369,7 @@ RSpec.describe CocinaObjectStore do
         end
 
         it 'adds purl and updates notes in description' do
-          expect(cocina_object_store.create(requested_cocina_object)).to be cocina_object
+          expect(cocina_object_store.create(requested_cocina_object)).to cocina_object_with cocina_object_with_metadata
           expect(Cocina::Models).to have_received(:build).with({
                                                                  externalIdentifier: druid,
                                                                  description: {
@@ -389,7 +404,7 @@ RSpec.describe CocinaObjectStore do
         end
 
         it 'adds a description from label' do
-          expect(cocina_object_store.create(requested_cocina_object)).to be cocina_object
+          expect(cocina_object_store.create(requested_cocina_object)).to cocina_object_with cocina_object_with_metadata
           expect(requested_cocina_object).to have_received(:new).with(description: { title: [{ value: 'Roadside Geology of Utah' }] })
         end
       end
@@ -454,7 +469,7 @@ RSpec.describe CocinaObjectStore do
         end
 
         it 'adds external identifiers' do
-          expect(cocina_object_store.create(requested_cocina_object)).to be cocina_object
+          expect(cocina_object_store.create(requested_cocina_object)).to cocina_object_with cocina_object_with_metadata
           expect(Cocina::Models).to have_received(:build).with({
                                                                  externalIdentifier: druid,
                                                                  structural: {
@@ -522,7 +537,7 @@ RSpec.describe CocinaObjectStore do
         end
 
         it 'adds DOI to identification' do
-          expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to be cocina_object
+          expect(cocina_object_store.create(requested_cocina_object, assign_doi: true)).to cocina_object_with cocina_object_with_metadata
           expect(identification).to have_received(:new).with(doi: '10.80343/bc123df4567')
           expect(cocina_object).to have_received(:new).with(identification: updated_identification)
         end
@@ -531,12 +546,12 @@ RSpec.describe CocinaObjectStore do
       context 'when postgres create is enabled' do
         before do
           allow(Settings.enabled_features).to receive(:postgres).and_return(true)
-          allow(cocina_object_store).to receive(:cocina_to_ar_save)
+          allow(cocina_object_store).to receive(:cocina_to_ar_save).and_return([date, date, lock])
         end
 
         it 'save to postgres' do
-          expect(cocina_object_store.create(requested_cocina_object)).to be cocina_object
-          expect(cocina_object_store).to have_received(:cocina_to_ar_save).with(cocina_object)
+          expect(cocina_object_store.create(requested_cocina_object)).to cocina_object_with cocina_object_with_metadata
+          expect(cocina_object_store).to have_received(:cocina_to_ar_save).with(cocina_object, skip_lock: true)
         end
       end
     end
@@ -605,8 +620,8 @@ RSpec.describe CocinaObjectStore do
       context 'when object is a DRO' do
         let(:ar_cocina_object) { create(:dro) }
 
-        it 'returns Cocina::Models::DRO' do
-          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to match([instance_of(Cocina::Models::DRO), kind_of(Time), kind_of(Time)])
+        it 'returns Cocina::Models::DROWithMetadata' do
+          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_instance_of(Cocina::Models::DROWithMetadata)
         end
       end
 
@@ -614,7 +629,7 @@ RSpec.describe CocinaObjectStore do
         let(:ar_cocina_object) { create(:admin_policy) }
 
         it 'returns Cocina::Models::AdminPolicy' do
-          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to match([instance_of(Cocina::Models::AdminPolicy), kind_of(Time), kind_of(Time)])
+          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_instance_of(Cocina::Models::AdminPolicyWithMetadata)
         end
       end
 
@@ -622,7 +637,7 @@ RSpec.describe CocinaObjectStore do
         let(:ar_cocina_object) { create(:collection) }
 
         it 'returns Cocina::Models::Collection' do
-          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to match([instance_of(Cocina::Models::Collection), kind_of(Time), kind_of(Time)])
+          expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_instance_of(Cocina::Models::CollectionWithMetadata)
         end
       end
     end
@@ -663,28 +678,65 @@ RSpec.describe CocinaObjectStore do
       let(:store) { described_class.new }
 
       context 'when object is a DRO' do
-        let(:cocina_object) do
-          Cocina::Models::DRO.new({
-                                    cocinaVersion: '0.0.1',
-                                    externalIdentifier: 'druid:xz456jk0987',
-                                    type: Cocina::Models::ObjectType.book,
-                                    label: 'Test DRO',
-                                    version: 1,
-                                    description: {
-                                      title: [{ value: 'Test DRO' }],
-                                      purl: 'https://purl.stanford.edu/xz456jk0987'
-                                    },
-                                    access: { view: 'world', download: 'world' },
-                                    administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
-                                    structural: {},
-                                    identification: {}
-                                  })
+        context 'when skipping lock (e.g., for a create)' do
+          let(:cocina_object) do
+            Cocina::Models::DRO.new({
+                                      cocinaVersion: '0.0.1',
+                                      externalIdentifier: 'druid:xz456jk0987',
+                                      type: Cocina::Models::ObjectType.book,
+                                      label: 'Test DRO',
+                                      version: 1,
+                                      description: {
+                                        title: [{ value: 'Test DRO' }],
+                                        purl: 'https://purl.stanford.edu/xz456jk0987'
+                                      },
+                                      access: { view: 'world', download: 'world' },
+                                      administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
+                                      structural: {},
+                                      identification: {}
+                                    })
+          end
+
+          it 'saves to datastore' do
+            expect(Dro.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
+            expect(store.send(:cocina_to_ar_save, cocina_object, skip_lock: true)).to match([kind_of(Time), kind_of(Time), kind_of(String)])
+            expect(Dro.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
+          end
         end
 
-        it 'saves to datastore' do
-          expect(Dro.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
-          expect(store.send(:cocina_to_ar_save, cocina_object)).to match([kind_of(Time), kind_of(Time)])
-          expect(Dro.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
+        context 'when checking lock succeeds' do
+          let(:ar_cocina_object) { create(:dro) }
+
+          let(:cocina_object) do
+            Cocina::Models.with_metadata(ar_cocina_object.to_cocina, '0', created: ar_cocina_object.created_at.utc, modified: ar_cocina_object.updated_at.utc)
+          end
+
+          let(:changed_cocina_object) do
+            cocina_object.new(label: 'new label')
+          end
+
+          it 'saves to datastore' do
+            expect(store.send(:cocina_to_ar_save, changed_cocina_object)).to match([kind_of(Time), kind_of(Time), kind_of(String)])
+            expect(Dro.find_by(external_identifier: ar_cocina_object.external_identifier).label).to eq('new label')
+          end
+        end
+
+        context 'when checking lock fails' do
+          let!(:ar_cocina_object) { create(:dro) }
+
+          let(:cocina_object) do
+            Cocina::Models.with_metadata(ar_cocina_object.to_cocina, '0', created: ar_cocina_object.updated_at.utc, modified: ar_cocina_object.updated_at.utc)
+          end
+
+          let(:changed_cocina_object) do
+            cocina_object.new(label: 'new label')
+          end
+
+          it 'saves to datastore' do
+            ar_cocina_object.label = 'someone else changed this label'
+            ar_cocina_object.save!
+            expect { store.send(:cocina_to_ar_save, changed_cocina_object) }.to raise_error(CocinaObjectStore::StaleLockError)
+          end
         end
       end
 
@@ -706,7 +758,7 @@ RSpec.describe CocinaObjectStore do
 
         it 'saves to datastore' do
           expect(AdminPolicy.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
-          expect(store.send(:cocina_to_ar_save, cocina_object)).to match([kind_of(Time), kind_of(Time)])
+          expect(store.send(:cocina_to_ar_save, cocina_object, skip_lock: true)).to match([kind_of(Time), kind_of(Time), kind_of(String)])
           expect(AdminPolicy.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
         end
       end
@@ -733,7 +785,7 @@ RSpec.describe CocinaObjectStore do
 
         it 'saves to datastore' do
           expect(Collection.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
-          expect(store.send(:cocina_to_ar_save, cocina_object)).to match([kind_of(Time), kind_of(Time)])
+          expect(store.send(:cocina_to_ar_save, cocina_object, skip_lock: true)).to match([kind_of(Time), kind_of(Time), kind_of(String)])
           expect(Collection.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
         end
       end
@@ -759,11 +811,11 @@ RSpec.describe CocinaObjectStore do
         end
 
         before do
-          store.send(:cocina_to_ar_save, cocina_object.new(externalIdentifier: 'druid:dd645sg2172'))
+          store.send(:cocina_to_ar_save, cocina_object.new(externalIdentifier: 'druid:dd645sg2172'), skip_lock: true)
         end
 
         it 'raises' do
-          expect { store.send(:cocina_to_ar_save, cocina_object) }.to raise_error(Cocina::ValidationError)
+          expect { store.send(:cocina_to_ar_save, cocina_object, skip_lock: true) }.to raise_error(Cocina::ValidationError)
         end
       end
     end

@@ -2,6 +2,8 @@
 
 # Model for a Digital Repository Object.
 class Dro < ApplicationRecord
+  self.locking_column = 'lock'
+
   # @return [Cocina::Models::DRO] Cocina Digital Repository Object
   def to_cocina
     Cocina::Models::DRO.new(to_h)
