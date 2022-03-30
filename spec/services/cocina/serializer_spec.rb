@@ -66,6 +66,8 @@ RSpec.describe Cocina::Serializer do
     )
   end
 
+  let(:dro_with_metadata) { Cocina::Models.with_metadata(dro, '1', created: DateTime.now) }
+
   let(:json) do
     {
       cocinaVersion: Cocina::Models::VERSION,
@@ -158,6 +160,10 @@ RSpec.describe Cocina::Serializer do
       expect(serializer.serialize?(dro)).to be true
     end
 
+    it 'serializes DROWithMetadatas' do
+      expect(serializer.serialize?(dro_with_metadata)).to be true
+    end
+
     it 'does not serialize non-DROs' do
       expect(serializer.serialize?('not a DRO')).to be false
     end
@@ -166,6 +172,10 @@ RSpec.describe Cocina::Serializer do
   describe '.serialize' do
     it 'serializes DROs' do
       expect(serializer.serialize(dro)).to eq json
+    end
+
+    it 'serializes DROWithMetadatas' do
+      expect(serializer.serialize(dro_with_metadata)).to eq json
     end
   end
 

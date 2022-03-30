@@ -6,14 +6,14 @@ module Cocina
   # class Serializer < ActiveJob::Serializers::ObjectSerializer
   class Serializer
     def serialize?(argument)
-      argument.is_a?(Cocina::Models::DRO)
+      argument.is_a?(Cocina::Models::DRO) || argument.is_a?(Cocina::Models::DROWithMetadata)
     end
 
     def serialize(cocina_item)
       # For Rails 6:
       # super(cocina_item.to_h)
 
-      cocina_item.to_json
+      Cocina::Models.without_metadata(cocina_item).to_json
     end
 
     def deserialize(json)
