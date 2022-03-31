@@ -184,7 +184,7 @@ class CocinaObjectStore
   end
 
   def fedora_lock_for(fedora_object)
-    fedora_object.modified_date.to_datetime.iso8601
+    ActiveSupport::Digest.hexdigest(fedora_object.pid + fedora_object.modified_date.to_datetime.iso8601)
   end
 
   # @return [Array] array consisting of created date and modified date
@@ -273,7 +273,7 @@ class CocinaObjectStore
   end
 
   def ar_lock_for(ar_cocina_object)
-    ar_cocina_object.lock.to_s
+    ActiveSupport::Digest.hexdigest(ar_cocina_object.external_identifier + ar_cocina_object.lock.to_s)
   end
 
   # Find an ActiveRecord Cocina object.
