@@ -515,7 +515,7 @@ RSpec.describe 'Update object' do
     end
   end
 
-  context 'when incorrect Etag' do
+  context 'when incorrect ETag' do
     it 'is a stale request and does not save' do
       patch "/v1/objects/#{druid}",
             params: data,
@@ -529,7 +529,7 @@ RSpec.describe 'Update object' do
     end
   end
 
-  context 'when omitted Etag' do
+  context 'when omitted ETag' do
     it 'updates the item' do
       patch "/v1/objects/#{druid}",
             params: data,

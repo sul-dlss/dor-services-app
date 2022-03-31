@@ -216,7 +216,7 @@ class ObjectsController < ApplicationController
   def add_headers(cocina_object)
     headers['X-Created-At'] = cocina_object.created.httpdate
     headers['Last-Modified'] = cocina_object.modified.httpdate
-    headers['Etag'] = "W/\"#{cocina_object.lock}\""
+    headers['ETag'] = "W/\"#{cocina_object.lock}\""
   end
 
   def from_etag(etag)
