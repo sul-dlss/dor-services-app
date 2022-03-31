@@ -3254,7 +3254,6 @@ components:
           $ref: '#/components/schemas/Druid'
         constituent_ids:
           type: array
-          minItems: 1
           items:
             $ref: '#/components/schemas/Druid'
     UpdateLegacyMetadata:

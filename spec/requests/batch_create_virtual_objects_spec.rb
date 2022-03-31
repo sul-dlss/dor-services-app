@@ -107,13 +107,13 @@ RSpec.describe 'Batch creation of virtual objects' do
   end
 
   context 'when virtual_objects array has a hash w/ constituent_ids empty' do
-    it 'renders an error' do
+    it 'queues a background job to create a virtual object' do
       post '/v1/virtual_objects',
            params: { virtual_objects: [{ virtual_object_id: 'druid:bb111cc3333', constituent_ids: [] }] }.to_json,
            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
-      expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
-      expect(response).to have_http_status(:bad_request)
-      expect(body['errors'][0]['detail']).to eq('#/components/schemas/VirtualObjectRequest/properties/constituent_ids [] contains fewer than min items')
+      expect(CreateVirtualObjectsJob).to have_received(:perform_later)
+      expect(response).to have_http_status(:created)
+      expect(response.location).to match(%r{http://www.example.com/v1/background_job_results/\d+})
     end
   end
 

@@ -411,6 +411,8 @@ RSpec.describe Cocina::ObjectUpdater do
 
     let(:book_data_node) { double }
 
+    let(:external_file_node) { double }
+
     let(:desc_metadata) { double }
 
     let(:identity_metadata) { double }
@@ -562,7 +564,7 @@ RSpec.describe Cocina::ObjectUpdater do
           instance_double(Dor::RightsMetadataDS, ng_xml_will_change!: nil)
         )
         allow(content_metadata).to receive(:contentType=)
-        allow(content_metadata).to receive(:ng_xml)
+        allow(content_metadata).to receive(:ng_xml).and_return(Nokogiri::XML('<contentMetadata />'))
         allow(Cocina::ToFedora::DROAccess).to receive(:apply)
       end
 
@@ -580,7 +582,7 @@ RSpec.describe Cocina::ObjectUpdater do
           update
           expect(item).to have_received(:collection_ids=)
           expect(content_metadata).to have_received(:contentType=)
-          expect(content_metadata).not_to have_received(:ng_xml)
+          expect(content_metadata).to have_received(:ng_xml)
           expect(Cocina::ToFedora::DROAccess).to have_received(:apply)
         end
       end
@@ -592,6 +594,39 @@ RSpec.describe Cocina::ObjectUpdater do
           expect(content_metadata).not_to have_received(:contentType=)
           expect(Cocina::ToFedora::DROAccess).not_to have_received(:apply)
         end
+      end
+    end
+
+    context 'when updating structural to clear external files' do
+      before do
+        allow(item).to receive(:collection_ids=)
+        allow(item).to receive(:rightsMetadata).and_return(
+          instance_double(Dor::RightsMetadataDS, ng_xml_will_change!: nil)
+        )
+        allow(content_metadata).to receive(:contentType=)
+        allow(content_metadata).to receive(:content=)
+        allow(content_metadata).to receive(:ng_xml).and_return(content_metadata_ng_xml)
+        allow(content_metadata_ng_xml).to receive(:xpath).with('//externalFile').and_return([external_file_node])
+        allow(Cocina::ToFedora::DROAccess).to receive(:apply)
+      end
+
+      let(:cocina_attrs) do
+        # Need to force a structural change. However, cannot include hasMemberOrders > members here because
+        # the mapping to Fedora retrieves the constituents.
+        orig_cocina_attrs.tap do |attrs|
+          attrs[:structural] = {
+            isMemberOf: ['druid:bk024qs1809']
+          }
+        end
+      end
+
+      it 'replaces all content with newly generated contentMetadata' do
+        update
+        expect(item).to have_received(:collection_ids=)
+        expect(content_metadata).to have_received(:content=)
+        expect(content_metadata).not_to have_received(:contentType=)
+        expect(content_metadata).to have_received(:ng_xml)
+        expect(Cocina::ToFedora::DROAccess).to have_received(:apply)
       end
     end
 
@@ -685,7 +720,8 @@ RSpec.describe Cocina::ObjectUpdater do
       before do
         allow(content_metadata).to receive(:contentType=)
         allow(content_metadata).to receive(:ng_xml).and_return(content_metadata_ng_xml)
-        allow(content_metadata_ng_xml).to receive(:xpath).and_return([book_data_node])
+        allow(content_metadata_ng_xml).to receive(:xpath).with('//externalFile').and_return([])
+        allow(content_metadata_ng_xml).to receive(:xpath).with('//bookData').and_return([book_data_node])
         allow(book_data_node).to receive(:remove)
       end
 
@@ -699,7 +735,7 @@ RSpec.describe Cocina::ObjectUpdater do
         it 'updates access and removes any bookData nodes' do
           update
           expect(content_metadata).to have_received(:contentType=)
-          expect(content_metadata).to have_received(:ng_xml)
+          expect(content_metadata).to have_received(:ng_xml).twice
           expect(content_metadata_ng_xml).to have_received(:xpath).with('//bookData')
           expect(book_data_node).to have_received(:remove)
         end
@@ -807,7 +843,8 @@ RSpec.describe Cocina::ObjectUpdater do
       allow(AdministrativeTags).to receive(:create)
       allow(content_metadata).to receive(:contentType=)
       allow(content_metadata).to receive(:ng_xml).and_return(content_metadata_ng_xml)
-      allow(content_metadata_ng_xml).to receive(:xpath).and_return([book_data_node])
+      allow(content_metadata_ng_xml).to receive(:xpath).with('//bookData').and_return([book_data_node])
+      allow(content_metadata_ng_xml).to receive(:xpath).with('//externalFile').and_return([])
       allow(book_data_node).to receive(:remove)
       allow(Cocina::ToFedora::DROAccess).to receive(:apply)
       allow(identity_metadata).to receive(:barcode=)
@@ -831,8 +868,6 @@ RSpec.describe Cocina::ObjectUpdater do
       expect(desc_metadata).to have_received(:content_will_change!)
       expect(Cocina::ToFedora::Descriptive).to have_received(:transform)
       expect(content_metadata).to have_received(:contentType=)
-      allow(content_metadata).to receive(:ng_xml).and_return(content_metadata_ng_xml)
-      allow(content_metadata_ng_xml).to receive(:xpath).and_return([book_data_node])
       expect(Cocina::ToFedora::DROAccess).to have_received(:apply)
       expect(identity_metadata).to have_received(:barcode=)
       expect(identity_metadata).to have_received(:ng_xml_will_change!)
