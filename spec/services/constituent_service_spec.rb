@@ -19,7 +19,7 @@ RSpec.describe ConstituentService do
           purl: 'https://purl.stanford.edu/kh875jg9754'
         },
         externalIdentifier: 'druid:kh875jg9754',
-        identification: {},
+        identification: { sourceId: 'sul:123' },
         structural: {}
       )
     end
@@ -37,7 +37,7 @@ RSpec.describe ConstituentService do
           purl: "https://purl.stanford.edu/#{virtual_object_druid.delete_prefix('druid:')}"
         },
         externalIdentifier: virtual_object_druid,
-        identification: {},
+        identification: { sourceId: 'sul:123' },
         structural: {}
       )
     end
@@ -124,7 +124,8 @@ RSpec.describe ConstituentService do
                 catalog: 'symphony',
                 catalogRecordId: '12345'
               }
-            ]
+            ],
+            sourceId: 'sul:123'
           },
           structural: {}
         )

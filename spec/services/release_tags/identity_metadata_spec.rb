@@ -15,7 +15,7 @@ RSpec.describe ReleaseTags::IdentityMetadata do
                               title: [{ value: 'Bryar 250 Trans-American: July 9-10' }],
                               purl: "https://purl.stanford.edu/#{pid.delete_prefix('druid:')}"
                             },
-                            identification: {},
+                            identification: { sourceId: 'sul:123' },
                             access: {},
                             structural: { isMemberOf: [collection_pid] },
                             administrative: { hasAdminPolicy: apo_id,
@@ -149,7 +149,7 @@ RSpec.describe ReleaseTags::IdentityMetadata do
                                   title: [{ value: 'Bryar 250 Trans-American: July 9-10' }],
                                   purl: "https://purl.stanford.edu/#{pid.delete_prefix('druid:')}"
                                 },
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 structural: {},
                                 administrative: { hasAdminPolicy: apo_id,
@@ -183,7 +183,7 @@ RSpec.describe ReleaseTags::IdentityMetadata do
                                      access: {},
                                      type: Cocina::Models::ObjectType.collection,
                                      administrative: { hasAdminPolicy: apo_id },
-                                     identification: {})
+                                     identification: { sourceId: 'sul:123' })
     end
     let(:collection_release_tags) do
       {

@@ -6,7 +6,7 @@ RSpec.describe Publish::PublicDescMetadataService do
   subject(:service) { described_class.new(cocina_object) }
 
   let(:access) { {} }
-  let(:identification) { {} }
+  let(:identification) { { sourceId: 'sul:123' } }
   let(:structural) { {} }
   let(:description) do
     { title: [{ value: 'stuff' }], purl: 'https://purl.stanford.edu/bc123df4567' }
@@ -57,7 +57,7 @@ RSpec.describe Publish::PublicDescMetadataService do
                                  ],
                                  purl: 'https://purl-test.stanford.edu/xh235dd9059'
                                },
-                               'identification' => {}
+                               identification: { sourceId: 'sul:123' }
                              })
       end
 
@@ -139,7 +139,7 @@ RSpec.describe Publish::PublicDescMetadataService do
                                ],
                                purl: 'https://purl-test.stanford.edu/zb871zd0767'
                              },
-                             'identification' => {}
+                             identification: { sourceId: 'sul:123' }
                            })
     end
 
@@ -196,7 +196,7 @@ RSpec.describe Publish::PublicDescMetadataService do
   end
 
   describe '#add_doi' do
-    let(:identification) { { doi: '10.80343/ty606df5808' } }
+    let(:identification) { { doi: '10.80343/ty606df5808', sourceId: 'sul:123' } }
 
     let(:public_mods) do
       service.ng_xml
@@ -289,7 +289,7 @@ RSpec.describe Publish::PublicDescMetadataService do
                                ],
                                purl: 'https://purl-test.stanford.edu/zb871zd0767'
                              },
-                             'identification' => {}
+                             identification: { sourceId: 'sul:123' }
                            })
     end
 

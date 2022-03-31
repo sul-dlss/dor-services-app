@@ -374,7 +374,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                        title: [{ value: title }],
                                        purl: purl
                                      },
-                                     identification: {},
+                                     identification: { sourceId: 'sul:123' },
                                      access: {},
                                      administrative: {
                                        hasAdminPolicy: apo_druid

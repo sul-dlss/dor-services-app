@@ -43,7 +43,7 @@ RSpec.describe Cocina::ApoExistenceValidator do
         },
         access: {},
         structural: {},
-        identification: {}
+        identification: { sourceId: 'sul:123' }
       )
     end
 
@@ -68,7 +68,7 @@ RSpec.describe Cocina::ApoExistenceValidator do
         },
         access: {},
         structural: {},
-        identification: {}
+        identification: { sourceId: 'sul:123' }
       )
     end
 
@@ -94,7 +94,7 @@ RSpec.describe Cocina::ApoExistenceValidator do
                                      administrative: {
                                        hasAdminPolicy: 'druid:df123cd4567'
                                      },
-                                     identification: {})
+                                     identification: { sourceId: 'sul:123' })
     end
     let(:item) do
       Cocina::Models::DRO.new(
@@ -110,7 +110,7 @@ RSpec.describe Cocina::ApoExistenceValidator do
           hasAdminPolicy: collection_druid
         },
         access: {},
-        identification: {},
+        identification: { sourceId: 'sul:123' },
         structural: {}
       )
     end

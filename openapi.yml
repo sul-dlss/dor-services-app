@@ -1273,7 +1273,7 @@ paths:
               schema:
                 type: string
         '304':
-          description: No change. The client provided an ETag that matches the current state of the item.                
+          description: No change. The client provided an ETag that matches the current state of the item.
         '422':
           description: Unprocessable Entity
           content:
@@ -2407,6 +2407,8 @@ components:
           $ref: '#/components/schemas/DOI'
         sourceId:
           $ref: '#/components/schemas/SourceId'
+      required:
+        - sourceId
     Language:
       description: Languages, scripts, symbolic systems, and notations used in all
         or part of a resource or its descriptive metadata.
@@ -2692,7 +2694,7 @@ components:
             partOfProject:
               description: Internal project this resource is a part of. This governs routing of messages about this object.
               example: Google Books
-              type: string          
+              type: string
     RequestAdminPolicy:
       description: Same as an AdminPolicy, but doesn't have an externalIdentifier as one will be created
       type: object

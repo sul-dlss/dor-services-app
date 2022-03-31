@@ -26,7 +26,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
           },
           type: Cocina::Models::ObjectType.image,
           structural: child_structural1,
-          identification: {}
+          identification: { sourceId: 'sul:123' }
         )
       end
 
@@ -45,7 +45,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
           },
           type: Cocina::Models::ObjectType.image,
           structural: child_structural2,
-          identification: {}
+          identification: { sourceId: 'sul:123' }
         )
       end
       let(:child_structural1) do

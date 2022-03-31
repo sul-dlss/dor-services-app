@@ -791,7 +791,7 @@ RSpec.describe Cocina::ToFedora::ContentMetadataGenerator do
         structural: {
           contains: filesets
         },
-        identification: {}
+        identification: { sourceId: 'sul:123' }
       )
     end
 

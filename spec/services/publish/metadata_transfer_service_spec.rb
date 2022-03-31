@@ -19,7 +19,7 @@ RSpec.describe Publish::MetadataTransferService do
                             label: 'google download barcode 36105049267078',
                             version: 1,
                             description: description,
-                            identification: {},
+                            identification: { sourceId: 'sul:123' },
                             access: access,
                             structural: { contains: [], isMemberOf: ['druid:xh235dd9059'] },
                             administrative: { hasAdminPolicy: 'druid:fg890hx1234',
@@ -46,7 +46,7 @@ RSpec.describe Publish::MetadataTransferService do
                                    label: 'some collection object',
                                    version: 1,
                                    description: description,
-                                   identification: {},
+                                   identification: { sourceId: 'sul:123' },
                                    access: {},
                                    administrative: { hasAdminPolicy: 'druid:fg890hx1234' })
   end
@@ -136,7 +136,7 @@ RSpec.describe Publish::MetadataTransferService do
                                          label: 'some collection object',
                                          version: 1,
                                          description: description,
-                                         identification: {},
+                                         identification: { sourceId: 'sul:123' },
                                          access: { view: 'world' },
                                          administrative: { hasAdminPolicy: 'druid:fg890hx1234' })
         end

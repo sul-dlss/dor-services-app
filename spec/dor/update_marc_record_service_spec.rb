@@ -231,7 +231,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -375,7 +375,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                        description: descriptive_metadata_basic,
                                        access: access,
                                        administrative: { hasAdminPolicy: apo_druid },
-                                       identification: {})
+                                       identification: { sourceId: 'sul:123' })
       end
 
       it 'generates an empty symphony record' do
@@ -396,7 +396,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                        version: 1,
                                        description: descriptive_metadata_basic,
                                        access: access,
-                                       identification: {},
+                                       identification: { sourceId: 'sul:123' },
                                        administrative: { hasAdminPolicy: apo_druid })
       end
 
@@ -439,7 +439,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
-                              identification: {},
+                              identification: { sourceId: 'sul:123' },
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid },
                               structural: structural_metadata)
@@ -525,7 +525,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: access_word,
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -543,7 +543,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: access_stanford_only,
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -561,7 +561,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: access_location,
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -580,7 +580,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
-                              identification: {},
+                              identification: { sourceId: 'sul:123' },
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid },
                               structural: structural_metadata)
@@ -598,7 +598,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
-                              identification: {},
+                              identification: { sourceId: 'sul:123' },
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid },
                               structural: structural_metadata)
@@ -617,7 +617,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -635,7 +635,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: 'druid:bx911tp9024' },
                                 structural: structural_metadata)
@@ -654,7 +654,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
-                              identification: {},
+                              identification: { sourceId: 'sul:123' },
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid },
                               structural: structural_metadata)
@@ -672,7 +672,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
-                              identification: {},
+                              identification: { sourceId: 'sul:123' },
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid },
                               structural: structural_metadata)
@@ -703,7 +703,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
-                              identification: {},
+                              identification: { sourceId: 'sul:123' },
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid },
                               structural: structural_metadata_no_collection)
@@ -736,7 +736,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -757,7 +757,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -798,7 +798,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -839,7 +839,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -887,7 +887,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -928,7 +928,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -973,7 +973,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -1028,7 +1028,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -1083,7 +1083,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -1105,7 +1105,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: access_word,
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -1121,7 +1121,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: access_stanford_only,
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -1143,7 +1143,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: access,
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -1159,7 +1159,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: access_location,
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -1181,7 +1181,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: access,
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -1197,7 +1197,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -1214,7 +1214,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
-                              identification: {},
+                              identification: { sourceId: 'sul:123' },
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid },
                               structural: structural_metadata)
@@ -1285,7 +1285,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: {})
@@ -1303,7 +1303,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -1324,7 +1324,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                               label: dro_object_label,
                               version: 1,
                               description: descriptive_metadata_basic,
-                              identification: {},
+                              identification: { sourceId: 'sul:123' },
                               access: {},
                               administrative: { hasAdminPolicy: apo_druid },
                               structural: structural_metadata)
@@ -1337,7 +1337,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)
@@ -1355,7 +1355,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: {})
@@ -1395,7 +1395,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                 label: dro_object_label,
                                 version: 1,
                                 description: descriptive_metadata_basic,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: apo_druid },
                                 structural: structural_metadata)

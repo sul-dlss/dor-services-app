@@ -20,7 +20,7 @@ RSpec.describe Cocina::CollectionExistenceValidator do
                                    administrative: {
                                      hasAdminPolicy: 'druid:df123cd4567'
                                    },
-                                   identification: {})
+                                   identification: { sourceId: 'sul:123' })
   end
 
   before do
@@ -43,7 +43,7 @@ RSpec.describe Cocina::CollectionExistenceValidator do
         },
         access: {},
         structural: {},
-        identification: {}
+        identification: { sourceId: 'sul:123' }
       )
     end
 
@@ -71,7 +71,7 @@ RSpec.describe Cocina::CollectionExistenceValidator do
           contains: [],
           isMemberOf: [collection_druid]
         },
-        identification: {}
+        identification: { sourceId: 'sul:123' }
       )
     end
 
@@ -99,7 +99,7 @@ RSpec.describe Cocina::CollectionExistenceValidator do
           contains: [],
           isMemberOf: [collection_druid]
         },
-        identification: {}
+        identification: { sourceId: 'sul:123' }
       )
     end
 

@@ -23,7 +23,7 @@ RSpec.describe CocinaObjectStore do
           purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
         },
         externalIdentifier: druid,
-        identification: {},
+        identification: { sourceId: 'sul:123' },
         structural: {}
       )
     end
@@ -693,7 +693,7 @@ RSpec.describe CocinaObjectStore do
                                       access: { view: 'world', download: 'world' },
                                       administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
                                       structural: {},
-                                      identification: {}
+                                      identification: { sourceId: 'sul:123' }
                                     })
           end
 
@@ -779,7 +779,7 @@ RSpec.describe CocinaObjectStore do
                                            administrative: {
                                              hasAdminPolicy: 'druid:hy787xj5878'
                                            },
-                                           identification: {}
+                                           identification: { sourceId: 'sul:123' }
                                          })
         end
 

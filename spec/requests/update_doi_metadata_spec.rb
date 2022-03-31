@@ -88,7 +88,8 @@ RSpec.describe 'Update DOI metadata' do
                              contains: []
                            },
                            identification: {
-                             doi: '10.80343/bc123df4567'
+                             doi: '10.80343/bc123df4567',
+                             sourceId: 'sul:123'
                            }
                          })
   end
@@ -131,8 +132,9 @@ RSpec.describe 'Update DOI metadata' do
           'structural' => {
             'contains' => []
           },
-          'identification' => {
-            'doi' => '10.80343/bc123df4567'
+          identification: {
+            doi: '10.80343/bc123df4567',
+            sourceId: 'sul:123'
           }
         )
       end

@@ -79,7 +79,7 @@ RSpec.describe Publish::PublicXmlService do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
                                 structural: {})
@@ -98,7 +98,7 @@ RSpec.describe Publish::PublicXmlService do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'world',
                                   download: 'world',
@@ -126,7 +126,7 @@ RSpec.describe Publish::PublicXmlService do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'location-based',
                                   download: 'location-based',
@@ -156,7 +156,8 @@ RSpec.describe Publish::PublicXmlService do
                                   catalogLinks: [
                                     { catalog: 'previous symphony', catalogRecordId: '9001001001' },
                                     { catalog: 'symphony', catalogRecordId: '129483625' }
-                                  ]
+                                  ],
+                                  sourceId: 'sul:123'
                                 },
                                 access: {},
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
@@ -258,7 +259,7 @@ RSpec.describe Publish::PublicXmlService do
                                   label: 'A generic label',
                                   version: 1,
                                   description: description,
-                                  identification: {},
+                                  identification: { sourceId: 'sul:123' },
                                   access: {},
                                   administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
                                   structural: {})
@@ -297,7 +298,7 @@ RSpec.describe Publish::PublicXmlService do
                                        label: 'A generic label',
                                        version: 1,
                                        description: description,
-                                       identification: {},
+                                       identification: { sourceId: 'sul:123' },
                                        access: {},
                                        administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
       end
@@ -319,7 +320,7 @@ RSpec.describe Publish::PublicXmlService do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
                                 structural: structural)

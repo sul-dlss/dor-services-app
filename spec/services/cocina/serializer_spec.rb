@@ -61,7 +61,7 @@ RSpec.describe Cocina::Serializer do
             }
           ]
         },
-        'identification' => {}
+        identification: { sourceId: 'sul:123' }
       }
     )
   end
@@ -113,7 +113,8 @@ RSpec.describe Cocina::Serializer do
         purl: 'https://purl.stanford.edu/ft609gr4031'
       },
       identification: {
-        catalogLinks: []
+        catalogLinks: [],
+        sourceId: 'sul:123'
       },
       structural: {
         contains: [{

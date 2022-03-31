@@ -14,7 +14,7 @@ RSpec.describe 'Update MARC record' do
                               title: [{ value: 'Constituent label &amp; A Special character' }],
                               purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
                             },
-                            identification: {},
+                            identification: { sourceId: 'sul:123' },
                             access: {},
                             administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
                             structural: {})

@@ -21,7 +21,7 @@ RSpec.describe RefreshMetadataAction do
                             label: 'A new map of Africa',
                             version: 1,
                             description: description,
-                            identification: {},
+                            identification: { sourceId: 'sul:123' },
                             access: {},
                             administrative: { hasAdminPolicy: apo_druid },
                             structural: {})

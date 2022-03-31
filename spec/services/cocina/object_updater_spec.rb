@@ -228,7 +228,7 @@ RSpec.describe Cocina::ObjectUpdater do
         },
         access: { view: 'world' },
         administrative: { hasAdminPolicy: 'druid:dd999df4567' },
-        identification: {}
+        identification: { sourceId: 'sul:123' }
       }
     end
 
@@ -432,7 +432,7 @@ RSpec.describe Cocina::ObjectUpdater do
         access: {},
         administrative: { hasAdminPolicy: 'druid:dd999df4567' },
         structural: {},
-        identification: {}
+        identification: { sourceId: 'sul:123' }
       }
     end
 

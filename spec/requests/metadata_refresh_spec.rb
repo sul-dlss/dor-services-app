@@ -17,7 +17,8 @@ RSpec.describe 'Refresh metadata' do
       catalogLinks: [{
         catalog: 'symphony',
         catalogRecordId: '10121797'
-      }]
+      }],
+      sourceId: 'sul:123'
     }
   end
   let(:cocina_object) do
@@ -90,7 +91,8 @@ RSpec.describe 'Refresh metadata' do
   context 'when the cocina object only has a barcode' do
     let(:identification) do
       {
-        barcode: '36105216275185'
+        barcode: '36105216275185',
+        sourceId: 'sul:123'
       }
     end
 
@@ -113,7 +115,7 @@ RSpec.describe 'Refresh metadata' do
                                      label: 'A new map of Africa',
                                      version: 1,
                                      description: description,
-                                     identification: {},
+                                     identification: { sourceId: 'sul:123' },
                                      access: {},
                                      administrative: { hasAdminPolicy: apo_druid })
     end
@@ -137,7 +139,8 @@ RSpec.describe 'Refresh metadata' do
         catalogLinks: [{
           catalog: 'symphony',
           catalogRecordId: '666'
-        }]
+        }],
+        sourceId: 'sul:123'
       }
     end
 

@@ -597,7 +597,7 @@ RSpec.describe 'Create object' do
                                        cocinaVersion: Cocina::Models::VERSION,
                                        access: {},
                                        administrative: { hasAdminPolicy: 'druid:dd999df4567' },
-                                       identification: {})
+                                       identification: { sourceId: 'sul:123' })
       end
 
       before do
