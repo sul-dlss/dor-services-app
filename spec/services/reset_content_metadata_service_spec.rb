@@ -15,7 +15,7 @@ RSpec.describe ResetContentMetadataService do
         purl: "https://purl.stanford.edu/#{item_druid.delete_prefix('druid:')}"
       },
       access: {},
-      identification: {},
+      identification: { sourceId: 'sul:123' },
       administrative: { hasAdminPolicy: 'druid:df123cd4567' },
       **structural_kwargs
     )

@@ -31,7 +31,7 @@ RSpec.describe PublishedRelationshipsFilter do
             structural: {
               isMemberOf: ['druid:xh235dd9059']
             },
-            identification: {}
+            identification: { sourceId: 'sul:123' }
           }
         )
       end
@@ -65,7 +65,7 @@ RSpec.describe PublishedRelationshipsFilter do
             administrative: {
               hasAdminPolicy: 'druid:df123cd4567'
             },
-            identification: {}
+            identification: { sourceId: 'sul:123' }
           }
         )
       end

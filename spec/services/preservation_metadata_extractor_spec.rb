@@ -20,7 +20,7 @@ RSpec.describe PreservationMetadataExtractor do
                               access: { view: 'world', download: 'world' },
                               administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
                               structural: {},
-                              identification: {}
+                              identification: { sourceId: 'sul:123' }
                             })
   end
 

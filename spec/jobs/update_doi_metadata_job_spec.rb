@@ -25,8 +25,9 @@ RSpec.describe UpdateDoiMetadataJob, type: :job do
       'structural' => {
         'contains' => []
       },
-      'identification' => {
-        'doi' => '10.80343/bc123df4567'
+      identification: {
+        doi: '10.80343/bc123df4567',
+        sourceId: 'sul:123'
       }
     )
   end

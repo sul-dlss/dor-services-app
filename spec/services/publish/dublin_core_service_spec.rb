@@ -17,7 +17,7 @@ RSpec.describe Publish::DublinCoreService do
                              'hasAdminPolicy' => 'druid:bz845pv2292'
                            },
                            'description' => description,
-                           'identification' => {}
+                           identification: { sourceId: 'sul:123' }
                          })
   end
   let(:desc_md_xml) { Publish::PublicDescMetadataService.new(cocina_object).ng_xml(include_access_conditions: false) }

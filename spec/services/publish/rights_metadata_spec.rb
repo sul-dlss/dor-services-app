@@ -25,7 +25,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {},
                                 administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
                                 structural: {})
@@ -60,7 +60,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'world',
                                   download: 'world'
@@ -98,7 +98,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'world',
                                   download: 'world',
@@ -143,7 +143,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'dark',
                                   download: 'none'
@@ -182,7 +182,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'world',
                                   download: 'stanford',
@@ -229,7 +229,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'location-based',
                                   download: 'location-based',
@@ -268,7 +268,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'location-based',
                                   download: 'none',
@@ -307,7 +307,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'stanford',
                                   download: 'location-based',
@@ -351,7 +351,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'world',
                                   download: 'location-based',
@@ -395,7 +395,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'citation-only',
                                   download: 'none'
@@ -432,7 +432,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'stanford',
                                   download: 'none',
@@ -472,7 +472,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'stanford',
                                   download: 'none',
@@ -510,7 +510,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'world',
                                   download: 'stanford'
@@ -552,7 +552,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'stanford',
                                   download: 'stanford'
@@ -620,7 +620,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'world',
                                   download: 'world'
@@ -695,7 +695,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'world',
                                   download: 'world'
@@ -774,7 +774,7 @@ RSpec.describe Publish::RightsMetadata do
                                 label: 'A generic label',
                                 version: 1,
                                 description: description,
-                                identification: {},
+                                identification: { sourceId: 'sul:123' },
                                 access: {
                                   view: 'world',
                                   download: 'world'
@@ -821,7 +821,7 @@ RSpec.describe Publish::RightsMetadata do
                                        label: 'A generic label',
                                        version: 1,
                                        description: description,
-                                       identification: {},
+                                       identification: { sourceId: 'sul:123' },
                                        access: {
                                          view: 'world'
                                        },
@@ -857,7 +857,7 @@ RSpec.describe Publish::RightsMetadata do
                                        label: 'A generic label',
                                        version: 1,
                                        description: description,
-                                       identification: {},
+                                       identification: { sourceId: 'sul:123' },
                                        access: {
                                          view: 'dark'
                                        },

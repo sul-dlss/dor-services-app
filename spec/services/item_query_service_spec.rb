@@ -19,7 +19,7 @@ RSpec.describe ItemQueryService do
       },
       access: { download: 'none' }.merge(access),
       administrative: { hasAdminPolicy: 'druid:df123cd4567' },
-      identification: {},
+      identification: { sourceId: 'sul:123' },
       structural: {}
     )
   end
@@ -152,7 +152,7 @@ RSpec.describe ItemQueryService do
           },
           access: access,
           administrative: { hasAdminPolicy: 'druid:df123cd4567' },
-          identification: {}
+          identification: { sourceId: 'sul:123' }
         )
       end
 
@@ -207,7 +207,7 @@ RSpec.describe ItemQueryService do
               }
             ]
           },
-          identification: {}
+          identification: { sourceId: 'sul:123' }
         )
       end
 
@@ -274,7 +274,7 @@ RSpec.describe ItemQueryService do
           },
           access: { view: 'citation-only', download: 'none' },
           administrative: { hasAdminPolicy: 'druid:df123cd4567' },
-          identification: {},
+          identification: { sourceId: 'sul:123' },
           structural: {}
         )
       end
@@ -292,7 +292,7 @@ RSpec.describe ItemQueryService do
           },
           access: { view: 'dark' },
           administrative: { hasAdminPolicy: 'druid:df123cd4567' },
-          identification: {},
+          identification: { sourceId: 'sul:123' },
           structural: {}
         )
       end
@@ -338,7 +338,7 @@ RSpec.describe ItemQueryService do
               }
             ]
           },
-          identification: {}
+          identification: { sourceId: 'sul:123' }
         )
       end
       let(:cocina_object_constituent_with_metadata) { Cocina::Models.with_metadata(cocina_object_constituent, '1', created: created_at, modified: updated_at) }

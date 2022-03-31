@@ -13,7 +13,7 @@ RSpec.describe ReleaseTags do
                                 title: [{ value: 'Some Label' }],
                                 purl: 'https://purl.stanford.edu/bc123df4567'
                               },
-                              identification: {},
+                              identification: { sourceId: 'sul:123' },
                               access: {},
                               structural: {},
                               administrative: { hasAdminPolicy: 'druid:fg890hx1234',

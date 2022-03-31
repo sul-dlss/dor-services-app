@@ -24,7 +24,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
       access: access_props,
       administrative: { hasAdminPolicy: apo_druid },
       structural: {},
-      identification: {}
+      identification: { sourceId: 'sul:123' }
     )
   end
   let(:workflow_state) { 'Registered' }
@@ -63,7 +63,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
           },
           access: {},
           administrative: { hasAdminPolicy: apo_druid },
-          identification: {}
+          identification: { sourceId: 'sul:123' }
         )
       end
 
@@ -188,7 +188,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
           },
           access: {},
           administrative: { hasAdminPolicy: apo_druid },
-          identification: {}
+          identification: { sourceId: 'sul:123' }
         )
       end
 
@@ -291,7 +291,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
           structural: {
             contains: [before_file_set]
           },
-          identification: {}
+          identification: { sourceId: 'sul:123' }
         )
       end
       let(:before_file_set) do

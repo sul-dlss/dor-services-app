@@ -29,7 +29,7 @@ RSpec.describe ThumbnailService do
                                        cocinaVersion: '0.0.1',
                                        access: {},
                                        administrative: { hasAdminPolicy: apo_druid },
-                                       identification: {})
+                                       identification: { sourceId: 'sul:123' })
       end
 
       it 'returns nil if there is no structural metadata' do
@@ -47,7 +47,7 @@ RSpec.describe ThumbnailService do
                                   label: 'A new map of Africa',
                                   version: 1,
                                   description: description,
-                                  identification: {},
+                                  identification: { sourceId: 'sul:123' },
                                   access: {},
                                   administrative: { hasAdminPolicy: apo_druid },
                                   structural: {})
@@ -93,7 +93,7 @@ RSpec.describe ThumbnailService do
                                   label: 'A new map of Africa',
                                   version: 1,
                                   description: description,
-                                  identification: {},
+                                  identification: { sourceId: 'sul:123' },
                                   access: {},
                                   administrative: { hasAdminPolicy: apo_druid },
                                   structural: structural)
@@ -118,7 +118,7 @@ RSpec.describe ThumbnailService do
                                   label: 'A new map of Africa',
                                   version: 1,
                                   description: description,
-                                  identification: {},
+                                  identification: { sourceId: 'sul:123' },
                                   access: {},
                                   administrative: { hasAdminPolicy: apo_druid },
                                   structural: structural)
@@ -164,7 +164,7 @@ RSpec.describe ThumbnailService do
                                   label: 'A new map of Africa',
                                   version: 1,
                                   description: description,
-                                  identification: {},
+                                  identification: { sourceId: 'sul:123' },
                                   access: {},
                                   administrative: { hasAdminPolicy: apo_druid },
                                   structural: structural)

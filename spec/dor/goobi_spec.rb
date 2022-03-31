@@ -87,7 +87,7 @@ RSpec.describe Dor::Goobi do
                                        administrative: {
                                          hasAdminPolicy: 'druid:dd999df4567'
                                        },
-                                       identification: {}
+                                       identification: { sourceId: 'sul:123' }
                                      })
     end
 

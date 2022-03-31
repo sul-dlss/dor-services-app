@@ -258,7 +258,7 @@ RSpec.describe Cocina::ObjectCreator do
               }
             ]
           },
-          'identification' => {}
+          identification: { sourceId: 'sul:123' }
         }
       end
 

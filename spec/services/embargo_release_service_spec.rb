@@ -95,7 +95,7 @@ RSpec.describe EmbargoReleaseService do
                                 access: access,
                                 structural: structural,
                                 administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
-                                identification: {}
+                                identification: { sourceId: 'sul:123' }
                               })
     end
 
@@ -229,7 +229,7 @@ RSpec.describe EmbargoReleaseService do
                                   access: access,
                                   administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
                                   structural: {},
-                                  identification: {}
+                                  identification: { sourceId: 'sul:123' }
                                 })
       end
 

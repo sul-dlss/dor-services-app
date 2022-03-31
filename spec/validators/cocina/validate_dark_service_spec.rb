@@ -52,7 +52,7 @@ RSpec.describe Cocina::ValidateDarkService do
           }
         ]
       },
-      identification: {}
+      identification: { sourceId: 'sul:123' }
     )
   end
 
@@ -112,7 +112,7 @@ RSpec.describe Cocina::ValidateDarkService do
         administrative: {
           hasAdminPolicy: 'druid:df123cd4567'
         },
-        identification: {}
+        identification: { sourceId: 'sul:123' }
       )
     end
 

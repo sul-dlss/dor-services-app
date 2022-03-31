@@ -16,7 +16,7 @@ RSpec.describe 'Display metadata' do
                             label: 'A generic label',
                             version: 1,
                             description: description,
-                            identification: {},
+                            identification: { sourceId: 'sul:123' },
                             access: {},
                             administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
                             structural: {})
@@ -110,7 +110,7 @@ RSpec.describe 'Display metadata' do
                               label: 'A generic label',
                               version: 1,
                               description: description,
-                              identification: {},
+                              identification: { sourceId: 'sul:123' },
                               access: {},
                               administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
                               structural: {})
