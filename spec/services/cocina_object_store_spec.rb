@@ -7,10 +7,10 @@ RSpec.describe CocinaObjectStore do
 
   let(:date) { Time.zone.now }
 
-  let(:lock) { date.to_datetime.iso8601 }
+  let(:lock) { ActiveSupport::Digest.hexdigest(druid + date.to_datetime.iso8601) }
 
   describe 'to Fedora' do
-    let(:item) { instance_double(Dor::Item, modified_date: date.to_time) }
+    let(:item) { instance_double(Dor::Item, pid: druid, modified_date: date.to_time) }
     let(:cocina_object) do
       Cocina::Models::DRO.new(
         type: Cocina::Models::ObjectType.book,
@@ -158,7 +158,7 @@ RSpec.describe CocinaObjectStore do
         let(:saved_cocina_object) { cocina_object_store.save(cocina_object_with_metadata) }
         let(:cocina_object_store) { described_class.new }
 
-        let(:lock) { date.utc.iso8601 }
+        let(:lock) { ActiveSupport::Digest.hexdigest(druid + date.utc.iso8601) }
 
         before do
           allow(Dor).to receive(:find).and_return(item)
