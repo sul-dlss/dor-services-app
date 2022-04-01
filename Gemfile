@@ -46,7 +46,6 @@ gem 'uuidtools', '~> 2.1.4'
 gem 'whenever', require: false
 
 group :development do
-  gem 'dor-services-client' # used by lib/fedora_cache.rb and lib/fedora_loader.rb
   gem 'listen', '~> 3.0.5'
   gem 'marc-vocab' # used by bin/reports/report-desc-marcgac
   gem 'rubyzip', '>= 1.0.0'

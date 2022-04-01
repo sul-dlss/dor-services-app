@@ -158,13 +158,6 @@ GEM
       solrizer (~> 3.0)
       stanford-mods (>= 2.3.1)
       stanford-mods-normalizer (~> 0.1)
-    dor-services-client (8.5.0)
-      activesupport (>= 4.2, < 8)
-      cocina-models (~> 0.71.0)
-      deprecation
-      faraday (~> 2.0)
-      faraday-retry
-      zeitwerk (~> 2.1)
     dor-workflow-client (4.0.0)
       activesupport (>= 3.2.1, < 8)
       deprecation (>= 0.99.0)
@@ -565,7 +558,6 @@ DEPENDENCIES
   dlss-capistrano
   dor-rights-auth (>= 1.5.0)
   dor-services (~> 9.6)
-  dor-services-client
   dor-workflow-client (~> 4.0)
   dry-monads
   dry-schema (~> 1.4)

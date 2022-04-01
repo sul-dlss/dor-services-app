@@ -157,6 +157,6 @@ class FedoraCache
   end
 
   def fetch_tags(druid)
-    Dor::Services::Client.object(druid).administrative_tags.list
+    AdministrativeTags.for(identifier: druid)
   end
 end
