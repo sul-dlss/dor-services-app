@@ -9,7 +9,6 @@ require_relative '../lib/cache_cocina_object_store'
 require 'set'
 require 'optparse'
 require 'diffy'
-require 'dor/services/client'
 require 'equivalent-xml'
 
 options = { random: false, druids: [], no_content: false, update: false, input: 'druids.txt', no_descriptive: false }
@@ -32,9 +31,6 @@ parser.parse!(into: options)
 
 cache = FedoraCache.new
 loader = FedoraLoader.new(cache: cache)
-
-Dor::Services::Client.configure(url: Settings.dor_services.url,
-                                token: Settings.dor_services.token)
 
 def write_result(druid, orig_cocina_hash, roundtrip_cocina_hash, diff_datastreams)
   File.open("results/#{druid}.txt", 'w') do |file|

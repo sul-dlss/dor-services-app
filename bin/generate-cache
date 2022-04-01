@@ -26,9 +26,6 @@ parser.parse!(into: options)
 
 cache = FedoraCache.new(overwrite: options[:overwrite])
 
-Dor::Services::Client.configure(url: Settings.dor_services.url,
-                                token: Settings.dor_services.token)
-
 offset = 1
 if options[:druids].empty?
   druids = File.read(options[:input]).split

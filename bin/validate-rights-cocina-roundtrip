@@ -27,9 +27,6 @@ parser.parse!(into: options)
 cache = FedoraCache.new
 loader = FedoraLoader.new(cache: cache)
 
-Dor::Services::Client.configure(url: Settings.dor_services.url,
-                                token: Settings.dor_services.token)
-
 def write_result(druid, original_ng_xml, normalized_original_ng_xml, roundtrip_ng_xml, cocina)
   File.open("results/#{druid}.txt", 'w') do |file|
     file.write("Druid: #{druid}\n\n")
