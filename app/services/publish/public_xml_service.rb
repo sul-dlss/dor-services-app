@@ -85,7 +85,7 @@ module Publish
         <<~XML
           <identityMetadata>
             <objectType>#{public_cocina.collection? ? 'collection' : 'item'}</objectType>
-            <objectLabel>#{public_cocina.label}</objectLabel>
+            <objectLabel>#{Cocina::Models::TitleBuilder.build(public_cocina.description.title)}</objectLabel>
           #{nodes.join("\n")}
           </identityMetadata>
         XML
