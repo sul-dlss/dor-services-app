@@ -5,18 +5,48 @@ require 'rails_helper'
 RSpec.describe PruneService do
   let(:druid_str) { 'druid:cd456ef7890' }
   let(:strictly_valid_druid_str) { 'druid:cd456gh1234' }
+  let(:access_druid_str) { 'druid:cd456ef9999' }
 
   describe '#prune!' do
     let(:workspace) { Dir.mktmpdir }
     let(:dr1) { DruidTools::Druid.new(druid_str, workspace) }
     let(:dr2) { DruidTools::Druid.new(strictly_valid_druid_str, workspace) }
-    let(:pathname1) { dr1.pathname }
 
     after do
       FileUtils.remove_entry workspace
     end
 
+    context 'with an access druid sharing the first three path segments' do
+      let(:dr3) { DruidTools::StacksDruid.new(access_druid_str, workspace) }
+
+      before do
+        # Nil the create records for this context because we're in a known read only one
+        dr1.mkdir
+        dr2.mkdir
+        dr3.mkdir
+        described_class.new(druid: dr3).prune!
+      end
+
+      it 'deletes the outermost directory' do
+        expect(File).not_to exist(dr3.pruning_base)
+      end
+
+      it 'does not delete unrelated ancestor directories' do
+        expect(File).to exist(dr1.pruning_base)
+        expect(File).to exist(dr1.pruning_base.parent)
+      end
+
+      it 'stops at ancestor directories that have children' do
+        # 'cd/456/ef' should still exist because of dr1
+        shared_ancestor = dr1.pruning_base.parent
+        expect(shared_ancestor.to_s).to match(%r{cd/456/ef$})
+        expect(File).to exist(shared_ancestor)
+      end
+    end
+
     context 'when there is a shared ancestor' do
+      let(:pathname1) { dr1.pathname }
+
       before do
         # Nil the create records for this context because we're in a known read only one
         dr1.mkdir
