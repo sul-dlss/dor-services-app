@@ -154,7 +154,7 @@ module Dor
       collections.each do |collection_druid|
         collection = CocinaObjectStore.find(collection_druid)
         catkey = collection.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
-        collection_info += "|xcollection:#{collection.externalIdentifier.sub('druid:', '')}:#{catkey&.catalogRecordId}:#{collection.label}"
+        collection_info += "|xcollection:#{collection.externalIdentifier.sub('druid:', '')}:#{catkey&.catalogRecordId}:#{Cocina::Models::TitleBuilder.build(collection.description.title)}"
       end
 
       collection_info
@@ -166,7 +166,7 @@ module Dor
       dor_items_for_constituents.map do |cons_obj_druid|
         cons_obj = CocinaObjectStore.find(cons_obj_druid)
         cons_obj_id = cons_obj_druid.sub('druid:', '')
-        cons_obj_title = cons_obj.description.title.first.value
+        cons_obj_title = Cocina::Models::TitleBuilder.build(cons_obj.description.title)
         catkey = cons_obj.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
         "|xset:#{cons_obj_id}:#{catkey&.catalogRecordId}:#{cons_obj_title}"
       end.join
