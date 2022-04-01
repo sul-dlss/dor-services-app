@@ -9,6 +9,7 @@ gem 'datacite', '~> 0.3.0'
 gem 'dor-rights-auth', '>= 1.5.0' # required for new CDL rights
 gem 'dor-services', '~> 9.6'
 gem 'dor-workflow-client', '~> 4.0'
+gem 'druid-tools', '~> 2.2'
 gem 'marc'
 gem 'moab-versioning', '~> 5.0', require: 'moab/stanford'
 gem 'preservation-client', '~> 4.0'

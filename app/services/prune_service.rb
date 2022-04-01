@@ -9,10 +9,9 @@ class PruneService
 
   # @raise [Errno::ENOTEMPTY] if the directory is not empty
   def prune!
-    this_path = druid.pathname
-    parent = this_path.parent
-    parent.rmtree if parent.exist? && parent != druid.base_pathname
-    prune_ancestors parent.parent
+    target = druid.pruning_base
+    target.rmtree if target.exist? && target != druid.base_pathname
+    prune_ancestors target.parent
   end
 
   # @param [Pathname] outermost_branch The branch at which pruning begins
