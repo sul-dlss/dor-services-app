@@ -256,12 +256,13 @@ class CocinaObjectStore
   end
 
   def ar_check_lock(cocina_object)
-    lock = Dro.where(external_identifier: cocina_object.externalIdentifier).limit(1).pluck(:lock).first ||
-           AdminPolicy.where(external_identifier: cocina_object.externalIdentifier).limit(1).pluck(:lock).first ||
-           Collection.where(external_identifier: cocina_object.externalIdentifier).limit(1).pluck(:lock).first
-    return if cocina_object.respond_to?(:lock) && lock&.to_s == cocina_object.lock
+    ar_object = Dro.find_by(external_identifier: cocina_object.externalIdentifier) ||
+                AdminPolicy.find_by(external_identifier: cocina_object.externalIdentifier) ||
+                Collection.find_by(external_identifier: cocina_object.externalIdentifier)
+    lock = ar_lock_for(ar_object)
+    return if cocina_object.respond_to?(:lock) && lock == cocina_object.lock
 
-    raise StaleLockError, "Expected lock of #{lock&.to_s} but received #{cocina_object.lock}."
+    raise StaleLockError, "Expected lock of #{lock} but received #{cocina_object.lock}."
   end
 
   # Find a Cocina object persisted by ActiveRecord.
