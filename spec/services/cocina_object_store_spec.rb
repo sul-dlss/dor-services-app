@@ -706,9 +706,10 @@ RSpec.describe CocinaObjectStore do
 
         context 'when checking lock succeeds' do
           let(:ar_cocina_object) { create(:dro) }
+          let(:lock) { ActiveSupport::Digest.hexdigest(ar_cocina_object.external_identifier + ar_cocina_object.lock.to_s) }
 
           let(:cocina_object) do
-            Cocina::Models.with_metadata(ar_cocina_object.to_cocina, '0', created: ar_cocina_object.created_at.utc, modified: ar_cocina_object.updated_at.utc)
+            Cocina::Models.with_metadata(ar_cocina_object.to_cocina, lock, created: ar_cocina_object.created_at.utc, modified: ar_cocina_object.updated_at.utc)
           end
 
           let(:changed_cocina_object) do
@@ -723,9 +724,10 @@ RSpec.describe CocinaObjectStore do
 
         context 'when checking lock fails' do
           let!(:ar_cocina_object) { create(:dro) }
+          let(:lock) { '64e8320d19d62ddb73c501276c5655cf' }
 
           let(:cocina_object) do
-            Cocina::Models.with_metadata(ar_cocina_object.to_cocina, '0', created: ar_cocina_object.updated_at.utc, modified: ar_cocina_object.updated_at.utc)
+            Cocina::Models.with_metadata(ar_cocina_object.to_cocina, lock, created: ar_cocina_object.updated_at.utc, modified: ar_cocina_object.updated_at.utc)
           end
 
           let(:changed_cocina_object) do
