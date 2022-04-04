@@ -10,7 +10,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   let(:bare_druid) { druid.delete_prefix('druid:') }
   let(:collection_druid) { 'druid:cc111cc1111' }
   let(:dro_object_label) { 'A generic label' }
-  let(:collection_label) { 'Collection label' }
+  let(:collection_label) { 'A collection label' }
   let(:release_service) { instance_double(ReleaseTags::IdentityMetadata, released_for: release_data) }
   let(:release_data) { {} }
   let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
@@ -18,6 +18,12 @@ RSpec.describe Dor::UpdateMarcRecordService do
   let(:descriptive_metadata_basic) do
     {
       title: [{ value: 'Constituent label & A Special character' }],
+      purl: "https://purl.stanford.edu/#{bare_druid}"
+    }
+  end
+  let(:collection_descriptive_metadata_basic) do
+    {
+      title: [{ value: 'Collection label & A Special character' }],
       purl: "https://purl.stanford.edu/#{bare_druid}"
     }
   end
@@ -213,7 +219,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                      type: Cocina::Models::ObjectType.collection,
                                      label: collection_label,
                                      version: 1,
-                                     description: descriptive_metadata_basic,
+                                     description: collection_descriptive_metadata_basic,
                                      access: {},
                                      administrative: { hasAdminPolicy: apo_druid },
                                      identification: identity_metadata_collection)
@@ -221,7 +227,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
     let(:release_data) { { 'Searchworks' => { 'release' => true } } }
 
     before do
-      allow(CocinaObjectStore).to receive(:find).and_return(collection)
+      allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
     end
 
     context "when the druid object doesn't have catkey or previous catkeys" do
@@ -258,7 +264,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       it 'generates a single symphony record' do
         # rubocop:disable Layout/LineLength
         expect(generate_symphony_records).to eq [
-          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label|xset:cc111cc1111:8832162:Constituent label & A Special character|xrights:world"
+          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label & A Special character|xset:cc111cc1111:8832162:Collection label & A Special character|xrights:world"
         ]
       end
     end
@@ -278,7 +284,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
       it 'generates symphony record with a z subfield' do
         expect(generate_symphony_records).to match_array [
-          "8832162\tbc123dg9393\t.856. 41|zAvailable to Stanford-affiliated users.|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label|xset:cc111cc1111:8832162:Constituent label & A Special character|xrights:group=stanford"
+          "8832162\tbc123dg9393\t.856. 41|zAvailable to Stanford-affiliated users.|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label & A Special character|xset:cc111cc1111:8832162:Collection label & A Special character|xrights:group=stanford"
         ]
       end
     end
@@ -300,7 +306,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
         expect(generate_symphony_records).to match_array [
           "123\tbc123dg9393\t",
           "456\tbc123dg9393\t",
-          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label|xset:cc111cc1111:8832162:Constituent label & A Special character|xrights:world"
+          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label & A Special character|xset:cc111cc1111:8832162:Collection label & A Special character|xrights:world"
         ]
       end
     end
@@ -350,7 +356,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                        type: Cocina::Models::ObjectType.collection,
                                        label: collection_label,
                                        version: 1,
-                                       description: descriptive_metadata_basic,
+                                       description: collection_descriptive_metadata_basic,
                                        access: access,
                                        identification: identity_metadata_collection,
                                        administrative: { hasAdminPolicy: apo_druid })
@@ -372,7 +378,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                        type: Cocina::Models::ObjectType.collection,
                                        label: collection_label,
                                        version: 1,
-                                       description: descriptive_metadata_basic,
+                                       description: collection_descriptive_metadata_basic,
                                        access: access,
                                        administrative: { hasAdminPolicy: apo_druid },
                                        identification: { sourceId: 'sul:123' })
@@ -394,7 +400,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
                                        type: Cocina::Models::ObjectType.collection,
                                        label: collection_label,
                                        version: 1,
-                                       description: descriptive_metadata_basic,
+                                       description: collection_descriptive_metadata_basic,
                                        access: access,
                                        identification: { sourceId: 'sul:123' },
                                        administrative: { hasAdminPolicy: apo_druid })
@@ -712,7 +718,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       Cocina::Models::Collection.new(externalIdentifier: collection_druid,
                                      type: Cocina::Models::ObjectType.collection,
                                      label: collection_label,
-                                     description: descriptive_metadata_basic,
+                                     description: collection_descriptive_metadata_basic,
                                      version: 1,
                                      access: {},
                                      administrative: { hasAdminPolicy: apo_druid },
@@ -743,8 +749,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
 
       it 'returns the appropriate information for the collection object' do
-        allow(CocinaObjectStore).to receive(:find).and_return(collection)
-        expect(umrs.get_x2_collection_info).to eq('|xcollection:cc111cc1111:8832162:Collection label')
+        allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
+        expect(umrs.get_x2_collection_info).to eq('|xcollection:cc111cc1111:8832162:Collection label & A Special character')
       end
     end
   end
