@@ -13,17 +13,18 @@ class Report
 
   Result = Struct.new(:druid, :apo, :catkey, :result)
 
-  def initialize(name:, dsids:)
+  def initialize(name:, dsids:, yield_cocina: false)
     @name = name
     @dsids = dsids
     @options = build_options
+    @yield_cocina = yield_cocina
   end
 
   def run
     results = Parallel.map(druids, progress: "Running #{name} report") do |druid|
       report_result =
         begin
-          yield(*datastream_xmls(druid))
+          yield(*datastreams(druid))
         rescue CacheFailure
           next
         end
@@ -47,14 +48,28 @@ class Report
 
   private
 
-  attr_reader :name, :options, :dsids
+  attr_reader :name, :options, :dsids, :yield_cocina
 
-  def datastream_xmls(druid)
+  def datastreams(druid)
     dsids.map do |dsid|
-      cache_result = cache.datastream(druid, dsid)
-      raise CacheFailure if cache_result.failure?
+      if yield_cocina && dsid == 'descMetadata'
+        cache_result = cache.label_and_desc_metadata(druid)
+        raise CacheFailure if cache_result.failure?
 
-      Nokogiri::XML(cache_result.value!)
+        label, descriptive_xml = cache_result.value!
+
+        props = Cocina::FromFedora::Descriptive.props(
+          mods: Nokogiri::XML(descriptive_xml),
+          druid: druid,
+          label: label
+        )
+        Cocina::Models::Description.new(props)
+      else
+        cache_result = cache.datastream(druid, dsid)
+        raise CacheFailure if cache_result.failure?
+
+        Nokogiri::XML(cache_result.value!)
+      end
     end
   end
 
