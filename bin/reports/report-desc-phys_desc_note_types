@@ -5,5 +5,5 @@ require_relative '../../config/environment'
 require_relative '../../lib/unique_report'
 
 UniqueReport.new(name: 'desc-phys_desc_types', dsids: ['descMetadata']).run do |ng_xml|
-  ng_xml.xpath('//mods:physicalDescription/@type', mods: MODS_NS).map(&:content)
+  ng_xml.xpath('//mods:physicalDescription//mods:note/@type', mods: MODS_NS).map(&:content)
 end
