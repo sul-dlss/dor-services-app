@@ -2115,6 +2115,294 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     end
   end
 
+  describe 'Duplicate names, one with primary' do
+    xit 'new MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+          <name type="personal">
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Dunnett, Dorothy',
+                  status: 'primary'
+                }
+              ],
+              type: 'person',
+              status: 'primary'
+            }
+          ]
+        }
+      end
+
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Duplicate name entry')
+        ]
+      end
+    end
+  end
+
+  describe 'Duplicate names, one with role' do
+    xit 'new MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+          <name type="personal">
+            <namePart>Dunnett, Dorothy</namePart>
+          </name>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Dunnett, Dorothy'
+                }
+              ],
+              type: 'person',
+              role: [
+                {
+                  value: 'author'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Duplicate name entry')
+        ]
+      end
+    end
+  end
+
+  describe 'Duplicate names, same role' do
+    xit 'new MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+          <name type="personal">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Dunnett, Dorothy'
+                }
+              ],
+              type: 'person',
+              role: [
+                {
+                  value: 'author'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Duplicate name entry')
+        ]
+      end
+    end
+  end
+
+  describe 'Duplicate names, different roles' do
+    xit 'new MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+          <name type="personal">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text">editor</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+            <role>
+              <roleTerm type="text">editor</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Dunnett, Dorothy'
+                }
+              ],
+              type: 'person',
+              role: [
+                {
+                  value: 'author'
+                },
+                {
+                  value: 'editor'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Duplicate name entry')
+        ]
+      end
+    end
+  end
+
+  describe 'Duplicate names, different attributes' do
+    xit 'new MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+          <name type="family" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/n50025011">
+            <namePart>Dunnett, Dorothy</namePart>
+            <role>
+              <roleTerm type="text">editor</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Dunnett, Dorothy'
+                }
+              ],
+              type: 'person',
+              role: [
+                {
+                  value: 'author'
+                }
+              ]
+            },
+            {
+              name: [
+                {
+                  value: 'Dunnett, Dorothy',
+                  uri: 'http://id.loc.gov/authorities/names/n50025011',
+                  source: {
+                    code: 'naf',
+                    uri: 'http://id.loc.gov/authorities/names/n50025011'
+                  }
+                }
+              ],
+              type: 'person',
+              role: [
+                {
+                  value: 'editor'
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Duplicate name entry')
+        ]
+      end
+    end
+  end
+
   # devs added specs below
 
   context 'with an invalid type' do
