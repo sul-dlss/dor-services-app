@@ -24,18 +24,10 @@ formats = [
 ]
 
 Report.new(name: 'desc-edtf', dsids: ['descMetadata']).run do |ng_xml|
-  errors = []
+union_xpath_selector = date_els.map { |el| "//mods:#{el}[@encoding='edtf']" }.join(' | ')
+errors = ng_xml.xpath(union_xpath_selector, mods: MODS_NS).filter_map do |el|
+  el.content unless formats.any? { |format| format.match?(el.content) }
+end
 
-  date_els.each do |el_name|
-    ng_xml.xpath("//mods:#{el_name}[@encoding='edtf']", mods: MODS_NS).each do |el|
-      # at least one of the formats must match or else we've found an error
-      errors.push(el.content) unless formats.map { |format| format.match? el.content }.any?
-    end
-  end
-
-  if errors.empty?
-    false
-  else
-    errors.join(';')
-  end
+errors.join(';').presence
 end
