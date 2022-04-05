@@ -2116,7 +2116,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Duplicate names, one with primary' do
-    it_behaves_like 'MODS cocina mapping' do
+    xit 'new MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <name type="personal" usage="primary">
