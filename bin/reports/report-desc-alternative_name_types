@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/unique_report'
+
+UniqueReport.new(name: 'desc-alternative_name_types', dsids: ['descMetadata']).run do |ng_xml|
+  ng_xml.xpath('//mods:alternativeName/@altType', mods: MODS_NS).map(&:content)
+end
