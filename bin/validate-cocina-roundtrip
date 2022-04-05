@@ -10,8 +10,12 @@ require 'set'
 require 'optparse'
 require 'diffy'
 require 'equivalent-xml'
+require 'super_diff'
 
-options = { random: false, druids: [], no_content: false, update: false, input: 'druids.txt', no_descriptive: false }
+# Make big hash diffs less big
+SuperDiff.configure { |config| config.diff_elision_enabled = true }
+
+options = { random: false, druids: [], no_content: false, update: false, input: 'druids.txt', no_descriptive: false, quiet: false }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/validate-cocina-roundtrip [options]'
 
@@ -20,6 +24,7 @@ parser = OptionParser.new do |option_parser|
   option_parser.on('-r', '--random', 'Select random druids.')
   option_parser.on('-f', '--no_content', 'Without content metadata (fast).')
   option_parser.on('-n', '--no_descriptive', 'Without descriptive metadata.')
+  option_parser.on('-q', '--quiet', 'Do not print empty arrays in Cocina output.')
   option_parser.on('-dDRUIDS', '--druids DRUIDS', Array, 'List of druids (instead of druids.txt).')
   option_parser.on('-iFILENAME', '--input FILENAME', String, 'File containing list of druids (instead of druids.txt).')
   option_parser.on('-h', '--help', 'Displays help.') do
@@ -32,7 +37,7 @@ parser.parse!(into: options)
 cache = FedoraCache.new
 loader = FedoraLoader.new(cache: cache)
 
-def write_result(druid, orig_cocina_hash, roundtrip_cocina_hash, diff_datastreams)
+def write_result(druid, orig_cocina_hash, roundtrip_cocina_hash, diff_datastreams, quiet)
   File.open("results/#{druid}.txt", 'w') do |file|
     file.write("Druid: #{druid}\n\n")
 
@@ -41,7 +46,7 @@ def write_result(druid, orig_cocina_hash, roundtrip_cocina_hash, diff_datastream
       next if DeepEqual.match?(orig_cocina_hash[cocina_key], roundtrip_cocina_hash[cocina_key])
 
       file.write("Diff for #{cocina_key}:\n")
-      file.write(Diffy::Diff.new("#{JSON.pretty_generate(orig_cocina_hash[cocina_key])}\n", "#{JSON.pretty_generate(roundtrip_cocina_hash[cocina_key])}\n"))
+      file.write(SuperDiff::EqualityMatchers::Hash.new(expected: orig_cocina_hash[cocina_key], actual: roundtrip_cocina_hash[cocina_key]).send(:diff))
       file.write("\n\n")
     end
 
@@ -57,10 +62,38 @@ def write_result(druid, orig_cocina_hash, roundtrip_cocina_hash, diff_datastream
       file.write("\n\n")
     end
 
-    file.write("Original cocina:\n#{JSON.pretty_generate(orig_cocina_hash)}\n\n")
-    file.write("Roundtrip cocina:\n#{JSON.pretty_generate(roundtrip_cocina_hash)}\n\n")
+    file.write("Original cocina:\n#{pretty_generate(orig_cocina_hash, quiet)}\n\n")
+    file.write("Roundtrip cocina:\n#{pretty_generate(roundtrip_cocina_hash, quiet)}\n\n")
   end
 end
+
+def pretty_generate(cocina_object_hash, quiet)
+  JSON.pretty_generate(
+    cocina_object_hash.tap do |cocina|
+      cocina[:description] = deep_compact_blank(cocina[:description]) if quiet && cocina[:description]
+    end
+  )
+end
+
+# rubocop:disable Style/DoubleNegation
+# This method would be simpler and shorter if we could use
+# Enumerable#compact_blank, but we can't because that's in Rails 6. And we can't
+# update to Rails 6 until we finish getting off Fedora.
+def deep_compact_blank(enumerable)
+  return enumerable unless enumerable.respond_to?(:reject)
+
+  case enumerable
+  when Hash
+    enumerable
+      .reject { |_key, value| value.respond_to?(:empty?) ? !!value.empty? : !value }
+      .transform_values { |value| deep_compact_blank(value) }
+  when Array
+    enumerable
+      .reject { |value| value.respond_to?(:empty?) ? !!value.empty? : !value }
+      .map { |value| deep_compact_blank(value) }
+  end
+end
+# rubocop:enable Style/DoubleNegation
 
 def write_error(druid, error)
   File.open("results/#{druid}.txt", 'w') do |file|
@@ -171,7 +204,7 @@ end
 # rubocop:disable Metrics/CyclomaticComplexity
 # rubocop:disable Metrics/MethodLength
 # rubocop:disable Metrics/PerceivedComplexity
-def validate_druid(druid, loader, no_content: false, no_desc: false, create: false)
+def validate_druid(druid, loader, no_content: false, no_desc: false, create: false, quiet: false)
   return [druid, :missing] unless loader.cached?(druid)
 
   begin
@@ -245,7 +278,7 @@ def validate_druid(druid, loader, no_content: false, no_desc: false, create: fal
 
   return [druid, :success] if DeepEqual.match?(normalize_cocina(orig_cocina_hash), normalize_cocina(roundtrip_cocina_hash)) && diff_datastreams.empty?
 
-  write_result(druid, orig_cocina_hash, roundtrip_cocina_hash, diff_datastreams)
+  write_result(druid, orig_cocina_hash, roundtrip_cocina_hash, diff_datastreams, quiet)
   [druid, :different]
 end
 # rubocop:enable Metrics/AbcSize
@@ -295,7 +328,7 @@ end
 
 puts "Running against: branch_name=#{branch_name} / short_commit_hash=#{short_commit_hash} (starting at: #{now_str})"
 results = Parallel.map(druids, progress: 'Testing') do |druid|
-  validate_druid(druid, loader, no_content: options[:no_content], no_desc: options[:no_descriptive], create: !options[:update])
+  validate_druid(druid, loader, no_content: options[:no_content], no_desc: options[:no_descriptive], create: !options[:update], quiet: options[:quiet])
 rescue StandardError
   [druid, :validate_error]
 end
