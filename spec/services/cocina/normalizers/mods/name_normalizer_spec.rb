@@ -168,6 +168,18 @@ RSpec.describe Cocina::Normalizers::Mods::NameNormalizer do
             <namePart type="termsOfAddress">de Lorris</namePart>
             <namePart type="date">active 1230</namePart>
           </name>
+          <name type="personal">
+            <namePart>Cat, Vinsky</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+          <name type="personal">
+            <namePart>Cat, Vinsky</namePart>
+            <role>
+              <roleTerm type="text">editor</roleTerm>
+            </role>
+          </name>
           <relatedItem>
             <name>
               <namePart>Dunnett, Dorothy</namePart>
@@ -186,6 +198,15 @@ RSpec.describe Cocina::Normalizers::Mods::NameNormalizer do
         <mods #{MODS_ATTRIBUTES}>
           <name>
             <namePart>Dunnett, Dorothy</namePart>
+          </name>
+          <name type="personal">
+            <namePart>Cat, Vinsky</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+            <role>
+              <roleTerm type="text">editor</roleTerm>
+            </role>
           </name>
           <name type="personal" usage="primary">
             <namePart>Guillaume</namePart>

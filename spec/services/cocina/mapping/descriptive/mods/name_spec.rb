@@ -2176,9 +2176,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
         XML
       end
 
-      # dedupping does not allow for normalized roundtrips
-      let(:skip_normalization) { true }
-
       let(:roundtrip_mods) do
         <<~XML
           <name type="personal">
@@ -2308,9 +2305,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
           </name>
         XML
       end
-
-      # dedupping does not allow for normalized roundtrips
-      let(:skip_normalization) { true }
 
       let(:cocina) do
         {
