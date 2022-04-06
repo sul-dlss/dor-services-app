@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+date_els = %w[
+  dateCreated
+  dateIssued
+  dateCaptured
+  dateValid
+  dateModified
+  copyrightDate
+  dateOther
+].freeze
+
+formats = [
+  /^-?\d{4}$/,                                               # 1997 or -1997
+  /^\d{4}-\d{2}$/,                                           # 1997-05
+  /^\d{4}-\d{2}-\d{2}$/,                                     # 1997-07-16
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}\+\d{2}:\d{2}$/,            # 1997-07-16T19:20+01:00
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}$/,      # 1997-07-16T19:20:30+01:00
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+\+\d{2}:\d{2}$/  # 1997-07-16T19:20:30.123+01:00
+]
+
+Report.new(name: 'desc-edtf', dsids: ['descMetadata']).run do |ng_xml|
+  union_xpath_selector = date_els.map { |el| "//mods:#{el}[@encoding='edtf']" }.join(' | ')
+  errors = ng_xml.xpath(union_xpath_selector, mods: MODS_NS).filter_map do |el|
+    el.content unless formats.any? { |format| format.match?(el.content) }
+  end
+
+  errors.join(';').presence
+end
