@@ -2380,11 +2380,11 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                   uri: 'http://id.loc.gov/authorities/names/n50025011',
                   source: {
                     code: 'naf',
-                    uri: 'http://id.loc.gov/authorities/names/n50025011'
+                    uri: 'http://id.loc.gov/authorities/names/'
                   }
                 }
               ],
-              type: 'person',
+              type: 'family',
               role: [
                 {
                   value: 'editor'
@@ -2393,12 +2393,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             }
           ]
         }
-      end
-
-      let(:warnings) do
-        [
-          Notification.new(msg: 'Duplicate name entry')
-        ]
       end
     end
   end
