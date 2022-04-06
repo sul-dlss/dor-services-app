@@ -43,6 +43,7 @@ Metrics/ClassLength:
     - 'app/services/cocina/from_fedora/descriptive/access.rb'
     - 'app/services/cocina/from_fedora/descriptive/admin_metadata.rb'
     - 'app/services/cocina/from_fedora/descriptive/identifier_type.rb'
+    - 'app/services/cocina/normalizers/mods/name_normalizer.rb'
     - 'app/services/cocina/normalizers/mods/subject_normalizer.rb'
     - 'app/services/cocina/normalizers/mods_normalizer.rb'
     - 'app/services/cocina/object_creator.rb'
