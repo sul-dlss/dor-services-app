@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/unique_report'
+
+UniqueReport.new(name: 'desc-form_types', dsids: ['descMetadata']).run do |ng_xml|
+  ng_xml.xpath('//mods:form/@type', mods: MODS_NS).map(&:content)
+end
