@@ -46,22 +46,67 @@ module Cocina
         attr_reader :resource_element, :notifier
 
         def deduped_name_nodes
-          # In addition, to plain-old dupes, need to get rid of names that are dupes with nameTitleGroups.
-          # Need to retain nameTitleGroups, so sorting so that first. (Uniq takes first.)
-          # When comparing, need to remove usage and nameTitleGroup.
+          # In addition, to plain-old dupes, need to get rid of names that are dupes where
+          #   e.g., one has a nameTitleGroup and one does not
+          # Need to retain nameTitleGroups, so sorting so those first. (Array.uniq takes first.)
           name_nodes = resource_element.xpath('mods:name', mods: DESC_METADATA_NS)
           nametitle_nodes, other_nodes = name_nodes.partition { |name_node| name_node['nameTitleGroup'] }
           ordered_name_nodes = nametitle_nodes + other_nodes
-          uniq_name_nodes = ordered_name_nodes.uniq do |name_node|
-            dup_name_node = name_node.dup
-            dup_name_node.delete('usage')
-            dup_name_node.delete('nameTitleGroup')
-            dup_name_node.to_s
-          end
+
+          uniq_name_nodes = uniq_name_nodes(ordered_name_nodes)
 
           notifier.warn('Duplicate name entry') if name_nodes.size != uniq_name_nodes.size
 
+          include_all_uniq_roles(uniq_name_nodes)
+        end
+
+        # uniq retains the first value, so sort input with that in mind.
+        # @param [Array<Nokogiri::XML::Node>]
+        # @return [Array<Nokogiri::XML::Node>] (yes, Johnny, this returns array of nodes, not comparitors)
+        def uniq_name_nodes(name_nodes)
+          name_nodes.uniq do |name_node|
+            name_node_comparitor(name_node)
+          end
+        end
+
+        # remove usage and nameTitleGroup attributes and role nodes for uniqueness comparison
+        # @return [String] a string to be used by Array.uniq for .eql? comparisons
+        def name_node_comparitor(name_node)
+          dup_name_node = name_node.dup
+          dup_name_node.delete('usage')
+          dup_name_node.delete('nameTitleGroup')
+          dup_name_node.xpath('mods:role', mods: DESC_METADATA_NS).each(&:unlink)
+          dup_name_node.to_s.strip.gsub(/\s+/, ' ')
+        end
+
+        # ensure all roles for uniq name node are included
+        def include_all_uniq_roles(uniq_name_nodes)
+          uniq_name_nodes.each do |uniq_name_node|
+            role_nodes = uniq_name_comparitor_2_role_nodes[name_node_comparitor(uniq_name_node)]
+            next if role_nodes.blank? || role_nodes.size < 2
+
+            uniq_name_node.xpath('mods:role', mods: DESC_METADATA_NS).each(&:unlink)
+            role_nodes.each { |role_node| uniq_name_node.add_child(role_node) }
+          end
           uniq_name_nodes
+        end
+
+        def uniq_name_comparitor_2_role_nodes
+          role_nodes = resource_element.xpath('mods:name/mods:role', mods: DESC_METADATA_NS)
+          # we can use name_node_comparitor to get uniq role nodes
+          uniq_role_nodes = role_nodes.uniq { |role_node| name_node_comparitor(role_node) }
+          return {} if uniq_role_nodes.size < 2
+
+          result = {}
+          uniq_role_nodes.each do |role_node|
+            name_comparitor = name_node_comparitor(role_node.parent)
+            result[name_comparitor] = if result[name_comparitor]
+                                        result[name_comparitor] << role_node
+                                      else
+                                        [role_node]
+                                      end
+          end
+          result
         end
 
         def check_altrepgroup_type_inconsistency(grouped_altrepgroup_name_nodes)

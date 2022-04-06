@@ -2116,7 +2116,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Duplicate names, one with primary' do
-    xit 'new MODS cocina mapping' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <name type="personal" usage="primary">
@@ -2142,8 +2142,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             {
               name: [
                 {
-                  value: 'Dunnett, Dorothy',
-                  status: 'primary'
+                  value: 'Dunnett, Dorothy'
                 }
               ],
               type: 'person',
@@ -2162,7 +2161,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Duplicate names, one with role' do
-    xit 'new MODS cocina mapping' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <name type="personal">
@@ -2176,6 +2175,9 @@ RSpec.describe 'MODS name <--> cocina mappings' do
           </name>
         XML
       end
+
+      # dedupping does not allow for normalized roundtrips
+      let(:skip_normalization) { true }
 
       let(:roundtrip_mods) do
         <<~XML
@@ -2217,7 +2219,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Duplicate names, same role' do
-    xit 'new MODS cocina mapping' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <name type="personal">
@@ -2275,7 +2277,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Duplicate names, different roles' do
-    xit 'new MODS cocina mapping' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <name type="personal">
@@ -2306,6 +2308,9 @@ RSpec.describe 'MODS name <--> cocina mappings' do
           </name>
         XML
       end
+
+      # dedupping does not allow for normalized roundtrips
+      let(:skip_normalization) { true }
 
       let(:cocina) do
         {
@@ -2339,7 +2344,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
   end
 
   describe 'Duplicate names, different attributes' do
-    xit 'new MODS cocina mapping' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <name type="personal">
@@ -2394,6 +2399,14 @@ RSpec.describe 'MODS name <--> cocina mappings' do
           ]
         }
       end
+
+      # As of 4/6/22, Arcadia would like this to warn, but is okay without it for now.
+      #   This warning is not critical path for getting off Fedora 3
+      # let(:warnings) do
+      #   [
+      #     Notification.new(msg: 'Duplicate name entry')
+      #   ]
+      # end
     end
   end
 
