@@ -2337,6 +2337,69 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     end
   end
 
+  describe 'Duplicate names, multiple nameParts and role' do
+    # adapted from dg193dh3423
+    xit 'new mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart>Ginsberg, Allen</namePart>
+            <namePart type="date">1926-1997</namePart>
+          </name>
+          <name type="personal">
+            <namePart>Ginsberg, Allen</namePart>
+            <namePart type="date">1926-1997</namePart>
+            <role>
+              <roleTerm type="text">former owner</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <name type="personal" usage="primary">
+            <namePart>Ginsberg, Allen</namePart>
+            <namePart type="date">1926-1997</namePart>
+            <role>
+              <roleTerm type="text">former owner</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Ginsberg, Allen',
+                      type: 'name'
+                    },
+                    {
+                      value: '1926-1997',
+                      type: 'life dates'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                {
+                  value: 'former owner'
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Duplicate names, different attributes' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
