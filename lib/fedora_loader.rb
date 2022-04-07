@@ -76,7 +76,6 @@ end
 # Supports loading from cache to a Fedora object with a little bit of monkeypatching.
 class FedoraLoader
   class BadCache < StandardError; end
-
   class ExpectedUnmapped < StandardError; end
   class Unmapped < StandardError; end
 
