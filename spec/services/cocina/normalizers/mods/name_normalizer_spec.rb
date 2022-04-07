@@ -180,6 +180,17 @@ RSpec.describe Cocina::Normalizers::Mods::NameNormalizer do
               <roleTerm type="text">editor</roleTerm>
             </role>
           </name>
+          <name type="personal" nameTitleGroup="2">
+             <namePart>Sheng, Bright</namePart>
+             <namePart type="date">1955-</namePart>
+           </name>
+           <name type="personal">
+             <namePart>Sheng, Bright</namePart>
+             <namePart type="date">1955-</namePart>
+             <role>
+               <roleTerm authority="marcrelator" type="code">prf</roleTerm>
+             </role>
+           </name>
           <relatedItem>
             <name>
               <namePart>Dunnett, Dorothy</namePart>
@@ -213,6 +224,13 @@ RSpec.describe Cocina::Normalizers::Mods::NameNormalizer do
             <namePart type="termsOfAddress">de Lorris</namePart>
             <namePart type="date">active 1230</namePart>
           </name>
+          <name type="personal">
+             <namePart>Sheng, Bright</namePart>
+             <namePart type="date">1955-</namePart>
+             <role>
+               <roleTerm authority="marcrelator" type="code">prf</roleTerm>
+             </role>
+           </name>
           <relatedItem>
             <name>
               <namePart>Dunnett, Dorothy</namePart>

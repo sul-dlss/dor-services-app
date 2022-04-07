@@ -2339,7 +2339,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
 
   describe 'Duplicate names, multiple nameParts and role' do
     # adapted from dg193dh3423
-    xit 'new mapping' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <name type="personal" usage="primary">
@@ -2396,6 +2396,12 @@ RSpec.describe 'MODS name <--> cocina mappings' do
             }
           ]
         }
+      end
+
+      let(:warnings) do
+        [
+          Notification.new(msg: 'Duplicate name entry')
+        ]
       end
     end
   end

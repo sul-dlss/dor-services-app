@@ -52,7 +52,6 @@ module Cocina
           name_nodes = resource_element.xpath('mods:name', mods: DESC_METADATA_NS)
           nametitle_nodes, other_nodes = name_nodes.partition { |name_node| name_node['nameTitleGroup'] }
           ordered_name_nodes = nametitle_nodes + other_nodes
-
           uniq_name_nodes = uniq_name_nodes(ordered_name_nodes)
 
           notifier.warn('Duplicate name entry') if name_nodes.size != uniq_name_nodes.size
@@ -79,11 +78,13 @@ module Cocina
           dup_name_node.to_s.strip.gsub(/\s+/, ' ')
         end
 
-        # ensure all roles for uniq name node are included
+        # ensure all roles for each uniq name node are present
+        # @return [Array<Nokogiri::XML::Node] the uniq name nodes with all roles present
         def include_all_uniq_roles(uniq_name_nodes)
+          names_to_roles = name_comparitor_2_role_nodes # compute this once
           uniq_name_nodes.each do |uniq_name_node|
-            role_nodes = uniq_name_comparitor_2_role_nodes[name_node_comparitor(uniq_name_node)]
-            next if role_nodes.blank? || role_nodes.size < 2
+            role_nodes = names_to_roles[name_node_comparitor(uniq_name_node)]
+            next if role_nodes.blank?
 
             uniq_name_node.xpath('mods:role', mods: DESC_METADATA_NS).each(&:unlink)
             role_nodes.each { |role_node| uniq_name_node.add_child(role_node) }
@@ -91,14 +92,14 @@ module Cocina
           uniq_name_nodes
         end
 
-        def uniq_name_comparitor_2_role_nodes
-          role_nodes = resource_element.xpath('mods:name/mods:role', mods: DESC_METADATA_NS)
-          # we can use name_node_comparitor to get uniq role nodes
-          uniq_role_nodes = role_nodes.uniq { |role_node| name_node_comparitor(role_node) }
-          return {} if uniq_role_nodes.size < 2
-
+        # @return [Hash<String, Array[Nokogiri::XML::Node]] key is the string comparitor for a name node;
+        #   value is an Array of uniq role nodes
+        def name_comparitor_2_role_nodes
           result = {}
-          uniq_role_nodes.each do |role_node|
+
+          # we must do this outside the loop in case of duplicate name nodes
+          all_role_nodes = resource_element.xpath('mods:name/mods:role', mods: DESC_METADATA_NS)
+          all_role_nodes.each do |role_node|
             name_comparitor = name_node_comparitor(role_node.parent)
             result[name_comparitor] = if result[name_comparitor]
                                         result[name_comparitor] << role_node
@@ -106,7 +107,8 @@ module Cocina
                                         [role_node]
                                       end
           end
-          result
+
+          result.each { |_k, role_nodes| role_nodes.uniq! { |role_node| name_node_comparitor(role_node) } }
         end
 
         def check_altrepgroup_type_inconsistency(grouped_altrepgroup_name_nodes)
