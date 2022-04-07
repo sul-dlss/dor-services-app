@@ -29,7 +29,9 @@ coverage/*
 /config/settings/*.local.yml
 /cache
 /tls
+*druids*.txt
 config/settings.local.yml
+results.txt
 /results
-*.txt
+cache-files.txt
 *.csv
