@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+Report.new(name: 'desc-accesscondition', dsids: ['descMetadata']).run do |ng_xml|
+  ng_xml.xpath('//mods:accessCondition[@type="Access Constraints"] | //mods:accessCondition[@type="restrictionsOnAccess"]', mods: MODS_NS).present?
+end
