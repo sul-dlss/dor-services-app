@@ -29,9 +29,11 @@ coverage/*
 /config/settings/*.local.yml
 /cache
 /tls
+# Ignore any input druid list to reports or roundtrip validation
 *druids*.txt
 config/settings.local.yml
 results.txt
 /results
 cache-files.txt
+# Ignore any output of reports
 *.csv
