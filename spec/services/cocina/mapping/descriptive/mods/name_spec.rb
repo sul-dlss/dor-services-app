@@ -2902,8 +2902,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
 
     context 'with empty name value and empty role value' do
       # from pd967mn2579, see https://github.com/sul-dlss/dor-services-app/issues/1161
-      xit 'to implement: if cocina gets empty values, MODS should not create empty elements'
-
       # NOTE: cocina -> MODS
       it_behaves_like 'cocina MODS mapping' do
         let(:cocina) do
@@ -2949,8 +2947,6 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     end
 
     context 'with empty name value and missing role' do
-      xit 'to implement: if cocina gets empty values, MODS should not create empty elements'
-
       # NOTE: cocina -> MODS
       it_behaves_like 'cocina MODS mapping' do
         let(:cocina) do
