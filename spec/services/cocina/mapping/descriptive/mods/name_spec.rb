@@ -2473,6 +2473,94 @@ RSpec.describe 'MODS name <--> cocina mappings' do
     end
   end
 
+  describe 'Single name, duplicate roles' do
+    # based on qt763ck5870 and yk340vn1168
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Yeager, Helen F</namePart>
+            <role>
+              <roleTerm type="text">joint author</roleTerm>
+            </role>
+            <role>
+              <roleTerm type="text">joint author</roleTerm>
+            </role>
+          </name>
+          <name type="personal" usage="primary">
+            <namePart>Selz, Peter, 1919-2019</namePart>
+            <role>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cmp">cmp</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cmp">composer</roleTerm>
+            </role>
+            <role>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cmp">cmp</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/cmp">composer</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <name type="personal">
+            <namePart>Yeager, Helen F</namePart>
+            <role>
+              <roleTerm type="text">joint author</roleTerm>
+            </role>
+          </name>
+          <name type="personal" usage="primary">
+            <namePart>Selz, Peter, 1919-2019</namePart>
+            <role>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/cmp">cmp</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/cmp">composer</roleTerm>
+            </role>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          contributor: [
+            {
+              name: [
+                {
+                  value: 'Yeager, Helen F'
+                }
+              ],
+              type: 'person',
+              role: [
+                {
+                  value: 'joint author'
+                }
+              ]
+            },
+            {
+              name: [
+                {
+                  value: 'Selz, Peter, 1919-2019'
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                {
+                  value: 'composer',
+                  code: 'cmp',
+                  uri: 'http://id.loc.gov/vocabulary/relators/cmp',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
   # devs added specs below
 
   context 'with an invalid type' do

@@ -181,16 +181,36 @@ RSpec.describe Cocina::Normalizers::Mods::NameNormalizer do
             </role>
           </name>
           <name type="personal" nameTitleGroup="2">
-             <namePart>Sheng, Bright</namePart>
-             <namePart type="date">1955-</namePart>
-           </name>
-           <name type="personal">
-             <namePart>Sheng, Bright</namePart>
-             <namePart type="date">1955-</namePart>
-             <role>
-               <roleTerm authority="marcrelator" type="code">prf</roleTerm>
-             </role>
-           </name>
+            <namePart>Sheng, Bright</namePart>
+            <namePart type="date">1955-</namePart>
+          </name>
+          <name type="personal">
+            <namePart>Sheng, Bright</namePart>
+            <namePart type="date">1955-</namePart>
+            <role>
+              <roleTerm authority="marcrelator" type="code">prf</roleTerm>
+            </role>
+          </name>
+          <name type="personal">
+            <namePart>Yeager, Helen F</namePart>
+            <role>
+              <roleTerm type="text">joint author</roleTerm>
+            </role>
+            <role>
+              <roleTerm type="text">joint author</roleTerm>
+            </role>
+          </name>
+          <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/no2001099549">
+            <namePart>Bickley, Tom</namePart>
+            <role>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/prf">prf</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/prf">performer</roleTerm>
+            </role>
+            <role>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/prf">prf</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" valueURI="http://id.loc.gov/vocabulary/relators/prf">performer</roleTerm>
+            </role>
+          </name>
           <relatedItem>
             <name>
               <namePart>Dunnett, Dorothy</namePart>
@@ -225,12 +245,25 @@ RSpec.describe Cocina::Normalizers::Mods::NameNormalizer do
             <namePart type="date">active 1230</namePart>
           </name>
           <name type="personal">
-             <namePart>Sheng, Bright</namePart>
-             <namePart type="date">1955-</namePart>
-             <role>
-               <roleTerm authority="marcrelator" type="code">prf</roleTerm>
-             </role>
-           </name>
+            <namePart>Sheng, Bright</namePart>
+            <namePart type="date">1955-</namePart>
+            <role>
+              <roleTerm authority="marcrelator" type="code">prf</roleTerm>
+            </role>
+          </name>
+          <name type="personal">
+            <namePart>Yeager, Helen F</namePart>
+            <role>
+              <roleTerm type="text">joint author</roleTerm>
+            </role>
+          </name>
+          <name type="personal" authority="naf" authorityURI="http://id.loc.gov/authorities/names/" valueURI="http://id.loc.gov/authorities/names/no2001099549">
+            <namePart>Bickley, Tom</namePart>
+            <role>
+              <roleTerm type="code" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/prf">prf</roleTerm>
+              <roleTerm type="text" authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators/" valueURI="http://id.loc.gov/vocabulary/relators/prf">performer</roleTerm>
+            </role>
+          </name>
           <relatedItem>
             <name>
               <namePart>Dunnett, Dorothy</namePart>
