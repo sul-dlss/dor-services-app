@@ -67,7 +67,7 @@ RSpec.describe 'Create object' do
     let(:identification) do
       {
         catalogLinks: [
-          { catalog: 'symphony', catalogRecordId: '8888' }
+          { catalog: 'symphony', catalogRecordId: '8888', refresh: true }
         ]
       }
     end

@@ -4,6 +4,8 @@ module Cocina
   module FromFedora
     # Creates Cocina::Identification object properties from Fedora objects
     class Identification
+      DO_NOT_REFRESH_TAG = 'Warning : Do Not Refresh'
+
       # @param [Dor::Item,Dor::Collection,Dor::Etd] fedora_object
       # @return [Hash] a hash that can be mapped to a Cocina::Identification object
       # @raises [Mapper::MissingSourceID]
@@ -54,11 +56,19 @@ module Cocina
         value.text.delete_prefix('https://doi.org/')
       end
 
+      def refreshable?
+        @refreshable ||= AdministrativeTags.for(identifier: fedora_object.pid).exclude?(DO_NOT_REFRESH_TAG)
+      end
+
       def catalog_links
         results = []
+        refresh_link_set = false
         fedora_object.identityMetadata.ng_xml.xpath('//otherId[@name="catkey" or @name="previous_catkey"]').each do |clink|
           catalog = clink['name'] == 'catkey' ? 'symphony' : 'previous symphony'
-          results << { catalog: catalog, catalogRecordId: clink.text.strip } if clink.text.present?
+          # NOTE: the next two lines ensure the first symphony catkey is the only one set as the "refresh" catkey
+          refresh = catalog == 'symphony' && !refresh_link_set && refreshable?
+          refresh_link_set = true if refresh
+          results << { catalog: catalog, catalogRecordId: clink.text.strip, refresh: refresh } if clink.text.present?
         end
         results.uniq { |clink| "#{clink[:catalog]}::#{clink[:catalogRecordId]}" }.presence
       end

@@ -16,7 +16,8 @@ RSpec.describe 'Refresh metadata' do
     {
       catalogLinks: [{
         catalog: 'symphony',
-        catalogRecordId: '10121797'
+        catalogRecordId: '10121797',
+        refresh: true
       }],
       sourceId: 'sul:123'
     }
@@ -138,7 +139,8 @@ RSpec.describe 'Refresh metadata' do
       {
         catalogLinks: [{
           catalog: 'symphony',
-          catalogRecordId: '666'
+          catalogRecordId: '666',
+          refresh: true
         }],
         sourceId: 'sul:123'
       }

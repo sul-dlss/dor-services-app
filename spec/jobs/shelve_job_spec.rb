@@ -8,7 +8,6 @@ RSpec.describe ShelveJob, type: :job do
   let(:druid) { 'druid:mk420bs7601' }
   let(:result) { create(:background_job_result) }
   let(:cocina_object) { instance_double(Cocina::Models::DRO) }
-  let(:validator) { instance_double(Cocina::ValidateDarkService, valid?: valid, invalid_filenames: invalid_filenames) }
   let(:valid) { true }
   let(:invalid_filenames) { [] }
 
@@ -17,7 +16,6 @@ RSpec.describe ShelveJob, type: :job do
     allow(result).to receive(:processing!)
     allow(EventFactory).to receive(:create)
     allow(Cocina::Mapper).to receive(:build)
-    allow(Cocina::ValidateDarkService).to receive(:new).and_return(validator)
   end
 
   context 'with no errors' do

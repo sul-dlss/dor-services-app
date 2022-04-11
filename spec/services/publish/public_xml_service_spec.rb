@@ -154,8 +154,8 @@ RSpec.describe Publish::PublicXmlService do
                                 description: description,
                                 identification: {
                                   catalogLinks: [
-                                    { catalog: 'previous symphony', catalogRecordId: '9001001001' },
-                                    { catalog: 'symphony', catalogRecordId: '129483625' }
+                                    { catalog: 'previous symphony', catalogRecordId: '9001001001', refresh: false },
+                                    { catalog: 'symphony', catalogRecordId: '129483625', refresh: true }
                                   ],
                                   sourceId: 'sul:123'
                                 },

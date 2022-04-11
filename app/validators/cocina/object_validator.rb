@@ -23,9 +23,6 @@ module Cocina
         raise ValidationError.new(validator.error, status: :conflict) unless validator.valid?
       end
 
-      validator = ValidateDarkService.new(cocina_object)
-      raise ValidationError, validator.error unless validator.valid?
-
       validator = Cocina::ApoExistenceValidator.new(cocina_object)
       raise ValidationError, validator.error unless validator.valid?
 

@@ -87,7 +87,7 @@ RSpec.describe Cocina::Mapper do
                 <checksum type="sha1">0cd3613c7dda558433ad955f0cf4f2730e3ec958</checksum>
                 <imageData width="2548" height="1696"/>
               </file>
-              <file id="PC0062_2008-194_Q03_02_007.jp2" mimetype="image/jp2" size="819813" preserve="no" publish="yes" shelve="yes">
+              <file id="PC0062_2008-194_Q03_02_007.jp2" mimetype="image/jp2" size="819813" preserve="no" publish="no" shelve="no">
                 <checksum type="md5">1f8d562f4f1fd87946a437176bb8e564</checksum>
                 <checksum type="sha1">3206db5137c0820ede261488e08f4d4815d16078</checksum>
               </file>
@@ -212,19 +212,19 @@ RSpec.describe Cocina::Mapper do
           <contentMetadata type="file" objectId="druid:dd116zh0343">
             <resource sequence="1" type="file" id="folder1PuSu">
               <label>Folder 1</label>
-              <file mimetype="text/plain" shelve="yes" publish="yes" size="7888" preserve="yes" datetime="2012-06-15T22:57:43Z" id="folder1PuSu/story1u.txt">
+              <file mimetype="text/plain" shelve="no" publish="no" size="7888" preserve="yes" datetime="2012-06-15T22:57:43Z" id="folder1PuSu/story1u.txt">
                 <checksum type="md5">e2837b9f02e0b0b76f526eeb81c7aa7b</checksum>
                 <checksum type="sha1">61dfac472b7904e1413e0cbf4de432bda2a97627</checksum>
               </file>
-              <file mimetype="text/plain" shelve="yes" publish="yes" size="5983" preserve="yes" datetime="2012-06-15T22:58:56Z" id="folder1PuSu/story2r.txt">
+              <file mimetype="text/plain" shelve="no" publish="no" size="5983" preserve="yes" datetime="2012-06-15T22:58:56Z" id="folder1PuSu/story2r.txt">
                 <checksum type="md5">dc2be64ae43f1c1db4a068603465955d</checksum>
                 <checksum type="sha1">b8a672c1848fc3d13b5f380e15835690e24600e0</checksum>
               </file>
-              <file mimetype="text/plain" shelve="yes" publish="yes" size="5951" preserve="yes" datetime="2012-06-15T23:00:43Z" id="folder1PuSu/story3m.txt">
+              <file mimetype="text/plain" shelve="no" publish="no" size="5951" preserve="yes" datetime="2012-06-15T23:00:43Z" id="folder1PuSu/story3m.txt">
                 <checksum type="md5">3d67f52e032e36b641d0cad40816f048</checksum>
                 <checksum type="sha1">548f349c79928b6d0996b7ff45990bdce5ee9753</checksum>
               </file>
-              <file mimetype="text/plain" shelve="yes" publish="yes" size="6307" preserve="yes" datetime="2012-06-15T23:02:22Z" id="folder1PuSu/story4d.txt">
+              <file mimetype="text/plain" shelve="no" publish="no" size="6307" preserve="yes" datetime="2012-06-15T23:02:22Z" id="folder1PuSu/story4d.txt">
                 <checksum type="md5">34f3f646523b0a8504f216483a57bce4</checksum>
                 <checksum type="sha1">d498b513add5bb138ed4f6205453a063a2434dc4</checksum>
               </file>
@@ -329,7 +329,9 @@ RSpec.describe Cocina::Mapper do
     it 'maps both the current and previous catkeys and strips extra spaces' do
       expect(cocina_model.identification.catalogLinks.size).to eq 2
       expect(cocina_model.identification.catalogLinks[0].catalogRecordId).to eq '4366577'
+      expect(cocina_model.identification.catalogLinks[0].refresh).to be true
       expect(cocina_model.identification.catalogLinks[1].catalogRecordId).to eq '12345'
+      expect(cocina_model.identification.catalogLinks[1].refresh).to be false
     end
 
     it 'maps label' do
@@ -379,6 +381,7 @@ RSpec.describe Cocina::Mapper do
       expect(cocina_model).to be_kind_of Cocina::Models::DRO
       expect(cocina_model.identification.catalogLinks.size).to eq 1
       expect(cocina_model.identification.catalogLinks.first.catalogRecordId).to eq '4084149'
+      expect(cocina_model.identification.catalogLinks.first.refresh).to be false
     end
   end
 end

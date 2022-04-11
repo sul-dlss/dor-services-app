@@ -60,13 +60,13 @@ RSpec.describe ResetContentMetadataService do
                       label: '00001.jp2',
                       hasMimeType: 'image/jp2',
                       administrative: {
-                        publish: true,
+                        publish: false,
                         sdrPreserve: true,
-                        shelve: true
+                        shelve: false
                       },
                       access: {
-                        view: 'stanford',
-                        download: 'stanford'
+                        view: 'dark',
+                        download: 'none'
                       },
                       hasMessageDigests: []
                     }
@@ -197,13 +197,13 @@ RSpec.describe ResetContentMetadataService do
                       label: '00001.jp2',
                       hasMimeType: 'image/jp2',
                       administrative: {
-                        publish: true,
+                        publish: false,
                         sdrPreserve: true,
-                        shelve: true
+                        shelve: false
                       },
                       access: {
-                        view: 'stanford',
-                        download: 'stanford'
+                        view: 'dark',
+                        download: 'none'
                       },
                       hasMessageDigests: []
                     }
@@ -239,13 +239,13 @@ RSpec.describe ResetContentMetadataService do
                         label: '00001.jp2',
                         hasMimeType: 'image/jp2',
                         administrative: {
-                          publish: true,
+                          publish: false,
                           sdrPreserve: true,
-                          shelve: true
+                          shelve: false
                         },
                         access: {
-                          view: 'stanford',
-                          download: 'stanford'
+                          view: 'dark',
+                          download: 'none'
                         },
                         hasMessageDigests: []
                       }

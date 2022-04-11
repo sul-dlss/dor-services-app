@@ -14,18 +14,6 @@ class PublishJob < ApplicationJob
     begin
       cocina_object = CocinaObjectStore.find(druid)
 
-      # Disabling validation until pre-assembly and WAS handle this correctly.
-      # validator = validator_for?(fedora_item)
-      # unless validator.valid?
-      # Honeybadger.notify("Not all files for '#{druid}' have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}")
-      # return LogFailureJob.perform_later(druid: druid,
-      #                                    background_job_result: background_job_result,
-      #                                    workflow: workflow,
-      #                                    workflow_process: workflow_process,
-      #                                    output: { errors: [{ title: 'Access mismatch',
-      #                                                         detail: "Not all files have dark access and/or are unshelved when item access is dark: #{validator.invalid_filenames}" }] })
-      # end
-
       Publish::MetadataTransferService.publish(cocina_object)
       EventFactory.create(druid: druid, event_type: 'publishing_complete', data: { background_job_result_id: background_job_result.id })
     end
@@ -34,10 +22,5 @@ class PublishJob < ApplicationJob
                                 background_job_result: background_job_result,
                                 workflow: workflow,
                                 workflow_process: workflow_process)
-  end
-
-  def validator_for?(fedora_item)
-    model = Cocina::Mapper.build(fedora_item)
-    Cocina::ValidateDarkService.new(model)
   end
 end

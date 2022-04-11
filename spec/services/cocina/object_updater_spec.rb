@@ -502,7 +502,7 @@ RSpec.describe Cocina::ObjectUpdater do
           orig_cocina_attrs.tap do |attrs|
             attrs[:identification] = {
               sourceId: 'sul:8.559351',
-              catalogLinks: [{ catalog: 'symphony', catalogRecordId: '10121797' }],
+              catalogLinks: [{ catalog: 'symphony', catalogRecordId: '10121797', refresh: true }],
               barcode: '36105036289127'
             }
           end
@@ -822,7 +822,7 @@ RSpec.describe Cocina::ObjectUpdater do
         administrative: { hasAdminPolicy: 'druid:dd999df4567' },
         identification: {
           sourceId: 'sul:8.559351',
-          catalogLinks: [{ catalog: 'symphony', catalogRecordId: '10121797' }]
+          catalogLinks: [{ catalog: 'symphony', catalogRecordId: '10121797', refresh: true }]
         },
         structural: {}
       }

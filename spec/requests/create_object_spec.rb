@@ -129,7 +129,7 @@ RSpec.describe 'Create object' do
         {
           sourceId: 'googlebooks:999999',
           catalogLinks: [
-            { catalog: 'symphony', catalogRecordId: '8888' }
+            { catalog: 'symphony', catalogRecordId: '8888', refresh: true }
           ]
         }
       end
@@ -378,13 +378,13 @@ RSpec.describe 'Create object' do
           'label' => '00001.jp2',
           'hasMimeType' => 'image/jp2',
           'administrative' => {
-            'publish' => true,
+            'publish' => false,
             'sdrPreserve' => true,
-            'shelve' => true
+            'shelve' => false
           },
           'access' => {
-            'view' => 'stanford',
-            'download' => 'stanford'
+            'view' => 'dark',
+            'download' => 'none'
           },
           'hasMessageDigests' => []
         }
@@ -417,13 +417,13 @@ RSpec.describe 'Create object' do
           'label' => '00002.jp2',
           'hasMimeType' => 'image/jp2',
           'administrative' => {
-            'publish' => true,
+            'publish' => false,
             'sdrPreserve' => true,
-            'shelve' => true
+            'shelve' => false
           },
           'access' => {
-            'view' => 'world',
-            'download' => 'world'
+            'view' => 'dark',
+            'download' => 'none'
           },
           'hasMessageDigests' => []
         }
@@ -501,8 +501,8 @@ RSpec.describe 'Create object' do
                     filename: '00001.jp2',
                     version: 1,
                     hasMimeType: 'image/jp2', hasMessageDigests: [],
-                    access: { view: 'stanford', download: 'stanford' },
-                    administrative: { publish: true, sdrPreserve: true, shelve: true }
+                    access: { view: 'dark', download: 'none' },
+                    administrative: { publish: false, sdrPreserve: true, shelve: false }
                   }
                 ]
               }
@@ -528,8 +528,8 @@ RSpec.describe 'Create object' do
                     version: 1,
                     hasMimeType: 'image/jp2',
                     hasMessageDigests: [],
-                    access: { view: 'world', download: 'world' },
-                    administrative: { publish: true, sdrPreserve: true, shelve: true }
+                    access: { view: 'dark', download: 'none' },
+                    administrative: { publish: false, sdrPreserve: true, shelve: false }
                   }
                 ]
               }
@@ -556,16 +556,29 @@ RSpec.describe 'Create object' do
 
       context 'when access mismatch' do
         let(:view) { 'dark' }
+        let(:access_mismatch_data) do
+          JSON
+            .parse(data)
+            .tap do |cocina_hash|
+            cocina_hash['structural']['contains'].map do |fileset|
+              fileset['structural']['contains'].map do |file|
+                file['access']['view'] = 'world'
+                file['access']['download'] = 'world'
+              end
+            end
+          end
+            .to_json
+        end
 
         it 'returns 400' do
           post '/v1/objects',
-               params: data,
+               params: access_mismatch_data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           expect(response.status).to eq 400
           expect(response.body).to eq '{"errors":[' \
                                       '{"status":"400","title":"Bad Request",' \
                                       '"detail":"Not all files have dark access and/or are unshelved when object access is dark: ' \
-                                      '[\\"00001.jp2\\", \\"00002.jp2\\"]"}]}'
+                                      '[\\"00001.html\\", \\"00001.jp2\\", \\"00002.html\\", \\"00002.jp2\\"]"}]}'
         end
       end
     end

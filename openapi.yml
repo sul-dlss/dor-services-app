@@ -1537,18 +1537,28 @@ components:
     CatalogLink:
       type: object
       additionalProperties: false
-      required:
-        - catalog
-        - catalogRecordId
       properties:
         catalog:
           description: Catalog that is the source of the linked record.
           type: string
+          enum:
+            - symphony
+            - previous symphony
           example: symphony
+        refresh:
+          description: Only one of the catkeys should be designated for refreshing.
+            This means that this key is the one used to pull metadata from the catalog
+            if there is more than one key present.
+          type: boolean
+          default: false
         catalogRecordId:
           description: Record identifier that is unique within the context of the linked record's catalog.
           type: string
           example: '11403803'
+      required:
+        - catalog
+        - catalogRecordId
+        - refresh
     CatkeyBarcode:
       description: The barcode associated with a DRO object based on catkey, prefixed with 36105
       type: string

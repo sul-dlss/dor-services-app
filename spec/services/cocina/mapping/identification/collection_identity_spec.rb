@@ -479,7 +479,8 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
             catalogLinks: [
               {
                 catalog: 'symphony',
-                catalogRecordId: catkey
+                catalogRecordId: catkey,
+                refresh: true
               }
             ]
           },
@@ -530,7 +531,8 @@ RSpec.describe 'Fedora Collection identityMetadata <--> Cocina Collection Identi
             catalogLinks: [
               {
                 catalog: 'symphony',
-                catalogRecordId: catkey
+                catalogRecordId: catkey,
+                refresh: true
               }
             ]
           },
