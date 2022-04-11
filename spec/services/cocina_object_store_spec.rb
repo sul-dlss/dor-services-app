@@ -300,7 +300,7 @@ RSpec.describe CocinaObjectStore do
       end
 
       context 'when refreshing from symphony' do
-        let(:catalog_links) { [Cocina::Models::CatalogLink.new(catalog: 'symphony', catalogRecordId: 'abc123')] }
+        let(:catalog_links) { [Cocina::Models::CatalogLink.new(catalog: 'symphony', catalogRecordId: 'abc123', refresh: true)] }
         let(:description_props) do
           {
             title: [{ value: 'The Well-Grounded Rubyist' }],
@@ -333,7 +333,7 @@ RSpec.describe CocinaObjectStore do
       end
 
       context 'when fails refreshing from symphony' do
-        let(:catalog_links) { [Cocina::Models::CatalogLink.new(catalog: 'symphony', catalogRecordId: 'abc123')] }
+        let(:catalog_links) { [Cocina::Models::CatalogLink.new(catalog: 'symphony', catalogRecordId: 'abc123', refresh: true)] }
 
         before do
           allow(RefreshMetadataAction).to receive(:run).and_return(Failure())

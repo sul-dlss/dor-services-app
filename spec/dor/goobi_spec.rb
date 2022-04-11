@@ -21,7 +21,8 @@ RSpec.describe Dor::Goobi do
         catalogLinks: [
           {
             catalog: 'symphony',
-            catalogRecordId: 'ckey_12345'
+            catalogRecordId: 'ckey_12345',
+            refresh: true
           }
         ],
         sourceId: 'some:source_id'

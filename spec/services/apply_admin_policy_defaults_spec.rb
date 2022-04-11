@@ -310,14 +310,13 @@ RSpec.describe ApplyAdminPolicyDefaults do
                 label: '00001.jp2',
                 hasMimeType: 'image/jp2',
                 administrative: {
-                  publish: true,
+                  publish: false,
                   sdrPreserve: true,
-                  shelve: true
+                  shelve: false
                 },
                 access: {
-                  view: 'stanford',
-                  download: 'location-based',
-                  location: 'spec'
+                  view: 'dark',
+                  download: 'none'
                 },
                 hasMessageDigests: []
               }
@@ -343,9 +342,9 @@ RSpec.describe ApplyAdminPolicyDefaults do
                   label: '00001.jp2',
                   hasMimeType: 'image/jp2',
                   administrative: {
-                    publish: true,
+                    publish: false,
                     sdrPreserve: true,
-                    shelve: true
+                    shelve: false
                   },
                   access: default_access,
                   hasMessageDigests: []
@@ -387,7 +386,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
                   label: '00001.jp2',
                   hasMimeType: 'image/jp2',
                   administrative: {
-                    publish: true,
+                    publish: false,
                     sdrPreserve: true,
                     shelve: false
                   },

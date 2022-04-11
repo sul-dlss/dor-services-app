@@ -80,7 +80,7 @@ RSpec.describe Publish::PublicCocinaService do
                         { type: 'md5', digest: '08544fe844c45eebb552f280709af564' }
                       ],
                       access: { view: 'dark', download: 'none' },
-                      administrative: { publish: true, sdrPreserve: false, shelve: true },
+                      administrative: { publish: false, sdrPreserve: false, shelve: false },
                       presentation: { height: 5496, width: 5736 }
                     }
                 ]
@@ -113,7 +113,7 @@ RSpec.describe Publish::PublicCocinaService do
                       { type: 'md5', digest: 'a9acee40e54bc6da6cee1388f7cc33e9' }
                     ],
                     access: { view: 'dark', download: 'none' },
-                    administrative: { publish: true, sdrPreserve: false, shelve: true },
+                    administrative: { publish: false, sdrPreserve: false, shelve: false },
                     presentation: { height: 5496, width: 5736 }
                   }
                 ]
@@ -126,8 +126,6 @@ RSpec.describe Publish::PublicCocinaService do
   end
 
   it 'discards the non-published filesets and files' do
-    expect(json.dig('structural', 'contains').size).to eq 2
-    expect(json.dig('structural', 'contains', 1, 'structural', 'contains').size).to eq 1
-    expect(json.dig('structural', 'contains', 1, 'structural', 'contains', 0, 'filename')).to eq '50807230_0003.jp2'
+    expect(json.dig('structural', 'contains').size).to eq 0
   end
 end

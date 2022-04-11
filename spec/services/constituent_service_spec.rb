@@ -122,7 +122,8 @@ RSpec.describe ConstituentService do
             catalogLinks: [
               {
                 catalog: 'symphony',
-                catalogRecordId: '12345'
+                catalogRecordId: '12345',
+                refresh: true
               }
             ],
             sourceId: 'sul:123'

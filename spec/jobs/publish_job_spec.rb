@@ -11,7 +11,6 @@ RSpec.describe PublishJob, type: :job do
   let(:result) { create(:background_job_result) }
   let(:item) { instance_double(Cocina::Models::DRO) }
   let(:workflow) { 'accessionWF' }
-  let(:validator) { instance_double(Cocina::ValidateDarkService, valid?: valid, invalid_filenames: invalid_filenames) }
   let(:valid) { true }
   let(:invalid_filenames) { [] }
 
@@ -20,7 +19,6 @@ RSpec.describe PublishJob, type: :job do
     allow(result).to receive(:processing!)
     allow(EventFactory).to receive(:create)
     allow(Cocina::Mapper).to receive(:build)
-    allow(Cocina::ValidateDarkService).to receive(:new).and_return(validator)
   end
 
   context 'with no errors' do

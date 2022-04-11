@@ -46,6 +46,8 @@ class ObjectsController < ApplicationController
     json_api_error(status: e.status, message: e.message)
   rescue Cocina::ValidationError => e
     json_api_error(status: e.status, message: e.message)
+  rescue Cocina::Models::ValidationError => e
+    json_api_error(status: 400, message: e.message)
   end
 
   def update

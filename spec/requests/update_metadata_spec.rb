@@ -622,7 +622,7 @@ RSpec.describe 'Update object' do
       {
         sourceId: 'googlebooks:999999',
         catalogLinks: [
-          { catalog: 'symphony', catalogRecordId: '8888' }
+          { catalog: 'symphony', catalogRecordId: '8888', refresh: true }
         ]
       }
     end
@@ -1034,7 +1034,7 @@ RSpec.describe 'Update object' do
     let(:identification) do
       {
         catalogLinks: [
-          { catalog: 'symphony', catalogRecordId: '8888' }
+          { catalog: 'symphony', catalogRecordId: '8888', refresh: true }
         ]
       }
     end

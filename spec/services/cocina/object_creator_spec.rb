@@ -155,7 +155,7 @@ RSpec.describe Cocina::ObjectCreator do
           },
           'identification' => {
             'sourceId' => 'sul:8.559351',
-            'catalogLinks' => [{ 'catalog' => 'symphony', 'catalogRecordId' => '10121797' }]
+            'catalogLinks' => [{ 'catalog' => 'symphony', 'catalogRecordId' => '10121797', 'refresh' => true }]
           }
         }
       end
@@ -209,7 +209,7 @@ RSpec.describe Cocina::ObjectCreator do
           },
           'identification' => {
             'sourceId' => 'sul:8.559351',
-            'catalogLinks' => [{ 'catalog' => 'symphony', 'catalogRecordId' => '10121797' }],
+            'catalogLinks' => [{ 'catalog' => 'symphony', 'catalogRecordId' => '10121797', 'refresh' => true }],
             'doi' => '10.25740/bb010dx6027'
           },
           'description' => {

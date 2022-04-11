@@ -287,7 +287,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             catalogLinks: [
               {
                 catalog: 'symphony',
-                catalogRecordId: catkey
+                catalogRecordId: catkey,
+                refresh: true
               }
             ]
           },
@@ -337,11 +338,13 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             catalogLinks: [
               {
                 catalog: 'symphony',
-                catalogRecordId: catkey1
+                catalogRecordId: catkey1,
+                refresh: true
               },
               {
                 catalog: 'symphony',
-                catalogRecordId: catkey2
+                catalogRecordId: catkey2,
+                refresh: false
               }
             ]
           },
@@ -391,11 +394,13 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             catalogLinks: [
               {
                 catalog: 'symphony',
-                catalogRecordId: catkey
+                catalogRecordId: catkey,
+                refresh: true
               },
               {
                 catalog: 'previous symphony',
-                catalogRecordId: prev_catkey
+                catalogRecordId: prev_catkey,
+                refresh: false
               }
             ]
           },
@@ -444,11 +449,13 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             catalogLinks: [
               {
                 catalog: 'symphony',
-                catalogRecordId: catkey
+                catalogRecordId: catkey,
+                refresh: true
               },
               {
                 catalog: 'previous symphony',
-                catalogRecordId: catkey
+                catalogRecordId: catkey,
+                refresh: false
               }
             ]
           },
@@ -499,7 +506,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             catalogLinks: [
               {
                 catalog: 'symphony',
-                catalogRecordId: catkey
+                catalogRecordId: catkey,
+                refresh: true
               }
             ]
           },
@@ -607,7 +615,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             catalogLinks: [
               {
                 catalog: 'symphony',
-                catalogRecordId: catkey
+                catalogRecordId: catkey,
+                refresh: true
               }
             ]
           },
@@ -699,7 +708,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             catalogLinks: [
               {
                 catalog: 'symphony',
-                catalogRecordId: catkey
+                catalogRecordId: catkey,
+                refresh: true
               }
             ],
             sourceId: 'google:STANFORD_36105014928126'
@@ -770,7 +780,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             catalogLinks: [
               {
                 catalog: 'symphony',
-                catalogRecordId: catkey
+                catalogRecordId: catkey,
+                refresh: true
               }
             ]
           },
@@ -848,7 +859,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             catalogLinks: [
               {
                 catalog: 'symphony',
-                catalogRecordId: catkey
+                catalogRecordId: catkey,
+                refresh: true
               }
             ]
           },
@@ -924,7 +936,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             catalogLinks: [
               {
                 catalog: 'symphony',
-                catalogRecordId: catkey
+                catalogRecordId: catkey,
+                refresh: true
               }
             ]
           },
@@ -1443,7 +1456,8 @@ RSpec.describe 'Fedora Item identityMetadata <--> Cocina DRO Identification mapp
             catalogLinks: [
               {
                 catalog: 'symphony',
-                catalogRecordId: catkey
+                catalogRecordId: catkey,
+                refresh: true
               }
             ]
           },

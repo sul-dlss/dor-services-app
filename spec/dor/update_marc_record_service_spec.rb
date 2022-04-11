@@ -37,7 +37,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
       sourceId: 'sul:36105216275185',
       catalogLinks: [{
         catalog: 'symphony',
-        catalogRecordId: '8832162'
+        catalogRecordId: '8832162',
+        refresh: true
       }],
       barcode: '36105216275185'
     }
@@ -47,7 +48,8 @@ RSpec.describe Dor::UpdateMarcRecordService do
       sourceId: 'sul:36105216275185',
       catalogLinks: [{
         catalog: 'symphony',
-        catalogRecordId: '8832162'
+        catalogRecordId: '8832162',
+        refresh: true
       }]
     }
   end
@@ -57,15 +59,18 @@ RSpec.describe Dor::UpdateMarcRecordService do
       catalogLinks: [
         {
           catalog: 'symphony',
-          catalogRecordId: '8832162'
+          catalogRecordId: '8832162',
+          refresh: true
         },
         {
           catalog: 'previous symphony',
-          catalogRecordId: '123'
+          catalogRecordId: '123',
+          refresh: false
         },
         {
           catalog: 'previous symphony',
-          catalogRecordId: '456'
+          catalogRecordId: '456',
+          refresh: false
         }
       ]
     }
@@ -319,11 +324,13 @@ RSpec.describe Dor::UpdateMarcRecordService do
           catalogLinks: [
             {
               catalog: 'previous symphony',
-              catalogRecordId: '123'
+              catalogRecordId: '123',
+              refresh: false
             },
             {
               catalog: 'previous symphony',
-              catalogRecordId: '456'
+              catalogRecordId: '456',
+              refresh: false
             }
           ]
         }

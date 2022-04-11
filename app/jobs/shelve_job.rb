@@ -12,18 +12,6 @@ class ShelveJob < ApplicationJob
     begin
       cocina_object = CocinaObjectStore.find(druid)
 
-      # Disabling validation until pre-assembly and WAS handle this correctly.
-      # validator = validator_for?(cocina_object)
-      # unless validator.valid?
-      # Honeybadger.notify("Not all files for '#{druid}' have dark access and/or are unshelved when dro access is dark: #{validator.invalid_filenames}")
-      # return LogFailureJob.perform_later(druid: druid,
-      #                                    background_job_result: background_job_result,
-      #                                    workflow: 'accessionWF',
-      #                                    workflow_process: 'shelve',
-      #                                    output: { errors: [{ title: 'Access mismatch',
-      #                                                         detail: "Not all files have dark access and/or are unshelved when dro access is dark: #{validator.invalid_filenames}" }] })
-      # end
-
       ShelvingService.shelve(cocina_object)
 
       # Shelving can take a long time and can cause the database connections to get stale.
@@ -42,10 +30,5 @@ class ShelveJob < ApplicationJob
                                 workflow: 'accessionWF',
                                 background_job_result: background_job_result,
                                 workflow_process: 'shelve')
-  end
-
-  def validator_for?(cocina_object)
-    model = Cocina::Mapper.build(cocina_object)
-    Cocina::ValidateDarkService.new(model)
   end
 end
