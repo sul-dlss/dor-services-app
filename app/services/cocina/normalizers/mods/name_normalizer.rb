@@ -81,18 +81,20 @@ module Cocina
 
         def normalize_dupes_for(base_node)
           name_nodes = base_node.xpath('mods:name', mods: ModsNormalizer::MODS_NS)
+          dupe_name_nodes_groups = name_nodes.group_by { |name_node| name_node_comparitor(name_node) }
+          dupe_name_nodes_groups.each_value do |grouped_name_nodes|
+            if grouped_name_nodes.size == 1
+              include_all_uniq_roles(grouped_name_nodes, base_node)
+            else
+              # If there is a name with nameTitleGroup, prefer retaining it.
+              nametitle_names, other_names = grouped_name_nodes.partition { |name_node| name_node['nameTitleGroup'] }
+              ordered_name_nodes = nametitle_names + other_names
 
-          dupe_name_nodes_groups = name_nodes.group_by { |name_node| name_node_comparitor(name_node) }.values.select { |grouped_name_nodes| grouped_name_nodes.size > 1 }
+              uniq_name_nodes = ordered_name_nodes.uniq { |name_node| name_node_comparitor(name_node) }
+              include_all_uniq_roles(uniq_name_nodes, base_node)
 
-          dupe_name_nodes_groups.each do |dupe_name_nodes|
-            # If there is a name with nameTitleGroup, prefer retaining it.
-            nametitle_names, other_names = dupe_name_nodes.partition { |name_node| name_node['nameTitleGroup'] }
-            ordered_name_nodes = nametitle_names + other_names
-
-            uniq_name_nodes = ordered_name_nodes.uniq { |name_node| name_node_comparitor(name_node) }
-            include_all_uniq_roles(uniq_name_nodes, base_node)
-
-            ordered_name_nodes[1..].each(&:remove)
+              ordered_name_nodes[1..].each(&:remove)
+            end
           end
         end
 
@@ -100,30 +102,32 @@ module Cocina
           dup_name_node = name_node.dup
           dup_name_node.delete('usage')
           dup_name_node.delete('nameTitleGroup')
-          dup_name_node.xpath('mods:role', mods: 'http://www.loc.gov/mods/v3').each(&:unlink)
+          dup_name_node.xpath('mods:role', mods: ModsNormalizer::MODS_NS).each(&:unlink)
           dup_name_node.to_s.strip.gsub(/\s+/, ' ')
         end
 
-        # ensure all roles for uniq name node are included
+        # ensure all roles for each uniq name node are present
+        # @return [Array<Nokogiri::XML::Node] the uniq name nodes with all roles present
         def include_all_uniq_roles(uniq_name_nodes, base_node)
+          names_to_roles = name_comparitor_2_role_nodes(base_node) # compute this once
           uniq_name_nodes.each do |uniq_name_node|
-            role_nodes = uniq_name_comparitor_2_role_nodes(base_node)[name_node_comparitor(uniq_name_node)]
-            next if role_nodes.blank? || role_nodes.size < 2
+            role_nodes = names_to_roles[name_node_comparitor(uniq_name_node)]
+            next if role_nodes.blank?
 
-            uniq_name_node.xpath('mods:role', mods: 'http://www.loc.gov/mods/v3').each(&:unlink)
+            uniq_name_node.xpath('mods:role', mods: ModsNormalizer::MODS_NS).each(&:unlink)
             role_nodes.each { |role_node| uniq_name_node.add_child(role_node) }
           end
           uniq_name_nodes
         end
 
-        def uniq_name_comparitor_2_role_nodes(base_node)
-          role_nodes = base_node.xpath('mods:name/mods:role', mods: 'http://www.loc.gov/mods/v3')
-          # we can use name_node_comparitor to get uniq role nodes
-          uniq_role_nodes = role_nodes.uniq { |role_node| name_node_comparitor(role_node) }
-          return {} if uniq_role_nodes.size < 2
-
+        # @return [Hash<String, Array[Nokogiri::XML::Node]] key is the string comparitor for a name node;
+        #   value is an Array of uniq role nodes
+        def name_comparitor_2_role_nodes(base_node)
           result = {}
-          uniq_role_nodes.each do |role_node|
+
+          # we must do this outside the loop in case of duplicate name nodes
+          all_role_nodes = base_node.xpath('mods:name/mods:role', mods: 'http://www.loc.gov/mods/v3')
+          all_role_nodes.each do |role_node|
             name_comparitor = name_node_comparitor(role_node.parent)
             result[name_comparitor] = if result[name_comparitor]
                                         result[name_comparitor] << role_node
@@ -131,7 +135,7 @@ module Cocina
                                         [role_node]
                                       end
           end
-          result
+          result.each { |_k, role_nodes| role_nodes.uniq! { |role_node| name_node_comparitor(role_node) } }
         end
 
         def normalize_type
