@@ -1043,6 +1043,77 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
     end
   end
 
+  describe 'Multilingual uniform title with unstructured name' do
+    # based on cs842gy7467
+    xit 'new mapping not implemented' do
+      let(:mods) do
+        <<~XML
+          <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="02">
+            <title>She&#x2BC;erit Mena&#x1E25;em</title>
+          </titleInfo>
+          <titleInfo type="uniform" nameTitleGroup="2" altRepGroup="02">
+            <title>&#x5E9;&#x5D0;&#x5E8;&#x5D9;&#x5EA; &#x5DE;&#x5E0;&#x5D7;&#x5DD;</title>
+          </titleInfo>
+          <name type="personal" usage="primary" altRepGroup="01" nameTitleGroup="1">
+            <namePart>Rubinstein, Samuel Jacob</namePart>
+          </name>
+          <name type="personal" altRepGroup="01" nameTitleGroup="2">
+            <namePart>&#x5E8;&#x5D5;&#x5D1;&#x5D9;&#x5E0;&#x5E9;&#x5D8;&#x5D9;&#x5D9;&#x5DF;, &#x5E9;&#x5DE;&#x5D5;&#x5D0;&#x5DC; &#x5D9;&#x5E2;&#x5E7;&#x5D1;</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          title: [
+            {
+              parallelValue: [
+                {
+                  value: 'Sefer She&#x2BC;erit Mena&#x1E25;em',
+                  note: [
+                    {
+                      value: 'Rubinstein, Samuel Jacob',
+                      type: 'associated name'
+                    }
+                  ]
+                },
+                {
+                  value: '&#x5E9;&#x5D0;&#x5E8;&#x5D9;&#x5EA; &#x5DE;&#x5E0;&#x5D7;&#x5DD;',
+                  note: [
+                    {
+                      value: '&#x5E8;&#x5D5;&#x5D1;&#x5D9;&#x5E0;&#x5E9;&#x5D8;&#x5D9;&#x5D9;&#x5DF;, &#x5E9;&#x5DE;&#x5D5;&#x5D0;&#x5DC; &#x5D9;&#x5E2;&#x5E7;&#x5D1;',
+                      type: 'associated name'
+                    }
+                  ]
+                }
+              ],
+              type: 'uniform'
+            }
+          ],
+          contributor: [
+            {
+              name: [
+                {
+                  paralleValue: [
+                    {
+                      value: 'Rubinstein, Samuel Jacob',
+                      status: 'primary'
+                    },
+                    {
+                      value: '&#x5E8;&#x5D5;&#x5D1;&#x5D9;&#x5E0;&#x5E9;&#x5D8;&#x5D9;&#x5D9;&#x5DF;, &#x5E9;&#x5DE;&#x5D5;&#x5D0;&#x5DC; &#x5D9;&#x5E2;&#x5E7;&#x5D1;'
+                    }
+                  ]
+                }
+              ],
+              status: 'primary',
+              type: 'person'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Title with xml:space="preserve"' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
