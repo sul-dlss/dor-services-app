@@ -11,6 +11,7 @@ SimpleCov.start :rails do
   add_filter '/lib/report.rb'
   add_filter '/lib/unique_report.rb'
   add_filter '/lib/cache_cocina_object_store.rb'
+  add_filter '/lib/administrative_tags.rb'
   add_filter '/bin/'
 end
 

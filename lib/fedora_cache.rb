@@ -2,6 +2,7 @@
 
 require 'dry/monads'
 require 'zip'
+require 'administrative_tags'
 
 # Support local caching of DOR content (for validating cocina mappings)
 class FedoraCache
