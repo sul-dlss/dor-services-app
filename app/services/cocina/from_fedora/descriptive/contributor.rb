@@ -38,6 +38,7 @@ module Cocina
           check_altrepgroup_type_inconsistency(grouped_altrepgroup_name_nodes)
           contributors = grouped_altrepgroup_name_nodes.map { |name_nodes| build_name_nodes(name_nodes) } + \
                          other_name_nodes.map { |name_node| build_name_nodes([name_node]) }
+          contrib_level_type_and_status(contributors)
           adjust_primary(contributors.compact).presence
         end
 
@@ -125,13 +126,32 @@ module Cocina
         end
 
         def adjust_primary(contributors)
-          Primary.adjust(contributors, 'name', notifier)
+          Primary.adjust(contributors, 'contributor', notifier)
           contributors.each do |contributor|
             Array(contributor[:name]).each do |name|
               Primary.adjust(name[:parallelValue], 'name', notifier) if name[:parallelValue]
             end
           end
           contributors
+        end
+
+        # 'type' and 'status' are generated in name_builder on the name level object,
+        #   but we want them at the contributor level object.
+        def contrib_level_type_and_status(contributors)
+          contributors.each do |contributor|
+            next if contributor.blank?
+
+            Array(contributor[:name]).each do |name|
+              if name[:status] == 'primary'
+                contributor[:status] = 'primary'
+                name.delete(:status)
+              end
+              if name[:type].present? && ROLES.value?(name[:type])
+                contributor[:type] = name[:type].presence
+                name.delete(:type)
+              end
+            end
+          end
         end
       end
     end

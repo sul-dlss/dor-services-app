@@ -53,7 +53,10 @@ module Cocina
         end
 
         def write_contributor(contributor)
-          xml.name name_attributes(contributor, contributor.name.first, name_title_group_indexes[0]) do
+          attributes = name_attributes(contributor, contributor.name.first, name_title_group_indexes[0])
+          type_attr = NAME_TYPE.fetch(contributor.type, name_title_group_indexes[0] ? 'personal' : nil)
+          attributes[:type] = type_attr if type_attr
+          xml.name attributes do
             contributor.name.each do |name|
               write_name(name)
             end
@@ -76,6 +79,8 @@ module Cocina
 
         def write_parallel_contributor(contributor, name, parallel_name, name_title_group, altrepgroup_id)
           attributes = parallel_name_attributes(name, parallel_name, name_title_group, altrepgroup_id)
+          type_attr = NAME_TYPE.fetch(contributor.type, name_title_group ? 'personal' : nil)
+          attributes[:type] = type_attr if type_attr
           xml.name attributes do
             if parallel_name.structuredValue.present?
               write_structured(parallel_name)
@@ -90,7 +95,6 @@ module Cocina
 
         def parallel_name_attributes(name, parallel_name, name_title_group, altrepgroup_id)
           {
-            type: NAME_TYPE.fetch(name.type, name_title_group ? 'personal' : nil),
             nameTitleGroup: name_title_group,
             altRepGroup: altrepgroup_id,
             lang: parallel_name.valueLanguage&.code,
@@ -107,7 +111,6 @@ module Cocina
 
         def name_attributes(contributor, name, name_title_group)
           {
-            type: NAME_TYPE.fetch(contributor.type, name_title_group ? 'personal' : nil),
             nameTitleGroup: name_title_group,
             lang: name.valueLanguage&.code,
             script: name.valueLanguage&.valueScript&.code,

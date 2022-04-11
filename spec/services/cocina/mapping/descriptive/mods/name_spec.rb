@@ -1253,11 +1253,11 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                         value: 'ALA-LC Romanization Tables'
                       }
                     }
-                  ],
-                  type: 'person',
-                  status: 'primary'
+                  ]
                 }
-              ]
+              ],
+              type: 'person',
+              status: 'primary'
             },
             {
               name: [
@@ -1289,10 +1289,10 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                         value: 'ALA-LC Romanization Tables'
                       }
                     }
-                  ],
-                  type: 'person'
+                  ]
                 }
-              ]
+              ],
+              type: 'person'
             }
           ]
         }
@@ -1441,11 +1441,11 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                       },
                       value: 'Rea Metaru Shigen Saisei Gijutsu Kenkyūkai'
                     }
-                  ],
-                  type: 'organization',
-                  status: 'primary'
+                  ]
                 }
               ],
+              type: 'organization',
+              status: 'primary',
               role: [
                 {
                   value: 'creator',
@@ -1905,11 +1905,11 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                         value: 'ALA-LC Romanization Tables'
                       }
                     }
-                  ],
-                  type: 'organization',
-                  status: 'primary'
+                  ]
                 }
-              ]
+              ],
+              type: 'organization',
+              status: 'primary'
             }
           ]
         }
@@ -1998,11 +1998,11 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                     {
                       value: 'Name v2'
                     }
-                  ],
-                  status: 'primary',
-                  type: 'person'
+                  ]
                 }
-              ]
+              ],
+              status: 'primary',
+              type: 'person'
             }
           ]
         }
@@ -2065,7 +2065,7 @@ RSpec.describe 'MODS name <--> cocina mappings' do
 
       let(:warnings) do
         [
-          Notification.new(msg: 'Multiple marked as primary', context: { type: 'name' })
+          Notification.new(msg: 'Multiple marked as primary', context: { type: 'contributor' })
         ]
       end
     end
