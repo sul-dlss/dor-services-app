@@ -1397,6 +1397,102 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
     end
   end
 
+  describe 'Multilingual uniform title with repeated name in multilingual alternative title' do
+    # based on cs842gy7467
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo type="uniform" nameTitleGroup="1" altRepGroup="1">
+            <title>Sheʼerit Menaḥem</title>
+          </titleInfo>
+          <titleInfo type="uniform" nameTitleGroup="2" altRepGroup="1">
+            <title>uniform title in Hebrew</title>
+          </titleInfo>
+          <titleInfo type="alternative" altRepGroup="3">
+            <title>Sheʼerit Menaḥem</title>
+          </titleInfo>
+          <titleInfo type="alternative">
+            <title>Legs de Menahem</title>
+          </titleInfo>
+          <titleInfo type="alternative" altRepGroup="3">
+            <title>alternative title in Hebrew</title>
+          </titleInfo>
+          <name type="personal" usage="primary" altRepGroup="2" nameTitleGroup="1">
+            <namePart>Rubinstein, Samuel Jacob</namePart>
+          </name>
+          <name type="personal" altRepGroup="2" nameTitleGroup="2">
+            <namePart>personal name in Hebrew</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          title: [
+            {
+              parallelValue: [
+                {
+                  value: 'Sheʼerit Menaḥem',
+                  note: [
+                    {
+                      value: 'Rubinstein, Samuel Jacob',
+                      type: 'associated name'
+                    }
+                  ]
+                },
+                {
+                  value: 'uniform title in Hebrew',
+                  note: [
+                    {
+                      value: 'personal name in Hebrew',
+                      type: 'associated name'
+                    }
+                  ]
+                }
+              ],
+              type: 'uniform'
+            },
+            {
+              parallelValue: [
+                {
+                  value: 'Sheʼerit Menaḥem',
+                  type: 'alternative'
+                },
+                {
+                  value: 'alternative title in Hebrew',
+                  type: 'alternative'
+                }
+              ]
+            },
+            {
+              value: 'Legs de Menahem',
+              type: 'alternative'
+            }
+          ],
+          contributor: [
+            {
+              name: [
+                {
+                  parallelValue: [
+                    {
+                      value: 'Rubinstein, Samuel Jacob',
+                      status: 'primary'
+                    },
+                    {
+                      value: 'personal name in Hebrew'
+                    }
+                  ]
+                }
+              ],
+              status: 'primary',
+              type: 'person'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Title with xml:space="preserve"' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do

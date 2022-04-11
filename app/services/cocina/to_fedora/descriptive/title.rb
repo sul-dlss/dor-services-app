@@ -103,6 +103,10 @@ module Cocina
             parallel_attrs[:lang] = parallel_title.valueLanguage.code if parallel_title.valueLanguage&.code
             if title.type == 'uniform'
               parallel_attrs[:type] = 'uniform'
+              if name_title_vals_index.present?
+                title_value_slice = NameTitleGroup.slice_of_value_or_structured_value(parallel_title.to_h)
+                parallel_attrs[:nameTitleGroup] = name_title_group_number(title_value_slice)
+              end
             elsif parallel_title.type == 'transliterated'
               parallel_attrs[:type] = 'translated'
               parallel_attrs[:transliteration] = parallel_title.standard.value
@@ -115,14 +119,8 @@ module Cocina
             end
 
             if parallel_title.structuredValue.present?
-              if name_title_vals_index.present?
-                title_value_slice = NameTitleGroup.slice_of_value_or_structured_value(parallel_title.to_h)
-                parallel_attrs[:nameTitleGroup] = name_title_group_number(title_value_slice)
-              end
               write_structured(title: parallel_title, title_info_attrs: parallel_attrs.compact)
             elsif parallel_title.value
-              title_value_slice = NameTitleGroup.slice_of_value_or_structured_value(parallel_title.to_h)
-              parallel_attrs[:nameTitleGroup] = name_title_group_number(title_value_slice) if name_title_vals_index.present?
               write_basic(title: parallel_title, title_info_attrs: parallel_attrs.compact)
             end
           end
