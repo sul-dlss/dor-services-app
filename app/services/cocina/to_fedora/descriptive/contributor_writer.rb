@@ -30,7 +30,6 @@ module Cocina
           @name_title_vals_index = name_title_vals_index
         end
 
-        # rubocop:disable Metrics/PerceivedComplexity
         def write
           if contributor.type == 'unspecified others'
             write_etal
@@ -57,7 +56,6 @@ module Cocina
             end
           end
         end
-        # rubocop:enable Metrics/PerceivedComplexity
 
         private
 

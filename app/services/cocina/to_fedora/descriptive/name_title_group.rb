@@ -99,7 +99,7 @@ module Cocina
           slices = []
           desc_value_slice = desc_value.to_h.slice(:value, :structuredValue, :parallelValue)
           if desc_value_slice[:value].present? || desc_value_slice[:structuredValue].present?
-            slices << desc_value_slice.select {|_k, value| value.present? }
+            slices << desc_value_slice.select { |_k, value| value.present? }
           elsif desc_value_slice[:parallelValue].present?
             desc_value_slice[:parallelValue].each { |parallel_val| slices << value_slices(parallel_val) }
           end
@@ -108,7 +108,6 @@ module Cocina
         end
         # private_class_method :value_slices
 
-
         # for a given Hash (from a Cocina DescriptiveValue or Title or Name or ...)
         # result will be either
         #   { value: 'string value' }
@@ -116,9 +115,9 @@ module Cocina
         #   { structuredValue: [ some structuredValue ] }
         def self.slice_of_value_or_structured_value(hash)
           if hash[:value].present?
-            hash.slice(:value).select {|_k, value| value.present? }
+            hash.slice(:value).select { |_k, value| value.present? }
           elsif hash[:structuredValue].present?
-            hash.slice(:structuredValue).select {|_k, value| value.present? }
+            hash.slice(:structuredValue).select { |_k, value| value.present? }
           end
         end
 
@@ -131,7 +130,7 @@ module Cocina
           title_slice = title.to_h.slice(:value, :structuredValue, :parallelValue, :note)
           # FIXME: can we simplify to slices << value_slices(title_slice)?
           if title_slice[:value].present? || title_slice[:structuredValue].present?
-            slices << title_slice.select {|_k, value| value.present? }
+            slices << title_slice.select { |_k, value| value.present? }
           elsif title_slice[:parallelValue].present?
             title_slice[:parallelValue].each { |parallel_val| slices << title_value_note_slices(parallel_val) }
           end

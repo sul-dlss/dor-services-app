@@ -29,6 +29,7 @@ module Cocina
         end
 
         # rubocop:disable Metrics/AbcSize
+        # rubocop:disable Metrics/BlockLength
         # rubocop:disable Metrics/CyclomaticComplexity
         # rubocop:disable Metrics/PerceivedComplexity
         def write
@@ -44,6 +45,7 @@ module Cocina
             elsif title.structuredValue.present?
               if name_title_vals_index.present?
                 title_value_slice = NameTitleGroup.slice_of_value_or_structured_value(title.to_h)
+                # don't leak nameTitleGroup into later titles
                 my_additional_attrs = additional_attrs.dup
                 my_additional_attrs[:nameTitleGroup] = name_title_group_number(title_value_slice)
                 write_structured(title: title, title_info_attrs: my_additional_attrs.compact)
@@ -53,6 +55,7 @@ module Cocina
             elsif title.value
               if name_title_vals_index.present?
                 title_value_slice = NameTitleGroup.slice_of_value_or_structured_value(title.to_h)
+                # don't leak nameTitleGroup into later titles
                 my_additional_attrs = additional_attrs.dup
                 my_additional_attrs[:nameTitleGroup] = name_title_group_number(title_value_slice)
                 write_basic(title: title, title_info_attrs: my_additional_attrs.compact)
@@ -74,6 +77,7 @@ module Cocina
           end
         end
         # rubocop:enable Metrics/AbcSize
+        # rubocop:enable Metrics/BlockLength
         # rubocop:enable Metrics/CyclomaticComplexity
         # rubocop:enable Metrics/PerceivedComplexity
 
