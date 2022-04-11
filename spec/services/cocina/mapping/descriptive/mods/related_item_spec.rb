@@ -638,7 +638,7 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
         XML
       end
 
-      # The goal of this test is to have different relatedItems with the same nameTitleGroup ids.
+      # The goal of this test is to have different relatedItems originally with the same nameTitleGroup ids.
       # However, this won't roundtrip to the normalized MODS, hence skipping.
       let(:skip_normalization) { true }
 
@@ -649,7 +649,13 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
               title: [
                 {
                   value: 'Contradizione',
-                  type: 'uniform'
+                  type: 'uniform',
+                  note: [
+                    {
+                      type: 'associated name',
+                      value: 'Bacewicz, Grayna.'
+                    }
+                  ]
                 }
               ],
               contributor: [
@@ -669,7 +675,13 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
               title: [
                 {
                   value: 'Concerto in one movement, marimba, orchestra',
-                  type: 'uniform'
+                  type: 'uniform',
+                  note: [
+                    {
+                      type: 'associated name',
+                      value: 'Diemer, Emma Lou.'
+                    }
+                  ]
                 }
               ],
               contributor: [

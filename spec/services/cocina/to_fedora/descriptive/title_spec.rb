@@ -71,8 +71,12 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
                       type: 'part number'
                     }
                   ]
-                },
+                }
+              ],
+              type: 'uniform',
+              note: [
                 {
+                  type: 'associated name',
                   structuredValue: [
                     {
                       value: 'Vivaldi, Antonio',
@@ -82,11 +86,9 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
                       value: '1678-1741',
                       type: 'life dates'
                     }
-                  ],
-                  type: 'name'
+                  ]
                 }
-              ],
-              type: 'uniform'
+              ]
             }
           )
         ]
@@ -299,8 +301,11 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
     let(:titles) do
       [
         Cocina::Models::Title.new(
-          structuredValue: [
+          value: 'Shaʻare ha-ḳedushah',
+          type: 'uniform',
+          note: [
             {
+              type: 'associated name',
               structuredValue: [
                 {
                   value: 'Vital, Ḥayyim ben Joseph',
@@ -310,15 +315,9 @@ RSpec.describe Cocina::ToFedora::Descriptive::Title do
                   value: '1542 or 1543-1620',
                   type: 'life dates'
                 }
-              ],
-              type: 'name'
-            },
-            {
-              value: 'Shaʻare ha-ḳedushah',
-              type: 'title'
+              ]
             }
-          ],
-          type: 'uniform'
+          ]
         ),
         Cocina::Models::Title.new(
           parallelValue: [

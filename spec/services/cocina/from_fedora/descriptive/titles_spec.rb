@@ -254,7 +254,22 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
           },
           {
             value: 'Shaʻare ha-ḳedushah',
-            type: 'uniform'
+            type: 'uniform',
+            note: [
+              {
+                type: 'associated name',
+                structuredValue: [
+                  {
+                    value: 'Vital, Ḥayyim ben Joseph',
+                    type: 'name'
+                  },
+                  {
+                    value: '1542 or 1543-1620',
+                    type: 'life dates'
+                  }
+                ]
+              }
+            ]
           }
         ]
       end
@@ -285,7 +300,22 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         expect(build).to eq [
           {
             value: 'Tractatus de intellectus emendatione. German',
-            type: 'uniform'
+            type: 'uniform',
+            note: [
+              {
+                type: 'associated name',
+                structuredValue: [
+                  {
+                    value: 'Spinoza, Benedictus de',
+                    type: 'name'
+                  },
+                  {
+                    value: '1632-1677',
+                    type: 'life dates'
+                  }
+                ]
+              }
+            ]
           }
         ]
       end
@@ -304,6 +334,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         XML
       end
 
+      before do
+        allow(notifier).to receive(:warn)
+      end
+
       it 'parses' do
         expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
       end
@@ -320,6 +354,7 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
             }
           }
         ]
+        expect(notifier).to have_received(:warn).at_least(:once).with("For title 'Hamlet', no name matching nameTitleGroup 0.")
       end
     end
 
@@ -386,29 +421,11 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
       end
 
-      it 'ignores and warns' do
+      it 'skips empty titleInfo and warns' do
         expect(build).to eq [
           {
             value: '[Ritter Pázmán sketches]',
             status: 'primary'
-          },
-          {
-            structuredValue: [
-              {
-                structuredValue: [
-                  {
-                    value: 'Strauss, Johann',
-                    type: 'name'
-                  },
-                  {
-                    value: '1825-1899',
-                    type: 'life dates'
-                  }
-                ],
-                type: 'name'
-              }
-            ],
-            type: 'uniform'
           }
         ]
         expect(notifier).to have_received(:warn).at_least(:once).with('Empty title node')
