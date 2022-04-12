@@ -593,10 +593,322 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
     end
   end
 
+  describe 'related item with nameTitleGroup with simple name' do
+    # based on fk884nj8194
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo>
+            <title>Carte géologique de la Tunisie</title>
+          </titleInfo>
+          <relatedItem>
+            <titleInfo nameTitleGroup="1">
+              <title>Annales des mines et de la géologie</title>
+            </titleInfo>
+            <name type="corporate" nameTitleGroup="1">
+              <namePart>Tunisia.</namePart>
+            </name>
+          </relatedItem>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          title: [
+            {
+              value: 'Carte géologique de la Tunisie'
+            }
+          ],
+          relatedResource: [
+            {
+              title: [
+                {
+                  value: 'Annales des mines et de la géologie',
+                  note: [
+                    {
+                      type: 'associated name',
+                      value: 'Tunisia.'
+                    }
+                  ]
+                }
+              ],
+              contributor: [
+                {
+                  type: 'organization',
+                  name: [
+                    {
+                      value: 'Tunisia.'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'related item with nameTitleGroup with multipart name' do
+    # based on fk884nj8194
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo>
+            <title>Carte géologique de la Tunisie</title>
+          </titleInfo>
+          <relatedItem>
+            <titleInfo nameTitleGroup="1">
+              <title>Annales des mines et de la géologie</title>
+            </titleInfo>
+            <name type="corporate" nameTitleGroup="1">
+              <namePart>Tunisia.</namePart>
+              <namePart>Direction des travaux publics.</namePart>
+            </name>
+          </relatedItem>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          title: [
+            {
+              value: 'Carte géologique de la Tunisie'
+            }
+          ],
+          relatedResource: [
+            {
+              title: [
+                {
+                  value: 'Annales des mines et de la géologie',
+                  note: [
+                    {
+                      type: 'associated name',
+                      structuredValue: [
+                        {
+                          value: 'Tunisia.',
+                          type: 'name'
+                        },
+                        {
+                          value: 'Direction des travaux publics.',
+                          type: 'name'
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              contributor: [
+                {
+                  type: 'organization',
+                  name: [
+                    structuredValue: [
+                      {
+                        value: 'Tunisia.',
+                        type: 'name'
+                      },
+                      {
+                        value: 'Direction des travaux publics.',
+                        type: 'name'
+                      }
+                    ]
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'related item with nameTitleGroup and title with nameTitleGroup' do
+    # based on qj452rj6647
+    it_behaves_like 'MODS cocina mapping' do
+      let(:mods) do
+        <<~XML
+          <titleInfo>
+            <nonSort xml:space="preserve">The </nonSort>
+            <title>ballad of Baby Doe</title>
+            <subTitle>libretto</subTitle>
+          </titleInfo>
+          <titleInfo type="uniform" nameTitleGroup="1">
+            <title>Ballad of Baby Doe</title>
+          </titleInfo>
+          <name type="personal" usage="primary" nameTitleGroup="1">
+            <namePart>Latouche, John</namePart>
+            <namePart type="date">1914-1956</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+          <relatedItem displayLabel="Libretto for (work):">
+            <titleInfo nameTitleGroup="1">
+              <title>Ballad of Baby Doe</title>
+            </titleInfo>
+            <name type="personal" nameTitleGroup="1">
+              <namePart>Moore, Douglas,</namePart>
+              <namePart type="date">1893-1969</namePart>
+            </name>
+          </relatedItem>
+        XML
+      end
+
+      # different nameTitleGroup number in the relatedItem
+      let(:roundtrip_mods) do
+        <<~XML
+          <titleInfo>
+            <nonSort>The </nonSort>
+            <title>ballad of Baby Doe</title>
+            <subTitle>libretto</subTitle>
+          </titleInfo>
+          <titleInfo type="uniform" nameTitleGroup="1">
+            <title>Ballad of Baby Doe</title>
+          </titleInfo>
+          <name type="personal" usage="primary" nameTitleGroup="1">
+            <namePart>Latouche, John</namePart>
+            <namePart type="date">1914-1956</namePart>
+            <role>
+              <roleTerm type="text">author</roleTerm>
+            </role>
+          </name>
+          <relatedItem displayLabel="Libretto for (work):">
+            <titleInfo nameTitleGroup="2">
+              <title>Ballad of Baby Doe</title>
+            </titleInfo>
+            <name type="personal" nameTitleGroup="2">
+              <namePart>Moore, Douglas,</namePart>
+              <namePart type="date">1893-1969</namePart>
+            </name>
+          </relatedItem>
+        XML
+      end
+
+      # The change in nameTitleGroup ids means this won't roundtrip to the normalized MODS, hence skipping.
+      let(:skip_normalization) { true }
+
+      let(:cocina) do
+        {
+          title: [
+            {
+              structuredValue: [
+                {
+                  value: 'The',
+                  type: 'nonsorting characters'
+                },
+                {
+                  value: 'ballad of Baby Doe',
+                  type: 'main title'
+                },
+                {
+                  value: 'libretto',
+                  type: 'subtitle'
+                }
+              ],
+              note: [
+                {
+                  type: 'nonsorting character count',
+                  value: '4'
+                }
+              ]
+            },
+            {
+              value: 'Ballad of Baby Doe',
+              type: 'uniform',
+              note: [
+                {
+                  type: 'associated name',
+                  structuredValue: [
+                    {
+                      value: 'Latouche, John',
+                      type: 'name'
+                    },
+                    {
+                      value: '1914-1956',
+                      type: 'life dates'
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          contributor: [
+            {
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Latouche, John',
+                      type: 'name'
+                    },
+                    {
+                      value: '1914-1956',
+                      type: 'life dates'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                value: 'author'
+              ]
+            }
+          ],
+          relatedResource: [
+            {
+              title: [
+                {
+                  value: 'Ballad of Baby Doe',
+                  note: [
+                    {
+                      type: 'associated name',
+                      structuredValue: [
+                        {
+                          value: 'Moore, Douglas,',
+                          type: 'name'
+                        },
+                        {
+                          value: '1893-1969',
+                          type: 'life dates'
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              contributor: [
+                {
+                  type: 'person',
+                  name: [
+                    structuredValue: [
+                      {
+                        value: 'Moore, Douglas,',
+                        type: 'name'
+                      },
+                      {
+                        value: '1893-1969',
+                        type: 'life dates'
+                      }
+                    ]
+                  ]
+                }
+              ],
+              displayLabel: 'Libretto for (work):'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Multiple related items with nameTitleGroups' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
+          <titleInfo>
+            <title>A title</title>
+          </titleInfo>
           <relatedItem type="constituent">
             <titleInfo type="uniform" nameTitleGroup="1">
               <title>Contradizione</title>
@@ -619,6 +931,9 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
       # two distinct nameTitleGroups
       let(:roundtrip_mods) do
         <<~XML
+          <titleInfo>
+            <title>A title</title>
+          </titleInfo>
           <relatedItem type="constituent">
             <titleInfo type="uniform" nameTitleGroup="1">
               <title>Contradizione</title>
@@ -644,6 +959,11 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
 
       let(:cocina) do
         {
+          title: [
+            {
+              value: 'A title'
+            }
+          ],
           relatedResource: [
             {
               title: [
