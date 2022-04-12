@@ -77,11 +77,11 @@ module Cocina
 
         def simple_or_structured(node_set, display_types: true)
           node_set.filter_map do |node|
-            if node['nameTitleGroup']
+            if node['primary']
               structured_name(node: node, display_types: display_types)
             else
               attrs = Descriptive::TitleBuilder.build(title_info_element: node, notifier: notifier)
-              attrs.present? ? attrs.merge(common_attributes(node, display_types: display_types)) : nil
+              attrs.present? ? attrs.merge(common_attributes(node, display_types: display_types)).merge(associated_name_note(node)) : nil
             end
           end
         end
@@ -123,6 +123,28 @@ module Cocina
             attrs[:standard] = { value: title_info['transliteration'] } if title_info['transliteration']
             attrs[:displayLabel] = title_info['displayLabel']
           end.compact
+        end
+
+        def associated_name_note(title_info_node)
+          name_title_group_num = title_info_node['nameTitleGroup']
+          return {} if name_title_group_num.blank?
+
+          xpath_expression = "../mods:name[@nameTitleGroup='#{name_title_group_num}']"
+          matching_name_elements = title_info_node.xpath(xpath_expression, mods: DESC_METADATA_NS)
+          if matching_name_elements.blank?
+            notifier.warn("For title '#{title_info_node.text.strip}', no name matching nameTitleGroup #{name_title_group_num}.")
+            {}
+          else
+            name = NameBuilder.build(name_elements: [matching_name_elements.first], notifier: notifier)
+            desired_name_attrs = name[:name].first.slice(:value, :structuredValue)
+            {
+              note: [
+                {
+                  type: 'associated name'
+                }.merge(desired_name_attrs).compact
+              ]
+            }
+          end
         end
       end
     end
