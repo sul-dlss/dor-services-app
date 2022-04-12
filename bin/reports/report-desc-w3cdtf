@@ -14,20 +14,11 @@ date_elements = %w[
   dateOther
 ].freeze
 
-formats = [
-  /^\d{4}$/,                                                 # 1997
-  /^\d{4}-\d{2}$/,                                           # 1997-05
-  /^\d{4}-\d{2}-\d{2}$/,                                     # 1997-07-16
-  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}\+\d{2}:\d{2}$/,            # 1997-07-16T19:20+01:00
-  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}$/,      # 1997-07-16T19:20:30+01:00
-  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+\+\d{2}:\d{2}$/  # 1997-07-16T19:20:30.123+01:00
-]
-
 Report.new(name: 'desc-w3cdtf', dsids: ['descMetadata']).run do |ng_xml|
   mods_paths = date_elements.map { |element| "//mods:#{element}[@encoding='w3cdtf']" }.join(' | ')
 
   errors = ng_xml.xpath(mods_paths, mods: MODS_NS).filter_map do |element|
-    element.content unless formats.any? { |format| format.match?(element.content) }
+    DateTimeValidator.w3cdtf?(element.content) ? nil : element.content
   end
 
   errors.join(';').presence
