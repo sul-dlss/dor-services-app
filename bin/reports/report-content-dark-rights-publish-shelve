@@ -4,9 +4,11 @@
 require_relative '../../config/environment'
 require_relative '../../lib/report'
 
-Report.new(name: 'content-dark-rights-publish-shelve', dsids: ['rightsMetadata', 'contentMetadata']).run do |rights_xml, content_xml|
+Report.new(name: 'content-dark-rights-publish-shelve', dsids: ['rightsMetadata', 'contentMetadata'], nil_cache_failure: true).run do |rights_xml, content_xml|
+  next if content_xml.nil?
+
   rights = Dor::RightsAuth.parse(rights_xml, true)
   next unless rights.dark?
 
-  content_xml.xpath('/contentMetadata/resource[file]/file[@shelve="yes" or @publish="yes"]').present?
+  content_xml.xpath('/contentMetadata/resource[file]/file[normalize-space(@shelve)="yes" or normalize-space(@publish)="yes"]').present?
 end
