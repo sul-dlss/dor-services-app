@@ -14,6 +14,7 @@ module Cocina
       # contrib_name_value_slices(contributor)
       # value_slices(cocina_desc_value)
       # slice_of_value_or_structured_value(hash)
+      # title_value_note_slices(title)
       class NameTitleGroup
         # When to assign nameTitleGroup to MODS from cocina:
         #   for cocina title of type "uniform",
@@ -36,7 +37,6 @@ module Cocina
         def self.title_vals_to_contrib_name_vals(title, contributors)
           result = {}
           return result if title.blank? || contributors.blank?
-          return result if title&.type != 'uniform'
 
           # pair title value with contributor name value
           title_value_note_slices(title).each do |value_note_slice|
@@ -122,8 +122,7 @@ module Cocina
           end
         end
 
-        # ---------------------- private class methods below ---------------------------------------
-
+        # reduce parallelValues down to value or structuredValue for these slices
         # @params [Cocina::Models::Title] title
         # @return [Array<Cocina::Models::DescriptiveValue>] where we are only interested in
         #   hashes containing (either :value or :structureValue) and :note if present
@@ -139,7 +138,6 @@ module Cocina
           # ignoring groupedValue
           slices.flatten
         end
-        private_class_method :title_value_note_slices
       end
     end
   end

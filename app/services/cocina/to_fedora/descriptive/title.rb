@@ -61,7 +61,10 @@ module Cocina
               end
             end
 
-            next unless title.type == 'uniform'
+            associated_name = NameTitleGroup.title_value_note_slices(title).each do |value_note_slice|
+              value_note_slice[:note]&.detect { |note| note[:type] == 'associated name' }
+            end
+            next if associated_name.blank?
 
             contributors.each do |contributor|
               if NameTitleGroup.in_name_title_group?(contributor: contributor, titles: [title])
