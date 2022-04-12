@@ -69,9 +69,10 @@ module Cocina
           end
 
           status = name_node['usage']
-          # NOTE:  this lovely "or" clause for 'primary' is brought to you by MARC records for our GoogleBooks
+          # NOTE:  this lovely "or" clause for status 'primary' is brought to you by MARC records for our GoogleBooks
           #  in a perfect world, it should be sure there is no existing 'usage' attribute of primary on any top level name nodes
-          if status.blank? && name_node[:nameTitleGroup].present? && name_node[:type] == 'corporate'
+          if status.blank? && name_node[:nameTitleGroup].present? && name_node[:type] == 'corporate' &&
+             name_node.parent.node_name == 'mods'
             xpath_expression = "//mods:mods/mods:name[@usage='primary']"
             primary_names = name_node.xpath(xpath_expression, mods: DESC_METADATA_NS)
             status = 'primary' if primary_names.blank?
