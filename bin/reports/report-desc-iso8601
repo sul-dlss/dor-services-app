@@ -18,10 +18,7 @@ Report.new(name: 'desc-iso8601', dsids: ['descMetadata']).run do |ng_xml|
   mods_paths = date_elements.map { |element| "//mods:#{element}[@encoding='iso8601']" }.join(' | ')
 
   errors = ng_xml.xpath(mods_paths, mods: MODS_NS).filter_map do |element|
-    Time.iso8601(element.content)
-    nil
-  rescue ArgumentError
-    element.content
+    DateTimeValidator.iso8601?(element.content) ? nil : element.content
   end
 
   errors.join(';').presence
