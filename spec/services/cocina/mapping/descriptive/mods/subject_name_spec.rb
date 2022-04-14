@@ -29,7 +29,7 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
   end
 
   describe 'Name subject - corporate' do
-    xit 'new MODS cocina mapping - not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <subject>
@@ -54,12 +54,12 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
   end
 
   describe 'Name subject - conference' do
-    xit 'new MODS cocina mapping - not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <subject>
             <name type="conference">
-              <namePart>Dunnett, Dorothy</namePart>
+              <namePart>DunnettCon</namePart>
             </name>
           </subject>
         XML
@@ -79,7 +79,7 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
   end
 
   describe 'Name subject - family' do
-    xit 'new MODS cocina mapping - not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <subject>
