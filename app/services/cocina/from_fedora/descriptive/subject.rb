@@ -234,10 +234,14 @@ module Cocina
           values = node_set.map do |node|
             {
               value: node.text,
-              type: node.name
+              type: decamelize(node.name)
             }
           end
           attrs.merge(structuredValue: values, type: 'place')
+        end
+
+        def decamelize(str)
+          str.underscore.tr('_', ' ')
         end
 
         def subject_classification(subject_classification_node, attrs)

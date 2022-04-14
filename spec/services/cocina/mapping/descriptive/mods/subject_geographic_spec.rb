@@ -152,7 +152,7 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
   end
 
   describe 'Hierarchical geographic subject with mapped types' do
-    xit 'new MODS cocina mapping - not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <subject>
