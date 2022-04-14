@@ -50,9 +50,8 @@ module Dor
     # Subfield x #4 (optional): the barcode if known (<identityMetadata><otherId name="barcode">, recorded as barcode:barcode-value
     # Subfield x #5 (optional): the file-id to be used as thumb if available, recorded as file:file-id-value
     # Subfield x #6..n (optional): Collection(s) this object is a member of, recorded as collection:druid-value:ckey-value:title
-    # Subfield x #7..n (optional): Set(s) this object is a member of, recorded as set:druid-value:ckey-value:title
-    # Subfield x #8..n (optional): label and part sort keys for the member
-    # Subfield x #9..n (optional): High-level rights summary
+    # Subfield x #7..n (optional): label and part sort keys for the member
+    # Subfield x #8..n (optional): High-level rights summary
     def generate_symphony_records
       return [] unless ckeys?
 
@@ -91,7 +90,6 @@ module Dor
       new856 += "|xbarcode:#{@cocina_object.identification.barcode}" if @cocina_object.identification.respond_to?(:barcode) && @cocina_object.identification.barcode
       new856 += "|xfile:#{thumb}" unless thumb.nil?
       new856 += get_x2_collection_info unless get_x2_collection_info.nil?
-      new856 += get_x2_constituent_info unless get_x2_constituent_info.nil?
       new856 += get_x2_part_info unless get_x2_part_info.nil?
       new856 += get_x2_rights_info unless get_x2_rights_info.nil?
       new856
@@ -160,18 +158,6 @@ module Dor
       collection_info
     end
 
-    # returns the constituent information subfields if exists
-    # @return [String] the constituent information druid-value:catkey-value:title format
-    def get_x2_constituent_info
-      dor_items_for_constituents.map do |cons_obj_druid|
-        cons_obj = CocinaObjectStore.find(cons_obj_druid)
-        cons_obj_id = cons_obj_druid.sub('druid:', '')
-        cons_obj_title = Cocina::Models::TitleBuilder.build(cons_obj.description.title)
-        catkey = cons_obj.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
-        "|xset:#{cons_obj_id}:#{catkey&.catalogRecordId}:#{cons_obj_title}"
-      end.join
-    end
-
     def get_x2_part_info
       title_info = @cocina_object.description&.title&.first
       return unless title_info.respond_to?(:structuredValue) && title_info.structuredValue
@@ -227,12 +213,6 @@ module Dor
 
     def released_for
       ::ReleaseTags.for(cocina_object: @cocina_object)
-    end
-
-    def dor_items_for_constituents
-      return [] unless @cocina_object.respond_to?(:structural) && @cocina_object.structural
-
-      @cocina_object.structural.isMemberOf
     end
 
     # adapted from mods_display

@@ -269,7 +269,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       it 'generates a single symphony record' do
         # rubocop:disable Layout/LineLength
         expect(generate_symphony_records).to eq [
-          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label & A Special character|xset:cc111cc1111:8832162:Collection label & A Special character|xrights:world"
+          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label & A Special character|xrights:world"
         ]
       end
     end
@@ -289,7 +289,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
       it 'generates symphony record with a z subfield' do
         expect(generate_symphony_records).to match_array [
-          "8832162\tbc123dg9393\t.856. 41|zAvailable to Stanford-affiliated users.|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label & A Special character|xset:cc111cc1111:8832162:Collection label & A Special character|xrights:group=stanford"
+          "8832162\tbc123dg9393\t.856. 41|zAvailable to Stanford-affiliated users.|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label & A Special character|xrights:group=stanford"
         ]
       end
     end
@@ -311,7 +311,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
         expect(generate_symphony_records).to match_array [
           "123\tbc123dg9393\t",
           "456\tbc123dg9393\t",
-          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label & A Special character|xset:cc111cc1111:8832162:Collection label & A Special character|xrights:world"
+          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label & A Special character|xrights:world"
         ]
       end
     end
@@ -1286,44 +1286,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
       it 'returns false' do
         expect(umrs.released_to_searchworks?).to be false
-      end
-    end
-  end
-
-  describe 'dor_items_for_constituents' do
-    context 'when not a member of any collection' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::ObjectType.object,
-                                label: dro_object_label,
-                                version: 1,
-                                description: descriptive_metadata_basic,
-                                identification: { sourceId: 'sul:123' },
-                                access: {},
-                                administrative: { hasAdminPolicy: apo_druid },
-                                structural: {})
-      end
-
-      it 'returns empty array if no relationships' do
-        expect(umrs.send(:dor_items_for_constituents)).to eq([])
-      end
-    end
-
-    context 'when a member of a collection' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::ObjectType.object,
-                                label: dro_object_label,
-                                version: 1,
-                                description: descriptive_metadata_basic,
-                                identification: { sourceId: 'sul:123' },
-                                access: {},
-                                administrative: { hasAdminPolicy: apo_druid },
-                                structural: structural_metadata)
-      end
-
-      it 'successfully determines constituent druid' do
-        expect(umrs.send(:dor_items_for_constituents)).to eq([collection_druid])
       end
     end
   end
