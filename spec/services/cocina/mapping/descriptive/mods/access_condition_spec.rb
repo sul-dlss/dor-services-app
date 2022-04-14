@@ -55,6 +55,35 @@ RSpec.describe 'MODS accessCondition <--> cocina mappings' do
     end
   end
 
+  describe 'Restrictions on access type without spaces' do
+    xit 'new MODS cocina mapping - not implemented' do
+      let(:mods) do
+        <<~XML
+          <accessCondition type="restrictionsOnAccess">Available to Stanford researchers only.</accessCondition>
+        XML
+      end
+
+      let(:roundtrip_mods) do
+        <<~XML
+          <accessCondition type="restriction on access">Available to Stanford researchers only.</accessCondition>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          access: {
+            note: [
+              {
+                value: 'Available to Stanford researchers only.',
+                type: 'access restriction'
+              }
+            ]
+          }
+        }
+      end
+    end
+  end
+
   describe 'Restriction on use and reproduction type' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
