@@ -151,6 +151,41 @@ RSpec.describe 'MODS subject geographic <--> cocina mappings' do
     end
   end
 
+  describe 'Hierarchical geographic subject with mapped types' do
+    xit 'new MODS cocina mapping - not implemented' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <hierarchicalGeographic>
+              <extraterrestrialArea>Moon</extraterrestrialArea>
+              <citySection>Moon Zero Two</citySection>
+            </hierarchicalGeographic>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              structuredValue: [
+                {
+                  value: 'Moon',
+                  type: 'extraterrestrial area'
+                },
+                {
+                  value: 'Moon Zero Two',
+                  type: 'city section'
+                }
+              ],
+              type: 'place'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Geographic code subject' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
