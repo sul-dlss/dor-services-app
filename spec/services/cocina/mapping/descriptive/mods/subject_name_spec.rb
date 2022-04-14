@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'MODS subject name <--> cocina mappings' do
-  describe 'Name subject' do
+  describe 'Name subject - person' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
@@ -21,6 +21,81 @@ RSpec.describe 'MODS subject name <--> cocina mappings' do
             {
               value: 'Dunnett, Dorothy',
               type: 'person'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Name subject - corporate' do
+    xit 'new MODS cocina mapping - not implemented' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <name type="corporate">
+              <namePart>Dorothy Dunnett Society</namePart>
+            </name>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: 'Dorothy Dunnett Society',
+              type: 'organization'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Name subject - conference' do
+    xit 'new MODS cocina mapping - not implemented' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <name type="conference">
+              <namePart>Dunnett, Dorothy</namePart>
+            </name>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: 'DunnettCon',
+              type: 'conference'
+            }
+          ]
+        }
+      end
+    end
+  end
+
+  describe 'Name subject - family' do
+    xit 'new MODS cocina mapping - not implemented' do
+      let(:mods) do
+        <<~XML
+          <subject>
+            <name type="family">
+              <namePart>Dunnett family</namePart>
+            </name>
+          </subject>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          subject: [
+            {
+              value: 'Dunnett family',
+              type: 'family'
             }
           ]
         }
