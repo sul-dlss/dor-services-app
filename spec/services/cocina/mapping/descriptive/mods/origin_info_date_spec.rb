@@ -118,35 +118,6 @@ RSpec.describe 'MODS originInfo <--> cocina mappings' do
     end
   end
 
-  describe 'Single dateOther with type attr and eventType; date type overrides eventType from cocina -> MODS' do
-    # the date type overrides the eventType for choosing date flavor for cocina -> MODS
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <originInfo eventType="publication">
-            <dateOther type="foo">1441</dateOther>
-          </originInfo>
-        XML
-      end
-
-      let(:cocina) do
-        {
-          event: [
-            {
-              type: 'publication',
-              date: [
-                {
-                  value: '1441',
-                  type: 'foo'
-                }
-              ]
-            }
-          ]
-        }
-      end
-    end
-  end
-
   describe 'dateOther in Gregorian calendar' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do

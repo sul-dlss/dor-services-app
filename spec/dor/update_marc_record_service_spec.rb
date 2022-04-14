@@ -969,12 +969,14 @@ RSpec.describe Dor::UpdateMarcRecordService do
                 {
                   value: '2011',
                   type: 'part number'
-                },
-                {
-                  value: '2011',
-                  type: 'date/sequential designation'
                 }
               ]
+            }
+          ],
+          note: [
+            {
+              value: '2011',
+              type: 'date/sequential designation'
             }
           ],
           purl: "https://purl.stanford.edu/#{bare_druid}"
@@ -1023,7 +1025,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
               structuredValue: [
                 {
                   value: 'Some label',
-                  type: 'alternative'
+                  type: 'main title'
                 },
                 {
                   value: 'Some lie',
@@ -1078,7 +1080,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
               structuredValue: [
                 {
                   value: 'Some label',
-                  type: 'alternative'
+                  type: 'main title'
                 },
                 {
                   value: 'Some lie',

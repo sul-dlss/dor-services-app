@@ -195,27 +195,6 @@ RSpec.describe 'MODS identifier <--> cocina mappings' do
     end
   end
 
-  context 'with an identifier with an unknown MODS type that does not match a Cocina type' do
-    it_behaves_like 'MODS cocina mapping' do
-      let(:mods) do
-        <<~XML
-          <identifier type="xyz">123456789203</identifier>
-        XML
-      end
-
-      let(:cocina) do
-        {
-          identifier: [
-            {
-              value: '123456789203',
-              type: 'xyz'
-            }
-          ]
-        }
-      end
-    end
-  end
-
   context 'when identifier is various flavors of missing' do
     context 'when cocina is empty array' do
       # NOTE: cocina -> MODS
