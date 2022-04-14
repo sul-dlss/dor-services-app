@@ -135,7 +135,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
     it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
-          <note type="Qualifications and Caveats">Attribution of Caracciolo as creator is probable but uncertain.</note>
+          <note type="description">Attribution of Caracciolo as creator is probable but uncertain.</note>
         XML
       end
 
@@ -144,7 +144,7 @@ RSpec.describe 'MODS note <--> cocina mappings' do
           note: [
             {
               value: 'Attribution of Caracciolo as creator is probable but uncertain.',
-              type: 'Qualifications and Caveats'
+              type: 'description'
             }
           ]
         }

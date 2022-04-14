@@ -41,9 +41,7 @@ RSpec.describe Publish::DublinCoreService do
           { value: 'photographs, color transparencies', type: 'form' }
         ],
         identifier: [
-          { displayLabel: 'Image ID', type: 'local', value: 'M1090_S15_B01_F01_0055',
-            note: [{ type: 'type', value: 'local', uri: 'http://id.loc.gov/vocabulary/identifiers/local',
-                     source: { value: 'Standard Identifier Schemes', uri: 'http://id.loc.gov/vocabulary/identifiers/' } }] }
+          { displayLabel: 'Image ID', type: 'local', value: 'M1090_S15_B01_F01_0055' }
         ],
         relatedResource: [
           { title: [{ value: 'Buckminster Fuller papers, 1920-1983' }],

@@ -1030,18 +1030,18 @@ RSpec.describe Cocina::ToDatacite::Event do
                       value: 'Stanford University Press'
                     }
                   ],
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ],
                   role: [
                     {
                       value: 'Publisher',
                       source: {
                         value: 'H2 contributor role terms'
-                      },
-                      note: [
-                        {
-                          type: 'citation status',
-                          value: 'false'
-                        }
-                      ]
+                      }
                     },
                     {
                       value: 'publisher',
@@ -1107,18 +1107,18 @@ RSpec.describe Cocina::ToDatacite::Event do
                       value: 'Stanford University Press'
                     }
                   ],
+                  note: [
+                    {
+                      type: 'citation status',
+                      value: 'false'
+                    }
+                  ],
                   role: [
                     {
                       value: 'Publisher',
                       source: {
                         value: 'H2 contributor role terms'
-                      },
-                      note: [
-                        {
-                          type: 'citation status',
-                          value: 'false'
-                        }
-                      ]
+                      }
                     },
                     {
                       value: 'publisher',
