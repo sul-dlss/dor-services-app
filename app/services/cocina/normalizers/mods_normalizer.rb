@@ -290,6 +290,9 @@ module Cocina
         ng_xml.xpath('//mods:accessCondition[@type="restrictionOnAccess"]', mods: MODS_NS).each do |node|
           node['type'] = 'restriction on access'
         end
+        ng_xml.xpath('//mods:accessCondition[@type="restrictionsOnAccess"]', mods: MODS_NS).each do |node|
+          node['type'] = 'restriction on access'
+        end
         ng_xml.xpath('//mods:accessCondition[@type="useAndReproduction"]', mods: MODS_NS).each do |node|
           node['type'] = 'use and reproduction'
         end

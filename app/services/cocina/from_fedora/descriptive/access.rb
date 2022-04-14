@@ -8,6 +8,7 @@ module Cocina
         ACCESS_CONDITION_TYPES = {
           'restriction on access' => 'access restriction',
           'restrictionOnAccess' => 'access restriction',
+          'restrictionsOnAccess' => 'access restriction',
           'useAndReproduction' => 'use and reproduction'
         }.freeze
 
