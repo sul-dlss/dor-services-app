@@ -362,8 +362,12 @@ module Cocina
 
         def hierarchical_geographic(subject)
           xml.hierarchicalGeographic do
-            subject.structuredValue.each { |structured_value| xml.send(structured_value.type, structured_value.value) }
+            subject.structuredValue.each { |structured_value| xml.send(camelize(structured_value.type), structured_value.value) }
           end
+        end
+
+        def camelize(str)
+          str.tr(' ', '_').camelize(:lower)
         end
 
         def write_person(subject, subject_value, display_values: nil)
