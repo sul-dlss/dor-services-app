@@ -13,11 +13,12 @@ class Report
 
   Result = Struct.new(:druid, :apo, :catkey, :result)
 
-  def initialize(name:, dsids:, yield_cocina: false)
+  def initialize(name:, dsids:, yield_cocina: false, nil_cache_failure: false)
     @name = name
     @dsids = dsids
     @options = build_options
     @yield_cocina = yield_cocina
+    @nil_cache_failure = nil_cache_failure
   end
 
   def run
@@ -48,13 +49,17 @@ class Report
 
   private
 
-  attr_reader :name, :options, :dsids, :yield_cocina
+  attr_reader :name, :options, :dsids, :yield_cocina, :nil_cache_failure
 
   def datastreams(druid)
     dsids.map do |dsid|
       if yield_cocina && dsid == 'descMetadata'
         cache_result = cache.label_and_desc_metadata(druid)
-        raise CacheFailure if cache_result.failure?
+        if cache_result.failure?
+          next nil if nil_cache_failure
+
+          raise CacheFailure
+        end
 
         label, descriptive_xml = cache_result.value!
 
@@ -66,7 +71,11 @@ class Report
         Cocina::Models::Description.new(props)
       else
         cache_result = cache.datastream(druid, dsid)
-        raise CacheFailure if cache_result.failure?
+        if cache_result.failure?
+          next nil if nil_cache_failure
+
+          raise CacheFailure
+        end
 
         Nokogiri::XML(cache_result.value!)
       end
