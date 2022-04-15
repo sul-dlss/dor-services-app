@@ -152,7 +152,8 @@ module Dor
       collections.each do |collection_druid|
         collection = CocinaObjectStore.find(collection_druid)
         catkey = collection.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
-        collection_info += "|xcollection:#{collection.externalIdentifier.sub('druid:', '')}:#{catkey&.catalogRecordId}:#{Cocina::Models::TitleBuilder.build(collection.description.title)}"
+        collection_info += "|xcollection:#{collection.externalIdentifier.sub('druid:',
+                                                                             '')}:#{catkey&.catalogRecordId}:#{Cocina::Models::Builders::TitleBuilder.build(collection.description.title)}"
       end
 
       collection_info
