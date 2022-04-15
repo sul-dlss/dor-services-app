@@ -22,7 +22,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
           },
           description: {
             title: [{ value: 'Number 1' }],
-            purl: 'https://example.com'
+            purl: 'https://purl.stanford.edu/gj047zn0886'
           },
           type: Cocina::Models::ObjectType.image,
           structural: child_structural1,
@@ -41,7 +41,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
           },
           description: {
             title: [{ value: 'Number 2' }],
-            purl: 'https://example.com'
+            purl: 'https://purl.stanford.edu/tm207xk5096'
           },
           type: Cocina::Models::ObjectType.image,
           structural: child_structural2,

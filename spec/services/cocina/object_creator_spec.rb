@@ -214,7 +214,7 @@ RSpec.describe Cocina::ObjectCreator do
           },
           'description' => {
             'title' => [{ 'value' => 'Mountain Biking Utah' }],
-            'purl' => Purl.for(druid: druid)
+            'purl' => Purl.for(druid: 'druid:bb010dx6027')
           }
         }
       end

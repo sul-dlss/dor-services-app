@@ -270,7 +270,7 @@ RSpec.describe ItemQueryService do
           label: 'Dummy DRO',
           description: {
             title: [{ value: 'Dummy DRO' }],
-            purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+            purl: "https://purl.stanford.edu/#{constituent_druids[0].delete_prefix('druid:')}"
           },
           access: { view: 'citation-only', download: 'none' },
           administrative: { hasAdminPolicy: 'druid:df123cd4567' },
@@ -288,7 +288,7 @@ RSpec.describe ItemQueryService do
           label: 'Dummy DRO',
           description: {
             title: [{ value: 'Dummy DRO' }],
-            purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+            purl: "https://purl.stanford.edu/#{constituent_druids[1].delete_prefix('druid:')}"
           },
           access: { view: 'dark' },
           administrative: { hasAdminPolicy: 'druid:df123cd4567' },

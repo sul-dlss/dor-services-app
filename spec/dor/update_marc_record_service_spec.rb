@@ -9,6 +9,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   let(:druid) { 'druid:bc123dg9393' }
   let(:bare_druid) { druid.delete_prefix('druid:') }
   let(:collection_druid) { 'druid:cc111cc1111' }
+  let(:collection_bare_druid) { collection_druid.delete_prefix('druid:') }
   let(:dro_object_label) { 'A generic label' }
   let(:collection_label) { 'A collection label' }
   let(:release_service) { instance_double(ReleaseTags::IdentityMetadata, released_for: release_data) }
@@ -24,7 +25,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   let(:collection_descriptive_metadata_basic) do
     {
       title: [{ value: 'Collection label & A Special character' }],
-      purl: "https://purl.stanford.edu/#{bare_druid}"
+      purl: "https://purl.stanford.edu/#{collection_bare_druid}"
     }
   end
   let(:identity_metadata_basic) do

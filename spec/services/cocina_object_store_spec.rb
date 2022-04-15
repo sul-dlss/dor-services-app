@@ -813,7 +813,13 @@ RSpec.describe CocinaObjectStore do
         end
 
         before do
-          store.send(:cocina_to_ar_save, cocina_object.new(externalIdentifier: 'druid:dd645sg2172'), skip_lock: true)
+          store.send(:cocina_to_ar_save, cocina_object.new(
+                                           externalIdentifier: 'druid:dd645sg2172',
+                                           description: {
+                                             title: [{ value: 'Test Collection' }],
+                                             purl: 'https://purl.stanford.edu/dd645sg2172'
+                                           }
+                                         ), skip_lock: true)
         end
 
         it 'raises' do

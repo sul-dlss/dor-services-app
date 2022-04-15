@@ -14,7 +14,7 @@ RSpec.describe Dro do
                               version: 1,
                               description: {
                                 title: [{ value: 'Test DRO' }],
-                                purl: 'https://purl.stanford.edu/xz456jk0987'
+                                purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
                               },
                               access: { view: 'world', download: 'world' },
                               administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
@@ -62,7 +62,7 @@ RSpec.describe Dro do
                               administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
                               description: {
                                 title: [{ value: 'Test DRO' }],
-                                purl: 'https://purl.stanford.edu/xz456jk0987'
+                                purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
                               },
                               geographic: {
                                 iso19139: '<?xml version="1.0"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">...'
@@ -169,7 +169,14 @@ RSpec.describe Dro do
 
     context 'when sourceId is unique' do
       let(:cocina_object2) do
-        minimal_cocina_dro.new(externalIdentifier: 'druid:dd645sg2172', identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0032' })
+        minimal_cocina_dro.new(
+          externalIdentifier: 'druid:dd645sg2172',
+          identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0032' },
+          description: {
+            title: [{ value: 'Test DRO' }],
+            purl: 'https://purl.stanford.edu/dd645sg2172'
+          }
+        )
       end
 
       it 'does not raise' do
@@ -180,7 +187,14 @@ RSpec.describe Dro do
 
     context 'when sourceId is not unique' do
       let(:cocina_object2) do
-        minimal_cocina_dro.new(externalIdentifier: 'druid:dd645sg2172', identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0031' })
+        minimal_cocina_dro.new(
+          externalIdentifier: 'druid:dd645sg2172',
+          identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0031' },
+          description: {
+            title: [{ value: 'Test DRO' }],
+            purl: 'https://purl.stanford.edu/dd645sg2172'
+          }
+        )
       end
 
       it 'raises' do

@@ -340,7 +340,7 @@ RSpec.describe Publish::PublicDescMetadataService do
 
         let(:description) do
           { title: [{ value: 'Slides, IA, Geodesic Domes [1 of 2]' }],
-            purl: 'https://purl.stanford.edu/zb871zd0767',
+            purl: 'https://purl.stanford.edu/bc123df4567',
             form: [{ value: 'still image', type: 'resource type',
                      source: { value: 'MODS resource types' } }, { value: 'photographs, color transparencies', type: 'form' }],
             identifier: [{ displayLabel: 'Image ID', type: 'local', value: 'M1090_S15_B01_F01_0055' }],
