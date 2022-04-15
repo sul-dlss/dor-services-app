@@ -4,12 +4,6 @@ require 'rails_helper'
 
 RSpec.describe Publish::MetadataTransferService do
   let(:druid) { 'bc123df4567' }
-  let(:description) do
-    {
-      title: [{ value: 'Constituent label &amp; A Special character' }],
-      purl: "https://purl.stanford.edu/#{druid}"
-    }
-  end
 
   let(:access) { {} }
 
@@ -18,7 +12,10 @@ RSpec.describe Publish::MetadataTransferService do
                             type: Cocina::Models::ObjectType.object,
                             label: 'google download barcode 36105049267078',
                             version: 1,
-                            description: description,
+                            description: {
+                              title: [{ value: 'Constituent label &amp; A Special character' }],
+                              purl: "https://purl.stanford.edu/#{druid}"
+                            },
                             identification: { sourceId: 'sul:123' },
                             access: access,
                             structural: { contains: [], isMemberOf: ['druid:xh235dd9059'] },
@@ -45,7 +42,10 @@ RSpec.describe Publish::MetadataTransferService do
                                    type: Cocina::Models::ObjectType.collection,
                                    label: 'some collection object',
                                    version: 1,
-                                   description: description,
+                                   description: {
+                                     title: [{ value: 'Constituent label &amp; A Special character' }],
+                                     purl: 'https://purl.stanford.edu/xh235dd9059'
+                                   },
                                    identification: { sourceId: 'sul:123' },
                                    access: {},
                                    administrative: { hasAdminPolicy: 'druid:fg890hx1234' })
@@ -135,7 +135,10 @@ RSpec.describe Publish::MetadataTransferService do
                                          type: Cocina::Models::ObjectType.collection,
                                          label: 'some collection object',
                                          version: 1,
-                                         description: description,
+                                         description: {
+                                           title: [{ value: 'Constituent label &amp; A Special character' }],
+                                           purl: 'https://purl.stanford.edu/xh235dd9059'
+                                         },
                                          identification: { sourceId: 'sul:123' },
                                          access: { view: 'world' },
                                          administrative: { hasAdminPolicy: 'druid:fg890hx1234' })

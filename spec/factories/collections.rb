@@ -13,11 +13,11 @@ FactoryBot.define do
     description do
       {
         title: [{ value: 'Test Collection' }],
-        purl: 'https://purl.stanford.edu/hp308wm0436'
+        purl: "https://purl.stanford.edu/#{external_identifier.delete_prefix('druid:')}"
       }
     end
     sequence(:identification) do |n|
-      { sourceId: "googlebooks:#{n}" }
+      { sourceId: "googlebooks:c#{n}" }
     end
     administrative do
       { hasAdminPolicy: 'druid:hy787xj5878' }

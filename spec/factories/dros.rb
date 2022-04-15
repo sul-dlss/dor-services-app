@@ -16,7 +16,7 @@ FactoryBot.define do
     description do
       {
         title: [{ value: 'Test DRO' }],
-        purl: 'https://purl.stanford.edu/xz456jk0987'
+        purl: "https://purl.stanford.edu/#{external_identifier.delete_prefix('druid:')}"
       }
     end
     sequence(:identification) do |n|

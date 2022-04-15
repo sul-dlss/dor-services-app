@@ -57,7 +57,14 @@ RSpec.describe Collection do
 
     context 'when sourceId is unique' do
       let(:cocina_object2) do
-        cocina_collection.new(externalIdentifier: 'druid:dd645sg2172', identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0032' })
+        cocina_collection.new(
+          externalIdentifier: 'druid:dd645sg2172',
+          identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0032' },
+          description: {
+            title: [{ value: 'Test Collection' }],
+            purl: 'https://purl.stanford.edu/dd645sg2172'
+          }
+        )
       end
 
       it 'does not raise' do
@@ -68,7 +75,14 @@ RSpec.describe Collection do
 
     context 'when sourceId is not unique' do
       let(:cocina_object2) do
-        cocina_collection.new(externalIdentifier: 'druid:dd645sg2172', identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0031' })
+        cocina_collection.new(
+          externalIdentifier: 'druid:dd645sg2172',
+          identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0031' },
+          description: {
+            title: [{ value: 'Test Collection' }],
+            purl: 'https://purl.stanford.edu/dd645sg2172'
+          }
+        )
       end
 
       it 'raises' do
