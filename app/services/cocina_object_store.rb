@@ -381,7 +381,7 @@ class CocinaObjectStore
     description_props = result.value!.description_props
     # Remove PURL since this is still a request
     description_props.delete(:purl)
-    label = ModsService.label_from_mods(result.value!.mods_ng_xml)
+    label = ModsUtils.label(result.value!.mods_ng_xml)
     cocina_request_object.new(label: label, description: description_props)
   end
 
