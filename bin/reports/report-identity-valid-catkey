@@ -5,6 +5,8 @@ require_relative '../../config/environment'
 require_relative '../../lib/report'
 
 Report.new(name: 'identity-valid_catkeys', dsids: ['identityMetadata']).run do |ng_xml|
-  catkey = ng_xml.xpath('//otherId[@name="catkey"]')
-  /^\d+(:\d+)*$/.match?(catkey)
+  catkey = ng_xml.xpath('//otherId[@name="catkey"]').first&.text
+  next unless catkey
+
+  /^\d+(:\d+)*$/.match?(catkey) ? 'valid' : 'invalid'
 end
