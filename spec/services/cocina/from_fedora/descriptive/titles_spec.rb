@@ -218,8 +218,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         XML
       end
 
-      it 'parses' do
-        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
+      it 'raises' do
+        # Raises since no associated contributor for nameTitleGroup
+        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.to raise_error(Cocina::Models::ValidationError)
       end
 
       it 'creates value from the authority record' do
@@ -292,8 +293,9 @@ RSpec.describe Cocina::FromFedora::Descriptive::Titles do
         XML
       end
 
-      it 'parses' do
-        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.not_to raise_error
+      it 'raises' do
+        # Raises since no associated contributor for nameTitleGroup
+        expect { Cocina::Models::Description.new(title: build, purl: 'https://purl.stanford.edu/aa666bb1234') }.to raise_error(Cocina::Models::ValidationError)
       end
 
       it 'creates value from the authority record' do

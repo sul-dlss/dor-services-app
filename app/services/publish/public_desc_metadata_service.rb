@@ -109,7 +109,7 @@ module Publish
 
     def add_related_item_node_for_collection!(cocina_collection)
       title_node         = Nokogiri::XML::Node.new('title', doc)
-      title_node.content = Cocina::Models::TitleBuilder.build(cocina_collection.description.title)
+      title_node.content = Cocina::Models::Builders::TitleBuilder.build(cocina_collection.description.title)
 
       title_info_node = Nokogiri::XML::Node.new('titleInfo', doc)
       title_info_node.add_child(title_node)
