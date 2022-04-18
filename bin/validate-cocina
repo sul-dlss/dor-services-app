@@ -1,0 +1,65 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Validates cocina model changes by loading each object into cocina to determine if an error is raised.
+# This should be run on sdr-deploy since it requires using a version of cocina models that is not the latest release.
+# To select the cocina model version to test, adjust the Gemfile.
+# For example, gem 'cocina-models', github: 'sul-dlss/cocina-models', branch: 'test_me'
+
+require_relative '../config/environment'
+require 'optparse'
+require 'tty-progressbar'
+
+# how many druids to process as a single advance unit of the progress bar
+def num_for_progress_advance(count)
+  return 1 if count < 100
+
+  count / 100
+end
+
+def tty_progress_bar(count, clazz_name)
+  TTY::ProgressBar.new(
+    "Validating #{clazz_name} [:bar] (:percent (:current/:total), rate: :rate/s, mean rate: :mean_rate/s, :elapsed total, ETA: :eta_time)",
+    bar_format: :crate,
+    advance: num_for_progress_advance(count),
+    total: count
+  )
+end
+
+def validate(clazz, sample_size, writer)
+  objs = if sample_size
+           clazz.limit(sample_size)
+         else
+           clazz.all
+         end
+
+  progress_bar = tty_progress_bar(objs.count, clazz.name)
+  progress_bar.start
+
+  objs.find_each do |obj|
+    progress_bar.advance(druid: obj.external_identifier)
+    obj.to_cocina
+  rescue Cocina::Models::ValidationError => e
+    writer << [obj.external_identifier, clazz.name, e.message]
+  end
+end
+
+options = {}
+parser = OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/migrate [options]'
+
+  option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size per type, otherwise all objects.')
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
+end
+
+parser.parse!(into: options)
+
+CSV.open('validate-cocina.csv', 'w') do |writer|
+  writer << %w[type druid message]
+  validate(Dro, options[:sample_size], writer)
+  validate(Collection, options[:sample_size], writer)
+  validate(AdminPolicy, options[:sample_size], writer)
+end
