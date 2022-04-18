@@ -12,7 +12,7 @@ class MarcxmlController < ApplicationController # :nodoc:
   end
 
   def marcxml
-    render xml: MarcxmlResource.new(barcode: params[:barcode], catkey: params[:catkey]).marcxml
+    render xml: MarcService.marcxml(barcode: params[:barcode], catkey: params[:catkey])
   rescue SymphonyReader::NotFound => e
     json_api_error(status: :bad_request, title: 'Catkey not found in Symphony', message: e.message)
   end

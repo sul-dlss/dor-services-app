@@ -1,12 +1,20 @@
 # frozen_string_literal: true
 
-# MARC resource model for retrieving and transforming MARC records
-class MarcxmlResource
+# MARC service for retrieving and transforming MARC records
+class MarcService
   attr_reader :catkey, :barcode
 
-  def initialize(params)
-    @catkey = params[:catkey]
-    @barcode = params[:barcode]
+  def self.mods(catkey: nil, barcode: nil)
+    new(catkey: catkey, barcode: barcode).mods
+  end
+
+  def self.marcxml(catkey: nil, barcode: nil)
+    new(catkey: catkey, barcode: barcode).marcxml
+  end
+
+  def initialize(catkey: nil, barcode: nil)
+    @catkey = catkey
+    @barcode = barcode
   end
 
   # @raises SymphonyReader::ResponseError

@@ -176,7 +176,7 @@ RSpec/VariableName:
 # SupportedStyles: slashes, arguments
 Rails/FilePath:
   Exclude:
-    - 'app/models/marcxml_resource.rb'
+    - 'app/services/marc_service.rb'
 
 # Offense count: 5
 # This cop supports safe auto-correction (--auto-correct).
