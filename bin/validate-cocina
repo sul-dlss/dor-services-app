@@ -10,6 +10,10 @@ require_relative '../config/environment'
 require 'optparse'
 require 'tty-progressbar'
 
+Honeybadger.configure do |config|
+  config.exceptions.ignore += [Cocina::Models::ValidationError]
+end
+
 # how many druids to process as a single advance unit of the progress bar
 def num_for_progress_advance(count)
   return 1 if count < 100
