@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 require 'cache'
-class MetadataError < RuntimeError; end
+class ModsServiceError < RuntimeError; end
 
-class MetadataService
+# Service for fetching MODS from the catalog and associated helper methods.
+class ModsService
   VALID_PREFIXES = %w[catkey barcode].freeze
   CATKEY_REGEX = /^\d+(:\d+)*$/.freeze
 
@@ -56,8 +57,8 @@ class MetadataService
     end
 
     def valid_identifier!(prefix, identifier)
-      raise MetadataError, "Unknown metadata prefix: #{prefix}" unless valid_prefix?(prefix)
-      raise MetadataError, "Invalid catkey: #{identifier}" unless valid_catkey?(identifier)
+      raise ModsServiceError, "Unknown metadata prefix: #{prefix}" unless valid_prefix?(prefix)
+      raise ModsServiceError, "Invalid catkey: #{identifier}" unless valid_catkey?(identifier)
     end
 
     def valid_prefix?(prefix)

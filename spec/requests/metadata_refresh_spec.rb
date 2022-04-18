@@ -78,7 +78,7 @@ RSpec.describe 'Refresh metadata' do
 
   context 'when happy path' do
     before do
-      allow(MetadataService).to receive(:fetch).and_return(mods)
+      allow(ModsService).to receive(:fetch).and_return(mods)
     end
 
     it 'updates the metadata and saves the changes' do
@@ -98,7 +98,7 @@ RSpec.describe 'Refresh metadata' do
     end
 
     before do
-      allow(MetadataService).to receive(:fetch).and_return(mods)
+      allow(ModsService).to receive(:fetch).and_return(mods)
     end
 
     it 'updates the metadata and saves the changes' do
@@ -122,7 +122,7 @@ RSpec.describe 'Refresh metadata' do
     end
 
     before do
-      allow(MetadataService).to receive(:fetch).and_return(mods)
+      allow(ModsService).to receive(:fetch).and_return(mods)
     end
 
     it 'returns a 422 error' do
