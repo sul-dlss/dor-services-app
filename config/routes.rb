@@ -79,6 +79,8 @@ Rails.application.routes.draw do
       resources :versions, only: [:create, :index] do
         collection do
           get 'openable'
+          # question mark needs to be encoded in a URL and it's not worth it.
+          get 'is_open', action: :open?
           get 'current'
           post 'current/close', action: 'close_current'
         end

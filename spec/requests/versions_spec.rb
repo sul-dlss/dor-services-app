@@ -146,7 +146,7 @@ RSpec.describe 'Operations regarding object versions' do
         allow(VersionService).to receive(:can_open?).and_return(false)
       end
 
-      it 'returns true' do
+      it 'returns false' do
         get '/v1/objects/druid:mx123qw2323/versions/openable',
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('false')
@@ -163,6 +163,47 @@ RSpec.describe 'Operations regarding object versions' do
         get '/v1/objects/druid:mx123qw2323/versions/openable',
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('{"errors":[{"status":"500","title":"Unable to check if openable due to preservation client error","detail":"Oops, a 500"}]}')
+        expect(response.status).to eq 500
+      end
+    end
+  end
+
+  describe '/versions/is_open' do
+    context 'when a version is open' do
+      before do
+        allow(VersionService).to receive(:open?).and_return(true)
+      end
+
+      it 'returns true' do
+        get '/v1/objects/druid:mx123qw2323/versions/is_open',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response.body).to eq('true')
+        expect(response).to be_successful
+      end
+    end
+
+    context 'when a version is not open' do
+      before do
+        allow(VersionService).to receive(:open?).and_return(false)
+      end
+
+      it 'returns false' do
+        get '/v1/objects/druid:mx123qw2323/versions/is_open',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response.body).to eq('false')
+        expect(response).to be_successful
+      end
+    end
+
+    context 'when workflow client call fails' do
+      before do
+        allow(VersionService).to receive(:open?).and_raise(Dor::WorkflowException, 'Oops, a 500')
+      end
+
+      it 'returns an error' do
+        get '/v1/objects/druid:mx123qw2323/versions/is_open',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response.body).to eq('{"errors":[{"status":"500","title":"Unable to check if a version is open due to workflow client error","detail":"Oops, a 500"}]}')
         expect(response.status).to eq 500
       end
     end

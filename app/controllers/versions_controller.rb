@@ -49,6 +49,12 @@ class VersionsController < ApplicationController
     render build_error('Unable to check if openable due to preservation client error', e, status: :internal_server_error)
   end
 
+  def open?
+    render plain: VersionService.open?(@cocina_object)
+  rescue Dor::WorkflowException => e
+    render build_error('Unable to check if a version is open due to workflow client error', e, status: :internal_server_error)
+  end
+
   private
 
   # JSON-API error response
