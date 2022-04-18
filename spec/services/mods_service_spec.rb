@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe MetadataService do
+RSpec.describe ModsService do
   let(:mods) { File.read(File.join(fixture_dir, 'mods_record.xml')) }
 
   describe '#resolvable' do
@@ -41,11 +41,11 @@ RSpec.describe MetadataService do
     end
 
     it 'raises an exception if an unknown metadata type is requested' do
-      expect { described_class.fetch('foo:bar') }.to raise_exception(MetadataError)
+      expect { described_class.fetch('foo:bar') }.to raise_exception(ModsServiceError)
     end
 
     it 'raises an exception if an invalid catkey is provided' do
-      expect { described_class.fetch('catkey:from server') }.to raise_exception(MetadataError)
+      expect { described_class.fetch('catkey:from server') }.to raise_exception(ModsServiceError)
     end
 
     it 'fetches a record based on barcode' do

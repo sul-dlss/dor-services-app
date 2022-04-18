@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 require 'cache'
-class MetadataError < RuntimeError; end
+class ModsServiceError < RuntimeError; end
 
-class MetadataService
+# Service for fetching MODS from the catalog and associated helper methods.
+class ModsService
   VALID_PREFIXES = %w[catkey barcode].freeze
   CATKEY_REGEX = /^\d+(:\d+)*$/.freeze
 
@@ -29,15 +30,8 @@ class MetadataService
       end
     end
 
-    def label_from_mods(mods)
-      mods.root.add_namespace_definition('mods', 'http://www.loc.gov/mods/v3')
-      mods.xpath('/mods:mods/mods:titleInfo[1]')
-          .xpath('mods:title|mods:nonSort')
-          .collect(&:text).join(' ').strip
-    end
-
     def label_for(identifier)
-      label_from_mods(Nokogiri::XML(fetch(identifier)))
+      ModsUtils.label(Nokogiri::XML(fetch(identifier)))
     end
 
     private
@@ -56,8 +50,8 @@ class MetadataService
     end
 
     def valid_identifier!(prefix, identifier)
-      raise MetadataError, "Unknown metadata prefix: #{prefix}" unless valid_prefix?(prefix)
-      raise MetadataError, "Invalid catkey: #{identifier}" unless valid_catkey?(identifier)
+      raise ModsServiceError, "Unknown metadata prefix: #{prefix}" unless valid_prefix?(prefix)
+      raise ModsServiceError, "Invalid catkey: #{identifier}" unless valid_catkey?(identifier)
     end
 
     def valid_prefix?(prefix)

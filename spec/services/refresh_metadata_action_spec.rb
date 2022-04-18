@@ -38,7 +38,7 @@ RSpec.describe RefreshMetadataAction do
   end
 
   before do
-    allow(MetadataService).to receive(:fetch).and_return(mods)
+    allow(ModsService).to receive(:fetch).and_return(mods)
     allow(Honeybadger).to receive(:notify)
   end
 
@@ -54,7 +54,7 @@ RSpec.describe RefreshMetadataAction do
 
   context 'when fetch_metadata fails' do
     before do
-      allow(MetadataService).to receive(:fetch).and_raise(SymphonyReader::ResponseError)
+      allow(ModsService).to receive(:fetch).and_raise(SymphonyReader::ResponseError)
     end
 
     it 'gets the data and puts it in descMetadata and Honeybadger notifies' do
@@ -64,7 +64,7 @@ RSpec.describe RefreshMetadataAction do
 
   context 'when fetch_metadata returns nil' do
     before do
-      allow(MetadataService).to receive(:fetch).and_return(nil)
+      allow(ModsService).to receive(:fetch).and_return(nil)
     end
 
     it 'returns a Dry::Monads::Result::Failure object' do

@@ -40,8 +40,8 @@ class RefreshMetadataAction
   # @raises SymphonyReader::ResponseError
   def mods
     @mods ||= begin
-      metadata_id = MetadataService.resolvable(identifiers).first
-      metadata_id.nil? ? nil : MetadataService.fetch(metadata_id.to_s)
+      metadata_id = ModsService.resolvable(identifiers).first
+      metadata_id.nil? ? nil : ModsService.fetch(metadata_id.to_s)
     end
   end
 

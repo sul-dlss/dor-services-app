@@ -189,7 +189,7 @@ Rails/TimeZone:
 # Offense count: 1
 Style/ClassVars:
   Exclude:
-    - 'app/services/metadata_service.rb'
+    - 'app/services/mods_service.rb'
 
 # Offense count: 1
 Style/CombinableLoops:
@@ -212,7 +212,6 @@ Style/Documentation:
     - 'app/controllers/objects_controller.rb'
     - 'app/controllers/versions_controller.rb'
     - 'app/models/dor/update_marc_record_service.rb'
-    - 'app/services/metadata_service.rb'
     - 'app/services/publish/dublin_core_service.rb'
     - 'app/services/release_tags/identity_metadata.rb'
     - 'config/application.rb'

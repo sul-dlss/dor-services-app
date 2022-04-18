@@ -149,7 +149,7 @@ RSpec.describe 'Create object' do
         end
 
         before do
-          allow(MetadataService).to receive(:fetch).and_return(mods_from_symphony)
+          allow(ModsService).to receive(:fetch).and_return(mods_from_symphony)
         end
 
         it 'registers the object with the registration service and immediately indexes' do
@@ -161,7 +161,7 @@ RSpec.describe 'Create object' do
           expect(response.body).to equal_cocina_model(expected)
           expect(response.status).to eq(201)
           expect(response.location).to eq "/v1/objects/#{druid}"
-          expect(MetadataService).to have_received(:fetch).with('catkey:8888')
+          expect(ModsService).to have_received(:fetch).with('catkey:8888')
           expect(a_request(:put, 'https://dor-indexing-app.example.edu/dor/reindex_from_cocina').with do |req|
                    parsed_body = JSON.parse(req.body).deep_symbolize_keys
                    expect(parsed_body[:cocina_object]).to eq(expected.to_h)
@@ -174,7 +174,7 @@ RSpec.describe 'Create object' do
 
       context 'when connecting to symphony fails' do
         before do
-          allow(MetadataService).to receive(:fetch).and_raise(SymphonyReader::ResponseError)
+          allow(ModsService).to receive(:fetch).and_raise(SymphonyReader::ResponseError)
         end
 
         it 'draws an error message' do
@@ -189,7 +189,7 @@ RSpec.describe 'Create object' do
 
       context 'when symphony returns a 404' do
         before do
-          allow(MetadataService).to receive(:fetch).and_raise(SymphonyReader::NotFound, 'unable to find catkey')
+          allow(ModsService).to receive(:fetch).and_raise(SymphonyReader::NotFound, 'unable to find catkey')
         end
 
         it 'draws an error message' do

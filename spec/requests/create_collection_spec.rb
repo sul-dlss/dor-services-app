@@ -85,7 +85,7 @@ RSpec.describe 'Create object' do
     end
 
     before do
-      allow(MetadataService).to receive(:fetch).and_return(mods_from_symphony)
+      allow(ModsService).to receive(:fetch).and_return(mods_from_symphony)
     end
 
     it 'creates the collection' do
@@ -95,7 +95,7 @@ RSpec.describe 'Create object' do
       expect(response.body).to equal_cocina_model(expected)
       expect(response.status).to eq(201)
       expect(response.location).to eq "/v1/objects/#{druid}"
-      expect(MetadataService).to have_received(:fetch).with('catkey:8888')
+      expect(ModsService).to have_received(:fetch).with('catkey:8888')
     end
   end
 
