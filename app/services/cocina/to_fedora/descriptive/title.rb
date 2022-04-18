@@ -44,7 +44,7 @@ module Cocina
               write_grouped(title: title, title_info_attrs: additional_attrs)
             elsif title.structuredValue.present?
               if name_title_vals_index.present?
-                title_value_slice = NameTitleGroup.slice_of_value_or_structured_value(title.to_h)
+                title_value_slice = Cocina::Models::Builders::NameTitleGroupBuilder.slice_of_value_or_structured_value(title.to_h)
                 # don't leak nameTitleGroup into later titles
                 my_additional_attrs = additional_attrs.dup
                 my_additional_attrs[:nameTitleGroup] = name_title_group_number(title_value_slice)
@@ -54,7 +54,7 @@ module Cocina
               end
             elsif title.value
               if name_title_vals_index.present?
-                title_value_slice = NameTitleGroup.slice_of_value_or_structured_value(title.to_h)
+                title_value_slice = Cocina::Models::Builders::NameTitleGroupBuilder.slice_of_value_or_structured_value(title.to_h)
                 # don't leak nameTitleGroup into later titles
                 my_additional_attrs = additional_attrs.dup
                 my_additional_attrs[:nameTitleGroup] = name_title_group_number(title_value_slice)
@@ -64,7 +64,7 @@ module Cocina
               end
             end
 
-            associated_name = NameTitleGroup.title_value_note_slices(title).each do |value_note_slice|
+            associated_name = Cocina::Models::Builders::NameTitleGroupBuilder.title_value_note_slices(title).each do |value_note_slice|
               value_note_slice[:note]&.detect { |note| note[:type] == 'associated name' }
             end
             next if associated_name.blank?
@@ -111,7 +111,7 @@ module Cocina
             if title.type == 'uniform'
               parallel_attrs[:type] = 'uniform'
               if name_title_vals_index.present?
-                title_value_slice = NameTitleGroup.slice_of_value_or_structured_value(parallel_title.to_h)
+                title_value_slice = Cocina::Models::Builders::NameTitleGroupBuilder.slice_of_value_or_structured_value(parallel_title.to_h)
                 parallel_attrs[:nameTitleGroup] = name_title_group_number(title_value_slice)
               end
             elsif parallel_title.type == 'transliterated'
@@ -153,10 +153,10 @@ module Cocina
         def name_title_vals_index_for(title)
           return nil unless contributors
 
-          title_vals_to_contrib_name_vals = NameTitleGroup.title_vals_to_contrib_name_vals(title, contributors)
+          title_vals_to_contrib_name_vals = Cocina::Models::Builders::NameTitleGroupBuilder.build_title_values_to_contributor_name_values(title)
           return nil if title_vals_to_contrib_name_vals.blank?
 
-          title_value_slices = NameTitleGroup.value_slices(title)
+          title_value_slices = Cocina::Models::Builders::NameTitleGroupBuilder.value_slices(title)
           title_value_slices.each do |title_value_slice|
             contrib_name_val_slice = title_vals_to_contrib_name_vals[title_value_slice]
             next if contrib_name_val_slice.blank?

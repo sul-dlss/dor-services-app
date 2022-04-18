@@ -39,7 +39,7 @@ module Cocina
             if parallel_values.present?
               altrepgroup_id = id_generator.next_altrepgroup
               parallel_values.each do |parallel_contrib_name|
-                NameTitleGroup.value_slices(parallel_contrib_name)&.each do |parallel_contrib_name_slice|
+                Cocina::Models::Builders::NameTitleGroupBuilder.value_slices(parallel_contrib_name)&.each do |parallel_contrib_name_slice|
                   if name_title_vals_index[parallel_contrib_name_slice]
                     name_title_group = name_title_vals_index[parallel_contrib_name_slice]&.values&.first
                     write_parallel_contributor(contributor, contrib_name, parallel_contrib_name, name_title_group, altrepgroup_id)
@@ -70,7 +70,7 @@ module Cocina
         def write_contributor(contributor)
           name_title_group = nil
 
-          contrib_name_value_slices = NameTitleGroup.contrib_name_value_slices(contributor)
+          contrib_name_value_slices = Cocina::Models::Builders::NameTitleGroupBuilder.contributor_name_value_slices(contributor)
           contrib_name_value_slices.each do |contrib_name_value_slice|
             next if name_title_vals_index.blank?
 
