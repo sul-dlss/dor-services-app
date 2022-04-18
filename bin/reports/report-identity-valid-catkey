@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+Report.new(name: 'identity-valid_catkeys', dsids: ['identityMetadata']).run do |ng_xml|
+  catkey = ng_xml.xpath('//otherId[@name="catkey"]')
+  /^\d+(:\d+)*$/.match?(catkey)
+end
