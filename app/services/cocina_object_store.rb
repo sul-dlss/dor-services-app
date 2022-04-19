@@ -3,7 +3,6 @@
 # Abstracts persistence operations for Cocina objects.
 # For the actions that are supported, this class includes step that happen regardless of the datastore.
 # For example, publishing a notification upon create.
-# See ObjectCreator and ObjectUpdater for Fedora-specific steps for creating and updating when persisting to Fedora.
 # rubocop:disable Metrics/ClassLength
 class CocinaObjectStore
   # Generic base error class.
@@ -14,8 +13,6 @@ class CocinaObjectStore
 
   # Cocina object in datastore has been updated since this instance was retrieved.
   class StaleLockError < CocinaObjectStoreError; end
-
-  include FedoraPersistence
 
   # Retrieves a Cocina object from the datastore.
   # @param [String] druid
@@ -82,21 +79,13 @@ class CocinaObjectStore
 
   # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
   def find(druid)
-    if Settings.enabled_features.postgres && ar_exists?(druid)
-      ar_to_cocina_find(druid)
-    else
-      fedora_to_cocina_find(druid)
-    end
+    ar_to_cocina_find(druid)
   end
 
   def save(cocina_object, skip_lock: false)
     validate(cocina_object)
-    ar_save = Settings.enabled_features.postgres && ar_exists?(cocina_object.externalIdentifier)
     # Only update if already exists in PG (i.e., added by create or migration).
-    ar_result = cocina_to_ar_save(cocina_object, skip_lock: skip_lock) if ar_save
-    # Skip the lock check for fedora if saving to PG.
-    fedora_result = cocina_to_fedora_save(cocina_object, skip_lock: skip_lock || ar_save)
-    (created_at, modified_at, lock) = ar_result || fedora_result
+    (created_at, modified_at, lock) = cocina_to_ar_save(cocina_object, skip_lock: skip_lock)
     add_tags_for_update(cocina_object)
 
     cocina_object_without_metadata = Cocina::Models.without_metadata(cocina_object)
@@ -122,10 +111,7 @@ class CocinaObjectStore
     updated_cocina_request_object = add_description(updated_cocina_request_object)
     cocina_object = cocina_from_request(updated_cocina_request_object, druid)
     cocina_object = assign_doi(cocina_object) if assign_doi
-
-    # This saves the Fedora object.
-    (created_at, modified_at, lock) = fedora_create(cocina_object, druid: druid)
-    (created_at, modified_at, lock) = cocina_to_ar_save(cocina_object, skip_lock: true) if Settings.enabled_features.postgres
+    (created_at, modified_at, lock) = cocina_to_ar_save(cocina_object, skip_lock: true)
     add_tags_for_create(druid, cocina_request_object)
     # This creates version 1.0.0 (Initial Version)
     ObjectVersion.initial_version(druid: druid)
@@ -144,7 +130,7 @@ class CocinaObjectStore
   end
 
   def exists?(druid)
-    fedora_exists?(druid)
+    ar_exists?(druid)
   end
 
   # This is only public for migration use.
@@ -154,9 +140,8 @@ class CocinaObjectStore
 
   def destroy(druid)
     cocina_object = CocinaObjectStore.find(druid)
-    fedora_destroy(druid)
 
-    ar_destroy(druid) if Settings.enabled_features.postgres && ar_exists?(druid)
+    ar_destroy(druid)
 
     Notifications::ObjectDeleted.publish(model: cocina_object, deleted_at: Time.zone.now)
   end

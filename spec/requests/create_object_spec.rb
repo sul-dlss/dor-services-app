@@ -3,23 +3,17 @@
 require 'rails_helper'
 
 RSpec.describe 'Create object' do
-  let(:apo) do
-    build(:admin_policy, id: 'druid:dd999df4567').new(
-      administrative: {
-        hasAdminPolicy: 'druid:hy787xj5878',
-        hasAgreement: 'druid:bb033gt0615',
-        accessTemplate: default_access
-      }
-    )
-  end
-
-  let(:default_access) do
+  let(:access_template) do
     {
       view: 'world',
       download: 'none',
       copyright: 'All rights reserved unless otherwise indicated.',
       useAndReproductionStatement: 'Property rights reside with the repository...'
     }
+  end
+
+  let(:admin_policy_id) do
+    create(:ar_admin_policy, access_template: access_template).external_identifier
   end
   let(:data) { item.to_json }
   let(:druid) { 'druid:gg777gg7777' }
@@ -29,7 +23,6 @@ RSpec.describe 'Create object' do
 
   before do
     allow(SuriService).to receive(:mint_id).and_return(druid)
-    allow_any_instance_of(CocinaObjectStore).to receive(:find).with('druid:dd999df4567').and_return(apo)
     allow(Cocina::ActiveFedoraPersister).to receive(:store)
     stub_request(:put, 'https://dor-indexing-app.example.edu/dor/reindex_from_cocina')
     allow(SolrService).to receive(:get).and_return(search_result)
@@ -42,7 +35,7 @@ RSpec.describe 'Create object' do
     let(:expected_structural) { {} }
     let(:view) { 'world' }
     let(:expected) do
-      build(:dro, id: druid, label: expected_label, title: title, type: Cocina::Models::ObjectType.image, admin_policy_id: 'druid:dd999df4567').new(
+      build(:dro, id: druid, label: expected_label, title: title, type: Cocina::Models::ObjectType.image, admin_policy_id: admin_policy_id).new(
         identification: expected_identification,
         structural: expected_structural,
         access: {
@@ -53,6 +46,7 @@ RSpec.describe 'Create object' do
         }
       )
     end
+
     let(:data) do
       <<~JSON
         {#{' '}
@@ -65,7 +59,7 @@ RSpec.describe 'Create object' do
             "copyright":"All rights reserved unless otherwise indicated.",
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"#{admin_policy_id}","partOfProject":"Google Books"},
           "description":{"title":[{"value":"#{title}"}]},
           "identification":#{identification.to_json},
           "structural":#{structural.to_json}}
@@ -207,19 +201,6 @@ RSpec.describe 'Create object' do
 
     context 'when catkey is not provided' do
       context 'when no object with the source id exists and the save is successful' do
-        let(:item) do
-          Dor::Item.new(pid: druid,
-                        admin_policy_object_id: 'druid:dd999df4567',
-                        source_id: 'googlebooks:999999',
-                        label: 'This is my label')
-        end
-
-        before do
-          allow(Dor::Item).to receive(:new).and_return(item)
-          allow(item).to receive(:collections).and_return([])
-          allow(item).to receive(:save!)
-        end
-
         it 'registers the object with the registration service and immediately indexes' do
           post '/v1/objects',
                params: data,
@@ -232,88 +213,15 @@ RSpec.describe 'Create object' do
           expect(response.status).to eq(201)
           expect(response.location).to eq "/v1/objects/#{druid}"
 
-          # Identity metadata set correctly.
-          expect(item.objectId).to eq(druid)
-          expect(item.objectCreator.first).to eq('DOR')
-          expect(item.objectLabel.first).to eq(expected_label)
-          expect(item.objectType.first).to eq('item')
-          expect(item.identityMetadata.barcode).to eq('36105036289127')
-        end
-      end
-
-      # rubocop:disable Layout/LineLength
-      context 'when a really long title' do
-        let(:item) do
-          Dor::Item.new(pid: druid,
-                        admin_policy_object_id: 'druid:dd999df4567',
-                        source_id: 'googlebooks:999999',
-                        label: truncated_label)
-        end
-
-        let(:label) { 'Hearings before the Subcommittee on Elementary, Secondary, and Vocational Education of the Committee on Education and Labor, House of Representatives, Ninety-fifth Congress, first session, on H.R. 15, to extend for five years certain elementary, secondary, and other education programs ....' }
-        let(:truncated_label) { 'Hearings before the Subcommittee on Elementary, Secondary, and Vocational Education of the Committee on Education and Labor, House of Representatives, Ninety-fifth Congress, first session, on H.R. 15, to extend for five years certain elementary, secondar' }
-
-        before do
-          allow(Dor::Item).to receive(:new).and_return(item)
-          allow(item).to receive(:collections).and_return([])
-          allow(item).to receive(:save!)
-        end
-
-        it 'truncates the title' do
-          post '/v1/objects',
-               params: data,
-               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(a_request(:put, 'https://dor-indexing-app.example.edu/dor/reindex_from_cocina').with do |req|
-                   parsed_body = JSON.parse(req.body).deep_symbolize_keys
-                   expect(parsed_body[:cocina_object]).to eq(expected.to_h)
-                 end).to have_been_made
-          expect(response.body).to equal_cocina_model(expected)
-          expect(response.status).to eq(201)
-          expect(response.location).to eq "/v1/objects/#{druid}"
-
-          expect(Dor::Item).to have_received(:new).with(pid: druid,
-                                                        admin_policy_object_id: 'druid:dd999df4567',
-                                                        source_id: 'googlebooks:999999',
-                                                        collection_ids: [],
-                                                        catkey: nil)
-
-          # Identity metadata set correctly.
-          expect(item.objectLabel.first).to eq(expected_label)
-          expect(item.objectType.first).to eq('item')
-        end
-      end
-      # rubocop:enable Layout/LineLength
-
-      context 'when descriptive roundtrip validation fails' do
-        let(:changed_description) do
-          {
-            title: [{ value: 'changed title' }],
-            purl: 'https://purl.stanford.edu/gg777gg7777'
-          }
-        end
-
-        before do
-          allow(Honeybadger).to receive(:notify)
-          allow(Cocina::Models::Mapping::FromMods::Description).to receive(:props).and_return(changed_description)
-        end
-
-        it 'returns error' do
-          post '/v1/objects',
-               params: data,
-               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(response).to have_http_status(:unprocessable_entity)
-          expect(Honeybadger).to have_received(:notify)
+          item = CocinaObjectStore.find(druid)
+          # Metadata persisted correctly.
+          expect(item.label).to eq(expected_label)
+          expect(item.type).to eq('https://cocina.sul.stanford.edu/models/image')
+          expect(item.identification.barcode).to eq('36105036289127')
         end
       end
 
       context 'when assigning DOI' do
-        let(:item) do
-          Dor::Item.new(pid: druid,
-                        admin_policy_object_id: 'druid:dd999df4567',
-                        source_id: 'googlebooks:999999',
-                        label: 'This is my label')
-        end
-
         let(:expected_identification) do
           {
             sourceId: 'googlebooks:999999',
@@ -323,9 +231,6 @@ RSpec.describe 'Create object' do
         end
 
         before do
-          allow(Dor::Item).to receive(:new).and_return(item)
-          allow(item).to receive(:collections).and_return([])
-          allow(item).to receive(:save!)
           allow(Settings.datacite).to receive(:prefix).and_return('10.25740')
         end
 
@@ -336,8 +241,9 @@ RSpec.describe 'Create object' do
           expect(response.body).to equal_cocina_model(expected)
           expect(response.status).to eq(201)
 
-          # Identity metadata set correctly.
-          expect(item.identityMetadata.ng_xml.at('doi').text).to eq('10.25740/gg777gg7777')
+          item = CocinaObjectStore.find(druid)
+          # Metadata persisted correctly.
+          expect(item.identification.doi).to eq('10.25740/gg777gg7777')
         end
       end
     end
@@ -450,22 +356,6 @@ RSpec.describe 'Create object' do
 
       let(:structural) { { contains: filesets } }
 
-      let(:item) do
-        Dor::Item.new(pid: druid,
-                      admin_policy_object_id: 'druid:dd999df4567',
-                      source_id: 'googlebooks:999999',
-                      label: 'This is my label').tap do |i|
-          i.rightsMetadata.copyright = 'All rights reserved unless otherwise indicated.'
-          i.rightsMetadata.use_statement = 'Property rights reside with the repository...'
-        end
-      end
-
-      before do
-        allow(Dor::Item).to receive(:new).and_return(item)
-        allow(item).to receive(:collections).and_return([])
-        allow(item).to receive(:save!)
-      end
-
       context 'when access match' do
         before do
           # This gives every file and file set the same UUID. In reality, they would be unique.
@@ -543,16 +433,13 @@ RSpec.describe 'Create object' do
           post '/v1/objects',
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(Dor::Item).to have_received(:new)
-            .with(pid: druid,
-                  admin_policy_object_id: 'druid:dd999df4567',
-                  source_id: 'googlebooks:999999',
-                  collection_ids: [],
-                  catkey: nil)
           expect(response.body).to equal_cocina_model(expected)
           expect(response.status).to eq(201)
-          expect(item.contentMetadata.resource.file.count).to eq 4
           expect(response.location).to eq "/v1/objects/#{druid}"
+
+          item = CocinaObjectStore.find(druid)
+          # Metadata persisted correctly.
+          expect(item.structural.contains.map { |fs| fs.structural.contains.size }).to eq [2, 2]
         end
       end
 
@@ -586,91 +473,51 @@ RSpec.describe 'Create object' do
     end
 
     context 'when it is a member of a collection' do
-      let(:structural) { { isMemberOf: ['druid:xx888xx7777'] } }
+      let(:structural) { { isMemberOf: [collection_id] } }
       let(:expected_structural) { structural }
-
-      let(:item) do
-        Dor::Item.new(pid: druid,
-                      admin_policy_object_id: 'druid:dd999df4567',
-                      source_id: 'googlebooks:999999',
-                      label: 'This is my label').tap do |i|
-          i.rightsMetadata.copyright = 'All rights reserved unless otherwise indicated.'
-          i.rightsMetadata.use_statement = 'Property rights reside with the repository...'
-        end
-      end
-
-      let(:dor_collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }
-      let(:collection) { build(:collection, id: 'druid:xx888xx7777') }
-
-      before do
-        # Allows the CollectionExistenceValidator to find the collection:
-        allow_any_instance_of(CocinaObjectStore).to receive(:find).with('druid:xx888xx7777').and_return(collection)
-
-        allow(Dor::Item).to receive(:new).and_return(item)
-        allow(item).to receive(:collections).and_return([dor_collection])
-        allow(item).to receive(:save!)
-      end
+      let(:collection_id) { create(:ar_collection).external_identifier }
 
       it 'creates collection relationship' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(Dor::Item).to have_received(:new)
-          .with(pid: druid,
-                admin_policy_object_id: 'druid:dd999df4567',
-                source_id: 'googlebooks:999999',
-                collection_ids: ['druid:xx888xx7777'],
-                catkey: nil)
         expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
+
+        item = CocinaObjectStore.find(druid)
+        # Metadata persisted correctly.
+        expect(item.structural.isMemberOf).to eq [collection_id]
       end
     end
 
     context 'when no access is provided' do
-      let(:structural) { {} }
-      let(:expected_structural) { structural }
-
       let(:data) do
         <<~JSON
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
             "type":"#{Cocina::Models::ObjectType.image}",
             "label":"#{label}","version":1,
-            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Google Books"},
+            "administrative":{"releaseTags":[],"hasAdminPolicy":"#{admin_policy_id}","partOfProject":"Google Books"},
             "description":{"title":[{"value":"#{title}"}]},
             "identification":#{identification.to_json},
             "structural":#{structural.to_json}}
         JSON
       end
 
-      let(:item) do
-        Dor::Item.new(pid: druid,
-                      admin_policy_object_id: 'druid:dd999df4567',
-                      source_id: 'googlebooks:999999',
-                      label: 'This is my label')
-      end
-
-      let(:collection) { build(:collection, id: 'druid:xx888xx7777') }
-
-      before do
-        allow(Dor::Item).to receive(:new).and_return(item)
-        allow(item).to receive(:save!)
-      end
-
       it 'has default access' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(Dor::Item).to have_received(:new)
-          .with(pid: druid,
-                admin_policy_object_id: 'druid:dd999df4567',
-                source_id: 'googlebooks:999999',
-                collection_ids: [],
-                catkey: nil)
+
         expect(response.body).to equal_cocina_model(expected)
         expect(response.status).to eq(201)
         expect(response.location).to eq "/v1/objects/#{druid}"
+
+        item = CocinaObjectStore.find(druid)
+        # Metadata persisted correctly.
+        expect(item.access.view).to eq 'world'
+        expect(item.access.download).to eq 'none'
       end
     end
   end
@@ -680,7 +527,7 @@ RSpec.describe 'Create object' do
     let(:title) { 'This is my title' }
     let(:expected_label) { label }
     let(:expected) do
-      build(:dro, id: druid, title: title, label: expected_label, admin_policy_id: 'druid:dd999df4567', type: Cocina::Models::ObjectType.book).new(
+      build(:dro, id: druid, title: title, label: expected_label, admin_policy_id: admin_policy_id, type: Cocina::Models::ObjectType.book).new(
         identification: { sourceId: 'googlebooks:999999' },
         structural: {
           hasMemberOrders: [
@@ -699,13 +546,13 @@ RSpec.describe 'Create object' do
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.book}",
           "label":"#{label}","version":1,"access":{"view":"world","download":"world"},
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"#{admin_policy_id}"},
           "description":{"title":[{"value":"#{title}"}]},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
     end
-    let(:default_access) do
+    let(:access_template) do
       {
         view: 'world',
         download: 'world'
@@ -744,7 +591,7 @@ RSpec.describe 'Create object' do
                                           license: 'http://opendatacommons.org/licenses/by/1.0/',
                                           useAndReproductionStatement: 'Whatever makes you happy'
                                         },
-                                        hasAdminPolicy: 'druid:dd999df4567',
+                                        hasAdminPolicy: admin_policy_id,
                                         disseminationWorkflow: 'assemblyWF',
                                         registrationWorkflow: %w[goobiWF registrationWF],
                                         collectionsForRegistration: ['druid:gg888df4567', 'druid:bb888gg4444'],
@@ -782,7 +629,7 @@ RSpec.describe 'Create object' do
             "disseminationWorkflow":"assemblyWF",
             "registrationWorkflow":["goobiWF","registrationWF"],
             "collectionsForRegistration":["druid:gg888df4567","druid:bb888gg4444"],
-            "hasAdminPolicy":"druid:dd999df4567",
+            "hasAdminPolicy":"#{admin_policy_id}",
             "hasAgreement":"druid:bc753qt7345",
             "roles":[{"name":"dor-apo-manager","members":[{"type":"workgroup","identifier":"sdr:psm-staff"}]}]
           },
@@ -792,7 +639,7 @@ RSpec.describe 'Create object' do
 
     before do
       # This stubs out Solr:
-      allow_any_instance_of(Dor::AdminPolicyObject).to receive(:admin_policy_object_id).and_return('druid:dd999df4567')
+      allow_any_instance_of(Dor::AdminPolicyObject).to receive(:admin_policy_object_id).and_return(admin_policy_id)
     end
 
     context 'when the request is successful' do
@@ -811,7 +658,7 @@ RSpec.describe 'Create object' do
 
       before do
         allow(Settings.enabled_features).to receive(:create_ur_admin_policy).and_return(true)
-        allow(Settings.ur_admin_policy).to receive(:druid).and_return('druid:dd999df4567')
+        allow(Settings.ur_admin_policy).to receive(:druid).and_return(admin_policy_id)
         allow(Dor::AdminPolicyObject).to receive(:exists?).and_return(false)
         allow(UrAdminPolicyFactory).to receive(:create)
       end
@@ -837,7 +684,7 @@ RSpec.describe 'Create object' do
             view: 'world',
             download: 'world'
           },
-          hasAdminPolicy: 'druid:dd999df4567',
+          hasAdminPolicy: admin_policy_id,
           roles: [],
           hasAgreement: 'druid:bc753qt7345'
         }
@@ -851,7 +698,7 @@ RSpec.describe 'Create object' do
           "type":"#{Cocina::Models::ObjectType.admin_policy}",
           "label":"Hydrus","version":1,
           "administrative":{
-            "hasAdminPolicy":"druid:dd999df4567",
+            "hasAdminPolicy":"#{admin_policy_id}",
             "hasAgreement":"druid:bc753qt7345",
             "accessTemplate":{
               "view":"world",
@@ -864,7 +711,7 @@ RSpec.describe 'Create object' do
     context 'when the request is successful' do
       before do
         # This stubs out Solr:
-        allow_any_instance_of(Dor::AdminPolicyObject).to receive(:admin_policy_object_id).and_return('druid:dd999df4567')
+        allow_any_instance_of(Dor::AdminPolicyObject).to receive(:admin_policy_object_id).and_return(admin_policy_id)
       end
 
       it 'registers the object with the registration service' do
@@ -889,7 +736,7 @@ RSpec.describe 'Create object' do
                                 purl: 'https://purl.stanford.edu/gg777gg7777'
                               },
                               administrative: {
-                                hasAdminPolicy: 'druid:dd999df4567'
+                                hasAdminPolicy: admin_policy_id
                               },
                               identification: { sourceId: 'googlebooks:999999' },
                               externalIdentifier: 'druid:gg777gg7777',
@@ -912,13 +759,13 @@ RSpec.describe 'Create object' do
           "type":"#{Cocina::Models::ObjectType.book}",
           "label":"This is my label","version":1,"access":{"view":"stanford","download":"none","controlledDigitalLending":false,
           "embargo":{"view":"world","download":"world","releaseDate":"2020-02-29"}},
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"#{admin_policy_id}"},
           "description":{"title":[{"value":"This is my title"}]},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
     end
-    let(:default_access) do
+    let(:access_template) do
       {
         view: 'stanford',
         download: 'none',
@@ -950,7 +797,7 @@ RSpec.describe 'Create object' do
                                 purl: 'https://purl.stanford.edu/gg777gg7777'
                               },
                               administrative: {
-                                hasAdminPolicy: 'druid:dd999df4567'
+                                hasAdminPolicy: admin_policy_id
                               },
                               identification: { sourceId: 'googlebooks:999999' },
                               externalIdentifier: 'druid:gg777gg7777',
@@ -973,13 +820,13 @@ RSpec.describe 'Create object' do
           "type":"#{Cocina::Models::ObjectType.book}",
           "label":"This is my label","version":1,
           "access":{"view":"location-based","download":"location-based","location":"m&m"},
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"#{admin_policy_id}"},
           "description":{"title":[{"value":"This is my title"}]},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
     end
-    let(:default_access) do
+    let(:access_template) do
       {
         view: 'location-based',
         download: 'location-based',
@@ -1003,7 +850,7 @@ RSpec.describe 'Create object' do
 
   context 'when no-download access is specified' do
     let(:expected) do
-      build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my title', type: Cocina::Models::ObjectType.book, admin_policy_id: 'druid:dd999df4567').new(
+      build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my title', type: Cocina::Models::ObjectType.book, admin_policy_id: admin_policy_id).new(
         structural: {
           hasMemberOrders: [
             { viewingDirection: 'right-to-left' }
@@ -1023,13 +870,13 @@ RSpec.describe 'Create object' do
           "type":"#{Cocina::Models::ObjectType.book}",
           "label":"This is my label","version":1,
           "access":{"view":"world","download":"none"},
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"#{admin_policy_id}"},
           "description":{"title":[{"value":"This is my title"}]},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
     end
-    let(:default_access) do
+    let(:access_template) do
       {
         view: 'world',
         download: 'none'
@@ -1058,7 +905,7 @@ RSpec.describe 'Create object' do
 
     context 'when structural is provided' do
       let(:expected) do
-        build(:dro, id: 'druid:gg777gg7777', admin_policy_id: 'druid:dd999df4567', label: 'This is my label', title: 'This is my label').new(
+        build(:dro, id: 'druid:gg777gg7777', admin_policy_id: admin_policy_id, label: 'This is my label', title: 'This is my label').new(
           identification: { sourceId: 'googlebooks:999999' }
         )
       end
@@ -1068,12 +915,12 @@ RSpec.describe 'Create object' do
             "cocinaVersion":"#{Cocina::Models::VERSION}",
             "type":"#{Cocina::Models::ObjectType.object}",
             "label":"This is my label","version":1,"access":{},
-            "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
+            "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
             "identification":{"sourceId":"googlebooks:999999"},
             "structural":{}}
         JSON
       end
-      let(:default_access) do
+      let(:access_template) do
         {
           view: 'dark',
           download: 'none'
@@ -1092,7 +939,7 @@ RSpec.describe 'Create object' do
 
     context 'when structural is not provided' do
       let(:expected) do
-        build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my label', admin_policy_id: 'druid:dd999df4567').new(
+        build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my label', admin_policy_id: admin_policy_id).new(
           identification: { sourceId: 'googlebooks:999999' }
         )
       end
@@ -1102,13 +949,13 @@ RSpec.describe 'Create object' do
             "cocinaVersion":"#{Cocina::Models::VERSION}",
             "type":"#{Cocina::Models::ObjectType.object}",
             "label":"This is my label","version":1,"access":{},
-            "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
+            "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
             "identification":{"sourceId":"googlebooks:999999"},
             "structural":{}
           }
         JSON
       end
-      let(:default_access) do
+      let(:access_template) do
         {
           view: 'dark',
           download: 'none'
@@ -1127,7 +974,7 @@ RSpec.describe 'Create object' do
 
     context 'when access is not provided' do
       let(:expected) do
-        build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my label', admin_policy_id: 'druid:dd999df4567').new(
+        build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my label', admin_policy_id: admin_policy_id).new(
           identification: { sourceId: 'googlebooks:999999' }
         )
       end
@@ -1138,13 +985,13 @@ RSpec.describe 'Create object' do
             "cocinaVersion":"#{Cocina::Models::VERSION}",
             "type":"#{Cocina::Models::ObjectType.object}",
             "label":"This is my label","version":1,
-            "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
+            "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
             "access":{},
             "identification":{"sourceId":"googlebooks:999999"},
             "structural":{}}
         JSON
       end
-      let(:default_access) do
+      let(:access_template) do
         {
           view: 'dark',
           download: 'none'
@@ -1169,7 +1016,7 @@ RSpec.describe 'Create object' do
     end
 
     let(:expected) do
-      build(:dro, id: 'druid:gg777gg7777', type: Cocina::Models::ObjectType.webarchive_binary, label: 'This is my label', title: 'This is my label', admin_policy_id: 'druid:dd999df4567').new(
+      build(:dro, id: 'druid:gg777gg7777', type: Cocina::Models::ObjectType.webarchive_binary, label: 'This is my label', title: 'This is my label', admin_policy_id: admin_policy_id).new(
         identification: { sourceId: 'warc:999999' }
       )
     end
@@ -1179,12 +1026,12 @@ RSpec.describe 'Create object' do
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.webarchive_binary}",
           "label":"This is my label","version":1,"access":{},
-          "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
+          "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
           "identification":{"sourceId":"warc:999999"},
           "structural":{}}
       JSON
     end
-    let(:default_access) do
+    let(:access_template) do
       {
         view: 'dark',
         download: 'none'
@@ -1209,7 +1056,7 @@ RSpec.describe 'Create object' do
     end
 
     let(:expected) do
-      build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my label', admin_policy_id: 'druid:dd999df4567').new(
+      build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my label', admin_policy_id: admin_policy_id).new(
         identification: { sourceId: 'warc:999999' }
       )
     end
@@ -1219,12 +1066,12 @@ RSpec.describe 'Create object' do
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.object}",
           "label":"This is my label","version":1,"access":{},
-          "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
+          "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
           "identification":{"sourceId":"warc:999999"},
           "structural":{}}
       JSON
     end
-    let(:default_access) do
+    let(:access_template) do
       {
         view: 'dark',
         download: 'none'

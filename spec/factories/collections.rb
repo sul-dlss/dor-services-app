@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :ar_collection, class: 'Collection' do
-    cocina_version { '0.0.1' }
+    cocina_version { Cocina::Models::VERSION }
     external_identifier { generate(:unique_druid) }
     collection_type { Cocina::Models::ObjectType.collection }
     label { 'Test Collection' }

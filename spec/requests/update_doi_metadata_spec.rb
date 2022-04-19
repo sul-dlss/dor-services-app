@@ -3,89 +3,15 @@
 require 'rails_helper'
 
 RSpec.describe 'Update DOI metadata' do
-  let(:druid) { 'druid:mx123qw2323' }
-  let(:object) { Dor::Item.new(pid: druid) }
-
-  let(:cocina_item) do
-    build(:dro, id: 'druid:bc123df4567').new(
-      description: {
-        title: [{ value: 'Test obj' }],
-        purl: 'https://purl.stanford.edu/bc123df4567',
-        subject: [{ type: 'topic', value: 'word' }],
-        contributor: [
-          {
-            name: [
-              {
-                structuredValue: [
-                  {
-                    value: 'Jane',
-                    type: 'forename'
-                  },
-                  {
-                    value: 'Stanford',
-                    type: 'surname'
-                  }
-                ]
-              }
-            ],
-            type: 'person'
-          }
-        ],
-        form: [
-          {
-            structuredValue: [
-              {
-                value: 'Data',
-                type: 'type'
-              }
-            ],
-            source: {
-              value: 'Stanford self-deposit resource types'
-            },
-            type: 'resource type'
-          },
-          {
-            value: 'Dataset',
-            type: 'resource type',
-            uri: 'http://id.loc.gov/vocabulary/resourceTypes/dat',
-            source: {
-              uri: 'http://id.loc.gov/vocabulary/resourceTypes/'
-            }
-          },
-          {
-            value: 'Data sets',
-            type: 'genre',
-            uri: 'https://id.loc.gov/authorities/genreForms/gf2018026119',
-            source: {
-              code: 'lcgft'
-            }
-          },
-          {
-            value: 'dataset',
-            type: 'genre',
-            source: {
-              code: 'local'
-            }
-          },
-          {
-            value: 'Dataset',
-            type: 'resource type',
-            source: {
-              value: 'DataCite resource types'
-            }
-          }
-        ]
-      },
-      identification: {
-        doi: '10.80343/bc123df4567',
-        sourceId: 'sul:123'
-      }
-    )
+  let(:druid) { object.external_identifier }
+  let(:object) do
+    create(:ar_dro, identification: {
+             doi: '10.80343/bc123df4567',
+             sourceId: "sul:#{rand(100000..9_999_999)}"
+           })
   end
 
   before do
-    allow(Dor).to receive(:find).and_return(object)
-    allow(Cocina::Mapper).to receive(:build).and_return(cocina_item)
     allow(UpdateDoiMetadataJob).to receive(:perform_later)
   end
 
@@ -95,6 +21,79 @@ RSpec.describe 'Update DOI metadata' do
     end
 
     context 'when the item meets the required preconditions' do
+      before do
+        object.update(
+          description: {
+            title: [{ value: 'Test obj' }],
+            purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}",
+            subject: [{ type: 'topic', value: 'word' }],
+            contributor: [
+              {
+                name: [
+                  {
+                    structuredValue: [
+                      {
+                        value: 'Jane',
+                        type: 'forename'
+                      },
+                      {
+                        value: 'Stanford',
+                        type: 'surname'
+                      }
+                    ]
+                  }
+                ],
+                type: 'person'
+              }
+            ],
+            form: [
+              {
+                structuredValue: [
+                  {
+                    value: 'Data',
+                    type: 'type'
+                  }
+                ],
+                source: {
+                  value: 'Stanford self-deposit resource types'
+                },
+                type: 'resource type'
+              },
+              {
+                value: 'Dataset',
+                type: 'resource type',
+                uri: 'http://id.loc.gov/vocabulary/resourceTypes/dat',
+                source: {
+                  uri: 'http://id.loc.gov/vocabulary/resourceTypes/'
+                }
+              },
+              {
+                value: 'Data sets',
+                type: 'genre',
+                uri: 'https://id.loc.gov/authorities/genreForms/gf2018026119',
+                source: {
+                  code: 'lcgft'
+                }
+              },
+              {
+                value: 'dataset',
+                type: 'genre',
+                source: {
+                  code: 'local'
+                }
+              },
+              {
+                value: 'Dataset',
+                type: 'resource type',
+                source: {
+                  value: 'DataCite resource types'
+                }
+              }
+            ]
+          }
+        )
+      end
+
       it 'responds to the request with 202 ("accepted")' do
         post "/v1/objects/#{druid}/update_doi_metadata", headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:accepted)
@@ -103,20 +102,6 @@ RSpec.describe 'Update DOI metadata' do
     end
 
     context 'when the item is missing the required preconditions' do
-      let(:cocina_item) do
-        build(:dro, id: 'druid:bc123df4567').new(
-          description: {
-            title: [{ value: 'Test obj' }],
-            purl: 'https://purl.stanford.edu/bc123df4567',
-            subject: [{ type: 'topic', value: 'word' }]
-          },
-          identification: {
-            doi: '10.80343/bc123df4567',
-            sourceId: 'sul:123'
-          }
-        )
-      end
-
       it 'responds to the request with 409 ("conflict")' do
         post "/v1/objects/#{druid}/update_doi_metadata", headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:conflict)
