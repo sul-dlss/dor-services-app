@@ -25,8 +25,7 @@ class ModsService
         (prefix, identifier) = parse_identifier(identifier)
         valid_identifier!(prefix, identifier)
 
-        marcxml = MarcxmlResource.new(prefix.to_sym => identifier)
-        marcxml.mods
+        MarcService.mods(prefix.to_sym => identifier)
       end
     end
 
