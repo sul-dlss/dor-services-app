@@ -19,7 +19,7 @@ class ModsService
       #       preferred order specified above in KNOWN_PREFIXES, so that the .first is the preferred one
     end
 
-    # @raises SymphonyReader::ResponseError
+    # @raises MarcService::MarcServiceError
     def fetch(identifier)
       @@cache.fetch(identifier) do
         (prefix, identifier) = parse_identifier(identifier)

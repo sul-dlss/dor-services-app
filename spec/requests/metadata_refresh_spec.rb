@@ -39,8 +39,14 @@ RSpec.describe 'Refresh metadata' do
                             label: 'A new map of Africa',
                             version: 1,
                             description: {
-                              title: [{ value: 'Paying for College' }],
-                              purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+                              title: [{ value: 'Paying for College', status: 'primary' }],
+                              purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}",
+                              adminMetadata: {
+                                note: [{ type: 'record origin',
+                                         value: "Converted from MARCXML to MODS version 3.7 using\n\t\t\t\t" \
+                                                "MARC21slim2MODS3-7_SDR_v2-5.xsl (SUL 3.7 version 2.5 20210421; LC Revision 1.140\n\t\t\t\t" \
+                                                '20200717)' }]
+                              }
                             },
                             identification: identification,
                             access: {},
@@ -59,15 +65,13 @@ RSpec.describe 'Refresh metadata' do
                                     type: Cocina::Models::ObjectType.admin_policy)
   end
 
-  let(:mods) do
-    <<~XML
-      <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.7">
-        <titleInfo>
-          <title>Paying for College</title>
-        </titleInfo>
-      </mods>
-    XML
+  let(:marc) do
+    MARC::Record.new.tap do |record|
+      record << MARC::DataField.new('245', '0', ' ', ['a', 'Paying for College'])
+    end
   end
+
+  let(:symphony_reader) { instance_double(SymphonyReader, to_marc: marc) }
 
   before do
     allow(Dor).to receive(:find).and_return(object)
@@ -78,7 +82,7 @@ RSpec.describe 'Refresh metadata' do
 
   context 'when happy path' do
     before do
-      allow(ModsService).to receive(:fetch).and_return(mods)
+      allow(SymphonyReader).to receive(:new).and_return(symphony_reader)
     end
 
     it 'updates the metadata and saves the changes' do
@@ -98,7 +102,7 @@ RSpec.describe 'Refresh metadata' do
     end
 
     before do
-      allow(ModsService).to receive(:fetch).and_return(mods)
+      allow(SymphonyReader).to receive(:new).and_return(symphony_reader)
     end
 
     it 'updates the metadata and saves the changes' do
@@ -122,7 +126,7 @@ RSpec.describe 'Refresh metadata' do
     end
 
     before do
-      allow(ModsService).to receive(:fetch).and_return(mods)
+      allow(SymphonyReader).to receive(:new).and_return(symphony_reader)
     end
 
     it 'returns a 422 error' do
@@ -155,7 +159,7 @@ RSpec.describe 'Refresh metadata' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:internal_server_error)
-        expect(response.body).to eq('Incomplete response received from Symphony for 666 - expected 0 bytes but got 2')
+        expect(response.body).to match('Incomplete response received from Symphony for 666 - expected 0 bytes but got 2')
       end
     end
 
@@ -193,7 +197,24 @@ RSpec.describe 'Refresh metadata' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:internal_server_error)
-        expect(response.body).to match(%r{^Got HTTP Status-Code 403 calling https://sirsi.example.com/symws/catalog/bib/key/666\?includeFields=bib:.*Something somewhere went wrong.})
+        expect(response.body).to match(%r{Got HTTP Status-Code 403 calling https://sirsi.example.com/symws/catalog/bib/key/666\?includeFields=bib:.*Something somewhere went wrong.})
+      end
+    end
+
+    context 'when transform error' do
+      let(:xslt) { instance_double(Nokogiri::XSLT::Stylesheet) }
+
+      before do
+        allow(SymphonyReader).to receive(:new).and_return(symphony_reader)
+        allow(Nokogiri).to receive(:XSLT).and_return(xslt)
+        allow(xslt).to receive(:transform).and_raise(RuntimeError, 'Cannot add attributes to an element if children have been already added to the element.')
+      end
+
+      it 'returns a 500 error' do
+        post '/v1/objects/druid:mk420bs7601/refresh_metadata',
+             headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status(:internal_server_error)
+        expect(response.body).to match('Cannot add attributes to an element if children have been already added to the element.')
       end
     end
   end

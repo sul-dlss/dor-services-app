@@ -52,7 +52,7 @@ RSpec.describe "Looking up an item's marcxml" do
     stub_request(:get, format(marc_url, catkey: catkey)).to_return(body: body.to_json, headers: { 'Content-Length': 394 })
 
     get "/v1/catalog/marcxml?catkey=#{catkey}", headers: { 'Authorization' => "Bearer #{jwt}" }
-    expect(response.body).to start_with '<record'
+    expect(response.body).to start_with "<?xml version=\"1.0\"?>\n<record xmlns=\"http://www.loc.gov/MARC21/slim\">"
   end
 
   it 'looks up an item by barcode' do
@@ -61,7 +61,7 @@ RSpec.describe "Looking up an item's marcxml" do
 
     get "/v1/catalog/marcxml?barcode=#{barcode}", headers: { 'Authorization' => "Bearer #{jwt}" }
 
-    expect(response.body).to start_with '<record'
+    expect(response.body).to start_with "<?xml version=\"1.0\"?>\n<record xmlns=\"http://www.loc.gov/MARC21/slim\">"
   end
 
   describe 'errors in response from Symphony' do
@@ -73,7 +73,7 @@ RSpec.describe "Looking up an item's marcxml" do
       it 'returns a 500 error' do
         get "/v1/catalog/marcxml?catkey=#{catkey}", headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.status).to eq(500)
-        expect(response.body).to eq("Incomplete response received from Symphony for #{catkey} - expected 0 bytes but got 2")
+        expect(response.body).to match("Incomplete response received from Symphony for #{catkey} - expected 0 bytes but got 2")
       end
     end
 
@@ -85,7 +85,7 @@ RSpec.describe "Looking up an item's marcxml" do
         get "/v1/catalog/marcxml?catkey=#{bogus_value}", headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:bad_request)
         json = JSON.parse(response.body)
-        expect(json.dig('errors', 0, 'title')).to eq 'Catkey not found in Symphony'
+        expect(json.dig('errors', 0, 'title')).to eq 'Record not found in Symphony'
       end
     end
 
@@ -108,7 +108,7 @@ RSpec.describe "Looking up an item's marcxml" do
       it 'returns a 500 error' do
         get "/v1/catalog/marcxml?catkey=#{catkey}", headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.status).to eq(500)
-        expect(response.body).to match(/^Got HTTP Status-Code 403.*:.*Something somewhere went wrong./)
+        expect(response.body).to match(/Got HTTP Status-Code 403.*:.*Something somewhere went wrong./)
       end
     end
   end

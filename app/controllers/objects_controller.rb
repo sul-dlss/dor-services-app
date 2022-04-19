@@ -36,11 +36,14 @@ class ObjectsController < ApplicationController
 
     add_headers(cocina_object)
     render status: :created, location: object_path(cocina_object.externalIdentifier), json: Cocina::Models.without_metadata(cocina_object)
-  rescue SymphonyReader::ResponseError => e
+  rescue MarcService::CatalogResponseError => e
     Honeybadger.notify(e)
     json_api_error(status: :bad_gateway, title: 'Catalog connection error', message: 'Unable to read descriptive metadata from the catalog')
-  rescue SymphonyReader::NotFound => e
+  rescue MarcService::CatalogRecordNotFoundError => e
     json_api_error(status: :bad_request, title: 'Catkey not found in Symphony', message: e.message)
+  rescue MarcService::MarcServiceError => e
+    Honeybadger.notify(e)
+    json_api_error(status: :internal_server_error, message: e.message)
   rescue Cocina::RoundtripValidationError => e
     Honeybadger.notify(e)
     json_api_error(status: e.status, message: e.message)
