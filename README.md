@@ -125,7 +125,7 @@ dor_services:
   url: 'https://dor-services-prod.stanford.edu'
   token: '<create a token>'
 ```
-  
+
 2. Copy certificates locally via `scp -r root@<dor services production host>:/etc/pki/tls .`
 
 ### Create a list of all druids
@@ -182,31 +182,6 @@ $ bin/copy-cache -i druids.testbed.txt -s 1000
 To copy cache:
 rsync --files-from=cache-files.txt deploy@sdr-deploy.stanford.edu:/opt/app/deploy/dor-services-app .
 ```
-
-### Validate mapping to Cocina from Fedora
-```
-$ bin/validate-cocina-roundtrip -h
-Usage: bin/validate-cocina-roundtrip [options]
-    -s, --sample SAMPLE              Sample size, otherwise all druids.
-    -u, --update                     Run object update instead of object create.
-    -r, --random                     Select random druids.
-    -f, --no_content                 Without content metadata (fast).
-    -n, --no_descriptive             Without descriptive metadata.
-    -d, --druids DRUIDS              List of druids (instead of druids.txt).
-    -i, --input FILENAME             File containing list of druids (instead of druids.txt).
-    -h, --help                       Displays help.
-
-$ bin/validate-cocina-roundtrip -s 100
-Testing |Time: 00:00:21 | ============================================================================ | Time: 00:00:21
-Status (n=100; not using Missing for success/different/error stats):
-  Success:   8 (8.0%)
-  Different: 56 (56.0%)
-  Mapping error:     36 (36.0%)
-  Update error:     0 (0.0%)
-  Missing:     0 (0.0%)
-```
-
-Using the druids from `druids.txt` and the cache, this will create a Fedora item, map the Fedora item to the Cocina model, create a new Fedora item from the Cocina object, map the new Fedora item to the Cocina model, and compare the original Cocina object against the new Cocina object and the original Fedora item against the new Fedora item.
 
 ### Validate mapping to Cocina from MODS (descriptive metadata only)
 ```
@@ -339,7 +314,7 @@ $ echo $FEDORA_CACHE
 /opt/app/deploy/dor-services-app/cache
 ```
 
-Test with `bin/validate-cocina-roundtrip`, comparing results from main against your branch. The sample size to you is up to you; bigger samples are recommended for more complex changes.
+Test with `bin/validate-desc-cocina-roundtrip`, comparing results from main against your branch. The sample size to you is up to you; bigger samples are recommended for more complex changes.
 
 ```
 $ git checkout main
