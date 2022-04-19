@@ -215,6 +215,87 @@ RSpec.describe VersionService do
     end
   end
 
+  describe '.update_open_version' do
+    subject(:update_open_version) { described_class.update_open_version(cocina_object, opts) }
+
+    let(:opts) do
+      {
+        description: 'updated description',
+        significance: 'major'
+      }
+    end
+
+    let(:version) { 2 }
+
+    let(:workflow_client) do
+      instance_double(Dor::Workflow::Client)
+    end
+
+    before do
+      allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
+      allow(VersionMigrationService).to receive(:find_and_migrate)
+      ObjectVersion.create(druid: druid, version: 1, tag: '1.0.0')
+      ObjectVersion.create(druid: druid, version: 2)
+    end
+
+    context 'when significance and description are passed in' do
+      before do
+        # stub out calls for open_for_versioning?
+        allow(workflow_client).to receive(:active_lifecycle).and_return(true)
+      end
+
+      it 'checks if active_lifecycle is "opened", sets tag and description' do
+        update_open_version
+        object_version = ObjectVersion.find_by(druid: druid, version: 2)
+        expect(object_version.tag).to eq('2.0.0')
+        expect(object_version.description).to eq('updated description')
+        expect(workflow_client).to have_received(:active_lifecycle)
+          .with(druid: druid, version: '2', milestone_name: 'opened')
+      end
+
+      it 'returns open version information as json' do
+        response_text = update_open_version
+        expect(response_text).to include(druid)
+        expect(response_text).to include('2.0.0') # version + significance
+        expect(response_text).to include('updated description')
+      end
+    end
+
+    context 'when the object has not been opened for versioning' do
+      before do
+        allow(workflow_client).to receive(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '2').and_return(nil)
+      end
+
+      it 'raises an exception' do
+        expect { update_open_version }.to raise_error(Dor::Exception, "Trying to update version 2 information on #{druid} and version is not open")
+      end
+    end
+
+    context 'when the description parameter is missing' do
+      let(:opts) { { significance: 'major' } }
+
+      before do
+        allow(workflow_client).to receive(:active_lifecycle).and_return(true)
+      end
+
+      it 'raises an exception' do
+        expect { update_open_version }.to raise_error(Dor::Exception, 'no description provided for updating open version 2 on druid:xz456jk0987')
+      end
+    end
+
+    context 'when the significance parameter is missing' do
+      let(:opts) { { description: 'whatever' } }
+
+      before do
+        allow(workflow_client).to receive(:active_lifecycle).and_return(true)
+      end
+
+      it 'raises an exception' do
+        expect { update_open_version }.to raise_error(Dor::Exception, 'no significance/type (Major, Minor, Admin) provided for updating open version 2 on druid:xz456jk0987')
+      end
+    end
+  end
+
   describe '.close' do
     subject(:close) { described_class.close(cocina_object, opts, event_factory: event_factory) }
 

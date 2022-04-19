@@ -80,6 +80,7 @@ Rails.application.routes.draw do
         collection do
           get 'openable'
           get 'current'
+          post 'current/update', action: 'update_current'
           post 'current/close', action: 'close_current'
         end
       end

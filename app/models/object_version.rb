@@ -49,7 +49,7 @@ class ObjectVersion < ApplicationRecord
   # @param [String] druid
   # @param [Symbol] significance which part of the version tag to increment
   #  :major, :minor, :admin (see VersionTag#increment)
-  # @param [String] description optional text describing version change
+  # @param [String] description text describing version change
   # @return [ObjectVersion] created ObjectVersion
   def self.update_current_version(druid, significance: nil, description: nil)
     return if significance.nil? && description.nil?

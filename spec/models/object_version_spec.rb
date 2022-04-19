@@ -77,7 +77,7 @@ RSpec.describe ObjectVersion, type: :model do
     end
   end
 
-  describe '#update_version' do
+  describe '#update_current_version' do
     context 'when description and significance not provided' do
       before do
         described_class.create(druid: druid, version: 1, tag: '1.0.0')
@@ -106,7 +106,7 @@ RSpec.describe ObjectVersion, type: :model do
 
       it 'does not update' do
         described_class.update_current_version(druid: druid, significance: :minor)
-        expect(described_class.find_by(druid: druid, version: 1).version).to eq(1)
+        expect(described_class.current_version(druid).version).to eq(1)
       end
     end
 

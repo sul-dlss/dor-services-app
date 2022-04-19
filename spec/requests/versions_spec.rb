@@ -20,8 +20,49 @@ RSpec.describe 'Operations regarding object versions' do
     end
   end
 
+  describe '/versions/current/update' do
+    context 'when updating a version succeeds' do
+      before do
+        allow(VersionService).to receive(:update_open_version)
+      end
+
+      it 'returns status 200' do
+        post '/v1/objects/druid:mx123qw2323/versions/current/update',
+             params: %( {"description": "some text", "significance": "major"} ),
+             headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response.status).to eq 200
+      end
+
+      it 'forwards optional params to the VersionService#update_open_version method' do
+        post '/v1/objects/druid:mx123qw2323/versions/current/update',
+             params: %( {"description": "wat?", "significance": "major"} ),
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(VersionService).to have_received(:update_open_version)
+          .with(cocina_object, { description: 'wat?', significance: 'major' })
+      end
+    end
+
+    context 'when updating a version fails' do
+      before do
+        allow(VersionService).to receive(:update_open_version)
+          .and_raise(Dor::WorkflowException, 'Trying to update version on an object not opened for versioning')
+      end
+
+      it 'returns an error' do
+        post '/v1/objects/druid:mx123qw2323/versions/current/update',
+             params: %( {"description": "wat?", "significance": "major"} ),
+             headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response.status).to eq 500
+        expect(response.body).to eq(
+          '{"errors":[{"status":"500","title":"Unable to check if a version is open due to workflow client error",' \
+          '"detail":"Trying to update version on an object not opened for versioning"}]}'
+        )
+      end
+    end
+  end
+
   describe '/versions/current/close' do
-    context 'when closing a version succeedes' do
+    context 'when closing a version succeeds' do
       before do
         allow(VersionService).to receive(:close)
       end
@@ -146,7 +187,7 @@ RSpec.describe 'Operations regarding object versions' do
         allow(VersionService).to receive(:can_open?).and_return(false)
       end
 
-      it 'returns true' do
+      it 'returns false' do
         get '/v1/objects/druid:mx123qw2323/versions/openable',
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('false')

@@ -43,6 +43,12 @@ class VersionsController < ApplicationController
     render build_error('Unable to close version', e)
   end
 
+  def update_current
+    render plain: VersionService.update_open_version(@cocina_object, update_params).to_s
+  rescue Dor::WorkflowException => e
+    render build_error('Unable to check if a version is open due to workflow client error', e, status: :internal_server_error)
+  end
+
   def openable
     render plain: VersionService.can_open?(@cocina_object, open_params).to_s
   rescue Preservation::Client::Error => e
@@ -73,6 +79,13 @@ class VersionsController < ApplicationController
       :assume_accessioned,
       :description,
       :opening_user_name,
+      :significance
+    ).to_h.symbolize_keys
+  end
+
+  def update_params
+    params.permit(
+      :description,
       :significance
     ).to_h.symbolize_keys
   end

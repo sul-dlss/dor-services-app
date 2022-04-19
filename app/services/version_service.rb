@@ -14,6 +14,10 @@ class VersionService
     new(cocina_object).open_for_versioning?
   end
 
+  def self.update_open_version(cocina_object, opts = {})
+    new(cocina_object).update_open_version(opts)
+  end
+
   def self.close(cocina_object, opts = {}, event_factory:)
     new(cocina_object, event_factory: event_factory).close(opts)
   end
@@ -70,6 +74,30 @@ class VersionService
     true
   rescue Dor::Exception
     false
+  end
+
+  # Updates description and significance (type) for an open version
+  # @param [Hash] opts optional params
+  # @option opts [String] :description describes the version change
+  # @option opts [Symbol] :significance which part of the version tag to increment
+  #  major, minor, admin (see Dor::VersionTag#increment) - called "Type" in Argo form
+  # @raise [Dor::Exception] if the object hasn't been opened for versioning or
+  #   the description or the significance param is empty
+  def update_open_version(opts = {})
+    # This can be removed after migration.
+    VersionMigrationService.find_and_migrate(druid)
+
+    msg = "Trying to update version #{cocina_object.version} information on #{druid} and version is not open"
+    raise Dor::Exception, msg unless open_for_versioning?
+
+    msg = "no description provided for updating open version #{cocina_object.version} on #{druid}"
+    raise Dor::Exception, msg if opts[:description].blank?
+
+    msg = "no significance/type (Major, Minor, Admin) provided for updating open version #{cocina_object.version} on #{druid}"
+    raise Dor::Exception, msg if opts[:significance].blank?
+
+    ObjectVersion.update_current_version(druid, description: opts[:description], significance: opts[:significance].downcase.to_sym)
+    ObjectVersion.current_version(druid).to_json
   end
 
   # Sets versioningWF:submit-version to completed and initiates accessionWF for the object
