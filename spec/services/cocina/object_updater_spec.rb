@@ -30,7 +30,6 @@ RSpec.describe Cocina::ObjectUpdater do
   before do
     allow(Cocina::Mapper).to receive(:build).and_return(orig_cocina_object)
     allow(Cocina::ApoExistenceValidator).to receive(:new).and_return(instance_double(Cocina::ApoExistenceValidator, valid?: true))
-    allow(Settings.enabled_features).to receive(:update_descriptive).and_return(true)
     allow(AdministrativeTags).to receive(:for).and_return([])
   end
 
