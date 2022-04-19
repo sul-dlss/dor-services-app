@@ -393,7 +393,7 @@ RSpec.describe 'Update object' do
     end
   end
 
-  context 'with bad data' do
+  context 'with a non-matching druid (Cocina::Models::ValidationError)' do
     before do
       allow(Dor).to receive(:find).with(other_druid).and_return(item)
     end
