@@ -21,7 +21,7 @@ RSpec.describe 'Operations regarding object versions' do
   end
 
   describe '/versions/current/close' do
-    context 'when closing a version succeedes' do
+    context 'when closing a version succeeds' do
       before do
         allow(VersionService).to receive(:close)
       end
@@ -146,7 +146,7 @@ RSpec.describe 'Operations regarding object versions' do
         allow(VersionService).to receive(:can_open?).and_return(false)
       end
 
-      it 'returns true' do
+      it 'returns false' do
         get '/v1/objects/druid:mx123qw2323/versions/openable',
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('false')
