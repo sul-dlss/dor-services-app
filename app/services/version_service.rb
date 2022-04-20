@@ -82,14 +82,12 @@ class VersionService
   # @option opts [Boolean] :start_accession set to true if you want accessioning to start (default), false otherwise
   # @raise [Dor::Exception] if the object hasn't been opened for versioning, or if accessionWF has
   #   already been instantiated or the current version is missing a tag or description
-  # rubocop:disable Metrics/AbcSize
   def close(opts = {})
     # This can be removed after migration.
     VersionMigrationService.find_and_migrate(druid)
 
-    ObjectVersion.update_current_version(druid, description: opts[:description], significance: opts[:significance].to_sym) if opts[:description] && opts[:significance]
+    ObjectVersion.update_current_version(druid, description: opts[:description], significance: opts[:significance].to_sym) if opts[:description] || opts[:significance]
 
-    raise Dor::Exception, "latest version in versionMetadata for #{druid} requires tag and description before it can be closed" unless ObjectVersion.current_version_closeable?(druid)
     raise Dor::Exception, "Trying to close version #{cocina_object.version} on #{druid} which is not opened for versioning" unless open_for_versioning?
     raise Dor::Exception, "Trying to close version #{cocina_object.version} on #{druid} which has active assemblyWF" if active_assembly_wf?
     raise Dor::Exception, "accessionWF already created for versioned object #{druid}" if accessioning?
@@ -102,7 +100,6 @@ class VersionService
 
     event_factory.create(druid: druid, event_type: 'version_close', data: { who: opts[:user_name], version: cocina_object.version.to_s })
   end
-  # rubocop:enable Metrics/AbcSize
 
   # Performs checks on whether a new version can be opened for an object
   # @return [Void]
