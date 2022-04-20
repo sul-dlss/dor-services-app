@@ -147,38 +147,6 @@ RSpec.describe ObjectVersion, type: :model do
     end
   end
 
-  describe '#current_version_closeable?' do
-    context 'when it has a description and tag' do
-      before do
-        described_class.create(druid: druid, version: 1, tag: '1.0.0', description: 'Initial Version')
-      end
-
-      it 'is closeable' do
-        expect(described_class.current_version_closeable?(druid)).to be(true)
-      end
-    end
-
-    context 'when it does not have a description' do
-      before do
-        described_class.create(druid: druid, version: 1, tag: '1.0.0')
-      end
-
-      it 'is not closeable' do
-        expect(described_class.current_version_closeable?(druid)).to be(false)
-      end
-    end
-
-    context 'when it does not have a tag' do
-      before do
-        described_class.create(druid: druid, version: 1, description: 'Initial Version')
-      end
-
-      it 'is not closeable' do
-        expect(described_class.current_version_closeable?(druid)).to be(false)
-      end
-    end
-  end
-
   describe '#version_xml' do
     let(:expected_xml) do
       <<~XML

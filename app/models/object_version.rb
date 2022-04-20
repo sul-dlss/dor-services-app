@@ -52,13 +52,12 @@ class ObjectVersion < ApplicationRecord
   # @param [String] description optional text describing version change
   # @return [ObjectVersion] created ObjectVersion
   def self.update_current_version(druid, significance: nil, description: nil)
-    return if significance.nil? && description.nil?
+    return if significance.nil? && description.nil? # no need to update
 
     current_object_version = current_version(druid)
-
     return if current_object_version.nil? || current_object_version.version == 1
 
-    current_object_version.description = description if description
+    current_object_version.description = description.presence
 
     if significance
       # Greatest version with a tag.
@@ -68,13 +67,6 @@ class ObjectVersion < ApplicationRecord
     end
 
     current_object_version.save!
-  end
-
-  # @param [String] druid
-  # @return [Boolean] returns true if the current version has a tag and a description, false otherwise
-  def self.current_version_closeable?(druid)
-    current_object_version = current_version(druid)
-    (current_object_version&.tag && current_object_version&.description).present?
   end
 
   # @return [ObjectVersion] current ObjectVersion

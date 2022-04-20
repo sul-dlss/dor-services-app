@@ -336,8 +336,20 @@ RSpec.describe VersionService do
     context 'when the latest version does not have a tag and a description' do
       let(:opts) { {} }
 
-      it 'raises an exception' do
-        expect { close }.to raise_error(Dor::Exception, "latest version in versionMetadata for #{druid} requires tag and description before it can be closed")
+      before do
+        # stub out calls for open_for_versioning?
+        allow(workflow_client).to receive(:active_lifecycle).and_return(true, false)
+        allow(workflow_client).to receive(:workflow_status).with(hash_including(workflow: 'assemblyWF')).and_return('completed')
+        allow(workflow_client).to receive(:close_version)
+      end
+
+      it 'closes the object version' do
+        close
+        object_version = ObjectVersion.find_by(druid: druid, version: 2)
+        expect(object_version.tag).to be_nil
+        expect(object_version.description).to be_nil
+        expect(workflow_client).to have_received(:close_version)
+          .with(druid: druid, version: '2', create_accession_wf: true)
       end
     end
   end
