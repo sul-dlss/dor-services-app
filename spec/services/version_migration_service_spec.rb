@@ -64,7 +64,7 @@ RSpec.describe VersionMigrationService do
 
       current_version = ObjectVersion.find_by(druid: druid, version: 12)
       expect(current_version.tag).to eq('1.10.0')
-      expect(current_version.description).to be_nil
+      expect(current_version.description).to eq('Version 1.10.0') # default
     end
   end
 
@@ -77,6 +77,61 @@ RSpec.describe VersionMigrationService do
       expect(ObjectVersion.where(druid: druid).size).to eq(1)
       described_class.migrate(item)
       expect(ObjectVersion.where(druid: druid).size).to eq(1)
+    end
+  end
+
+  context 'when version tag is missing' do
+    let(:version_xml) do
+      <<~XML
+        <versionMetadata objectId="#{druid}">
+          <version versionId="1">
+            <description>Initial Version</description>
+          </version>
+        </versionMetadata>
+      XML
+    end
+
+    it 'uses default of "<version>.0.0"' do
+      described_class.migrate(item)
+      first_version = ObjectVersion.find_by(druid: druid, version: 1)
+      expect(first_version.tag).to eq('1.0.0')
+      expect(first_version.description).to eq('Initial Version')
+    end
+  end
+
+  context 'when version description is missing' do
+    let(:version_xml) do
+      <<~XML
+        <versionMetadata objectId="#{druid}">
+          <version tag="1.0.0" versionId="1">
+          </version>
+        </versionMetadata>
+      XML
+    end
+
+    it 'uses default of "Version <tag>"' do
+      described_class.migrate(item)
+      first_version = ObjectVersion.find_by(druid: druid, version: 1)
+      expect(first_version.tag).to eq('1.0.0')
+      expect(first_version.description).to eq('Version 1.0.0')
+    end
+  end
+
+  context 'when both tag and description are missing' do
+    let(:version_xml) do
+      <<~XML
+        <versionMetadata objectId="#{druid}">
+          <version versionId="1">
+          </version>
+        </versionMetadata>
+      XML
+    end
+
+    it 'uses defaults of "<version>.0.0" for tag and "Version <tag>" for description' do
+      described_class.migrate(item)
+      first_version = ObjectVersion.find_by(druid: druid, version: 1)
+      expect(first_version.tag).to eq('1.0.0')
+      expect(first_version.description).to eq('Version 1.0.0')
     end
   end
 end

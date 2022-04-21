@@ -42,10 +42,10 @@ class VersionMigrationService
   end
 
   def tag_for(version)
-    version_md.tag_for_version(version.to_s).presence
+    version_md.tag_for_version(version.to_s).presence || "#{current_version}.0.0"
   end
 
   def description_for(version)
-    version_md.description_for_version(version.to_s).presence
+    version_md.description_for_version(version.to_s).presence || "Version #{tag_for(version)}"
   end
 end
