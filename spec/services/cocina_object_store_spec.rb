@@ -7,7 +7,7 @@ RSpec.describe CocinaObjectStore do
 
   let(:date) { Time.zone.now }
 
-  let(:lock) { ActiveSupport::Digest.hexdigest(druid + date.to_datetime.iso8601) }
+  let(:lock) { "#{druid}=#{date.to_datetime.iso8601}" }
 
   describe 'to Fedora' do
     let(:item) { instance_double(Dor::Item, pid: druid, modified_date: date.to_time) }
@@ -706,7 +706,7 @@ RSpec.describe CocinaObjectStore do
 
         context 'when checking lock succeeds' do
           let(:ar_cocina_object) { create(:dro) }
-          let(:lock) { ActiveSupport::Digest.hexdigest(ar_cocina_object.external_identifier + ar_cocina_object.lock.to_s) }
+          let(:lock) { "#{ar_cocina_object.external_identifier}=#{ar_cocina_object.lock}" }
 
           let(:cocina_object) do
             Cocina::Models.with_metadata(ar_cocina_object.to_cocina, lock, created: ar_cocina_object.created_at.utc, modified: ar_cocina_object.updated_at.utc)

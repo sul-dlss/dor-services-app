@@ -133,7 +133,7 @@ RSpec.describe 'Update object' do
       doi: '10.25740/gg777gg7777'
     }
   end
-  let(:etag) { ActiveSupport::Digest.hexdigest(druid + modified.iso8601) }
+  let(:etag) { "#{druid}=#{modified.iso8601}" }
 
   let(:headers) do
     {
@@ -398,7 +398,7 @@ RSpec.describe 'Update object' do
       allow(Dor).to receive(:find).with(other_druid).and_return(item)
     end
 
-    let(:etag) { ActiveSupport::Digest.hexdigest(other_druid + modified.iso8601) }
+    let(:etag) { "#{other_druid}=#{modified.iso8601}" }
 
     let(:item) do
       Dor::Item.new(pid: other_druid,
