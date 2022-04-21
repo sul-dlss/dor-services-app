@@ -3,12 +3,37 @@
 require 'rails_helper'
 
 RSpec.describe 'Operations regarding object versions' do
-  let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: 'druid:mx123qw2323', version: version) }
+  let(:cocina_object) do
+    Cocina::Models::DRO.new(externalIdentifier: 'druid:mx123qw2323',
+                            type: Cocina::Models::ObjectType.book,
+                            label: 'test object',
+                            version: version,
+                            access: {},
+                            description: {
+                              title: [{ value: 'test object' }],
+                              purl: 'https://purl.stanford.edu/mx123qw2323'
+                            },
+                            administrative: {
+                              hasAdminPolicy: 'druid:dd999df4567'
+                            },
+                            identification: {
+                              sourceId: 'googlebooks:999999'
+                            },
+                            structural: {})
+  end
+
+  let(:date) { Time.zone.now }
+
+  let(:lock) { 'abc123' }
+
+  let(:cocina_object_with_metadata) do
+    Cocina::Models.with_metadata(cocina_object, lock, created: date, modified: date)
+  end
 
   let(:version) { 1 }
 
   before do
-    allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+    allow(CocinaObjectStore).to receive(:find).and_return(cocina_object_with_metadata)
   end
 
   describe '/versions/current' do
@@ -39,7 +64,7 @@ RSpec.describe 'Operations regarding object versions' do
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to match(/version 1 closed/)
         expect(VersionService).to have_received(:close)
-          .with(cocina_object,
+          .with(cocina_object_with_metadata,
                 { description: 'some text', significance: 'major' },
                 event_factory: EventFactory)
       end
@@ -79,22 +104,25 @@ RSpec.describe 'Operations regarding object versions' do
     context 'when opening a version succeeds' do
       before do
         # Do not test version service side effects in dor-services-app; that is dor-services' responsibility
-        allow(VersionService).to receive(:open).and_return(cocina_object)
+        allow(VersionService).to receive(:open).and_return(cocina_object_with_metadata)
       end
 
       it 'opens a new object version when posted to' do
         post '/v1/objects/druid:mx123qw2323/versions',
              headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.body).to eq('2')
         expect(response).to be_successful
+        expect(response.body).to equal_cocina_model(cocina_object)
+        expect(response.headers['Last-Modified']).to end_with 'GMT'
+        expect(response.headers['X-Created-At']).to end_with 'GMT'
+        expect(response.headers['ETag']).to match(%r{W/".+"})
       end
 
       it 'forwards optional params to the VersionService#open method' do
         post '/v1/objects/druid:mx123qw2323/versions',
              params: open_params.to_json,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(VersionService).to have_received(:open).with(cocina_object, open_params, event_factory: EventFactory)
-        expect(response.body).to eq('2')
+        expect(VersionService).to have_received(:open).with(cocina_object_with_metadata, open_params, event_factory: EventFactory)
+        expect(response.body).to equal_cocina_model(cocina_object)
         expect(response).to be_successful
       end
     end
