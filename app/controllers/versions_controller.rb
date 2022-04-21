@@ -25,7 +25,9 @@ class VersionsController < ApplicationController
 
   def create
     updated_cocina_object = VersionService.open(@cocina_object, open_params, event_factory: EventFactory)
-    render plain: updated_cocina_object.version
+
+    add_headers(updated_cocina_object)
+    render json: Cocina::Models.without_metadata(updated_cocina_object)
   rescue Dor::Exception => e
     render build_error('Unable to open version', e)
   rescue Preservation::Client::Error => e

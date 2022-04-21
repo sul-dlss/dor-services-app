@@ -70,4 +70,11 @@ class ApplicationController < ActionController::API
   def load_cocina_object
     @cocina_object = CocinaObjectStore.find(params[:object_id] || params[:id])
   end
+
+  # Adds headers from the cocina object.
+  def add_headers(cocina_object)
+    headers['X-Created-At'] = cocina_object.created.httpdate
+    headers['Last-Modified'] = cocina_object.modified.httpdate
+    headers['ETag'] = "W/\"#{cocina_object.lock}\""
+  end
 end

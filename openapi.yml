@@ -1079,6 +1079,24 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/DRO'
+                  - $ref: '#/components/schemas/Collection'
+                  - $ref: '#/components/schemas/AdminPolicy'
+          headers:
+            ETag:
+              schema:
+                type: string
+            Last-Modified:
+              schema:
+                type: string
+            X-Created-At:
+              schema:
+                type: string
+
       parameters:
         - name: object_id
           in: path
