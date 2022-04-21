@@ -118,7 +118,8 @@ RSpec.describe 'Create object' do
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status(:conflict)
-        expect(response.body).to match(/\(druid:abc123\)/)
+        json = JSON.parse(response.body)
+        expect(json.dig('errors', 0, 'detail')).to eq "An object (druid:abc123) with the source ID 'googlebooks:999999' has already been registered."
       end
     end
 
