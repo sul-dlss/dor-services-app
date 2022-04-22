@@ -38,7 +38,15 @@ RSpec.describe VersionService do
   end
 
   describe '.open' do
-    subject(:open) { described_class.open(cocina_object, event_factory: event_factory) }
+    subject(:open) do
+      described_class.open(cocina_object,
+                           event_factory: event_factory,
+                           description: description,
+                           significance: significance)
+    end
+
+    let(:description) { 'covid 19 version' }
+    let(:significance) { 'minor' }
 
     before do
       allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
@@ -73,10 +81,12 @@ RSpec.describe VersionService do
                                                              event_type: 'version_open')
       end
 
-      it 'includes options' do
-        options = { significance: 'major', description: 'same as it ever was', opening_user_name: 'sunetid' }
-
-        described_class.open(cocina_object, options, event_factory: event_factory)
+      it 'includes information from params' do
+        described_class.open(cocina_object,
+                             significance: 'major',
+                             description: 'same as it ever was',
+                             opening_user_name: 'sunetid',
+                             event_factory: event_factory)
 
         current_version = ObjectVersion.current_version(druid)
         expect(current_version.version).to eq(2)
@@ -180,6 +190,17 @@ RSpec.describe VersionService do
         expect(can_open?).to be false
         expect(workflow_client).to have_received(:lifecycle).with(druid: druid, milestone_name: 'accessioned')
       end
+
+      context 'when assume_accessioned is true' do
+        before do
+          allow(Preservation::Client.objects).to receive(:current_version).and_return(2)
+        end
+
+        it 'returns true' do
+          expect(described_class.can_open?(cocina_object, assume_accessioned: true)).to be true
+          expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1')
+        end
+      end
     end
 
     context 'when the object has already been opened' do
@@ -216,14 +237,12 @@ RSpec.describe VersionService do
   end
 
   describe '.close' do
-    subject(:close) { described_class.close(cocina_object, opts, event_factory: event_factory) }
-
-    let(:opts) do
-      {
-        description: 'closing text',
-        significance: 'major',
-        user_name: 'jcoyne'
-      }
+    subject(:close) do
+      described_class.close(cocina_object,
+                            description: 'closing text',
+                            significance: 'major',
+                            user_name: 'jcoyne',
+                            event_factory: event_factory)
     end
 
     let(:version) { 2 }
@@ -250,7 +269,7 @@ RSpec.describe VersionService do
       it 'sets tag, description and an event' do
         close
         object_version = ObjectVersion.find_by(druid: druid, version: 2)
-        expect(object_version.tag).to eq('2.0.0')
+        expect(object_version.tag).to eq('1.0.0')
         expect(object_version.description).to eq('closing text')
         expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'jcoyne' },
                                                              druid: druid,
@@ -262,13 +281,13 @@ RSpec.describe VersionService do
     end
 
     context 'when start_accession is false' do
-      let(:opts) do
-        {
-          description: 'closing text',
-          significance: 'major',
-          user_name: 'jcoyne',
-          start_accession: false
-        }
+      subject(:close) do
+        described_class.close(cocina_object,
+                              description: 'closing text',
+                              significance: 'major',
+                              user_name: 'jcoyne',
+                              start_accession: false,
+                              event_factory: event_factory)
       end
 
       before do
@@ -334,7 +353,12 @@ RSpec.describe VersionService do
     end
 
     context 'when the latest version does not have a tag and a description' do
-      let(:opts) { {} }
+      subject(:close) do
+        described_class.close(cocina_object,
+                              description: nil,
+                              significance: nil,
+                              event_factory: event_factory)
+      end
 
       before do
         # stub out calls for open_for_versioning?
