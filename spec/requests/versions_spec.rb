@@ -109,7 +109,8 @@ RSpec.describe 'Operations regarding object versions' do
 
       it 'opens a new object version when posted to' do
         post '/v1/objects/druid:mx123qw2323/versions',
-             headers: { 'Authorization' => "Bearer #{jwt}" }
+             params: open_params.to_json,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to be_successful
         expect(response.body).to equal_cocina_model(cocina_object)
         expect(response.headers['Last-Modified']).to end_with 'GMT'
@@ -117,13 +118,32 @@ RSpec.describe 'Operations regarding object versions' do
         expect(response.headers['ETag']).to match(%r{W/".+"})
       end
 
-      it 'forwards optional params to the VersionService#open method' do
+      it 'forwards params to the VersionService#open method' do
         post '/v1/objects/druid:mx123qw2323/versions',
              params: open_params.to_json,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(VersionService).to have_received(:open).with(cocina_object_with_metadata, open_params, event_factory: EventFactory)
         expect(response.body).to equal_cocina_model(cocina_object)
         expect(response).to be_successful
+      end
+    end
+
+    context 'when required params are missing' do
+      let(:incomplete_params) do
+        {
+          assume_accessioned: false,
+          opening_user_name: opening_user_name
+        }
+      end
+
+      it 'returns a bad request error' do
+        post '/v1/objects/druid:mx123qw2323/versions',
+             params: incomplete_params.to_json,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        # rubocop:disable Layout/LineLength
+        expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":"#/paths/~1v1~1objects~1{object_id}~1versions/post missing required parameters: description, significance"}]}')
+        # rubocop:enable Layout/LineLength
+        expect(response.status).to eq 400
       end
     end
 
@@ -135,7 +155,8 @@ RSpec.describe 'Operations regarding object versions' do
 
       it 'returns an error' do
         post '/v1/objects/druid:mx123qw2323/versions',
-             headers: { 'Authorization' => "Bearer #{jwt}" }
+             params: open_params.to_json,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to eq('{"errors":[{"status":"422","title":"Unable to open version","detail":"Object net yet accessioned"}]}')
         expect(response.status).to eq 422
       end
@@ -148,7 +169,8 @@ RSpec.describe 'Operations regarding object versions' do
 
       it 'returns an error' do
         post '/v1/objects/druid:mx123qw2323/versions',
-             headers: { 'Authorization' => "Bearer #{jwt}" }
+             params: open_params.to_json,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to eq('{"errors":[{"status":"500","title":"Unable to open version due to preservation client error","detail":"Oops, a 500"}]}')
         expect(response.status).to eq 500
       end

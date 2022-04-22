@@ -62,7 +62,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'          
+                $ref: '#/components/schemas/ErrorResponse'
       parameters:
         - name: barcode
           in: query
@@ -91,7 +91,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'          
+                $ref: '#/components/schemas/ErrorResponse'
       parameters:
         - name: barcode
           in: query
@@ -198,7 +198,7 @@ paths:
             enum:
               - accessionWF
               - releaseWF
-            example: releaseWF
+          example: releaseWF
         - name: lane-id
           in: query
           description: Lane for prioritizing the work
@@ -237,7 +237,6 @@ paths:
             enum:
               - accessionWF
               - assemblyWF
-            example: assemblyWF
         - name: significance
           in: query
           description: the significance of the version change (if versioning is needed)
@@ -248,20 +247,19 @@ paths:
               - minor
               - major
               - admin
-            example: admin
         - name: description
           in: query
           description: the description of the version change (if versioning is needed)
           required: false
           schema:
             type: string
-            example: 'Re-accessioning this object'
+          example: 'Re-accessioning this object'
         - name: opening_user_name
           in: query
           description: the username of the person creating the version (if versioning is needed)
           schema:
             type: string
-            example: 'some_sunetid'
+          example: 'some_sunetid'
   '/v1/objects/{id}/preserve':
     post:
       tags:
@@ -1142,6 +1140,37 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
+        - name: description
+          in: query
+          description: short description for object version being opened
+          required: true
+          schema:
+            type: string
+          example: 'Adding thumbnail'
+        - name: significance
+          in: query
+          description: set significance of version change (akin to semantic versioning)
+          required: true
+          schema:
+            type: string
+            enum:
+                - major
+                - minor
+                - admin
+        - name: assume_accessioned
+          in: query
+          description: If true, does not check whether object has been accessioned
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: opening_user_name
+          in: query
+          description: username to include in version event
+          required: false
+          schema:
+            type: string
+          example: 'some_sunetid'
   /v1/objects:
     post:
       tags:
