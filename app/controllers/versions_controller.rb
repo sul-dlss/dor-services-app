@@ -24,7 +24,7 @@ class VersionsController < ApplicationController
   end
 
   def create
-    updated_cocina_object = VersionService.open(@cocina_object, create_params, event_factory: EventFactory)
+    updated_cocina_object = VersionService.open(@cocina_object, **create_params, event_factory: EventFactory)
 
     add_headers(updated_cocina_object)
     render json: Cocina::Models.without_metadata(updated_cocina_object)
@@ -39,14 +39,14 @@ class VersionsController < ApplicationController
   end
 
   def close_current
-    VersionService.close(@cocina_object, close_params, event_factory: EventFactory)
+    VersionService.close(@cocina_object, **close_params, event_factory: EventFactory)
     render plain: "version #{@cocina_object.version} closed"
   rescue Dor::Exception => e
     render build_error('Unable to close version', e)
   end
 
   def openable
-    render plain: VersionService.can_open?(@cocina_object, openable_params).to_s
+    render plain: VersionService.can_open?(@cocina_object, **openable_params).to_s
   rescue Preservation::Client::Error => e
     render build_error('Unable to check if openable due to preservation client error', e, status: :internal_server_error)
   end
@@ -90,8 +90,7 @@ class VersionsController < ApplicationController
       :description,
       :significance,
       :start_accession,
-      :user_name,
-      :version_num
+      :user_name
     ).to_h.symbolize_keys
   end
 end

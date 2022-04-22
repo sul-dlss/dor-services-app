@@ -5,8 +5,8 @@
 #  1. altering the structural metadata of the virtual object
 #  2. saving the virtual object
 class ConstituentService
-  VERSION_CLOSE_DESCRIPTION = 'Virtual object created'
-  VERSION_CLOSE_SIGNIFICANCE = :major
+  VERSION_DESCRIPTION = 'Virtual object created'
+  VERSION_SIGNIFICANCE = :major
 
   # @param [String] virtual_object_druid the identifier of the virtual object
   def initialize(virtual_object_druid:, event_factory:)
@@ -27,15 +27,18 @@ class ConstituentService
     return errors if errors.any?
 
     # Make sure the virtual object is open before making modifications
-    updated_virtual_object = VersionService.open?(virtual_object) ? virtual_object : VersionService.open(virtual_object, event_factory: event_factory)
+    updated_virtual_object = if VersionService.open?(virtual_object)
+                               virtual_object
+                             else
+                               VersionService.open(virtual_object,
+                                                   description: VERSION_DESCRIPTION,
+                                                   significance: VERSION_SIGNIFICANCE,
+                                                   event_factory: event_factory)
+                             end
 
     updated_virtual_object = ResetContentMetadataService.reset(cocina_item: updated_virtual_object, constituent_druids: constituent_druids)
 
     VersionService.close(updated_virtual_object,
-                         {
-                           description: VERSION_CLOSE_DESCRIPTION,
-                           significance: VERSION_CLOSE_SIGNIFICANCE
-                         },
                          event_factory: event_factory)
 
     CocinaObjectStore.save(updated_virtual_object)

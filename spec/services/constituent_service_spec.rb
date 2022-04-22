@@ -79,7 +79,11 @@ RSpec.describe ConstituentService do
 
       it 'opens virtual object for versioning' do
         service.add(constituent_druids: constituent_druids)
-        expect(VersionService).to have_received(:open).once
+        expect(VersionService).to have_received(:open)
+          .with(virtual_object_with_metadata,
+                description: ConstituentService::VERSION_DESCRIPTION,
+                significance: ConstituentService::VERSION_SIGNIFICANCE,
+                event_factory: event_factory).once
       end
     end
 

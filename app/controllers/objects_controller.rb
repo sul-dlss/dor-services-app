@@ -89,16 +89,19 @@ class ObjectsController < ApplicationController
   end
 
   # Initialize specified workflow (assemblyWF by default), and also version if needed
-  # called by pre-assembly and goobi kick off accessioning for a new or existing object
+  #
+  # called by pre-assembly and goobi to kick off accessioning for a new or existing object
   #
   # You can specify params when POSTing to this method to include when opening a version (if that is required to accession).
-  # The optional versioning params are included below for reference.  You can also optionally include a workflow to initialize
+  # The versioning params are included below for reference.  You can also optionally include a workflow to initialize
   #   (which defaults to assemblyWF)
-  # @option opts [String] :significance set significance (major/minor/patch) of version change
-  # @option opts [String] :description set description of version change
-  # @option opts [String] :opening_user_name add opening username to the events datastream
-  # @option opts [String] :workflow the workflow to start (defaults to 'assemblyWF')
+  # @param [String] :significance set significance (major/minor/patch) of version change
+  # @param [String] :description set description of version change
+  # @param [String] :opening_user_name add opening username to the events datastream
+  # @param [String] :assume_accessioned 'true' or 'false'
+  # @param [String] :workflow the workflow to start (defaults to 'assemblyWF')
   def accession
+    permit_accession_params
     workflow = params[:workflow] || default_start_accession_workflow
 
     EventFactory.create(druid: params[:id], event_type: 'accession_request', data: { workflow: workflow })
@@ -112,12 +115,25 @@ class ObjectsController < ApplicationController
 
     updated_cocina_object = @cocina_object
     # if this is an existing versionable object, open and close it without starting accessionWF
-    if VersionService.can_open?(@cocina_object, params)
-      updated_cocina_object = VersionService.open(@cocina_object, params, event_factory: EventFactory)
-      VersionService.close(updated_cocina_object, params.merge(start_accession: false), event_factory: EventFactory)
+    if VersionService.can_open?(@cocina_object, assume_accessioned: params[:assume_accessioned])
+      updated_cocina_object = VersionService.open(@cocina_object,
+                                                  description: params[:description],
+                                                  significance: params[:significance],
+                                                  opening_user_name: params[:opening_user_name],
+                                                  assume_accessioned: params[:assume_accessioned],
+                                                  event_factory: EventFactory)
+      VersionService.close(updated_cocina_object,
+                           description: params[:description],
+                           significance: params[:significance],
+                           start_accession: false,
+                           event_factory: EventFactory)
     # if this is an existing accessioned object that is currently open, just close it without starting accessionWF
     elsif VersionService.open?(@cocina_object)
-      VersionService.close(@cocina_object, params.merge(start_accession: false), event_factory: EventFactory)
+      VersionService.close(@cocina_object,
+                           description: params[:description],
+                           significance: params[:significance],
+                           start_accession: false,
+                           event_factory: EventFactory)
     end
 
     # initialize workflow
@@ -206,8 +222,8 @@ class ObjectsController < ApplicationController
     render status: response.status, content_type: response.headers['Content-Type'], body: response.body
   end
 
-  def create_params
-    params.except(:action, :controller).to_unsafe_h.merge(body_params)
+  def permit_accession_params
+    params.permit!
   end
 
   def default_start_accession_workflow

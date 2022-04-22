@@ -23,13 +23,10 @@ RSpec.describe 'Operations regarding object versions' do
   end
 
   let(:date) { Time.zone.now }
-
   let(:lock) { 'abc123' }
-
   let(:cocina_object_with_metadata) do
     Cocina::Models.with_metadata(cocina_object, lock, created: date, modified: date)
   end
-
   let(:version) { 1 }
 
   before do
@@ -51,6 +48,16 @@ RSpec.describe 'Operations regarding object versions' do
         allow(VersionService).to receive(:close)
       end
 
+      let(:closing_user_name) { 'some_sunetid1' }
+      let(:close_params) do
+        {
+          significance: 'minor',
+          description: 'bar',
+          user_name: closing_user_name,
+          event_factory: EventFactory
+        }
+      end
+
       it 'closes the current version when posted to' do
         post '/v1/objects/druid:mx123qw2323/versions/current/close',
              headers: { 'Authorization' => "Bearer #{jwt}" }
@@ -58,15 +65,14 @@ RSpec.describe 'Operations regarding object versions' do
         expect(response.body).to match(/version 1 closed/)
       end
 
-      it 'forwards optional params to the VersionService#close method' do
+      it 'forwards params to the VersionService#close method' do
         post '/v1/objects/druid:mx123qw2323/versions/current/close',
-             params: %( {"description": "some text", "significance": "major"} ),
+             params: close_params.to_json,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to match(/version 1 closed/)
         expect(VersionService).to have_received(:close)
           .with(cocina_object_with_metadata,
-                { description: 'some text', significance: 'major' },
-                event_factory: EventFactory)
+                close_params)
       end
     end
 
@@ -94,16 +100,17 @@ RSpec.describe 'Operations regarding object versions' do
         assume_accessioned: false,
         significance: 'minor',
         description: 'bar',
-        opening_user_name: opening_user_name
+        opening_user_name: opening_user_name,
+        event_factory: EventFactory
       }
     end
-    let(:opening_user_name) { 'foo' }
+    let(:opening_user_name) { 'sunetid666' }
 
     let(:version) { 2 }
 
     context 'when opening a version succeeds' do
       before do
-        # Do not test version service side effects in dor-services-app; that is dor-services' responsibility
+        # Do not test version service side effects here; see version_service_spec
         allow(VersionService).to receive(:open).and_return(cocina_object_with_metadata)
       end
 
@@ -122,7 +129,9 @@ RSpec.describe 'Operations regarding object versions' do
         post '/v1/objects/druid:mx123qw2323/versions',
              params: open_params.to_json,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(VersionService).to have_received(:open).with(cocina_object_with_metadata, open_params, event_factory: EventFactory)
+        expect(VersionService).to have_received(:open)
+          .with(cocina_object_with_metadata,
+                open_params)
         expect(response.body).to equal_cocina_model(cocina_object)
         expect(response).to be_successful
       end
@@ -149,7 +158,7 @@ RSpec.describe 'Operations regarding object versions' do
 
     context 'when opening a version fails' do
       before do
-        # Do not test version service side effects in dor-services-app; that is dor-services' responsibility
+        # Do not test version service side effects here; see version_service_spec
         allow(VersionService).to receive(:open).and_raise(Dor::Exception, 'Object net yet accessioned')
       end
 

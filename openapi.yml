@@ -240,7 +240,7 @@ paths:
         - name: significance
           in: query
           description: the significance of the version change (if versioning is needed)
-          required: false
+          required: true
           schema:
             type: string
             enum:
@@ -250,7 +250,7 @@ paths:
         - name: description
           in: query
           description: the description of the version change (if versioning is needed)
-          required: false
+          required: true
           schema:
             type: string
           example: 'Re-accessioning this object'
