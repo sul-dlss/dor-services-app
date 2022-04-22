@@ -1142,6 +1142,37 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
+        - name: description
+          in: query
+          description: short description for object version being opened
+          required: true
+          schema:
+            type: string
+            example: 'Adding thumbnail'
+        - name: significance
+          in: query
+          description: set significance of version change (akin to semantic versioning)
+          required: true
+          schema:
+            type: string
+            enum:
+                - major
+                - minor
+                - admin
+        - name: assume_accessioned
+          in: query
+          description: If true, does not check whether object has been accessioned
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: opening_user_name
+          in: query
+          description: username to include in version event
+          required: false
+          schema:
+            type: string
+            example: 'vinsky'
   /v1/objects:
     post:
       tags:
