@@ -67,12 +67,12 @@ module Cocina
           access: DROAccess.props(fedora_item.rightsMetadata, fedora_item.embargoMetadata),
           structural: DroStructural.props(fedora_item, type: type, notifier: notifier)
         }.tap do |props|
-          title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: fedora_item.label)
-          description = FromFedora::Descriptive.props(title_builder: title_builder,
-                                                      mods: fedora_item.descMetadata.ng_xml,
-                                                      druid: fedora_item.pid,
-                                                      label: cocina_label,
-                                                      notifier: notifier)
+          title_builder = Models::Mapping::FromMods::TitleBuilderStrategy.find(label: fedora_item.label)
+          description = Models::Mapping::FromMods::Description.props(title_builder: title_builder,
+                                                                     mods: fedora_item.descMetadata.ng_xml,
+                                                                     druid: fedora_item.pid,
+                                                                     label: cocina_label,
+                                                                     notifier: notifier)
           props[:description] = description
           props[:geographic] = { iso19139: fedora_item.geoMetadata.content } if type == Cocina::Models::ObjectType.geo
           identification = FromFedora::Identification.props(fedora_item)

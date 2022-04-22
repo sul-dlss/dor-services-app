@@ -6,7 +6,7 @@ module Cocina
     #   between Fedora contentMetadata and cocina structural that are valid but different
     #   when round-tripping.
     class ContentMetadataNormalizer
-      include Cocina::Normalizers::Base
+      include Cocina::Models::Mapping::Normalizers::Base
       FILE_DIRECTIVES = %i[publish preserve shelve].freeze
 
       # @param [String] druid

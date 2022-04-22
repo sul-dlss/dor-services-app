@@ -27,12 +27,12 @@ parser.parse!(into: options)
 cache = FedoraCache.new
 
 def round_tripped_ng_xml(cocina, druid)
-  Nokogiri::XML(Cocina::ToFedora::Descriptive.transform(cocina, druid).to_xml) { |config| config.default_xml.noblanks }
+  Nokogiri::XML(Cocina::Models::Mapping::ToMods::Description.transform(cocina, druid).to_xml) { |config| config.default_xml.noblanks }
 end
 
 def cocina_props(ng_xml, druid, label, notifier)
-  title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: label)
-  Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: ng_xml, druid: druid, notifier: notifier, label: label)
+  title_builder = Cocina::Models::Mapping::FromMods::TitleBuilderStrategy.find(label: label)
+  Cocina::Models::Mapping::FromMods::Description.props(title_builder: title_builder, mods: ng_xml, druid: druid, notifier: notifier, label: label)
 end
 
 def node_count_match?(ng_xml1, ng_xml2)
@@ -135,7 +135,7 @@ def validate_druid(druid, cache, fast: false)
 
   begin
     # Perform approved XML normalization changes to avoid noise in roundtrip failures
-    norm_original_ng_xml = Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: original_ng_xml, druid: druid, label: label)
+    norm_original_ng_xml = Cocina::Models::Mapping::Normalizers::ModsNormalizer.normalize(mods_ng_xml: original_ng_xml, druid: druid, label: label)
   rescue StandardError => e
     write_error(druid, original_ng_xml, cocina_props, e) unless fast
     return [druid, :mods_normalizer_error]

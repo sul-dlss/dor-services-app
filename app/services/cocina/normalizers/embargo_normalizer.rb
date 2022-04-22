@@ -4,7 +4,7 @@ module Cocina
   module Normalizers
     # Normalizes a Fedora object embargo metadata datastream
     class EmbargoNormalizer
-      include Cocina::Normalizers::Base
+      include Cocina::Models::Mapping::Normalizers::Base
 
       # @param [Nokogiri::Document] embargo_ng_xml embargo metadata XML to be normalized
       # @return [Nokogiri::Document] normalized embargo metadata xml

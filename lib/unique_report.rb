@@ -4,7 +4,7 @@
 require 'optparse'
 require 'fedora_cache'
 
-MODS_NS = Cocina::FromFedora::Descriptive::DESC_METADATA_NS
+MODS_NS = Cocina::Models::Mapping::FromMods::Description::DESC_METADATA_NS
 
 # Report generator that returns a list of unique values using Fedora objects stored in cache.
 class UniqueReport

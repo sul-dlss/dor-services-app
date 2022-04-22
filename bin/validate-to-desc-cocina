@@ -98,8 +98,8 @@ results = Parallel.map(druids, progress: 'Testing') do |druid|
   label, apo, mods_xml = result.value!
   mods_ng_xml = Nokogiri::XML(mods_xml)
 
-  title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: label)
-  desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: mods_ng_xml, druid: druid, notifier: notifier, label: label)
+  title_builder = Cocina::Models::Mapping::FromMods::TitleBuilderStrategy.find(label: label)
+  desc_props = Cocina::Models::Mapping::FromMods::Description.props(title_builder: title_builder, mods: mods_ng_xml, druid: druid, notifier: notifier, label: label)
   Cocina::Models::Description.new(desc_props)
   notifier.error? ? Result.new(druid, apo, notifier.data_errors.first.msg, :data_error) : nil
 rescue StandardError => e

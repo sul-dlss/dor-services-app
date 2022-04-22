@@ -62,15 +62,15 @@ def validate_druid(druid, cache)
   mods_ng_xml = Nokogiri::XML(mods_xml)
 
   begin
-    title_builder = Cocina::FromFedora::Descriptive::TitleBuilderStrategy.find(label: label)
-    desc_props = Cocina::FromFedora::Descriptive.props(title_builder: title_builder, mods: mods_ng_xml, druid: druid)
+    title_builder = Cocina::Models::Mapping::FromMods::TitleBuilderStrategy.find(label: label)
+    desc_props = Cocina::Models::Mapping::FromMods::Description.props(title_builder: title_builder, mods: mods_ng_xml, druid: druid)
     cocina = Cocina::Models::Description.new(desc_props)
   rescue StandardError => e
     return Result.new(druid, e.message.gsub('\n', ' '), :to_cocina_error)
   end
 
   begin
-    Cocina::ToFedora::Descriptive.transform(cocina, druid)
+    Cocina::Models::Mapping::ToMods::Description.transform(cocina, druid)
   rescue StandardError => e
     return Result.new(druid, e.message.gsub('\n', ' '), :to_fedora_error)
   end

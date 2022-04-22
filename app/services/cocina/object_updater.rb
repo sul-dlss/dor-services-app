@@ -148,7 +148,7 @@ module Cocina
     end
 
     def update_descriptive
-      fedora_object.descMetadata.content = Cocina::ToFedora::Descriptive.transform(cocina_object.description, fedora_object.pid).to_xml
+      fedora_object.descMetadata.content = Cocina::Models::Mapping::ToMods::Description.transform(cocina_object.description, fedora_object.pid).to_xml
       fedora_object.descMetadata.content_will_change!
     end
 
@@ -162,9 +162,9 @@ module Cocina
     # rubocop:enable Style/GuardClause
 
     def client_attempted_metadata_update?
-      title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: fedora_object.label)
+      title_builder = Models::Mapping::FromMods::TitleBuilderStrategy.find(label: fedora_object.label)
 
-      descriptive = FromFedora::Descriptive.props(title_builder: title_builder, mods: fedora_object.descMetadata.ng_xml, druid: fedora_object.pid)
+      descriptive = Models::Mapping::FromMods::Description.props(title_builder: title_builder, mods: fedora_object.descMetadata.ng_xml, druid: fedora_object.pid)
       cocina_object.description.title != descriptive.fetch(:title).map { |value| Cocina::Models::Title.new(value) }
     end
 

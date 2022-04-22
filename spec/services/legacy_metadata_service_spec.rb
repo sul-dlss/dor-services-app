@@ -76,6 +76,6 @@ RSpec.describe LegacyMetadataService do
       end
     end
 
-    # TODO: Test roundtrip error. Cocina::FromFedora::Descriptive.props
+    # TODO: Test roundtrip error. Cocina::Models::Mapping::FromMods::Description.props
   end
 end

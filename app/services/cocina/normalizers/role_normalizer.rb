@@ -4,7 +4,7 @@ module Cocina
   module Normalizers
     # Normalizes a Fedora object roleMetadata datastream, accounting for differences between Fedora and cocina that are valid but differ when round-tripping.
     class RoleNormalizer
-      include Cocina::Normalizers::Base
+      include Cocina::Models::Mapping::Normalizers::Base
 
       # @param [Nokogiri::Document] role_ng_xml role metadata XML to be normalized
       # @return [Nokogiri::Document] normalized role metadata xml

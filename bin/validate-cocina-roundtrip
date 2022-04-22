@@ -118,7 +118,7 @@ def norm_orig_datastream_ng_xml_for(dsid, orig_datastream_ng_xml, druid, label, 
   when 'administrativeMetadata'
     Cocina::Normalizers::AdminNormalizer.normalize(admin_ng_xml: orig_datastream_ng_xml)
   when 'descMetadata'
-    Cocina::Normalizers::ModsNormalizer.normalize(mods_ng_xml: orig_datastream_ng_xml, druid: druid, label: label)
+    Cocina::Models::Mapping::Normalizers::ModsNormalizer.normalize(mods_ng_xml: orig_datastream_ng_xml, druid: druid, label: label)
   when 'rightsMetadata', 'defaultObjectRights'
     Cocina::Normalizers::RightsNormalizer.normalize(datastream: fedora_obj.datastreams[dsid])
   when 'contentMetadata'
@@ -225,7 +225,7 @@ def validate_druid(druid, loader, no_content: false, no_desc: false, create: fal
                                         fedora_obj.label == 'Hydrus' ? hydrus_desc_metadata : empty_desc_metadata
                                       else
                                         # Identifier types have to be normalized before mapping
-                                        Cocina::Normalizers::ModsNormalizer.normalize_identifier_type(mods_ng_xml: ng_xml_for(fedora_obj.descMetadata.content)).to_xml
+                                        Cocina::Models::Mapping::Normalizers::ModsNormalizer.normalize_identifier_type(mods_ng_xml: ng_xml_for(fedora_obj.descMetadata.content)).to_xml
                                       end
   end
 
