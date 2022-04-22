@@ -24,7 +24,7 @@ class VersionsController < ApplicationController
   end
 
   def create
-    updated_cocina_object = VersionService.open(@cocina_object, open_params, event_factory: EventFactory)
+    updated_cocina_object = VersionService.open(@cocina_object, create_params, event_factory: EventFactory)
 
     add_headers(updated_cocina_object)
     render json: Cocina::Models.without_metadata(updated_cocina_object)
@@ -46,7 +46,7 @@ class VersionsController < ApplicationController
   end
 
   def openable
-    render plain: VersionService.can_open?(@cocina_object, open_params).to_s
+    render plain: VersionService.can_open?(@cocina_object, openable_params).to_s
   rescue Preservation::Client::Error => e
     render build_error('Unable to check if openable due to preservation client error', e, status: :internal_server_error)
   end
@@ -70,7 +70,13 @@ class VersionsController < ApplicationController
     }
   end
 
-  def open_params
+  def create_params
+    params.require(:description)
+    params.require(:significance)
+    openable_params # return _all_ allowed params as hash with symbolized keys
+  end
+
+  def openable_params
     params.permit(
       :assume_accessioned,
       :description,
