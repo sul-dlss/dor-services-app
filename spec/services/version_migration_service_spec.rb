@@ -70,7 +70,7 @@ RSpec.describe VersionMigrationService do
 
   context 'when migration already performed' do
     before do
-      ObjectVersion.create(druid: druid, version: 1, tag: '1.0.0')
+      ObjectVersion.create(druid: druid, version: 1, tag: '1.0.0', description: 'Initial Version')
     end
 
     it 'does not populate versions' do

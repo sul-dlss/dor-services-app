@@ -54,7 +54,7 @@ RSpec.describe DeleteService do
       allow(CocinaObjectStore).to receive(:destroy)
       AdministrativeTags.create(identifier: druid, tags: ['test : tag'])
       Event.create!(druid: druid, event_type: 'version_close', data: { version: '4' })
-      ObjectVersion.create(druid: druid, version: 4)
+      ObjectVersion.create(druid: druid, version: 4, tag: '4.0.0', description: 'Version 4.0.0')
     end
 
     it 'deletes from datastore and Solr' do
