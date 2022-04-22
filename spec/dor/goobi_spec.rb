@@ -21,7 +21,7 @@ RSpec.describe Dor::Goobi do
         catalogLinks: [
           {
             catalog: 'symphony',
-            catalogRecordId: 'ckey_12345',
+            catalogRecordId: '11403803',
             refresh: true
           }
         ],
@@ -226,7 +226,7 @@ RSpec.describe Dor::Goobi do
             <title>Object Title &amp; A Special character</title>
             <contentType>book</contentType>
             <project>Project Name</project>
-            <catkey>ckey_12345</catkey>
+            <catkey>11403803</catkey>
             <barcode>#{barcode}</barcode>
             <collectionId>druid:oo000oo0001</collectionId>
             <collectionName>collection name</collectionName>
@@ -255,7 +255,7 @@ RSpec.describe Dor::Goobi do
             <title>Object Title &amp; A Special character</title>
             <contentType>book</contentType>
             <project>Project Name</project>
-            <catkey>ckey_12345</catkey>
+            <catkey>11403803</catkey>
             <barcode>#{barcode}</barcode>
             <collectionId>druid:oo000oo0001</collectionId>
             <collectionName>collection name</collectionName>
@@ -294,7 +294,7 @@ RSpec.describe Dor::Goobi do
             <title>Constituent label &amp; A Special character</title>
             <contentType>book</contentType>
             <project>Project Name</project>
-            <catkey>ckey_12345</catkey>
+            <catkey>11403803</catkey>
             <barcode>#{barcode}</barcode>
             <collectionId>druid:oo000oo0001</collectionId>
             <collectionName>collection name</collectionName>
