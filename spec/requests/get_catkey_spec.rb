@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe "Looking up an item's catkey by it's barcode" do
+RSpec.describe "Looking up an item's catkey by its barcode" do
   let(:barcode_url) { Settings.catalog.symphony.base_url + Settings.catalog.symphony.barcode_path }
   let(:barcode) { '101' }
   let(:barcode_with_no_catkey) { '102' }
@@ -61,6 +61,17 @@ RSpec.describe "Looking up an item's catkey by it's barcode" do
       expect(response).to have_http_status(:bad_request)
       json = JSON.parse(response.body)
       expect(json.dig('errors', 0, 'title')).to eq 'Catkey not found in Symphony'
+    end
+  end
+
+  context 'when response error from Symphony not found' do
+    it 'returns a 500 error when looking up catkey by barcode' do
+      stub_request(:get, format(barcode_url, barcode: barcode)).to_return(status: 500)
+
+      get "/v1/catalog/catkey?barcode=#{barcode}", headers: { 'Authorization' => "Bearer #{jwt}" }
+
+      expect(response).to have_http_status(:internal_server_error)
+      expect(response.body).to match('Got HTTP Status-Code 500 calling https://sirsi.example.com/symws/catalog/item/barcode/101')
     end
   end
 end

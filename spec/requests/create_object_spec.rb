@@ -175,7 +175,7 @@ RSpec.describe 'Create object' do
 
       context 'when connecting to symphony fails' do
         before do
-          allow(ModsService).to receive(:fetch).and_raise(SymphonyReader::ResponseError)
+          allow(ModsService).to receive(:fetch).and_raise(MarcService::CatalogResponseError)
         end
 
         it 'draws an error message' do
@@ -190,7 +190,7 @@ RSpec.describe 'Create object' do
 
       context 'when symphony returns a 404' do
         before do
-          allow(ModsService).to receive(:fetch).and_raise(SymphonyReader::NotFound, 'unable to find catkey')
+          allow(ModsService).to receive(:fetch).and_raise(MarcService::CatalogRecordNotFoundError, 'unable to find catkey')
         end
 
         it 'draws an error message' do
@@ -200,6 +200,20 @@ RSpec.describe 'Create object' do
           expect(response.body).to eq '{"errors":[{"status":"400","title":"Catkey not found in Symphony",' \
                                       '"detail":"unable to find catkey"}]}'
           expect(response.status).to eq 400
+        end
+      end
+
+      context 'when other error refreshing MARC' do
+        before do
+          allow(ModsService).to receive(:fetch).and_raise(MarcService::MarcServiceError)
+        end
+
+        it 'draws an error message' do
+          post '/v1/objects',
+               params: data,
+               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+          expect(response.body).to match 'MarcService::MarcServiceError'
+          expect(response.status).to eq 500
         end
       end
     end

@@ -109,6 +109,7 @@ class CocinaObjectStore
     raise
   end
 
+  # @raises MarcService::MarcServiceError
   def create(cocina_request_object, assign_doi: false)
     ensure_ur_admin_policy_exists(cocina_request_object)
     validate(cocina_request_object)
@@ -370,6 +371,7 @@ class CocinaObjectStore
   end
 
   # Synch from symphony if a catkey is present
+  # @raises MarcService::MarcServiceError
   def sync_from_symphony(cocina_request_object, druid)
     return cocina_request_object if cocina_request_object.admin_policy?
 

@@ -51,6 +51,18 @@ paths:
       responses:
         '200':
           description: OK
+        '400':
+          description: Catkey not found in Symphony.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'          
       parameters:
         - name: barcode
           in: query
@@ -68,6 +80,18 @@ paths:
       responses:
         '200':
           description: OK
+        '400':
+          description: Record not found in Symphony.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'          
       parameters:
         - name: barcode
           in: query
@@ -636,10 +660,24 @@ paths:
       responses:
         '200':
           description: OK
+        '400':
+          description: Catkey not found in Symphony.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
           description: Unprocessable entity.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       parameters:
         - name: id
           in: path
