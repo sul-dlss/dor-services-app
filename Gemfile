@@ -37,7 +37,7 @@ gem 'pg'
 gem 'progressbar' # for the cleaner rake task
 gem 'puma', '~> 5.3' # app server
 gem 'rails', '~> 5.2.0'
-gem 'retries' # for ReleaseTags::PurlClient and Goobi
+gem 'retries' # for Goobi
 gem 'rsolr'
 gem 'ruby-cache', '~> 0.3.0'
 gem 'sidekiq', '~> 6.0'
