@@ -257,8 +257,8 @@ CREATE TABLE public.object_versions (
     id bigint NOT NULL,
     druid character varying NOT NULL,
     version integer NOT NULL,
-    tag character varying,
-    description character varying,
+    tag character varying NOT NULL,
+    description character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -587,6 +587,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220307201030'),
 ('20220307201420'),
 ('20220311015318'),
-('20220329134023');
+('20220329134023'),
+('20220422143440');
 
 
