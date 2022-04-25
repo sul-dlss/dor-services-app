@@ -153,6 +153,14 @@ RSpec.describe VersionService do
         expect { open }.to raise_error(Dor::Exception, errmsg)
       end
     end
+
+    context 'when required arguments are missing' do
+      let(:description) { nil }
+
+      it 'raises ArgumentError' do
+        expect { open }.to raise_error(ArgumentError, 'description and significance are required to open a new version')
+      end
+    end
   end
 
   describe '.can_open?' do

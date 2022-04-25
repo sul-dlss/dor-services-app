@@ -54,6 +54,7 @@ class VersionService
   def open(significance:, description:, opening_user_name:, assume_accessioned:)
     # This can be removed after migration.
     VersionMigrationService.find_and_migrate(druid)
+    raise ArgumentError, 'description and significance are required to open a new version' if description.blank? || significance.blank?
 
     ensure_openable!(assume_accessioned: assume_accessioned)
     if Settings.version_service.sync_with_preservation
