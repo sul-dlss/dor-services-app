@@ -15,6 +15,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     allow(VersionService).to receive(:close)
     allow(VersionService).to receive(:open).and_return(updated_cocina_object)
     allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
+    allow(EventFactory).to receive(:create)
   end
 
   context 'when newly registered object that has not been accessioned yet' do
@@ -28,6 +29,11 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
       post "/v1/objects/#{druid}/accession",
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
+      expect(EventFactory).to have_received(:create).with(
+        { data: { workflow: 'assemblyWF' },
+          druid: 'druid:mx123qw2323',
+          event_type: 'accession_request' }
+      )
       expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, default_start_accession_workflow, version: '1')
       expect(VersionService).not_to have_received(:open)
       expect(VersionService).not_to have_received(:close)
@@ -100,6 +106,17 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     it 'returns an unacceptable response and does not start any workflows' do
       post "/v1/objects/#{druid}/accession",
            headers: { 'Authorization' => "Bearer #{jwt}" }
+      expect(EventFactory).to have_received(:create).with(
+        { data: { workflow: 'assemblyWF' },
+          druid: 'druid:mx123qw2323',
+          event_type: 'accession_request' }
+      )
+
+      expect(EventFactory).to have_received(:create).with(
+        { data: { workflow: 'assemblyWF' },
+          druid: 'druid:mx123qw2323',
+          event_type: 'accession_request_aborted' }
+      )
       expect(workflow_client).not_to have_received(:create_workflow_by_name)
       expect(VersionService).not_to have_received(:open)
       expect(VersionService).not_to have_received(:close)
