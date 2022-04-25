@@ -154,8 +154,6 @@ module Cocina
 
     # rubocop:disable Style/GuardClause
     def validate
-      raise ValidationError, "Identifier on the query and in the body don't match" if fedora_object.pid != cocina_object.externalIdentifier
-
       if has_changed?(:description) && Settings.enabled_features.validate_descriptive_roundtrip.update
         result = DescriptionRoundtripValidator.valid_from_cocina?(cocina_object)
         raise RoundtripValidationError, result.failure unless result.success?

@@ -55,6 +55,10 @@ class ObjectsController < ApplicationController
 
   def update
     cocina_object = Cocina::Models.build(params.except(:action, :controller, :id).to_unsafe_h)
+
+    # Ensure the id in the path matches the id in the post body.
+    raise Cocina::ValidationError, "Identifier on the query and in the body don't match" if params[:id] != cocina_object.externalIdentifier
+
     # ETag / optimistic locking is optional.
     etag = from_etag(request.headers['If-Match'])
     updated_cocina_object = if etag
