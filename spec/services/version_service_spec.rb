@@ -45,9 +45,6 @@ RSpec.describe VersionService do
                            significance: significance)
     end
 
-    let(:description) { 'covid 19 version' }
-    let(:significance) { 'minor' }
-
     before do
       allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
@@ -63,6 +60,8 @@ RSpec.describe VersionService do
                       lifecycle: true,
                       active_lifecycle: nil)
     end
+    let(:description) { 'covid 19 version' }
+    let(:significance) { 'minor' }
 
     context 'when on the expected path' do
       it 'creates an object version and starts a workflow' do

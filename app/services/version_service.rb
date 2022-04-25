@@ -27,7 +27,7 @@ class VersionService
   #  :major, :minor, :admin (see Dor::VersionTag#increment)
   # @param [String] :user_name add username to the events datastream
   # @param [Boolean] :start_accession set to true if you want accessioning to start (default), false otherwise
-  def self.close(cocina_object, description:, significance:, event_factory:, user_name: nil, start_accession: true)
+  def self.close(cocina_object, event_factory:, description: nil, significance: nil, user_name: nil, start_accession: true)
     new(cocina_object, event_factory: event_factory).close(description: description,
                                                            significance: significance,
                                                            user_name: user_name,
