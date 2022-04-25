@@ -101,8 +101,11 @@ class ObjectsController < ApplicationController
   def accession
     workflow = params[:workflow] || default_start_accession_workflow
 
+    EventFactory.create(druid: params[:id], event_type: 'accession_request', data: { workflow: workflow })
+
     # if this object is currently already in accessioning, we cannot start it again
     if VersionService.in_accessioning?(@cocina_object)
+      EventFactory.create(druid: params[:id], event_type: 'accession_request_aborted', data: { workflow: workflow })
       return json_api_error(status: :conflict,
                             message: 'This object is already in accessioning, it can not be accessioned again until the workflow is complete')
     end
