@@ -89,7 +89,7 @@ class ObjectsController < ApplicationController
   end
 
   # Initialize specified workflow (assemblyWF by default), and also version if needed
-  # called by pre-assembly, goobi and lybservices-scripts to kick off accessioning for a new or existing object
+  # called by pre-assembly and goobi kick off accessioning for a new or existing object
   #
   # You can specify params when POSTing to this method to include when opening a version (if that is required to accession).
   # The optional versioning params are included below for reference.  You can also optionally include a workflow to initialize
