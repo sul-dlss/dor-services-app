@@ -1084,17 +1084,17 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
 
   describe 'Uniform title with parallel name' do
     # cv621pf3709
-    xit 'not implemented' do
+    it_behaves_like 'MODS cocina mapping' do
       let(:mods) do
         <<~XML
           <titleInfo type="uniform" nameTitleGroup="1">
             <title>Correspondence respecting the affairs of Persia. Persian</title>
           </titleInfo>
-          <name type="corporate" altRepGroup="01" nameTitleGroup="1" usage="primary">
+          <name type="corporate" altRepGroup="1" nameTitleGroup="1" usage="primary">
             <namePart>Great Britain</namePart>
             <namePart>Foreign Office</namePart>
           </name>
-          <name type="corporate" altRepGroup="01">
+          <name type="corporate" altRepGroup="1">
             <namePart>بريتانياى كبير</namePart>
             <namePart>وزارت خارجه</namePart>
           </name>
@@ -1152,7 +1152,7 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
                 }
               ],
               status: 'primary',
-              type: 'corporate'
+              type: 'organization'
             }
           ]
         }

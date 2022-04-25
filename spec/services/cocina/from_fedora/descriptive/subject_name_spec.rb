@@ -101,12 +101,10 @@ RSpec.describe Cocina::FromFedora::Descriptive::Subject do
             {
               structuredValue: [
                 {
-                  value: 'California.',
-                  type: 'name'
+                  value: 'California.'
                 },
                 {
-                  value: 'Sect. 7570.',
-                  type: 'name'
+                  value: 'Sect. 7570.'
                 }
               ],
               type: 'organization'

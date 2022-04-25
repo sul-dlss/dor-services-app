@@ -404,12 +404,10 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                 {
                   structuredValue: [
                     {
-                      value: 'United States',
-                      type: 'name'
+                      value: 'United States'
                     },
                     {
-                      value: 'Office of Foreign Investment in the United States',
-                      type: 'name'
+                      value: 'Office of Foreign Investment in the United States'
                     }
                   ]
                 }
@@ -3119,12 +3117,10 @@ RSpec.describe 'MODS name <--> cocina mappings' do
                 {
                   structuredValue: [
                     {
-                      value: 'United States',
-                      type: 'name'
+                      value: 'United States'
                     },
                     {
-                      value: 'Office of Foreign Investment in the United States.',
-                      type: 'name'
+                      value: 'Office of Foreign Investment in the United States.'
                     }
                   ]
                 }

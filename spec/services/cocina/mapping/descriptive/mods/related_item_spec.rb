@@ -686,12 +686,10 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
                       type: 'associated name',
                       structuredValue: [
                         {
-                          value: 'Tunisia.',
-                          type: 'name'
+                          value: 'Tunisia.'
                         },
                         {
-                          value: 'Direction des travaux publics.',
-                          type: 'name'
+                          value: 'Direction des travaux publics.'
                         }
                       ]
                     }
@@ -704,12 +702,10 @@ RSpec.describe 'MODS relatedItem <--> cocina mappings' do
                   name: [
                     structuredValue: [
                       {
-                        value: 'Tunisia.',
-                        type: 'name'
+                        value: 'Tunisia.'
                       },
                       {
-                        value: 'Direction des travaux publics.',
-                        type: 'name'
+                        value: 'Direction des travaux publics.'
                       }
                     ]
                   ]

@@ -118,7 +118,7 @@ module Cocina
             parts << build_name_part(name_node, name_part_nodes.first, default_type: alternative_name_nodes.present?)
                      .merge(common_authority(name_node)).merge(common_lang_script(name_node)).presence
           else
-            vals = name_part_nodes.filter_map { |name_part| build_name_part(name_node, name_part).presence }
+            vals = name_part_nodes.filter_map { |name_part| build_name_part(name_node, name_part, default_type: name_node['type'] != 'corporate').presence }
             parts << { structuredValue: vals }.merge(common_authority(name_node)).merge(common_lang_script(name_node))
           end
 
