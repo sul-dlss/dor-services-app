@@ -1082,6 +1082,84 @@ RSpec.describe 'MODS titleInfo <--> cocina mappings' do
     end
   end
 
+  describe 'Uniform title with parallel name' do
+    # cv621pf3709
+    xit 'not implemented' do
+      let(:mods) do
+        <<~XML
+          <titleInfo type="uniform" nameTitleGroup="1">
+            <title>Correspondence respecting the affairs of Persia. Persian</title>
+          </titleInfo>
+          <name type="corporate" altRepGroup="01" nameTitleGroup="1" usage="primary">
+            <namePart>Great Britain</namePart>
+            <namePart>Foreign Office</namePart>
+          </name>
+          <name type="corporate" altRepGroup="01">
+            <namePart>بريتانياى كبير</namePart>
+            <namePart>وزارت خارجه</namePart>
+          </name>
+        XML
+      end
+
+      let(:cocina) do
+        {
+          title: [
+            {
+              value: 'Correspondence respecting the affairs of Persia. Persian',
+              type: 'uniform',
+              note: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Great Britain'
+                    },
+                    {
+                      value: 'Foreign Office'
+                    }
+                  ],
+                  type: 'associated name'
+                }
+              ]
+            }
+          ],
+          contributor: [
+            {
+              name: [
+                {
+                  parallelValue: [
+                    {
+                      structuredValue: [
+                        {
+                          value: 'Great Britain'
+                        },
+                        {
+                          value: 'Foreign Office'
+                        }
+                      ],
+                      status: 'primary'
+                    },
+                    {
+                      structuredValue: [
+                        {
+                          value: 'بريتانياى كبير'
+                        },
+                        {
+                          value: 'وزارت خارجه'
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              status: 'primary',
+              type: 'corporate'
+            }
+          ]
+        }
+      end
+    end
+  end
+
   describe 'Multilingual uniform title' do
     # adapted from cv621pf3709
     # NOTE: clunky workaround for MARC data
