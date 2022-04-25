@@ -355,8 +355,8 @@ RSpec.describe Cocina::FromFedora::Descriptive do
         {
           name: [{
             structuredValue: [
-              { value: 'Stanford University', type: 'name' },
-              { value: 'Department of Computer Science.', type: 'name' }
+              { value: 'Stanford University' },
+              { value: 'Department of Computer Science.' }
             ]
           }],
           type: 'organization'
