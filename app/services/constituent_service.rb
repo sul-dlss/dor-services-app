@@ -30,10 +30,10 @@ class ConstituentService
     updated_virtual_object = if VersionService.open?(virtual_object)
                                virtual_object
                              else
-                               VersionService.open(virtual_object, {
-                                                     description: VERSION_DESCRIPTION,
-                                                     significance: VERSION_SIGNIFICANCE
-                                                   }, event_factory: event_factory)
+                               VersionService.open(virtual_object,
+                                                   description: VERSION_DESCRIPTION,
+                                                   significance: VERSION_SIGNIFICANCE,
+                                                   event_factory: event_factory)
                              end
 
     updated_virtual_object = ResetContentMetadataService.reset(cocina_item: updated_virtual_object, constituent_druids: constituent_druids)

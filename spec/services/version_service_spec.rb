@@ -38,9 +38,8 @@ RSpec.describe VersionService do
   end
 
   describe '.open' do
-    subject(:open) { described_class.open(cocina_object, options, event_factory: event_factory) }
+    subject(:open) { described_class.open(cocina_object, significance: 'major', description: 'same as it ever was', opening_user_name: 'sunetid', event_factory: event_factory) }
 
-    let(:options) { { significance: 'major', description: 'same as it ever was', opening_user_name: 'sunetid' } }
     let(:workflow_client) do
       instance_double(Dor::Workflow::Client,
                       create_workflow_by_name: true,
@@ -207,17 +206,22 @@ RSpec.describe VersionService do
   end
 
   describe '.close' do
-    subject(:close) { described_class.close(cocina_object, opts, event_factory: event_factory) }
-
-    let(:opts) do
-      {
-        description: 'closing text',
-        significance: 'major',
-        user_name: 'jcoyne'
-      }
+    subject(:close) do
+      described_class.close(cocina_object,
+                            description: description,
+                            significance: significance,
+                            user_name: 'jcoyne',
+                            event_factory: event_factory,
+                            start_accession: start_accession)
     end
 
     let(:version) { 2 }
+
+    let(:start_accession) { true }
+
+    let(:description) { 'closing text' }
+
+    let(:significance) { 'major' }
 
     let(:workflow_client) do
       instance_double(Dor::Workflow::Client)
@@ -253,14 +257,7 @@ RSpec.describe VersionService do
     end
 
     context 'when start_accession is false' do
-      let(:opts) do
-        {
-          description: 'closing text',
-          significance: 'major',
-          user_name: 'jcoyne',
-          start_accession: false
-        }
-      end
+      let(:start_accession) { false }
 
       before do
         allow(workflow_client).to receive(:active_lifecycle).and_return(true, false)
@@ -324,8 +321,10 @@ RSpec.describe VersionService do
       end
     end
 
-    context 'when the latest version does not have a tag and a description' do
-      let(:opts) { {} }
+    context 'when not providing a significance or description' do
+      let(:description) { nil }
+
+      let(:significance) { nil }
 
       before do
         # stub out calls for open_for_versioning?
@@ -334,7 +333,7 @@ RSpec.describe VersionService do
         allow(workflow_client).to receive(:close_version)
       end
 
-      it 'closes the object version' do
+      it 'closes the object version using existing signficance and description' do
         close
         object_version = ObjectVersion.find_by(druid: druid, version: 2)
         expect(object_version.tag).to eq '1.1.0'
