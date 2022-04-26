@@ -55,7 +55,6 @@ module Cocina
       end
 
       # @raises [SolrConnectionError]
-      # rubocop:disable Metrics/AbcSize
       def props
         type = DRO.dro_type(fedora_item)
         {
@@ -79,7 +78,6 @@ module Cocina
           props[:identification] = identification unless identification.empty?
         end
       end
-      # rubocop:enable Metrics/AbcSize
 
       private
 

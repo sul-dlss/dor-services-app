@@ -26,7 +26,6 @@ module Cocina
 
         attr_reader :xml, :languages
 
-        # rubocop:disable Metrics/AbcSize
         def write_basic(language)
           top_attributes = {}
           top_attributes[:displayLabel] = language.displayLabel if language.displayLabel
@@ -52,7 +51,6 @@ module Cocina
             write_script(language.script) if language.script
           end
         end
-        # rubocop:enable Metrics/AbcSize
 
         def write_script(script)
           attributes = {}
