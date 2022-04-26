@@ -165,17 +165,17 @@ RSpec.describe EmbargoReleaseService do
       it 'moves embargo to access and updates file access' do
         released_cocina_object = service.send(:release_cocina_object, embargoed_cocina_object)
         expect(released_cocina_object.access.to_h).to eq(
-          {
+          Cocina::Models::DROAccess.new(
             view: 'world',
             download: 'world',
             useAndReproductionStatement: 'Free!'
-          }
+          ).to_h
         )
         expect(released_cocina_object.structural.contains.first.structural.contains.first.access.to_h).to eq(
-          {
+          Cocina::Models::FileAccess.new(
             view: 'world',
             download: 'world'
-          }
+          ).to_h
         )
         expect(CocinaObjectStore).to have_received(:save)
       end
@@ -198,17 +198,17 @@ RSpec.describe EmbargoReleaseService do
       it 'moves embargo to access and updates file access' do
         released_cocina_object = service.send(:release_cocina_object, embargoed_cocina_object)
         expect(released_cocina_object.access.to_h).to eq(
-          {
+          Cocina::Models::DROAccess.new(
             view: 'citation-only',
             download: 'none',
             useAndReproductionStatement: 'Free!'
-          }
+          ).to_h
         )
         expect(released_cocina_object.structural.contains.first.structural.contains.first.access.to_h).to eq(
-          {
+          Cocina::Models::FileAccess.new(
             view: 'dark',
             download: 'none'
-          }
+          ).to_h
         )
         expect(CocinaObjectStore).to have_received(:save)
       end
@@ -249,11 +249,11 @@ RSpec.describe EmbargoReleaseService do
       it 'moves embargo to access' do
         released_cocina_object = service.send(:release_cocina_object, embargoed_cocina_object)
         expect(released_cocina_object.access.to_h).to eq(
-          {
+          Cocina::Models::DROAccess.new(
             view: 'citation-only',
             download: 'none',
             useAndReproductionStatement: 'Free!'
-          }
+          ).to_h
         )
         expect(CocinaObjectStore).to have_received(:save)
       end
