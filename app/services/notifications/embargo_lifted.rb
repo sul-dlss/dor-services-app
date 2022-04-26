@@ -13,7 +13,7 @@ module Notifications
     end
 
     def initialize(model:, channel:)
-      @model = model
+      @model = Cocina::Models.without_metadata(model)
       @channel = channel
     end
 
