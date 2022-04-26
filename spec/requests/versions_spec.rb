@@ -46,6 +46,15 @@ RSpec.describe 'Operations regarding object versions' do
   end
 
   describe '/versions/current/close' do
+    let(:close_params) do
+      {
+        description: 'some text',
+        significance: 'major',
+        user_name: 'eshackleton',
+        start_accession: false
+      }
+    end
+
     context 'when closing a version succeeds' do
       before do
         allow(VersionService).to receive(:close)
@@ -53,19 +62,13 @@ RSpec.describe 'Operations regarding object versions' do
 
       it 'closes the current version when posted to' do
         post '/v1/objects/druid:mx123qw2323/versions/current/close',
+             params: close_params,
              headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(VersionService).to have_received(:close)
-        expect(response.body).to match(/version 1 closed/)
-      end
-
-      it 'forwards optional params to the VersionService#close method' do
-        post '/v1/objects/druid:mx123qw2323/versions/current/close',
-             params: %( {"description": "some text", "significance": "major"} ),
-             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(response.status).to eq 200
         expect(response.body).to match(/version 1 closed/)
         expect(VersionService).to have_received(:close)
           .with(cocina_object_with_metadata,
-                { description: 'some text', significance: 'major' },
+                close_params,
                 event_factory: EventFactory)
       end
     end
@@ -78,12 +81,13 @@ RSpec.describe 'Operations regarding object versions' do
 
       it 'returns an error' do
         post '/v1/objects/druid:mx123qw2323/versions/current/close',
+             params: close_params,
              headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response.status).to eq 422
         expect(response.body).to eq(
           '{"errors":[{"status":"422","title":"Unable to close version",' \
           '"detail":"Trying to close version on an object not opened for versioning"}]}'
         )
-        expect(response.status).to eq 422
       end
     end
   end
@@ -94,10 +98,9 @@ RSpec.describe 'Operations regarding object versions' do
         assume_accessioned: false,
         significance: 'minor',
         description: 'bar',
-        opening_user_name: opening_user_name
+        opening_user_name: 'eshackleton'
       }
     end
-    let(:opening_user_name) { 'foo' }
 
     let(:version) { 2 }
 
@@ -109,22 +112,14 @@ RSpec.describe 'Operations regarding object versions' do
 
       it 'opens a new object version when posted to' do
         post '/v1/objects/druid:mx123qw2323/versions',
-             params: open_params.to_json,
-             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+             params: open_params,
+             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to be_successful
         expect(response.body).to equal_cocina_model(cocina_object)
         expect(response.headers['Last-Modified']).to end_with 'GMT'
         expect(response.headers['X-Created-At']).to end_with 'GMT'
         expect(response.headers['ETag']).to match(%r{W/".+"})
-      end
-
-      it 'forwards params to the VersionService#open method' do
-        post '/v1/objects/druid:mx123qw2323/versions',
-             params: open_params.to_json,
-             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(VersionService).to have_received(:open).with(cocina_object_with_metadata, open_params, event_factory: EventFactory)
-        expect(response.body).to equal_cocina_model(cocina_object)
-        expect(response).to be_successful
       end
     end
 
@@ -132,17 +127,15 @@ RSpec.describe 'Operations regarding object versions' do
       let(:incomplete_params) do
         {
           assume_accessioned: false,
-          opening_user_name: opening_user_name
+          opening_user_name: 'eshackleton'
         }
       end
 
       it 'returns a bad request error' do
         post '/v1/objects/druid:mx123qw2323/versions',
-             params: incomplete_params.to_json,
-             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        # rubocop:disable Layout/LineLength
-        expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":"#/paths/~1v1~1objects~1{object_id}~1versions/post missing required parameters: description, significance"}]}')
-        # rubocop:enable Layout/LineLength
+             params: incomplete_params,
+             headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response.body).to match('missing required parameters: description, significance')
         expect(response.status).to eq 400
       end
     end
@@ -155,8 +148,8 @@ RSpec.describe 'Operations regarding object versions' do
 
       it 'returns an error' do
         post '/v1/objects/druid:mx123qw2323/versions',
-             params: open_params.to_json,
-             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+             params: open_params,
+             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('{"errors":[{"status":"422","title":"Unable to open version","detail":"Object net yet accessioned"}]}')
         expect(response.status).to eq 422
       end
@@ -169,8 +162,8 @@ RSpec.describe 'Operations regarding object versions' do
 
       it 'returns an error' do
         post '/v1/objects/druid:mx123qw2323/versions',
-             params: open_params.to_json,
-             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+             params: open_params,
+             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('{"errors":[{"status":"500","title":"Unable to open version due to preservation client error","detail":"Oops, a 500"}]}')
         expect(response.status).to eq 500
       end

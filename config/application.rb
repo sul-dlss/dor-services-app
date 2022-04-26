@@ -40,7 +40,8 @@ module DorServices
       error_class: JSONAPIError,
       accept_request_filter: accept_proc,
       parse_response_by_content_type: false,
-      query_hash_key: 'action_dispatch.request.query_parameters'
+      query_hash_key: 'action_dispatch.request.query_parameters',
+      params_key: 'action_dispatch.request.request_parameters'
     )
     # Ensure we are passing back valid responses when running tests
     if Rails.env.test?
