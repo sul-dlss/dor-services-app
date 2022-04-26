@@ -78,9 +78,11 @@ RSpec.describe Cocina::Serializer do
       access: {
         view: 'citation-only',
         download: 'none',
+        controlledDigitalLending: false,
         embargo: {
           view: 'world',
           download: 'world',
+          controlledDigitalLending: false,
           releaseDate: '2022-02-25T00:00:00.000+00:00'
         },
         useAndReproductionStatement: 'User agrees that, where applicable, content will not be used.',
@@ -140,7 +142,8 @@ RSpec.describe Cocina::Serializer do
               }],
               access: {
                 view: 'world',
-                download: 'world'
+                download: 'world',
+                controlledDigitalLending: false
               },
               administrative: {
                 publish: true,

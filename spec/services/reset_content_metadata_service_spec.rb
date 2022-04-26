@@ -42,7 +42,7 @@ RSpec.describe ResetContentMetadataService do
 
       context 'when item has structural metadata with no orders' do
         let(:structural) do
-          {
+          Cocina::Models::DROStructural.new(
             isMemberOf: ['druid:fd234jh8769'],
             contains: [
               {
@@ -74,7 +74,7 @@ RSpec.describe ResetContentMetadataService do
                 }
               }
             ]
-          }
+          ).to_h
         end
 
         it 'returns item with structural metadata containing no orders' do
@@ -245,7 +245,8 @@ RSpec.describe ResetContentMetadataService do
                         },
                         access: {
                           view: 'dark',
-                          download: 'none'
+                          download: 'none',
+                          controlledDigitalLending: false
                         },
                         hasMessageDigests: []
                       }

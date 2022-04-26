@@ -6,10 +6,10 @@ RSpec.describe ApplyAdminPolicyDefaults do
   let(:apo_druid) { 'druid:df123cd4567' }
   let(:object_druid) { 'druid:bc123df4567' }
   let(:default_access) do
-    {
+    Cocina::Models::DROAccess.new(
       view: 'world',
       download: 'world'
-    }
+    ).to_h
   end
   let(:cocina_object) do
     Cocina::Models::DRO.new(
@@ -363,12 +363,12 @@ RSpec.describe ApplyAdminPolicyDefaults do
 
       context 'when APO specifies custom default object rights' do
         let(:default_access) do
-          {
+          Cocina::Models::DROAccess.new(
             view: 'dark',
             download: 'none',
             useAndReproductionStatement: 'Use at will.',
             license: 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
-          }
+          ).to_h
         end
         let(:file_set_with_custom_access) do
           {
@@ -390,7 +390,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
                     sdrPreserve: true,
                     shelve: false
                   },
-                  access: default_access.slice(:view, :download),
+                  access: default_access.slice(:view, :download, :location, :controlledDigitalLending),
                   hasMessageDigests: []
                 }
               ]

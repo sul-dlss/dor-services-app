@@ -601,7 +601,7 @@ RSpec.describe 'Get the object' do
       expect(json['type']).to eq Cocina::Models::ObjectType.object
       expect(json['label']).to eq 'foo'
       expect(json['version']).to eq 1
-      expect(json['access']).to eq('view' => 'dark', 'download' => 'none')
+      expect(json['access']).to eq('view' => 'dark', 'download' => 'none', 'controlledDigitalLending' => false)
       expect(json['identification']).to eq({ 'catalogLinks' => [], 'sourceId' => 'dissertationid:00000123' })
       expect(json['structural']).to eq({ 'contains' => [], 'hasMemberOrders' => [], 'isMemberOf' => [] })
     end
