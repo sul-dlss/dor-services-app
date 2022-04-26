@@ -92,7 +92,7 @@ class ObjectsController < ApplicationController
   # called by pre-assembly and goobi kick off accessioning for a new or existing object
   #
   # You can specify params when POSTing to this method to include when opening a version (if that is required to accession).
-  # The optional versioning params are included below for reference.  You can also optionally include a workflow to initialize
+  # The versioning params are included below for reference.  You can also optionally include a workflow to initialize
   #   (which defaults to assemblyWF)
   # @option opts [String] :significance set significance (major/minor/patch) of version change
   # @option opts [String] :description set description of version change
@@ -112,12 +112,12 @@ class ObjectsController < ApplicationController
 
     updated_cocina_object = @cocina_object
     # if this is an existing versionable object, open and close it without starting accessionWF
-    if VersionService.can_open?(@cocina_object, params)
-      updated_cocina_object = VersionService.open(@cocina_object, params, event_factory: EventFactory)
-      VersionService.close(updated_cocina_object, params.merge(start_accession: false), event_factory: EventFactory)
+    if VersionService.can_open?(@cocina_object)
+      updated_cocina_object = VersionService.open(@cocina_object, version_open_params, event_factory: EventFactory)
+      VersionService.close(updated_cocina_object, version_close_params.merge(start_accession: false), event_factory: EventFactory)
     # if this is an existing accessioned object that is currently open, just close it without starting accessionWF
     elsif VersionService.open?(@cocina_object)
-      VersionService.close(@cocina_object, params.merge(start_accession: false), event_factory: EventFactory)
+      VersionService.close(@cocina_object, version_close_params.merge(start_accession: false), event_factory: EventFactory)
     end
 
     # initialize workflow
@@ -234,5 +234,16 @@ class ObjectsController < ApplicationController
     # Delete trailing -gzip added by mod_default. See https://github.com/rails/rails/issues/19056
     etag[3..-2].delete_suffix('-gzip')
   end
+
+  def version_open_params
+    params.permit(:significance, :description, :opening_user_name).to_h.symbolize_keys
+  end
+
+  def version_close_params
+    new_params = params.permit(:significance, :description).to_h.symbolize_keys
+    new_params[:user_name] = params[:opening_user_name] if params[:opening_user_name]
+    new_params
+  end
+
   # rubocop:enable Metrics/ClassLength
 end
