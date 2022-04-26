@@ -26,7 +26,7 @@ RSpec.describe ConstituentService do
     let(:open_for_versioning) { true }
     let(:service) { described_class.new(virtual_object_druid: virtual_object_druid, event_factory: event_factory) }
     let(:virtual_object) do
-      Cocina::Models::DRO.new(
+      dro = Cocina::Models::DRO.new(
         type: Cocina::Models::ObjectType.object,
         label: 'Dummy',
         version: 1,
@@ -40,19 +40,17 @@ RSpec.describe ConstituentService do
         identification: { sourceId: 'sul:123' },
         structural: {}
       )
+      Cocina::Models.with_metadata(dro, 'abc123')
     end
     let(:virtual_object_druid) { 'druid:bc123df4567' }
-    let(:created_at) { Time.zone.now }
-    let(:updated_at) { Time.zone.now }
-    let(:virtual_object_with_metadata) { Cocina::Models.with_metadata(virtual_object, '1', created: created_at, modified: updated_at) }
 
     before do
-      allow(ItemQueryService).to receive(:find_combinable_item).and_return(virtual_object_with_metadata)
+      allow(ItemQueryService).to receive(:find_combinable_item).and_return(virtual_object)
       allow(ItemQueryService).to receive(:validate_combinable_items).and_return(item_errors)
       allow(VersionService).to receive(:open?).and_return(open_for_versioning)
-      allow(VersionService).to receive(:open)
+      allow(VersionService).to receive(:open).and_return(virtual_object)
       allow(VersionService).to receive(:close)
-      allow(ResetContentMetadataService).to receive(:reset)
+      allow(ResetContentMetadataService).to receive(:reset).and_return(virtual_object)
       allow(CocinaObjectStore).to receive(:save)
       allow(CocinaObjectStore).to receive(:find).and_return(mock_item)
       allow(SynchronousIndexer).to receive(:reindex_remotely_from_cocina)
@@ -79,7 +77,10 @@ RSpec.describe ConstituentService do
 
       it 'opens virtual object for versioning' do
         service.add(constituent_druids: constituent_druids)
-        expect(VersionService).to have_received(:open).once
+        expect(VersionService).to have_received(:open).with(virtual_object,
+                                                            { description: ConstituentService::VERSION_DESCRIPTION,
+                                                              significance: ConstituentService::VERSION_SIGNIFICANCE },
+                                                            event_factory: event_factory)
       end
     end
 
@@ -90,7 +91,7 @@ RSpec.describe ConstituentService do
 
     it 'closes open version' do
       service.add(constituent_druids: constituent_druids)
-      expect(VersionService).to have_received(:close).once
+      expect(VersionService).to have_received(:close).with(virtual_object, event_factory: event_factory)
     end
 
     it 'indexes virtual object synchronously' do
