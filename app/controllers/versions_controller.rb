@@ -46,7 +46,7 @@ class VersionsController < ApplicationController
   end
 
   def openable
-    render plain: VersionService.can_open?(@cocina_object, openable_params).to_s
+    render plain: VersionService.can_open?(@cocina_object).to_s
   rescue Preservation::Client::Error => e
     render build_error('Unable to check if openable due to preservation client error', e, status: :internal_server_error)
   end
@@ -73,10 +73,6 @@ class VersionsController < ApplicationController
   def create_params
     params.require(:description)
     params.require(:significance)
-    openable_params # return _all_ allowed params as hash with symbolized keys
-  end
-
-  def openable_params
     params.permit(
       :assume_accessioned,
       :description,
@@ -90,8 +86,7 @@ class VersionsController < ApplicationController
       :description,
       :significance,
       :start_accession,
-      :user_name,
-      :version_num
+      :user_name
     ).to_h.symbolize_keys
   end
 end

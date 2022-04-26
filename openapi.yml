@@ -1086,6 +1086,30 @@ paths:
             default: true
           required: false
           description: Indicates if accessionWF should be started after closing the version
+        - name: significance
+          in: query
+          description: the significance of the version change
+          required: false
+          schema:
+            type: string
+            enum:
+              - minor
+              - major
+              - admin
+            example: admin
+        - name: description
+          in: query
+          description: the description of the version change
+          required: false
+          schema:
+            type: string
+            example: 'Re-accessioning this object'
+        - name: user_name
+          in: query
+          description: the username of the person creating the version
+          schema:
+            type: string
+            example: 'some_sunetid'
   '/v1/objects/{object_id}/versions':
     get:
       tags:
@@ -1132,7 +1156,6 @@ paths:
             X-Created-At:
               schema:
                 type: string
-
       parameters:
         - name: object_id
           in: path

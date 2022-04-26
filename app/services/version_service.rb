@@ -75,7 +75,6 @@ class VersionService
   # @option opts [String] :description describes the version change
   # @option opts [Symbol] :significance which part of the version tag to increment
   #  :major, :minor, :admin (see Dor::VersionTag#increment)
-  # @option opts [String] :version_num version number to archive rows with. Otherwise, current version is used
   # @option opts [String] :user_name add username to the events datastream
   # @option opts [Boolean] :start_accession set to true if you want accessioning to start (default), false otherwise
   # @raise [Dor::Exception] if the object hasn't been opened for versioning, or if accessionWF has
