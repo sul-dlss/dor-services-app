@@ -49,7 +49,7 @@ class EmbargoReleaseService
     end
     Rails.logger.info("Releasing embargo for #{druid}")
 
-    updated_cocina_object = VersionService.open(cocina_object, { description: 'embargo released', significance: 'admin' }, event_factory: EventFactory)
+    updated_cocina_object = VersionService.open(cocina_object, description: 'embargo released', significance: 'admin', event_factory: EventFactory)
 
     updated_cocina_object = release_cocina_object(updated_cocina_object)
 
