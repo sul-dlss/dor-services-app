@@ -73,20 +73,27 @@ class VersionsController < ApplicationController
   def create_params
     params.require(:description)
     params.require(:significance)
-    params.permit(
+    new_params = params.permit(
       :assume_accessioned,
       :description,
       :opening_user_name,
       :significance
     ).to_h.symbolize_keys
+    boolean_param(new_params, :assume_accessioned)
   end
 
   def close_params
-    params.permit(
+    new_params = params.permit(
       :description,
       :significance,
       :start_accession,
       :user_name
     ).to_h.symbolize_keys
+    boolean_param(new_params, :start_accession)
+  end
+
+  def boolean_param(params_hash, key)
+    params_hash[key] = ActiveModel::Type::Boolean.new.cast(params_hash[key]) if params_hash.key?(key)
+    params_hash
   end
 end
