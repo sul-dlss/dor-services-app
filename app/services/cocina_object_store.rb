@@ -125,7 +125,7 @@ class CocinaObjectStore
     (created_at, modified_at, lock) = cocina_to_ar_save(cocina_object, skip_lock: true) if Settings.enabled_features.postgres
     add_tags_for_create(druid, cocina_request_object)
     # This creates version 1.0.0 (Initial Version)
-    ObjectVersion.increment_version(druid)
+    ObjectVersion.initial_version(druid: druid)
 
     created_at ||= Time.zone.now
     updated_at ||= created_at

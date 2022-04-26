@@ -43,17 +43,15 @@ class VersionService
     ensure_openable!(opts[:assume_accessioned])
     if Settings.version_service.sync_with_preservation
       sdr_version = retrieve_version_from_preservation
-      new_object_version = ObjectVersion.sync_then_increment_version(druid, sdr_version)
+      new_object_version = ObjectVersion.sync_then_increment_version(druid: druid, known_version: sdr_version, description: opts[:description], significance: opts[:significance].to_sym)
     else
       # This is for testing when we don't have the SDR container available
-      new_object_version = ObjectVersion.increment_version(druid)
+      new_object_version = ObjectVersion.increment_version(druid: druid, description: opts[:description], significance: opts[:significance].to_sym)
     end
     update_cocina_object = cocina_object
     update_cocina_object = CocinaObjectStore.save(cocina_object.new(version: new_object_version.version)) if cocina_object.version != new_object_version.version
 
     workflow_client.create_workflow_by_name(druid, 'versioningWF', version: new_object_version.version.to_s)
-
-    ObjectVersion.update_current_version(druid, description: opts[:description], significance: opts[:significance].to_sym) if opts[:description] && opts[:significance]
 
     event_factory.create(druid: druid, event_type: 'version_open', data: { who: opts[:opening_user_name], version: new_object_version.version.to_s })
     update_cocina_object
@@ -86,7 +84,7 @@ class VersionService
     # This can be removed after migration.
     VersionMigrationService.find_and_migrate(druid)
 
-    ObjectVersion.update_current_version(druid, description: opts[:description], significance: opts[:significance].to_sym) if opts[:description] || opts[:significance]
+    ObjectVersion.update_current_version(druid: druid, description: opts[:description], significance: opts[:significance].to_sym) if opts[:description] || opts[:significance]
 
     raise Dor::Exception, "Trying to close version #{cocina_object.version} on #{druid} which is not opened for versioning" unless open_for_versioning?
     raise Dor::Exception, "Trying to close version #{cocina_object.version} on #{druid} which has active assemblyWF" if active_assembly_wf?
