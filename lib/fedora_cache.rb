@@ -13,7 +13,7 @@ class FedoraCache
 
   def initialize(overwrite: false, cache_dir: nil)
     @overwrite = overwrite
-    @cache_dir = cache_dir || ENV['FEDORA_CACHE'] || 'cache'
+    @cache_dir = cache_dir || ENV.fetch('FEDORA_CACHE', nil) || 'cache'
   end
 
   def connection
