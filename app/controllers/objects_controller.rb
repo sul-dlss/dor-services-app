@@ -92,12 +92,11 @@ class ObjectsController < ApplicationController
   # called by pre-assembly and goobi kick off accessioning for a new or existing object
   #
   # You can specify params when POSTing to this method to include when opening a version (if that is required to accession).
-  # The versioning params are included below for reference.  You can also optionally include a workflow to initialize
-  #   (which defaults to assemblyWF)
-  # @option opts [String] :significance set significance (major/minor/patch) of version change
-  # @option opts [String] :description set description of version change
-  # @option opts [String] :opening_user_name add opening username to the events datastream
-  # @option opts [String] :workflow the workflow to start (defaults to 'assemblyWF')
+  # The versioning params are included below for reference.
+  #  :significance [String] (required) significance (major/minor/patch) of version change
+  #  :descriptions [String] (required) description of version change
+  #  :opening_user_name [String] (optional) opening sunetid to add to the events datastream
+  #  :workflow [String] (optional) the workflow to start (defaults to 'assemblyWF')
   def accession
     workflow = params[:workflow] || default_start_accession_workflow
 
