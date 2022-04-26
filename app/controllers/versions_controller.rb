@@ -24,7 +24,7 @@ class VersionsController < ApplicationController
   end
 
   def create
-    updated_cocina_object = VersionService.open(@cocina_object, **create_params, event_factory: EventFactory)
+    updated_cocina_object = VersionService.open(@cocina_object, **create_params)
 
     add_headers(updated_cocina_object)
     render json: Cocina::Models.without_metadata(updated_cocina_object)
@@ -39,7 +39,7 @@ class VersionsController < ApplicationController
   end
 
   def close_current
-    VersionService.close(@cocina_object, **close_params, event_factory: EventFactory)
+    VersionService.close(@cocina_object, **close_params)
     render plain: "version #{@cocina_object.version} closed"
   rescue Dor::Exception => e
     render build_error('Unable to close version', e)

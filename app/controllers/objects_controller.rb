@@ -113,11 +113,11 @@ class ObjectsController < ApplicationController
     updated_cocina_object = @cocina_object
     # if this is an existing versionable object, open and close it without starting accessionWF
     if VersionService.can_open?(@cocina_object)
-      updated_cocina_object = VersionService.open(@cocina_object, **version_open_params, event_factory: EventFactory)
-      VersionService.close(updated_cocina_object, **version_close_params.merge(start_accession: false), event_factory: EventFactory)
+      updated_cocina_object = VersionService.open(@cocina_object, **version_open_params)
+      VersionService.close(updated_cocina_object, **version_close_params.merge(start_accession: false))
     # if this is an existing accessioned object that is currently open, just close it without starting accessionWF
     elsif VersionService.open?(@cocina_object)
-      VersionService.close(@cocina_object, **version_close_params.merge(start_accession: false), event_factory: EventFactory)
+      VersionService.close(@cocina_object, **version_close_params.merge(start_accession: false))
     end
 
     # initialize workflow
