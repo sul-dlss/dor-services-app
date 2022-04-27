@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :collection do
+  factory :ar_collection, class: 'Collection' do
     cocina_version { '0.0.1' }
     external_identifier { generate(:unique_druid) }
     collection_type { Cocina::Models::ObjectType.collection }

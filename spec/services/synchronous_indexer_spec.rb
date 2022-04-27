@@ -6,7 +6,7 @@ RSpec.describe SynchronousIndexer do
   describe '.reindex_remotely_from_cocina' do
     subject(:reindex) { described_class.reindex_remotely_from_cocina(cocina_object: cocina_object, created_at: created_at, updated_at: created_at) }
 
-    let(:dro) { create(:dro) }
+    let(:dro) { create(:ar_dro) }
     let(:cocina_object) { dro.to_cocina }
     let(:created_at) { Time.zone.now }
     let(:req_body) { { cocina_object: dro.to_cocina, created_at: created_at, updated_at: created_at }.to_json }

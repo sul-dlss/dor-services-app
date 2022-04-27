@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :dro do
+  factory :ar_dro, class: 'Dro' do
     cocina_version { '0.0.1' }
     external_identifier { generate(:unique_druid) }
     content_type { Cocina::Models::ObjectType.book }
