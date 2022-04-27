@@ -11,15 +11,7 @@ RSpec.describe 'Display metadata' do
     }
   end
   let(:cocina_object) do
-    Cocina::Models::DRO.new(externalIdentifier: 'druid:mk420bs7601',
-                            type: Cocina::Models::ObjectType.object,
-                            label: 'A generic label',
-                            version: 1,
-                            description: description,
-                            identification: { sourceId: 'sul:123' },
-                            access: {},
-                            administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                            structural: {})
+    build(:dro, id: 'druid:mk420bs7601').new(description: description)
   end
 
   before do
@@ -103,17 +95,6 @@ RSpec.describe 'Display metadata' do
           </rdf:Description>
         </rdf:RDF>
       XML
-    end
-    let(:cocina_object) do
-      Cocina::Models::DRO.new(externalIdentifier: 'druid:mk420bs7601',
-                              type: Cocina::Models::ObjectType.object,
-                              label: 'A generic label',
-                              version: 1,
-                              description: description,
-                              identification: { sourceId: 'sul:123' },
-                              access: {},
-                              administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                              structural: {})
     end
 
     let(:solr_client) { instance_double(RSolr::Client, get: solr_response) }

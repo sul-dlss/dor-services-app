@@ -12,19 +12,12 @@ RSpec.describe Publish::PublicDescMetadataService do
     { title: [{ value: 'stuff' }], purl: 'https://purl.stanford.edu/bc123df4567' }
   end
   let(:cocina_object) do
-    Cocina::Models.build({
-                           'type' => Cocina::Models::ObjectType.object,
-                           'label' => 'test',
-                           'externalIdentifier' => 'druid:bc123df4567',
-                           'access' => access,
-                           'version' => 1,
-                           'structural' => structural,
-                           'administrative' => {
-                             'hasAdminPolicy' => 'druid:bz845pv2292'
-                           },
-                           'description' => description,
-                           'identification' => identification
-                         })
+    build(:dro, id: 'druid:bc123df4567').new(
+      access: access,
+      structural: structural,
+      description: description,
+      identification: identification
+    )
   end
 
   let(:solr_response) { { 'response' => { 'docs' => virtual_object_solr_docs } } }
@@ -42,23 +35,9 @@ RSpec.describe Publish::PublicDescMetadataService do
       let(:structural) { { isMemberOf: ['druid:xh235dd9059'] } }
 
       let(:collection) do
-        Cocina::Models.build({
-                               'type' => Cocina::Models::ObjectType.collection,
-                               'label' => 'test',
-                               'externalIdentifier' => 'druid:xh235dd9059',
-                               'access' => {},
-                               'version' => 1,
-                               'administrative' => {
-                                 'hasAdminPolicy' => 'druid:bz845pv2292'
-                               },
-                               'description' => {
-                                 title: [
-                                   { value: 'David Rumsey Map Collection at Stanford University Libraries' }
-                                 ],
-                                 purl: 'https://purl-test.stanford.edu/xh235dd9059'
-                               },
-                               identification: { sourceId: 'sul:123' }
-                             })
+        build(:collection,
+              id: 'druid:xh235dd9059',
+              title: 'David Rumsey Map Collection at Stanford University Libraries')
       end
 
       before do
@@ -100,18 +79,10 @@ RSpec.describe Publish::PublicDescMetadataService do
 
     context 'when the object is a collection' do
       let(:cocina_object) do
-        Cocina::Models.build({
-                               'type' => Cocina::Models::ObjectType.collection,
-                               'label' => 'test',
-                               'externalIdentifier' => 'druid:bc123df4567',
-                               'access' => access,
-                               'version' => 1,
-                               'administrative' => {
-                                 'hasAdminPolicy' => 'druid:bz845pv2292'
-                               },
-                               'description' => description,
-                               'identification' => identification
-                             })
+        build(:collection, id: 'druid:bc123df4567').new(
+          description: description,
+          identification: identification
+        )
       end
 
       it 'has no errors' do
@@ -124,23 +95,9 @@ RSpec.describe Publish::PublicDescMetadataService do
     subject(:xml) { service.to_xml }
 
     let(:cocina_collection) do
-      Cocina::Models.build({
-                             'type' => Cocina::Models::ObjectType.collection,
-                             'label' => 'test',
-                             'externalIdentifier' => 'druid:zb871zd0767',
-                             'access' => {},
-                             'version' => 1,
-                             'administrative' => {
-                               'hasAdminPolicy' => 'druid:bz845pv2292'
-                             },
-                             'description' => {
-                               title: [
-                                 { value: 'The complete works of Henry George' }
-                               ],
-                               purl: 'https://purl-test.stanford.edu/zb871zd0767'
-                             },
-                             identification: { sourceId: 'sul:123' }
-                           })
+      build(:collection,
+            id: 'druid:zb871zd0767',
+            title: 'The complete works of Henry George')
     end
 
     let(:access) do
@@ -266,29 +223,20 @@ RSpec.describe Publish::PublicDescMetadataService do
     let(:structural) { { isMemberOf: ['druid:zb871zd0767'] } }
 
     let(:collection) do
-      Cocina::Models.build({
-                             'type' => Cocina::Models::ObjectType.collection,
-                             'label' => 'test',
-                             'externalIdentifier' => 'druid:zb871zd0767',
-                             'access' => {},
-                             'version' => 1,
-                             'administrative' => {
-                               'hasAdminPolicy' => 'druid:bz845pv2292'
-                             },
-                             'description' => {
-                               title: [
-                                 {
-                                   structuredValue: [
-                                     { value: 'The', type: 'nonsorting characters' },
-                                     { value: 'complete works of Henry George', type: 'main title' }
-                                   ],
-                                   note: [{ value: '4', type: 'nonsorting character count' }]
-                                 }
-                               ],
-                               purl: 'https://purl-test.stanford.edu/zb871zd0767'
-                             },
-                             identification: { sourceId: 'sul:123' }
-                           })
+      build(:collection, id: 'druid:zb871zd0767').new(
+        description: {
+          title: [
+            {
+              structuredValue: [
+                { value: 'The', type: 'nonsorting characters' },
+                { value: 'complete works of Henry George', type: 'main title' }
+              ],
+              note: [{ value: '4', type: 'nonsorting character count' }]
+            }
+          ],
+          purl: 'https://purl-test.stanford.edu/zb871zd0767'
+        }
+      )
     end
 
     before do

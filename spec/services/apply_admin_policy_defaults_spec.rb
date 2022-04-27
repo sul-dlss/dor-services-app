@@ -12,20 +12,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
     ).to_h
   end
   let(:cocina_object) do
-    Cocina::Models::DRO.new(
-      externalIdentifier: object_druid,
-      version: 1,
-      type: Cocina::Models::ObjectType.object,
-      label: 'Dummy DRO',
-      description: {
-        title: [{ value: 'Dummy DRO' }],
-        purl: "https://purl.stanford.edu/#{object_druid.delete_prefix('druid:')}"
-      },
-      access: access_props,
-      administrative: { hasAdminPolicy: apo_druid },
-      structural: {},
-      identification: { sourceId: 'sul:123' }
-    )
+    build(:dro, id: object_druid, admin_policy_id: apo_druid).new(access: access_props)
   end
   let(:workflow_state) { 'Registered' }
   let(:workflow_client) { instance_double(Dor::Workflow::Client, status: status_client) }
@@ -51,21 +38,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
 
   describe '#new' do
     context 'with a collection' do
-      let(:cocina_object) do
-        Cocina::Models::Collection.new(
-          externalIdentifier: object_druid,
-          version: 1,
-          type: Cocina::Models::ObjectType.collection,
-          label: 'Dummy Collection',
-          description: {
-            title: [{ value: 'Dummy Collection' }],
-            purl: "https://purl.stanford.edu/#{object_druid.delete_prefix('druid:')}"
-          },
-          access: {},
-          administrative: { hasAdminPolicy: apo_druid },
-          identification: { sourceId: 'sul:123' }
-        )
-      end
+      let(:cocina_object) { build(:collection) }
 
       it 'validates the object type and creates an instance' do
         expect { described_class.new(cocina_object: cocina_object) }.not_to raise_error
@@ -79,19 +52,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
     end
 
     context 'with an APO' do
-      let(:cocina_object) do
-        Cocina::Models::AdminPolicy.new(
-          externalIdentifier: object_druid,
-          version: 1,
-          type: Cocina::Models::ObjectType.admin_policy,
-          label: 'Dummy APO',
-          administrative: {
-            hasAdminPolicy: 'druid:hv992ry2431',
-            hasAgreement: 'druid:bc753qt7345',
-            accessTemplate: default_access
-          }
-        )
-      end
+      let(:cocina_object) { build(:admin_policy, id: object_druid) }
 
       it 'invalidates the object type and raises a custom exception' do
         expect { described_class.new(cocina_object: cocina_object) }.to raise_error(
@@ -128,12 +89,9 @@ RSpec.describe ApplyAdminPolicyDefaults do
 
   describe '#apply' do
     let(:instance) { described_class.new(cocina_object: cocina_object) }
+
     let(:cocina_admin_policy) do
-      Cocina::Models::AdminPolicy.new(
-        externalIdentifier: apo_druid,
-        version: 1,
-        type: Cocina::Models::ObjectType.admin_policy,
-        label: 'Dummy APO',
+      build(:admin_policy).new(
         administrative: {
           hasAdminPolicy: 'druid:hv992ry2431',
           hasAgreement: 'druid:bc753qt7345',
@@ -177,19 +135,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
 
     context 'with a collection' do
       let(:cocina_object) do
-        Cocina::Models::Collection.new(
-          externalIdentifier: object_druid,
-          version: 1,
-          type: Cocina::Models::ObjectType.collection,
-          label: 'Dummy Collection',
-          description: {
-            title: [{ value: 'Dummy Collection' }],
-            purl: "https://purl.stanford.edu/#{object_druid.delete_prefix('druid:')}"
-          },
-          access: {},
-          administrative: { hasAdminPolicy: apo_druid },
-          identification: { sourceId: 'sul:123' }
-        )
+        build(:collection, id: object_druid, admin_policy_id: apo_druid)
       end
 
       context 'when APO specifies citation-only accessTemplate' do
@@ -277,21 +223,10 @@ RSpec.describe ApplyAdminPolicyDefaults do
 
     context 'with a DRO that has structural metadata' do
       let(:cocina_object) do
-        Cocina::Models::DRO.new(
-          externalIdentifier: object_druid,
-          version: 1,
-          type: Cocina::Models::ObjectType.object,
-          label: 'Dummy Object',
-          description: {
-            title: [{ value: 'Dummy Object' }],
-            purl: "https://purl.stanford.edu/#{object_druid.delete_prefix('druid:')}"
-          },
-          access: {},
-          administrative: { hasAdminPolicy: apo_druid },
+        build(:dro, id: object_druid, admin_policy_id: apo_druid).new(
           structural: {
             contains: [before_file_set]
-          },
-          identification: { sourceId: 'sul:123' }
+          }
         )
       end
       let(:before_file_set) do

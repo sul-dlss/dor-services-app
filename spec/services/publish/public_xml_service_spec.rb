@@ -74,15 +74,7 @@ RSpec.describe Publish::PublicXmlService do
     context 'when there are no release tags' do
       let(:release_tags) { {} }
       let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {},
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
+        build(:dro, id: 'druid:bc123df4567').new(description: description)
       end
 
       it 'does not include a releaseData element and any info in identityMetadata' do
@@ -93,21 +85,15 @@ RSpec.describe Publish::PublicXmlService do
 
     context 'with an embargo' do
       let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'world',
-                                  download: 'world',
-                                  embargo: {
-                                    releaseDate: '2021-10-08T00:00:00Z'
-                                  }
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
+        build(:dro, id: 'druid:bc123df4567').new(
+          access: {
+            view: 'world',
+            download: 'world',
+            embargo: {
+              releaseDate: '2021-10-08T00:00:00Z'
+            }
+          }
+        )
       end
 
       let(:result) do
@@ -121,19 +107,13 @@ RSpec.describe Publish::PublicXmlService do
 
     context 'with an problematic location code' do
       let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'location-based',
-                                  download: 'location-based',
-                                  location: 'm&m'
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
+        build(:dro, id: 'druid:bc123df4567').new(
+          access: {
+            view: 'location-based',
+            download: 'location-based',
+            location: 'm&m'
+          }
+        )
       end
 
       let(:result) do
@@ -147,21 +127,17 @@ RSpec.describe Publish::PublicXmlService do
 
     context 'produces xml with' do
       let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: {
-                                  catalogLinks: [
-                                    { catalog: 'previous symphony', catalogRecordId: '9001001001', refresh: false },
-                                    { catalog: 'symphony', catalogRecordId: '129483625', refresh: true }
-                                  ],
-                                  sourceId: 'sul:123'
-                                },
-                                access: {},
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: structural)
+        build(:dro, id: 'druid:bc123df4567').new(
+          description: description,
+          structural: structural,
+          identification: {
+            catalogLinks: [
+              { catalog: 'previous symphony', catalogRecordId: '9001001001', refresh: false },
+              { catalog: 'symphony', catalogRecordId: '129483625', refresh: true }
+            ],
+            sourceId: 'sul:123'
+          }
+        )
       end
       let(:now) { Time.now.utc }
 
@@ -254,15 +230,7 @@ RSpec.describe Publish::PublicXmlService do
 
       context 'when no thumb is present' do
         let(:cocina_object) do
-          Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                  type: Cocina::Models::ObjectType.object,
-                                  label: 'A generic label',
-                                  version: 1,
-                                  description: description,
-                                  identification: { sourceId: 'sul:123' },
-                                  access: {},
-                                  administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                  structural: {})
+          build(:dro, id: 'druid:bc123df4567').new(description: description)
         end
 
         it 'does not add a thumb node' do
@@ -293,14 +261,7 @@ RSpec.describe Publish::PublicXmlService do
 
     context 'with a collection' do
       let(:cocina_object) do
-        Cocina::Models::Collection.new(externalIdentifier: 'druid:bc123df4567',
-                                       type: Cocina::Models::ObjectType.collection,
-                                       label: 'A generic label',
-                                       version: 1,
-                                       description: description,
-                                       identification: { sourceId: 'sul:123' },
-                                       access: {},
-                                       administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+        build(:collection, id: 'druid:bc123df4567').new(description: description)
       end
 
       it 'publishes the expected datastreams' do
@@ -315,15 +276,7 @@ RSpec.describe Publish::PublicXmlService do
     context 'with external references' do
       let(:druid) { 'druid:hj097bm8879' }
       let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::ObjectType.map,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {},
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: structural)
+        build(:dro, id: druid, type: Cocina::Models::ObjectType.map).new(description: description, structural: structural)
       end
       let(:structural) do
         {

@@ -4,24 +4,9 @@ require 'rails_helper'
 
 RSpec.describe 'Update MARC record' do
   let(:druid) { 'druid:mx123qw2323' }
-  let(:object) { Dor::Item.new(pid: druid) }
-  let(:cocina_object) do
-    Cocina::Models::DRO.new(externalIdentifier: druid,
-                            type: Cocina::Models::ObjectType.object,
-                            label: 'A generic label',
-                            version: 1,
-                            description: {
-                              title: [{ value: 'Constituent label &amp; A Special character' }],
-                              purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
-                            },
-                            identification: { sourceId: 'sul:123' },
-                            access: {},
-                            administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                            structural: {})
-  end
+  let(:cocina_object) { build(:dro, id: druid) }
 
   before do
-    allow(Dor).to receive(:find).and_return(object)
     allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
   end
 

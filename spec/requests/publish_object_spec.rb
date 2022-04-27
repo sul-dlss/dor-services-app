@@ -4,11 +4,9 @@ require 'rails_helper'
 
 RSpec.describe 'Publish object' do
   let(:druid) { 'druid:mx123qw2323' }
-  let(:object) { Dor::Item.new(pid: druid) }
   let(:job) { class_double(PublishJob, perform_later: nil) }
 
   before do
-    allow(Dor).to receive(:find).and_return(object)
     allow(PublishJob).to receive(:set).and_return(job)
   end
 

@@ -4,21 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Create object' do
   let(:minimal_cocina_admin_policy) do
-    Cocina::Models::AdminPolicy.new({
-                                      cocinaVersion: '0.0.1',
-                                      externalIdentifier: 'druid:dd999df4567',
-                                      type: Cocina::Models::ObjectType.admin_policy,
-                                      label: 'Test Admin Policy',
-                                      version: 1,
-                                      administrative: {
-                                        hasAdminPolicy: 'druid:hy787xj5878',
-                                        hasAgreement: 'druid:bb033gt0615',
-                                        accessTemplate: {
-                                          view: 'world',
-                                          download: 'world'
-                                        }
-                                      }
-                                    })
+    build(:admin_policy, id: 'druid:dd999df4567')
   end
   let(:label) { 'This is my label' }
   let(:title) { 'This is my title' }
@@ -47,21 +33,12 @@ RSpec.describe 'Create object' do
     end
 
     let(:expected) do
-      Cocina::Models::Collection.new(type: Cocina::Models::ObjectType.collection,
-                                     label: expected_label,
-                                     version: 1,
-                                     description: {
-                                       title: [{ value: title }],
-                                       purl: 'https://purl.stanford.edu/gg777gg7777'
-                                     },
-                                     administrative: {
-                                       hasAdminPolicy: 'druid:dd999df4567'
-                                     },
-                                     identification: identification,
-                                     externalIdentifier: druid,
-                                     access: {
-                                       view: 'world'
-                                     })
+      build(:collection, id: druid, label: expected_label, title: title, admin_policy_id: 'druid:dd999df4567').new(
+        identification: identification,
+        access: {
+          view: 'world'
+        }
+      )
     end
 
     let(:identification) do
@@ -101,23 +78,14 @@ RSpec.describe 'Create object' do
 
   context 'when the catkey is not provided and save is successful' do
     let(:expected) do
-      Cocina::Models::Collection.new(type: Cocina::Models::ObjectType.collection,
-                                     label: expected_label,
-                                     version: 1,
-                                     description: {
-                                       title: [{ value: title }],
-                                       purl: 'https://purl.stanford.edu/gg777gg7777'
-                                     },
-                                     identification: {
-                                       sourceId: 'hydrus:collection-456'
-                                     },
-                                     administrative: {
-                                       hasAdminPolicy: 'druid:dd999df4567'
-                                     },
-                                     externalIdentifier: druid,
-                                     access: {
-                                       view: 'world'
-                                     })
+      build(:collection, id: druid, label: expected_label, title: title, admin_policy_id: 'druid:dd999df4567').new(
+        identification: {
+          sourceId: 'hydrus:collection-456'
+        },
+        access: {
+          view: 'world'
+        }
+      )
     end
 
     let(:data) do
@@ -163,20 +131,16 @@ RSpec.describe 'Create object' do
       JSON
     end
     let(:expected) do
-      Cocina::Models::Collection.new(type: Cocina::Models::ObjectType.collection,
-                                     label: expected_label,
-                                     version: 1,
-                                     access: { view: 'world' },
-                                     administrative: {
-                                       hasAdminPolicy: 'druid:dd999df4567'
-                                     },
-                                     description: {
-                                       title: [{ value: title }],
-                                       note: [{ value: 'coll abstract', type: 'abstract' }],
-                                       purl: Purl.for(druid: druid)
-                                     },
-                                     externalIdentifier: druid,
-                                     identification: {})
+      build(:collection, id: druid, label: expected_label, title: title, admin_policy_id: 'druid:dd999df4567').new(
+        access: {
+          view: 'world'
+        },
+        description: {
+          title: [{ value: title }],
+          note: [{ value: 'coll abstract', type: 'abstract' }],
+          purl: Purl.for(druid: druid)
+        }
+      )
     end
 
     it 'creates the collection with populated description title and note' do
@@ -204,19 +168,11 @@ RSpec.describe 'Create object' do
       JSON
     end
     let(:expected) do
-      Cocina::Models::Collection.new(type: Cocina::Models::ObjectType.collection,
-                                     label: expected_label,
-                                     version: 1,
-                                     access: { view: 'world' },
-                                     administrative: {
-                                       hasAdminPolicy: 'druid:dd999df4567'
-                                     },
-                                     description: {
-                                       title: [{ value: expected_label }],
-                                       purl: 'https://purl.stanford.edu/gg777gg7777'
-                                     },
-                                     externalIdentifier: druid,
-                                     identification: {})
+      build(:collection, id: druid, label: expected_label, title: expected_label, admin_policy_id: 'druid:dd999df4567').new(
+        access: {
+          view: 'world'
+        }
+      )
     end
 
     it 'creates the collection with populated access' do

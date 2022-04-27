@@ -5,27 +5,20 @@ require 'rails_helper'
 RSpec.describe ReleaseTags do
   describe '.for' do
     let(:cocina_item) do
-      Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                              type: Cocina::Models::ObjectType.object,
-                              label: 'Some Label',
-                              version: 1,
-                              description: {
-                                title: [{ value: 'Some Label' }],
-                                purl: 'https://purl.stanford.edu/bc123df4567'
-                              },
-                              identification: { sourceId: 'sul:123' },
-                              access: {},
-                              structural: {},
-                              administrative: { hasAdminPolicy: 'druid:fg890hx1234',
-                                                releaseTags: [
-                                                  {
-                                                    who: 'dhartwig',
-                                                    what: 'collection',
-                                                    date: '2019-01-18T17:03:35.000+00:00',
-                                                    to: 'Searchworks',
-                                                    release: true
-                                                  }
-                                                ] })
+      build(:dro).new(
+        administrative: {
+          hasAdminPolicy: 'druid:fg890hx1234',
+          releaseTags: [
+            {
+              who: 'dhartwig',
+              what: 'collection',
+              date: '2019-01-18T17:03:35.000+00:00',
+              to: 'Searchworks',
+              release: true
+            }
+          ]
+        }
+      )
     end
 
     it 'returns the hash of release tags' do
