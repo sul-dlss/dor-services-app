@@ -12,7 +12,7 @@ RSpec.describe 'Get the object' do
     end
   end
 
-  let(:collection_records) { [create(:collection)] }
+  let(:collection_records) { [create(:ar_collection)] }
   let(:collections) { collection_records.map(&:to_cocina).map { |cocina_object| Cocina::Models.without_metadata(cocina_object) } }
 
   let(:expected) do
@@ -21,7 +21,7 @@ RSpec.describe 'Get the object' do
     }
   end
 
-  let(:dro_record) { create(:dro, isMemberOf: collections.map(&:externalIdentifier)) }
+  let(:dro_record) { create(:ar_dro, isMemberOf: collections.map(&:externalIdentifier)) }
   let(:dro) { dro_record.to_cocina }
 
   let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
@@ -47,7 +47,7 @@ RSpec.describe 'Get the object' do
   end
 
   describe 'more than one collection' do
-    let(:collection_records) { [create(:collection), create(:collection)] }
+    let(:collection_records) { [create(:ar_collection), create(:ar_collection)] }
 
     it 'returns an empty array for collections' do
       get "/v1/objects/#{dro.externalIdentifier}/query/collections",

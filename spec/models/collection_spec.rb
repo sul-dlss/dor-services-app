@@ -25,7 +25,7 @@ RSpec.describe Collection do
   let(:source_id) { 'googlebooks:9999999' }
 
   describe 'to_cocina' do
-    let(:collection) { create(:collection, external_identifier: druid) }
+    let(:collection) { create(:ar_collection, external_identifier: druid) }
     let(:source_id) { collection.identification['sourceId'] }
 
     it 'returns a Cocina::Model::Collection' do

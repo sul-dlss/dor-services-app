@@ -85,7 +85,7 @@ RSpec.describe CocinaObjectStore do
         end
 
         context 'when found in postgres' do
-          let!(:ar_cocina_object) { create(:dro) }
+          let!(:ar_cocina_object) { create(:ar_dro) }
 
           it 'returns from postgres' do
             expect(described_class.find(ar_cocina_object.external_identifier)).to be_instance_of(Cocina::Models::DROWithMetadata)
@@ -618,7 +618,7 @@ RSpec.describe CocinaObjectStore do
       end
 
       context 'when object is a DRO' do
-        let(:ar_cocina_object) { create(:dro) }
+        let(:ar_cocina_object) { create(:ar_dro) }
 
         it 'returns Cocina::Models::DROWithMetadata' do
           expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_instance_of(Cocina::Models::DROWithMetadata)
@@ -626,7 +626,7 @@ RSpec.describe CocinaObjectStore do
       end
 
       context 'when object is an AdminPolicy' do
-        let(:ar_cocina_object) { create(:admin_policy) }
+        let(:ar_cocina_object) { create(:ar_admin_policy) }
 
         it 'returns Cocina::Models::AdminPolicy' do
           expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_instance_of(Cocina::Models::AdminPolicyWithMetadata)
@@ -634,7 +634,7 @@ RSpec.describe CocinaObjectStore do
       end
 
       context 'when object is a Collection' do
-        let(:ar_cocina_object) { create(:collection) }
+        let(:ar_cocina_object) { create(:ar_collection) }
 
         it 'returns Cocina::Models::Collection' do
           expect(store.send(:ar_to_cocina_find, ar_cocina_object.external_identifier)).to be_instance_of(Cocina::Models::CollectionWithMetadata)
@@ -650,7 +650,7 @@ RSpec.describe CocinaObjectStore do
       end
 
       context 'when object is a DRO' do
-        let(:ar_cocina_object) { create(:dro) }
+        let(:ar_cocina_object) { create(:ar_dro) }
 
         it 'returns true' do
           expect(store.ar_exists?(ar_cocina_object.external_identifier)).to be(true)
@@ -658,7 +658,7 @@ RSpec.describe CocinaObjectStore do
       end
 
       context 'when object is an AdminPolicy' do
-        let(:ar_cocina_object) { create(:admin_policy) }
+        let(:ar_cocina_object) { create(:ar_admin_policy) }
 
         it 'returns true' do
           expect(store.ar_exists?(ar_cocina_object.external_identifier)).to be(true)
@@ -666,7 +666,7 @@ RSpec.describe CocinaObjectStore do
       end
 
       context 'when object is a Collection' do
-        let(:ar_cocina_object) { create(:collection) }
+        let(:ar_cocina_object) { create(:ar_collection) }
 
         it 'returns true' do
           expect(store.ar_exists?(ar_cocina_object.external_identifier)).to be(true)
@@ -705,7 +705,7 @@ RSpec.describe CocinaObjectStore do
         end
 
         context 'when checking lock succeeds' do
-          let(:ar_cocina_object) { create(:dro) }
+          let(:ar_cocina_object) { create(:ar_dro) }
           let(:lock) { "#{ar_cocina_object.external_identifier}=#{ar_cocina_object.lock}" }
 
           let(:cocina_object) do
@@ -723,7 +723,7 @@ RSpec.describe CocinaObjectStore do
         end
 
         context 'when checking lock fails' do
-          let!(:ar_cocina_object) { create(:dro) }
+          let!(:ar_cocina_object) { create(:ar_dro) }
           let(:lock) { '64e8320d19d62ddb73c501276c5655cf' }
 
           let(:cocina_object) do

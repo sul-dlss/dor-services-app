@@ -104,7 +104,7 @@ RSpec.describe Dro do
 
   describe 'to_cocina' do
     context 'with minimal DRO' do
-      let(:dro) { create(:dro, external_identifier: druid) }
+      let(:dro) { create(:ar_dro, external_identifier: druid) }
       let(:source_id) { dro.identification['sourceId'] }
 
       it 'returns a Cocina::Model::DRO' do
@@ -113,7 +113,7 @@ RSpec.describe Dro do
     end
 
     context 'with complete DRO' do
-      let(:dro) { create(:dro, :with_geographic, external_identifier: druid) }
+      let(:dro) { create(:ar_dro, :with_geographic, external_identifier: druid) }
       let(:source_id) { dro.identification['sourceId'] }
 
       it 'returns a Cocina::Model::DRO' do

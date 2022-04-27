@@ -39,7 +39,7 @@ RSpec.describe AdminPolicy do
 
   describe 'to_cocina' do
     context 'with minimal admin_policy' do
-      let(:admin_policy) { create(:admin_policy) }
+      let(:admin_policy) { create(:ar_admin_policy) }
 
       it 'returns a Cocina::Model::AdminPolicy' do
         expect(admin_policy.to_cocina).to cocina_object_with(minimal_cocina_admin_policy)
@@ -47,7 +47,7 @@ RSpec.describe AdminPolicy do
     end
 
     context 'with complete AdminPolicy' do
-      let(:admin_policy) { create(:admin_policy, :with_admin_policy_description) }
+      let(:admin_policy) { create(:ar_admin_policy, :with_admin_policy_description) }
 
       it 'returns a Cocina::Model::AdminPolicy' do
         expect(admin_policy.to_cocina).to cocina_object_with(cocina_admin_policy)

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :admin_policy do
+  factory :ar_admin_policy, class: 'AdminPolicy' do
     cocina_version { '0.0.1' }
     external_identifier { 'druid:jt959wc5586' }
     label { 'Test Admin Policy' }
