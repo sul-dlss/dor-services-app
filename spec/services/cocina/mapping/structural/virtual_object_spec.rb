@@ -16,7 +16,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
           externalIdentifier: 'druid:gj047zn0886',
           version: 1,
           label: 'Constituent 1',
-          access: {},
+          access: { view: 'world', download: 'world' },
           administrative: {
             hasAdminPolicy: 'druid:bx911tp9024'
           },
@@ -35,7 +35,7 @@ RSpec.describe 'Fedora item content metadata <--> Cocina DRO structural mappings
           externalIdentifier: 'druid:tm207xk5096',
           version: 1,
           label: 'Constituent 2',
-          access: {},
+          access: { view: 'world', download: 'world' },
           administrative: {
             hasAdminPolicy: 'druid:bx911tp9024'
           },

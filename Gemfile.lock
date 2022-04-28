@@ -98,11 +98,13 @@ GEM
       sshkit (~> 1.2)
     capistrano-shared_configs (0.2.2)
     chronic (0.10.2)
-    cocina-models (0.75.0)
+    cocina-models (0.76.0)
       activesupport
       deprecation
       dry-struct (~> 1.0)
       dry-types (~> 1.1)
+      equivalent-xml
+      nokogiri
       openapi3_parser
       openapi_parser (>= 0.11.1, < 1.0)
       super_diff
@@ -498,7 +500,7 @@ GEM
       nokogiri (~> 1.8)
     stomp (1.4.10)
     strings-ansi (0.2.0)
-    super_diff (0.8.0)
+    super_diff (0.9.0)
       attr_extras (>= 6.2.4)
       diff-lcs
       patience_diff
@@ -549,7 +551,7 @@ DEPENDENCIES
   capistrano-rails
   capistrano-rvm
   capistrano-shared_configs
-  cocina-models (~> 0.75.0)
+  cocina-models (~> 0.76.0)
   committee (~> 4.4)
   config
   datacite (~> 0.3.0)
