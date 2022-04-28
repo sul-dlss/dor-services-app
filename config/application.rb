@@ -53,6 +53,10 @@ module DorServices
       )
     end
 
+    config.after_initialize do
+      Cocina::Models::Mapping::Purl.base_url = Settings.release.purl_base_url
+    end
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
