@@ -5,7 +5,7 @@ module Cocina
     # Normalizes a Fedora object rights datastream, accounting for differences between Fedora rights and cocina rights that are valid but different
     # when round-tripping.
     class RightsNormalizer
-      include Cocina::Normalizers::Base
+      include Cocina::Models::Mapping::Normalizers::Base
 
       # @param [Nokogiri::Document] the rights datastream to be normalized
       # @return [Nokogiri::Document] normalized rights xml

@@ -122,15 +122,15 @@ class ModsEquivalentService
   end
 
   def mods_nodes1
-    @mods_nodes1 ||= mods_ng_xml1.root.xpath('mods:*', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
+    @mods_nodes1 ||= mods_ng_xml1.root.xpath('mods:*', mods: Cocina::Models::Mapping::FromMods::Description::DESC_METADATA_NS)
   end
 
   def mods_nodes2
-    @mods_nodes2 ||= mods_ng_xml2.root.xpath('mods:*', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS)
+    @mods_nodes2 ||= mods_ng_xml2.root.xpath('mods:*', mods: Cocina::Models::Mapping::FromMods::Description::DESC_METADATA_NS)
   end
 
   def norm_mods_nodes2
-    @norm_mods_nodes2 ||= mods_ng_xml2.root.xpath('mods:*', mods: Cocina::FromFedora::Descriptive::DESC_METADATA_NS).map { |node| norm_node(node) }
+    @norm_mods_nodes2 ||= mods_ng_xml2.root.xpath('mods:*', mods: Cocina::Models::Mapping::FromMods::Description::DESC_METADATA_NS).map { |node| norm_node(node) }
   end
 
   def norm_node(node)

@@ -92,7 +92,7 @@ RSpec.describe Cocina::ObjectUpdater do
       before do
         allow(desc_metadata).to receive(:content=)
         allow(desc_metadata).to receive(:content_will_change!)
-        allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Builder.new)
+        allow(Cocina::Models::Mapping::ToMods::Description).to receive(:transform).and_return(Nokogiri::XML::Builder.new)
         allow(Cocina::DescriptionRoundtripValidator).to receive(:valid_from_cocina?).and_return(Success())
       end
 
@@ -107,7 +107,7 @@ RSpec.describe Cocina::ObjectUpdater do
           update
           expect(desc_metadata).to have_received(:content=)
           expect(desc_metadata).to have_received(:content_will_change!)
-          expect(Cocina::ToFedora::Descriptive).to have_received(:transform)
+          expect(Cocina::Models::Mapping::ToMods::Description).to have_received(:transform)
         end
       end
 
@@ -116,7 +116,7 @@ RSpec.describe Cocina::ObjectUpdater do
           update
           expect(desc_metadata).not_to have_received(:content=)
           expect(desc_metadata).not_to have_received(:content_will_change!)
-          expect(Cocina::ToFedora::Descriptive).not_to have_received(:transform)
+          expect(Cocina::Models::Mapping::ToMods::Description).not_to have_received(:transform)
         end
       end
     end
@@ -272,7 +272,7 @@ RSpec.describe Cocina::ObjectUpdater do
       end
 
       before do
-        allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(builder)
+        allow(Cocina::Models::Mapping::ToMods::Description).to receive(:transform).and_return(builder)
         allow(Cocina::DescriptionRoundtripValidator).to receive(:valid_from_cocina?).and_return(Success())
       end
 
@@ -456,7 +456,7 @@ RSpec.describe Cocina::ObjectUpdater do
       before do
         allow(desc_metadata).to receive(:content=)
         allow(desc_metadata).to receive(:content_will_change!)
-        allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Builder.new)
+        allow(Cocina::Models::Mapping::ToMods::Description).to receive(:transform).and_return(Nokogiri::XML::Builder.new)
         allow(Cocina::DescriptionRoundtripValidator).to receive(:valid_from_cocina?).and_return(Success())
       end
 
@@ -471,7 +471,7 @@ RSpec.describe Cocina::ObjectUpdater do
           update
           expect(desc_metadata).to have_received(:content=)
           expect(desc_metadata).to have_received(:content_will_change!)
-          expect(Cocina::ToFedora::Descriptive).to have_received(:transform)
+          expect(Cocina::Models::Mapping::ToMods::Description).to have_received(:transform)
         end
       end
 
@@ -480,7 +480,7 @@ RSpec.describe Cocina::ObjectUpdater do
           update
           expect(desc_metadata).not_to have_received(:content=)
           expect(desc_metadata).not_to have_received(:content_will_change!)
-          expect(Cocina::ToFedora::Descriptive).not_to have_received(:transform)
+          expect(Cocina::Models::Mapping::ToMods::Description).not_to have_received(:transform)
         end
       end
     end
@@ -838,7 +838,7 @@ RSpec.describe Cocina::ObjectUpdater do
       allow(Cocina::ToFedora::Identity).to receive(:apply_label)
       allow(desc_metadata).to receive(:content=)
       allow(desc_metadata).to receive(:content_will_change!)
-      allow(Cocina::ToFedora::Descriptive).to receive(:transform).and_return(Nokogiri::XML::Builder.new)
+      allow(Cocina::Models::Mapping::ToMods::Description).to receive(:transform).and_return(Nokogiri::XML::Builder.new)
       allow(AdministrativeTags).to receive(:create)
       allow(content_metadata).to receive(:contentType=)
       allow(content_metadata).to receive(:ng_xml).and_return(content_metadata_ng_xml)
@@ -865,7 +865,7 @@ RSpec.describe Cocina::ObjectUpdater do
       expect(Cocina::ToFedora::Identity).to have_received(:apply_label)
       expect(desc_metadata).to have_received(:content=)
       expect(desc_metadata).to have_received(:content_will_change!)
-      expect(Cocina::ToFedora::Descriptive).to have_received(:transform)
+      expect(Cocina::Models::Mapping::ToMods::Description).to have_received(:transform)
       expect(content_metadata).to have_received(:contentType=)
       expect(Cocina::ToFedora::DROAccess).to have_received(:apply)
       expect(identity_metadata).to have_received(:barcode=)

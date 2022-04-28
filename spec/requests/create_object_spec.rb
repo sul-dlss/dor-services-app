@@ -307,7 +307,7 @@ RSpec.describe 'Create object' do
 
         before do
           allow(Honeybadger).to receive(:notify)
-          allow(Cocina::FromFedora::Descriptive).to receive(:props).and_return(changed_description)
+          allow(Cocina::Models::Mapping::FromMods::Description).to receive(:props).and_return(changed_description)
         end
 
         it 'returns error' do

@@ -24,8 +24,9 @@ module Cocina
           version: fedora_apo.current_version.to_i,
           administrative: build_apo_administrative
         }.tap do |props|
-          title_builder = FromFedora::Descriptive::TitleBuilderStrategy.find(label: fedora_apo.label)
-          description = FromFedora::Descriptive.props(title_builder: title_builder, mods: fedora_apo.descMetadata.ng_xml, druid: fedora_apo.pid, label: cocina_label, notifier: notifier)
+          title_builder = Models::Mapping::FromMods::TitleBuilderStrategy.find(label: fedora_apo.label)
+          description = Models::Mapping::FromMods::Description.props(title_builder: title_builder, mods: fedora_apo.descMetadata.ng_xml, druid: fedora_apo.pid, label: cocina_label,
+                                                                     notifier: notifier)
           props[:description] = description unless description.nil?
         end
       end

@@ -4,7 +4,7 @@ module Cocina
   module Normalizers
     # Normalizes a Fedora object adminMetadata datastream, accounting for differences between Fedora and cocina that are valid but differ when round-tripping.
     class AdminNormalizer
-      include Cocina::Normalizers::Base
+      include Cocina::Models::Mapping::Normalizers::Base
 
       # @param [Nokogiri::Document] admin_ng_xml admin metadata XML to be normalized
       # @return [Nokogiri::Document] normalized admin metadata xml

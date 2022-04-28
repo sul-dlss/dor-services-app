@@ -13,7 +13,7 @@ module Publish
 
     # @return [Nokogiri::XML::Document] A copy of the descriptiveMetadata of the object, to be modified
     def doc
-      @doc ||= Cocina::ToFedora::Descriptive.transform(cocina_object.description, cocina_object.externalIdentifier)
+      @doc ||= Cocina::Models::Mapping::ToMods::Description.transform(cocina_object.description, cocina_object.externalIdentifier)
     end
 
     # @return [String] Public descriptive medatada XML

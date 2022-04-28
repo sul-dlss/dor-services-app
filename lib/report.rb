@@ -5,7 +5,7 @@ require 'optparse'
 require 'fedora_cache'
 require 'fedora_loader'
 
-MODS_NS = Cocina::FromFedora::Descriptive::DESC_METADATA_NS
+MODS_NS = Cocina::Models::Mapping::FromMods::Description::DESC_METADATA_NS
 
 # Report generator using Fedora objects stored in cache.
 class Report
@@ -63,7 +63,7 @@ class Report
 
         label, descriptive_xml = cache_result.value!
 
-        props = Cocina::FromFedora::Descriptive.props(
+        props = Cocina::Models::Mapping::FromMods::Description.props(
           mods: Nokogiri::XML(descriptive_xml),
           druid: druid,
           label: label

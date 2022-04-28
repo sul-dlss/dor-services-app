@@ -6,7 +6,7 @@ module Cocina
     # when round-tripping.
     # rubocop:disable Metrics/ClassLength
     class IdentityNormalizer
-      include Cocina::Normalizers::Base
+      include Cocina::Models::Mapping::Normalizers::Base
 
       # @param [Nokogiri::Document] identity_ng_xml identity metadata XML to be normalized
       # @param [String] label the object label to add when normalizing

@@ -133,7 +133,7 @@ module Dor
 
     def title_or_label
       if cocina_obj.description
-        desc_ng_xml = Cocina::ToFedora::Descriptive.transform(cocina_obj.description, cocina_obj.externalIdentifier)
+        desc_ng_xml = Cocina::Models::Mapping::ToMods::Description.transform(cocina_obj.description, cocina_obj.externalIdentifier)
         title_element = ModsUtils.primary_title_info(desc_ng_xml)
         return title_element.content.strip if title_element.respond_to?(:content) && title_element.content.present?
       end

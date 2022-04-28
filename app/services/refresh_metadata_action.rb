@@ -27,7 +27,7 @@ class RefreshMetadataAction
   def run
     return Failure() if mods.nil?
 
-    description_props = Cocina::FromFedora::Descriptive.props(mods: mods_ng_xml, druid: druid, label: cocina_object.label)
+    description_props = Cocina::Models::Mapping::FromMods::Description.props(mods: mods_ng_xml, druid: druid, label: cocina_object.label)
     return Failure() if description_props.nil?
 
     Success(Result.new(description_props, mods_ng_xml))

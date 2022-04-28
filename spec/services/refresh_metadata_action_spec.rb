@@ -74,7 +74,7 @@ RSpec.describe RefreshMetadataAction do
 
   context 'when Descriptive.props returns nil' do
     before do
-      allow(Cocina::FromFedora::Descriptive).to receive(:props).and_return(nil)
+      allow(Cocina::Models::Mapping::FromMods::Description).to receive(:props).and_return(nil)
     end
 
     it 'returns a Dry::Monads::Result::Failure object' do

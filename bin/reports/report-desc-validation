@@ -8,7 +8,7 @@ require_relative '../../lib/report'
 # including validation changes.
 # It may be useful to reference unreleased cocina models in Gemfile.
 Report.new(name: 'desc-validation', dsids: ['descMetadata']).run do |ng_xml|
-  props = Cocina::FromFedora::Descriptive.props(
+  props = Cocina::Models::Mapping::FromMods::Description.props(
     mods: ng_xml,
     # druid and label are fake.
     druid: 'druid:bb042rt9930',

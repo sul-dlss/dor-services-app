@@ -51,7 +51,7 @@ RSpec.describe Cocina::DescriptionRoundtripValidator do
     context 'when invalid' do
       before do
         changed_cocina_hash = cocina_hash[:description].merge(contributor: [{ name: [{ value: 'Stanford University. Department of Geophysics' }] }])
-        allow(Cocina::FromFedora::Descriptive).to receive(:props).and_return(changed_cocina_hash)
+        allow(Cocina::Models::Mapping::FromMods::Description).to receive(:props).and_return(changed_cocina_hash)
       end
 
       it 'returns failure' do
@@ -158,7 +158,7 @@ RSpec.describe Cocina::DescriptionRoundtripValidator do
 
     context 'when invalid' do
       before do
-        allow(Cocina::Normalizers::ModsNormalizer).to receive(:normalize).and_return(Nokogiri::XML(mods.gsub('Chi Running', 'Zen of Running')))
+        allow(Cocina::Models::Mapping::Normalizers::ModsNormalizer).to receive(:normalize).and_return(Nokogiri::XML(mods.gsub('Chi Running', 'Zen of Running')))
       end
 
       it 'returns failure' do
