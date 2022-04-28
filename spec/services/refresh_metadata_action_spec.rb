@@ -16,15 +16,7 @@ RSpec.describe RefreshMetadataAction do
     }
   end
   let(:cocina_object) do
-    Cocina::Models::DRO.new(externalIdentifier: druid,
-                            type: Cocina::Models::ObjectType.object,
-                            label: 'A new map of Africa',
-                            version: 1,
-                            description: description,
-                            identification: { sourceId: 'sul:123' },
-                            access: {},
-                            administrative: { hasAdminPolicy: apo_druid },
-                            structural: {})
+    build(:dro, id: druid).new(description: description)
   end
 
   let(:mods) do

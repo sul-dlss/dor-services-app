@@ -82,21 +82,7 @@ RSpec.describe EmbargoReleaseService do
 
   describe '#release_cocina_object' do
     let(:embargoed_cocina_object) do
-      Cocina::Models::DRO.new({
-                                cocinaVersion: '0.0.1',
-                                externalIdentifier: druid,
-                                type: Cocina::Models::ObjectType.book,
-                                label: 'Test DRO',
-                                description: {
-                                  title: [{ value: 'Test DRO' }],
-                                  purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
-                                },
-                                version: 1,
-                                access: access,
-                                structural: structural,
-                                administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
-                                identification: { sourceId: 'sul:123' }
-                              })
+      build(:dro).new(access: access, structural: structural)
     end
 
     let(:structural) do
@@ -216,21 +202,7 @@ RSpec.describe EmbargoReleaseService do
 
     context 'when structural is nil' do
       let(:embargoed_cocina_object) do
-        Cocina::Models::DRO.new({
-                                  cocinaVersion: '0.0.1',
-                                  externalIdentifier: druid,
-                                  type: Cocina::Models::ObjectType.book,
-                                  label: 'Test DRO',
-                                  version: 1,
-                                  description: {
-                                    title: [{ value: 'Test DRO' }],
-                                    purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
-                                  },
-                                  access: access,
-                                  administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
-                                  structural: {},
-                                  identification: { sourceId: 'sul:123' }
-                                })
+        build(:dro).new(access: access)
       end
 
       let(:access) do

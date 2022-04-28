@@ -6,23 +6,7 @@ RSpec.describe PreservationMetadataExtractor do
   let(:workspace) { instance_double(DruidTools::Druid, path: 'foo') }
   let(:druid) { 'druid:nc893zj8956' }
   let(:instance) { described_class.new(workspace: workspace, cocina_object: cocina_object) }
-  let(:cocina_object) do
-    Cocina::Models::DRO.new({
-                              cocinaVersion: '0.0.1',
-                              externalIdentifier: druid,
-                              type: Cocina::Models::ObjectType.book,
-                              label: 'Test DRO',
-                              description: {
-                                title: [{ value: 'Test DRO' }],
-                                purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
-                              },
-                              version: 1,
-                              access: { view: 'world', download: 'world' },
-                              administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
-                              structural: {},
-                              identification: { sourceId: 'sul:123' }
-                            })
-  end
+  let(:cocina_object) { build(:dro, id: druid) }
 
   describe '.extract' do
     subject(:extract) { instance.extract }
@@ -59,7 +43,7 @@ RSpec.describe PreservationMetadataExtractor do
       expect(version_file).to have_received(:<<)
         .with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<versionMetadata objectId=\"druid:nc893zj8956\"/>\n")
       expect(content_file).to have_received(:<<)
-        .with("<?xml version=\"1.0\"?>\n<contentMetadata objectId=\"druid:nc893zj8956\" type=\"book\"/>\n")
+        .with("<?xml version=\"1.0\"?>\n<contentMetadata objectId=\"druid:nc893zj8956\" type=\"file\"/>\n")
 
       expect(instance).to have_received(:extract_cocina)
     end
@@ -81,7 +65,7 @@ RSpec.describe PreservationMetadataExtractor do
       instance.send(:extract_cocina)
       expect(metadata_dir).to have_received(:join).with('cocina.json')
       expect(file).to have_received(:<<)
-        .with(/"cocinaVersion": "0.0.1"/)
+        .with(/"cocinaVersion":/)
     end
   end
 end

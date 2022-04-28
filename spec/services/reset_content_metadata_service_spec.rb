@@ -5,22 +5,10 @@ require 'rails_helper'
 RSpec.describe ResetContentMetadataService do
   let(:item_druid) { 'druid:bc123df4567' }
   let(:cocina_item) do
-    Cocina::Models::DRO.new(
-      externalIdentifier: item_druid,
-      version: 1,
-      type: Cocina::Models::ObjectType.object,
-      label: 'Dummy DRO',
-      description: {
-        title: [{ value: 'Dummy DRO' }],
-        purl: "https://purl.stanford.edu/#{item_druid.delete_prefix('druid:')}"
-      },
-      access: {},
-      identification: { sourceId: 'sul:123' },
-      administrative: { hasAdminPolicy: 'druid:df123cd4567' },
-      **structural_kwargs
+    build(:dro, id: item_druid).new(
+      structural: structural
     )
   end
-  let(:structural_kwargs) { { structural: structural } }
   let(:service) { described_class.new(cocina_item: cocina_item) }
 
   before do

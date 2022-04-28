@@ -25,20 +25,7 @@ RSpec.describe 'Update object' do
   end
 
   let(:collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }
-  let(:apo) do
-    Cocina::Models::AdminPolicy.new({
-                                      cocinaVersion: '0.0.1',
-                                      externalIdentifier: apo_druid,
-                                      type: Cocina::Models::ObjectType.admin_policy,
-                                      label: 'Test Admin Policy',
-                                      version: 1,
-                                      administrative: {
-                                        hasAdminPolicy: 'druid:hy787xj5878',
-                                        hasAgreement: 'druid:bb033gt0615',
-                                        accessTemplate: { view: 'world', download: 'world' }
-                                      }
-                                    })
-  end
+  let(:apo) { build(:admin_policy, id: apo_druid) }
   let!(:item) do
     Dor::Item.new(pid: druid,
                   source_id: 'googlebooks:111111',
@@ -77,20 +64,15 @@ RSpec.describe 'Update object' do
     Cocina::Models::DROAccess.new(view: view, download: download)
   end
   let(:expected) do
-    Cocina::Models::DRO.new(externalIdentifier: druid,
-                            type: Cocina::Models::ObjectType.book,
-                            label: label,
-                            version: 1,
-                            access: {
-                              copyright: 'All rights reserved unless otherwise indicated.',
-                              useAndReproductionStatement: 'Property rights reside with the repository...'
-                            }.merge(cocina_access.to_h),
-                            description: description,
-                            administrative: {
-                              hasAdminPolicy: apo_druid
-                            },
-                            identification: identification,
-                            structural: structural)
+    build(:dro, id: druid, label: label, admin_policy_id: apo_druid, type: Cocina::Models::ObjectType.book).new(
+      description: description,
+      identification: identification,
+      structural: structural,
+      access: {
+        copyright: 'All rights reserved unless otherwise indicated.',
+        useAndReproductionStatement: 'Property rights reside with the repository...'
+      }.merge(cocina_access.to_h)
+    )
   end
 
   let(:description) do
@@ -220,38 +202,33 @@ RSpec.describe 'Update object' do
     end
 
     let(:expected) do
-      Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::ObjectType.book,
-                              label: label,
-                              version: 1,
-                              access: {
-                                view: view,
-                                download: 'world',
-                                copyright: 'All rights reserved unless otherwise indicated.',
-                                useAndReproductionStatement: 'Property rights reside with the repository...'
-                              },
-                              description: {
-                                title: [
-                                  {
-                                    structuredValue: [
-                                      {
-                                        value: title,
-                                        type: 'main title'
-                                      },
-                                      {
-                                        value: '(repeat)',
-                                        type: 'subtitle'
-                                      }
-                                    ]
-                                  }
-                                ],
-                                purl: 'https://purl.stanford.edu/gg777gg7777'
-                              },
-                              administrative: {
-                                hasAdminPolicy: apo_druid
-                              },
-                              identification: identification,
-                              structural: structural)
+      build(:dro, id: druid, label: label, admin_policy_id: apo_druid, type: Cocina::Models::ObjectType.book).new(
+        description: {
+          title: [
+            {
+              structuredValue: [
+                {
+                  value: title,
+                  type: 'main title'
+                },
+                {
+                  value: '(repeat)',
+                  type: 'subtitle'
+                }
+              ]
+            }
+          ],
+          purl: 'https://purl.stanford.edu/gg777gg7777'
+        },
+        identification: identification,
+        structural: structural,
+        access: {
+          view: view,
+          download: 'world',
+          copyright: 'All rights reserved unless otherwise indicated.',
+          useAndReproductionStatement: 'Property rights reside with the repository...'
+        }
+      )
     end
     let(:data) do
       <<~JSON
@@ -501,25 +478,16 @@ RSpec.describe 'Update object' do
     end
     let(:view) { 'world' }
     let(:expected) do
-      Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::ObjectType.image,
-                              label: expected_label,
-                              version: 1,
-                              access: {
-                                view: view,
-                                download: 'world',
-                                copyright: 'All rights reserved unless otherwise indicated.',
-                                useAndReproductionStatement: 'Property rights reside with the repository...'
-                              },
-                              description: {
-                                title: [{ value: title }],
-                                purl: 'https://purl.stanford.edu/gg777gg7777'
-                              },
-                              administrative: {
-                                hasAdminPolicy: 'druid:dd999df4567'
-                              },
-                              identification: identification,
-                              structural: structural)
+      build(:dro, id: druid, type: Cocina::Models::ObjectType.image, label: expected_label, title: title, admin_policy_id: 'druid:dd999df4567').new(
+        access: {
+          view: view,
+          download: 'world',
+          copyright: 'All rights reserved unless otherwise indicated.',
+          useAndReproductionStatement: 'Property rights reside with the repository...'
+        },
+        identification: identification,
+        structural: structural
+      )
     end
     let(:data) do
       <<~JSON
@@ -874,25 +842,16 @@ RSpec.describe 'Update object' do
     let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
     let(:expected) do
-      Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.book,
-                              label: label,
-                              version: 1,
-                              description: {
-                                title: [{ value: title }],
-                                purl: 'https://purl.stanford.edu/gg777gg7777'
-                              },
-                              administrative: {
-                                hasAdminPolicy: 'druid:dd999df4567'
-                              },
-                              identification: { sourceId: 'googlebooks:999999' },
-                              externalIdentifier: druid,
-                              structural: {
-                                hasMemberOrders: [
-                                  { viewingDirection: 'right-to-left' }
-                                ],
-                                isMemberOf: ['druid:xx888xx7777']
-                              },
-                              access: { view: 'world', download: 'world' })
+      build(:dro, id: druid, type: Cocina::Models::ObjectType.book, label: label, title: title, admin_policy_id: 'druid:dd999df4567').new(
+        identification: { sourceId: 'googlebooks:999999' },
+        structural: {
+          hasMemberOrders: [
+            { viewingDirection: 'right-to-left' }
+          ],
+          isMemberOf: ['druid:xx888xx7777']
+        },
+        access: { view: 'world', download: 'world' }
+      )
     end
     let(:data) do
       <<~JSON
@@ -945,19 +904,9 @@ RSpec.describe 'Update object' do
     let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
     let(:expected) do
-      Cocina::Models::Collection.new(type: Cocina::Models::ObjectType.collection,
-                                     label: label,
-                                     version: 1,
-                                     description: {
-                                       title: [{ value: title }],
-                                       purl: 'https://purl.stanford.edu/gg777gg7777'
-                                     },
-                                     identification: identification,
-                                     administrative: {
-                                       hasAdminPolicy: 'druid:dd999df4567'
-                                     },
-                                     externalIdentifier: druid,
-                                     access: {})
+      build(:collection, id: druid, label: label, title: title, admin_policy_id: 'druid:dd999df4567').new(
+        identification: identification
+      )
     end
     let(:identification) do
       {
@@ -1011,33 +960,27 @@ RSpec.describe 'Update object' do
     end
 
     let(:expected) do
-      Cocina::Models::AdminPolicy.new(type: Cocina::Models::ObjectType.admin_policy,
-                                      label: 'This is my label',
-                                      version: 1,
-                                      description: {
-                                        title: [{ value: 'This is my title' }],
-                                        purl: 'https://purl.stanford.edu/gg777gg7777'
-                                      },
-                                      administrative: {
-                                        accessTemplate: default_access_expected,
-                                        hasAdminPolicy: 'druid:dd999df4567',
-                                        hasAgreement: 'druid:bc123df4567',
-                                        disseminationWorkflow: 'assemblyWF',
-                                        registrationWorkflow: %w[goobiWF registrationWF],
-                                        collectionsForRegistration: ['druid:gg888df4567', 'druid:bb888gg4444'],
-                                        roles: [
-                                          {
-                                            name: 'dor-apo-manager',
-                                            members: [
-                                              {
-                                                type: 'workgroup',
-                                                identifier: 'sdr:psm-staff'
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      },
-                                      externalIdentifier: druid)
+      build(:admin_policy, id: druid, label: 'This is my label', title: 'This is my title').new(
+        administrative: {
+          accessTemplate: default_access_expected,
+          hasAdminPolicy: 'druid:dd999df4567',
+          hasAgreement: 'druid:bc123df4567',
+          disseminationWorkflow: 'assemblyWF',
+          registrationWorkflow: %w[goobiWF registrationWF],
+          collectionsForRegistration: ['druid:gg888df4567', 'druid:bb888gg4444'],
+          roles: [
+            {
+              name: 'dor-apo-manager',
+              members: [
+                {
+                  type: 'workgroup',
+                  identifier: 'sdr:psm-staff'
+                }
+              ]
+            }
+          ]
+        }
+      )
     end
 
     let(:default_access) do
@@ -1126,33 +1069,24 @@ RSpec.describe 'Update object' do
 
   context 'when an embargo is provided' do
     let(:expected) do
-      Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.book,
-                              label: 'This is my label',
-                              version: 1,
-                              description: {
-                                title: [{ value: 'This is my title' }],
-                                purl: 'https://purl.stanford.edu/gg777gg7777'
-                              },
-                              administrative: {
-                                hasAdminPolicy: 'druid:dd999df4567'
-                              },
-                              identification: { sourceId: 'googlebooks:999999' },
-                              externalIdentifier: 'druid:gg777gg7777',
-                              structural: {
-                                hasMemberOrders: [
-                                  { viewingDirection: 'right-to-left' }
-                                ],
-                                isMemberOf: ['druid:xx888xx7777']
-                              },
-                              access: {
-                                view: 'stanford',
-                                download: 'stanford',
-                                embargo: {
-                                  view: 'world',
-                                  download: 'world',
-                                  releaseDate: '2020-02-29'
-                                }
-                              })
+      build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my title', admin_policy_id: 'druid:dd999df4567', type: Cocina::Models::ObjectType.book).new(
+        identification: { sourceId: 'googlebooks:999999' },
+        structural: {
+          hasMemberOrders: [
+            { viewingDirection: 'right-to-left' }
+          ],
+          isMemberOf: ['druid:xx888xx7777']
+        },
+        access: {
+          view: 'stanford',
+          download: 'stanford',
+          embargo: {
+            view: 'world',
+            download: 'world',
+            releaseDate: '2020-02-29'
+          }
+        }
+      )
     end
     let(:data) do
       <<~JSON

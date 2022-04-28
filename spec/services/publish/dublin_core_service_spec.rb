@@ -6,19 +6,7 @@ RSpec.describe Publish::DublinCoreService do
   subject(:service) { described_class.new(desc_md_xml) }
 
   let(:cocina_object) do
-    Cocina::Models.build({
-                           'type' => Cocina::Models::ObjectType.object,
-                           'label' => 'test',
-                           'externalIdentifier' => 'druid:bc123df4567',
-                           'access' => {},
-                           'version' => 1,
-                           'structural' => {},
-                           'administrative' => {
-                             'hasAdminPolicy' => 'druid:bz845pv2292'
-                           },
-                           'description' => description,
-                           identification: { sourceId: 'sul:123' }
-                         })
+    build(:dro, id: 'druid:bc123df4567').new(description: description)
   end
   let(:desc_md_xml) { Publish::PublicDescMetadataService.new(cocina_object).ng_xml(include_access_conditions: false) }
   let(:solr_client) { instance_double(RSolr::Client, get: solr_response) }

@@ -11,25 +11,18 @@ RSpec.describe Publish::RightsMetadata do
     subject(:result) { service.create }
 
     let(:release_date) { nil }
-    let(:description) do
-      {
-        title: [{ value: 'Constituent label &amp; A Special character' }],
-        purl: 'https://purl.stanford.edu/bc123df4567'
-      }
+
+    let(:cocina_object) do
+      build(:dro).new(
+        access: access,
+        structural: structural
+      )
     end
 
+    let(:structural) { {} }
+
     context 'when an object has an empty access node' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {},
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
-      end
+      let(:access) { {} }
 
       let(:expected) do
         <<~XML
@@ -54,19 +47,11 @@ RSpec.describe Publish::RightsMetadata do
     end
 
     context 'when an object is world' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'world',
-                                  download: 'world'
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
+      let(:access) do
+        {
+          view: 'world',
+          download: 'world'
+        }
       end
 
       let(:expected) do
@@ -92,22 +77,14 @@ RSpec.describe Publish::RightsMetadata do
     end
 
     context 'when an object is world and includes use and copyright statements' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'world',
-                                  download: 'world',
-                                  useAndReproductionStatement: 'Temporary use statement',
-                                  copyright: 'Temporary copyright',
-                                  license: 'https://creativecommons.org/licenses/by/4.0/legalcode'
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
+      let(:access) do
+        {
+          view: 'world',
+          download: 'world',
+          useAndReproductionStatement: 'Temporary use statement',
+          copyright: 'Temporary copyright',
+          license: 'https://creativecommons.org/licenses/by/4.0/legalcode'
+        }
       end
 
       let(:expected) do
@@ -137,19 +114,11 @@ RSpec.describe Publish::RightsMetadata do
     end
 
     context 'when an object is dark' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'dark',
-                                  download: 'none'
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
+      let(:access) do
+        {
+          view: 'dark',
+          download: 'none'
+        }
       end
 
       let(:expected) do
@@ -176,22 +145,15 @@ RSpec.describe Publish::RightsMetadata do
 
     context 'when an embargo date is provided' do
       let(:release_date) { '2020-02-26T00:00:00+00:00' }
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'world',
-                                  download: 'stanford',
-                                  embargo: {
-                                    releaseDate: release_date
-                                  }
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
+
+      let(:access) do
+        {
+          view: 'world',
+          download: 'stanford',
+          embargo: {
+            releaseDate: release_date
+          }
+        }
       end
 
       let(:expected) do
@@ -223,20 +185,12 @@ RSpec.describe Publish::RightsMetadata do
     end
 
     context 'when read access is location based' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'location-based',
-                                  download: 'location-based',
-                                  location: 'art'
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
+      let(:access) do
+        {
+          view: 'location-based',
+          download: 'location-based',
+          location: 'art'
+        }
       end
 
       let(:expected) do
@@ -262,20 +216,12 @@ RSpec.describe Publish::RightsMetadata do
     end
 
     context 'when read access is location based and no download' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'location-based',
-                                  download: 'none',
-                                  location: 'art'
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
+      let(:access) do
+        {
+          view: 'location-based',
+          download: 'none',
+          location: 'art'
+        }
       end
 
       let(:expected) do
@@ -301,20 +247,12 @@ RSpec.describe Publish::RightsMetadata do
     end
 
     context 'when object is location based and stanford no download' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'stanford',
-                                  download: 'location-based',
-                                  location: 'art'
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
+      let(:access) do
+        {
+          view: 'stanford',
+          download: 'location-based',
+          location: 'art'
+        }
       end
 
       let(:expected) do
@@ -345,20 +283,12 @@ RSpec.describe Publish::RightsMetadata do
     end
 
     context 'when object is location based and world no download' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'world',
-                                  download: 'location-based',
-                                  location: 'art'
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
+      let(:access) do
+        {
+          view: 'world',
+          download: 'location-based',
+          location: 'art'
+        }
       end
 
       let(:expected) do
@@ -389,20 +319,13 @@ RSpec.describe Publish::RightsMetadata do
     end
 
     context 'when an object is citation only' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'citation-only',
-                                  download: 'none'
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
+      let(:access) do
+        {
+          view: 'citation-only',
+          download: 'none'
+        }
       end
+
       let(:expected) do
         <<~XML
           <rightsMetadata>
@@ -426,21 +349,14 @@ RSpec.describe Publish::RightsMetadata do
     end
 
     context 'when an object is controlled digital lending' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'stanford',
-                                  download: 'none',
-                                  controlledDigitalLending: true
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
+      let(:access) do
+        {
+          view: 'stanford',
+          download: 'none',
+          controlledDigitalLending: true
+        }
       end
+
       let(:expected) do
         <<~XML
           <rightsMetadata>
@@ -466,21 +382,14 @@ RSpec.describe Publish::RightsMetadata do
     end
 
     context 'when an object is stanford no-download' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'stanford',
-                                  download: 'none',
-                                  controlledDigitalLending: false
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
+      let(:access) do
+        {
+          view: 'stanford',
+          download: 'none',
+          controlledDigitalLending: false
+        }
       end
+
       let(:expected) do
         <<~XML
           <rightsMetadata>
@@ -504,20 +413,13 @@ RSpec.describe Publish::RightsMetadata do
     end
 
     context 'when an object is world no-download' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'world',
-                                  download: 'stanford'
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
+      let(:access) do
+        {
+          view: 'world',
+          download: 'stanford'
+        }
       end
+
       let(:expected) do
         <<~XML
           <rightsMetadata>
@@ -546,20 +448,13 @@ RSpec.describe Publish::RightsMetadata do
     end
 
     context 'when an object is stanford stanford' do
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'stanford',
-                                  download: 'stanford'
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: {})
+      let(:access) do
+        {
+          view: 'stanford',
+          download: 'stanford'
+        }
       end
+
       let(:expected) do
         <<~XML
           <rightsMetadata>
@@ -614,20 +509,14 @@ RSpec.describe Publish::RightsMetadata do
           }]
         }
       end
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'world',
-                                  download: 'world'
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: structural)
+
+      let(:access) do
+        {
+          view: 'world',
+          download: 'world'
+        }
       end
+
       let(:expected) do
         <<~XML
           <rightsMetadata>
@@ -689,19 +578,12 @@ RSpec.describe Publish::RightsMetadata do
           }]
         }
       end
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'world',
-                                  download: 'world'
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: structural)
+
+      let(:access) do
+        {
+          view: 'world',
+          download: 'world'
+        }
       end
 
       let(:expected) do
@@ -768,19 +650,12 @@ RSpec.describe Publish::RightsMetadata do
           }]
         }
       end
-      let(:cocina_object) do
-        Cocina::Models::DRO.new(externalIdentifier: 'druid:bc123df4567',
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A generic label',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {
-                                  view: 'world',
-                                  download: 'world'
-                                },
-                                administrative: { hasAdminPolicy: 'druid:pp000pp0000' },
-                                structural: structural)
+
+      let(:access) do
+        {
+          view: 'world',
+          download: 'world'
+        }
       end
 
       let(:expected) do
@@ -816,16 +691,11 @@ RSpec.describe Publish::RightsMetadata do
 
     context 'when a collection is world' do
       let(:cocina_object) do
-        Cocina::Models::Collection.new(externalIdentifier: 'druid:bc123df4567',
-                                       type: Cocina::Models::ObjectType.collection,
-                                       label: 'A generic label',
-                                       version: 1,
-                                       description: description,
-                                       identification: { sourceId: 'sul:123' },
-                                       access: {
-                                         view: 'world'
-                                       },
-                                       administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+        build(:collection, id: 'druid:bc123df4567').new(
+          access: {
+            view: 'world'
+          }
+        )
       end
 
       let(:expected) do
@@ -852,16 +722,11 @@ RSpec.describe Publish::RightsMetadata do
 
     context 'when a collection is dark' do
       let(:cocina_object) do
-        Cocina::Models::Collection.new(externalIdentifier: 'druid:bc123df4567',
-                                       type: Cocina::Models::ObjectType.collection,
-                                       label: 'A generic label',
-                                       version: 1,
-                                       description: description,
-                                       identification: { sourceId: 'sul:123' },
-                                       access: {
-                                         view: 'dark'
-                                       },
-                                       administrative: { hasAdminPolicy: 'druid:pp000pp0000' })
+        build(:collection, id: 'druid:bc123df4567').new(
+          access: {
+            view: 'dark'
+          }
+        )
       end
 
       let(:expected) do

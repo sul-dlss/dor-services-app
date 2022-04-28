@@ -5,32 +5,12 @@ require 'rails_helper'
 RSpec.describe ThumbnailService do
   let(:instance) { described_class.new(object) }
   let(:druid) { 'druid:bc123df4567' }
-  let(:apo_druid) { 'druid:pp000pp0000' }
-  let(:description) do
-    {
-      title: [{ value: 'Constituent label &amp; A Special character' }],
-      purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
-    }
-  end
 
   describe '#thumb' do
     subject { instance.thumb }
 
     context 'for a collection' do
-      let(:object) do
-        Cocina::Models::Collection.new(externalIdentifier: 'druid:bc123df4567',
-                                       type: Cocina::Models::ObjectType.collection,
-                                       label: 'Collection of new maps of Africa',
-                                       description: {
-                                         title: [{ value: 'Collection of new maps of Africa' }],
-                                         purl: 'https://purl.stanford.edu/bc123df4567'
-                                       },
-                                       version: 1,
-                                       cocinaVersion: '0.0.1',
-                                       access: {},
-                                       administrative: { hasAdminPolicy: apo_druid },
-                                       identification: { sourceId: 'sul:123' })
-      end
+      let(:object) { build(:collection) }
 
       it 'returns nil if there is no structural metadata' do
         expect(subject).to be_nil
@@ -40,17 +20,7 @@ RSpec.describe ThumbnailService do
     context 'for an item' do
       let(:druid) { 'druid:bc123df4567' }
 
-      let(:object) do
-        Cocina::Models::DRO.new(externalIdentifier: druid,
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'A new map of Africa',
-                                version: 1,
-                                description: description,
-                                identification: { sourceId: 'sul:123' },
-                                access: {},
-                                administrative: { hasAdminPolicy: apo_druid },
-                                structural: structural)
-      end
+      let(:object) { build(:dro, id: druid).new(structural: structural) }
 
       context 'with no structural metadata' do
         let(:structural) { {} }

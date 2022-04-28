@@ -3,24 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Operations regarding object versions' do
-  let(:cocina_object) do
-    Cocina::Models::DRO.new(externalIdentifier: 'druid:mx123qw2323',
-                            type: Cocina::Models::ObjectType.book,
-                            label: 'test object',
-                            version: version,
-                            access: {},
-                            description: {
-                              title: [{ value: 'test object' }],
-                              purl: 'https://purl.stanford.edu/mx123qw2323'
-                            },
-                            administrative: {
-                              hasAdminPolicy: 'druid:dd999df4567'
-                            },
-                            identification: {
-                              sourceId: 'googlebooks:999999'
-                            },
-                            structural: {})
-  end
+  let(:cocina_object) { build(:dro) }
 
   let(:date) { Time.zone.now }
 

@@ -23,47 +23,28 @@ RSpec.describe 'Refresh metadata' do
     }
   end
   let(:cocina_object) do
-    Cocina::Models::DRO.new(externalIdentifier: druid,
-                            type: Cocina::Models::ObjectType.object,
-                            label: 'A new map of Africa',
-                            version: 1,
-                            description: description,
-                            identification: identification,
-                            access: {},
-                            administrative: { hasAdminPolicy: apo_druid },
-                            structural: {})
+    build(:dro, id: druid, label: 'A new map of Africa', admin_policy_id: apo_druid).new(identification: identification, description: description)
   end
   let(:updated_cocina_object) do
-    Cocina::Models::DRO.new(externalIdentifier: druid,
-                            type: Cocina::Models::ObjectType.object,
-                            label: 'A new map of Africa',
-                            version: 1,
-                            description: {
-                              title: [{ value: 'Paying for College', status: 'primary' }],
-                              purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}",
-                              adminMetadata: {
-                                note: [{ type: 'record origin',
-                                         value: "Converted from MARCXML to MODS version 3.7 using\n\t\t\t\t" \
-                                                "MARC21slim2MODS3-7_SDR_v2-5.xsl (SUL 3.7 version 2.5 20210421; LC Revision 1.140\n\t\t\t\t" \
-                                                '20200717)' }]
-                              }
-                            },
-                            identification: identification,
-                            access: {},
-                            administrative: { hasAdminPolicy: apo_druid },
-                            structural: {})
+    build(:dro, id: druid, label: 'A new map of Africa', admin_policy_id: apo_druid).new(
+      identification: identification,
+      description: {
+        title: [{ value: 'Paying for College', status: 'primary' }],
+        purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}",
+        adminMetadata: {
+          note: [
+            {
+              type: 'record origin',
+              value: "Converted from MARCXML to MODS version 3.7 using\n\t\t\t\t" \
+                     "MARC21slim2MODS3-7_SDR_v2-5.xsl (SUL 3.7 version 2.5 20210421; LC Revision 1.140\n\t\t\t\t" \
+                     '20200717)'
+            }
+          ]
+        }
+      }
+    )
   end
-  let(:cocina_apo_object) do
-    Cocina::Models::AdminPolicy.new(externalIdentifier: apo_druid,
-                                    administrative: {
-                                      hasAdminPolicy: 'druid:gg123vx9393',
-                                      hasAgreement: 'druid:bb008zm4587',
-                                      accessTemplate: { view: 'world', download: 'world' }
-                                    },
-                                    version: 1,
-                                    label: 'just an apo',
-                                    type: Cocina::Models::ObjectType.admin_policy)
-  end
+  let(:cocina_apo_object) { build(:admin_policy, id: apo_druid) }
 
   let(:marc) do
     MARC::Record.new.tap do |record|
@@ -115,14 +96,7 @@ RSpec.describe 'Refresh metadata' do
 
   context 'with a collection' do
     let(:cocina_object) do
-      Cocina::Models::Collection.new(externalIdentifier: druid,
-                                     type: Cocina::Models::ObjectType.collection,
-                                     label: 'A new map of Africa',
-                                     version: 1,
-                                     description: description,
-                                     identification: { sourceId: 'sul:123' },
-                                     access: {},
-                                     administrative: { hasAdminPolicy: apo_druid })
+      build(:collection, id: druid)
     end
 
     before do

@@ -11,23 +11,7 @@ RSpec.describe CocinaObjectStore do
 
   describe 'to Fedora' do
     let(:item) { instance_double(Dor::Item, pid: druid, modified_date: date.to_time) }
-    let(:cocina_object) do
-      Cocina::Models::DRO.new(
-        type: Cocina::Models::ObjectType.book,
-        label: 'The Trails of Virginia',
-        version: 1,
-        administrative: { hasAdminPolicy: 'druid:dd999df2345' },
-        access: {},
-        description: {
-          title: [{ value: 'The Trails of Virginia' }],
-          purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
-        },
-        externalIdentifier: druid,
-        identification: { sourceId: 'sul:123' },
-        structural: {}
-      )
-    end
-
+    let(:cocina_object) { build(:dro, id: druid) }
     let(:cocina_object_with_metadata) do
       Cocina::Models.with_metadata(cocina_object, lock, created: date, modified: date)
     end
@@ -679,23 +663,7 @@ RSpec.describe CocinaObjectStore do
 
       context 'when object is a DRO' do
         context 'when skipping lock (e.g., for a create)' do
-          let(:cocina_object) do
-            Cocina::Models::DRO.new({
-                                      cocinaVersion: '0.0.1',
-                                      externalIdentifier: 'druid:xz456jk0987',
-                                      type: Cocina::Models::ObjectType.book,
-                                      label: 'Test DRO',
-                                      version: 1,
-                                      description: {
-                                        title: [{ value: 'Test DRO' }],
-                                        purl: 'https://purl.stanford.edu/xz456jk0987'
-                                      },
-                                      access: { view: 'world', download: 'world' },
-                                      administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
-                                      structural: {},
-                                      identification: { sourceId: 'sul:123' }
-                                    })
-          end
+          let(:cocina_object) { build(:dro) }
 
           it 'saves to datastore' do
             expect(Dro.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
@@ -743,20 +711,7 @@ RSpec.describe CocinaObjectStore do
       end
 
       context 'when object is an AdminPolicy' do
-        let(:cocina_object) do
-          Cocina::Models::AdminPolicy.new({
-                                            cocinaVersion: '0.0.1',
-                                            externalIdentifier: 'druid:jt959wc5586',
-                                            type: Cocina::Models::ObjectType.admin_policy,
-                                            label: 'Test Admin Policy',
-                                            version: 1,
-                                            administrative: {
-                                              hasAdminPolicy: 'druid:hy787xj5878',
-                                              hasAgreement: 'druid:bb033gt0615',
-                                              accessTemplate: { view: 'world', download: 'world' }
-                                            }
-                                          })
-        end
+        let(:cocina_object) { build(:admin_policy) }
 
         it 'saves to datastore' do
           expect(AdminPolicy.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
@@ -766,24 +721,7 @@ RSpec.describe CocinaObjectStore do
       end
 
       context 'when object is a Collection' do
-        let(:cocina_object) do
-          Cocina::Models::Collection.new({
-                                           cocinaVersion: '0.0.1',
-                                           externalIdentifier: 'druid:hp308wm0436',
-                                           type: Cocina::Models::ObjectType.collection,
-                                           label: 'Test Collection',
-                                           description: {
-                                             title: [{ value: 'Test Collection' }],
-                                             purl: 'https://purl.stanford.edu/hp308wm0436'
-                                           },
-                                           version: 1,
-                                           access: { view: 'world' },
-                                           administrative: {
-                                             hasAdminPolicy: 'druid:hy787xj5878'
-                                           },
-                                           identification: { sourceId: 'sul:123' }
-                                         })
-        end
+        let(:cocina_object) { build(:collection) }
 
         it 'saves to datastore' do
           expect(Collection.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
@@ -793,24 +731,7 @@ RSpec.describe CocinaObjectStore do
       end
 
       context 'when sourceId is not unique' do
-        let(:cocina_object) do
-          Cocina::Models::Collection.new({
-                                           cocinaVersion: '0.0.1',
-                                           externalIdentifier: 'druid:hp308wm0436',
-                                           type: Cocina::Models::ObjectType.collection,
-                                           label: 'Test Collection',
-                                           description: {
-                                             title: [{ value: 'Test Collection' }],
-                                             purl: 'https://purl.stanford.edu/hp308wm0436'
-                                           },
-                                           version: 1,
-                                           access: { view: 'world' },
-                                           identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0031' },
-                                           administrative: {
-                                             hasAdminPolicy: 'druid:hy787xj5878'
-                                           }
-                                         })
-        end
+        let(:cocina_object) { build(:collection, source_id: 'sul:PC0170_s3_USC_2010-10-09_141959_0031') }
 
         before do
           store.send(:cocina_to_ar_save, cocina_object.new(

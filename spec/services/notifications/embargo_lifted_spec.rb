@@ -9,27 +9,7 @@ RSpec.describe Notifications::EmbargoLifted do
   let(:channel) { instance_double(Notifications::RabbitChannel, topic: topic) }
   let(:topic) { instance_double(Bunny::Exchange, publish: true) }
 
-  let(:model) do
-    Cocina::Models::DROWithMetadata.new(externalIdentifier: druid,
-                                        lock: "#{druid}=0",
-                                        created: 'Mon, 17 Jun 2019 15:47:11 +0000',
-                                        modified: 'Mon, 17 Jun 2019 15:47:11 +0000',
-                                        type: Cocina::Models::ObjectType.book,
-                                        access: {},
-                                        structural: {},
-                                        label: 'cool',
-                                        version: 1,
-                                        description: {
-                                          title: [{ value: 'cool' }],
-                                          purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
-                                        },
-                                        administrative: {
-                                          hasAdminPolicy: 'druid:dd999df4567'
-                                        },
-                                        identification: {
-                                          sourceId: 'some:source_id'
-                                        })
-  end
+  let(:model) { build(:dro_with_metadata, id: druid) }
 
   context 'when RabbitMQ is enabled' do
     before do
@@ -44,31 +24,18 @@ RSpec.describe Notifications::EmbargoLifted do
 
       it 'strips metadata and is successful' do
         publish
-        expected = { model: model.to_h.except(:created, :modified, :lock) }.to_json
+        expected = { model: Cocina::Models.without_metadata(model).to_h }.to_json
         expect(topic).to have_received(:publish).with(expected, routing_key: 'h2')
         expect(AdministrativeTags).to have_received(:project).with(identifier: druid)
       end
     end
 
     context 'when called with an AdminPolicyWithMetadata' do
-      let(:model) do
-        Cocina::Models::AdminPolicyWithMetadata.new(externalIdentifier: druid,
-                                                    lock: "#{druid}=0",
-                                                    created: 'Mon, 17 Jun 2019 15:47:11 +0000',
-                                                    modified: 'Mon, 17 Jun 2019 15:47:11 +0000',
-                                                    administrative: {
-                                                      hasAdminPolicy: 'druid:gg123vx9393',
-                                                      hasAgreement: 'druid:bb008zm4587',
-                                                      accessTemplate: { view: 'world', download: 'world' }
-                                                    },
-                                                    version: 1,
-                                                    label: 'just an apo',
-                                                    type: Cocina::Models::ObjectType.admin_policy)
-      end
+      let(:model) { build(:admin_policy, id: druid) }
 
       it 'strips metadata and is successful' do
         publish
-        expected = { model: model.to_h.except(:created, :modified, :lock) }.to_json
+        expected = { model: Cocina::Models.without_metadata(model).to_h }.to_json
         expect(topic).to have_received(:publish).with(expected, routing_key: 'SDR')
       end
     end

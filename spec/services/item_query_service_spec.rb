@@ -8,20 +8,7 @@ RSpec.describe ItemQueryService do
   let(:druid) { 'druid:bc123df4567' }
   let(:access) { { view: 'world' } }
   let(:cocina_object) do
-    Cocina::Models::DRO.new(
-      externalIdentifier: druid,
-      version: 1,
-      type: Cocina::Models::ObjectType.object,
-      label: 'Dummy DRO',
-      description: {
-        title: [{ value: 'Dummy DRO' }],
-        purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
-      },
-      access: { download: 'none' }.merge(access),
-      administrative: { hasAdminPolicy: 'druid:df123cd4567' },
-      identification: { sourceId: 'sul:123' },
-      structural: {}
-    )
+    build(:dro, id: druid).new(access: { download: 'none' }.merge(access))
   end
   let(:workflow_state) { 'Accessioned' }
   let(:workflow_client) { instance_double(Dor::Workflow::Client, status: status_client) }
@@ -141,19 +128,7 @@ RSpec.describe ItemQueryService do
 
     context 'with a collection' do
       let(:cocina_object) do
-        Cocina::Models::Collection.new(
-          externalIdentifier: druid,
-          version: 1,
-          type: Cocina::Models::ObjectType.collection,
-          label: 'Dummy Collection',
-          description: {
-            title: [{ value: 'Dummy Collection' }],
-            purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
-          },
-          access: access,
-          administrative: { hasAdminPolicy: 'druid:df123cd4567' },
-          identification: { sourceId: 'sul:123' }
-        )
+        build(:collection, id: druid).new(access: access)
       end
 
       it 'raises an error' do
@@ -165,19 +140,7 @@ RSpec.describe ItemQueryService do
     end
 
     context 'with an admin policy' do
-      let(:cocina_object) do
-        Cocina::Models::AdminPolicy.new(
-          externalIdentifier: druid,
-          version: 1,
-          type: Cocina::Models::ObjectType.admin_policy,
-          label: 'Dummy DRO',
-          administrative: {
-            hasAdminPolicy: 'druid:df123cd4567',
-            hasAgreement: 'druid:mg978jy9754',
-            accessTemplate: { view: 'world', download: 'world' }
-          }
-        )
-      end
+      let(:cocina_object) { build(:admin_policy, id: druid) }
 
       it 'raises an error' do
         expect { service.find_combinable_item(druid) }.to raise_error(
@@ -189,25 +152,15 @@ RSpec.describe ItemQueryService do
 
     context 'with an DRO having memberless member orders' do
       let(:cocina_object) do
-        Cocina::Models::DRO.new(
-          externalIdentifier: druid,
-          version: 1,
-          type: Cocina::Models::ObjectType.object,
-          label: 'Dummy DRO',
-          description: {
-            title: [{ value: 'Dummy Collection' }],
-            purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
-          },
+        build(:dro, id: druid).new(
           access: { download: 'none' }.merge(access),
-          administrative: { hasAdminPolicy: 'druid:df123cd4567' },
           structural: {
             hasMemberOrders: [
               {
                 viewingDirection: 'left-to-right'
               }
             ]
-          },
-          identification: { sourceId: 'sul:123' }
+          }
         )
       end
 
@@ -263,37 +216,15 @@ RSpec.describe ItemQueryService do
     context 'when multiple constituents are uncombinable' do
       let(:constituent_druids) { ['druid:cc111dd2222', 'druid:bb111cc2222'] }
       let(:cocina_object_constituent) do
-        Cocina::Models::DRO.new(
-          externalIdentifier: constituent_druids[0],
-          version: 1,
-          type: Cocina::Models::ObjectType.object,
-          label: 'Dummy DRO',
-          description: {
-            title: [{ value: 'Dummy DRO' }],
-            purl: "https://purl.stanford.edu/#{constituent_druids[0].delete_prefix('druid:')}"
-          },
-          access: { view: 'citation-only', download: 'none' },
-          administrative: { hasAdminPolicy: 'druid:df123cd4567' },
-          identification: { sourceId: 'sul:123' },
-          structural: {}
+        build(:dro, id: constituent_druids[0]).new(
+          access: { view: 'citation-only', download: 'none' }
         )
       end
       let(:cocina_object_constituent_with_metadata) { Cocina::Models.with_metadata(cocina_object_constituent, '1', created: created_at, modified: updated_at) }
 
       let(:cocina_object_constituent1) do
-        Cocina::Models::DRO.new(
-          externalIdentifier: constituent_druids[1],
-          version: 1,
-          type: Cocina::Models::ObjectType.object,
-          label: 'Dummy DRO',
-          description: {
-            title: [{ value: 'Dummy DRO' }],
-            purl: "https://purl.stanford.edu/#{constituent_druids[1].delete_prefix('druid:')}"
-          },
-          access: { view: 'dark' },
-          administrative: { hasAdminPolicy: 'druid:df123cd4567' },
-          identification: { sourceId: 'sul:123' },
-          structural: {}
+        build(:dro, id: constituent_druids[1]).new(
+          access: { view: 'dark' }
         )
       end
       let(:cocina_object_constituent1_with_metadata) { Cocina::Models.with_metadata(cocina_object_constituent1, '1', created: created_at, modified: updated_at) }
@@ -317,17 +248,8 @@ RSpec.describe ItemQueryService do
       let(:constituent_druid) { 'druid:xh235dd9059' }
       let(:constituent_druids) { [constituent_druid] }
       let(:cocina_object_constituent) do
-        Cocina::Models::DRO.new(
-          externalIdentifier: constituent_druid,
-          version: 1,
-          type: Cocina::Models::ObjectType.object,
-          label: 'Dummy DRO',
-          description: {
-            title: [{ value: 'Dummy DRO' }],
-            purl: "https://purl.stanford.edu/#{constituent_druid.delete_prefix('druid:')}"
-          },
+        build(:dro, id: constituent_druid).new(
           access: { download: 'world' }.merge(access),
-          administrative: { hasAdminPolicy: 'druid:df123cd4567' },
           structural: {
             hasMemberOrders: [
               {
@@ -337,8 +259,7 @@ RSpec.describe ItemQueryService do
                 members: ['druid:bj776jy8755']
               }
             ]
-          },
-          identification: { sourceId: 'sul:123' }
+          }
         )
       end
       let(:cocina_object_constituent_with_metadata) { Cocina::Models.with_metadata(cocina_object_constituent, '1', created: created_at, modified: updated_at) }

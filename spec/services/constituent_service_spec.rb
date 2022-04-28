@@ -7,41 +7,10 @@ RSpec.describe ConstituentService do
     let(:constituent_druids) { ['druid:xh235dd9059'] }
     let(:event_factory) { class_double(EventFactory) }
     let(:item_errors) { {} }
-    let(:mock_item) do
-      Cocina::Models::DRO.new(
-        type: Cocina::Models::ObjectType.object,
-        label: 'Dummy',
-        version: 1,
-        administrative: { hasAdminPolicy: 'druid:dd999df2345' },
-        access: {},
-        description: {
-          title: [{ value: 'Dummy' }],
-          purl: 'https://purl.stanford.edu/kh875jg9754'
-        },
-        externalIdentifier: 'druid:kh875jg9754',
-        identification: { sourceId: 'sul:123' },
-        structural: {}
-      )
-    end
+    let(:mock_item) { build(:dro) }
     let(:open_for_versioning) { true }
     let(:service) { described_class.new(virtual_object_druid: virtual_object_druid, event_factory: event_factory) }
-    let(:virtual_object) do
-      dro = Cocina::Models::DRO.new(
-        type: Cocina::Models::ObjectType.object,
-        label: 'Dummy',
-        version: 1,
-        administrative: { hasAdminPolicy: 'druid:dd999df2345' },
-        access: {},
-        description: {
-          title: [{ value: 'Dummy' }],
-          purl: "https://purl.stanford.edu/#{virtual_object_druid.delete_prefix('druid:')}"
-        },
-        externalIdentifier: virtual_object_druid,
-        identification: { sourceId: 'sul:123' },
-        structural: {}
-      )
-      Cocina::Models.with_metadata(dro, 'abc123')
-    end
+    let(:virtual_object) { build(:dro_with_metadata, id: virtual_object_druid) }
     let(:virtual_object_druid) { 'druid:bc123df4567' }
 
     before do
@@ -107,31 +76,7 @@ RSpec.describe ConstituentService do
     end
 
     context 'when constituents have catkeys' do
-      let(:mock_item) do
-        Cocina::Models::DRO.new(
-          type: Cocina::Models::ObjectType.object,
-          label: 'Dummy',
-          version: 1,
-          administrative: { hasAdminPolicy: 'druid:dd999df2345' },
-          access: {},
-          externalIdentifier: 'druid:kh875jg9754',
-          description: {
-            title: [{ value: 'Dummy' }],
-            purl: 'https://purl.stanford.edu/kh875jg9754'
-          },
-          identification: {
-            catalogLinks: [
-              {
-                catalog: 'symphony',
-                catalogRecordId: '12345',
-                refresh: true
-              }
-            ],
-            sourceId: 'sul:123'
-          },
-          structural: {}
-        )
-      end
+      let(:mock_item) { build(:dro, catkeys: ['12345']) }
 
       it 'updates MARC' do
         service.add(constituent_druids: constituent_druids)

@@ -8,49 +8,31 @@ RSpec.describe Publish::MetadataTransferService do
   let(:access) { {} }
 
   let(:cocina_object) do
-    Cocina::Models::DRO.new(externalIdentifier: "druid:#{druid}",
-                            type: Cocina::Models::ObjectType.object,
-                            label: 'google download barcode 36105049267078',
-                            version: 1,
-                            description: {
-                              title: [{ value: 'Constituent label &amp; A Special character' }],
-                              purl: "https://purl.stanford.edu/#{druid}"
-                            },
-                            identification: { sourceId: 'sul:123' },
-                            access: access,
-                            structural: { contains: [], isMemberOf: ['druid:xh235dd9059'] },
-                            administrative: { hasAdminPolicy: 'druid:fg890hx1234',
-                                              releaseTags: [
-                                                {
-                                                  who: 'dhartwig',
-                                                  what: 'collection',
-                                                  date: '2019-01-18T17:03:35.000+00:00',
-                                                  to: 'Searchworks',
-                                                  release: true
-                                                },
-                                                {
-                                                  who: 'dhartwig',
-                                                  what: 'collection',
-                                                  date: '2020-01-18T17:03:35.000+00:00',
-                                                  to: 'Some_special_place',
-                                                  release: true
-                                                }
-                                              ] })
+    build(:dro, id: "druid:#{druid}").new(
+      access: access,
+      structural: { contains: [], isMemberOf: ['druid:xh235dd9059'] },
+      administrative: {
+        hasAdminPolicy: 'druid:fg890hx1234',
+        releaseTags: [
+          {
+            who: 'dhartwig',
+            what: 'collection',
+            date: '2019-01-18T17:03:35.000+00:00',
+            to: 'Searchworks',
+            release: true
+          },
+          {
+            who: 'dhartwig',
+            what: 'collection',
+            date: '2020-01-18T17:03:35.000+00:00',
+            to: 'Some_special_place',
+            release: true
+          }
+        ]
+      }
+    )
   end
-  let(:cocina_collection) do
-    Cocina::Models::Collection.new(externalIdentifier: 'druid:xh235dd9059',
-                                   type: Cocina::Models::ObjectType.collection,
-                                   label: 'some collection object',
-                                   version: 1,
-                                   description: {
-                                     title: [{ value: 'Constituent label &amp; A Special character' }],
-                                     purl: 'https://purl.stanford.edu/xh235dd9059'
-                                   },
-                                   identification: { sourceId: 'sul:123' },
-                                   access: {},
-                                   administrative: { hasAdminPolicy: 'druid:fg890hx1234' })
-  end
-
+  let(:cocina_collection) { build(:collection, id: 'druid:xh235dd9059') }
   let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
   let(:service) { described_class.new(cocina_object) }
 
@@ -131,17 +113,20 @@ RSpec.describe Publish::MetadataTransferService do
 
       context 'with a collection object' do
         let(:cocina_object) do
-          Cocina::Models::Collection.new(externalIdentifier: 'druid:xh235dd9059',
-                                         type: Cocina::Models::ObjectType.collection,
-                                         label: 'some collection object',
-                                         version: 1,
-                                         description: {
-                                           title: [{ value: 'Constituent label &amp; A Special character' }],
-                                           purl: 'https://purl.stanford.edu/xh235dd9059'
-                                         },
-                                         identification: { sourceId: 'sul:123' },
-                                         access: { view: 'world' },
-                                         administrative: { hasAdminPolicy: 'druid:fg890hx1234' })
+          build(:collection, id: 'druid:xh235dd9059').new(
+            access: { view: 'world' }
+          )
+          # Cocina::Models::Collection.new(externalIdentifier: 'druid:xh235dd9059',
+          #                                type: Cocina::Models::ObjectType.collection,
+          #                                label: 'some collection object',
+          #                                version: 1,
+          #                                description: {
+          #                                  title: [{ value: 'Constituent label &amp; A Special character' }],
+          #                                  purl: 'https://purl.stanford.edu/xh235dd9059'
+          #                                },
+          #                                identification: { sourceId: 'sul:123' },
+          #                                access: { view: 'world' },
+          #                                administrative: { hasAdminPolicy: 'druid:fg890hx1234' })
         end
 
         before do

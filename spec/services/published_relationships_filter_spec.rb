@@ -14,24 +14,9 @@ RSpec.describe PublishedRelationshipsFilter do
 
     context 'with a DRO' do
       let(:cocina_object) do
-        Cocina::Models::DRO.new(
-          {
-            externalIdentifier: 'druid:bc123df4567',
-            type: Cocina::Models::ObjectType.object,
-            label: 'foo',
-            version: 1,
-            access: {},
-            description: {
-              title: [{ value: 'foo' }],
-              purl: 'https://purl.stanford.edu/bc123df4567'
-            },
-            administrative: {
-              hasAdminPolicy: 'druid:df123cd4567'
-            },
-            structural: {
-              isMemberOf: ['druid:xh235dd9059']
-            },
-            identification: { sourceId: 'sul:123' }
+        build(:dro, id: 'druid:bc123df4567').new(
+          structural: {
+            isMemberOf: ['druid:xh235dd9059']
           }
         )
       end
@@ -50,25 +35,7 @@ RSpec.describe PublishedRelationshipsFilter do
     end
 
     context 'with a Collection' do
-      let(:cocina_object) do
-        Cocina::Models::Collection.new(
-          {
-            externalIdentifier: 'druid:bc123df4567',
-            type: Cocina::Models::ObjectType.collection,
-            label: 'foo',
-            version: 1,
-            description: {
-              title: [{ value: 'foo' }],
-              purl: 'https://purl.stanford.edu/bc123df4567'
-            },
-            access: {},
-            administrative: {
-              hasAdminPolicy: 'druid:df123cd4567'
-            },
-            identification: { sourceId: 'sul:123' }
-          }
-        )
-      end
+      let(:cocina_object) { build(:collection, id: 'druid:bc123df4567') }
 
       it 'serializes the relations as RDF' do
         expect(doc).to be_equivalent_to <<~XML

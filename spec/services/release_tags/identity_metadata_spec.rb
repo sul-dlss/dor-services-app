@@ -3,58 +3,51 @@
 require 'rails_helper'
 
 RSpec.describe ReleaseTags::IdentityMetadata do
-  let(:pid) { 'druid:bb004bn8654' }
-  let(:collection_pid) { 'druid:xh235dd9059' }
+  let(:druid) { 'druid:bb004bn8654' }
+  let(:collection_druid) { 'druid:xh235dd9059' }
   let(:apo_id) { 'druid:qv648vd4392' }
   let(:cocina_item) do
-    Cocina::Models::DRO.new(externalIdentifier: pid,
-                            type: Cocina::Models::ObjectType.object,
-                            label: 'Bryar 250 Trans-American: July 9-10',
-                            version: 1,
-                            description: {
-                              title: [{ value: 'Bryar 250 Trans-American: July 9-10' }],
-                              purl: "https://purl.stanford.edu/#{pid.delete_prefix('druid:')}"
-                            },
-                            identification: { sourceId: 'sul:123' },
-                            access: {},
-                            structural: { isMemberOf: [collection_pid] },
-                            administrative: { hasAdminPolicy: apo_id,
-                                              releaseTags: [
-                                                {
-                                                  who: 'carrickr',
-                                                  what: 'collection',
-                                                  date: '2015-01-06T23:33:47.000+00:00',
-                                                  to: 'Revs',
-                                                  release: true
-                                                },
-                                                {
-                                                  who: 'carrickr',
-                                                  what: 'self',
-                                                  date: '2015-01-06T23:33:54.000+00:00',
-                                                  to: 'Revs',
-                                                  release: true
-                                                },
-                                                {
-                                                  who: 'carrickr',
-                                                  what: 'self',
-                                                  date: '2015-01-06T23:40:01.000+00:00',
-                                                  to: 'Revs',
-                                                  release: false
-                                                }
-                                              ] })
+    build(:dro, id: druid, collection_ids: [collection_druid]).new(
+      administrative: {
+        hasAdminPolicy: apo_id,
+        releaseTags: [
+          {
+            who: 'carrickr',
+            what: 'collection',
+            date: '2015-01-06T23:33:47.000+00:00',
+            to: 'Revs',
+            release: true
+          },
+          {
+            who: 'carrickr',
+            what: 'self',
+            date: '2015-01-06T23:33:54.000+00:00',
+            to: 'Revs',
+            release: true
+          },
+          {
+            who: 'carrickr',
+            what: 'self',
+            date: '2015-01-06T23:40:01.000+00:00',
+            to: 'Revs',
+            release: false
+          }
+        ]
+      }
+    )
   end
   let(:releases) { described_class.for(cocina_item) }
-  let(:bryar_trans_am_admin_tags) { AdministrativeTags.for(identifier: pid) }
+  let(:bryar_trans_am_admin_tags) { AdministrativeTags.for(identifier: druid) }
   let(:array_of_times) do
     ['2015-01-06 23:33:47Z', '2015-01-07 23:33:47Z', '2015-01-08 23:33:47Z', '2015-01-09 23:33:47Z'].map { |x| Time.parse(x).iso8601 }
   end
 
   before do
     # Create expected tags (see item fixture above) in the database
-    create(:administrative_tag, druid: pid, tag_label: create(:tag_label, tag: 'Project : Revs'))
-    create(:administrative_tag, druid: pid, tag_label: create(:tag_label, tag: 'Remediated By : 3.25.0'))
-    create(:administrative_tag, druid: pid, tag_label: create(:tag_label, tag: 'tag : test1'))
-    create(:administrative_tag, druid: pid, tag_label: create(:tag_label, tag: 'old : tag'))
+    create(:administrative_tag, druid: druid, tag_label: create(:tag_label, tag: 'Project : Revs'))
+    create(:administrative_tag, druid: druid, tag_label: create(:tag_label, tag: 'Remediated By : 3.25.0'))
+    create(:administrative_tag, druid: druid, tag_label: create(:tag_label, tag: 'tag : test1'))
+    create(:administrative_tag, druid: druid, tag_label: create(:tag_label, tag: 'old : tag'))
   end
 
   describe 'Tag sorting, combining, and comparision functions' do
@@ -141,19 +134,12 @@ RSpec.describe ReleaseTags::IdentityMetadata do
 
     context 'for an item that does not have any release tags' do
       let(:cocina_item) do
-        Cocina::Models::DRO.new(externalIdentifier: pid,
-                                type: Cocina::Models::ObjectType.object,
-                                label: 'Bryar 250 Trans-American: July 9-10',
-                                version: 1,
-                                description: {
-                                  title: [{ value: 'Bryar 250 Trans-American: July 9-10' }],
-                                  purl: "https://purl.stanford.edu/#{pid.delete_prefix('druid:')}"
-                                },
-                                identification: { sourceId: 'sul:123' },
-                                access: {},
-                                structural: {},
-                                administrative: { hasAdminPolicy: apo_id,
-                                                  releaseTags: [] })
+        build(:dro, id: druid).new(
+          administrative: {
+            hasAdminPolicy: apo_id,
+            releaseTags: []
+          }
+        )
       end
 
       it { is_expected.to eq({}) }
@@ -173,17 +159,7 @@ RSpec.describe ReleaseTags::IdentityMetadata do
 
   describe '#release_tags_for_item_and_all_governing_sets' do
     let(:collection_object) do
-      Cocina::Models::Collection.new(externalIdentifier: collection_pid,
-                                     label: 'Some collection',
-                                     version: 1,
-                                     description: {
-                                       title: [{ value: 'Some collection' }],
-                                       purl: "https://purl.stanford.edu/#{collection_pid.delete_prefix('druid:')}"
-                                     },
-                                     access: {},
-                                     type: Cocina::Models::ObjectType.collection,
-                                     administrative: { hasAdminPolicy: apo_id },
-                                     identification: { sourceId: 'sul:123' })
+      build(:collection, id: collection_druid, admin_policy_id: apo_id)
     end
     let(:collection_release_tags) do
       {
@@ -196,7 +172,7 @@ RSpec.describe ReleaseTags::IdentityMetadata do
 
     before do
       releases # call releases before subbing the invocation.
-      allow(CocinaObjectStore).to receive(:find).with(collection_pid).and_return(collection_object)
+      allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection_object)
       allow(described_class).to receive(:for).with(collection_object).and_return(collection_tags)
     end
 

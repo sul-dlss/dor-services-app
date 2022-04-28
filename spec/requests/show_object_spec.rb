@@ -24,31 +24,15 @@ RSpec.describe 'Get the object' do
 
     context 'when the object exists with minimal metadata' do
       let(:expected) do
-        Cocina::Models::DRO.new(
-          {
-            externalIdentifier: 'druid:bc123df4567',
-            type: Cocina::Models::ObjectType.object,
-            label: 'foo',
-            version: 1,
-            access: {
-              view: 'world',
-              copyright: 'All rights reserved unless otherwise indicated.',
-              download: 'world',
-              useAndReproductionStatement: 'Property rights reside with the repository...'
-            },
-            administrative: {
-              hasAdminPolicy: 'druid:df123cd4567'
-            },
-            description: {
-              title: [
-                { value: 'Hello' }
-              ],
-              purl: 'https://purl.stanford.edu/bc123df4567'
-            },
-            identification: {
-              sourceId: 'src:99999'
-            },
-            structural: {}
+        build(:dro, id: 'druid:bc123df4567', label: 'foo', title: 'Hello', admin_policy_id: 'druid:df123cd4567').new(
+          identification: {
+            sourceId: 'src:99999'
+          },
+          access: {
+            view: 'world',
+            copyright: 'All rights reserved unless otherwise indicated.',
+            download: 'world',
+            useAndReproductionStatement: 'Property rights reside with the repository...'
           }
         )
       end
@@ -144,31 +128,17 @@ RSpec.describe 'Get the object' do
       end
 
       let(:expected) do
-        Cocina::Models::DRO.new({
-                                  externalIdentifier: 'druid:bc123df4567',
-                                  type: Cocina::Models::ObjectType.object,
-                                  label: 'foo',
-                                  version: 1,
-                                  access: {
-                                    view: 'world',
-                                    copyright: 'All rights reserved unless otherwise indicated.',
-                                    download: 'world',
-                                    useAndReproductionStatement: 'Property rights reside with the repository...'
-                                  },
-                                  administrative: {
-                                    hasAdminPolicy: 'druid:df123cd4567'
-                                  },
-                                  description: {
-                                    title: [
-                                      { value: 'Hello' }
-                                    ],
-                                    purl: 'https://purl.stanford.edu/bc123df4567'
-                                  },
-                                  identification: {
-                                    sourceId: 'src:99999'
-                                  },
-                                  structural: {}
-                                })
+        build(:dro, id: 'druid:bc123df4567', label: 'foo', title: 'Hello', admin_policy_id: 'druid:df123cd4567').new(
+          access: {
+            view: 'world',
+            copyright: 'All rights reserved unless otherwise indicated.',
+            download: 'world',
+            useAndReproductionStatement: 'Property rights reside with the repository...'
+          },
+          identification: {
+            sourceId: 'src:99999'
+          }
+        )
       end
 
       it 'returns the object without the embargo' do
@@ -234,49 +204,36 @@ RSpec.describe 'Get the object' do
       end
 
       let(:expected) do
-        Cocina::Models::DRO.new({
-                                  externalIdentifier: 'druid:bc123df4567',
-                                  type: Cocina::Models::ObjectType.image,
-                                  label: 'foo',
-                                  version: 1,
-                                  access: {
-                                    view: 'world',
-                                    copyright: 'All rights reserved unless otherwise indicated.',
-                                    download: 'world',
-                                    useAndReproductionStatement: 'Property rights reside with the repository...'
-                                  },
-                                  administrative: {
-                                    hasAdminPolicy: 'druid:df123cd4567'
-                                  },
-                                  description: {
-                                    title: [
-                                      { value: 'Hello' }
-                                    ],
-                                    purl: 'https://purl.stanford.edu/bc123df4567'
-                                  },
-                                  identification: {
-                                    sourceId: 'src:99999'
-                                  },
-                                  structural: {
-                                    hasMemberOrders: [
-                                      {
-                                        members: [
-                                          'druid:kq126jw7402',
-                                          'druid:cv761kr7119',
-                                          'druid:kn300wd1779',
-                                          'druid:rz617vr4473',
-                                          'druid:sd322dt2118',
-                                          'druid:hp623ch4433',
-                                          'druid:sq217qj5005',
-                                          'druid:vd823mb5658',
-                                          'druid:zp230ft8517',
-                                          'druid:xx933wk5286',
-                                          'druid:qf828rv2163'
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                })
+        build(:dro, id: 'druid:bc123df4567', label: 'foo', title: 'Hello', admin_policy_id: 'druid:df123cd4567', type: Cocina::Models::ObjectType.image).new(
+          access: {
+            view: 'world',
+            copyright: 'All rights reserved unless otherwise indicated.',
+            download: 'world',
+            useAndReproductionStatement: 'Property rights reside with the repository...'
+          },
+          identification: {
+            sourceId: 'src:99999'
+          },
+          structural: {
+            hasMemberOrders: [
+              {
+                members: [
+                  'druid:kq126jw7402',
+                  'druid:cv761kr7119',
+                  'druid:kn300wd1779',
+                  'druid:rz617vr4473',
+                  'druid:sd322dt2118',
+                  'druid:hp623ch4433',
+                  'druid:sq217qj5005',
+                  'druid:vd823mb5658',
+                  'druid:zp230ft8517',
+                  'druid:xx933wk5286',
+                  'druid:qf828rv2163'
+                ]
+              }
+            ]
+          }
+        )
       end
 
       it 'returns the object' do
@@ -437,7 +394,7 @@ RSpec.describe 'Get the object' do
     end
   end
 
-  context 'when the requested object is an collection' do
+  context 'when the requested object is a collection' do
     before do
       object.descMetadata.title_info.main_title = 'Hello'
     end
@@ -449,24 +406,10 @@ RSpec.describe 'Get the object' do
     end
 
     let(:expected) do
-      Cocina::Models::Collection.new(
-        externalIdentifier: 'druid:bc123df4567',
-        type: Cocina::Models::ObjectType.collection,
-        label: 'foo',
-        version: 1,
+      build(:collection, id: 'druid:bc123df4567', title: 'Hello', label: 'foo', admin_policy_id: 'druid:df123cd4567').new(
         access: {
           view: 'world'
-        },
-        administrative: {
-          hasAdminPolicy: 'druid:df123cd4567'
-        },
-        description: {
-          title: [
-            { value: 'Hello' }
-          ],
-          purl: 'https://purl.stanford.edu/bc123df4567'
-        },
-        identification: {}
+        }
       )
     end
 
