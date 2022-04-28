@@ -40,18 +40,20 @@ RSpec.describe ThumbnailService do
     context 'for an item' do
       let(:druid) { 'druid:bc123df4567' }
 
+      let(:object) do
+        Cocina::Models::DRO.new(externalIdentifier: druid,
+                                type: Cocina::Models::ObjectType.object,
+                                label: 'A new map of Africa',
+                                version: 1,
+                                description: description,
+                                identification: { sourceId: 'sul:123' },
+                                access: {},
+                                administrative: { hasAdminPolicy: apo_druid },
+                                structural: structural)
+      end
+
       context 'with no structural metadata' do
-        let(:object) do
-          Cocina::Models::DRO.new(externalIdentifier: druid,
-                                  type: Cocina::Models::ObjectType.object,
-                                  label: 'A new map of Africa',
-                                  version: 1,
-                                  description: description,
-                                  identification: { sourceId: 'sul:123' },
-                                  access: {},
-                                  administrative: { hasAdminPolicy: apo_druid },
-                                  structural: {})
-        end
+        let(:structural) { {} }
 
         it 'returns nil' do
           expect(subject).to be_nil
@@ -87,17 +89,6 @@ RSpec.describe ThumbnailService do
             }]
           }
         end
-        let(:object) do
-          Cocina::Models::DRO.new(externalIdentifier: druid,
-                                  type: Cocina::Models::ObjectType.object,
-                                  label: 'A new map of Africa',
-                                  version: 1,
-                                  description: description,
-                                  identification: { sourceId: 'sul:123' },
-                                  access: {},
-                                  administrative: { hasAdminPolicy: apo_druid },
-                                  structural: structural)
-        end
 
         it 'finds the first image as the thumb' do
           expect(subject).to eq('bc123df4567/wt183gy6220_00_0001.jp2')
@@ -111,17 +102,6 @@ RSpec.describe ThumbnailService do
               members: ['cg767mn6478_1/2542A.jp2']
             }]
           }
-        end
-        let(:object) do
-          Cocina::Models::DRO.new(externalIdentifier: druid,
-                                  type: Cocina::Models::ObjectType.object,
-                                  label: 'A new map of Africa',
-                                  version: 1,
-                                  description: description,
-                                  identification: { sourceId: 'sul:123' },
-                                  access: {},
-                                  administrative: { hasAdminPolicy: apo_druid },
-                                  structural: structural)
         end
 
         it 'returns the image as the thumb' do
@@ -158,16 +138,39 @@ RSpec.describe ThumbnailService do
             }]
           }
         end
-        let(:object) do
-          Cocina::Models::DRO.new(externalIdentifier: druid,
-                                  type: Cocina::Models::ObjectType.object,
-                                  label: 'A new map of Africa',
-                                  version: 1,
-                                  description: description,
-                                  identification: { sourceId: 'sul:123' },
-                                  access: {},
-                                  administrative: { hasAdminPolicy: apo_druid },
-                                  structural: structural)
+
+        it 'returns nil' do
+          expect(subject).to be_nil
+        end
+      end
+
+      context 'when file has no mime-type' do
+        let(:structural) do
+          {
+            contains: [{
+              type: Cocina::Models::FileSetType.image,
+              externalIdentifier: 'wt183gy6220',
+              label: 'File 1',
+              version: 1,
+              structural: {
+                contains: [{
+                  type: Cocina::Models::ObjectType.file,
+                  externalIdentifier: 'wt183gy6220_1',
+                  label: 'File 1',
+                  filename: 'some_file.pdf',
+                  size: 3_182_927,
+                  version: 1,
+                  access: {},
+                  administrative: {
+                    publish: false,
+                    sdrPreserve: false,
+                    shelve: false
+                  },
+                  hasMessageDigests: []
+                }]
+              }
+            }]
+          }
         end
 
         it 'returns nil' do

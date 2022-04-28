@@ -18,7 +18,7 @@ class ThumbnailService
 
     object.structural.contains.each do |file_set|
       file_set.structural.contains.each do |file|
-        next unless file.hasMimeType.include?(MIME_TYPE)
+        next unless file.hasMimeType == MIME_TYPE
 
         return "#{object.externalIdentifier.delete_prefix('druid:')}/#{file.filename}"
       end
