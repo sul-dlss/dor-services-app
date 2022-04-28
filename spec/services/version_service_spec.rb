@@ -51,7 +51,6 @@ RSpec.describe VersionService do
       allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
       allow(CocinaObjectStore).to receive(:save)
-      allow(VersionMigrationService).to receive(:find_and_migrate)
       ObjectVersion.create(druid: druid, version: 1, tag: '1.0.0', description: 'new version')
       allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
     end
@@ -62,7 +61,6 @@ RSpec.describe VersionService do
         expect(cocina_object).to have_received(:new).with(version: 2)
         expect(ObjectVersion.current_version(druid).version).to eq(2)
         expect(CocinaObjectStore).to have_received(:save)
-        expect(VersionMigrationService).to have_received(:find_and_migrate).with(druid)
         expect(workflow_client).to have_received(:lifecycle).with(druid: druid, milestone_name: 'accessioned')
         expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1')
         expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '1')
@@ -91,7 +89,6 @@ RSpec.describe VersionService do
         expect(ObjectVersion.current_version(druid).version).to eq(2)
         expect(ObjectVersion).not_to have_received(:sync_then_increment_version)
         expect(CocinaObjectStore).to have_received(:save)
-        expect(VersionMigrationService).to have_received(:find_and_migrate).with(druid)
         expect(workflow_client).to have_received(:lifecycle).with(druid: druid, milestone_name: 'accessioned')
         expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'opened', version: '1')
         expect(workflow_client).to have_received(:active_lifecycle).with(druid: druid, milestone_name: 'submitted', version: '1')
@@ -229,7 +226,6 @@ RSpec.describe VersionService do
 
     before do
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
-      allow(VersionMigrationService).to receive(:find_and_migrate)
       ObjectVersion.create(druid: druid, version: 1, tag: '1.0.0', description: 'Initial Version')
       ObjectVersion.create(druid: druid, version: 2, tag: '1.1.0', description: 'Version 1.1.0')
     end

@@ -52,9 +52,6 @@ class VersionService
   # @raise [Dor::Exception] if the object hasn't been accessioned, or if a version is already opened
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   def open(significance:, description:, opening_user_name:, assume_accessioned:)
-    # This can be removed after migration.
-    VersionMigrationService.find_and_migrate(druid)
-
     raise ArgumentError, 'description and significance are required to open a new version' if description.blank? || significance.blank?
 
     ensure_openable!(assume_accessioned: assume_accessioned)
@@ -95,9 +92,6 @@ class VersionService
   # @raise [Dor::Exception] if the object hasn't been opened for versioning, or if accessionWF has
   #   already been instantiated or the current version is missing a tag or description
   def close(description:, significance:, user_name:, start_accession: true)
-    # This can be removed after migration.
-    VersionMigrationService.find_and_migrate(druid)
-
     ObjectVersion.update_current_version(druid: druid, description: description, significance: significance.to_sym) if description || significance
 
     raise Dor::Exception, "Trying to close version #{cocina_object.version} on #{druid} which is not opened for versioning" unless open_for_versioning?

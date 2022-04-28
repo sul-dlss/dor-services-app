@@ -4,9 +4,6 @@ class VersionsController < ApplicationController
   before_action :load_cocina_object
 
   def index
-    # This can be removed after migration.
-    VersionMigrationService.find_and_migrate(@cocina_object.externalIdentifier)
-
     object_versions = ObjectVersion.where(druid: @cocina_object.externalIdentifier)
 
     return render json: {} if object_versions.empty?

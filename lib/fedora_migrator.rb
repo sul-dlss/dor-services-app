@@ -76,7 +76,6 @@ class FedoraMigrator
 
     return 'skipped' unless MigrationFilter.migrate?(Nokogiri::XML(fedora_obj.rels_ext.to_rels_ext))
 
-    VersionMigrationService.migrate(fedora_obj)
     'success'
   rescue CocinaObjectStore::CocinaObjectNotFoundError => e
     Rails.logger.warn("#{druid} was not found during migration: #{e.inspect}")
