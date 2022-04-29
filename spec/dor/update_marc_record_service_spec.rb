@@ -601,7 +601,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
                 type: 'date/sequential designation'
               }
             ]
-
           }
         )
       end
@@ -687,7 +686,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
           description: {
             title: [
               {
-                value: 'Some label',
                 status: 'primary',
                 structuredValue: [
                   {
@@ -733,8 +731,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
           description: {
             title: [
               {
-                value: 'Some label',
-                status: 'primary',
                 structuredValue: [
                   {
                     value: 'Some label',
@@ -770,6 +766,82 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
       it 'returns the label from the first title' do
         expect(umrs.get_x2_part_info).to eq '|xlabel:Issue #3. 2011'
+      end
+    end
+
+    context 'with descMetadata with parallel title' do
+      let(:cocina_object) do
+        build(:dro, id: druid).new(
+          description: {
+            title: [
+              {
+                parallelValue: [
+                  {
+                    structuredValue: [
+                      {
+                        value: 'Some label',
+                        type: 'main title'
+                      },
+                      {
+                        value: 'Issue #3',
+                        type: 'part name'
+                      }
+                    ]
+                  },
+                  {
+                    value: 'Some other label'
+                  }
+                ]
+              }
+            ],
+            purl: "https://purl.stanford.edu/#{bare_druid}"
+          }
+        )
+      end
+
+      it 'returns the label from the parallel title' do
+        expect(umrs.get_x2_part_info).to eq '|xlabel:Issue #3'
+      end
+    end
+
+    context 'with descMetadata with parallel title with a sequential designation in a note' do
+      let(:cocina_object) do
+        build(:dro, id: druid).new(
+          description: {
+            title: [
+              {
+                parallelValue: [
+                  {
+                    structuredValue: [
+                      {
+                        value: 'Some label',
+                        type: 'main title'
+                      },
+                      {
+                        value: 'Issue #3',
+                        type: 'part name'
+                      }
+                    ]
+                  },
+                  {
+                    value: 'Some other label'
+                  }
+                ]
+              }
+            ],
+            purl: "https://purl.stanford.edu/#{bare_druid}",
+            note: [
+              {
+                value: '123',
+                type: 'date/sequential designation'
+              }
+            ]
+          }
+        )
+      end
+
+      it 'returns the label from the parallel title' do
+        expect(umrs.get_x2_part_info).to eq '|xlabel:Issue #3|xsort:123'
       end
     end
   end
