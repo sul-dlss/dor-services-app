@@ -160,21 +160,9 @@ module Dor
     end
 
     def get_x2_part_info
-      title_info = @cocina_object.description&.title&.first
-      return unless title_info.respond_to?(:structuredValue) && title_info.structuredValue
-
-      part_parts = title_info.structuredValue.select { |part| ['part name', 'part number'].include? part.type }
-
-      part_label = part_parts.filter_map(&:value).join(parts_delimiter(part_parts))
-
       str = ''
-      str += "|xlabel:#{part_label}" unless part_label.empty?
-
-      part_sort_from_title = title_info.structuredValue.find { |part| part.type == 'date/sequential designation' }
-      part_sort_from_note = @cocina_object.description.note.find { |note| note.type == 'date/sequential designation' }
-      return str unless part_sort_from_title || part_sort_from_note
-
-      str += "|xsort:#{[part_sort_from_note, part_sort_from_title].flatten.compact.first.value}"
+      str += "|xlabel:#{part_label}" if part_label.present?
+      str += "|xsort:#{part_sort}" if part_sort.present?
       str
     end
 
@@ -237,6 +225,29 @@ module Dor
     # @return [String] thumbnail filename (nil if none found)
     def thumb
       @thumb ||= ERB::Util.url_encode(@thumbnail_service.thumb).presence
+    end
+
+    def part_label
+      @part_label ||= begin
+        title_info = @cocina_object.description.title.first
+        # Need to check both structuredValue on title_info and in parallelValues
+        structured_values = []
+        structured_values << title_info.structuredValue if title_info.structuredValue.present?
+        title_info.parallelValue.each { |parallel_value| structured_values << parallel_value.structuredValue if parallel_value.structuredValue.present? }
+
+        part_parts = []
+        structured_values.each do |structured_value|
+          structured_value.each do |part|
+            part_parts << part if ['part name', 'part number'].include? part.type
+          end
+        end
+
+        part_parts.filter_map(&:value).join(parts_delimiter(part_parts))
+      end
+    end
+
+    def part_sort
+      @part_sort ||= @cocina_object.description.note.find { |note| note.type == 'date/sequential designation' }&.value
     end
   end
   # rubocop:enable Metrics/ClassLength
