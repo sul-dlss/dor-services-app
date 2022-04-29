@@ -58,16 +58,16 @@ docker-compose up db # use -d to daemonize/run in background
 And if you haven't yet prepared the test database, run:
 
 ```shell
-RAILS_ENV=test rails db:test:prepare
+RAILS_ENV=test bundle exec rails db:test:prepare
 ```
 
 To run the tests:
 
-  `bundle exec rake`
+  `bundle exec rspec`
 
-To run rubocop separately (auto run with tests):
+To run rubocop:
 
-  `bundle exec rake rubocop`
+  `bundle exec rubocop`
 
 ## Console and Development Server
 
