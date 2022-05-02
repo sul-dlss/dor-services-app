@@ -98,7 +98,7 @@ GEM
       sshkit (~> 1.2)
     capistrano-shared_configs (0.2.2)
     chronic (0.10.2)
-    cocina-models (0.76.0)
+    cocina-models (0.77.0)
       activesupport
       deprecation
       dry-struct (~> 1.0)
@@ -551,7 +551,7 @@ DEPENDENCIES
   capistrano-rails
   capistrano-rvm
   capistrano-shared_configs
-  cocina-models (~> 0.76.0)
+  cocina-models (~> 0.77.0)
   committee (~> 4.4)
   config
   datacite (~> 0.3.0)
