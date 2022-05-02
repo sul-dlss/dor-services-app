@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Used for Ruderman Map Collection dates
+# see https://github.com/sul-dlss/dor-services-app/issues/3965
+# druids are on sdr-deploy in /opt/app/deploy/dor-services-app/ruderman.txt
+require_relative '../../config/environment'
+require_relative '../../lib/report'
+
+date_elements = %w[
+  dateCreated
+  dateIssued
+  dateCaptured
+  dateValid
+  dateModified
+  copyrightDate
+  dateOther
+].freeze
+
+Report.new(name: 'desc-date_ranges', dsids: ['descMetadata']).run do |ng_xml|
+  mods_paths = date_elements.map { |element| "//mods:#{element}[@point='start'] | //mods:#{element}[@point='end']" }.join(' | ')
+
+  ng_xml.xpath(mods_paths, mods: MODS_NS).map(&:content).join(';').presence
+end
