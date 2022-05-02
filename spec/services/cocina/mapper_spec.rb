@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::Mapper do
-  subject(:cocina_model) { described_class.build(fedora_object) }
+  subject(:cocina_model) { described_class.build(fedora_object, notifier: DataErrorNotifier.new) }
 
   context 'when object is a Dor::Item' do
     let(:fedora_object) do
