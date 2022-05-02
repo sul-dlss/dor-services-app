@@ -142,13 +142,13 @@ RSpec.describe CocinaObjectStore do
         let(:saved_cocina_object) { cocina_object_store.save(cocina_object_with_metadata) }
         let(:cocina_object_store) { described_class.new }
 
-        let(:lock) { ActiveSupport::Digest.hexdigest(druid + date.utc.iso8601) }
+        let(:lock) { 'bad lock' }
 
         before do
           allow(Dor).to receive(:find).and_return(item)
         end
 
-        it 'maps and saves to Fedora' do
+        it 'raises' do
           expect { cocina_object_store.save(cocina_object_with_metadata) }.to raise_error(CocinaObjectStore::StaleLockError)
         end
       end
@@ -172,19 +172,37 @@ RSpec.describe CocinaObjectStore do
           allow(described_class).to receive(:new).and_return(cocina_object_store)
           allow(Dor).to receive(:find).and_return(item)
           allow(Cocina::ObjectUpdater).to receive(:run)
-          allow(cocina_object_store).to receive(:cocina_to_ar_save).and_return([date, date, 'abc123'])
           allow(cocina_object_store).to receive(:ar_exists?).and_return(true)
           allow(cocina_object_store).to receive(:add_tags_for_update)
           allow(EventFactory).to receive(:create)
         end
 
-        it 'maps and saves to Fedora and Postgres' do
-          expect(saved_cocina_object).to cocina_object_with(cocina_object)
-          expect(saved_cocina_object).to be_instance_of(Cocina::Models::DROWithMetadata)
-          expect(Dor).to have_received(:find).with(druid)
-          expect(Cocina::ObjectUpdater).to have_received(:run).with(item, cocina_object)
-          expect(cocina_object_store).to have_received(:cocina_to_ar_save).with(cocina_object_with_metadata, skip_lock: false)
-          expect(cocina_object_store).to have_received(:ar_exists?).with(druid)
+        context 'when object found in datastore' do
+          before do
+            allow(cocina_object_store).to receive(:cocina_to_ar_save).and_return([date, date, 'abc123'])
+          end
+
+          it 'maps and saves to Fedora and Postgres' do
+            expect(saved_cocina_object).to cocina_object_with(cocina_object)
+            expect(saved_cocina_object).to be_instance_of(Cocina::Models::DROWithMetadata)
+            expect(Dor).to have_received(:find).with(druid)
+            expect(Cocina::ObjectUpdater).to have_received(:run).with(item, cocina_object)
+            expect(cocina_object_store).to have_received(:cocina_to_ar_save).with(cocina_object_with_metadata, skip_lock: false)
+            expect(cocina_object_store).to have_received(:ar_exists?).with(druid)
+          end
+        end
+
+        context 'when stale lock' do
+          before do
+            allow(cocina_object_store).to receive(:cocina_to_ar_save).and_raise(CocinaObjectStore::StaleLockError)
+          end
+
+          it 'raises' do
+            expect { cocina_object_store.save(cocina_object_with_metadata) }.to raise_error(CocinaObjectStore::StaleLockError)
+            # When PG stale lock, don't save to Fedora.
+            expect(Cocina::ObjectUpdater).not_to have_received(:run)
+            expect(Dor).not_to have_received(:find)
+          end
         end
       end
 

@@ -92,10 +92,11 @@ class CocinaObjectStore
   def save(cocina_object, skip_lock: false)
     validate(cocina_object)
     ar_save = Settings.enabled_features.postgres && ar_exists?(cocina_object.externalIdentifier)
-    # Skip the lock check for fedora if saving to PG.
-    (created_at, modified_at, lock) = cocina_to_fedora_save(cocina_object, skip_lock: skip_lock || ar_save)
     # Only update if already exists in PG (i.e., added by create or migration).
-    (created_at, modified_at, lock) = cocina_to_ar_save(cocina_object, skip_lock: skip_lock) if ar_save
+    ar_result = cocina_to_ar_save(cocina_object, skip_lock: skip_lock) if ar_save
+    # Skip the lock check for fedora if saving to PG.
+    fedora_result = cocina_to_fedora_save(cocina_object, skip_lock: skip_lock || ar_save)
+    (created_at, modified_at, lock) = ar_result || fedora_result
     add_tags_for_update(cocina_object)
 
     cocina_object_without_metadata = Cocina::Models.without_metadata(cocina_object)
