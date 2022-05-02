@@ -30,7 +30,7 @@ RSpec.shared_examples 'valid APO mappings' do
     #  from data store (Fedora) and back
     Cocina::Normalizers::AdminNormalizer.normalize(admin_ng_xml: Nokogiri::XML(admin_metadata_xml)).to_xml
   end
-  let(:actual_cocina_props) { Cocina::FromFedora::APO.props(orig_fedora_apo_mock) }
+  let(:actual_cocina_props) { Cocina::FromFedora::APO.props(orig_fedora_apo_mock, notifier: DataErrorNotifier.new) }
   let(:expected_cocina_props) do
     {
       administrative: cocina.deep_dup,
@@ -163,7 +163,7 @@ RSpec.shared_examples 'valid APO mappings' do
       )
     end
 
-    let(:roundtrip_cocina_props) { Cocina::FromFedora::APO.props(roundtrip_fedora_apo_mock) }
+    let(:roundtrip_cocina_props) { Cocina::FromFedora::APO.props(roundtrip_fedora_apo_mock, notifier: DataErrorNotifier.new) }
 
     it 'maps to expected object props' do
       expect(roundtrip_cocina_props).to be_deep_equal(expected_cocina_props)
