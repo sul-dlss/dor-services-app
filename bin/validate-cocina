@@ -14,11 +14,31 @@ Honeybadger.configure do |config|
   config.exceptions.ignore += [Cocina::Models::ValidationError]
 end
 
+options = { processes: 4 }
+parser = OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/migrate [options]'
+  option_parser.on('-pPROCESSES', '--processes PROCESSES', Integer, "Number of processes. Default is #{options[:processes]}.")
+  option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size per type, otherwise all objects.')
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
+end
+
+parser.parse!(into: options)
+
 # how many druids to process as a single advance unit of the progress bar
 def num_for_progress_advance(count)
   return 1 if count < 100
 
   count / 100
+end
+
+def on_finish(clazz, results, progress_bar, writer)
+  results.each do |(druid, error)|
+    writer << [druid, clazz.name, error.message] if error
+  end
+  progress_bar.advance(results.size)
 end
 
 def tty_progress_bar(count, clazz_name)
@@ -30,40 +50,31 @@ def tty_progress_bar(count, clazz_name)
   )
 end
 
-def validate(clazz, sample_size, writer)
-  objs = if sample_size
-           clazz.limit(sample_size)
-         else
-           clazz.all
-         end
+def validate(clazz, sample_size, writer, processes)
+  obj_ids = if sample_size
+              clazz.limit(sample_size).ids
+            else
+              clazz.ids
+            end
 
-  progress_bar = tty_progress_bar(objs.count, clazz.name)
+  progress_bar = tty_progress_bar(obj_ids.size, clazz.name)
   progress_bar.start
 
-  objs.find_each do |obj|
-    progress_bar.advance(druid: obj.external_identifier)
-    obj.to_cocina
-  rescue Cocina::Models::ValidationError => e
-    writer << [obj.external_identifier, clazz.name, e.message]
+  Parallel.each(obj_ids.each_slice(100),
+                in_processes: processes,
+                finish: ->(_, _, results) { on_finish(clazz, results, progress_bar, writer) }) do |slice_obj_ids|
+    clazz.find(slice_obj_ids).map do |obj|
+      obj.to_cocina
+      [obj.external_identifier, nil]
+    rescue Cocina::Models::ValidationError => e
+      [obj.external_identifier, e]
+    end
   end
 end
-
-options = {}
-parser = OptionParser.new do |option_parser|
-  option_parser.banner = 'Usage: bin/migrate [options]'
-
-  option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size per type, otherwise all objects.')
-  option_parser.on('-h', '--help', 'Displays help.') do
-    puts option_parser
-    exit
-  end
-end
-
-parser.parse!(into: options)
 
 CSV.open('validate-cocina.csv', 'w') do |writer|
   writer << %w[type druid message]
-  validate(Dro, options[:sample_size], writer)
-  validate(Collection, options[:sample_size], writer)
-  validate(AdminPolicy, options[:sample_size], writer)
+  validate(Dro, options[:sample_size], writer, options[:processes])
+  validate(Collection, options[:sample_size], writer, options[:processes])
+  validate(AdminPolicy, options[:sample_size], writer, options[:processes])
 end
