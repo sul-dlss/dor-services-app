@@ -172,8 +172,4 @@ class AdministrativeTags
   private
 
   attr_reader :identifier
-
-  def tags_relation
-    AdministrativeTag.arel_table[:tag]
-  end
 end

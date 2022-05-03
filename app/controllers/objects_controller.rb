@@ -205,23 +205,8 @@ class ObjectsController < ApplicationController
     render status: response.status, content_type: response.headers['Content-Type'], body: response.body
   end
 
-  def create_params
-    params.except(:action, :controller).to_unsafe_h.merge(body_params)
-  end
-
   def default_start_accession_workflow
     'assemblyWF'
-  end
-
-  def body_params
-    case request.content_type
-    when 'application/xml', 'text/xml'
-      Hash.from_xml(request.body.read)
-    when 'application/json', 'text/json'
-      JSON.parse(request.body.read)
-    else
-      {}
-    end
   end
 
   def from_etag(etag)
