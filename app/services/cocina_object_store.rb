@@ -36,7 +36,6 @@ class CocinaObjectStore
   # @param [Cocina::Models::DRO|Collection|AdminPolicy|DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata] cocina_object
   # @param [#create] event_factory creates events
   # @param [boolean] skip_lock do not perform an optimistic lock check
-  # @raise [Cocina::RoundtripValidationError] raised when validating roundtrip mapping fails. This error will no longer be raised when Fedora is removed.
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
   # @raise [CocinaObjectNotFoundError] raised if the cocina object does not already exist in the datastore.
   # @raise [StateLockError] raised if optimistic lock failed.

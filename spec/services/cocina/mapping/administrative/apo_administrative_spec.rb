@@ -80,26 +80,6 @@ RSpec.shared_examples 'valid APO mappings' do
       end
     end
 
-    describe 'Cocina::ToFedora::DefaultRights' do
-      let(:roundtrip_rights_metadata_xml) { defined?(roundtrip_default_object_rights_xml) ? roundtrip_default_object_rights_xml : default_object_rights_xml }
-
-      let(:normalized_orig_rights_xml) do
-        Cocina::Normalizers::RightsNormalizer.normalize(datastream: orig_fedora_apo_mock.defaultObjectRights)
-      end
-
-      before do
-        Cocina::ToFedora::DefaultRights.write(orig_fedora_apo_mock.defaultObjectRights, actual_cocina_apo_admin.accessTemplate)
-      end
-
-      it 'roundtrips to expected defaultObjectRights.xml' do
-        expect(orig_fedora_apo_mock.defaultObjectRights.ng_xml).to be_equivalent_to(roundtrip_rights_metadata_xml)
-      end
-
-      it 'roundtrips to normalized original defaultObjectRights.xml' do
-        expect(orig_fedora_apo_mock.defaultObjectRights.ng_xml).to be_equivalent_to(normalized_orig_rights_xml)
-      end
-    end
-
     describe 'Cocina::ToFedora::Roles' do
       let(:actual_role_xml) do
         Cocina::ToFedora::Roles.write(roundtrip_fedora_apo, actual_cocina_apo_admin.roles)
