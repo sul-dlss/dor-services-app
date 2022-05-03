@@ -62,10 +62,7 @@ Rails.application.routes.draw do
       resource :shelve, only: [:create]
 
       resource :metadata, only: [] do
-        resources :datastreams, only: %i[index show]
-
         collection do
-          patch 'legacy', action: :update_legacy_metadata
           get 'dublin_core'
           get 'descriptive'
           get 'public_xml'
