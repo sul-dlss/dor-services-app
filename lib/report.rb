@@ -3,7 +3,6 @@
 
 require 'optparse'
 require 'fedora_cache'
-require 'fedora_loader'
 
 MODS_NS = Cocina::Models::Mapping::FromMods::Description::DESC_METADATA_NS
 
@@ -32,16 +31,7 @@ class Report
 
       next unless report_result
 
-      if options[:fast]
-        Result.new(druid, nil, nil, report_result)
-      else
-        begin
-          fedora_obj = loader.load(druid)
-          Result.new(druid, fedora_obj.admin_policy_object_id, fedora_obj.catkey, report_result)
-        rescue FedoraLoader::Unmapped
-          Result.new(druid, nil, nil, report_result)
-        end
-      end
+      Result.new(druid, nil, nil, report_result)
     end
 
     write_report(results)
@@ -112,10 +102,6 @@ class Report
 
   def cache
     @cache ||= FedoraCache.new
-  end
-
-  def loader
-    @loader ||= FedoraLoader.new(cache: cache)
   end
 
   def druids
