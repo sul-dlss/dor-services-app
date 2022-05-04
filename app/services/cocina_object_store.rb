@@ -309,8 +309,7 @@ class CocinaObjectStore
   def sync_from_symphony(cocina_request_object, druid)
     return cocina_request_object if cocina_request_object.admin_policy?
 
-    catkeys = catkeys_for(cocina_request_object)
-
+    catkeys = RefreshMetadataAction.identifiers(cocina_object: cocina_request_object)
     return cocina_request_object if catkeys.blank?
 
     result = RefreshMetadataAction.run(identifiers: catkeys, cocina_object: cocina_request_object, druid: druid)
