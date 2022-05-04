@@ -809,7 +809,7 @@ paths:
                 type: string
                 format: uri
         '422':
-          description: 'The object you provided was not a Dor::Item and could not be shelved'
+          description: 'The object you provided was not an item and could not be shelved'
           content:
             application/json:
               schema:
