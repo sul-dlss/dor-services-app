@@ -322,10 +322,6 @@ class CocinaObjectStore
     cocina_request_object.new(label: label, description: description_props)
   end
 
-  def catkeys_for(cocina_request_object)
-    cocina_request_object.identification&.catalogLinks&.filter_map { |clink| "catkey:#{clink.catalogRecordId}" if clink.catalog == 'symphony' && clink.refresh }
-  end
-
   # Converts from Cocina::Models::RequestDRO|RequestCollection|RequestAdminPolicy to Cocina::Models::DRO|Collection||AdminPolicy
   # rubocop:disable Metrics/AbcSize
   # rubocop:disable Metrics/CyclomaticComplexity
