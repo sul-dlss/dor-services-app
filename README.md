@@ -38,6 +38,8 @@ Note that the application has a web UI for monitoring Sidekiq activity at `/queu
 
 ## Running Tests
 
+NOTE: you need to be running at least Ruby 2.7.4 in order for the tests to pass (using the cocina factories).
+
 First, ensure the database container is spun up:
 
 ```shell
@@ -137,7 +139,7 @@ Usage: bin/generate-cache [options]
     -a, --auto                       Automatically choose sample based on 14 day cycle.
     -d, --druids DRUIDS              List of druids (instead of druids.txt).
     -i, --input INPUT                Input filename, otherwise druids.txt.
-    -k, --skip SKIP                  Number of druids to skip.    
+    -k, --skip SKIP                  Number of druids to skip.
     -h, --help                       Displays help.
 
 $ bin/generate-cache
@@ -211,7 +213,7 @@ $ bin/validate-to-mods -h
 Usage: bin/validate-to-mods [options]
     -s, --sample SAMPLE              Sample size, otherwise all druids.
     -u, --unique-filename            Result file named for branch and runtime
-    -i, --input FILENAME             File containing list of druids (instead of druids.txt).    
+    -i, --input FILENAME             File containing list of druids (instead of druids.txt).
     -h, --help                       Displays help.
 
 $ bin/validate-to-mods
@@ -234,7 +236,7 @@ Usage: bin/validate-desc-cocina-roundtrip [options]
     -r, --random                     Select random druids.
     -f, --fast                       Do not write results files.
     -d, --druids DRUIDS              List of druids (instead of druids.txt).
-    -i, --input FILENAME             File containing list of druids (instead of druids.txt).    
+    -i, --input FILENAME             File containing list of druids (instead of druids.txt).
     -h, --help                       Displays help.
 
 $ bin/validate-desc-cocina-roundtrip -s 10 -r
