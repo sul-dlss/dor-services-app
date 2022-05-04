@@ -301,7 +301,7 @@ RSpec.describe CocinaObjectStore do
         end
       end
 
-      context 'when refreshing from symphony' do
+      context 'when refreshing from symphony with a refresh=true catkey' do
         let(:catalog_links) { [Cocina::Models::CatalogLink.new(catalog: 'symphony', catalogRecordId: 'abc123', refresh: true)] }
         let(:description_props) do
           {
@@ -331,6 +331,38 @@ RSpec.describe CocinaObjectStore do
           expect(cocina_object_store.create(requested_cocina_object)).to cocina_object_with cocina_object_with_metadata
           expect(RefreshMetadataAction).to have_received(:run).with(identifiers: ['catkey:abc123'], cocina_object: requested_cocina_object, druid: druid)
           expect(requested_cocina_object).to have_received(:new).with(label: 'The Well-Grounded Rubyist', description: { title: [{ value: 'The Well-Grounded Rubyist' }] })
+        end
+      end
+
+      context 'when skips refreshing from symphony with a refresh=false catkey' do
+        let(:catalog_links) { [Cocina::Models::CatalogLink.new(catalog: 'symphony', catalogRecordId: 'abc123', refresh: false)] }
+        let(:description_props) do
+          {
+            title: [{ value: 'The Well-Grounded Rubyist' }],
+            purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+          }
+        end
+
+        let(:mods) do
+          Nokogiri::XML(
+            <<~XML
+              <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.7">
+                <titleInfo>
+                  <title>The Well-Grounded Rubyist</title>
+                </titleInfo>
+              </mods>
+            XML
+          )
+        end
+
+        before do
+          allow(requested_cocina_object).to receive(:new).and_return(requested_cocina_object)
+        end
+
+        it 'does not add to description' do
+          expect(cocina_object_store.create(requested_cocina_object)).to cocina_object_with cocina_object_with_metadata
+          expect(RefreshMetadataAction).not_to have_received(:run).with(identifiers: ['catkey:abc123'], cocina_object: requested_cocina_object, druid: druid)
+          expect(requested_cocina_object).not_to have_received(:new).with(label: 'The Well-Grounded Rubyist', description: { title: [{ value: 'The Well-Grounded Rubyist' }] })
         end
       end
 

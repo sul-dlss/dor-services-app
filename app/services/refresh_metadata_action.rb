@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-# Look into identityMetadata for compliant ids and use them to fetch
-# descriptive metadata from Symphony.  Put the fetched value in the descMetadata
+# Use resolvable identifiers to fetch descriptive metadata from Symphony.
 class RefreshMetadataAction
   include Dry::Monads[:result]
 

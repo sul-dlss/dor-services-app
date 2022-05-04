@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Gets the catkey or barcode from identityMetadata and returns the catalog info
+# Given a cocina object, fetch the available refreshable catkey or barcodes and returns the catalog info
 class MetadataRefreshController < ApplicationController
   before_action :load_cocina_object
 
@@ -25,7 +25,7 @@ class MetadataRefreshController < ApplicationController
   def identifiers
     return [] unless @cocina_object.identification&.catalogLinks
 
-    @identifiers ||= @cocina_object.identification.catalogLinks.filter_map { |clink| "catkey:#{clink.catalogRecordId}" if clink.catalog == 'symphony' }.tap do |id|
+    @identifiers ||= @cocina_object.identification.catalogLinks.filter_map { |clink| "catkey:#{clink.catalogRecordId}" if clink.catalog == 'symphony' && clink.refresh }.tap do |id|
       # Not all Cocina objects have identification metadata that includes barcodes (e.g., collections)
       next unless @cocina_object.identification.try(:barcode)
 
