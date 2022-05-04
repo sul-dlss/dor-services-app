@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Display metadata' do
-  let(:object) { Dor::Item.new(pid: 'druid:mk420bs7601') }
   let(:description) do
     {
       title: [{ value: 'Hello' }],
@@ -15,7 +14,6 @@ RSpec.describe 'Display metadata' do
   end
 
   before do
-    allow(Dor).to receive(:find).and_return(object)
     allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
   end
 
@@ -37,10 +35,6 @@ RSpec.describe 'Display metadata' do
   end
 
   describe 'mods' do
-    before do
-      object.descMetadata.title_info.main_title = 'Hello'
-    end
-
     it 'returns the source MODS xml' do
       get '/v1/objects/druid:mk420bs7601/metadata/mods',
           headers: { 'Authorization' => "Bearer #{jwt}" }
