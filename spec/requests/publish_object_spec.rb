@@ -5,8 +5,10 @@ require 'rails_helper'
 RSpec.describe 'Publish object' do
   let(:druid) { 'druid:mx123qw2323' }
   let(:job) { class_double(PublishJob, perform_later: nil) }
+  let(:object) { build(:ar_dro, external_identifier: druid) }
 
   before do
+    allow(CocinaObjectStore).to receive(:find).and_return(object)
     allow(PublishJob).to receive(:set).and_return(job)
   end
 

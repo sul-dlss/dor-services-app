@@ -4,11 +4,11 @@ require 'rails_helper'
 
 RSpec.describe 'Preserve object' do
   let(:druid) { 'druid:mx123qw2323' }
-  let(:object) { Dor::Item.new(pid: druid) }
+  let(:object) { build(:ar_dro, external_identifier: druid) }
   let(:job) { class_double(PreserveJob, perform_later: nil) }
 
   before do
-    allow(Dor).to receive(:find).and_return(object)
+    allow(CocinaObjectStore).to receive(:find).and_return(object)
     allow(PreserveJob).to receive(:set).and_return(job)
   end
 

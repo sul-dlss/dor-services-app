@@ -8,11 +8,9 @@ RSpec.describe UnpublishJob, type: :job do
   end
 
   let(:druid) { 'druid:mk420bs7601' }
-  let(:item) { instance_double(Dor::Item) }
   let(:result) { create(:background_job_result) }
 
   before do
-    allow(Dor).to receive(:find).with(druid).and_return(item)
     allow(result).to receive(:processing!)
     allow(EventFactory).to receive(:create)
   end

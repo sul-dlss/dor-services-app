@@ -2,7 +2,7 @@
 
 # rubocop:disable Metrics/ClassLength
 class ObjectsController < ApplicationController
-  before_action :load_cocina_object, only: %i[update_doi_metadata update_marc_record notify_goobi accession destroy show]
+  before_action :load_cocina_object, only: %i[update_doi_metadata update_marc_record notify_goobi accession destroy show preserve publish unpublish]
 
   rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
     json_api_error(status: :not_found, message: e.message)
@@ -130,8 +130,6 @@ class ObjectsController < ApplicationController
   def publish
     result = BackgroundJobResult.create
     EventFactory.create(druid: params[:id], event_type: 'publish_request_received', data: { background_job_result_id: result.id })
-    queue = params['lane-id'] == 'low' ? :low : :default
-
     PublishJob.set(queue: queue).perform_later(druid: params[:id], background_job_result: result, workflow: params[:workflow])
     head :created, location: result
   end
@@ -139,8 +137,6 @@ class ObjectsController < ApplicationController
   def preserve
     result = BackgroundJobResult.create
     EventFactory.create(druid: params[:id], event_type: 'preserve_request_received', data: { background_job_result_id: result.id })
-    queue = params['lane-id'] == 'low' ? :low : :default
-
     PreserveJob.set(queue: queue).perform_later(druid: params[:id], background_job_result: result)
     head :created, location: result
   end
@@ -148,7 +144,6 @@ class ObjectsController < ApplicationController
   def unpublish
     result = BackgroundJobResult.create
     EventFactory.create(druid: params[:id], event_type: 'unpublish_request_received', data: { background_job_result_id: result.id })
-    queue = params['lane-id'] == 'low' ? :low : :default
     UnpublishJob.set(queue: queue).perform_later(druid: params[:id], background_job_result: result)
     head :accepted, location: result
   end
@@ -196,6 +191,10 @@ class ObjectsController < ApplicationController
   end
 
   private
+
+  def queue
+    params['lane-id'] == 'low' ? :low : :default
+  end
 
   def workflow_client
     WorkflowClientFactory.build

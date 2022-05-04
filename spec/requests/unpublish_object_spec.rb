@@ -4,10 +4,10 @@ require 'rails_helper'
 
 RSpec.describe 'Unpublishes an Object' do
   let(:druid) { 'druid:mx123qw2323' }
-  let(:object) { Dor::Item.new(pid: druid) }
+  let(:object) { build(:ar_dro, external_identifier: druid) }
 
   before do
-    allow(Dor).to receive(:find).and_return(object)
+    allow(CocinaObjectStore).to receive(:find).and_return(object)
   end
 
   context 'when an unpublish request is successful' do
