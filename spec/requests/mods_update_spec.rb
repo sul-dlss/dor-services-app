@@ -12,12 +12,7 @@ RSpec.describe 'Update MODS' do
       purl: "https://purl.stanford.edu/#{bare_druid}"
     }
   end
-  let(:object) do
-    Dor::Item.new(pid: 'druid:mk420bs7601',
-                  label: 'Hey',
-                  source_id: 'foo:bar',
-                  admin_policy_object_id: 'druid:dd999df4567')
-  end
+
   let(:cocina_object) do
     build(:dro, id: druid, admin_policy_id: apo_druid, label: 'A new map of Africa').new(
       description: description,
@@ -37,9 +32,6 @@ RSpec.describe 'Update MODS' do
   end
 
   before do
-    object.descMetadata.title_info.main_title = 'Goodbye'
-    allow(Dor).to receive(:find).and_return(object)
-    allow(object).to receive(:save!)
     allow(CocinaObjectStore).to receive(:find).with(apo_druid).and_return(cocina_apo_object)
     allow(CocinaObjectStore).to receive(:find).with(druid).and_return(cocina_object)
     allow(CocinaObjectStore).to receive(:save)
