@@ -280,8 +280,10 @@ RSpec.describe CocinaObjectStore do
 
       context 'when a Collection' do
         let(:requested_cocina_object) do
-          instance_double(Cocina::Models::RequestCollection, admin_policy?: false, identification: nil, to_h: cocina_hash, description: request_description, dro?: false, collection?: true)
+          instance_double(Cocina::Models::RequestCollection, admin_policy?: false, identification: request_identification, to_h: cocina_hash, description: request_description, dro?: false,
+                                                             collection?: true)
         end
+        let(:request_identification) { instance_double(Cocina::Models::RequestIdentification, catalogLinks: []) }
 
         it 'maps and saves to Fedora' do
           expect(cocina_object_store.create(requested_cocina_object)).to cocina_object_with cocina_object_with_metadata

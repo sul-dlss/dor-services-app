@@ -15,7 +15,7 @@ class RefreshMetadataAction
   # @param [Cocina::Models::DRO|Collection|APO|Agreement|RequestDRO|RequestCollection|RequestAPO|RequestAgreement] cocina_object
   # @return [Array] Refreshable identifiers in the object
   def self.identifiers(cocina_object:)
-    cocina_object.identification&.catalogLinks&.filter_map { |clink| "catkey:#{clink.catalogRecordId}" if clink.catalog == 'symphony' && clink.refresh }
+    cocina_object.identification.catalogLinks.filter_map { |clink| "catkey:#{clink.catalogRecordId}" if clink.catalog == 'symphony' && clink.refresh }
   end
 
   # @param [Array<String>] identifiers the set of identifiers that might be resolvable
