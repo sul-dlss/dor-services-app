@@ -4,7 +4,6 @@ require 'simplecov'
 SimpleCov.start :rails do
   add_filter '/spec/'
   add_filter '/lib/fedora_archiver.rb'
-  add_filter '/lib/fedora_migrator.rb'
   add_filter '/bin/'
 end
 
