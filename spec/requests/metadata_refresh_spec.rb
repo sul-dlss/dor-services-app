@@ -4,7 +4,6 @@ require 'rails_helper'
 
 RSpec.describe 'Refresh metadata' do
   let(:druid) { 'druid:bc753qt7345' }
-  let(:object) { Dor::Item.new(pid: druid) }
   let(:apo_druid) { 'druid:pp000pp0000' }
   let(:description) do
     {
@@ -55,7 +54,6 @@ RSpec.describe 'Refresh metadata' do
   let(:symphony_reader) { instance_double(SymphonyReader, to_marc: marc) }
 
   before do
-    allow(Dor).to receive(:find).and_return(object)
     allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
     allow(CocinaObjectStore).to receive(:find).with(apo_druid).and_return(cocina_apo_object)
     allow(CocinaObjectStore).to receive(:save).and_return(updated_cocina_object)
