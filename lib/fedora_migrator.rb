@@ -78,7 +78,6 @@ class FedoraMigrator
 
     EventsMigrationService.migrate(fedora_obj)
     VersionMigrationService.migrate(fedora_obj)
-    CocinaMigrationService.migrate(fedora_obj)
     'success'
   rescue CocinaObjectStore::CocinaObjectNotFoundError => e
     Rails.logger.warn("#{druid} was not found during migration: #{e.inspect}")
