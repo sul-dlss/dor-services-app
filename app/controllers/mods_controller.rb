@@ -7,17 +7,4 @@ class ModsController < ApplicationController
   def show
     render xml: Cocina::Models::Mapping::ToMods::Description.transform(@cocina_object.description, @cocina_object.externalIdentifier).to_xml
   end
-
-  def update
-    props = Cocina::Models::Mapping::FromMods::Description.props(
-      mods: Nokogiri::XML(request.body.read),
-      druid: @cocina_object.externalIdentifier,
-      label: @cocina_object.label,
-      notifier: DataErrorNotifier.new
-    )
-    updated_cocina_object = @cocina_object.new(description: props)
-    CocinaObjectStore.save(updated_cocina_object)
-  rescue Cocina::Models::ValidationError => e
-    json_api_error(status: :bad_request, message: e.message)
-  end
 end

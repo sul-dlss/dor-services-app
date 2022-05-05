@@ -68,7 +68,7 @@ Rails.application.routes.draw do
           get 'public_xml'
         end
 
-        resource :mods, only: %i[update show]
+        resource :mods, only: %i[show]
       end
 
       resources :events, only: [:create, :index], defaults: { format: :json }
