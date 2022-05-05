@@ -76,7 +76,6 @@ class FedoraMigrator
 
     return 'skipped' unless MigrationFilter.migrate?(Nokogiri::XML(fedora_obj.rels_ext.to_rels_ext))
 
-    EventsMigrationService.migrate(fedora_obj)
     VersionMigrationService.migrate(fedora_obj)
     'success'
   rescue CocinaObjectStore::CocinaObjectNotFoundError => e
