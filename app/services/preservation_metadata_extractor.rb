@@ -46,9 +46,6 @@ class PreservationMetadataExtractor
   end
 
   def version_xml
-    # This can be removed after migration.
-    VersionMigrationService.find_and_migrate(cocina_object.externalIdentifier)
-
     ObjectVersion.version_xml(cocina_object.externalIdentifier)
   end
 
