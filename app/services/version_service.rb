@@ -2,32 +2,38 @@
 
 # Open and close versions
 class VersionService
-  # @param [String] :significance set significance (major/minor/patch) of version change
-  # @param [String] :description set description of version change
-  # @param [String] :opening_user_name add opening username to the events datastream
-  # @param [Boolean] :assume_accessioned If true, does not check whether object has been accessioned.
-  def self.open(cocina_object, event_factory:, description:, significance:, opening_user_name: nil, assume_accessioned: false)
+  # @param [Cocina::Models::DRO,Cocina::Models::Collection] cocina_object the item being acted upon
+  # @param [String] significance set significance (major/minor/patch) of version change
+  # @param [String] description set description of version change
+  # @param [String] opening_user_name add opening username to the events datastream
+  # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
+  # @param [Class] event_factory (EventFactory) the factory for creating events
+  def self.open(cocina_object, description:, significance:, event_factory: EventFactory, opening_user_name: nil, assume_accessioned: false)
     new(cocina_object, event_factory: event_factory).open(description: description,
                                                           significance: significance,
                                                           opening_user_name: opening_user_name,
                                                           assume_accessioned: assume_accessioned)
   end
 
-  # @param [Boolean] :assume_accessioned If true, does not check whether object has been accessioned.
+  # @param [Cocina::Models::DRO,Cocina::Models::Collection] cocina_object the item being acted upon
+  # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
   def self.can_open?(cocina_object, assume_accessioned: false)
     new(cocina_object).can_open?(assume_accessioned: assume_accessioned)
   end
 
+  # @param [Cocina::Models::DRO,Cocina::Models::Collection] cocina_object the item being acted upon
   def self.open?(cocina_object)
     new(cocina_object).open_for_versioning?
   end
 
-  # @param [String] :description describes the version change
-  # @param [Symbol] :significance which part of the version tag to increment
+  # @param [Cocina::Models::DRO,Cocina::Models::Collection] cocina_object the item being acted upon
+  # @param [String] description describes the version change
+  # @param [Symbol] significance which part of the version tag to increment
   #  :major, :minor, :admin (see Dor::VersionTag#increment)
-  # @param [String] :user_name add username to the events datastream
-  # @param [Boolean] :start_accession set to true if you want accessioning to start (default), false otherwise
-  def self.close(cocina_object, event_factory:, description: nil, significance: nil, user_name: nil, start_accession: true)
+  # @param [String] user_name add username to the events datastream
+  # @param [Boolean] start_accession (true) set to true if you want accessioning to start, false otherwise
+  # @param [Class] event_factory (EventFactory) the factory for creating events
+  def self.close(cocina_object, event_factory: EventFactory, description: nil, significance: nil, user_name: nil, start_accession: true)
     new(cocina_object, event_factory: event_factory).close(description: description,
                                                            significance: significance,
                                                            user_name: user_name,
@@ -38,16 +44,18 @@ class VersionService
     new(cocina_object).accessioning?
   end
 
+  # @param [Cocina::Models::DRO,Cocina::Models::Collection] cocina_object the item being acted upon
+  # @param [Class] event_factory (nil) the factory for creating events
   def initialize(cocina_object, event_factory: nil)
     @cocina_object = cocina_object
     @event_factory = event_factory
   end
 
   # Increments the version number and initializes versioningWF for the object
-  # @param [String] :significance set significance (major/minor/patch) of version change
-  # @param [String] :description set description of version change
-  # @param [String] :opening_user_name add opening username to the events datastream
-  # @param [Boolean] :assume_accessioned If true, does not check whether object has been accessioned.
+  # @param [String] significance set significance (major/minor/patch) of version change
+  # @param [String] description set description of version change
+  # @param [String] opening_user_name add opening username to the events datastream
+  # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
   # @return [Cocina::Models::DRO, Cocina::Models::AdminPolicy, Cocina::Models::Collection] updated cocina object
   # @raise [Dor::Exception] if the object hasn't been accessioned, or if a version is already opened
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.

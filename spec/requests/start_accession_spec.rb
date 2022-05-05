@@ -78,8 +78,8 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
            params: params,
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, default_start_accession_workflow, version: '2')
-      expect(VersionService).to have_received(:open).with(cocina_object, **params, event_factory: EventFactory)
-      expect(VersionService).to have_received(:close).with(updated_cocina_object, **close_params, event_factory: EventFactory)
+      expect(VersionService).to have_received(:open).with(cocina_object, **params)
+      expect(VersionService).to have_received(:close).with(updated_cocina_object, **close_params)
     end
 
     it 'can override the default workflow' do
@@ -87,8 +87,8 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
            params: params.merge(workflow: 'accessionWF'),
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'accessionWF', version: '2')
-      expect(VersionService).to have_received(:open).with(cocina_object, **params, event_factory: EventFactory)
-      expect(VersionService).to have_received(:close).with(updated_cocina_object, **close_params, event_factory: EventFactory)
+      expect(VersionService).to have_received(:open).with(cocina_object, **params)
+      expect(VersionService).to have_received(:close).with(updated_cocina_object, **close_params)
     end
   end
 
@@ -106,7 +106,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
       expect(response).to have_http_status(:success)
       expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, default_start_accession_workflow, version: '1')
       expect(VersionService).not_to have_received(:open)
-      expect(VersionService).to have_received(:close).with(cocina_object, **close_params, event_factory: EventFactory)
+      expect(VersionService).to have_received(:close).with(cocina_object, **close_params)
     end
   end
 

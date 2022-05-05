@@ -51,8 +51,7 @@ RSpec.describe 'Operations regarding object versions' do
         expect(response.body).to match(/version 1 closed/)
         expect(VersionService).to have_received(:close)
           .with(cocina_object_with_metadata,
-                **close_params,
-                event_factory: EventFactory)
+                **close_params)
       end
     end
 
@@ -102,7 +101,7 @@ RSpec.describe 'Operations regarding object versions' do
         expect(response.headers['Last-Modified']).to end_with 'GMT'
         expect(response.headers['X-Created-At']).to end_with 'GMT'
         expect(response.headers['ETag']).to match(%r{W/".+"})
-        expect(VersionService).to have_received(:open).with(cocina_object_with_metadata, **open_params, event_factory: EventFactory)
+        expect(VersionService).to have_received(:open).with(cocina_object_with_metadata, **open_params)
       end
     end
 
