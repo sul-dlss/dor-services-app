@@ -309,8 +309,7 @@ class CocinaObjectStore
   def sync_from_symphony(cocina_request_object, druid)
     return cocina_request_object if cocina_request_object.admin_policy?
 
-    catkeys = catkeys_for(cocina_request_object)
-
+    catkeys = RefreshMetadataAction.identifiers(cocina_object: cocina_request_object)
     return cocina_request_object if catkeys.blank?
 
     result = RefreshMetadataAction.run(identifiers: catkeys, cocina_object: cocina_request_object, druid: druid)
@@ -321,10 +320,6 @@ class CocinaObjectStore
     description_props.delete(:purl)
     label = ModsUtils.label(result.value!.mods_ng_xml)
     cocina_request_object.new(label: label, description: description_props)
-  end
-
-  def catkeys_for(cocina_request_object)
-    cocina_request_object.identification&.catalogLinks&.filter_map { |clink| "catkey:#{clink.catalogRecordId}" if clink.catalog == 'symphony' && clink.refresh }
   end
 
   # Converts from Cocina::Models::RequestDRO|RequestCollection|RequestAdminPolicy to Cocina::Models::DRO|Collection||AdminPolicy

@@ -23,9 +23,7 @@ class MetadataRefreshController < ApplicationController
   private
 
   def identifiers
-    return [] unless @cocina_object.identification&.catalogLinks
-
-    @identifiers ||= @cocina_object.identification.catalogLinks.filter_map { |clink| "catkey:#{clink.catalogRecordId}" if clink.catalog == 'symphony' && clink.refresh }.tap do |id|
+    RefreshMetadataAction.identifiers(cocina_object: @cocina_object).tap do |id|
       # Not all Cocina objects have identification metadata that includes barcodes (e.g., collections)
       next unless @cocina_object.identification.try(:barcode)
 
