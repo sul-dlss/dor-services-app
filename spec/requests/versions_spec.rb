@@ -58,7 +58,7 @@ RSpec.describe 'Operations regarding object versions' do
     context 'when closing a version fails' do
       before do
         allow(VersionService).to receive(:close)
-          .and_raise(Dor::Exception, 'Trying to close version on an object not opened for versioning')
+          .and_raise(VersionService::VersioningError, 'Trying to close version on an object not opened for versioning')
       end
 
       it 'returns an error' do
@@ -125,7 +125,7 @@ RSpec.describe 'Operations regarding object versions' do
     context 'when opening a version fails' do
       before do
         # Do not test version service side effects in dor-services-app; that is dor-services' responsibility
-        allow(VersionService).to receive(:open).and_raise(Dor::Exception, 'Object net yet accessioned')
+        allow(VersionService).to receive(:open).and_raise(VersionService::VersioningError, 'Object net yet accessioned')
       end
 
       it 'returns an error' do

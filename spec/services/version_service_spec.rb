@@ -104,19 +104,19 @@ RSpec.describe VersionService do
       let(:instance) { described_class.new(cocina_object) }
 
       before do
-        allow(instance).to receive(:ensure_openable!).and_raise(Dor::Exception, 'Object net yet accessioned')
+        allow(instance).to receive(:ensure_openable!).and_raise(VersionService::VersioningError, 'Object net yet accessioned')
         allow(described_class).to receive(:new).and_return(instance)
       end
 
       it 'raises an exception' do
-        expect { open }.to raise_error(Dor::Exception, 'Object net yet accessioned')
+        expect { open }.to raise_error(VersionService::VersioningError, 'Object net yet accessioned')
       end
     end
 
     context "when Preservation's current version is greater than the current version" do
       it 'raises an exception' do
         expect(Preservation::Client.objects).to receive(:current_version).and_return(3)
-        expect { open }.to raise_error(Dor::Exception, 'Cannot sync to a version greater than current: 1, requested 3')
+        expect { open }.to raise_error(VersionService::VersioningError, 'Cannot sync to a version greater than current: 1, requested 3')
       end
     end
 
@@ -127,7 +127,7 @@ RSpec.describe VersionService do
 
       it 'raises an exception' do
         errmsg = "Preservation (SDR) is not yet answering queries about this object. When an object has just been transferred, Preservation isn't immediately ready to answer queries."
-        expect { open }.to raise_error(Dor::Exception, errmsg)
+        expect { open }.to raise_error(VersionService::VersioningError, errmsg)
       end
     end
   end
@@ -274,7 +274,7 @@ RSpec.describe VersionService do
       end
 
       it 'raises an exception' do
-        expect { close }.to raise_error(Dor::Exception, "Trying to close version 2 on #{druid} which is not opened for versioning")
+        expect { close }.to raise_error(VersionService::VersioningError, "Trying to close version 2 on #{druid} which is not opened for versioning")
       end
     end
 
@@ -286,7 +286,7 @@ RSpec.describe VersionService do
       end
 
       it 'raises an exception' do
-        expect { close }.to raise_error(Dor::Exception, "accessionWF already created for versioned object #{druid}")
+        expect { close }.to raise_error(VersionService::VersioningError, "accessionWF already created for versioned object #{druid}")
       end
     end
 
@@ -297,7 +297,7 @@ RSpec.describe VersionService do
       end
 
       it 'raises an exception' do
-        expect { close }.to raise_error(Dor::Exception, "Trying to close version 2 on #{druid} which has active assemblyWF")
+        expect { close }.to raise_error(VersionService::VersioningError, "Trying to close version 2 on #{druid} which has active assemblyWF")
         expect(workflow_client).to have_received(:workflow_status).with(hash_including(workflow: 'assemblyWF'))
       end
     end

@@ -25,7 +25,7 @@ class VersionsController < ApplicationController
 
     add_headers(updated_cocina_object)
     render json: Cocina::Models.without_metadata(updated_cocina_object)
-  rescue Dor::Exception => e
+  rescue VersionService::VersioningError => e
     render build_error('Unable to open version', e)
   rescue Preservation::Client::Error => e
     render build_error('Unable to open version due to preservation client error', e, status: :internal_server_error)
@@ -38,7 +38,7 @@ class VersionsController < ApplicationController
   def close_current
     VersionService.close(@cocina_object, **close_params)
     render plain: "version #{@cocina_object.version} closed"
-  rescue Dor::Exception => e
+  rescue VersionService::VersioningError => e
     render build_error('Unable to close version', e)
   end
 

@@ -2,6 +2,8 @@
 
 # Open and close versions
 class VersionService
+  class VersioningError < StandardError; end
+
   # @param [Cocina::Models::DRO,Cocina::Models::Collection] cocina_object the item being acted upon
   # @param [String] significance set significance (major/minor/patch) of version change
   # @param [String] description set description of version change
@@ -57,7 +59,7 @@ class VersionService
   # @param [String] opening_user_name add opening username to the events datastream
   # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
   # @return [Cocina::Models::DRO, Cocina::Models::AdminPolicy, Cocina::Models::Collection] updated cocina object
-  # @raise [Dor::Exception] if the object hasn't been accessioned, or if a version is already opened
+  # @raise [VersionService::VersioningError] if the object hasn't been accessioned, or if a version is already opened
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   def open(significance:, description:, opening_user_name:, assume_accessioned:)
     raise ArgumentError, 'description and significance are required to open a new version' if description.blank? || significance.blank?
@@ -87,7 +89,7 @@ class VersionService
     ensure_openable!(assume_accessioned: assume_accessioned)
     retrieve_version_from_preservation
     true
-  rescue Dor::Exception
+  rescue VersionService::VersioningError
     false
   end
 
@@ -97,14 +99,14 @@ class VersionService
   #  :major, :minor, :admin (see Dor::VersionTag#increment)
   # @param [String] :user_name add username to the events datastream
   # @param [Boolean] :start_accession set to true if you want accessioning to start (default), false otherwise
-  # @raise [Dor::Exception] if the object hasn't been opened for versioning, or if accessionWF has
+  # @raise [VersionService::VersioningError] if the object hasn't been opened for versioning, or if accessionWF has
   #   already been instantiated or the current version is missing a tag or description
   def close(description:, significance:, user_name:, start_accession: true)
     ObjectVersion.update_current_version(druid: druid, description: description, significance: significance.to_sym) if description || significance
 
-    raise Dor::Exception, "Trying to close version #{cocina_object.version} on #{druid} which is not opened for versioning" unless open_for_versioning?
-    raise Dor::Exception, "Trying to close version #{cocina_object.version} on #{druid} which has active assemblyWF" if active_assembly_wf?
-    raise Dor::Exception, "accessionWF already created for versioned object #{druid}" if accessioning?
+    raise VersionService::VersioningError, "Trying to close version #{cocina_object.version} on #{druid} which is not opened for versioning" unless open_for_versioning?
+    raise VersionService::VersioningError, "Trying to close version #{cocina_object.version} on #{druid} which has active assemblyWF" if active_assembly_wf?
+    raise VersionService::VersioningError, "accessionWF already created for versioned object #{druid}" if accessioning?
 
     # Default to creating accessionWF when calling close_version
     workflow_client.close_version(druid: druid,
@@ -117,31 +119,31 @@ class VersionService
   # Performs checks on whether a new version can be opened for an object
   # @return [Void]
   # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
-  # @raise [Dor::Exception] if the object hasn't been accessioned,
+  # @raise [VersionService::VersioningError] if the object hasn't been accessioned,
   #    if a version is already opened
   def ensure_openable!(assume_accessioned:)
     # Raised when the object has never been accessioned.
     # The accessioned milestone is the last step of the accessionWF.
     # During local development, we need a way to open a new version even if the object has not been accessioned.
-    raise(Dor::Exception, 'Object net yet accessioned') unless
+    raise(VersionService::VersioningError, 'Object net yet accessioned') unless
         assume_accessioned || workflow_client.lifecycle(druid: druid, milestone_name: 'accessioned')
     # Raised when the current version has any incomplete wf steps and there is a versionWF.
     # The open milestone is part of the versioningWF.
-    raise Dor::VersionAlreadyOpenError, 'Object already opened for versioning' if open_for_versioning?
+    raise VersionService::VersioningError, 'Object already opened for versioning' if open_for_versioning?
     # Raised when the current version has any incomplete wf steps and there is an accessionWF.
     # The submitted milestone is part of the accessionWF.
-    raise Dor::Exception, 'Object currently being accessioned' if accessioning?
+    raise VersionService::VersioningError, 'Object currently being accessioned' if accessioning?
   end
 
   # Performs checks on whether a new version can be opened for an object
   # @return [Integer] the version from Preservation (SDR) if a version can be opened
-  # @raise [Dor::Exception] if Preservation returns 404 when queried.
+  # @raise [VersionService::VersioningError] if Preservation returns 404 when queried.
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   def retrieve_version_from_preservation
     Preservation::Client.objects.current_version(druid)
   rescue Preservation::Client::NotFoundError
-    raise Dor::Exception, 'Preservation (SDR) is not yet answering queries about this object. ' \
-                          "When an object has just been transferred, Preservation isn't immediately ready to answer queries."
+    raise VersionService::VersioningError, 'Preservation (SDR) is not yet answering queries about this object. ' \
+                                           "When an object has just been transferred, Preservation isn't immediately ready to answer queries."
   end
 
   # Checks if current version has any incomplete wf steps and there is a versionWF
