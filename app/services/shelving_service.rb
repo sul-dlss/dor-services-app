@@ -3,6 +3,7 @@
 # Push file changes for shelve-able files into stacks
 class ShelvingService
   class ConfigurationError < RuntimeError; end
+  class ShelvingError < StandardError; end
 
   def self.shelve(cocina_object)
     new(cocina_object).shelve
@@ -10,7 +11,7 @@ class ShelvingService
 
   def initialize(cocina_object)
     raise ConfigurationError, 'Missing configuration Settings.stacks.local_workspace_root' if Settings.stacks.local_workspace_root.nil?
-    raise Dor::Exception, 'Missing structural' if cocina_object.structural.nil?
+    raise ShelvingService::ShelvingError, 'Missing structural' if cocina_object.structural.nil?
 
     @cocina_object = cocina_object
   end
@@ -40,11 +41,11 @@ class ShelvingService
   # (filtering to select only the files that should be shelved to stacks)
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   # @raise [ConfigurationError] if missing local workspace root.
-  # @raise [Dor::Exception] if something went wrong.
+  # @raise [ShelvingService::ShelvingError] if something went wrong.
   def shelve_diff
     @shelve_diff ||= Preservation::Client.objects.shelve_content_diff(druid: cocina_object.externalIdentifier, content_metadata: content_metadata)
   rescue Preservation::Client::Error => e
-    raise Dor::Exception, e
+    raise ShelvingService::ShelvingError, e
   end
 
   def stacks_location
@@ -62,7 +63,7 @@ class ShelvingService
   def was_stack_location
     collection_druid = cocina_object.structural&.isMemberOf&.first
 
-    raise Dor::Exception, 'Web archive object missing collection' unless collection_druid
+    raise ShelvingService::ShelvingError, 'Web archive object missing collection' unless collection_druid
 
     "/web-archiving-stacks/data/collections/#{collection_druid.delete_prefix('druid:')}"
   end
