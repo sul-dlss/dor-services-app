@@ -2,7 +2,7 @@
 
 module Cocina
   module ToFedora
-    class Rights
+    module Rights
       # Builds the rightsMetadata xml from cocina for an object (item/collection)
       class ObjectLevel
         # @param [Nokogiri::XML::Element] root Element that is the root of the access assertions.

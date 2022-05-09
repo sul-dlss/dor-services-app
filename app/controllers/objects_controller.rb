@@ -44,9 +44,6 @@ class ObjectsController < ApplicationController
   rescue MarcService::MarcServiceError => e
     Honeybadger.notify(e)
     json_api_error(status: :internal_server_error, message: e.message)
-  rescue Cocina::RoundtripValidationError => e
-    Honeybadger.notify(e)
-    json_api_error(status: e.status, message: e.message)
   rescue Cocina::ValidationError => e
     json_api_error(status: e.status, message: e.message)
   rescue Cocina::Models::ValidationError => e
@@ -69,10 +66,6 @@ class ObjectsController < ApplicationController
 
     add_headers(updated_cocina_object)
     render json: Cocina::Models.without_metadata(updated_cocina_object)
-  # This rescue will no longer be necessary when remove Fedora.
-  rescue Cocina::RoundtripValidationError => e
-    Honeybadger.notify(e)
-    json_api_error(status: e.status, message: e.message)
   rescue Cocina::ValidationError => e
     json_api_error(status: e.status, message: e.message)
   rescue CocinaObjectStore::StaleLockError => e
