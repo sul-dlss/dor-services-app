@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :ar_dro, class: 'Dro' do
-    cocina_version { '0.0.1' }
+    cocina_version { Cocina::Models::VERSION }
     external_identifier { generate(:unique_druid) }
     content_type { Cocina::Models::ObjectType.book }
     label { 'Test DRO' }

@@ -3,50 +3,44 @@
 require 'rails_helper'
 
 RSpec.describe 'Update object' do
-  before do
-    allow(Dor).to receive(:find).with(druid).and_return(item)
-    allow(CocinaObjectStore).to receive(:find).with(apo_druid).and_return(apo)
-    allow(item).to receive(:save!)
-    allow(item).to receive(:new_record?).and_return(false)
-    allow(item).to receive(:modified_date).and_return(modified)
-
-    # Stub out AF for ObjectUpdater
-    allow(item.association(:collections)).to receive(:ids_writer).and_return(true)
-    # Stub out AF for ObjectMapper
-    allow(item).to receive(:collections).and_return [collection]
-    allow(item).to receive(:admin_policy_object_id=)
-    allow(AdministrativeTags).to receive(:create)
-    allow(AdministrativeTags).to receive(:project).and_return(['Google Books'])
-    allow(AdministrativeTags).to receive(:content_type).and_return(['Book (rtl)'])
-    allow(AdministrativeTags).to receive(:for).and_return([])
-    allow(Cocina::ObjectValidator).to receive(:validate)
-
-    allow(EventFactory).to receive(:create)
+  let!(:item) { create(:ar_dro) }
+  let(:druid) { item.external_identifier }
+  let(:purl) { "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}" }
+  # let(:collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }
+  let(:apo) do
+    create(:ar_admin_policy)
+    # Cocina::Models::AdminPolicy.new({
+    #                                   cocinaVersion: Cocina::Models::VERSION,
+    #                                   externalIdentifier: apo_druid,
+    #                                   type: Cocina::Models::ObjectType.admin_policy,
+    #                                   label: 'Test Admin Policy',
+    #                                   version: 1,
+    #                                   administrative: {
+    #                                     hasAdminPolicy: 'druid:hy787xj5878',
+    #                                     hasAgreement: 'druid:bb033gt0615',
+    #                                     accessTemplate: { view: 'world', download: 'world' }
+    #                                   }
+    #                                 })
   end
+  let(:apo_druid) { apo.external_identifier }
 
-  let(:collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }
-  let(:apo) { build(:admin_policy, id: apo_druid) }
-  let!(:item) do
-    Dor::Item.new(pid: druid,
-                  source_id: 'googlebooks:111111',
-                  label: label,
-                  admin_policy_object_id: apo_druid).tap do |item|
-      item.descMetadata.title_info.main_title = title
-      item.contentMetadata.contentType = ['book']
-      item.identityMetadata.barcode = '36105036289000'
-      item.rightsMetadata.content = Cocina::ToFedora::AccessGenerator.generate(
-        root: Dor::RightsMetadataDS.new.ng_xml.root,
-        access: cocina_access,
-        structural: cocina_structural
-      )
-    end
-  end
+  # let!(:item) do
+  #   Dor::Item.new(pid: druid,
+  #                 source_id: 'googlebooks:111111',
+  #                 label: label,
+  #                 admin_policy_object_id: apo_druid).tap do |item|
+  #     item.descMetadata.title_info.main_title = title
+  #     item.contentMetadata.contentType = ['book']
+  #     item.identityMetadata.barcode = '36105036289000'
+  #     item.rightsMetadata.content = Cocina::ToFedora::AccessGenerator.generate(
+  #       root: Dor::RightsMetadataDS.new.ng_xml.root,
+  #       access: cocina_access,
+  #       structural: cocina_structural
+  #     )
+  #   end
+  # end
 
   let(:modified) { DateTime.now }
-
-  let(:druid) { 'druid:gg777gg7777' }
-  let(:apo_druid) { 'druid:dd999df4567' }
-
   let(:label) { 'This is my label' }
   let(:title) { 'This is my title' }
   let(:structural) do
@@ -74,20 +68,17 @@ RSpec.describe 'Update object' do
       }.merge(cocina_access.to_h)
     )
   end
-
   let(:description) do
     {
       title: [{ value: title }],
-      purl: 'https://purl.stanford.edu/gg777gg7777'
+      purl: "https://purl.stanford.edu/#{item.external_identifier.delete_prefix('druid:')}"
     }
   end
-
   let(:content_type) { Cocina::Models::ObjectType.book }
-
   let(:data) do
     <<~JSON
       {
-        "cocinaVersion": "0.0.1",
+        "cocinaVersion": "#{Cocina::Models::VERSION}",
         "externalIdentifier": "#{druid}",
         "type":"#{content_type}",
         "label":"#{label}","version":1,
@@ -97,7 +88,7 @@ RSpec.describe 'Update object' do
           "copyright":"All rights reserved unless otherwise indicated.",
           "useAndReproductionStatement":"Property rights reside with the repository..."
         },
-        "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4568"},
+        "administrative":{"releaseTags":[],"hasAdminPolicy":"#{apo_druid}"},
         "description":#{description.to_json},
         "identification":#{identification.to_json},
         "structural":{
@@ -107,7 +98,6 @@ RSpec.describe 'Update object' do
       }
     JSON
   end
-
   let(:identification) do
     {
       sourceId: 'googlebooks:999999',
@@ -115,7 +105,7 @@ RSpec.describe 'Update object' do
       doi: '10.25740/gg777gg7777'
     }
   end
-  let(:etag) { "#{druid}=#{modified.iso8601}" }
+  let(:etag) { "#{druid}=#{item.lock}" }
 
   let(:headers) do
     {
@@ -123,6 +113,16 @@ RSpec.describe 'Update object' do
       'Content-Type' => 'application/json',
       'If-Match' => "W/\"#{etag}\""
     }
+  end
+
+  before do
+    allow(AdministrativeTags).to receive(:create)
+    allow(AdministrativeTags).to receive(:project).and_return(['Google Books'])
+    allow(AdministrativeTags).to receive(:content_type).and_return(['Book (rtl)'])
+    allow(AdministrativeTags).to receive(:for).and_return([])
+    allow(Cocina::ObjectValidator).to receive(:validate)
+
+    allow(EventFactory).to receive(:create)
   end
 
   it 'updates the object' do
@@ -135,196 +135,10 @@ RSpec.describe 'Update object' do
     expect(response.headers['X-Created-At']).to end_with 'GMT'
     expect(response.headers['ETag']).to match(%r{W/".+"})
 
-    expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
-    expect(item).to have_received(:save!)
-    expect(item).to have_received(:admin_policy_object_id=).with('druid:dd999df4568')
+    expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
     expect(Cocina::ObjectValidator).to have_received(:validate)
 
     expect(EventFactory).to have_received(:create).with(druid: druid, data: hash_including(:request, success: true), event_type: 'update')
-  end
-
-  context 'with a structured title that has nonsorting characters' do
-    # This tests the problem found in https://github.com/sul-dlss/argo/issues/2253
-    # where an integer value in a string field was being detected as invalid data.
-    let(:description) do
-      {
-        title: [
-          {
-            structuredValue: [
-              { value: 'The', type: 'nonsorting characters' },
-              { value: 'romantic Bach', type: 'main title' },
-              { value: "a celebration of Bach's most romantic music", type: 'subtitle' }
-            ],
-            note: [
-              { value: '4', type: 'nonsorting character count' }
-            ]
-          }
-        ],
-        purl: 'https://purl.stanford.edu/gg777gg7777'
-      }
-    end
-
-    let(:ng_xml) do
-      Nokogiri::XML <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://www.loc.gov/mods/v3" version="3.6"
-          xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-          <titleInfo>
-            <nonSort xml:space="preserve">The</nonSort>
-            <title>romantic Bach</title>
-            <subTitle>a celebration of Bach's most romantic music</subTitle>
-          </titleInfo>
-        </mods>
-      XML
-    end
-
-    let(:item) do
-      Dor::Item.new(pid: druid,
-                    source_id: 'google_books:99999',
-                    label: label,
-                    admin_policy_object_id: apo_druid).tap do |item|
-        item.descMetadata.content = ng_xml.to_xml
-      end
-    end
-
-    it 'accepts the request with a supplied nonsorting character count' do
-      patch "/v1/objects/#{druid}",
-            params: data,
-            headers: headers
-      expect(response.status).to eq(200)
-      expect(item).to have_received(:save!)
-    end
-  end
-
-  context 'with a structured title' do
-    let(:cocina_access) do
-      Cocina::Models::DROAccess.new(view: view, download: view)
-    end
-
-    let(:expected) do
-      build(:dro, id: druid, label: label, admin_policy_id: apo_druid, type: Cocina::Models::ObjectType.book).new(
-        description: {
-          title: [
-            {
-              structuredValue: [
-                {
-                  value: title,
-                  type: 'main title'
-                },
-                {
-                  value: '(repeat)',
-                  type: 'subtitle'
-                }
-              ]
-            }
-          ],
-          purl: 'https://purl.stanford.edu/gg777gg7777'
-        },
-        identification: identification,
-        structural: structural,
-        access: {
-          view: view,
-          download: 'world',
-          copyright: 'All rights reserved unless otherwise indicated.',
-          useAndReproductionStatement: 'Property rights reside with the repository...'
-        }
-      )
-    end
-    let(:data) do
-      <<~JSON
-        {
-          "cocinaVersion": "0.0.1",
-          "externalIdentifier": "#{druid}",
-          "type":"#{Cocina::Models::ObjectType.book}",
-          "label":"#{label}","version":1,
-          "access":{
-            "view":"#{view}",
-            "download":"world",
-            "copyright":"All rights reserved unless otherwise indicated.",
-            "useAndReproductionStatement":"Property rights reside with the repository..."
-          },
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{
-            "title":[{"structuredValue":[{"value":"#{title}","type":"main title"},{"value":"(repeat)","type":"subtitle"}]}],
-            "purl":"https://purl.stanford.edu/gg777gg7777"
-          },
-          "identification":#{identification.to_json},
-          "structural":{
-            "hasMemberOrders":[{"viewingDirection":"right-to-left"}],
-            "isMemberOf":["druid:xx888xx7777"]
-          }
-        }
-      JSON
-    end
-    let!(:item) do
-      Dor::Item.new(pid: druid,
-                    source_id: 'google_books:99999',
-                    label: label,
-                    admin_policy_object_id: apo_druid).tap do |item|
-        # Dor::DescMetadataDS does not have a setter for subtitles
-        item.descMetadata.content = <<~XML
-          <mods xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.loc.gov/mods/v3" version="3.6" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
-            <titleInfo>
-              <title>#{title}</title>
-              <subTitle>(repeat)</subTitle>
-            </titleInfo>
-          </mods>
-        XML
-        item.contentMetadata.contentType = ['book']
-        item.rightsMetadata.content = Cocina::ToFedora::AccessGenerator.generate(
-          root: Dor::RightsMetadataDS.new.ng_xml.root,
-          access: cocina_access
-        )
-      end
-    end
-
-    it 'updates the object' do
-      patch "/v1/objects/#{druid}",
-            params: data,
-            headers: headers
-      expect(response.status).to eq(200)
-      expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-      expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
-      expect(item).to have_received(:save!)
-    end
-  end
-
-  context 'when the object is a hydrus item' do
-    # This is how the item looks in the repository before being updated
-    let(:item) do
-      Dor::Item.new(pid: druid,
-                    source_id: 'google_books:99999',
-                    admin_policy_object_id: apo_druid,
-                    label: 'Hydrus').tap do |item|
-        # Hydrus doesn't fill in a title right away.
-        item.descMetadata.content = <<~XML
-          <mods xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
-            <titleInfo>
-              <title/>
-            </titleInfo>
-          </mods>
-        XML
-
-        item.contentMetadata.contentType = ['book']
-        item.rightsMetadata.content = Cocina::ToFedora::AccessGenerator.generate(
-          root: Dor::RightsMetadataDS.new.ng_xml.root,
-          access: cocina_access
-        )
-      end
-    end
-
-    let(:title) { 'Hydrus' } # The title in the request (data)
-    let(:label) { 'Hydrus' } # This is the label in the request (data)
-
-    it 'updates the object' do
-      patch "/v1/objects/#{druid}",
-            params: data,
-            headers: headers
-      expect(response.status).to eq(200)
-      expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-      expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
-      expect(item).to have_received(:save!)
-    end
   end
 
   context 'when tags change' do
@@ -342,8 +156,7 @@ RSpec.describe 'Update object' do
             headers: headers
       expect(response.status).to eq(200)
       expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-      expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
-      expect(item).to have_received(:save!)
+      expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
 
       # Tags are updated.
       expect(AdministrativeTags).not_to have_received(:create)
@@ -362,8 +175,7 @@ RSpec.describe 'Update object' do
             headers: headers
       expect(response.status).to eq(200)
       expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-      expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
-      expect(item).to have_received(:save!)
+      expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
 
       # Tags are not updated or created.
       expect(AdministrativeTags).not_to have_received(:create)
@@ -371,41 +183,41 @@ RSpec.describe 'Update object' do
   end
 
   context 'with a non-matching druid (Cocina::Models::ValidationError)' do
-    before do
-      allow(Dor).to receive(:find).with(other_druid).and_return(item)
+    let(:data) do
+      <<~JSON
+        {
+          "cocinaVersion": "#{Cocina::Models::VERSION}",
+          "externalIdentifier": "druid:xs123xx8388",
+          "type":"#{content_type}",
+          "label":"#{label}","version":1,
+          "access":{
+            "view":"#{view}",
+            "download":"#{view}",
+            "copyright":"All rights reserved unless otherwise indicated.",
+            "useAndReproductionStatement":"Property rights reside with the repository..."
+          },
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "description":#{description.to_json},
+          "identification":#{identification.to_json},
+          "structural":{
+            "hasMemberOrders":[{"viewingDirection":"right-to-left"}],
+            "isMemberOf":["druid:xx888xx7777"]
+          }
+        }
+      JSON
     end
-
-    let(:etag) { "#{other_druid}=#{modified.iso8601}" }
-
-    let(:item) do
-      Dor::Item.new(pid: other_druid,
-                    source_id: 'google_books:99999',
-                    label: label,
-                    admin_policy_object_id: apo_druid).tap do |item|
-        item.descMetadata.title_info.main_title = title
-      end
+    let(:description) do
+      {
+        title: [{ value: title }],
+        purl: 'https://purl.stanford.edu/xs123xx8388'
+      }
     end
-
-    let(:other_druid) { 'druid:xs123xx8388' }
 
     it 'is a bad request' do
-      patch "/v1/objects/#{other_druid}",
-            params: data,
-            headers: headers
-      expect(response.status).to eq(400)
-    end
-  end
-
-  context 'when updated cocina cannot be mapped' do
-    # Geo content type without geographic.
-    let(:content_type) { Cocina::Models::ObjectType.geo }
-
-    it 'is a bad request and does not save' do
       patch "/v1/objects/#{druid}",
             params: data,
             headers: headers
-      expect(response.status).to eq(422)
-      expect(item).not_to have_received(:save!)
+      expect(response.status).to eq(400)
     end
   end
 
@@ -419,7 +231,6 @@ RSpec.describe 'Update object' do
             params: data,
             headers: headers
       expect(response.status).to eq(400)
-      expect(item).not_to have_received(:save!)
     end
   end
 
@@ -433,7 +244,6 @@ RSpec.describe 'Update object' do
               'If-Match' => 'W/"BAD LOCK"'
             }
       expect(response.status).to eq(412)
-      expect(item).not_to have_received(:save!)
     end
   end
 
@@ -446,7 +256,6 @@ RSpec.describe 'Update object' do
               'Content-Type' => 'application/json'
             }
       expect(response.status).to eq(200)
-      expect(item).to have_received(:save!)
     end
   end
 
@@ -454,7 +263,7 @@ RSpec.describe 'Update object' do
     let(:description) do
       {
         title: [{ value: 'Not a title' }],
-        purl: 'https://purl.stanford.edu/gg777gg7777'
+        purl: purl
       }
     end
 
@@ -492,7 +301,7 @@ RSpec.describe 'Update object' do
     let(:data) do
       <<~JSON
         {
-          "cocinaVersion": "0.0.1",
+          "cocinaVersion": "#{Cocina::Models::VERSION}",
           "externalIdentifier": "#{druid}",
           "type":"#{Cocina::Models::ObjectType.image}",
           "label":"#{expected_label}","version":1,
@@ -505,7 +314,7 @@ RSpec.describe 'Update object' do
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{
             "title":[{"value":"#{title}"}],
-            "purl":"https://purl.stanford.edu/gg777gg7777"
+            "purl":"#{purl}"
           },
           "identification":#{identification.to_json},
           "structural":{
@@ -536,10 +345,10 @@ RSpec.describe 'Update object' do
               headers: headers
         expect(response.status).to eq 200
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-        expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
+        expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
 
-        # Identity metadata set correctly.
-        expect(item.objectLabel.first).to eq(expected_label)
+        # Metadata set correctly.
+        expect(item.label).to eq(expected_label)
       end
     end
 
@@ -554,15 +363,20 @@ RSpec.describe 'Update object' do
               headers: headers
         expect(response.status).to eq(200)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-        expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
+        expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
       end
     end
     # rubocop:enable Layout/LineLength
 
     context 'when files are provided' do
+      let(:file1_id) { 'https://cocina.sul.stanford.edu/file/123-456-789' }
+      let(:file2_id) { 'https://cocina.sul.stanford.edu/file/223-456-789' }
+      let(:file3_id) { 'https://cocina.sul.stanford.edu/file/323-456-789' }
+      let(:file4_id) { 'https://cocina.sul.stanford.edu/file/423-456-789' }
+
       let(:file1) do
         {
-          'externalIdentifier' => 'https://cocina.sul.stanford.edu/file/123-456-789',
+          'externalIdentifier' => file1_id,
           'version' => 1,
           'type' => Cocina::Models::ObjectType.file,
           'filename' => '00001.html',
@@ -593,7 +407,7 @@ RSpec.describe 'Update object' do
 
       let(:file2) do
         {
-          'externalIdentifier' => 'https://cocina.sul.stanford.edu/file/223-456-789',
+          'externalIdentifier' => file2_id,
           'version' => 1,
           'type' => Cocina::Models::ObjectType.file,
           'filename' => '00001.jp2',
@@ -614,7 +428,7 @@ RSpec.describe 'Update object' do
 
       let(:file3) do
         {
-          'externalIdentifier' => 'https://cocina.sul.stanford.edu/file/323-456-789',
+          'externalIdentifier' => file3_id,
           'version' => 1,
           'type' => Cocina::Models::ObjectType.file,
           'filename' => '00002.html',
@@ -626,8 +440,8 @@ RSpec.describe 'Update object' do
             'shelve' => false
           },
           'access' => {
-            'view' => 'world',
-            'download' => 'world'
+            'view' => 'dark',
+            'download' => 'none'
           },
           'hasMessageDigests' => []
         }
@@ -635,7 +449,7 @@ RSpec.describe 'Update object' do
 
       let(:file4) do
         {
-          'externalIdentifier' => 'https://cocina.sul.stanford.edu/file/423-456-789',
+          'externalIdentifier' => file4_id,
           'version' => 1,
           'type' => Cocina::Models::ObjectType.file,
           'filename' => '00002.jp2',
@@ -654,17 +468,20 @@ RSpec.describe 'Update object' do
         }
       end
 
+      let(:fileset1_id) { 'https://cocina.sul.stanford.edu/fileSet/234-567-890' }
+      let(:fileset2_id) { 'https://cocina.sul.stanford.edu/fileSet/334-567-890' }
+
       let(:filesets) do
         [
           {
-            'externalIdentifier' => 'https://cocina.sul.stanford.edu/fileSet/234-567-890',
+            'externalIdentifier' => fileset1_id,
             'version' => 1,
             'type' => Cocina::Models::FileSetType.file,
             'label' => 'Page 1',
             'structural' => { 'contains' => [file1, file2] }
           },
           {
-            'externalIdentifier' => 'https://cocina.sul.stanford.edu/fileSet/334-567-890',
+            'externalIdentifier' => fileset2_id,
             'version' => 1,
             'type' => Cocina::Models::FileSetType.file,
             'label' => 'Page 2',
@@ -681,7 +498,7 @@ RSpec.describe 'Update object' do
       let(:data) do
         <<~JSON
           {
-            "cocinaVersion": "0.0.1",
+            "cocinaVersion": "#{Cocina::Models::VERSION}",
             "externalIdentifier": "#{druid}",
             "type":"#{Cocina::Models::ObjectType.image}",
             "label":"#{label}","version":1,
@@ -694,7 +511,7 @@ RSpec.describe 'Update object' do
             "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
             "description":{
               "title":[{"value":"#{title}"}],
-              "purl":"https://purl.stanford.edu/gg777gg7777"
+              "purl":"#{purl}"
             },
             "identification":#{identification.to_json},"structural":{"contains":#{filesets.to_json}}}
         JSON
@@ -708,19 +525,18 @@ RSpec.describe 'Update object' do
 
         let(:structural) do
           {
-            isMemberOf: ['druid:xx888xx7777'],
+            isMemberOf: [],
             contains: [
               {
                 type: Cocina::Models::FileSetType.file,
-                externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/gg777gg7777-234-567-890', label: 'Page 1', version: 1,
+                externalIdentifier: fileset1_id, label: 'Page 1', version: 1,
                 structural: {
                   contains: [
                     {
                       type: Cocina::Models::ObjectType.file,
-                      externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777-234-567-890/00001.html',
+                      externalIdentifier: file1_id,
                       label: '00001.html',
                       filename: '00001.html',
-                      size: 0,
                       version: 1,
                       hasMimeType: 'text/html',
                       use: 'transcription',
@@ -735,36 +551,36 @@ RSpec.describe 'Update object' do
                       administrative: { publish: false, sdrPreserve: true, shelve: false }
                     }, {
                       type: Cocina::Models::ObjectType.file,
-                      externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777-234-567-890/00001.jp2',
+                      externalIdentifier: file2_id,
                       label: '00001.jp2',
                       filename: '00001.jp2',
-                      size: 0, version: 1,
+                      version: 1,
                       hasMimeType: 'image/jp2', hasMessageDigests: [],
-                      access: { view: 'world', download: 'world' },
+                      access: { view: 'stanford', download: 'stanford' },
                       administrative: { publish: true, sdrPreserve: true, shelve: true }
                     }
                   ]
                 }
               }, {
                 type: Cocina::Models::FileSetType.file,
-                externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/gg777gg7777-334-567-890',
+                externalIdentifier: fileset2_id,
                 label: 'Page 2', version: 1,
                 structural: {
                   contains: [
                     {
                       type: Cocina::Models::ObjectType.file,
-                      externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777-334-567-890/00002.html',
-                      label: '00002.html', filename: '00002.html', size: 0,
+                      externalIdentifier: file3_id,
+                      label: '00002.html', filename: '00002.html',
                       version: 1, hasMimeType: 'text/html',
                       hasMessageDigests: [],
                       access: { view: 'dark', download: 'none' },
                       administrative: { publish: false, sdrPreserve: true, shelve: false }
                     }, {
                       type: Cocina::Models::ObjectType.file,
-                      externalIdentifier: 'https://cocina.sul.stanford.edu/file/gg777gg7777-334-567-890/00002.jp2',
+                      externalIdentifier: file4_id,
                       label: '00002.jp2',
                       filename: '00002.jp2',
-                      size: 0, version: 1,
+                      version: 1,
                       hasMimeType: 'image/jp2',
                       hasMessageDigests: [],
                       access: { view: 'world', download: 'world' },
@@ -783,8 +599,9 @@ RSpec.describe 'Update object' do
                 headers: headers
           expect(response.status).to eq(200)
           expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-          expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
-          expect(item.contentMetadata.resource.file.count).to eq 4
+          cocina_item = Cocina::Models.without_metadata(CocinaObjectStore.find(druid))
+          expect(cocina_item.to_json).to equal_cocina_model(expected)
+          expect(cocina_item.structural.contains.map { |fs| fs.structural.contains.size }).to eq [2, 2]
         end
       end
 
@@ -807,7 +624,7 @@ RSpec.describe 'Update object' do
       let(:data) do
         <<~JSON
           {
-            "cocinaVersion":"0.0.1",
+            "cocinaVersion":"#{Cocina::Models::VERSION}",
             "externalIdentifier": "#{druid}",
             "type":"#{Cocina::Models::ObjectType.image}",
             "label":"#{label}","version":1,
@@ -820,7 +637,7 @@ RSpec.describe 'Update object' do
             "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
             "description":{
               "title":[{"value":"#{title}"}],
-              "purl":"https://purl.stanford.edu/gg777gg7777"
+              "purl":"#{purl}"
             },
             "identification":#{identification.to_json},
             "structural":{"isMemberOf":["druid:xx888xx7777"]}}
@@ -833,7 +650,7 @@ RSpec.describe 'Update object' do
               headers: headers
         expect(response.status).to eq(200)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-        expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
+        expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
       end
     end
   end
@@ -856,7 +673,7 @@ RSpec.describe 'Update object' do
     let(:data) do
       <<~JSON
         {
-          "cocinaVersion": "0.0.1",
+          "cocinaVersion": "#{Cocina::Models::VERSION}",
           "externalIdentifier": "#{druid}",
           "type":"#{Cocina::Models::ObjectType.book}",
           "label":"#{label}","version":1,
@@ -867,7 +684,7 @@ RSpec.describe 'Update object' do
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{
             "title":[{"value":"#{title}"}],
-            "purl":"https://purl.stanford.edu/gg777gg7777"
+            "purl":"#{purl}"
           },
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{
@@ -888,19 +705,12 @@ RSpec.describe 'Update object' do
 
       expect(response.status).to eq(200)
       expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-      expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
+      expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
     end
   end
 
   context 'when a collection is provided' do
-    let(:item) do
-      Dor::Collection.new(pid: druid,
-                          label: label,
-                          admin_policy_object_id: apo_druid).tap do |item|
-        item.descMetadata.title_info.main_title = title
-      end
-    end
-
+    let(:item) { create(:ar_collection) }
     let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
     let(:expected) do
@@ -919,7 +729,7 @@ RSpec.describe 'Update object' do
     let(:data) do
       <<~JSON
         {
-          "cocinaVersion": "0.0.1",
+          "cocinaVersion": "#{Cocina::Models::VERSION}",
           "externalIdentifier": "#{druid}",
           "type":"#{Cocina::Models::ObjectType.collection}",
           "label":"#{label}","version":1,
@@ -928,7 +738,7 @@ RSpec.describe 'Update object' do
           "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
           "description":{
             "title":[{"value":"#{title}"}],
-            "purl":"https://purl.stanford.edu/gg777gg7777"
+            "purl":"#{purl}"
           }
         }
       JSON
@@ -944,20 +754,12 @@ RSpec.describe 'Update object' do
             headers: headers
       expect(response.status).to eq(200)
       expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-      expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
+      expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
     end
   end
 
   context 'when an APO is provided' do
-    let(:item) do
-      Dor::AdminPolicyObject.new(pid: druid,
-                                 label: 'old value').tap do |item|
-        item.descMetadata.title_info.main_title = 'This is my title'
-        item.administrativeMetadata.default_workflow = 'myWorkflow'
-        item.administrativeMetadata.add_default_collection 'druid:gh333qq4444'
-        item.identityMetadata.objectLabel = 'my original objectLabel'
-      end
-    end
+    let(:item) { create(:ar_admin_policy, access_template: default_access) }
 
     let(:expected) do
       build(:admin_policy, id: druid, label: 'This is my label', title: 'This is my title').new(
@@ -998,7 +800,7 @@ RSpec.describe 'Update object' do
     let(:data) do
       <<~JSON
         {
-          "cocinaVersion": "0.0.1",
+          "cocinaVersion": "#{Cocina::Models::VERSION}",
           "externalIdentifier": "#{druid}",
           "type":"#{Cocina::Models::ObjectType.admin_policy}",
           "label":"This is my label","version":1,
@@ -1013,26 +815,20 @@ RSpec.describe 'Update object' do
           },
           "description":{
             "title":[{"value":"This is my title"}],
-            "purl":"https://purl.stanford.edu/gg777gg7777"
+            "purl":"#{purl}"
           }
         }
       JSON
     end
 
     context 'when the request is successful' do
-      before do
-        # This stubs out Solr:
-        allow(item).to receive(:admin_policy_object_id).and_return('druid:dd999df4567')
-        allow(item).to receive(:agreement_object_id).and_return('druid:bc123df4567')
-      end
-
       it 'registers the object with the registration service' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: headers
         expect(response.status).to eq(200)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-        expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
+        expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
       end
     end
 
@@ -1048,34 +844,25 @@ RSpec.describe 'Update object' do
         }
       end
 
-      let(:default_access_expected) { default_access.compact }
-
-      before do
-        # This stubs out Solr:
-        allow(item).to receive(:admin_policy_object_id).and_return('druid:dd999df4567')
-        allow(item).to receive(:agreement_object_id).and_return('druid:bc123df4567')
-      end
-
       it 'updates the metadata' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: headers
         expect(response.status).to eq(200)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-        expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
+        expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
       end
     end
   end
 
   context 'when an embargo is provided' do
     let(:expected) do
-      build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my title', admin_policy_id: 'druid:dd999df4567', type: Cocina::Models::ObjectType.book).new(
+      build(:dro, id: druid, label: 'This is my label', title: 'This is my title', admin_policy_id: apo_druid, type: Cocina::Models::ObjectType.book).new(
         identification: { sourceId: 'googlebooks:999999' },
         structural: {
           hasMemberOrders: [
             { viewingDirection: 'right-to-left' }
-          ],
-          isMemberOf: ['druid:xx888xx7777']
+          ]
         },
         access: {
           view: 'stanford',
@@ -1091,17 +878,17 @@ RSpec.describe 'Update object' do
     let(:data) do
       <<~JSON
         {
-          "cocinaVersion": "0.0.1",
+          "cocinaVersion": "#{Cocina::Models::VERSION}",
           "externalIdentifier": "#{druid}",
           "type":"#{Cocina::Models::ObjectType.book}",
           "label":"This is my label","version":1,
           "access":{"view":"stanford","download":"stanford",
             "embargo":{"view":"world","download":"world","releaseDate":"2020-02-29"}
           },
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "administrative":{"releaseTags":[],"hasAdminPolicy":"#{apo_druid}"},
           "description":{
             "title":[{"value":"This is my title"}],
-            "purl":"https://purl.stanford.edu/gg777gg7777"
+            "purl":"#{purl}"
           },
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
@@ -1120,7 +907,7 @@ RSpec.describe 'Update object' do
             headers: headers
       expect(response.status).to eq(200)
       expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-      expect(Cocina::Mapper.build(item).to_json).to equal_cocina_model(expected)
+      expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
     end
   end
 end

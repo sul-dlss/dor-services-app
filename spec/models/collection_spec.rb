@@ -7,7 +7,7 @@ RSpec.describe Collection do
 
   let(:cocina_collection) do
     Cocina::Models::Collection.new({
-                                     cocinaVersion: '0.0.1',
+                                     cocinaVersion: Cocina::Models::VERSION,
                                      externalIdentifier: druid,
                                      type: Cocina::Models::ObjectType.collection,
                                      label: 'Test Collection',
