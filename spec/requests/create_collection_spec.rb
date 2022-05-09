@@ -14,7 +14,6 @@ RSpec.describe 'Create object' do
   before do
     allow(SuriService).to receive(:mint_id).and_return(druid)
     allow_any_instance_of(CocinaObjectStore).to receive(:find).with('druid:dd999df4567').and_return(minimal_cocina_admin_policy)
-    allow(Cocina::ActiveFedoraPersister).to receive(:store)
     stub_request(:put, 'https://dor-indexing-app.example.edu/dor/reindex_from_cocina')
   end
 
