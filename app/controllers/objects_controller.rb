@@ -13,21 +13,6 @@ class ObjectsController < ApplicationController
     raise e
   end
 
-  # No longer be necessary when remove Fedora.
-  rescue_from(Cocina::Mapper::UnexpectedBuildError) do |e|
-    json_api_error(status: :unprocessable_entity,
-                   title: 'Unexpected Cocina::Mapper.build error',
-                   message: e.cause,
-                   meta: { backtrace: e.cause.backtrace })
-  end
-
-  # No longer be necessary when remove Fedora.
-  rescue_from(SolrConnectionError) do |e|
-    json_api_error(status: :internal_server_error,
-                   title: 'Unable to reach Solr',
-                   message: e.message)
-  end
-
   def create
     return json_api_error(status: :service_unavailable, message: 'Registration is temporarily disabled') unless Settings.enabled_features.registration
 

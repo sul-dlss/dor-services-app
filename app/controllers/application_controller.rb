@@ -11,14 +11,6 @@ class ApplicationController < ActionController::API
     }, status: :bad_request
   end
 
-  # No longer be necessary when remove Fedora.
-  rescue_from(Cocina::Mapper::UnexpectedBuildError) do |e|
-    json_api_error(status: :unprocessable_entity,
-                   title: 'Unexpected Cocina::Mapper.build error',
-                   message: e.cause,
-                   meta: { backtrace: e.cause&.backtrace })
-  end
-
   before_action :check_auth_token
 
   TOKEN_HEADER = 'Authorization'
