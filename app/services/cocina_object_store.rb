@@ -221,7 +221,7 @@ class CocinaObjectStore
   def ensure_ur_admin_policy_exists(cocina_object)
     return unless Settings.enabled_features.create_ur_admin_policy && cocina_object.administrative.hasAdminPolicy == Settings.ur_admin_policy.druid
 
-    Dor::AdminPolicyObject.exists?(Settings.ur_admin_policy.druid) || UrAdminPolicyFactory.create
+    AdminPolicy.exists?(external_identifier: Settings.ur_admin_policy.druid) || UrAdminPolicyFactory.create
   end
 
   # @raise [Cocina::ValidationError]
