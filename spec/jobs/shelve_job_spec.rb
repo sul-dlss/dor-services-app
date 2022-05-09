@@ -15,7 +15,6 @@ RSpec.describe ShelveJob, type: :job do
     allow(CocinaObjectStore).to receive(:find).with(druid).and_return(cocina_object)
     allow(result).to receive(:processing!)
     allow(EventFactory).to receive(:create)
-    allow(Cocina::Mapper).to receive(:build)
   end
 
   context 'with no errors' do

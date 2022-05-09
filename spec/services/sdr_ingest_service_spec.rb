@@ -42,7 +42,6 @@ RSpec.describe SdrIngestService do
 
     before do
       allow(Preservation::Client.objects).to receive(:signature_catalog).and_return(fixture_sig_cat_obj)
-      allow(Cocina::Mapper).to receive(:build).and_return(cocina_object)
       expect(PreservationMetadataExtractor).to receive(:extract).with(workspace: an_instance_of(DruidTools::Druid), cocina_object: cocina_object).and_return(metadata_dir)
     end
 
