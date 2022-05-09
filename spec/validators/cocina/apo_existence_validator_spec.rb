@@ -20,6 +20,14 @@ RSpec.describe Cocina::ApoExistenceValidator do
     end
   end
 
+  context 'with a dor object with a UR APO' do
+    let(:item) { build(:dro, admin_policy_id: 'druid:hv992ry2431') }
+
+    it 'returns true' do
+      expect(validator.valid?).to be true
+    end
+  end
+
   context 'when a dor object as an APO that is not found' do
     let(:item) { build(:dro, admin_policy_id: 'druid:df123cd4567') }
 
