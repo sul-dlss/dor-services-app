@@ -11,6 +11,9 @@ module Cocina
 
     # @return [Boolean] false if the APO is not in the repository
     def valid?
+      # Always valid if UR APO
+      return true if apo_id == Settings.ur_admin_policy.druid
+
       begin
         apo = CocinaObjectStore.find(apo_id)
         @error = "Expected '#{apo_id}' to be an AdminPolicy but it is a #{apo.class}" unless apo.admin_policy?
