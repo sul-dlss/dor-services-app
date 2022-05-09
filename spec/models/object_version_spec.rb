@@ -70,7 +70,7 @@ RSpec.describe ObjectVersion, type: :model do
 
     context 'when missing versions' do
       it 'raises' do
-        expect { described_class.sync_then_increment_version(druid: druid, known_version: 3, significance: :major, description: 'Version 3') }.to raise_error(Dor::Exception)
+        expect { described_class.sync_then_increment_version(druid: druid, known_version: 3, significance: :major, description: 'Version 3') }.to raise_error(VersionService::VersioningError)
       end
     end
   end

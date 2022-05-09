@@ -41,7 +41,7 @@ class ObjectVersion < ApplicationRecord
   def self.sync_then_increment_version(druid:, known_version:, significance:, description:)
     current_version = current_version(druid)&.version || 0
 
-    raise Dor::Exception, "Cannot sync to a version greater than current: #{current_version}, requested #{known_version}" if current_version < known_version
+    raise VersionService::VersioningError, "Cannot sync to a version greater than current: #{current_version}, requested #{known_version}" if current_version < known_version
 
     ObjectVersion.where(druid: druid).where('version > ?', known_version).destroy_all if current_version > known_version
 
