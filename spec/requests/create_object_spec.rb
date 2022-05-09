@@ -659,7 +659,7 @@ RSpec.describe 'Create object' do
       before do
         allow(Settings.enabled_features).to receive(:create_ur_admin_policy).and_return(true)
         allow(Settings.ur_admin_policy).to receive(:druid).and_return(admin_policy_id)
-        allow(Dor::AdminPolicyObject).to receive(:exists?).and_return(false)
+        allow(AdminPolicy).to receive(:exists?).and_return(false)
         allow(UrAdminPolicyFactory).to receive(:create)
       end
 

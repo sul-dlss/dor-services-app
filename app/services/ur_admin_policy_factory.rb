@@ -5,19 +5,28 @@ class UrAdminPolicyFactory
   # If an object references the Ur-AdminPolicy, it has to exist first.
   # This is particularly important in testing, where the repository may be empty.
   def self.create
-    Dor::AdminPolicyObject.new(pid: Settings.ur_admin_policy.druid,
-                               label: Settings.ur_admin_policy.label,
-                               agreement_object_id: Settings.ur_admin_policy.druid,
-                               mods_title: Settings.ur_admin_policy.label).tap do |ur_apo|
-      ur_apo.add_relationship(:is_governed_by, "info:fedora/#{Settings.ur_admin_policy.druid}")
-      ur_apo.save!
-    end
+    admin_policy_cocina = Cocina::Models::AdminPolicy.new(
+      type: Cocina::Models::ObjectType.admin_policy,
+      externalIdentifier: Settings.ur_admin_policy.druid,
+      label: Settings.ur_admin_policy.label,
+      version: 1,
+      administrative: {
+        hasAdminPolicy: Settings.ur_admin_policy.druid,
+        hasAgreement: Settings.ur_admin_policy.agreement,
+        accessTemplate: {
+          view: 'dark',
+          download: 'none'
+        }
+      },
+      description: {
+        title: [{ value: 'Test Admin Policy' }],
+        purl: Purl.for(druid: Settings.ur_admin_policy.druid)
+      }
+    )
 
-    # Solves an odd bootstrapping problem, where the dor-indexing-app can only index cocina-models,
-    # but cocina-model can't be built unless the AdminPolicy is found in Solr
-    SolrService.add(id: Settings.ur_admin_policy.druid,
-                    objectType_ssim: ['adminPolicy'],
-                    has_model_ssim: 'info:fedora/afmodel:Dor_AdminPolicyObject')
-    SolrService.commit
+    ar_apo = AdminPolicy.upsert_cocina(admin_policy_cocina)
+    Notifications::ObjectCreated.publish(model: admin_policy_cocina,
+                                         created_at: ar_apo.created_at.utc,
+                                         modified_at: ar_apo.updated_at.utc)
   end
 end

@@ -5,18 +5,16 @@ require 'rails_helper'
 RSpec.describe UrAdminPolicyFactory do
   subject(:create) { described_class.create }
 
-  let(:ur_apo) { instance_double(Dor::AdminPolicyObject, save!: true, add_relationship: true) }
+  let(:druid) { Settings.ur_admin_policy.druid }
 
   before do
-    allow(Dor::AdminPolicyObject).to receive(:exists?).and_return(false)
-    allow(Dor::AdminPolicyObject).to receive(:new).and_return(ur_apo)
-    allow(SolrService).to receive_messages(add: true, commit: true)
+    allow(Notifications::ObjectCreated).to receive(:publish)
   end
 
   it 'creates the Ur-AdminPolicy' do
+    expect(AdminPolicy.exists?(external_identifier: druid)).to be false
     create
-    expect(ur_apo).to have_received(:save!)
-    expect(SolrService).to have_received(:add)
-    expect(SolrService).to have_received(:commit)
+    expect(AdminPolicy.exists?(external_identifier: druid)).to be true
+    expect(Notifications::ObjectCreated).to have_received(:publish)
   end
 end

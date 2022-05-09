@@ -13,6 +13,7 @@ enabled_features:
 # Ur Admin Policy
 ur_admin_policy:
   druid: druid:hv992ry2431
+  agreement: druid:wv961pm7301
   label: Ur-APO
 
 content:
