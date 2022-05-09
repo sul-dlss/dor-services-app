@@ -19,7 +19,7 @@ module Publish
       pub = Nokogiri::XML('<publicObject/>').root
       pub['id'] = public_cocina.externalIdentifier
       pub['published'] = Time.now.utc.xmlschema
-      pub['publishVersion'] = "dor-services/#{Dor::VERSION}"
+      pub['publishVersion'] = "cocina-models/#{Cocina::Models::VERSION}"
       pub.add_child(public_identity_metadata.root) # add in modified identityMetadata datastream
       pub.add_child(public_content_metadata.root) if public_content_metadata.xpath('//resource').any?
       pub.add_child(public_rights_metadata)

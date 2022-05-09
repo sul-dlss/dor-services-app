@@ -158,7 +158,7 @@ RSpec.describe Publish::PublicXmlService do
       end
 
       it 'a published version' do
-        expect(ng_xml.at_xpath('/publicObject/@publishVersion').value).to eq("dor-services/#{Dor::VERSION}")
+        expect(ng_xml.at_xpath('/publicObject/@publishVersion').value).to eq("cocina-models/#{Cocina::Models::VERSION}")
       end
 
       it 'has identityMetadata with catkeys' do
