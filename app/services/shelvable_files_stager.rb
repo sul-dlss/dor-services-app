@@ -70,13 +70,13 @@ class ShelvableFilesStager
   # (filtering to select only the files that should be preserved)
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   # @raise [ConfigurationError] if missing local workspace root.
-  # @raise [Dor::Exception] if something went wrong.
+  # @raise [ShelvingService::ShelvingError] if something went wrong.
   def preserve_diff
     @preserve_diff ||= begin
       inventory_diff = Preservation::Client.objects.content_inventory_diff(druid: identifier, content_metadata: content_metadata, subset: 'preserve')
       inventory_diff.group_difference('content')
     end
   rescue Preservation::Client::Error => e
-    raise Dor::Exception, e
+    raise ShelvingService::ShelvingError, e
   end
 end

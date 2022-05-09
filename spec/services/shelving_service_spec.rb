@@ -88,7 +88,7 @@ RSpec.describe ShelvingService do
     let(:structural) { nil }
 
     it 'raises' do
-      expect { described_class.shelve(cocina_object) }.to raise_error(Dor::Exception)
+      expect { described_class.shelve(cocina_object) }.to raise_error(ShelvingService::ShelvingError)
     end
   end
 
@@ -113,7 +113,7 @@ RSpec.describe ShelvingService do
     let(:collections) { [] }
 
     it 'raises' do
-      expect { described_class.shelve(cocina_object) }.to raise_error(Dor::Exception)
+      expect { described_class.shelve(cocina_object) }.to raise_error(ShelvingService::ShelvingError)
     end
   end
 end
