@@ -1,11 +1,6 @@
 # Feature flippers
 enabled_features:
   registration: true
-  validate_descriptive_roundtrip:
-    update: true
-    create: true
-    legacy: true
-    refresh: true
   create_ur_admin_policy: false
   datacite_update: false
   postgres: false
