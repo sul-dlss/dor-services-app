@@ -17,8 +17,6 @@ class CocinaObjectStore
   # Retrieves a Cocina object from the datastore.
   # @param [String] druid
   # @return [Cocina::Models::DROWithMetadata, Cocina::Models::CollectionWithMetadata, Cocina::Models::AdminPolicyWithMetadata] cocina_object
-  # @raise [SolrConnectionError] raised when cannot connect to Solr. This error will no longer be raised when Fedora is removed.
-  # @raise [Cocina::Mapper::UnexpectedBuildError] raised when an mapping error occurs. This error will no longer be raised when Fedora is removed.
   # @raise [CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
   def self.find(druid)
     new.find(druid)
