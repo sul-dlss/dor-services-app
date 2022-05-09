@@ -113,7 +113,7 @@ RSpec.describe 'Display metadata' do
       expect(response).to be_successful
       expect(response.body).to be_equivalent_to <<~XML
         <?xml version="1.0" encoding="UTF-8"?>
-        <publicObject id="druid:mk420bs7601" published="#{now.utc.xmlschema}" publishVersion="dor-services/#{Dor::VERSION}">
+        <publicObject id="druid:mk420bs7601" published="#{now.utc.xmlschema}" publishVersion="cocina-models/#{Cocina::Models::VERSION}">
           <identityMetadata>
             <objectType>item</objectType>
             <objectLabel>Hello</objectLabel>
