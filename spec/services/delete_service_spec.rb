@@ -3,16 +3,35 @@
 require 'rails_helper'
 
 RSpec.describe DeleteService do
-  let(:service) { described_class.new(druid) }
+  let(:service) { described_class.new(cocina_object, event_factory) }
 
-  describe '#remove_active_workflows' do
-    let(:druid) { 'druid:aa123bb4567' }
-    let(:client) { instance_double(Dor::Workflow::Client, delete_all_workflows: nil) }
+  let(:cocina_object) { build(:dro, id: druid, source_id: source_id) }
 
+  let(:druid) { 'druid:bb408qn5061' }
+
+  let(:source_id) { 'hydrus:object-63-sdr-client' }
+
+  let(:event_factory) { class_double(EventFactory, create: nil) }
+
+  let(:client) { instance_double(Dor::Workflow::Client, delete_all_workflows: nil) }
+
+  before do
+    allow(WorkflowClientFactory).to receive(:build).and_return(client)
+  end
+
+  describe '#destroy' do
     before do
-      allow(WorkflowClientFactory).to receive(:build).and_return(client)
+      allow(CocinaObjectStore).to receive(:destroy)
     end
 
+    it 'creates an event' do
+      service.destroy
+
+      expect(event_factory).to have_received(:create).with(druid: druid, event_type: 'delete', data: { request: cocina_object.to_h, source_id: source_id })
+    end
+  end
+
+  describe '#remove_active_workflows' do
     it 'calls the workflow client' do
       service.send(:remove_active_workflows)
       expect(client).to have_received(:delete_all_workflows).with(pid: druid)
@@ -22,7 +41,6 @@ RSpec.describe DeleteService do
   describe '#cleanup_stacks' do
     let(:fixture_dir) { '/tmp/cleanup-spec' }
     let(:stacks_dir) { File.join(fixture_dir, 'stacks') }
-    let(:druid) { 'druid:cd456ef7890' }
     let(:stacks_druid) { DruidTools::StacksDruid.new(druid, Settings.stacks.local_stacks_root) }
 
     before do
@@ -46,10 +64,6 @@ RSpec.describe DeleteService do
   end
 
   describe '#delete_from_dor' do
-    let(:druid) { 'druid:cd456ef7890' }
-
-    let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid) }
-
     before do
       allow(CocinaObjectStore).to receive(:destroy)
       AdministrativeTags.create(identifier: druid, tags: ['test : tag'])

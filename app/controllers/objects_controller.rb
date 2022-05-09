@@ -172,7 +172,7 @@ class ObjectsController < ApplicationController
   end
 
   def destroy
-    DeleteService.destroy(@cocina_object.externalIdentifier)
+    DeleteService.destroy(@cocina_object)
     head :no_content
   rescue StandardError => e
     json_api_error(status: :internal_server_error,
