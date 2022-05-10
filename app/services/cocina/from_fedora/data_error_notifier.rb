@@ -12,23 +12,10 @@ module Cocina
         @druid = druid
       end
 
-      # Notify for a non-critical data error.
-      # @param [String] message
-      # @param [Hash<String, String>] context to add to warning context
-      def warn(message, context = {})
-        return unless Settings.from_fedora_data_errors.notify_warn
-
-        Honeybadger.notify("[DATA WARNING] #{message}",
-                           tags: 'data_warning',
-                           context: { druid: druid }.merge(context))
-      end
-
       # Notify for a critical data error.
       # @param [String] message
       # @param [Hash<String, String>] context to add to error context
       def error(message, context = {})
-        return unless Settings.from_fedora_data_errors.notify_error
-
         Honeybadger.notify("[DATA ERROR] #{message}",
                            tags: 'data_error',
                            context: { druid: druid }.merge(context))
