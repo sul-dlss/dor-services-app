@@ -63,7 +63,10 @@ class ObjectVersion < ApplicationRecord
 
     if significance
       # Greatest version with a tag.
-      last_object_version = ObjectVersion.where(druid: druid).where.not(tag: nil, version: current_object_version.version).order(version: :desc).first
+      last_object_version = ObjectVersion.where(druid: druid)
+                                         .where.not(tag: nil)
+                                         .where.not(version: current_object_version.version)
+                                         .order(version: :desc).first
       last_tag = VersionTag.parse(last_object_version.tag)
       current_object_version.tag = last_tag.increment(significance).to_s
     end
