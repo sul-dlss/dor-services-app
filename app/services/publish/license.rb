@@ -10,7 +10,7 @@ module Publish
     class LegacyLicenseError < StandardError; end
 
     def self.licenses
-      @licenses ||= Rails.application.config_for(:licenses, env: 'production')
+      @licenses ||= Rails.application.config_for(:licenses, env: 'production').stringify_keys
     end
 
     def initialize(url:)
@@ -18,7 +18,7 @@ module Publish
 
       attrs = License.licenses.fetch(url)
       @uri = url
-      @description = attrs.fetch('description')
+      @description = attrs.fetch(:description)
     end
   end
 end
