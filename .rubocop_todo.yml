@@ -70,7 +70,7 @@ RSpec/AnyInstance:
     - 'spec/requests/notify_goobi_spec.rb'
     - 'spec/services/publish/metadata_transfer_service_spec.rb'
     - 'spec/services/publish/public_xml_service_spec.rb'
-    - 'spec/services/sdr_ingest_service_spec.rb'
+    - 'spec/services/preservation_ingest_service_spec.rb'
 
 # Offense count: 11
 RSpec/Be:
@@ -99,7 +99,7 @@ RSpec/ExpectInHook:
   Exclude:
     - 'spec/services/preservation_metadata_extractor_spec.rb'
     - 'spec/services/publish/metadata_transfer_service_spec.rb'
-    - 'spec/services/sdr_ingest_service_spec.rb'
+    - 'spec/services/preservation_ingest_service_spec.rb'
 
 # Offense count: 19
 # Configuration parameters: AssignmentOnly.
@@ -114,7 +114,7 @@ RSpec/MessageSpies:
   Exclude:
     - 'spec/services/digital_stacks_service_spec.rb'
     - 'spec/services/preservation_metadata_extractor_spec.rb'
-    - 'spec/services/sdr_ingest_service_spec.rb'
+    - 'spec/services/preservation_ingest_service_spec.rb'
     - 'spec/services/update_marc_record_service_spec.rb'
     - 'spec/services/version_service_spec.rb'
 
@@ -133,7 +133,7 @@ RSpec/RepeatedExampleGroupDescription:
 RSpec/StubbedMock:
   Exclude:
     - 'spec/services/preservation_metadata_extractor_spec.rb'
-    - 'spec/services/sdr_ingest_service_spec.rb'
+    - 'spec/services/preservation_ingest_service_spec.rb'
     - 'spec/services/version_service_spec.rb'
 
 # Offense count: 4

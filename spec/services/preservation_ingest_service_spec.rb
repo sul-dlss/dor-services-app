@@ -3,7 +3,7 @@
 require 'rails_helper'
 require 'fileutils'
 
-RSpec.describe SdrIngestService do
+RSpec.describe PreservationIngestService do
   let(:fixtures) { Pathname(File.dirname(__FILE__)).join('../fixtures') }
   let(:export_dir) { Pathname(Settings.sdr.local_export_home) }
   let(:fixture_sig_cat_obj) do

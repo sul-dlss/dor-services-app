@@ -20,7 +20,7 @@ RSpec.describe PreserveJob, type: :job do
     subject(:perform) { described_class.perform_now(druid: druid, background_job_result: result) }
 
     before do
-      allow(SdrIngestService).to receive(:transfer)
+      allow(PreservationIngestService).to receive(:transfer)
       allow(StartPreservationWorkflowJob).to receive(:perform_later)
       perform
     end
@@ -29,8 +29,8 @@ RSpec.describe PreserveJob, type: :job do
       expect(result).to have_received(:processing!).once
     end
 
-    it 'invokes the SdrIngestService' do
-      expect(SdrIngestService).to have_received(:transfer).with(cocina).once
+    it 'invokes the PreservationIngestService' do
+      expect(PreservationIngestService).to have_received(:transfer).with(cocina).once
     end
 
     it 'marks the job as complete' do
@@ -38,11 +38,11 @@ RSpec.describe PreserveJob, type: :job do
     end
   end
 
-  context 'with errors returned by SdrIngestService' do
+  context 'with errors returned by PreservationIngestService' do
     let(:error_message) { 'something broke' }
 
     before do
-      allow(SdrIngestService).to receive(:transfer).and_raise(error_message)
+      allow(PreservationIngestService).to receive(:transfer).and_raise(error_message)
       allow(LogFailureJob).to receive(:perform_later)
     end
 
@@ -51,7 +51,7 @@ RSpec.describe PreserveJob, type: :job do
         described_class.perform_now(druid: druid, background_job_result: result)
       end
       expect(result).to have_received(:processing!).once
-      expect(SdrIngestService).to have_received(:transfer).with(cocina).exactly(5).times
+      expect(PreservationIngestService).to have_received(:transfer).with(cocina).exactly(5).times
       expect(LogFailureJob).to have_received(:perform_later)
         .with(druid: druid,
               background_job_result: result,

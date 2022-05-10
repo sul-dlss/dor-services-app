@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Preserve::BagVerifier do
   let(:fixtures) { Pathname(File.dirname(__FILE__)).join('../../fixtures') }
 
-  # NOTE: BagVerifier#verify is exercised by spec/services/sdr_ingest_service_spec.rb
+  # NOTE: BagVerifier#verify is exercised by spec/services/preservation_ingest_service_spec.rb
 
   describe '#verify_pathname' do
     subject(:verify_pathname) { instance.verify_pathname(path) }

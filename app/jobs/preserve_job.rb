@@ -19,7 +19,7 @@ class PreserveJob < ApplicationJob
   def perform(druid:, background_job_result:)
     background_job_result.processing!
     cocina_object = CocinaObjectStore.find(druid)
-    SdrIngestService.transfer(cocina_object) # This might raise a StandardError which will be handled by the retry above.
+    PreservationIngestService.transfer(cocina_object) # This might raise a StandardError which will be handled by the retry above.
 
     StartPreservationWorkflowJob.perform_later(druid: druid,
                                                version: cocina_object.version,
