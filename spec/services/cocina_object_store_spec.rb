@@ -272,7 +272,7 @@ RSpec.describe CocinaObjectStore do
       let(:description_props) do
         {
           title: [{ value: 'The Well-Grounded Rubyist' }],
-          purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+          purl: Purl.for(druid: druid)
         }
       end
 
