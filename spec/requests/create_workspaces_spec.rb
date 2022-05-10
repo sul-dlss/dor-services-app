@@ -7,9 +7,6 @@ RSpec.describe 'Creating a workspace' do
 
   before do
     allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
-    rights_metadata_xml = Dor::RightsMetadataDS.new
-    allow(rights_metadata_xml).to receive_messages(ng_xml: Nokogiri::XML('<xml/>'))
-    allow(rights_metadata_xml).to receive(:dra_object).and_return(Dor::RightsAuth.parse(Nokogiri::XML('<xml/>'), true))
     clean_workspace
   end
 
