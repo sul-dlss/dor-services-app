@@ -7,7 +7,6 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 gem 'cocina-models', '~> 0.79.0'
 gem 'datacite', '~> 0.3.0'
 gem 'dor-rights-auth', '>= 1.5.0' # required for new CDL rights
-gem 'dor-services', '~> 9.6'
 gem 'dor-workflow-client', '~> 4.0'
 gem 'druid-tools', '~> 2.2'
 gem 'marc'
