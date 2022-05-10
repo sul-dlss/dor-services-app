@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Dor::Goobi do
+RSpec.describe GoobiService do
   let(:goobi) { described_class.new(dro) }
   let(:druid) { 'druid:jp670nd1791' }
   let(:barcode) { '6772719-1001' }
@@ -218,7 +218,7 @@ RSpec.describe Dor::Goobi do
       let(:tags) { ['DPG : Workflow : book_workflow & stuff', 'Process : Content Type : Book', 'LAB : MAPS'] }
 
       it 'creates the correct xml request' do
-        expect(xml_request).to be_equivalent_to <<-END
+        expect(xml_request).to be_equivalent_to <<-XML
           <stanfordCreationRequest>
             <objectId>#{druid}</objectId>
             <objectType>item</objectType>
@@ -239,7 +239,7 @@ RSpec.describe Dor::Goobi do
                 <tag name="LAB" value="MAPS"/>
             </tags>
           </stanfordCreationRequest>
-        END
+        XML
       end
     end
 
@@ -247,7 +247,7 @@ RSpec.describe Dor::Goobi do
       let(:tags) { ['DPG : Workflow : book_workflow', 'DPG : OCR : TRUE'] }
 
       it 'creates the correct xml request' do
-        expect(xml_request).to be_equivalent_to <<-END
+        expect(xml_request).to be_equivalent_to <<-XML
           <stanfordCreationRequest>
             <objectId>#{druid}</objectId>
             <objectType>item</objectType>
@@ -267,7 +267,7 @@ RSpec.describe Dor::Goobi do
                 <tag name="DPG" value="OCR : TRUE"/>
             </tags>
           </stanfordCreationRequest>
-        END
+        XML
       end
     end
 
@@ -286,7 +286,7 @@ RSpec.describe Dor::Goobi do
       end
 
       it 'creates the correct xml request when MODs title exists with a special character' do
-        expect(xml_request).to be_equivalent_to <<-END
+        expect(xml_request).to be_equivalent_to <<-XML
           <stanfordCreationRequest>
             <objectId>#{druid}</objectId>
             <objectType>item</objectType>
@@ -303,7 +303,7 @@ RSpec.describe Dor::Goobi do
             <ocr>false</ocr>
             <tags></tags>
           </stanfordCreationRequest>
-        END
+        XML
       end
     end
   end
