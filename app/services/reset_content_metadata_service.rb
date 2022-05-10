@@ -10,7 +10,7 @@ class ResetContentMetadataService
 
   def initialize(cocina_item:)
     @cocina_item = cocina_item
-    @notifier = Cocina::FromFedora::DataErrorNotifier.new(druid: cocina_item.externalIdentifier)
+    @notifier = DataErrorNotifier.new(druid: cocina_item.externalIdentifier)
   end
 
   # @return [Cocina::Models::DRO] updated cocina object
