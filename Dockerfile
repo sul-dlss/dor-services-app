@@ -27,7 +27,7 @@ RUN apk add --update --no-cache  \
 # Get bundler 2.0
 RUN gem install bundler
 
-RUN mkdir /app
+RUN mkdir -p /app/tmp/pids
 WORKDIR /app
 
 COPY Gemfile Gemfile.lock ./
