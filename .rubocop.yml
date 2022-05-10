@@ -27,6 +27,7 @@ Layout/LineLength:
   Exclude:
     - 'bin/remediate-stanford-placeTerm'
     - 'spec/services/cocina/mapping/descriptive/h2_datacite/subject_h2_datacite_spec.rb'
+    - 'spec/services/update_marc_record_service_spec.rb'
 
 Lint/UnusedMethodArgument:
   AllowUnusedKeywordArguments: true
@@ -56,11 +57,12 @@ Metrics/ClassLength:
     - 'app/services/mods_equivalent_service.rb'
     - 'app/services/cocina/to_fedora/content_metadata_generator.rb'
     - 'app/services/cocina/normalizers/content_metadata_normalizer.rb'
+    - 'app/services/update_marc_record_service.rb'
 
 Performance/CollectionLiteralInLoop:
   Enabled: true
   Exclude:
-    - 'app/models/dor/update_marc_record_service.rb'
+    - 'app/services/update_marc_record_service.rb'
     - 'app/models/symphony_reader.rb'
     - 'app/services/cocina/from_fedora/descriptive/access.rb'
     - 'app/services/cocina/from_fedora/descriptive/form.rb'

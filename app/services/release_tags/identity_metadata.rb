@@ -13,7 +13,7 @@ class ReleaseTags
       @cocina_object = cocina_object
     end
 
-    # Called in Dor::UpdateMarcRecordService (in dor-services-app too)
+    # Called in UpdateMarcRecordService (in dor-services-app too)
     # Determine projects in which an item is released
     # @param [Hash{String => Boolean}] the released hash to add tags to
     # @return [Hash{String => Boolean}] all namespaces, keys are Project name Strings, values are Boolean

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Dor::UpdateMarcRecordService do
+RSpec.describe UpdateMarcRecordService do
   subject(:umrs) { described_class.new(cocina_object, thumbnail_service: thumbnail_service) }
 
   let(:apo_druid) { 'druid:pp000pp0000' }
@@ -130,14 +130,14 @@ RSpec.describe Dor::UpdateMarcRecordService do
     end
   end
 
-  context 'for a druid without a catkey' do
+  context 'when a druid without a catkey' do
     it 'does nothing' do
       expect(umrs).not_to receive(:push_symphony_records)
       umrs.update
     end
   end
 
-  context 'for a druid with a catkey' do
+  context 'when a druid with a catkey' do
     let(:cocina_object) do
       build(:dro, id: druid).new(identification: identity_metadata_catkey_barcode)
     end
@@ -187,7 +187,6 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
 
       it 'generates a single symphony record' do
-        # rubocop:disable Layout/LineLength
         expect(generate_symphony_records).to eq [
           "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label & A Special character|xrights:world"
         ]
@@ -251,7 +250,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
 
       it 'generates blank symphony records for an item object' do
-        expect(generate_symphony_records).to match_array %W(123\tbc123dg9393\t 456\tbc123dg9393\t)
+        expect(generate_symphony_records).to match_array %W[123\tbc123dg9393\t 456\tbc123dg9393\t]
       end
     end
 
@@ -311,25 +310,25 @@ RSpec.describe Dor::UpdateMarcRecordService do
 
     before do
       Settings.release.symphony_path = "#{fixtures}/sdr_purl"
-      expect(File).not_to exist(output_file)
     end
 
     after do
       FileUtils.rm_f(output_file)
     end
 
-    context 'for a single record' do
+    context 'when a single record' do
       let(:marc_records) { ['abcdef'] }
 
       it 'writes the record' do
+        expect(File).not_to exist(output_file)
         expect(writer).not_to be_nil
         expect(File).to exist(output_file)
         expect(File.read(output_file)).to eq "#{marc_records.first}\n"
       end
     end
 
-    context 'for multiple records including special characters' do
-      let(:marc_records) { %w(ab!#cdef 12@345 thirdrecord'withquote fourthrecordwith"doublequote) }
+    context 'when multiple records including special characters' do
+      let(:marc_records) { %w[ab!#cdef 12@345 thirdrecord'withquote fourthrecordwith"doublequote] }
 
       it 'writes the record' do
         expect(writer).not_to be_nil
@@ -338,7 +337,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
     end
 
-    context 'for an empty array' do
+    context 'when an empty array' do
       let(:marc_records) { [] }
 
       it 'does nothing' do
@@ -347,7 +346,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
     end
 
-    context 'for nil' do
+    context 'when nil' do
       let(:marc_records) { nil }
 
       it 'does nothing' do
@@ -356,7 +355,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
     end
 
-    context 'for a record with single quotes' do
+    context 'when a record with single quotes' do
       let(:marc_records) { ["this is | a record | that has 'single quotes' in it | and it should work"] }
 
       it 'writes the record' do
@@ -366,7 +365,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
     end
 
-    context 'for a record with double and single quotes' do
+    context 'when a record with double and single quotes' do
       let(:marc_records) { ['record with "double quotes" in it | and it should work'] }
 
       it 'writes the record' do
@@ -390,7 +389,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
     end
 
-    context 'for a stanford only object' do
+    context 'when a stanford only object' do
       let(:cocina_object) do
         build(:dro, id: druid).new(
           access: access_stanford_only
@@ -402,7 +401,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
     end
 
-    context 'for a location restricted object' do
+    context 'when a location restricted object' do
       let(:cocina_object) do
         build(:dro, id: druid).new(
           access: access_location
@@ -481,13 +480,13 @@ RSpec.describe Dor::UpdateMarcRecordService do
       expect(umrs.get_x2_collection_info).to be_empty
     end
 
-    context 'for a collection object' do
+    context 'when a collection object' do
       it 'returns an empty string' do
         expect(umrs.get_x2_collection_info).to be_empty
       end
     end
 
-    context 'for an object with a collection' do
+    context 'when an object with a collection' do
       let(:cocina_object) do
         build(:dro, id: druid).new(
           structural: structural_metadata
@@ -849,7 +848,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
   describe '#get_x2_rights_info' do
     subject(:rights_info) { umrs.get_x2_rights_info }
 
-    context 'world rights' do
+    context 'with world rights' do
       let(:cocina_object) do
         build(:dro, id: druid).new(access: access_world)
       end
@@ -857,7 +856,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       it { is_expected.to eq '|xrights:world' }
     end
 
-    context 'stanford-only rights' do
+    context 'with stanford-only rights' do
       let(:cocina_object) do
         build(:dro, id: druid).new(access: access_stanford_only)
       end
@@ -865,7 +864,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       it { is_expected.to eq '|xrights:group=stanford' }
     end
 
-    context 'CDL rights' do
+    context 'with CDL rights' do
       let(:cocina_object) do
         build(:dro, id: druid).new(
           access: {
@@ -878,7 +877,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       it { is_expected.to eq '|xrights:cdl' }
     end
 
-    context 'location rights' do
+    context 'with location rights' do
       let(:cocina_object) do
         build(:dro, id: druid).new(access: access_location)
       end
@@ -886,7 +885,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       it { is_expected.to eq '|xrights:location=spec' }
     end
 
-    context 'citation rights' do
+    context 'with citation rights' do
       let(:cocina_object) do
         build(:dro, id: druid).new(
           access: {
@@ -899,7 +898,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       it { is_expected.to eq '|xrights:citation' }
     end
 
-    context 'dark rights' do
+    context 'with dark rights' do
       it { is_expected.to eq '|xrights:dark' }
     end
   end
@@ -991,7 +990,7 @@ RSpec.describe Dor::UpdateMarcRecordService do
       end
 
       it 'returns values for previous catkeys in identityMetadata' do
-        expect(previous_ckeys).to eq(%w(123 456))
+        expect(previous_ckeys).to eq(%w[123 456])
       end
     end
 

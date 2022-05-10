@@ -75,7 +75,7 @@ class ConstituentService
 
       next unless cocina_item.identification&.catalogLinks&.any? { |link| link.catalog == 'symphony' }
 
-      Dor::UpdateMarcRecordService.update(cocina_item, thumbnail_service: ThumbnailService.new(cocina_item))
+      UpdateMarcRecordService.update(cocina_item, thumbnail_service: ThumbnailService.new(cocina_item))
     end
   end
 end
