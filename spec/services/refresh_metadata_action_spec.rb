@@ -8,7 +8,7 @@ RSpec.describe RefreshMetadataAction do
   let(:description) do
     {
       title: [{ value: 'However am I going to be' }],
-      purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+      purl: Purl.for(druid: druid)
     }
   end
 
