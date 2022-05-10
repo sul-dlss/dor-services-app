@@ -6,7 +6,7 @@ require 'moab/stanford'
 #
 # NOTE:  this class makes use of data structures from moab-versioning gem,
 #  but it does NOT access any preservation storage roots directly
-class SdrIngestService
+class PreservationIngestService
   # @param [Cocina::Models::DRO, Cocina::Models::Collection] cocina_object The representation of the digital object
   # @return [void] Create the Moab/bag manifests for new version, export data to BagIt bag, kick off the SDR preservation workflow
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
