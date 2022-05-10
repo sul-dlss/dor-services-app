@@ -636,11 +636,6 @@ RSpec.describe 'Create object' do
       JSON
     end
 
-    before do
-      # This stubs out Solr:
-      allow_any_instance_of(Dor::AdminPolicyObject).to receive(:admin_policy_object_id).and_return(admin_policy_id)
-    end
-
     context 'when the request is successful' do
       it 'registers the object with the registration service' do
         post '/v1/objects',
@@ -708,11 +703,6 @@ RSpec.describe 'Create object' do
     end
 
     context 'when the request is successful' do
-      before do
-        # This stubs out Solr:
-        allow_any_instance_of(Dor::AdminPolicyObject).to receive(:admin_policy_object_id).and_return(admin_policy_id)
-      end
-
       it 'registers the object with the registration service' do
         post '/v1/objects',
              params: data,
