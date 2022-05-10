@@ -162,7 +162,7 @@ class ObjectsController < ApplicationController
   # (code in https://github.com/sul-dlss/common-accessioning/blob/main/lib/robots/dor_repo/goobi/goobi_notify.rb)
   # This proxies a request to the Goobi server and proxies it's response to the client.
   def notify_goobi
-    response = Dor::Goobi.new(@cocina_object).register
+    response = GoobiService.new(@cocina_object).register
     return json_api_error(status: :conflict, message: response.body) if response.status == 409
 
     proxy_faraday_response(response)

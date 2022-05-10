@@ -9,7 +9,7 @@ RSpec.describe 'Notify Goobi' do
 
   before do
     allow(CocinaObjectStore).to receive(:find).and_return(object)
-    allow_any_instance_of(Dor::Goobi).to receive(:xml_request).and_return fake_request
+    allow_any_instance_of(GoobiService).to receive(:xml_request).and_return fake_request
   end
 
   context 'when it is successful' do
