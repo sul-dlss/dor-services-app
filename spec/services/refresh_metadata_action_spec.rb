@@ -39,7 +39,7 @@ RSpec.describe RefreshMetadataAction do
       expect(refresh.success?).to be(true)
       expect(refresh.value!.description_props).to eq({
                                                        title: [{ value: 'Paying for College' }],
-                                                       purl: "https://purl.stanford.edu/#{Dor::PidUtils.remove_druid_prefix(druid)}"
+                                                       purl: Purl.for(druid: druid)
                                                      })
       expect(refresh.value!.mods_ng_xml).to be_equivalent_to(Nokogiri::XML(mods))
       expect(Honeybadger).not_to have_received(:notify)
