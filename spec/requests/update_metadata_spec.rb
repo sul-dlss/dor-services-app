@@ -6,40 +6,10 @@ RSpec.describe 'Update object' do
   let!(:item) { create(:ar_dro) }
   let(:druid) { item.external_identifier }
   let(:purl) { "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}" }
-  # let(:collection) { Dor::Collection.new(pid: 'druid:xx888xx7777') }
   let(:apo) do
     create(:ar_admin_policy)
-    # Cocina::Models::AdminPolicy.new({
-    #                                   cocinaVersion: Cocina::Models::VERSION,
-    #                                   externalIdentifier: apo_druid,
-    #                                   type: Cocina::Models::ObjectType.admin_policy,
-    #                                   label: 'Test Admin Policy',
-    #                                   version: 1,
-    #                                   administrative: {
-    #                                     hasAdminPolicy: 'druid:hy787xj5878',
-    #                                     hasAgreement: 'druid:bb033gt0615',
-    #                                     accessTemplate: { view: 'world', download: 'world' }
-    #                                   }
-    #                                 })
   end
   let(:apo_druid) { apo.external_identifier }
-
-  # let!(:item) do
-  #   Dor::Item.new(pid: druid,
-  #                 source_id: 'googlebooks:111111',
-  #                 label: label,
-  #                 admin_policy_object_id: apo_druid).tap do |item|
-  #     item.descMetadata.title_info.main_title = title
-  #     item.contentMetadata.contentType = ['book']
-  #     item.identityMetadata.barcode = '36105036289000'
-  #     item.rightsMetadata.content = Cocina::ToFedora::AccessGenerator.generate(
-  #       root: Dor::RightsMetadataDS.new.ng_xml.root,
-  #       access: cocina_access,
-  #       structural: cocina_structural
-  #     )
-  #   end
-  # end
-
   let(:modified) { DateTime.now }
   let(:label) { 'This is my label' }
   let(:title) { 'This is my title' }
