@@ -11,7 +11,6 @@ AllCops:
     - 'bin/console'
     - 'bin/rails'
     - 'bin/rake'
-    - 'cache/**/*'
     - 'docs/**/*'
     - 'db/migrate/**'
     - 'db/schema.rb'
@@ -25,7 +24,6 @@ Rails:
 
 Layout/LineLength:
   Exclude:
-    - 'bin/remediate-stanford-placeTerm'
     - 'spec/services/cocina/mapping/descriptive/h2_datacite/subject_h2_datacite_spec.rb'
     - 'spec/services/update_marc_record_service_spec.rb'
 
@@ -37,26 +35,11 @@ Metrics/BlockLength:
     - 'spec/**/*'
     - 'config/routes.rb'
     - 'config/initializers/dor_config.rb'
-    - 'bin/remediate-stanford-placeTerm'
 
 Metrics/ClassLength:
   Exclude:
-    - 'app/services/cocina/from_fedora/descriptive/access.rb'
-    - 'app/services/cocina/from_fedora/descriptive/admin_metadata.rb'
-    - 'app/services/cocina/from_fedora/descriptive/identifier_type.rb'
-    - 'app/services/cocina/normalizers/mods/name_normalizer.rb'
-    - 'app/services/cocina/normalizers/mods/subject_normalizer.rb'
-    - 'app/services/cocina/normalizers/mods_normalizer.rb'
-    - 'app/services/cocina/object_creator.rb'
-    - 'app/services/cocina/object_updater.rb'
     - 'app/services/cocina/to_datacite/event.rb'
-    - 'app/services/cocina/to_fedora/descriptive/contributor_writer.rb'
-    - 'app/services/cocina/to_fedora/descriptive/event.rb'
-    - 'app/services/cocina/to_fedora/descriptive/form.rb'
-    - 'app/services/cocina/to_fedora/descriptive/title.rb'
-    - 'app/services/mods_equivalent_service.rb'
     - 'app/services/cocina/to_fedora/content_metadata_generator.rb'
-    - 'app/services/cocina/normalizers/content_metadata_normalizer.rb'
     - 'app/services/update_marc_record_service.rb'
 
 Performance/CollectionLiteralInLoop:
@@ -64,28 +47,12 @@ Performance/CollectionLiteralInLoop:
   Exclude:
     - 'app/services/update_marc_record_service.rb'
     - 'app/models/symphony_reader.rb'
-    - 'app/services/cocina/from_fedora/descriptive/access.rb'
-    - 'app/services/cocina/from_fedora/descriptive/form.rb'
-    - 'app/services/cocina/from_fedora/descriptive/title_builder.rb'
-    - 'app/services/cocina/to_fedora/descriptive/access.rb'
 
 Rails/EagerEvaluationLogMessage: # (new in 2.11)
   Enabled: false
 
 Rails/EnvironmentVariableAccess: # (new in 2.10)
   Enabled: true
-  Exclude:
-    - 'lib/fedora_cache.rb'
-
-Rails/Exit:
-  Exclude:
-    - 'lib/report.rb'
-    - 'lib/unique_report.rb'
-
-Rails/Output:
-  Exclude:
-    - 'lib/report.rb'
-    - 'lib/unique_report.rb'
 
 RSpec/DescribeClass:
   Exclude:
@@ -108,11 +75,6 @@ RSpec/ExpectActual:
 
 RSpec/NestedGroups:
   Max: 5
-
-Style/AsciiComments:
-  Exclude:
-    - 'spec/services/cocina/from_fedora/descriptive/contributor_spec.rb'
-    - 'spec/services/cocina/mapping/descriptive/mods/origin_info_spec.rb'
 
 Style/WordArray:
   MinSize: 3
@@ -520,4 +482,7 @@ Style/FetchEnvVar: # new in 1.28
 Style/ObjectThen: # new in 1.28
   Enabled: true
 RSpec/VerifiedDoubleReference: # new in 2.10.0
+  Enabled: true
+
+Style/EnvHome: # new in 1.29
   Enabled: true
