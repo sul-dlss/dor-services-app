@@ -35,7 +35,7 @@ gem 'parallel' # used for validating cocina tools
 gem 'pg'
 gem 'progressbar' # for the cleaner rake task
 gem 'puma', '~> 5.3' # app server
-gem 'rails', '~> 5.2.0'
+gem 'rails', '~> 6.0.5'
 gem 'retries' # for Goobi
 gem 'rsolr'
 gem 'ruby-cache', '~> 0.3.0'
