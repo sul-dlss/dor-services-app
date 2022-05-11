@@ -59,7 +59,7 @@ class MarcService
   def marc_record
     SymphonyReader.new(catkey: catkey, barcode: barcode).to_marc
   rescue SymphonyReader::NotFound
-    raise CatalogRecordNotFoundError, "Catalog record not found with #{[catkey, barcode].join(' and ')}"
+    raise CatalogRecordNotFoundError, "Catalog record not found. Catkey: #{catkey} | Barcode: #{barcode}"
   rescue SymphonyReader::ResponseError => e
     raise CatalogResponseError, "Error getting record from catalog: #{e.message}"
   end
