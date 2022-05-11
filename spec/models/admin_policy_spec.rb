@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe AdminPolicy do
   let(:minimal_cocina_admin_policy) do
     Cocina::Models::AdminPolicy.new({
-                                      cocinaVersion: '0.0.1',
+                                      cocinaVersion: Cocina::Models::VERSION,
                                       externalIdentifier: 'druid:jt959wc5586',
                                       type: Cocina::Models::ObjectType.admin_policy,
                                       label: 'Test Admin Policy',
@@ -20,7 +20,7 @@ RSpec.describe AdminPolicy do
 
   let(:cocina_admin_policy) do
     Cocina::Models::AdminPolicy.new({
-                                      cocinaVersion: '0.0.1',
+                                      cocinaVersion: Cocina::Models::VERSION,
                                       externalIdentifier: 'druid:jt959wc5586',
                                       type: Cocina::Models::ObjectType.admin_policy,
                                       label: 'Test Admin Policy',
@@ -42,7 +42,7 @@ RSpec.describe AdminPolicy do
       let(:admin_policy) { create(:ar_admin_policy) }
 
       it 'returns a Cocina::Model::AdminPolicy' do
-        expect(admin_policy.to_cocina).to cocina_object_with(minimal_cocina_admin_policy)
+        expect(admin_policy.to_cocina).to eq minimal_cocina_admin_policy
       end
     end
 
@@ -50,7 +50,7 @@ RSpec.describe AdminPolicy do
       let(:admin_policy) { create(:ar_admin_policy, :with_admin_policy_description) }
 
       it 'returns a Cocina::Model::AdminPolicy' do
-        expect(admin_policy.to_cocina).to cocina_object_with(cocina_admin_policy)
+        expect(admin_policy.to_cocina).to eq cocina_admin_policy
       end
     end
   end

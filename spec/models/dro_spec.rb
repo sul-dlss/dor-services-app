@@ -7,7 +7,7 @@ RSpec.describe Dro do
 
   let(:minimal_cocina_dro) do
     Cocina::Models::DRO.new({
-                              cocinaVersion: '0.0.1',
+                              cocinaVersion: Cocina::Models::VERSION,
                               externalIdentifier: druid,
                               type: Cocina::Models::ObjectType.book,
                               label: 'Test DRO',
@@ -53,7 +53,7 @@ RSpec.describe Dro do
 
   let(:cocina_dro) do
     Cocina::Models::DRO.new({
-                              cocinaVersion: '0.0.1',
+                              cocinaVersion: Cocina::Models::VERSION,
                               externalIdentifier: druid,
                               type: Cocina::Models::ObjectType.book,
                               label: 'Test DRO',
@@ -108,7 +108,7 @@ RSpec.describe Dro do
       let(:source_id) { dro.identification['sourceId'] }
 
       it 'returns a Cocina::Model::DRO' do
-        expect(dro.to_cocina).to cocina_object_with(minimal_cocina_dro)
+        expect(dro.to_cocina).to eq(minimal_cocina_dro)
       end
     end
 
@@ -117,7 +117,7 @@ RSpec.describe Dro do
       let(:source_id) { dro.identification['sourceId'] }
 
       it 'returns a Cocina::Model::DRO' do
-        expect(dro.to_cocina).to cocina_object_with(cocina_dro)
+        expect(dro.to_cocina).to eq(cocina_dro)
       end
     end
   end
