@@ -8,28 +8,28 @@ RSpec.describe UpdateDoiMetadataJob, type: :job do
   end
 
   let(:cocina_item) do
-    Cocina::Models.build(
-      'externalIdentifier' => 'druid:bc123df4567',
-      'type' => Cocina::Models::ObjectType.image,
-      'version' => 1,
-      'label' => 'testing',
-      'access' => {},
-      'administrative' => {
-        'hasAdminPolicy' => 'druid:xx123xx4567'
-      },
-      'description' => {
-        'title' => [{ 'value' => 'Test obj' }],
-        'purl' => 'https://purl.stanford.edu/bc123df4567',
-        'subject' => [{ 'type' => 'topic', 'value' => 'word' }]
-      },
-      'structural' => {
-        'contains' => []
-      },
-      identification: {
-        doi: '10.80343/bc123df4567',
-        sourceId: 'sul:123'
-      }
-    )
+    Cocina::Models.build({
+                           'externalIdentifier' => 'druid:bc123df4567',
+                           'type' => Cocina::Models::ObjectType.image,
+                           'version' => 1,
+                           'label' => 'testing',
+                           'access' => {},
+                           'administrative' => {
+                             'hasAdminPolicy' => 'druid:xx123xx4567'
+                           },
+                           'description' => {
+                             'title' => [{ 'value' => 'Test obj' }],
+                             'purl' => 'https://purl.stanford.edu/bc123df4567',
+                             'subject' => [{ 'type' => 'topic', 'value' => 'word' }]
+                           },
+                           'structural' => {
+                             'contains' => []
+                           },
+                           identification: {
+                             doi: '10.80343/bc123df4567',
+                             sourceId: 'sul:123'
+                           }
+                         })
   end
 
   let(:attributes) { { titles: [{ title: 'test deposit' }] } }
