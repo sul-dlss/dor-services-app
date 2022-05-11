@@ -14,8 +14,8 @@ module Publish
 
     # @raise [Dor::DataError]
     # rubocop:disable Metrics/AbcSize
-    # @note Rails sends args when rendering XML but we ignore them
-    def to_xml(**)
+    # @params [Hash] _opts ({}) Rails sends args when rendering XML but we ignore them
+    def to_xml(_opts = {})
       pub = Nokogiri::XML('<publicObject/>').root
       pub['id'] = public_cocina.externalIdentifier
       pub['published'] = Time.now.utc.xmlschema
