@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Cocina
-  module ToFedora
+  module ToXml
     # This transforms the DRO.type attribute to the
     # Fedora 3 data model contentMetadata#contentType value
     class ContentType

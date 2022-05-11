@@ -52,7 +52,7 @@ class PreservationMetadataExtractor
   def content_xml
     return if cocina_object.admin_policy? || cocina_object.collection?
 
-    Cocina::ToFedora::ContentMetadataGenerator.generate(druid: cocina_object.externalIdentifier, structural: cocina_object.structural, type: cocina_object.type)
+    Cocina::ToXml::ContentMetadataGenerator.generate(druid: cocina_object.externalIdentifier, structural: cocina_object.structural, type: cocina_object.type)
   end
 
   def extract_cocina

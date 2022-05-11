@@ -57,7 +57,7 @@ RSpec.describe ShelvingService do
   before do
     allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
     allow(Settings.stacks).to receive_messages(local_stacks_root: stacks_root, local_workspace_root: workspace_root)
-    allow(Cocina::ToFedora::ContentMetadataGenerator).to receive(:generate).and_return(content_metadata)
+    allow(Cocina::ToXml::ContentMetadataGenerator).to receive(:generate).and_return(content_metadata)
     allow(Preservation::Client.objects).to receive(:shelve_content_diff).and_return(mock_diff)
     allow(ShelvableFilesStager).to receive(:stage)
     allow(DigitalStacksService).to receive(:remove_from_stacks)
@@ -80,7 +80,7 @@ RSpec.describe ShelvingService do
       expect(DigitalStacksService).to have_received(:remove_from_stacks).with(stacks_object_pathname, mock_diff)
       expect(DigitalStacksService).to have_received(:rename_in_stacks).with(stacks_object_pathname, mock_diff)
       expect(DigitalStacksService).to have_received(:shelve_to_stacks).with(Pathname, stacks_object_pathname, mock_diff)
-      expect(Cocina::ToFedora::ContentMetadataGenerator).to have_received(:generate).with(druid: druid, structural: structural, type: Cocina::Models::ObjectType.book)
+      expect(Cocina::ToXml::ContentMetadataGenerator).to have_received(:generate).with(druid: druid, structural: structural, type: Cocina::Models::ObjectType.book)
     end
   end
 
@@ -104,7 +104,7 @@ RSpec.describe ShelvingService do
       expect(DigitalStacksService).to have_received(:remove_from_stacks).with(stacks_object_pathname, mock_diff)
       expect(DigitalStacksService).to have_received(:rename_in_stacks).with(stacks_object_pathname, mock_diff)
       expect(DigitalStacksService).to have_received(:shelve_to_stacks).with(Pathname, stacks_object_pathname, mock_diff)
-      expect(Cocina::ToFedora::ContentMetadataGenerator).to have_received(:generate).with(druid: druid, structural: structural, type: Cocina::Models::ObjectType.book)
+      expect(Cocina::ToXml::ContentMetadataGenerator).to have_received(:generate).with(druid: druid, structural: structural, type: Cocina::Models::ObjectType.book)
     end
   end
 

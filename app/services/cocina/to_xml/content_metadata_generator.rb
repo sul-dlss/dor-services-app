@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Cocina
-  module ToFedora
+  module ToXml
     # Builds the contentMetadata xml from cocina filesets
     class ContentMetadataGenerator
       # @param [String] druid the identifier of the item
@@ -22,7 +22,7 @@ module Cocina
       def generate
         @xml_doc = Nokogiri::XML('<contentMetadata />')
         @xml_doc.root['objectId'] = druid
-        @xml_doc.root['type'] = Cocina::ToFedora::ContentType.map(object_type)
+        @xml_doc.root['type'] = Cocina::ToXml::ContentType.map(object_type)
         add_book_data
         add_structural_data
         add_members_data

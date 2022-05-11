@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Cocina
-  module ToFedora
+  module ToXml
     module Rights
       # Builds the rightsMetadata xml from cocina for a file
       class FileLevel

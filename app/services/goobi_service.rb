@@ -85,7 +85,7 @@ class GoobiService
   # @return [String] first collection name the item is in (blank if none)
   def content_type
     if AdministrativeTags.content_type(identifier: cocina_obj.externalIdentifier).empty?
-      Cocina::ToFedora::ContentType.map(cocina_obj.type)
+      Cocina::ToXml::ContentType.map(cocina_obj.type)
     else
       AdministrativeTags.content_type(identifier: cocina_obj.externalIdentifier).first
     end

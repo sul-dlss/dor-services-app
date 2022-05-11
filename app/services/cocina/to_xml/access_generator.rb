@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Cocina
-  module ToFedora
+  module ToXml
     # Builds the access-related xml from cocina (for rightsMetadataDS and embargoDS)
     class AccessGenerator
       # @param [Nokogiri::XML::Element] root Element that is the root of the access assertions.

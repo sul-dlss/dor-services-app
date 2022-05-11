@@ -69,7 +69,7 @@ class ShelvingService
   end
 
   def content_metadata
-    @content_metadata ||= Cocina::ToFedora::ContentMetadataGenerator.generate(druid: cocina_object.externalIdentifier, structural: cocina_object.structural, type: cocina_object.type)
+    @content_metadata ||= Cocina::ToXml::ContentMetadataGenerator.generate(druid: cocina_object.externalIdentifier, structural: cocina_object.structural, type: cocina_object.type)
   end
 
   def workflow_client
