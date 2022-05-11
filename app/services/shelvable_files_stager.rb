@@ -6,15 +6,15 @@
 class ShelvableFilesStager
   class FileNotFound < RuntimeError; end
 
-  def self.stage(identifier, content_metadata, shelve_diff, content_dir)
-    new(identifier, content_metadata, shelve_diff, content_dir).stage
+  def self.stage(identifier, preserve_diff, shelve_diff, content_dir)
+    new(identifier, preserve_diff, shelve_diff, content_dir).stage
   end
 
-  def initialize(identifier, content_metadata, shelve_diff, content_dir)
+  def initialize(identifier, preserve_diff, shelve_diff, content_dir)
+    @identifier = identifier
+    @preserve_diff = preserve_diff
     @shelve_diff = shelve_diff
     @content_dir = content_dir
-    @identifier = identifier
-    @content_metadata = content_metadata
   end
 
   # Ensure all the files are found in the object's content files in the workspace area
@@ -36,7 +36,7 @@ class ShelvableFilesStager
 
   private
 
-  attr_reader :shelve_diff, :content_dir, :identifier, :content_metadata
+  attr_reader :identifier, :preserve_diff, :shelve_diff, :content_dir, :content_metadata
 
   delegate :file_deltas, to: :shelve_diff
 
@@ -64,19 +64,5 @@ class ShelvableFilesStager
       end
       Preservation::Client.objects.content(druid: identifier, filepath: file, on_data: writer)
     end
-  end
-
-  # retrieve the differences between the current contentMetadata and the previously ingested version
-  # (filtering to select only the files that should be preserved)
-  # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  # @raise [ConfigurationError] if missing local workspace root.
-  # @raise [ShelvingService::ShelvingError] if something went wrong.
-  def preserve_diff
-    @preserve_diff ||= begin
-      inventory_diff = Preservation::Client.objects.content_inventory_diff(druid: identifier, content_metadata: content_metadata, subset: 'preserve')
-      inventory_diff.group_difference('content')
-    end
-  rescue Preservation::Client::Error => e
-    raise ShelvingService::ShelvingError, e
   end
 end

@@ -24,7 +24,7 @@ class ShelvingService
     workspace_druid = DruidTools::Druid.new(cocina_object.externalIdentifier, Settings.stacks.local_workspace_root)
 
     workspace_content_pathname = Pathname(workspace_druid.content_dir(true))
-    ShelvableFilesStager.stage(cocina_object.externalIdentifier, content_metadata, shelve_diff, workspace_content_pathname)
+    ShelvableFilesStager.stage(cocina_object.externalIdentifier, preserve_diff, shelve_diff, workspace_content_pathname)
 
     # workspace_content_pathname = workspace_content_dir(shelve_diff, workspace_druid)
     # delete, rename, or copy files to the stacks area
@@ -36,6 +36,21 @@ class ShelvingService
   private
 
   attr_reader :cocina_object
+
+  # retrieve the differences between the current contentMetadata and the previously ingested version
+  # (filtering to select only the files that should be preserved)
+  # @return Moab::FileGroupDifference
+  # @raise [Preservation::Client::Error] if bad response from preservation catalog.
+  # @raise [ConfigurationError] if missing local workspace root.
+  # @raise [ShelvingService::ShelvingError] if something went wrong.
+  def preserve_diff
+    @preserve_diff ||= begin
+      inventory_diff = Preservation::Client.objects.content_inventory_diff(druid: cocina_object.externalIdentifier, content_metadata: content_metadata, subset: 'preserve')
+      inventory_diff.group_difference('content')
+    end
+  rescue Preservation::Client::Error => e
+    raise ShelvingService::ShelvingError, e
+  end
 
   # retrieve the differences between the current contentMetadata and the previously ingested version
   # (filtering to select only the files that should be shelved to stacks)

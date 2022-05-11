@@ -3,11 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe ShelvableFilesStager do
-  subject(:stage) { described_class.stage(druid, content_metadata, shelve_diff, content_dir) }
+  subject(:stage) { described_class.stage(druid, preserve_diff, shelve_diff, content_dir) }
 
   let(:workspace_root) { Dir.mktmpdir }
   let(:druid) { 'druid:jq937jp0017' }
-  let(:content_metadata) { '<contentMetadata/>' }
+  let(:preserve_diff) { instance_double(Moab::FileGroupDifference, file_deltas: { added: [] }) }
   let(:workspace_druid) { DruidTools::Druid.new(druid, workspace_root) }
 
   # create an empty workspace location for object content files
@@ -20,11 +20,9 @@ RSpec.describe ShelvableFilesStager do
   let(:shelve_diff) { inventory_diff.group_difference('content') }
 
   context 'when the manifest files are not in the workspace' do
-    let(:preservation_diff) { instance_double(Moab::FileInventoryDifference, group_difference: group_diff) }
-    let(:group_diff) { instance_double(Moab::FileGroupDifference, file_deltas: file_deltas) }
+    let(:preserve_diff) { instance_double(Moab::FileGroupDifference, file_deltas: file_deltas) }
 
     before do
-      allow(Preservation::Client.objects).to receive(:content_inventory_diff).and_return(preservation_diff)
       # create the one modified file:
       FileUtils.touch(content_dir.join('SUB2_b2000_1.bvals'))
     end
