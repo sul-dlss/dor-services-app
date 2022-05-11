@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::FromFedora::DataErrorNotifier do
+RSpec.describe DataErrorNotifier do
   subject(:notifier) do
     described_class.new(druid: 'druid:zq087nd5094')
   end

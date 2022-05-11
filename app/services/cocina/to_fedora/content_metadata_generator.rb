@@ -178,7 +178,7 @@ module Cocina
       end
 
       def notifier
-        @notifier ||= FromFedora::DataErrorNotifier.new(druid: druid)
+        @notifier ||= DataErrorNotifier.new(druid: druid)
       end
 
       def type_for(cocina_fileset)
