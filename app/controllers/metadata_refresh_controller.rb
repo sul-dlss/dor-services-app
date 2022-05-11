@@ -8,8 +8,8 @@ class MetadataRefreshController < ApplicationController
     result = RefreshMetadataAction.run(identifiers: identifiers,
                                        cocina_object: @cocina_object, druid: @cocina_object.externalIdentifier)
     if result.failure?
-      return json_api_error(status: :unprocessable_entity, title: 'No resolvable identifiers',
-                            message: "#{@cocina_object.externalIdentifier} had no resolvable identifiers: #{identifiers.inspect}")
+      return json_api_error(status: :unprocessable_entity, title: 'No available catkeys or barcodes',
+                            message: "#{@cocina_object.externalIdentifier} had no catkeys marked as refreshable: #{identifiers.inspect}")
     end
 
     CocinaObjectStore.save(@cocina_object.new(description: result.value!.description_props))

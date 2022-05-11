@@ -105,7 +105,7 @@ RSpec.describe 'Refresh metadata' do
       post '/v1/objects/druid:mk420bs7601/refresh_metadata',
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(response.body).to match("#{druid} had no resolvable identifiers")
+      expect(response.body).to match("#{druid} had no catkeys marked as refreshable")
     end
   end
 
