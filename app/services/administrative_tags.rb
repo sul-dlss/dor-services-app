@@ -77,15 +77,6 @@ class AdministrativeTags
   end
 
   # @return [Array<String>] an array of tags (strings), possibly empty
-  def content_type
-    AdministrativeTag.includes(:tag_label)
-                     .where(druid: identifier, tag_label: TagLabel.content_type)
-                     .limit(1) # "THERE CAN BE ONLY ONE!"
-                     .pluck(:tag)
-                     .map { |tag| tag.split(' : ').last }
-  end
-
-  # @return [Array<String>] an array of tags (strings), possibly empty
   def project
     AdministrativeTag.includes(:tag_label)
                      .where(druid: identifier, tag_label: TagLabel.project)

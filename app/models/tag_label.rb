@@ -12,6 +12,5 @@ class TagLabel < ApplicationRecord
   }
   # rubocop:enable Rails/I18nLocaleTexts
 
-  scope :content_type, -> { where('tag like ?', 'Process : Content Type : %') }
   scope :project, -> { where('tag like ?', 'Project : %') }
 end

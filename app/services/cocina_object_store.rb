@@ -83,7 +83,6 @@ class CocinaObjectStore
     validate(cocina_object)
     # Only update if already exists in PG (i.e., added by create or migration).
     (created_at, modified_at, lock) = cocina_to_ar_save(cocina_object, skip_lock: skip_lock)
-    add_tags_for_update(cocina_object)
 
     cocina_object_without_metadata = Cocina::Models.without_metadata(cocina_object)
 
@@ -109,7 +108,7 @@ class CocinaObjectStore
     cocina_object = cocina_from_request(updated_cocina_request_object, druid)
     cocina_object = assign_doi(cocina_object) if assign_doi
     (created_at, modified_at, lock) = cocina_to_ar_save(cocina_object, skip_lock: true)
-    add_tags_for_create(druid, cocina_request_object)
+    add_project_tag(druid, cocina_request_object)
     # This creates version 1.0.0 (Initial Version)
     ObjectVersion.initial_version(druid: druid)
 
@@ -237,53 +236,11 @@ class CocinaObjectStore
     cocina_object.new(access: AccessMergeService.merge(cocina_object, apo_object))
   end
 
-  def add_tags_for_create(druid, cocina_request_object)
-    add_dro_tags_for_create(druid, cocina_request_object) if cocina_request_object.dro?
-    add_collection_tags_for_create(druid, cocina_request_object) if cocina_request_object.collection?
-  end
+  def add_project_tag(druid, cocina_request_object)
+    return if cocina_request_object.admin_policy? || !cocina_request_object.administrative.partOfProject
 
-  def add_dro_tags_for_create(druid, cocina_request_object)
-    tags = []
-    process_tag = Cocina::ToFedora::ProcessTag.map(cocina_request_object.type, cocina_request_object.structural&.hasMemberOrders&.first&.viewingDirection)
-    tags << process_tag if process_tag
-    tags << "Project : #{cocina_request_object.administrative.partOfProject}" if cocina_request_object.administrative.partOfProject
-    AdministrativeTags.create(identifier: druid, tags: tags) if tags.any?
-  end
-
-  def add_collection_tags_for_create(druid, cocina_request_object)
-    return unless cocina_request_object.administrative.partOfProject
-
-    AdministrativeTags.create(identifier: druid, tags: ["Project : #{cocina_request_object.administrative.partOfProject}"])
-  end
-
-  def add_tags_for_update(cocina_object)
-    return unless cocina_object.dro?
-
-    # This is necessary so that the content type tag for a book can get updated
-    # to reflect the new direction if the direction hash changed in the structural metadata.
-    tag = Cocina::ToFedora::ProcessTag.map(cocina_object.type, cocina_object.structural&.hasMemberOrders&.first&.viewingDirection)
-    add_tag_for_update(cocina_object.externalIdentifier, tag, 'Process : Content Type') if tag
-  end
-
-  def add_tag_for_update(druid, new_tag, prefix)
-    raise "Must provide a #{prefix} tag for #{druid}" unless new_tag
-
-    existing_tags = tags_starting_with(druid, prefix)
-    if existing_tags.empty?
-      AdministrativeTags.create(identifier: druid, tags: [new_tag])
-    elsif existing_tags.size > 1
-      raise "Too many tags for prefix #{prefix}. Expected one."
-    elsif existing_tags.first != new_tag
-      AdministrativeTags.update(identifier: druid, current: existing_tags.first, new: new_tag)
-    end
-  end
-
-  def tags_starting_with(druid, prefix)
-    # This lets us find tags like "Project : Hydrus" when "Project" is the prefix, but will not match on tags like "Project : Hydrus : IR : data"
-    prefix_count = prefix.count(':') + 1
-    AdministrativeTags.for(identifier: druid).select do |tag|
-      tag.start_with?(prefix) && tag.count(':') == prefix_count
-    end
+    tags = ["Project : #{cocina_request_object.administrative.partOfProject}"]
+    AdministrativeTags.create(identifier: druid, tags: tags)
   end
 
   # Synch from symphony if a catkey is present
