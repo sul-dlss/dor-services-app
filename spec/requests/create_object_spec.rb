@@ -670,51 +670,6 @@ RSpec.describe 'Create object' do
     end
   end
 
-  context 'when a Hydrus APO is provided' do
-    let(:expected) do
-      build(:admin_policy, id: druid, label: 'Hydrus', title: 'Hydrus').new(
-        administrative: {
-          accessTemplate: {
-            view: 'world',
-            download: 'world'
-          },
-          hasAdminPolicy: admin_policy_id,
-          roles: [],
-          hasAgreement: 'druid:bc753qt7345'
-        }
-      )
-    end
-
-    let(:data) do
-      <<~JSON
-        {
-          "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "type":"#{Cocina::Models::ObjectType.admin_policy}",
-          "label":"Hydrus","version":1,
-          "administrative":{
-            "hasAdminPolicy":"#{admin_policy_id}",
-            "hasAgreement":"druid:bc753qt7345",
-            "accessTemplate":{
-              "view":"world",
-              "download":"world"
-            }}
-          }
-      JSON
-    end
-
-    context 'when the request is successful' do
-      it 'registers the object with the registration service' do
-        post '/v1/objects',
-             params: data,
-             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.body).to equal_cocina_model(expected)
-
-        expect(response.status).to eq(201)
-        expect(response.location).to eq "/v1/objects/#{druid}"
-      end
-    end
-  end
-
   context 'when an embargo is provided' do
     let(:expected) do
       Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.book,
