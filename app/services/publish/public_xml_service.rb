@@ -97,7 +97,7 @@ module Publish
       return Nokogiri::XML::Document.new unless public_cocina.dro?
 
       @public_content_metadata ||= ResourceIdRewriter.call(
-        Cocina::ToFedora::ContentMetadataGenerator.generate(
+        Cocina::ToXml::ContentMetadataGenerator.generate(
           druid: public_cocina.externalIdentifier,
           structural: public_cocina.structural,
           type: public_cocina.type

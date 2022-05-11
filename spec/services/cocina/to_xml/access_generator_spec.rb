@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Cocina::ToFedora::AccessGenerator do
+RSpec.describe Cocina::ToXml::AccessGenerator do
   subject(:generate) do
     Nokogiri::XML(described_class.generate(root: root, access: access, structural: structural))
   end

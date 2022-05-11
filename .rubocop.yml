@@ -39,7 +39,7 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Exclude:
     - 'app/services/cocina/to_datacite/event.rb'
-    - 'app/services/cocina/to_fedora/content_metadata_generator.rb'
+    - 'app/services/cocina/to_xml/content_metadata_generator.rb'
     - 'app/services/update_marc_record_service.rb'
 
 Performance/CollectionLiteralInLoop:
