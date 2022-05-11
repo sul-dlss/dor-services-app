@@ -17,8 +17,9 @@ module Publish
     end
 
     # @return [String] Public descriptive medatada XML
-    def to_xml(include_access_conditions: true, prefixes: nil, template: nil)
-      ng_xml(include_access_conditions: include_access_conditions).to_xml
+    # @params [Hash] _opts ({}) Rails sends args when rendering XML but we ignore them
+    def to_xml(_opts = {})
+      ng_xml(include_access_conditions: true).to_xml
     end
 
     # @return [Nokogiri::XML::Document]
