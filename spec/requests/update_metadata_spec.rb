@@ -88,7 +88,6 @@ RSpec.describe 'Update object' do
   before do
     allow(AdministrativeTags).to receive(:create)
     allow(AdministrativeTags).to receive(:project).and_return(['Google Books'])
-    allow(AdministrativeTags).to receive(:content_type).and_return(['Book (rtl)'])
     allow(AdministrativeTags).to receive(:for).and_return([])
     allow(Cocina::ObjectValidator).to receive(:validate)
 
@@ -109,47 +108,6 @@ RSpec.describe 'Update object' do
     expect(Cocina::ObjectValidator).to have_received(:validate)
 
     expect(EventFactory).to have_received(:create).with(druid: druid, data: hash_including(:request, success: true), event_type: 'update')
-  end
-
-  context 'when tags change' do
-    # In other tests, viewing direction starts at and remains right-to-left.
-    # For this test, starting at left-to-right and changing to right-to-left.
-    before do
-      allow(AdministrativeTags).to receive(:for).and_return(['Project : Tom Swift', 'Process : Content Type : Book (ltr)'])
-      allow(AdministrativeTags).to receive(:content_type).and_return(['Book (ltr)'], ['Book (rtl)'])
-      allow(AdministrativeTags).to receive(:update)
-    end
-
-    it 'updates the object and the tags' do
-      patch "/v1/objects/#{druid}",
-            params: data,
-            headers: headers
-      expect(response.status).to eq(200)
-      expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-      expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
-
-      # Tags are updated.
-      expect(AdministrativeTags).not_to have_received(:create)
-      expect(AdministrativeTags).to have_received(:update).with(identifier: druid, current: 'Process : Content Type : Book (ltr)', new: 'Process : Content Type : Book (rtl)')
-    end
-  end
-
-  context 'when tags do not change' do
-    before do
-      allow(AdministrativeTags).to receive(:for).and_return(['Project : EEMS', 'Process : Content Type : Book (rtl)'])
-    end
-
-    it 'updates the object but not the tags' do
-      patch "/v1/objects/#{druid}",
-            params: data,
-            headers: headers
-      expect(response.status).to eq(200)
-      expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-      expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
-
-      # Tags are not updated or created.
-      expect(AdministrativeTags).not_to have_received(:create)
-    end
   end
 
   context 'with a non-matching druid (Cocina::Models::ValidationError)' do
@@ -300,10 +258,6 @@ RSpec.describe 'Update object' do
           { catalog: 'symphony', catalogRecordId: '8888', refresh: true }
         ]
       }
-    end
-
-    before do
-      allow(AdministrativeTags).to receive(:content_type).and_return(['Image'])
     end
 
     context 'when the save is successful' do

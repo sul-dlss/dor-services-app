@@ -11,6 +11,31 @@ class GoobiService
                           Faraday::TimeoutError,
                           Faraday::RetriableResponse].freeze
 
+  # Formats the content type value as Goobi expects
+  class ContentType
+    # TODO: add Software
+    MAPPING = {
+      Cocina::Models::ObjectType.image => 'Image',
+      Cocina::Models::ObjectType.three_dimensional => '3D',
+      Cocina::Models::ObjectType.map => 'Map',
+      Cocina::Models::ObjectType.media => 'Media',
+      Cocina::Models::ObjectType.manuscript => 'Manuscript',
+      Cocina::Models::ObjectType.document => 'Document',
+      Cocina::Models::ObjectType.book => 'Book',
+      Cocina::Models::ObjectType.object => 'File',
+      Cocina::Models::ObjectType.webarchive_seed => 'Webarchive Seed'
+    }.freeze
+
+    def self.map(type, direction)
+      tag = MAPPING.fetch(type, nil)
+
+      return tag unless type == Cocina::Models::ObjectType.book
+
+      short_dir = direction == 'right-to-left' ? 'rtl' : 'ltr'
+      "#{tag} (#{short_dir})"
+    end
+  end
+
   def initialize(cocina_obj)
     @cocina_obj = cocina_obj
   end
@@ -80,15 +105,11 @@ class GoobiService
     cocina_obj.identification&.sourceId
   end
 
-  # returns the value of the content_type tag from admin tags service if it exists, else returns the value from contentMetadata object type
+  # returns the value from contentMetadata object type
   # note, the content_type tag comes from value of the tag called "Process : Content Type"
   # @return [String] first collection name the item is in (blank if none)
   def content_type
-    if AdministrativeTags.content_type(identifier: cocina_obj.externalIdentifier).empty?
-      Cocina::ToXml::ContentType.map(cocina_obj.type)
-    else
-      AdministrativeTags.content_type(identifier: cocina_obj.externalIdentifier).first
-    end
+    ContentType.map(cocina_obj.type, cocina_obj.structural&.hasMemberOrders&.first&.viewingDirection)
   end
 
   # returns the name of the project by examining the objects tags

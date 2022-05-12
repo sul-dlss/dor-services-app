@@ -10,7 +10,7 @@ RSpec.describe GoobiService do
     {
       externalIdentifier: druid,
       version: 1,
-      type: Cocina::Models::ObjectType.document,
+      type: Cocina::Models::ObjectType.book,
       label: 'Object Title & A Special character',
       description: {
         title: [{ value: 'Object Title & A Special character' }],
@@ -39,10 +39,6 @@ RSpec.describe GoobiService do
   let(:dro) { Cocina::Models::DRO.new(dro_props) }
 
   let(:description) { nil }
-
-  before do
-    allow(AdministrativeTags).to receive(:content_type).with(identifier: druid).and_return(['book'])
-  end
 
   describe '#title_or_label' do
     subject(:title_or_label) { Nokogiri::XML(goobi.send(:xml_request)).xpath('//title').first.content }
@@ -224,7 +220,7 @@ RSpec.describe GoobiService do
             <objectType>item</objectType>
             <sourceID>some:source_id</sourceID>
             <title>Object Title &amp; A Special character</title>
-            <contentType>book</contentType>
+            <contentType>Book (ltr)</contentType>
             <project>Project Name</project>
             <catkey>11403803</catkey>
             <barcode>#{barcode}</barcode>
@@ -253,7 +249,7 @@ RSpec.describe GoobiService do
             <objectType>item</objectType>
             <sourceID>some:source_id</sourceID>
             <title>Object Title &amp; A Special character</title>
-            <contentType>book</contentType>
+            <contentType>Book (ltr)</contentType>
             <project>Project Name</project>
             <catkey>11403803</catkey>
             <barcode>#{barcode}</barcode>
@@ -292,7 +288,7 @@ RSpec.describe GoobiService do
             <objectType>item</objectType>
             <sourceID>some:source_id</sourceID>
             <title>Constituent label &amp; A Special character</title>
-            <contentType>book</contentType>
+            <contentType>Book (ltr)</contentType>
             <project>Project Name</project>
             <catkey>11403803</catkey>
             <barcode>#{barcode}</barcode>
@@ -343,14 +339,8 @@ RSpec.describe GoobiService do
   describe '#content_type' do
     subject(:content_type) { goobi.send :content_type }
 
-    it 'returns the content_type_tag from tag service if the value exists' do
-      allow(AdministrativeTags).to receive(:content_type).and_return(['Process Value'])
-      expect(content_type).to eq 'Process Value'
-    end
-
-    it 'returns the type from cocina if content_type from tag service does not have a value' do
-      allow(AdministrativeTags).to receive(:content_type).and_return([])
-      expect(content_type).to eq 'document'
+    it 'returns the type from cocina' do
+      expect(content_type).to eq 'Book (ltr)'
     end
   end
 

@@ -18,19 +18,6 @@ RSpec.describe AdministrativeTags do
     end
   end
 
-  describe '.content_type' do
-    let(:instance) { instance_double(described_class, content_type: nil) }
-
-    before do
-      allow(described_class).to receive(:new).and_return(instance)
-    end
-
-    it 'calls #content_type on a new instance' do
-      described_class.content_type(identifier: identifier)
-      expect(instance).to have_received(:content_type).once
-    end
-  end
-
   describe '.project' do
     let(:instance) { instance_double(described_class, project: nil) }
 
@@ -104,39 +91,6 @@ RSpec.describe AdministrativeTags do
 
     it 'returns administrative tags from the database' do
       expect(described_class.for(identifier: identifier)).to eq(['Foo : Bar', 'Bar : Baz : Quux'])
-    end
-  end
-
-  describe '#content_type' do
-    context 'with a matching row in the database' do
-      before do
-        create(:administrative_tag, druid: identifier, tag_label: create(:tag_label, tag: 'Process : Content Type : Map'))
-      end
-
-      it 'parses and returns the content type' do
-        expect(described_class.content_type(identifier: identifier)).to eq(['Map'])
-      end
-    end
-
-    context 'with more than one matching row in the database' do
-      before do
-        create(:administrative_tag, druid: identifier, tag_label: create(:tag_label, tag: 'Process : Content Type : Map'))
-        create(:administrative_tag, druid: identifier, tag_label: create(:tag_label, tag: 'Process : Content Type : Media'))
-      end
-
-      it 'parses and returns the first content type' do
-        expect(described_class.content_type(identifier: identifier)).to eq(['Map'])
-      end
-    end
-
-    context 'with no content types' do
-      before do
-        create(:administrative_tag, druid: identifier, tag_label: create(:tag_label, tag: 'Foo : Bar'))
-      end
-
-      it 'returns an empty array' do
-        expect(described_class.content_type(identifier: identifier)).to eq([])
-      end
     end
   end
 
