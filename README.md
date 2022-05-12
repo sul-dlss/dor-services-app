@@ -43,7 +43,7 @@ NOTE: you need to be running at least Ruby 2.7.4 in order for the tests to pass 
 First, ensure the database container is spun up:
 
 ```shell
-docker-compose up db # use -d to daemonize/run in background
+docker compose up db # use -d to daemonize/run in background
 ```
 
 And if you haven't yet prepared the test database, run:
@@ -69,7 +69,7 @@ First, you'll need both Docker and docker-compose installed.
 Run dor-services-app and its dependencies using:
 
 ```shell
-docker-compose up -d
+docker compose up -d
 ```
 
 #### Update Docker image
