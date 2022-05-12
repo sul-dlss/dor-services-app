@@ -112,12 +112,6 @@ class CocinaObjectStore
     # This creates version 1.0.0 (Initial Version)
     ObjectVersion.initial_version(druid: druid)
 
-    created_at ||= Time.zone.now
-    updated_at ||= created_at
-    # Fedora 3 has no unique constrains, so
-    # index right away to reduce the likelyhood of duplicate sourceIds
-    SynchronousIndexer.reindex_remotely_from_cocina(cocina_object: cocina_object, created_at: created_at, updated_at: updated_at)
-
     event_factory.create(druid: druid, event_type: 'registration', data: cocina_object.to_h)
 
     # Broadcast this to a topic
@@ -168,8 +162,15 @@ class CocinaObjectStore
                   end
     ar_cocina_object = model_clazz.upsert_cocina(Cocina::Models.without_metadata(cocina_object))
     [ar_cocina_object.created_at.utc, ar_cocina_object.updated_at.utc, ar_lock_for(ar_cocina_object)]
-  rescue ActiveRecord::RecordNotUnique
-    raise Cocina::ValidationError.new('ExternalIdentifier or sourceId is not unique.', status: :conflict)
+  rescue ActiveRecord::RecordNotUnique => e
+    message = if e.message.include?('dro_source_id_idx')
+                source_id = cocina_object.identification.sourceId
+                druid = Dro.find_by("identification->>'sourceId' = ?", source_id).external_identifier
+                "An object (#{druid}) with the source ID '#{cocina_object.identification.sourceId}' has already been registered."
+              else
+                'ExternalIdentifier or sourceId is not unique.'
+              end
+    raise Cocina::ValidationError.new(message, status: :conflict)
   end
 
   def ar_check_lock(cocina_object)

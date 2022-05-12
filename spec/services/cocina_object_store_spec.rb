@@ -225,7 +225,6 @@ RSpec.describe CocinaObjectStore do
       allow(store).to receive(:merge_access_for).and_return(requested_cocina_object)
       allow(store).to receive(:add_project_tag)
       allow(SuriService).to receive(:mint_id).and_return(druid)
-      allow(SynchronousIndexer).to receive(:reindex_remotely_from_cocina)
       allow(EventFactory).to receive(:create)
       allow(RefreshMetadataAction).to receive(:run)
     end
@@ -242,7 +241,6 @@ RSpec.describe CocinaObjectStore do
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
         expect(store).to have_received(:merge_access_for).with(requested_cocina_object)
         expect(store).to have_received(:add_project_tag).with(druid, requested_cocina_object)
-        expect(SynchronousIndexer).to have_received(:reindex_remotely_from_cocina)
         expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
         expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'registration', data: Hash)
         expect(RefreshMetadataAction).not_to have_received(:run)
@@ -260,7 +258,6 @@ RSpec.describe CocinaObjectStore do
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
         expect(store).to have_received(:merge_access_for).with(requested_cocina_object)
         expect(store).to have_received(:add_project_tag).with(druid, requested_cocina_object)
-        expect(SynchronousIndexer).to have_received(:reindex_remotely_from_cocina)
         expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
         expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'registration', data: Hash)
         expect(RefreshMetadataAction).not_to have_received(:run)
