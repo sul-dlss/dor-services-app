@@ -17,14 +17,9 @@ RSpec.describe 'Create object' do
   end
   let(:data) { item.to_json }
   let(:druid) { 'druid:gg777gg7777' }
-  let(:matching_result) { { 'response' => { 'numFound' => 1, 'docs' => [{ 'id' => 'druid:abc123' }] } } }
-  let(:no_result) { { 'response' => { 'numFound' => 0, 'docs' => [] } } }
-  let(:search_result) { no_result }
 
   before do
     allow(SuriService).to receive(:mint_id).and_return(druid)
-    stub_request(:put, 'https://dor-indexing-app.example.edu/dor/reindex_from_cocina')
-    allow(SolrService).to receive(:get).and_return(search_result)
   end
 
   context 'when a DRO is provided' do
@@ -91,7 +86,9 @@ RSpec.describe 'Create object' do
     end
 
     context 'when an object already exists' do
-      let(:search_result) { matching_result }
+      before do
+        Dro.from_cocina(build(:dro).new(identification: identification)).save!
+      end
 
       it 'returns a 409 error' do
         post '/v1/objects',
@@ -99,7 +96,7 @@ RSpec.describe 'Create object' do
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status(:conflict)
         json = JSON.parse(response.body)
-        expect(json.dig('errors', 0, 'detail')).to eq "An object (druid:abc123) with the source ID 'googlebooks:999999' has already been registered."
+        expect(json.dig('errors', 0, 'detail')).to eq "An object (druid:bc234fg5678) with the source ID 'googlebooks:999999' has already been registered."
       end
     end
 
@@ -133,7 +130,7 @@ RSpec.describe 'Create object' do
           allow(ModsService).to receive(:fetch).and_return(mods_from_symphony)
         end
 
-        it 'registers the object with the registration service and immediately indexes' do
+        it 'registers the object with the registration service' do
           expect do
             post '/v1/objects',
                  params: data,
@@ -143,10 +140,6 @@ RSpec.describe 'Create object' do
           expect(response.status).to eq(201)
           expect(response.location).to eq "/v1/objects/#{druid}"
           expect(ModsService).to have_received(:fetch).with('catkey:8888')
-          expect(a_request(:put, 'https://dor-indexing-app.example.edu/dor/reindex_from_cocina').with do |req|
-                   parsed_body = JSON.parse(req.body).deep_symbolize_keys
-                   expect(parsed_body[:cocina_object]).to eq(expected.to_h)
-                 end).to have_been_made
           expect(response.headers['Last-Modified']).to end_with 'GMT'
           expect(response.headers['X-Created-At']).to end_with 'GMT'
           expect(response.headers['ETag']).to match(%r{W/".+"})
@@ -200,14 +193,10 @@ RSpec.describe 'Create object' do
 
     context 'when catkey is not provided' do
       context 'when no object with the source id exists and the save is successful' do
-        it 'registers the object with the registration service and immediately indexes' do
+        it 'registers the object with the registration service' do
           post '/v1/objects',
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(a_request(:put, 'https://dor-indexing-app.example.edu/dor/reindex_from_cocina').with do |req|
-                   parsed_body = JSON.parse(req.body).deep_symbolize_keys
-                   expect(parsed_body[:cocina_object]).to eq(expected.to_h)
-                 end).to have_been_made
           expect(response.body).to equal_cocina_model(expected)
           expect(response.status).to eq(201)
           expect(response.location).to eq "/v1/objects/#{druid}"
@@ -558,10 +547,6 @@ RSpec.describe 'Create object' do
       }
     end
 
-    before do
-      allow(SolrService).to receive(:get).and_return(no_result)
-    end
-
     it 'registers the book and sets the viewing direction' do
       post '/v1/objects',
            params: data,
@@ -717,10 +702,6 @@ RSpec.describe 'Create object' do
       }
     end
 
-    before do
-      allow(SolrService).to receive(:get).and_return(no_result)
-    end
-
     it 'registers the book and sets the rights' do
       post '/v1/objects',
            params: data,
@@ -778,10 +759,6 @@ RSpec.describe 'Create object' do
       }
     end
 
-    before do
-      allow(SolrService).to receive(:get).and_return(no_result)
-    end
-
     it 'registers the book and sets the rights' do
       post '/v1/objects',
            params: data,
@@ -827,10 +804,6 @@ RSpec.describe 'Create object' do
       }
     end
 
-    before do
-      allow(SolrService).to receive(:get).and_return(no_result)
-    end
-
     it 'registers the book and sets the rights' do
       post '/v1/objects',
            params: data,
@@ -843,10 +816,6 @@ RSpec.describe 'Create object' do
   end
 
   context 'when no description is provided (registration use case)' do
-    before do
-      allow(SolrService).to receive(:get).and_return(no_result)
-    end
-
     context 'when structural is provided' do
       let(:expected) do
         build(:dro, id: 'druid:gg777gg7777', admin_policy_id: admin_policy_id, label: 'This is my label', title: 'This is my label').new(
