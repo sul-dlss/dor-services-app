@@ -24,11 +24,10 @@ RSpec.describe DeleteService do
   describe '#destroy' do
     before do
       allow(CocinaObjectStore).to receive(:destroy)
+      described_class.destroy(cocina_object, user_name: user_name, event_factory: event_factory)
     end
 
     it 'creates an event' do
-      service.destroy
-
       expect(event_factory).to have_received(:create).with(druid: druid, event_type: 'delete', data: { request: cocina_object.to_h, source_id: source_id, user_name: user_name })
     end
   end
