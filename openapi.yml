@@ -1354,6 +1354,12 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
+        - name: user_name
+          in: query
+          description: Username of user requesting delete
+          required: true
+          schema:
+            type: string
 components:
   schemas:
     Access:
