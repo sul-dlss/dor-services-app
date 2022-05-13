@@ -12,10 +12,8 @@ RSpec.describe PreservationMetadataExtractor do
     subject(:extract) { instance.extract }
 
     let(:metadata_dir) { instance_double(Pathname) }
-    let(:workflow_path) { instance_double(Pathname, exist?: false, open: true) }
     let(:version_path) { instance_double(Pathname, exist?: false, open: true) }
     let(:content_path) { instance_double(Pathname, exist?: false, open: true) }
-    let(:workflow_file) { instance_double(File, :<< => nil) }
     let(:version_file) { instance_double(File, :<< => nil) }
     let(:content_file) { instance_double(File, :<< => nil) }
 
@@ -23,22 +21,16 @@ RSpec.describe PreservationMetadataExtractor do
       allow(workspace).to receive(:path).with('metadata', true).and_return('metadata_dir')
       expect(Pathname).to receive(:new).with('metadata_dir').and_return(metadata_dir)
       allow(Pathname).to receive(:new).and_call_original
-      allow(metadata_dir).to receive(:join).with('workflows.xml').and_return(workflow_path)
       allow(metadata_dir).to receive(:join).with('versionMetadata.xml').and_return(version_path)
       allow(metadata_dir).to receive(:join).with('contentMetadata.xml').and_return(content_path)
 
       allow(instance).to receive(:extract_cocina)
-      allow(workflow_path).to receive(:open).and_yield(workflow_file)
       allow(version_path).to receive(:open).and_yield(version_file)
       allow(content_path).to receive(:open).and_yield(content_file)
-
-      stub_request(:get, 'https://workflow.example.com/workflow/objects/druid:nc893zj8956/workflows')
-        .to_return(status: 200, body: '<workflow-stuff />', headers: {})
     end
 
     it 'extracts the metadata' do
       extract
-      expect(workflow_file).to have_received(:<<).with('<workflow-stuff />')
       expect(version_file).to have_received(:<<)
         .with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<versionMetadata objectId=\"druid:nc893zj8956\"/>\n")
       expect(content_file).to have_received(:<<)

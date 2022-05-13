@@ -30,19 +30,11 @@ class PreservationMetadataExtractor
 
   # Generate all the required xml files
   def generate_xml
-    workflow_file = metadata_dir.join('workflows.xml')
-    workflow_file.open('w') { |f| f << workflow_xml }
-
     versions_file = metadata_dir.join('versionMetadata.xml')
     versions_file.open('w') { |f| f << version_xml }
 
     content_file = metadata_dir.join('contentMetadata.xml')
     content_file.open('w') { |f| f << content_xml }
-  end
-
-  # Get the workflow xml representation from the workflow service
-  def workflow_xml
-    WorkflowClientFactory.build.all_workflows_xml(cocina_object.externalIdentifier)
   end
 
   def version_xml
