@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe DeleteService do
-  let(:service) { described_class.new(cocina_object, event_factory) }
+  let(:service) { described_class.new(cocina_object, user_name, event_factory) }
 
   let(:cocina_object) { build(:dro, id: druid, source_id: source_id) }
 
@@ -12,6 +12,8 @@ RSpec.describe DeleteService do
   let(:source_id) { 'hydrus:object-63-sdr-client' }
 
   let(:event_factory) { class_double(EventFactory, create: nil) }
+
+  let(:user_name) { 'some_person' }
 
   let(:client) { instance_double(Dor::Workflow::Client, delete_all_workflows: nil) }
 
@@ -27,7 +29,7 @@ RSpec.describe DeleteService do
     it 'creates an event' do
       service.destroy
 
-      expect(event_factory).to have_received(:create).with(druid: druid, event_type: 'delete', data: { request: cocina_object.to_h, source_id: source_id })
+      expect(event_factory).to have_received(:create).with(druid: druid, event_type: 'delete', data: { request: cocina_object.to_h, source_id: source_id, user_name: user_name })
     end
   end
 
