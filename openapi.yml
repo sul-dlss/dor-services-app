@@ -1978,6 +1978,7 @@ components:
             $ref: "#/components/schemas/DescriptiveValue"
     DescriptiveParallelContributor:
       description: Value model for multiple representations of information about the same contributor (e.g. in different languages).
+      deprecated: true
       type: object
       additionalProperties: false
       properties:
