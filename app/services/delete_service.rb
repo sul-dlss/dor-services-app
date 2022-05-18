@@ -12,12 +12,13 @@ class DeleteService
   #   - Removes content from purl
   #   - Removes active workflows
   # @param [Cocina::Models::DRO|AdminPolicy||Collection] cocina object wish to remove
-  def self.destroy(cocina_object, event_factory: EventFactory)
-    new(cocina_object, event_factory).destroy
+  def self.destroy(cocina_object, user_name:, event_factory: EventFactory)
+    new(cocina_object, user_name, event_factory).destroy
   end
 
-  def initialize(cocina_object, event_factory)
+  def initialize(cocina_object, user_name, event_factory)
     @cocina_object = Cocina::Models.without_metadata(cocina_object)
+    @user_name = user_name
     @event_factory = event_factory
   end
 
@@ -27,12 +28,12 @@ class DeleteService
     cleanup_purl_doc_cache
     remove_active_workflows
     delete_from_dor
-    event_factory.create(druid: druid, event_type: 'delete', data: { request: cocina_object.to_h, source_id: cocina_object&.identification&.sourceId })
+    event_factory.create(druid: druid, event_type: 'delete', data: { request: cocina_object.to_h, source_id: cocina_object&.identification&.sourceId, user_name: user_name })
   end
 
   private
 
-  attr_reader :cocina_object, :event_factory
+  attr_reader :cocina_object, :event_factory, :user_name
 
   def cleanup_stacks
     stacks_druid = DruidTools::StacksDruid.new(druid, Settings.stacks.local_stacks_root)
