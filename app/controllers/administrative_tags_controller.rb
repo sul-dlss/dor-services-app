@@ -2,7 +2,6 @@
 
 # Administrative tags controller (nested resource under objects)
 class AdministrativeTagsController < ApplicationController
-  # This just validates that this is an existing object
   before_action :load_cocina_object, only: %i[create update destroy]
 
   rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
@@ -32,6 +31,10 @@ class AdministrativeTagsController < ApplicationController
                        })
     render status: :conflict, plain: e.message
   else
+    # Broadcast this update action to a topic
+    Notifications::ObjectUpdated.publish(model: Cocina::Models.without_metadata(@cocina_object),
+                                         created_at: @cocina_object.created,
+                                         modified_at: @cocina_object.modified)
     head :created
   end
 
@@ -50,6 +53,10 @@ class AdministrativeTagsController < ApplicationController
                        })
     render status: :conflict, plain: e.message
   else
+    # Broadcast this update action to a topic
+    Notifications::ObjectUpdated.publish(model: Cocina::Models.without_metadata(@cocina_object),
+                                         created_at: @cocina_object.created,
+                                         modified_at: @cocina_object.modified)
     head :no_content
   end
 
@@ -58,6 +65,10 @@ class AdministrativeTagsController < ApplicationController
   rescue ActiveRecord::RecordNotFound => e
     render status: :not_found, plain: e.message
   else
+    # Broadcast this update action to a topic
+    Notifications::ObjectUpdated.publish(model: Cocina::Models.without_metadata(@cocina_object),
+                                         created_at: @cocina_object.created,
+                                         modified_at: @cocina_object.modified)
     head :no_content
   end
 end
