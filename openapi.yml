@@ -1357,7 +1357,7 @@ paths:
         - name: user_name
           in: query
           description: Username of user requesting delete
-          required: true
+          required: false
           schema:
             type: string
 components:
