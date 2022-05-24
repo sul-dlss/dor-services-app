@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Administrative tags' do
   let(:druid) { 'druid:mx123qw2323' }
-  let(:item) { instance_double(Cocina::Models::DRO) }
+  let(:item) { build(:dro_with_metadata) }
   let(:tags) do
     [
       'Process : Content Type : Map',
@@ -35,6 +35,7 @@ RSpec.describe 'Administrative tags' do
   describe '#create' do
     before do
       allow(AdministrativeTags).to receive(:create)
+      allow(Notifications::ObjectUpdated).to receive(:publish)
     end
 
     context 'when happy path (without replacement)' do
@@ -44,6 +45,7 @@ RSpec.describe 'Administrative tags' do
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(AdministrativeTags).to have_received(:create)
           .with(identifier: druid, tags: tags, replace: nil)
+        expect(Notifications::ObjectUpdated).to have_received(:publish)
         expect(response.status).to eq(201)
       end
     end
@@ -55,6 +57,7 @@ RSpec.describe 'Administrative tags' do
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(AdministrativeTags).to have_received(:create)
           .with(identifier: druid, tags: tags, replace: true)
+        expect(Notifications::ObjectUpdated).to have_received(:publish)
         expect(response.status).to eq(201)
       end
     end
@@ -71,6 +74,7 @@ RSpec.describe 'Administrative tags' do
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.status).to eq(404)
         expect(response.body).to eq('Unable to find \'druid:mx123qw2323\' in fedora. See logger for details.')
+        expect(Notifications::ObjectUpdated).not_to have_received(:publish)
       end
     end
 
@@ -115,6 +119,7 @@ RSpec.describe 'Administrative tags' do
 
     before do
       allow(AdministrativeTags).to receive(:update)
+      allow(Notifications::ObjectUpdated).to receive(:publish)
     end
 
     context 'when happy path' do
@@ -124,6 +129,7 @@ RSpec.describe 'Administrative tags' do
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(AdministrativeTags).to have_received(:update)
           .with(identifier: druid, current: current_tag, new: new_tag)
+        expect(Notifications::ObjectUpdated).to have_received(:publish)
         expect(response.status).to eq(204)
       end
     end
@@ -247,6 +253,7 @@ RSpec.describe 'Administrative tags' do
 
     before do
       allow(AdministrativeTags).to receive(:destroy)
+      allow(Notifications::ObjectUpdated).to receive(:publish)
     end
 
     context 'when happy path' do
@@ -255,6 +262,7 @@ RSpec.describe 'Administrative tags' do
                headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(AdministrativeTags).to have_received(:destroy)
           .with(identifier: druid, tag: tag)
+        expect(Notifications::ObjectUpdated).to have_received(:publish)
         expect(response.status).to eq(204)
       end
     end
