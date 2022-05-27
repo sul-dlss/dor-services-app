@@ -54,7 +54,3 @@ set :honeybadger_env, fetch(:stage)
 
 # update shared_configs before restarting app
 before 'deploy:restart', 'shared_configs:update'
-
-# the honeybadger gem should integrate automatically with capistrano-rvm but it
-# doesn't appear to do so on our new Ubuntu boxes :shrug:
-set :rvm_map_bins, fetch(:rvm_map_bins, []).push('honeybadger')
