@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 # DLSS/domain-specific dependencies
-gem 'cocina-models', '~> 0.80.0'
+gem 'cocina-models', '~> 0.81.0'
 gem 'datacite', '~> 0.3.0'
 gem 'dor-rights-auth', '>= 1.5.0' # required for new CDL rights
 gem 'dor-workflow-client', '~> 4.0'
