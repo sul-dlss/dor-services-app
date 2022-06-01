@@ -3516,13 +3516,14 @@
 
 		<xsl:for-each select="marc:datafield[@tag = '037']">
 			<identifier type="stock number">
+				<!-- SUL edit 20220601 issue #3747
 				<xsl:if test="marc:subfield[@code = 'c']">
 					<xsl:attribute name="displayLabel">
 						<xsl:call-template name="subfieldSelect">
 							<xsl:with-param name="codes">c</xsl:with-param>
 						</xsl:call-template>
 					</xsl:attribute>
-				</xsl:if>
+				</xsl:if> -->
 				<xsl:call-template name="subfieldSelect">
 					<xsl:with-param name="codes">ab</xsl:with-param>
 				</xsl:call-template>
