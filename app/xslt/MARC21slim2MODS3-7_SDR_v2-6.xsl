@@ -7363,21 +7363,25 @@
 	<!-- accessCondition 506 540 1.87 20130829-->
 
 	<xsl:template name="createAccessConditionFrom506">
-		<accessCondition type="restriction on access">
+		<!-- SUL edit 20220601 issue #3133
+		<accessCondition type="restriction on access"> -->
+		<note type="restriction on access">
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="subfieldSelect">
 				<xsl:with-param name="codes">abcd35</xsl:with-param>
 			</xsl:call-template>
-		</accessCondition>
+		</note>
 	</xsl:template>
 
 	<xsl:template name="createAccessConditionFrom540">
-		<accessCondition type="use and reproduction">
+		<!-- SUL edit 20220601 issue #3133
+		<accessCondition type="use and reproduction"> -->
+		<note type="use and reproduction">
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="subfieldSelect">
 				<xsl:with-param name="codes">abcde35</xsl:with-param>
 			</xsl:call-template>
-		</accessCondition>
+		</note>
 	</xsl:template>
 
 	<!-- recordInfo 040 005 001 003 -->
