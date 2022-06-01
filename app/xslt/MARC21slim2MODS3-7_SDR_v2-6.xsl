@@ -3709,8 +3709,8 @@
 	</xsl:template>
 	<xsl:template name="role">
 		<xsl:for-each select="marc:subfield[@code = 'e']">
-			<!-- SUL edit 20210125 issue #1872 -->
-			<xsl:if test="string-length(normalize-space(.)) > 2">
+			<!-- SUL edit 20210125 issue #1872; revised 20220601 issue #3089 -->
+			<xsl:if test="string-length(normalize-space(.)) > 1">
 				<role>
 					<roleTerm type="text">
 						<!-- 1.126 -->
