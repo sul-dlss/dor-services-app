@@ -1753,6 +1753,7 @@
 			<xsl:apply-templates select="marc:datafield[@tag = '351']" mode="physDesc"/>
 			<!-- SUL edit 20220602 issue #3006 -->
 			<xsl:apply-templates select="marc:datafield[@tag = '340']" mode="physDesc"/>
+			<xsl:apply-templates select="marc:datafield[@tag = '344']" mode="physDesc"/>
 		</xsl:variable>
 		<xsl:choose>
 			<!-- SUL edit 20210315 issue #2308 -->
@@ -7548,6 +7549,47 @@
 					</xsl:when>
 					<xsl:when test="self::marc:subfield[@code = 'j']">
 						<xsl:attribute name="displayLabel">Generation</xsl:attribute>
+					</xsl:when>
+				</xsl:choose>
+				<xsl:for-each select="../marc:subfield[@code = '3']">
+					<xsl:apply-templates/>
+					<xsl:text>: </xsl:text>
+				</xsl:for-each>
+				<xsl:apply-templates/>
+			</note>	
+		</xsl:for-each>
+	</xsl:template>
+	<!-- SUL edit 20220602 issue #3006 -->
+	<!-- 344 note-->
+	<xsl:template match="marc:datafield[@tag = '344']" mode="physDesc">
+		<xsl:for-each select="marc:subfield[@code = 'a'] | marc:subfield[@code = 'b'] | marc:subfield[@code = 'c']
+			| marc:subfield[@code = 'd'] | marc:subfield[@code = 'e'] | marc:subfield[@code = 'f']
+			| marc:subfield[@code = 'g'] | marc:subfield[@code = 'h']">
+			<note>		
+				<xsl:choose>
+					<xsl:when test="self::marc:subfield[@code = 'a']">
+						<xsl:attribute name="displayLabel">Type of recording</xsl:attribute>
+					</xsl:when>
+					<xsl:when test="self::marc:subfield[@code = 'b']">
+						<xsl:attribute name="displayLabel">Recording medium</xsl:attribute>
+					</xsl:when>
+					<xsl:when test="self::marc:subfield[@code = 'c']">
+						<xsl:attribute name="displayLabel">Playing speed</xsl:attribute>
+					</xsl:when>
+					<xsl:when test="self::marc:subfield[@code = 'd']">
+						<xsl:attribute name="displayLabel">Groove characteristic</xsl:attribute>
+					</xsl:when>
+					<xsl:when test="self::marc:subfield[@code = 'e']">
+						<xsl:attribute name="displayLabel">Track configuration</xsl:attribute>
+					</xsl:when>
+					<xsl:when test="self::marc:subfield[@code = 'f']">
+						<xsl:attribute name="displayLabel">Tape configuration</xsl:attribute>
+					</xsl:when>
+					<xsl:when test="self::marc:subfield[@code = 'g']">
+						<xsl:attribute name="displayLabel">Configuration of playback channels</xsl:attribute>
+					</xsl:when>
+					<xsl:when test="self::marc:subfield[@code = 'h']">
+						<xsl:attribute name="displayLabel">Special playback characteristics</xsl:attribute>
 					</xsl:when>
 				</xsl:choose>
 				<xsl:for-each select="../marc:subfield[@code = '3']">
