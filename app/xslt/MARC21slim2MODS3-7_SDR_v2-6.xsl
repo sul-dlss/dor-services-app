@@ -1751,6 +1751,8 @@
 				mode="physDesc"/>
 			<xsl:apply-templates select="marc:datafield[@tag = '300']" mode="physDesc"/>
 			<xsl:apply-templates select="marc:datafield[@tag = '351']" mode="physDesc"/>
+			<!-- SUL edit 20220602 issue #3006 -->
+			<xsl:apply-templates select="marc:datafield[@tag = '340']" mode="physDesc"/>
 		</xsl:variable>
 		<xsl:choose>
 			<!-- SUL edit 20210315 issue #2308 -->
@@ -7521,6 +7523,40 @@
 				<xsl:with-param name="codes">abc</xsl:with-param>
 			</xsl:call-template>
 		</note>
+	</xsl:template>
+	<!-- SUL edit 20220602 issue #3006 -->
+	<!-- 340 note-->
+	<xsl:template match="marc:datafield[@tag = '340']" mode="physDesc">
+		<xsl:for-each select="marc:subfield[@code = 'a'] | marc:subfield[@code = 'b'] | marc:subfield[@code = 'c']
+			| marc:subfield[@code = 'd'] | marc:subfield[@code = 'i'] | marc:subfield[@code = 'j']">
+			<note>		
+				<xsl:choose>
+					<xsl:when test="self::marc:subfield[@code = 'a']">
+						<xsl:attribute name="displayLabel">Material base and configuration</xsl:attribute>
+					</xsl:when>
+					<xsl:when test="self::marc:subfield[@code = 'b']">
+						<xsl:attribute name="displayLabel">Dimensions</xsl:attribute>
+					</xsl:when>
+					<xsl:when test="self::marc:subfield[@code = 'c']">
+						<xsl:attribute name="displayLabel">Materials applied to surface</xsl:attribute>
+					</xsl:when>
+					<xsl:when test="self::marc:subfield[@code = 'd']">
+						<xsl:attribute name="displayLabel">Information recording technique</xsl:attribute>
+					</xsl:when>
+					<xsl:when test="self::marc:subfield[@code = 'i']">
+						<xsl:attribute name="displayLabel">Technical specifications of medium</xsl:attribute>
+					</xsl:when>
+					<xsl:when test="self::marc:subfield[@code = 'j']">
+						<xsl:attribute name="displayLabel">Generation</xsl:attribute>
+					</xsl:when>
+				</xsl:choose>
+				<xsl:for-each select="../marc:subfield[@code = '3']">
+					<xsl:apply-templates/>
+					<xsl:text>: </xsl:text>
+				</xsl:for-each>
+				<xsl:apply-templates/>
+			</note>	
+		</xsl:for-each>
 	</xsl:template>
 	<!-- 856 internetMediaType -->
 	<xsl:template
