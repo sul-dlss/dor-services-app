@@ -6093,8 +6093,11 @@
 						following-sibling::marc:datafield[@tag = '880'][starts-with(marc:subfield[@code = '6'], '245')][marc:subfield[@code = 'c']]">
 					<xsl:call-template name="xxx880"/>
 				</xsl:if>
+				<!-- SUL edit 20220603 issue #2747 -->
 				<xsl:if test="
-						preceding-sibling::marc:datafield[@tag = '245']">
+					preceding-sibling::marc:datafield[@tag = '245'][marc:subfield[@code = 'c']]">
+<!--				<xsl:if test="
+						preceding-sibling::marc:datafield[@tag = '245']"> -->
 					<xsl:call-template name="xxx880"/>
 				</xsl:if>
 				<xsl:call-template name="subfieldSelect">
