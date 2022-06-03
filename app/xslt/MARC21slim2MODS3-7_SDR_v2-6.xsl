@@ -7329,11 +7329,12 @@
 				<url displayLabel="electronic resource"> -->
 				<url>
 					<!-- 1.41 tmee AQ1.9 added choice protocol for @usage="primary display" -->
+					<!-- SUL edit 20220603 issue #3042
 					<xsl:variable name="primary">
 						<xsl:choose>
-							<!-- SUL edit 20201204 issue #125 and #1559 -->
+							<!- SUL edit 20201204 issue #125 and #1559 ->
 							<xsl:when test="marc:subfield[@code = 'x'] = 'SDR-PURL'">true</xsl:when>
-							<!--
+							<!-
 							<xsl:when
 								test="@ind2 = 0 and count(preceding-sibling::marc:datafield[@tag = 856][@ind2 = 0]) = 0"
 								>true</xsl:when>
@@ -7345,12 +7346,12 @@
 							<xsl:when
 								test="@ind2 != 1 and @ind2 != 0 and @ind2 != 2 and count(ancestor::marc:record//marc:datafield[@tag = 856 and @ind2 = 0]) = 0 and count(ancestor::marc:record//marc:datafield[@tag = 856 and @ind2 = 1]) = 0 and count(preceding-sibling::marc:datafield[@tag = 856][@ind2]) = 0"
 								>true</xsl:when>
-							<xsl:otherwise>false</xsl:otherwise> -->
+							<xsl:otherwise>false</xsl:otherwise> ->
 						</xsl:choose>
 					</xsl:variable>
 					<xsl:if test="$primary = 'true'">
 						<xsl:attribute name="usage">primary display</xsl:attribute>
-					</xsl:if>
+					</xsl:if> -->
 
 					<xsl:if test="marc:subfield[@code = 'y' or @code = '3']">
 						<xsl:attribute name="displayLabel">
