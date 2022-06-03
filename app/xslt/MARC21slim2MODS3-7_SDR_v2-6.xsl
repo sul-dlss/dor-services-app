@@ -2381,7 +2381,14 @@
 						<!-- related item id -->
 						<xsl:apply-templates select="marc:subfield[@code = 'x']" mode="relatedItem"/>
 						<xsl:apply-templates select="marc:subfield[@code = 'z']" mode="relatedItem"/>
-						<xsl:call-template name="relatedNote"/>
+						<!-- SUL edit 20220603 issue #3726 -->
+						<xsl:for-each select="marc:subfield[@code = 'n']">
+							<note>
+								<xsl:call-template name="xxs880"/>
+								<xsl:value-of select="."/>
+							</note>
+						</xsl:for-each>
+						<!-- <xsl:call-template name="relatedNote"/> -->
 					</xsl:for-each>
 				</relatedItem>
 			</xsl:if>
