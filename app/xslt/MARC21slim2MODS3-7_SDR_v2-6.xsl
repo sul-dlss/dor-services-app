@@ -7321,7 +7321,9 @@
 	</xsl:template>
 
 	<xsl:template name="createLocationFrom856">
-		<xsl:if test="//marc:datafield[@tag = 856][@ind2 != 2][marc:subfield[@code = 'u']]">
+		<!-- SUL edit 20220603 issue #2710 -->
+		<xsl:if test="self::marc:datafield[@tag = 856][@ind2 != 2][marc:subfield[@code = 'u']]">
+		<!-- <xsl:if test="//marc:datafield[@tag = 856][@ind2 != 2][marc:subfield[@code = 'u']]"> -->
 			<location>
 				<!-- 1.121 -->
 				<xsl:call-template name="xxx880"/>
