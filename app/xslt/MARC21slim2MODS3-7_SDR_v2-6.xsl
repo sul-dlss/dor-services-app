@@ -6482,7 +6482,9 @@
 							<xsl:text>iso3166</xsl:text>
 						</xsl:if>
 					</xsl:attribute>
-					<xsl:value-of select="self::marc:subfield"/>
+					<!-- SUL edit 20220603 issue #2845
+					<xsl:value-of select="self::marc:subfield"/> -->
+					<xsl:value-of select="translate(self::marc:subfield, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')" />
 				</geographicCode>
 				<!-- SUL edit 20210315 issue #2452
 			</xsl:for-each> -->
