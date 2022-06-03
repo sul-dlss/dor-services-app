@@ -6733,7 +6733,9 @@
 					<xsl:call-template name="chopPunctuation">
 						<xsl:with-param name="chopString">
 							<xsl:call-template name="subfieldSelect">
-								<xsl:with-param name="codes">adfhklor</xsl:with-param>
+								<!-- SUL edit 20220603 issue #3043 -->
+								<xsl:with-param name="codes">adfhklort</xsl:with-param>
+								<!-- <xsl:with-param name="codes">adfhklor</xsl:with-param> -->
 							</xsl:call-template>
 						</xsl:with-param>
 					</xsl:call-template>
