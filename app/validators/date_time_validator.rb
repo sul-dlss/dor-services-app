@@ -12,9 +12,9 @@ class DateTimeValidator
 
   HOUR = '([01]\d|2[0123])'
 
-  MINUTE = '([0-4]\d|5[0-9])'
+  MINUTE = '([0-5]\d)'
 
-  SECOND = '([0-4]\d|5[0-9])'
+  SECOND = '([0-5]\d)'
 
   SECOND_FRACTION = '(\d+)'
 
