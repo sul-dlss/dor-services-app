@@ -31,11 +31,7 @@ class DateTimeValidator
 
   ISO8601_FORMATS = COMMON_FORMATS + [
     Regexp.new("^#{YEAR}#{MONTH}--$"),
-    Regexp.new("^#{YEAR}#{MONTH}#{DAY}$"),
-    Regexp.new("^#{YEAR}#{MONTH}#{DAY}T#{HOUR}#{MINUTE}$"),
-    Regexp.new("^#{YEAR}#{MONTH}#{DAY}T#{HOUR}#{MINUTE}#{SECOND}$"),
-    Regexp.new("^#{YEAR}#{MONTH}#{DAY}#{HOUR}#{MINUTE}$"),
-    Regexp.new("^#{YEAR}#{MONTH}#{DAY}#{HOUR}#{MINUTE}#{SECOND}$")
+    Regexp.new("^#{YEAR}#{MONTH}#{DAY}T?(#{HOUR}#{MINUTE}|#{HOUR}#{MINUTE}#{SECOND})?$"),
   ]
 
   W3CDTF_FORMATS = COMMON_FORMATS
