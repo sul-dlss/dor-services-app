@@ -30,7 +30,6 @@ class DateTimeValidator
   ].freeze
 
   ISO8601_FORMATS = COMMON_FORMATS + [
-    Regexp.new("^#{YEAR}#{MONTH}--$"),
     Regexp.new("^#{YEAR}#{MONTH}#{DAY}$"),
     Regexp.new("^#{YEAR}#{MONTH}#{DAY}T#{HOUR}#{MINUTE}$"),
     Regexp.new("^#{YEAR}#{MONTH}#{DAY}T#{HOUR}#{MINUTE}#{SECOND}$"),
