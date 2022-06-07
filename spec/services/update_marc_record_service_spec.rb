@@ -103,6 +103,26 @@ RSpec.describe UpdateMarcRecordService do
       download: 'stanford'
     }
   end
+  let(:access_world_stanford) do
+    {
+      view: 'world',
+      download: 'stanford'
+    }
+  end
+  let(:access_stanford_download_none) do
+    {
+      view: 'stanford',
+      download: 'none',
+      controlledDigitalLending: false
+    }
+  end
+  let(:access_stanford_cdl) do
+    {
+      view: 'stanford',
+      download: 'none',
+      controlledDigitalLending: true
+    }
+  end
   let(:access_location) do
     {
       view: 'location-based',
@@ -864,14 +884,25 @@ RSpec.describe UpdateMarcRecordService do
       it { is_expected.to eq '|xrights:group=stanford' }
     end
 
+    context 'with view-world stanford-download rights' do
+      let(:cocina_object) do
+        build(:dro, id: druid).new(access: access_world_stanford)
+      end
+
+      it { is_expected.to eq '' }
+    end
+
+    context 'with stanford-only download none rights' do
+      let(:cocina_object) do
+        build(:dro, id: druid).new(access: access_stanford_download_none)
+      end
+
+      it { is_expected.to eq '' }
+    end
+
     context 'with CDL rights' do
       let(:cocina_object) do
-        build(:dro, id: druid).new(
-          access: {
-            view: 'world',
-            download: 'stanford'
-          }
-        )
+        build(:dro, id: druid).new(access: access_stanford_cdl)
       end
 
       it { is_expected.to eq '|xrights:cdl' }
