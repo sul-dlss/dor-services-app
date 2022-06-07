@@ -8,8 +8,8 @@ namespace :missing_druids do
     druids_from_solr = []
 
     loop do
-      results = SolrService.query('*:*', fl: 'id', rows: 10000, start: druids_from_solr.length, sort: 'id asc')
-      break if results.empty?
+      results = SolrService.query('id:*', fl: 'id', rows: 10_000_000, sort: 'id asc', wt: 'csv')
+      break unless results.empty?
 
       results.each { |r| druids_from_solr << r['id'] }
       sleep(0.5)
