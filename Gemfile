@@ -79,3 +79,5 @@ group :deployment do
   gem 'capistrano-shared_configs'
   gem 'dlss-capistrano', require: false
 end
+
+gem 'jsonpath', '~> 1.1'

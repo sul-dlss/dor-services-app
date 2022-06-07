@@ -5,6 +5,7 @@ SimpleCov.start :rails do
   add_filter '/spec/'
   add_filter '/lib/fedora_archiver.rb'
   add_filter '/bin/'
+  add_filter '/app/reports/'
 end
 
 FIXTURES_PATH = File.expand_path('fixtures', __dir__)
