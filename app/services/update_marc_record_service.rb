@@ -173,11 +173,10 @@ class UpdateMarcRecordService
     values << 'rights:dark' if @access.view == 'dark'
 
     if @access.view == 'world'
-      values << 'rights:cdl' if @access.download == 'stanford'
       values << 'rights:world' if @access.download == 'world'
       values << 'rights:citation' if @access.download == 'none'
     end
-
+    values << 'rights:cdl' if @access.controlledDigitalLending
     values << 'rights:group=stanford' if @access.view == 'stanford' && @access.download == 'stanford'
     values << "rights:location=#{@access.location}" if @access.location
 
