@@ -15,10 +15,10 @@ class PreservationIngestService
     workspace = DruidTools::Druid.new(druid, Settings.sdr.local_workspace_root)
     signature_catalog = signature_catalog_from_preservation(druid)
     new_version_id = signature_catalog.version_id + 1
-    metadata_dir = PreservationMetadataExtractor.extract(workspace: workspace, cocina_object: cocina_object)
+    metadata_dir = PreservationMetadataExtractor.extract(workspace:, cocina_object:)
     verify_version_metadata(metadata_dir, new_version_id)
-    version_inventory = Preserve::FileInventoryBuilder.build(metadata_dir: metadata_dir,
-                                                             druid: druid,
+    version_inventory = Preserve::FileInventoryBuilder.build(metadata_dir:,
+                                                             druid:,
                                                              version_id: new_version_id)
     version_additions = signature_catalog.version_additions(version_inventory)
     content_additions = version_additions.group('content')

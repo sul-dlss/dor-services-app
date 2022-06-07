@@ -20,7 +20,7 @@ RSpec.describe ShelvableFilesStager do
   let(:shelve_diff) { inventory_diff.group_difference('content') }
 
   context 'when the manifest files are not in the workspace' do
-    let(:preserve_diff) { instance_double(Moab::FileGroupDifference, file_deltas: file_deltas) }
+    let(:preserve_diff) { instance_double(Moab::FileGroupDifference, file_deltas:) }
 
     before do
       # create the one modified file:

@@ -78,11 +78,11 @@ class ObjectsController < ApplicationController
   def accession
     workflow = params[:workflow] || default_start_accession_workflow
 
-    EventFactory.create(druid: params[:id], event_type: 'accession_request', data: { workflow: workflow })
+    EventFactory.create(druid: params[:id], event_type: 'accession_request', data: { workflow: })
 
     # if this object is currently already in accessioning, we cannot start it again
     if VersionService.in_accessioning?(@cocina_object)
-      EventFactory.create(druid: params[:id], event_type: 'accession_request_aborted', data: { workflow: workflow })
+      EventFactory.create(druid: params[:id], event_type: 'accession_request_aborted', data: { workflow: })
       return json_api_error(status: :conflict,
                             message: 'This object is already in accessioning, it can not be accessioned again until the workflow is complete')
     end
@@ -108,21 +108,21 @@ class ObjectsController < ApplicationController
   def publish
     result = BackgroundJobResult.create
     EventFactory.create(druid: params[:id], event_type: 'publish_request_received', data: { background_job_result_id: result.id })
-    PublishJob.set(queue: queue).perform_later(druid: params[:id], background_job_result: result, workflow: params[:workflow])
+    PublishJob.set(queue:).perform_later(druid: params[:id], background_job_result: result, workflow: params[:workflow])
     head :created, location: result
   end
 
   def preserve
     result = BackgroundJobResult.create
     EventFactory.create(druid: params[:id], event_type: 'preserve_request_received', data: { background_job_result_id: result.id })
-    PreserveJob.set(queue: queue).perform_later(druid: params[:id], background_job_result: result)
+    PreserveJob.set(queue:).perform_later(druid: params[:id], background_job_result: result)
     head :created, location: result
   end
 
   def unpublish
     result = BackgroundJobResult.create
     EventFactory.create(druid: params[:id], event_type: 'unpublish_request_received', data: { background_job_result_id: result.id })
-    UnpublishJob.set(queue: queue).perform_later(druid: params[:id], background_job_result: result)
+    UnpublishJob.set(queue:).perform_later(druid: params[:id], background_job_result: result)
     head :accepted, location: result
   end
 

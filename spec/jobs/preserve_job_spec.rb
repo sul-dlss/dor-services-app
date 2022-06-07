@@ -17,7 +17,7 @@ RSpec.describe PreserveJob, type: :job do
   end
 
   context 'with no errors' do
-    subject(:perform) { described_class.perform_now(druid: druid, background_job_result: result) }
+    subject(:perform) { described_class.perform_now(druid:, background_job_result: result) }
 
     before do
       allow(PreservationIngestService).to receive(:transfer)
@@ -48,12 +48,12 @@ RSpec.describe PreserveJob, type: :job do
 
     it 'marks the job as errored' do
       perform_enqueued_jobs do
-        described_class.perform_now(druid: druid, background_job_result: result)
+        described_class.perform_now(druid:, background_job_result: result)
       end
       expect(result).to have_received(:processing!).once
       expect(PreservationIngestService).to have_received(:transfer).with(cocina).exactly(5).times
       expect(LogFailureJob).to have_received(:perform_later)
-        .with(druid: druid,
+        .with(druid:,
               background_job_result: result,
               workflow: 'accessionWF',
               workflow_process: 'sdr-ingest-transfer',

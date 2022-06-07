@@ -15,10 +15,10 @@ class AdminPolicy < ApplicationRecord
       cocinaVersion: cocina_version,
       type: Cocina::Models::ObjectType.admin_policy,
       externalIdentifier: external_identifier,
-      label: label,
-      version: version,
-      administrative: administrative,
-      description: description
+      label:,
+      version:,
+      administrative:,
+      description:
     }.compact
   end
 

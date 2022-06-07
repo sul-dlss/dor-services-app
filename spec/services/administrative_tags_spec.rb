@@ -13,7 +13,7 @@ RSpec.describe AdministrativeTags do
     end
 
     it 'calls #for on a new instance' do
-      described_class.for(identifier: identifier)
+      described_class.for(identifier:)
       expect(instance).to have_received(:for).once
     end
   end
@@ -26,7 +26,7 @@ RSpec.describe AdministrativeTags do
     end
 
     it 'calls #project on a new instance' do
-      described_class.project(identifier: identifier)
+      described_class.project(identifier:)
       expect(instance).to have_received(:project).once
     end
   end
@@ -39,7 +39,7 @@ RSpec.describe AdministrativeTags do
     end
 
     it 'calls #create on a new instance' do
-      described_class.create(identifier: identifier, tags: ['What : Ever'])
+      described_class.create(identifier:, tags: ['What : Ever'])
       expect(instance).to have_received(:create).once.with(tags: ['What : Ever'], replace: false)
     end
   end
@@ -52,7 +52,7 @@ RSpec.describe AdministrativeTags do
     end
 
     it 'calls #update on a new instance' do
-      described_class.update(identifier: identifier, current: 'What : Ever', new: 'What : Ever : 2')
+      described_class.update(identifier:, current: 'What : Ever', new: 'What : Ever : 2')
       expect(instance).to have_received(:update).once.with(current: 'What : Ever', new: 'What : Ever : 2')
     end
   end
@@ -65,7 +65,7 @@ RSpec.describe AdministrativeTags do
     end
 
     it 'calls #destroy on a new instance' do
-      described_class.destroy(identifier: identifier, tag: 'What : Ever')
+      described_class.destroy(identifier:, tag: 'What : Ever')
       expect(instance).to have_received(:destroy).once.with(tag: 'What : Ever')
     end
   end
@@ -78,7 +78,7 @@ RSpec.describe AdministrativeTags do
     end
 
     it 'calls #destroy_all on a new instance' do
-      described_class.destroy_all(identifier: identifier)
+      described_class.destroy_all(identifier:)
       expect(instance).to have_received(:destroy_all).once
     end
   end
@@ -90,7 +90,7 @@ RSpec.describe AdministrativeTags do
     end
 
     it 'returns administrative tags from the database' do
-      expect(described_class.for(identifier: identifier)).to eq(['Foo : Bar', 'Bar : Baz : Quux'])
+      expect(described_class.for(identifier:)).to eq(['Foo : Bar', 'Bar : Baz : Quux'])
     end
   end
 
@@ -101,7 +101,7 @@ RSpec.describe AdministrativeTags do
       end
 
       it 'parses and returns the project' do
-        expect(described_class.project(identifier: identifier)).to eq(['Google Books'])
+        expect(described_class.project(identifier:)).to eq(['Google Books'])
       end
     end
 
@@ -112,7 +112,7 @@ RSpec.describe AdministrativeTags do
       end
 
       it 'parses and returns the first content type' do
-        expect(described_class.project(identifier: identifier)).to eq(['Google Books'])
+        expect(described_class.project(identifier:)).to eq(['Google Books'])
       end
     end
 
@@ -122,7 +122,7 @@ RSpec.describe AdministrativeTags do
       end
 
       it 'returns an empty array' do
-        expect(described_class.project(identifier: identifier)).to eq([])
+        expect(described_class.project(identifier:)).to eq([])
       end
     end
   end
@@ -131,8 +131,8 @@ RSpec.describe AdministrativeTags do
     let(:new_tags) { ['One : Two', 'A : B : C'] }
 
     it 'creates new administrative tags' do
-      expect { described_class.create(identifier: identifier, tags: new_tags) }
-        .to change { described_class.for(identifier: identifier).count }
+      expect { described_class.create(identifier:, tags: new_tags) }
+        .to change { described_class.for(identifier:).count }
         .by(new_tags.count)
     end
 
@@ -142,8 +142,8 @@ RSpec.describe AdministrativeTags do
       end
 
       it 'creates new administrative tags and returns existing ones' do
-        expect { described_class.create(identifier: identifier, tags: new_tags) }
-          .to change { described_class.for(identifier: identifier).count }
+        expect { described_class.create(identifier:, tags: new_tags) }
+          .to change { described_class.for(identifier:).count }
           .by(1)
       end
     end
@@ -156,8 +156,8 @@ RSpec.describe AdministrativeTags do
       end
 
       it 'destroys and creates new administrative tags' do
-        expect { described_class.create(identifier: identifier, tags: new_tags, replace: true) }
-          .to change { described_class.for(identifier: identifier).count }
+        expect { described_class.create(identifier:, tags: new_tags, replace: true) }
+          .to change { described_class.for(identifier:).count }
           .by(-1)
       end
     end
@@ -172,8 +172,8 @@ RSpec.describe AdministrativeTags do
     let(:new_tag) { 'A : B : C' }
 
     it 'updates the administrative tag' do
-      expect { described_class.update(identifier: identifier, current: current_tag, new: new_tag) }
-        .to change { described_class.for(identifier: identifier) }
+      expect { described_class.update(identifier:, current: current_tag, new: new_tag) }
+        .to change { described_class.for(identifier:) }
         .from([current_tag])
         .to([new_tag])
     end
@@ -181,14 +181,14 @@ RSpec.describe AdministrativeTags do
 
   describe '#destroy' do
     before do
-      create(:administrative_tag, druid: identifier, tag_label: create(:tag_label, tag: tag))
+      create(:administrative_tag, druid: identifier, tag_label: create(:tag_label, tag:))
     end
 
     let(:tag) { 'One : Two' }
 
     it 'destroys the administrative tag' do
-      expect { described_class.destroy(identifier: identifier, tag: tag) }
-        .to change { described_class.for(identifier: identifier) }
+      expect { described_class.destroy(identifier:, tag:) }
+        .to change { described_class.for(identifier:) }
         .from([tag])
         .to([])
     end
@@ -196,7 +196,7 @@ RSpec.describe AdministrativeTags do
 
   describe '#destroy_all' do
     before do
-      create(:administrative_tag, druid: identifier, tag_label: create(:tag_label, tag: tag))
+      create(:administrative_tag, druid: identifier, tag_label: create(:tag_label, tag:))
       create(:administrative_tag, druid: identifier, tag_label: create(:tag_label, tag: tag2))
     end
 
@@ -204,8 +204,8 @@ RSpec.describe AdministrativeTags do
     let(:tag2) { 'Three : Four' }
 
     it 'destroys the administrative tags' do
-      expect { described_class.destroy_all(identifier: identifier) }
-        .to change { described_class.for(identifier: identifier) }
+      expect { described_class.destroy_all(identifier:) }
+        .to change { described_class.for(identifier:) }
         .from([tag, tag2])
         .to([])
     end

@@ -3,10 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe Notifications::EmbargoLifted do
-  subject(:publish) { described_class.publish(model: model) }
+  subject(:publish) { described_class.publish(model:) }
 
   let(:druid) { 'druid:bc123df4567' }
-  let(:channel) { instance_double(Notifications::RabbitChannel, topic: topic) }
+  let(:channel) { instance_double(Notifications::RabbitChannel, topic:) }
   let(:topic) { instance_double(Bunny::Exchange, publish: true) }
 
   let(:model) { build(:dro_with_metadata, id: druid) }

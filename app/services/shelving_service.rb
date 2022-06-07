@@ -45,7 +45,7 @@ class ShelvingService
   # @raise [ShelvingService::ShelvingError] if something went wrong.
   def preserve_diff
     @preserve_diff ||= begin
-      inventory_diff = Preservation::Client.objects.content_inventory_diff(druid: cocina_object.externalIdentifier, content_metadata: content_metadata, subset: 'preserve')
+      inventory_diff = Preservation::Client.objects.content_inventory_diff(druid: cocina_object.externalIdentifier, content_metadata:, subset: 'preserve')
       inventory_diff.group_difference('content')
     end
   rescue Preservation::Client::Error => e
@@ -58,7 +58,7 @@ class ShelvingService
   # @raise [ConfigurationError] if missing local workspace root.
   # @raise [ShelvingService::ShelvingError] if something went wrong.
   def shelve_diff
-    @shelve_diff ||= Preservation::Client.objects.shelve_content_diff(druid: cocina_object.externalIdentifier, content_metadata: content_metadata)
+    @shelve_diff ||= Preservation::Client.objects.shelve_content_diff(druid: cocina_object.externalIdentifier, content_metadata:)
   rescue Preservation::Client::Error => e
     raise ShelvingService::ShelvingError, e
   end

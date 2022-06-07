@@ -22,11 +22,11 @@ RSpec.describe 'Refresh metadata' do
     }
   end
   let(:cocina_object) do
-    build(:dro, id: druid, label: 'A new map of Africa', admin_policy_id: apo_druid).new(identification: identification, description: description)
+    build(:dro, id: druid, label: 'A new map of Africa', admin_policy_id: apo_druid).new(identification:, description:)
   end
   let(:updated_cocina_object) do
     build(:dro, id: druid, label: 'A new map of Africa', admin_policy_id: apo_druid).new(
-      identification: identification,
+      identification:,
       description: {
         title: [{ value: 'Paying for College', status: 'primary' }],
         purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}",

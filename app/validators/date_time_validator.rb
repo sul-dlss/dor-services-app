@@ -18,7 +18,7 @@ class DateTimeValidator
 
   SECOND_FRACTION = '(\d+)'
 
-  TIME_ZONE = "(\\+#{HOUR}:#{MINUTE})?"
+  TIME_ZONE = "(\\+#{HOUR}:#{MINUTE})?".freeze
 
   COMMON_FORMATS = [
     Regexp.new("^#{YEAR}$"),

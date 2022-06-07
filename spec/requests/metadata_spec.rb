@@ -10,7 +10,7 @@ RSpec.describe 'Display metadata' do
     }
   end
   let(:cocina_object) do
-    build(:dro, id: 'druid:mk420bs7601').new(description: description)
+    build(:dro, id: 'druid:mk420bs7601').new(description:)
   end
 
   before do

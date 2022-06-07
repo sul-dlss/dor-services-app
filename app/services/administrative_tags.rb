@@ -7,7 +7,7 @@ class AdministrativeTags
   # @param identifier [String] the item identifier to list administrative tags for
   # @return [Array<String>] an array of tag strings (possibly empty)
   def self.for(identifier:)
-    new(identifier: identifier).for
+    new(identifier:).for
   end
 
   # Retrieve the content type tag for an item
@@ -15,7 +15,7 @@ class AdministrativeTags
   # @param identifier [String] the item identifier to list administrative tags for
   # @return [Array<String>] an array of tag strings (possibly empty)
   def self.content_type(identifier:)
-    new(identifier: identifier).content_type
+    new(identifier:).content_type
   end
 
   # Retrieve the project tag for an item
@@ -23,7 +23,7 @@ class AdministrativeTags
   # @param identifier [String] the item identifier to list administrative tags for
   # @return [Array<String>] an array of tag strings (possibly empty)
   def self.project(identifier:)
-    new(identifier: identifier).project
+    new(identifier:).project
   end
 
   # Add one or more administrative tags for an item
@@ -33,7 +33,7 @@ class AdministrativeTags
   # @param replace [Boolean] replace current tags? default: false
   # @return [Array<AdministrativeTag>]
   def self.create(identifier:, tags:, replace: false)
-    new(identifier: identifier).create(tags: tags, replace: replace)
+    new(identifier:).create(tags:, replace:)
   end
 
   # Update an administrative tag for an item
@@ -44,7 +44,7 @@ class AdministrativeTags
   # @return [Boolean] true if successful
   # @raise [ActiveRecord::RecordNotFound] if row not found for druid/tag combination
   def self.update(identifier:, current:, new:)
-    new(identifier: identifier).update(current: current, new: new)
+    new(identifier:).update(current:, new:)
   end
 
   # Destroy an administrative tag for an item
@@ -54,7 +54,7 @@ class AdministrativeTags
   # @return [Boolean] true if successful
   # @raise [ActiveRecord::RecordNotFound] if row not found for druid/tag combination
   def self.destroy(identifier:, tag:)
-    new(identifier: identifier).destroy(tag: tag)
+    new(identifier:).destroy(tag:)
   end
 
   # Destroy all administrative tags for an item
@@ -62,7 +62,7 @@ class AdministrativeTags
   # @param identifier [String] the item identifier to list administrative tags for
   # @return [Boolean] true if successful
   def self.destroy_all(identifier:)
-    new(identifier: identifier).destroy_all
+    new(identifier:).destroy_all
   end
 
   # @param identifier [String] the item identifier to list administrative tags for
@@ -94,9 +94,9 @@ class AdministrativeTags
 
       tags.map do |tag|
         # This is not atomic, so a race condition could occur here.
-        tag_label = TagLabel.find_or_create_by!(tag: tag)
+        tag_label = TagLabel.find_or_create_by!(tag:)
 
-        AdministrativeTag.find_or_create_by!(druid: identifier, tag_label: tag_label)
+        AdministrativeTag.find_or_create_by!(druid: identifier, tag_label:)
       end
     end
   rescue ActiveRecord::RecordNotUnique
@@ -150,14 +150,14 @@ class AdministrativeTags
   # @raise [ActiveRecord::RecordNotFound] if row not found for druid/tag combination
   def destroy(tag:)
     ActiveRecord::Base.transaction do
-      old_label = TagLabel.find_by!(tag: tag)
+      old_label = TagLabel.find_by!(tag:)
       AdministrativeTag.find_by!(druid: identifier, tag_label: old_label).destroy!
       old_label.destroy! if old_label.administrative_tags.count.zero?
     end
   end
 
   def destroy_all
-    self.for.each { |tag| destroy(tag: tag) }
+    self.for.each { |tag| destroy(tag:) }
   end
 
   private

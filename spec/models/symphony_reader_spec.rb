@@ -3,8 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe SymphonyReader do
-  let(:marc_reader) { described_class.new(catkey: catkey) }
-  let(:barcode_reader) { described_class.new(barcode: barcode) }
+  let(:marc_reader) { described_class.new(catkey:) }
+  let(:barcode_reader) { described_class.new(barcode:) }
 
   let(:catkey) { '482660' }
   let(:barcode) { 'barcode' }
@@ -13,7 +13,7 @@ RSpec.describe SymphonyReader do
 
   describe '#to_marc' do
     before do
-      stub_request(:get, format(marc_url, catkey: catkey)).to_return(body: body.to_json, headers: headers)
+      stub_request(:get, format(marc_url, catkey:)).to_return(body: body.to_json, headers:)
     end
 
     let(:body) do
@@ -91,14 +91,14 @@ RSpec.describe SymphonyReader do
                {
                  resource: '/catalog/bib',
                  key: catkey,
-                 barcode: barcode
+                 barcode:
                }
             }
         }
       end
 
       it 'returns the catkey given a barcode' do
-        stub_request(:get, format(barcode_url, barcode: barcode)).to_return(body: barcode_body.to_json, headers: { 'Content-Length': 162 })
+        stub_request(:get, format(barcode_url, barcode:)).to_return(body: barcode_body.to_json, headers: { 'Content-Length': 162 })
         expect(barcode_reader.fetch_catkey).to eq catkey
       end
 
@@ -121,7 +121,7 @@ RSpec.describe SymphonyReader do
 
       context 'when catkey not found' do
         before do
-          stub_request(:get, format(marc_url, catkey: catkey)).to_return(status: 404)
+          stub_request(:get, format(marc_url, catkey:)).to_return(status: 404)
         end
 
         it 'raises NotFound and does not notify Honeybadger' do
@@ -145,7 +145,7 @@ RSpec.describe SymphonyReader do
         end
 
         before do
-          stub_request(:get, format(marc_url, catkey: catkey)).to_return(status: 403, body: err_body.to_json)
+          stub_request(:get, format(marc_url, catkey:)).to_return(status: 403, body: err_body.to_json)
         end
 
         it 'raises ResponseError' do
@@ -158,7 +158,7 @@ RSpec.describe SymphonyReader do
         let(:faraday_msg) { 'faraday failed' }
 
         before do
-          stub_request(:get, format(marc_url, catkey: catkey)).to_raise(Faraday::TimeoutError.new(faraday_msg))
+          stub_request(:get, format(marc_url, catkey:)).to_raise(Faraday::TimeoutError.new(faraday_msg))
         end
 
         it 'raises ResponseError and notifies Honeybadger' do

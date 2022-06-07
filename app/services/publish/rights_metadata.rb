@@ -16,7 +16,7 @@ module Publish
       structural = cocina_object.structural || nil if cocina_object.respond_to?(:structural)
       cocina_access = Nokogiri::XML(Cocina::ToXml::AccessGenerator.generate(root: Nokogiri::XML('<rightsMetadata/>').root,
                                                                             access: cocina_object.access,
-                                                                            structural: structural))
+                                                                            structural:))
       add_release_date(cocina_access) if release_date
       add_use_statement(cocina_access) if cocina_object.access.useAndReproductionStatement
       add_copyright_statement(cocina_access) if cocina_object.access.copyright

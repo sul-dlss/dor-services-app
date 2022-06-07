@@ -2,7 +2,7 @@
 
 # This stores the tag text. This text could be applied to more than one object by an AdministrativeTag
 class TagLabel < ApplicationRecord
-  VALID_TAG_PATTERN = /\A.+( : .+)+\z/.freeze
+  VALID_TAG_PATTERN = /\A.+( : .+)+\z/
   has_many :administrative_tags, dependent: :destroy
 
   # rubocop:disable Rails/I18nLocaleTexts

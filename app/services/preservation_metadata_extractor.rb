@@ -7,7 +7,7 @@ class PreservationMetadataExtractor
   # @return [Pathname] Pull all the datastreams specified in the configuration file
   #   into the workspace's metadata directory, overwriting existing file if present
   def self.extract(cocina_object:, workspace:)
-    new(workspace: workspace, cocina_object: cocina_object).extract
+    new(workspace:, cocina_object:).extract
   end
 
   # @param [Cocina::Models::DRO, Cocina::Models::AdminPolicy, Cocina::Models::Collection] cocina_object The representation of the digital object

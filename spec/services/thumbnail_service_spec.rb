@@ -20,7 +20,7 @@ RSpec.describe ThumbnailService do
     context 'for an item' do
       let(:druid) { 'druid:bc123df4567' }
 
-      let(:object) { build(:dro, id: druid).new(structural: structural) }
+      let(:object) { build(:dro, id: druid).new(structural:) }
 
       context 'with no structural metadata' do
         let(:structural) { {} }

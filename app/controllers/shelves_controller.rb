@@ -10,7 +10,7 @@ class ShelvesController < ApplicationController
       EventFactory.create(druid: @cocina_object.externalIdentifier, event_type: 'shelve_request_received', data: { background_job_result_id: result.id })
       queue = params['lane-id'] == 'low' ? :low : :default
 
-      ShelveJob.set(queue: queue).perform_later(druid: @cocina_object.externalIdentifier, background_job_result: result)
+      ShelveJob.set(queue:).perform_later(druid: @cocina_object.externalIdentifier, background_job_result: result)
       head :created, location: result
     else
       render json: {

@@ -9,7 +9,7 @@ module Cocina
         # @param [Cocina::Models::DROAccess, Cocina::Models::Access] access access/rights metadata in Cocina
         # @return [Array<Nokogiri::XML::Element>]
         def self.generate(root:, access:)
-          new(root: root, access: access).generate
+          new(root:, access:).generate
         end
 
         # @param [Nokogiri::XML::Element] root Element that is the root of the access assertions.

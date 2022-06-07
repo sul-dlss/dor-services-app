@@ -32,7 +32,7 @@ RSpec.describe 'Shelve object' do
       expect(response).to have_http_status(:created)
       expect(ShelveJob).to have_received(:set).with(queue: :low)
       expect(job).to have_received(:perform_later)
-        .with(druid: druid, background_job_result: BackgroundJobResult)
+        .with(druid:, background_job_result: BackgroundJobResult)
     end
   end
 end

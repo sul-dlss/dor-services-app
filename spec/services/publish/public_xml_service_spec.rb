@@ -4,9 +4,9 @@ require 'rails_helper'
 
 RSpec.describe Publish::PublicXmlService do
   subject(:service) do
-    described_class.new(public_cocina: public_cocina,
+    described_class.new(public_cocina:,
                         released_for: release_tags,
-                        thumbnail_service: thumbnail_service)
+                        thumbnail_service:)
   end
 
   let(:public_cocina) { Publish::PublicCocinaService.create(cocina_object) }
@@ -74,7 +74,7 @@ RSpec.describe Publish::PublicXmlService do
     context 'when there are no release tags' do
       let(:release_tags) { {} }
       let(:cocina_object) do
-        build(:dro, id: 'druid:bc123df4567').new(description: description)
+        build(:dro, id: 'druid:bc123df4567').new(description:)
       end
 
       it 'does not include a releaseData element and any info in identityMetadata' do
@@ -128,8 +128,8 @@ RSpec.describe Publish::PublicXmlService do
     context 'produces xml with' do
       let(:cocina_object) do
         build(:dro, id: 'druid:bc123df4567').new(
-          description: description,
-          structural: structural,
+          description:,
+          structural:,
           identification: {
             catalogLinks: [
               { catalog: 'previous symphony', catalogRecordId: '9001001001', refresh: false },
@@ -230,7 +230,7 @@ RSpec.describe Publish::PublicXmlService do
 
       context 'when no thumb is present' do
         let(:cocina_object) do
-          build(:dro, id: 'druid:bc123df4567').new(description: description)
+          build(:dro, id: 'druid:bc123df4567').new(description:)
         end
 
         it 'does not add a thumb node' do
@@ -261,7 +261,7 @@ RSpec.describe Publish::PublicXmlService do
 
     context 'with a collection' do
       let(:cocina_object) do
-        build(:collection, id: 'druid:bc123df4567').new(description: description)
+        build(:collection, id: 'druid:bc123df4567').new(description:)
       end
 
       it 'publishes the expected datastreams' do
@@ -276,7 +276,7 @@ RSpec.describe Publish::PublicXmlService do
     context 'with external references' do
       let(:druid) { 'druid:hj097bm8879' }
       let(:cocina_object) do
-        build(:dro, id: druid, type: Cocina::Models::ObjectType.map).new(description: description, structural: structural)
+        build(:dro, id: druid, type: Cocina::Models::ObjectType.map).new(description:, structural:)
       end
       let(:structural) do
         {

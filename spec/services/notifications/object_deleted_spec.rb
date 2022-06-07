@@ -3,11 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Notifications::ObjectDeleted do
-  subject(:publish) { described_class.publish(model: model, deleted_at: deleted_at) }
+  subject(:publish) { described_class.publish(model:, deleted_at:) }
 
   let(:deleted_at) { Time.zone.now }
 
-  let(:channel) { instance_double(Notifications::RabbitChannel, topic: topic) }
+  let(:channel) { instance_double(Notifications::RabbitChannel, topic:) }
   let(:topic) { instance_double(Bunny::Exchange, publish: true) }
   let(:message) { "{\"druid\":\"druid:123\",\"deleted_at\":\"#{deleted_at.to_datetime.httpdate}\"}" }
 

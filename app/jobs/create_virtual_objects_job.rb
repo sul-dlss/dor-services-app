@@ -25,7 +25,7 @@ class CreateVirtualObjectsJob < ApplicationJob
       Honeybadger.notify(e)
     end
   ensure
-    background_job_result.output = { errors: errors } if errors.any?
+    background_job_result.output = { errors: } if errors.any?
     background_job_result.complete!
   end
 end

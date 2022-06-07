@@ -17,7 +17,7 @@ RSpec.describe 'Reset workspace' do
 
     it 'is successful' do
       post "/v1/objects/#{druid}/workspace/reset", headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(ResetWorkspaceService).to have_received(:reset).with(druid: druid, version: 2)
+      expect(ResetWorkspaceService).to have_received(:reset).with(druid:, version: 2)
       expect(response).to be_no_content
     end
   end

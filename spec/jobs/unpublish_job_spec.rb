@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe UnpublishJob, type: :job do
   subject(:perform) do
-    described_class.perform_now(druid: druid, background_job_result: result)
+    described_class.perform_now(druid:, background_job_result: result)
   end
 
   let(:druid) { 'druid:mk420bs7601' }

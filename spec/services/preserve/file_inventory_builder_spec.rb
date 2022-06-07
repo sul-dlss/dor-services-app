@@ -26,7 +26,7 @@ RSpec.describe Preserve::FileInventoryBuilder do
 
   describe '.build' do
     subject(:result) do
-      described_class.build(metadata_dir: metadata_dir, druid: druid, version_id: version_id)
+      described_class.build(metadata_dir:, druid:, version_id:)
     end
 
     let(:metadata_dir) { fixtures.join('workspace/ab/123/cd/4567/ab123cd4567/metadata') }
@@ -46,7 +46,7 @@ RSpec.describe Preserve::FileInventoryBuilder do
     let(:version_id) { 2 }
 
     let(:instance) do
-      described_class.new(metadata_dir: metadata_dir, druid: druid, version_id: version_id)
+      described_class.new(metadata_dir:, druid:, version_id:)
     end
 
     context 'when contentMetadata.xml exists' do
@@ -79,7 +79,7 @@ RSpec.describe Preserve::FileInventoryBuilder do
     let(:version_id) { 2 }
 
     let(:instance) do
-      described_class.new(metadata_dir: metadata_dir, druid: druid, version_id: version_id)
+      described_class.new(metadata_dir:, druid:, version_id:)
     end
 
     context 'when contentMetadata.xml exists' do
@@ -101,7 +101,7 @@ RSpec.describe Preserve::FileInventoryBuilder do
     let(:metadata_dir) { fixtures.join('workspace/ab/123/cd/4567/ab123cd4567/metadata') }
 
     let(:instance) do
-      described_class.new(metadata_dir: metadata_dir, druid: druid, version_id: version_id)
+      described_class.new(metadata_dir:, druid:, version_id:)
     end
 
     let(:file_group) { instance_double(Moab::FileGroup, group_from_directory: nil) }

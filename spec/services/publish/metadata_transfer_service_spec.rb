@@ -9,7 +9,7 @@ RSpec.describe Publish::MetadataTransferService do
 
   let(:cocina_object) do
     build(:dro, id: "druid:#{druid}").new(
-      access: access,
+      access:,
       structural: { contains: [], isMemberOf: ['druid:xh235dd9059'] },
       administrative: {
         hasAdminPolicy: 'druid:fg890hx1234',
@@ -106,7 +106,7 @@ RSpec.describe Publish::MetadataTransferService do
 
         it 'identityMetadta, contentMetadata, rightsMetadata, generated dublin core, and public xml' do
           service.publish
-          expect(Publish::PublicXmlService).to have_received(:new).with(public_cocina: Cocina::Models::DRO, released_for: release_tags, thumbnail_service: thumbnail_service)
+          expect(Publish::PublicXmlService).to have_received(:new).with(public_cocina: Cocina::Models::DRO, released_for: release_tags, thumbnail_service:)
           expect(Publish::PublicDescMetadataService).to have_received(:new).with(Cocina::Models::DRO)
         end
       end

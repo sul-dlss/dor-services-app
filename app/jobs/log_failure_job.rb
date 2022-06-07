@@ -17,8 +17,8 @@ class LogFailureJob < ApplicationJob
     return unless workflow
 
     # NOTE: Setting error_text same as in LyberCore::Robot.
-    WorkflowClientFactory.build.update_error_status(druid: druid,
-                                                    workflow: workflow,
+    WorkflowClientFactory.build.update_error_status(druid:,
+                                                    workflow:,
                                                     process: workflow_process,
                                                     error_msg: "problem with #{workflow_process} (BackgroundJob: #{background_job_result.id}): #{output.inspect}",
                                                     error_text: Socket.gethostname)

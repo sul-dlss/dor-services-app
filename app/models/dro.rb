@@ -15,14 +15,14 @@ class Dro < ApplicationRecord
       cocinaVersion: cocina_version,
       type: content_type,
       externalIdentifier: external_identifier,
-      label: label,
-      version: version,
-      access: access,
-      administrative: administrative,
-      description: description,
-      identification: identification,
-      structural: structural,
-      geographic: geographic
+      label:,
+      version:,
+      access:,
+      administrative:,
+      description:,
+      identification:,
+      structural:,
+      geographic:
     }.compact
   end
 

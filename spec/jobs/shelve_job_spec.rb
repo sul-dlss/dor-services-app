@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe ShelveJob, type: :job do
-  subject(:perform) { described_class.perform_now(druid: druid, background_job_result: result) }
+  subject(:perform) { described_class.perform_now(druid:, background_job_result: result) }
 
   let(:druid) { 'druid:mk420bs7601' }
   let(:result) { create(:background_job_result) }
@@ -35,7 +35,7 @@ RSpec.describe ShelveJob, type: :job do
     it 'marks the job as complete' do
       expect(EventFactory).to have_received(:create)
       expect(LogSuccessJob).to have_received(:perform_later)
-        .with(druid: druid,
+        .with(druid:,
               background_job_result: result,
               workflow: 'accessionWF',
               workflow_process: 'shelve')
@@ -55,7 +55,7 @@ RSpec.describe ShelveJob, type: :job do
       expect(result).to have_received(:processing!).once
       expect(ShelvingService).to have_received(:shelve).with(cocina_object).once
       expect(LogFailureJob).to have_received(:perform_later)
-        .with(druid: druid,
+        .with(druid:,
               background_job_result: result,
               workflow: 'accessionWF',
               workflow_process: 'shelve',
@@ -75,7 +75,7 @@ RSpec.describe ShelveJob, type: :job do
       perform
       expect(result).to have_received(:processing!).once
       expect(LogFailureJob).to have_received(:perform_later)
-        .with(druid: druid,
+        .with(druid:,
               background_job_result: result,
               workflow: 'accessionWF',
               workflow_process: 'shelve',

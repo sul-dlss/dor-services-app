@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Notifications::RabbitChannel do
   let(:bunny) { instance_double(Bunny::Session, start: true, create_channel: channel) }
-  let(:channel) { instance_double(Bunny::Channel, topic: topic) }
+  let(:channel) { instance_double(Bunny::Channel, topic:) }
   let(:topic) { instance_double(Bunny::Exchange) }
 
   before do

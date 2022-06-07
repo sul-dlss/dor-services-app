@@ -9,7 +9,7 @@ module Cocina
       # @param [String] type Cocina object type URI
       # @param [CocinaObjectStore] cocina_object_store
       def self.generate(druid:, structural:, type:, cocina_object_store: CocinaObjectStore)
-        new(druid: druid, structural: structural, type: type, cocina_object_store: cocina_object_store).generate
+        new(druid:, structural:, type:, cocina_object_store:).generate
       end
 
       def initialize(druid:, structural:, type:, cocina_object_store:)
@@ -63,7 +63,7 @@ module Cocina
           Array(cocina_object.structural.contains).each do |cocina_fileset|
             index += 1
             label = cocina_object.description.title.first.value
-            @xml_doc.root.add_child create_external_resource_node(cocina_fileset, index, external_druid, label: label)
+            @xml_doc.root.add_child create_external_resource_node(cocina_fileset, index, external_druid, label:)
           end
         end
       end
@@ -120,7 +120,7 @@ module Cocina
       # @param [Integer] sequence
       def create_resource_node(cocina_fileset, sequence)
         Nokogiri::XML::Node.new('resource', @xml_doc).tap do |resource|
-          resource['id'] = IdGenerator.generate_or_existing_fileset_id(resource_id: cocina_fileset.try(:externalIdentifier), druid: druid)
+          resource['id'] = IdGenerator.generate_or_existing_fileset_id(resource_id: cocina_fileset.try(:externalIdentifier), druid:)
           resource['sequence'] = sequence
           resource['type'] = type_for(cocina_fileset)
 
@@ -135,11 +135,11 @@ module Cocina
 
       def create_external_resource_node(cocina_fileset, sequence, external_druid, label:)
         Nokogiri::XML::Node.new('resource', @xml_doc).tap do |resource|
-          resource['id'] = IdGenerator.generate_or_existing_fileset_id(resource_id: cocina_fileset.try(:externalIdentifier), druid: druid)
+          resource['id'] = IdGenerator.generate_or_existing_fileset_id(resource_id: cocina_fileset.try(:externalIdentifier), druid:)
           resource['sequence'] = sequence
           resource['type'] = type_for(cocina_fileset)
 
-          create_external_file_nodes(resource, cocina_fileset, external_druid, label: label)
+          create_external_file_nodes(resource, cocina_fileset, external_druid, label:)
         end
       end
 
@@ -172,13 +172,13 @@ module Cocina
           if cocina_file.presentation
             file_node.add_child(create_image_data_node(cocina_file.presentation.height, cocina_file.presentation.width))
           else
-            notifier.error('External resource has no presentation data', { external_druid: external_druid })
+            notifier.error('External resource has no presentation data', { external_druid: })
           end
         end
       end
 
       def notifier
-        @notifier ||= DataErrorNotifier.new(druid: druid)
+        @notifier ||= DataErrorNotifier.new(druid:)
       end
 
       def type_for(cocina_fileset)

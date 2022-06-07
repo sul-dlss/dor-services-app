@@ -18,7 +18,7 @@ RSpec.describe 'Publish object' do
 
       expect(PublishJob).to have_received(:set).with(queue: :low)
       expect(job).to have_received(:perform_later)
-        .with(druid: druid, background_job_result: BackgroundJobResult, workflow: 'releaseWF')
+        .with(druid:, background_job_result: BackgroundJobResult, workflow: 'releaseWF')
       expect(response.status).to eq(201)
     end
   end
@@ -39,7 +39,7 @@ RSpec.describe 'Publish object' do
       post "/v1/objects/#{druid}/publish", headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(job).to have_received(:perform_later)
-        .with(druid: druid, background_job_result: BackgroundJobResult, workflow: nil)
+        .with(druid:, background_job_result: BackgroundJobResult, workflow: nil)
       expect(response.status).to eq(201)
     end
   end

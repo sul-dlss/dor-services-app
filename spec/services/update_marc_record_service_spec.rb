@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe UpdateMarcRecordService do
-  subject(:umrs) { described_class.new(cocina_object, thumbnail_service: thumbnail_service) }
+  subject(:umrs) { described_class.new(cocina_object, thumbnail_service:) }
 
   let(:apo_druid) { 'druid:pp000pp0000' }
   let(:druid) { 'druid:bc123dg9393' }
@@ -117,7 +117,7 @@ RSpec.describe UpdateMarcRecordService do
   end
 
   describe '.update' do
-    let(:instance) { described_class.new(cocina_object, thumbnail_service: thumbnail_service) }
+    let(:instance) { described_class.new(cocina_object, thumbnail_service:) }
 
     before do
       allow(described_class).to receive(:new).and_return(instance)
@@ -125,7 +125,7 @@ RSpec.describe UpdateMarcRecordService do
     end
 
     it 'invokes #update on a new instance' do
-      described_class.update(cocina_object, thumbnail_service: thumbnail_service)
+      described_class.update(cocina_object, thumbnail_service:)
       expect(instance).to have_received(:update).once
     end
   end

@@ -9,7 +9,7 @@ RSpec.describe AccessMergeService do
   let(:apo_administrative) { instance_double(Cocina::Models::AdminPolicyAdministrative, accessTemplate: default_access) }
 
   context 'when a RequestDRO' do
-    let(:cocina_object) { instance_double(Cocina::Models::RequestDRO, access: access, collection?: false) }
+    let(:cocina_object) { instance_double(Cocina::Models::RequestDRO, access:, collection?: false) }
 
     context 'when no access but APO has access' do
       let(:access) { nil }
@@ -121,7 +121,7 @@ RSpec.describe AccessMergeService do
   end
 
   context 'when a RequestCollection' do
-    let(:cocina_object) { instance_double(Cocina::Models::RequestCollection, access: access, collection?: true) }
+    let(:cocina_object) { instance_double(Cocina::Models::RequestCollection, access:, collection?: true) }
 
     context 'when no access but APO has dark access' do
       let(:access) { nil }

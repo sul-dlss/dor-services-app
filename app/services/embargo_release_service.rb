@@ -38,7 +38,7 @@ class EmbargoReleaseService
   end
 
   def release
-    unless WorkflowClientFactory.build.lifecycle(druid: druid, milestone_name: 'accessioned')
+    unless WorkflowClientFactory.build.lifecycle(druid:, milestone_name: 'accessioned')
       Rails.logger.warn("Skipping #{druid} - not yet accessioned")
       return
     end
@@ -55,7 +55,7 @@ class EmbargoReleaseService
 
     VersionService.close(updated_cocina_object)
 
-    EventFactory.create(druid: druid, event_type: 'embargo_released', data: {})
+    EventFactory.create(druid:, event_type: 'embargo_released', data: {})
 
     # Broadcast this action to a topic
     Notifications::EmbargoLifted.publish(model: updated_cocina_object)

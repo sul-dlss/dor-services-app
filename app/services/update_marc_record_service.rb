@@ -6,7 +6,7 @@ require 'shellwords'
 # Updates a MARC record based on cocina object.
 class UpdateMarcRecordService
   def self.update(cocina_object, thumbnail_service:)
-    new(cocina_object, thumbnail_service: thumbnail_service).update
+    new(cocina_object, thumbnail_service:).update
   end
 
   # objects goverened by these APOs (ETD and EEMs) will get indicator 2 = 0, else 1

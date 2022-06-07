@@ -45,7 +45,7 @@ RSpec.describe 'Get the object' do
               title: [
                 { value: 'Hello' }
               ],
-              purl: purl
+              purl:
             },
             identification: {
               sourceId: 'src:99999'
@@ -89,7 +89,7 @@ RSpec.describe 'Get the object' do
             title: [
               { value: 'Hello' }
             ],
-            purl: purl
+            purl:
           },
           identification: {
             sourceId: 'src:99999'

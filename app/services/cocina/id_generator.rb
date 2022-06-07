@@ -4,11 +4,11 @@ module Cocina
   # Generates identifiers for use within Cocina model.
   class IdGenerator
     def self.generate_or_existing_fileset_id(druid:, resource_id: nil)
-      new(druid: druid, resource_id: resource_id).generate_or_existing_fileset_id
+      new(druid:, resource_id:).generate_or_existing_fileset_id
     end
 
     def self.generate_or_existing_file_id(druid:, file_id: nil, resource_id: nil)
-      new(druid: druid, resource_id: resource_id, file_id: file_id).generate_or_existing_file_id
+      new(druid:, resource_id:, file_id:).generate_or_existing_file_id
     end
 
     ID_NAMESPACE = 'https://cocina.sul.stanford.edu'

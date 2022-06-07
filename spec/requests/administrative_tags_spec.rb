@@ -44,7 +44,7 @@ RSpec.describe 'Administrative tags' do
              params: %( {"administrative_tags":#{tags.to_json}} ),
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(AdministrativeTags).to have_received(:create)
-          .with(identifier: druid, tags: tags, replace: nil)
+          .with(identifier: druid, tags:, replace: nil)
         expect(Notifications::ObjectUpdated).to have_received(:publish)
         expect(response.status).to eq(201)
       end
@@ -56,7 +56,7 @@ RSpec.describe 'Administrative tags' do
              params: %( {"administrative_tags":#{tags.to_json},"replace":true} ),
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(AdministrativeTags).to have_received(:create)
-          .with(identifier: druid, tags: tags, replace: true)
+          .with(identifier: druid, tags:, replace: true)
         expect(Notifications::ObjectUpdated).to have_received(:publish)
         expect(response.status).to eq(201)
       end
@@ -261,7 +261,7 @@ RSpec.describe 'Administrative tags' do
         delete "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(tag)}",
                headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(AdministrativeTags).to have_received(:destroy)
-          .with(identifier: druid, tag: tag)
+          .with(identifier: druid, tag:)
         expect(Notifications::ObjectUpdated).to have_received(:publish)
         expect(response.status).to eq(204)
       end
@@ -274,7 +274,7 @@ RSpec.describe 'Administrative tags' do
         delete "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(tag)}",
                headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(AdministrativeTags).to have_received(:destroy)
-          .with(identifier: druid, tag: tag)
+          .with(identifier: druid, tag:)
         expect(response.status).to eq(204)
       end
     end

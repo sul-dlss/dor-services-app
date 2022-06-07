@@ -13,7 +13,7 @@ RSpec.describe 'Create object' do
   end
 
   let(:admin_policy_id) do
-    create(:ar_admin_policy, access_template: access_template).external_identifier
+    create(:ar_admin_policy, access_template:).external_identifier
   end
   let(:data) { item.to_json }
   let(:druid) { 'druid:gg777gg7777' }
@@ -29,11 +29,11 @@ RSpec.describe 'Create object' do
     let(:expected_structural) { {} }
     let(:view) { 'world' }
     let(:expected) do
-      build(:dro, id: druid, label: expected_label, title: title, type: Cocina::Models::ObjectType.image, admin_policy_id: admin_policy_id).new(
+      build(:dro, id: druid, label: expected_label, title:, type: Cocina::Models::ObjectType.image, admin_policy_id:).new(
         identification: expected_identification,
         structural: expected_structural,
         access: {
-          view: view,
+          view:,
           download: 'none',
           copyright: 'All rights reserved unless otherwise indicated.',
           useAndReproductionStatement: 'Property rights reside with the repository...'
@@ -87,7 +87,7 @@ RSpec.describe 'Create object' do
 
     context 'when an object already exists' do
       before do
-        Dro.from_cocina(build(:dro).new(identification: identification)).save!
+        Dro.from_cocina(build(:dro).new(identification:)).save!
       end
 
       it 'returns a 409 error' do
@@ -515,7 +515,7 @@ RSpec.describe 'Create object' do
     let(:title) { 'This is my title' }
     let(:expected_label) { label }
     let(:expected) do
-      build(:dro, id: druid, title: title, label: expected_label, admin_policy_id: admin_policy_id, type: Cocina::Models::ObjectType.book).new(
+      build(:dro, id: druid, title:, label: expected_label, admin_policy_id:, type: Cocina::Models::ObjectType.book).new(
         identification: { sourceId: 'googlebooks:999999' },
         structural: {
           hasMemberOrders: [
@@ -771,7 +771,7 @@ RSpec.describe 'Create object' do
 
   context 'when no-download access is specified' do
     let(:expected) do
-      build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my title', type: Cocina::Models::ObjectType.book, admin_policy_id: admin_policy_id).new(
+      build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my title', type: Cocina::Models::ObjectType.book, admin_policy_id:).new(
         structural: {
           hasMemberOrders: [
             { viewingDirection: 'right-to-left' }
@@ -818,7 +818,7 @@ RSpec.describe 'Create object' do
   context 'when no description is provided (registration use case)' do
     context 'when structural is provided' do
       let(:expected) do
-        build(:dro, id: 'druid:gg777gg7777', admin_policy_id: admin_policy_id, label: 'This is my label', title: 'This is my label').new(
+        build(:dro, id: 'druid:gg777gg7777', admin_policy_id:, label: 'This is my label', title: 'This is my label').new(
           identification: { sourceId: 'googlebooks:999999' }
         )
       end
@@ -852,7 +852,7 @@ RSpec.describe 'Create object' do
 
     context 'when structural is not provided' do
       let(:expected) do
-        build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my label', admin_policy_id: admin_policy_id).new(
+        build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my label', admin_policy_id:).new(
           identification: { sourceId: 'googlebooks:999999' }
         )
       end
@@ -887,7 +887,7 @@ RSpec.describe 'Create object' do
 
     context 'when access is not provided' do
       let(:expected) do
-        build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my label', admin_policy_id: admin_policy_id).new(
+        build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my label', admin_policy_id:).new(
           identification: { sourceId: 'googlebooks:999999' }
         )
       end

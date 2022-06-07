@@ -15,12 +15,12 @@ class PublishJob < ApplicationJob
       cocina_object = CocinaObjectStore.find(druid)
 
       Publish::MetadataTransferService.publish(cocina_object)
-      EventFactory.create(druid: druid, event_type: 'publishing_complete', data: { background_job_result_id: background_job_result.id })
+      EventFactory.create(druid:, event_type: 'publishing_complete', data: { background_job_result_id: background_job_result.id })
     end
 
-    LogSuccessJob.perform_later(druid: druid,
-                                background_job_result: background_job_result,
-                                workflow: workflow,
-                                workflow_process: workflow_process)
+    LogSuccessJob.perform_later(druid:,
+                                background_job_result:,
+                                workflow:,
+                                workflow_process:)
   end
 end

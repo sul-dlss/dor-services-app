@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe PublishJob, type: :job do
   subject(:perform) do
-    described_class.perform_now(druid: druid, background_job_result: result, workflow: workflow)
+    described_class.perform_now(druid:, background_job_result: result, workflow:)
   end
 
   let(:druid) { 'druid:mk420bs7601' }
@@ -39,7 +39,7 @@ RSpec.describe PublishJob, type: :job do
       expect(EventFactory).to have_received(:create)
 
       expect(LogSuccessJob).to have_received(:perform_later)
-        .with(druid: druid, background_job_result: result, workflow: 'accessionWF', workflow_process: 'publish')
+        .with(druid:, background_job_result: result, workflow: 'accessionWF', workflow_process: 'publish')
     end
   end
 
@@ -58,7 +58,7 @@ RSpec.describe PublishJob, type: :job do
 
     it 'marks the job as complete' do
       expect(LogFailureJob).to have_received(:perform_later)
-        .with(druid: druid,
+        .with(druid:,
               background_job_result: result,
               workflow: 'accessionWF',
               workflow_process: 'publish',

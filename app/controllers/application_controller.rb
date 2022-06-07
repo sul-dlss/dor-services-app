@@ -17,7 +17,7 @@ class ApplicationController < ActionController::API
 
   def json_api_error(status:, message:, title: nil, meta: nil)
     status_code = Rack::Utils.status_code(status)
-    render status: status,
+    render status:,
            content_type: 'application/vnd.api+json',
            json: {
              errors: [

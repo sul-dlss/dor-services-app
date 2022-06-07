@@ -56,7 +56,7 @@ RSpec.describe 'background job result' do
   end
 
   context 'when it is complete' do
-    let(:background_job_result) { create(:background_job_result, output: output) }
+    let(:background_job_result) { create(:background_job_result, output:) }
 
     before do
       background_job_result.complete!

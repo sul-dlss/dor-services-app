@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Cocina::ToXml::AccessGenerator do
   subject(:generate) do
-    Nokogiri::XML(described_class.generate(root: root, access: access, structural: structural))
+    Nokogiri::XML(described_class.generate(root:, access:, structural:))
   end
 
   let(:root) { Nokogiri::XML("<rightsMetadata>#{rights_statements}</rightsMetadata>").root }

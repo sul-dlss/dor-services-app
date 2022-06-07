@@ -4,12 +4,12 @@ require 'rails_helper'
 
 RSpec.describe SynchronousIndexer do
   describe '.reindex_remotely_from_cocina' do
-    subject(:reindex) { described_class.reindex_remotely_from_cocina(cocina_object: cocina_object, created_at: created_at, updated_at: created_at) }
+    subject(:reindex) { described_class.reindex_remotely_from_cocina(cocina_object:, created_at:, updated_at: created_at) }
 
     let(:dro) { create(:ar_dro) }
     let(:cocina_object) { build(:dro) }
     let(:created_at) { Time.zone.now }
-    let(:req_body) { { cocina_object: Cocina::Models.without_metadata(cocina_object), created_at: created_at, updated_at: created_at }.to_json }
+    let(:req_body) { { cocina_object: Cocina::Models.without_metadata(cocina_object), created_at:, updated_at: created_at }.to_json }
 
     context 'with a successful request' do
       before do

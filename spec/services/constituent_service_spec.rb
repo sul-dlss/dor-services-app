@@ -9,7 +9,7 @@ RSpec.describe ConstituentService do
     let(:item_errors) { {} }
     let(:mock_item) { build(:dro) }
     let(:open_for_versioning) { true }
-    let(:service) { described_class.new(virtual_object_druid: virtual_object_druid, event_factory: event_factory) }
+    let(:service) { described_class.new(virtual_object_druid:, event_factory:) }
     let(:virtual_object) { build(:dro_with_metadata, id: virtual_object_druid) }
     let(:virtual_object_druid) { 'druid:bc123df4567' }
 
@@ -31,7 +31,7 @@ RSpec.describe ConstituentService do
       let(:item_errors) { { virtual_object_druid => ["Item #{virtual_object_druid} is dark"] } }
 
       it 'returns hash with errors' do
-        expect(service.add(constituent_druids: constituent_druids)).to eq(item_errors)
+        expect(service.add(constituent_druids:)).to eq(item_errors)
         expect(VersionService).not_to have_received(:open?)
         expect(VersionService).not_to have_received(:open)
         expect(VersionService).not_to have_received(:close)
@@ -45,31 +45,31 @@ RSpec.describe ConstituentService do
       let(:open_for_versioning) { false }
 
       it 'opens virtual object for versioning' do
-        service.add(constituent_druids: constituent_druids)
+        service.add(constituent_druids:)
         expect(VersionService).to have_received(:open).with(virtual_object,
                                                             description: ConstituentService::VERSION_DESCRIPTION,
                                                             significance: ConstituentService::VERSION_SIGNIFICANCE,
-                                                            event_factory: event_factory)
+                                                            event_factory:)
       end
     end
 
     it 'resets structural metadata of virtual object to given constituents' do
-      service.add(constituent_druids: constituent_druids)
+      service.add(constituent_druids:)
       expect(ResetContentMetadataService).to have_received(:reset).once
     end
 
     it 'closes open version' do
-      service.add(constituent_druids: constituent_druids)
-      expect(VersionService).to have_received(:close).with(virtual_object, event_factory: event_factory)
+      service.add(constituent_druids:)
+      expect(VersionService).to have_received(:close).with(virtual_object, event_factory:)
     end
 
     it 'indexes virtual object synchronously' do
-      service.add(constituent_druids: constituent_druids)
+      service.add(constituent_druids:)
       expect(SynchronousIndexer).to have_received(:reindex_remotely_from_cocina).once
     end
 
     it 'publishes constituents' do
-      service.add(constituent_druids: constituent_druids)
+      service.add(constituent_druids:)
       expect(CocinaObjectStore).to have_received(:find).exactly(constituent_druids.count).times
       expect(Publish::MetadataTransferService).to have_received(:publish).exactly(constituent_druids.count).times
       expect(UpdateMarcRecordService).not_to have_received(:update)
@@ -79,13 +79,13 @@ RSpec.describe ConstituentService do
       let(:mock_item) { build(:dro, catkeys: ['12345']) }
 
       it 'updates MARC' do
-        service.add(constituent_druids: constituent_druids)
+        service.add(constituent_druids:)
         expect(UpdateMarcRecordService).to have_received(:update).exactly(constituent_druids.count).times
       end
     end
 
     it 'returns nil' do
-      expect(service.add(constituent_druids: constituent_druids)).to be_nil
+      expect(service.add(constituent_druids:)).to be_nil
     end
   end
 end

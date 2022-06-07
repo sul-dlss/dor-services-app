@@ -15,12 +15,12 @@ class Collection < ApplicationRecord
       cocinaVersion: cocina_version,
       type: collection_type,
       externalIdentifier: external_identifier,
-      label: label,
-      version: version,
-      access: access,
-      administrative: administrative,
-      description: description,
-      identification: identification
+      label:,
+      version:,
+      access:,
+      administrative:,
+      description:,
+      identification:
     }.compact
   end
 

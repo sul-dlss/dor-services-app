@@ -8,7 +8,7 @@ module Publish
     # @param [Nokogiri::XML] public_mods
     # @param [Cocina::Models::DroAccess,Cocina::Models::CollectionAccess] access
     def self.add(public_mods:, access:)
-      new(public_mods: public_mods, access: access).add
+      new(public_mods:, access:).add
     end
 
     def initialize(public_mods:, access:)
@@ -61,7 +61,7 @@ module Publish
     def add_access_condition(text, type)
       return if text.blank?
 
-      last_element.add_next_sibling public_mods.create_element('accessCondition', text, type: type, xmlns: PublicDescMetadataService::MODS_NS)
+      last_element.add_next_sibling public_mods.create_element('accessCondition', text, type:, xmlns: PublicDescMetadataService::MODS_NS)
     end
 
     def last_element

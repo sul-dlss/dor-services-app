@@ -14,8 +14,8 @@ RSpec.describe Publish::RightsMetadata do
 
     let(:cocina_object) do
       build(:dro).new(
-        access: access,
-        structural: structural
+        access:,
+        structural:
       )
     end
 

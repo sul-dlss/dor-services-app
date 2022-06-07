@@ -6,7 +6,7 @@ RSpec.describe ShelvingService do
   let(:druid) { 'druid:ng782rw8378' }
 
   let(:cocina_object) do
-    instance_double(Cocina::Models::DRO, externalIdentifier: druid, structural: structural, type: Cocina::Models::ObjectType.book)
+    instance_double(Cocina::Models::DRO, externalIdentifier: druid, structural:, type: Cocina::Models::ObjectType.book)
   end
 
   let(:structural) do
@@ -50,9 +50,9 @@ RSpec.describe ShelvingService do
   let(:stacks_root) { Dir.mktmpdir }
   let(:workspace_root) { Dir.mktmpdir }
   let(:mock_shelve_diff) { instance_double(Moab::FileGroupDifference) }
-  let(:content_inventory_diff) { instance_double(Moab::FileInventoryDifference, group_difference: group_difference) }
+  let(:content_inventory_diff) { instance_double(Moab::FileInventoryDifference, group_difference:) }
   let(:group_difference) { instance_double(Moab::FileGroupDifference) }
-  let(:workflow_client) { instance_double(Dor::Workflow::Client, workflows: workflows) }
+  let(:workflow_client) { instance_double(Dor::Workflow::Client, workflows:) }
   let(:workflows) { ['accessionWF', 'registrationWF'] }
   let(:stacks_object_pathname) { Pathname(DruidTools::StacksDruid.new(druid, stacks_root).path) }
 
@@ -83,7 +83,7 @@ RSpec.describe ShelvingService do
       expect(DigitalStacksService).to have_received(:remove_from_stacks).with(stacks_object_pathname, mock_shelve_diff)
       expect(DigitalStacksService).to have_received(:rename_in_stacks).with(stacks_object_pathname, mock_shelve_diff)
       expect(DigitalStacksService).to have_received(:shelve_to_stacks).with(Pathname, stacks_object_pathname, mock_shelve_diff)
-      expect(Cocina::ToXml::ContentMetadataGenerator).to have_received(:generate).with(druid: druid, structural: structural, type: Cocina::Models::ObjectType.book)
+      expect(Cocina::ToXml::ContentMetadataGenerator).to have_received(:generate).with(druid:, structural:, type: Cocina::Models::ObjectType.book)
     end
   end
 
@@ -107,7 +107,7 @@ RSpec.describe ShelvingService do
       expect(DigitalStacksService).to have_received(:remove_from_stacks).with(stacks_object_pathname, mock_shelve_diff)
       expect(DigitalStacksService).to have_received(:rename_in_stacks).with(stacks_object_pathname, mock_shelve_diff)
       expect(DigitalStacksService).to have_received(:shelve_to_stacks).with(Pathname, stacks_object_pathname, mock_shelve_diff)
-      expect(Cocina::ToXml::ContentMetadataGenerator).to have_received(:generate).with(druid: druid, structural: structural, type: Cocina::Models::ObjectType.book)
+      expect(Cocina::ToXml::ContentMetadataGenerator).to have_received(:generate).with(druid:, structural:, type: Cocina::Models::ObjectType.book)
     end
   end
 

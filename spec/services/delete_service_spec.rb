@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe DeleteService do
   let(:service) { described_class.new(cocina_object, user_name, event_factory) }
 
-  let(:cocina_object) { build(:dro, id: druid, source_id: source_id) }
+  let(:cocina_object) { build(:dro, id: druid, source_id:) }
 
   let(:druid) { 'druid:bb408qn5061' }
 
@@ -24,11 +24,11 @@ RSpec.describe DeleteService do
   describe '#destroy' do
     before do
       allow(CocinaObjectStore).to receive(:destroy)
-      described_class.destroy(cocina_object, user_name: user_name, event_factory: event_factory)
+      described_class.destroy(cocina_object, user_name:, event_factory:)
     end
 
     it 'creates an event' do
-      expect(event_factory).to have_received(:create).with(druid: druid, event_type: 'delete', data: { request: cocina_object.to_h, source_id: source_id, user_name: user_name })
+      expect(event_factory).to have_received(:create).with(druid:, event_type: 'delete', data: { request: cocina_object.to_h, source_id:, user_name: })
     end
   end
 
@@ -68,16 +68,16 @@ RSpec.describe DeleteService do
     before do
       allow(CocinaObjectStore).to receive(:destroy)
       AdministrativeTags.create(identifier: druid, tags: ['test : tag'])
-      Event.create!(druid: druid, event_type: 'version_close', data: { version: '4' })
-      ObjectVersion.create(druid: druid, version: 4, tag: '4.0.0', description: 'Version 4.0.0')
+      Event.create!(druid:, event_type: 'version_close', data: { version: '4' })
+      ObjectVersion.create(druid:, version: 4, tag: '4.0.0', description: 'Version 4.0.0')
     end
 
     it 'deletes from datastore and Solr' do
       service.send(:delete_from_dor)
       expect(CocinaObjectStore).to have_received(:destroy).with(druid)
       expect(AdministrativeTags.for(identifier: druid)).to be_empty
-      expect(Event.exists?(druid: druid)).to be(false)
-      expect(ObjectVersion.exists?(druid: druid)).to be(false)
+      expect(Event.exists?(druid:)).to be(false)
+      expect(ObjectVersion.exists?(druid:)).to be(false)
     end
   end
 end

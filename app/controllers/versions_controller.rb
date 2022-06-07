@@ -17,7 +17,7 @@ class VersionsController < ApplicationController
       }
     end
 
-    render json: { versions: versions }
+    render json: { versions: }
   end
 
   def create
@@ -63,7 +63,7 @@ class VersionsController < ApplicationController
         ]
       },
       content_type: 'application/vnd.api+json',
-      status: status
+      status:
     }
   end
 

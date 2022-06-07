@@ -56,7 +56,7 @@ FactoryBot.define do
           }
         }
       ] }.tap do |h|
-        h.merge!({ isMemberOf: isMemberOf }) if isMemberOf.present?
+        h.merge!({ isMemberOf: }) if isMemberOf.present?
       end
     end
   end

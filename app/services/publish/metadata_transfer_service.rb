@@ -18,7 +18,7 @@ module Publish
       return unpublish unless discoverable?
 
       # Retrieve release tags from identityMetadata and all collections this item is a member of
-      release_tags = ReleaseTags.for(cocina_object: cocina_object)
+      release_tags = ReleaseTags.for(cocina_object:)
 
       transfer_metadata(release_tags)
       publish_notify_on_success
@@ -30,7 +30,7 @@ module Publish
 
     def transfer_metadata(release_tags)
       public_cocina = PublicCocinaService.create(cocina_object)
-      public_nokogiri = PublicXmlService.new(public_cocina: public_cocina,
+      public_nokogiri = PublicXmlService.new(public_cocina:,
                                              released_for: release_tags,
                                              thumbnail_service: @thumbnail_service)
       transfer_to_document_store(public_cocina.to_json, 'cocina.json')
