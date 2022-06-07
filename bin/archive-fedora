@@ -35,7 +35,7 @@ bar = TTY::ProgressBar.new(
 )
 
 archiver = FedoraArchiver.new(
-  druids: druids,
+  druids:,
   archive_dir: options[:archive],
   lenient: options[:lenient]
 )

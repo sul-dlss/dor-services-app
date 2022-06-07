@@ -9,21 +9,21 @@ class ObjectVersion < ApplicationRecord
   # @param [String] description text describing version change
   # @return [ObjectVersion] created ObjectVersion
   def self.increment_version(druid:, significance:, description:)
-    if ObjectVersion.exists?(druid: druid)
+    if ObjectVersion.exists?(druid:)
       current_object_version = current_version(druid)
       current_tag = VersionTag.parse(current_object_version.tag)
       new_tag = significance && current_tag ? current_tag.increment(significance).to_s : nil
 
-      ObjectVersion.create(druid: druid, version: current_object_version.version + 1, tag: new_tag, description: description)
+      ObjectVersion.create(druid:, version: current_object_version.version + 1, tag: new_tag, description:)
     else
-      initial_version(druid: druid)
+      initial_version(druid:)
     end
   end
 
   # @param [String] druid
   # @return [ObjectVersion] created ObjectVersion
   def self.initial_version(druid:)
-    ObjectVersion.create(druid: druid, version: 1, tag: '1.0.0', description: 'Initial Version')
+    ObjectVersion.create(druid:, version: 1, tag: '1.0.0', description: 'Initial Version')
   end
 
   # Compares the current_version with the passed in known_version (usually SDRs version)
@@ -43,9 +43,9 @@ class ObjectVersion < ApplicationRecord
 
     raise VersionService::VersioningError, "Cannot sync to a version greater than current: #{current_version}, requested #{known_version}" if current_version < known_version
 
-    ObjectVersion.where(druid: druid).where('version > ?', known_version).destroy_all if current_version > known_version
+    ObjectVersion.where(druid:).where('version > ?', known_version).destroy_all if current_version > known_version
 
-    increment_version(druid: druid, significance: significance, description: description)
+    increment_version(druid:, significance:, description:)
   end
 
   # @param [String] druid
@@ -63,7 +63,7 @@ class ObjectVersion < ApplicationRecord
 
     if significance
       # Greatest version with a tag.
-      last_object_version = ObjectVersion.where(druid: druid)
+      last_object_version = ObjectVersion.where(druid:)
                                          .where.not(tag: nil)
                                          .where.not(version: current_object_version.version)
                                          .order(version: :desc).first
@@ -76,13 +76,13 @@ class ObjectVersion < ApplicationRecord
 
   # @return [ObjectVersion] current ObjectVersion
   def self.current_version(druid)
-    ObjectVersion.where(druid: druid).order(version: :desc).first
+    ObjectVersion.where(druid:).order(version: :desc).first
   end
 
   # @param [String] druid
   # @return [String] xml representation of version metadata
   def self.version_xml(druid)
-    object_versions = ObjectVersion.where(druid: druid).order(:version)
+    object_versions = ObjectVersion.where(druid:).order(:version)
 
     Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
       xml.versionMetadata({ objectId: druid }) do

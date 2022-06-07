@@ -32,8 +32,8 @@ RSpec.describe 'Create object' do
     end
 
     let(:expected) do
-      build(:collection, id: druid, label: expected_label, title: title, admin_policy_id: 'druid:dd999df4567').new(
-        identification: identification,
+      build(:collection, id: druid, label: expected_label, title:, admin_policy_id: 'druid:dd999df4567').new(
+        identification:,
         access: {
           view: 'world'
         }
@@ -77,7 +77,7 @@ RSpec.describe 'Create object' do
 
   context 'when the catkey is not provided and save is successful' do
     let(:expected) do
-      build(:collection, id: druid, label: expected_label, title: title, admin_policy_id: 'druid:dd999df4567').new(
+      build(:collection, id: druid, label: expected_label, title:, admin_policy_id: 'druid:dd999df4567').new(
         identification: {
           sourceId: 'hydrus:collection-456'
         },
@@ -130,14 +130,14 @@ RSpec.describe 'Create object' do
       JSON
     end
     let(:expected) do
-      build(:collection, id: druid, label: expected_label, title: title, admin_policy_id: 'druid:dd999df4567').new(
+      build(:collection, id: druid, label: expected_label, title:, admin_policy_id: 'druid:dd999df4567').new(
         access: {
           view: 'world'
         },
         description: {
           title: [{ value: title }],
           note: [{ value: 'coll abstract', type: 'abstract' }],
-          purl: Purl.for(druid: druid)
+          purl: Purl.for(druid:)
         }
       )
     end

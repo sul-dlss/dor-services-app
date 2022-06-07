@@ -8,16 +8,16 @@ RSpec.describe RefreshMetadataAction do
   let(:description) do
     {
       title: [{ value: 'However am I going to be' }],
-      purl: Purl.for(druid: druid)
+      purl: Purl.for(druid:)
     }
   end
 
   describe '#refresh' do
-    subject(:refresh) { described_class.run(identifiers: ['catkey:123'], cocina_object: cocina_object, druid: druid) }
+    subject(:refresh) { described_class.run(identifiers: ['catkey:123'], cocina_object:, druid:) }
 
     let(:apo_druid) { 'druid:pp000pp0000' }
     let(:cocina_object) do
-      build(:dro, id: druid).new(description: description)
+      build(:dro, id: druid).new(description:)
     end
 
     let(:mods) do
@@ -39,7 +39,7 @@ RSpec.describe RefreshMetadataAction do
       expect(refresh.success?).to be(true)
       expect(refresh.value!.description_props).to eq({
                                                        title: [{ value: 'Paying for College' }],
-                                                       purl: Purl.for(druid: druid)
+                                                       purl: Purl.for(druid:)
                                                      })
       expect(refresh.value!.mods_ng_xml).to be_equivalent_to(Nokogiri::XML(mods))
       expect(Honeybadger).not_to have_received(:notify)
@@ -77,11 +77,11 @@ RSpec.describe RefreshMetadataAction do
   end
 
   describe '#identifiers' do
-    subject(:indentifiers) { described_class.identifiers(cocina_object: cocina_object) }
+    subject(:indentifiers) { described_class.identifiers(cocina_object:) }
 
     let(:identification) { instance_double(Cocina::Models::RequestIdentification, catalogLinks: catalog_links) }
     let(:cocina_object) do
-      instance_double(Cocina::Models::RequestDRO, admin_policy?: false, identification: identification, to_h: {}, dro?: true, collection?: false)
+      instance_double(Cocina::Models::RequestDRO, admin_policy?: false, identification:, to_h: {}, dro?: true, collection?: false)
     end
 
     context 'when a valid identifier' do

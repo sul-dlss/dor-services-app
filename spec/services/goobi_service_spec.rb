@@ -17,7 +17,7 @@ RSpec.describe GoobiService do
         purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
       },
       identification: {
-        barcode: barcode,
+        barcode:,
         catalogLinks: [
           {
             catalog: 'symphony',
@@ -51,7 +51,7 @@ RSpec.describe GoobiService do
               value: 'Constituent label & A Special character'
             }
           ],
-          purl: Purl.for(druid: druid)
+          purl: Purl.for(druid:)
         }
       end
 
@@ -277,7 +277,7 @@ RSpec.describe GoobiService do
               value: 'Constituent label & A Special character'
             }
           ],
-          purl: Purl.for(druid: druid)
+          purl: Purl.for(druid:)
         }
       end
 

@@ -8,7 +8,7 @@ module Notifications
       return unless Settings.rabbitmq.enabled
 
       Rails.logger.debug "Publishing Rabbitmq Message for embargo #{model.externalIdentifier}"
-      new(model: model, channel: RabbitChannel.instance).publish
+      new(model:, channel: RabbitChannel.instance).publish
       Rails.logger.debug "Published Rabbitmq Message for embargo #{model.externalIdentifier}"
     end
 
@@ -19,7 +19,7 @@ module Notifications
 
     def publish
       message = { model: model.to_h }
-      exchange.publish(message.to_json, routing_key: routing_key)
+      exchange.publish(message.to_json, routing_key:)
     end
 
     private

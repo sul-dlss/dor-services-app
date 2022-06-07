@@ -13,10 +13,10 @@ RSpec.describe Publish::PublicDescMetadataService do
   end
   let(:cocina_object) do
     build(:dro, id: 'druid:bc123df4567').new(
-      access: access,
-      structural: structural,
-      description: description,
-      identification: identification
+      access:,
+      structural:,
+      description:,
+      identification:
     )
   end
 
@@ -80,8 +80,8 @@ RSpec.describe Publish::PublicDescMetadataService do
     context 'when the object is a collection' do
       let(:cocina_object) do
         build(:collection, id: 'druid:bc123df4567').new(
-          description: description,
-          identification: identification
+          description:,
+          identification:
         )
       end
 

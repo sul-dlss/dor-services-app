@@ -13,7 +13,7 @@ class DataErrorNotifier
   def error(message, context = {})
     Honeybadger.notify("[DATA ERROR] #{message}",
                        tags: 'data_error',
-                       context: { druid: druid }.merge(context))
+                       context: { druid: }.merge(context))
   end
 
   private

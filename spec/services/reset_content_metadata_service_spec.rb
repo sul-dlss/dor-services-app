@@ -6,10 +6,10 @@ RSpec.describe ResetContentMetadataService do
   let(:item_druid) { 'druid:bc123df4567' }
   let(:cocina_item) do
     build(:dro, id: item_druid).new(
-      structural: structural
+      structural:
     )
   end
-  let(:service) { described_class.new(cocina_item: cocina_item) }
+  let(:service) { described_class.new(cocina_item:) }
 
   before do
     allow(Honeybadger).to receive(:notify)
@@ -66,7 +66,7 @@ RSpec.describe ResetContentMetadataService do
         end
 
         it 'returns item with structural metadata containing no orders' do
-          expect(updated_cocina_item).to match_cocina_object_with(structural: structural)
+          expect(updated_cocina_item).to match_cocina_object_with(structural:)
           expect(Honeybadger).not_to have_received(:notify)
         end
       end
@@ -84,7 +84,7 @@ RSpec.describe ResetContentMetadataService do
         end
 
         it 'returns only non-member orders' do
-          expect(updated_cocina_item).to match_cocina_object_with(structural: structural)
+          expect(updated_cocina_item).to match_cocina_object_with(structural:)
           expect(Honeybadger).not_to have_received(:notify)
         end
       end
@@ -144,7 +144,7 @@ RSpec.describe ResetContentMetadataService do
     end
 
     context 'with constituent druids' do
-      subject(:updated_cocina_item) { service.reset(constituent_druids: constituent_druids) }
+      subject(:updated_cocina_item) { service.reset(constituent_druids:) }
 
       let(:constituent_druids) { ['druid:bj876jy8756', 'druid:bj776jy8755'] }
 

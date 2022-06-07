@@ -24,7 +24,7 @@ class ApplyAdminPolicyDefaults
   FILE_ACCESS_PROPS = %i[view controlledDigitalLending download location].freeze
 
   def self.apply(cocina_object:)
-    new(cocina_object: cocina_object).apply
+    new(cocina_object:).apply
   end
 
   attr_reader :cocina_object
@@ -78,7 +78,7 @@ class ApplyAdminPolicyDefaults
           file_set.new(
             structural: file_set.structural.new(
               contains: file_set.structural.contains.map do |file|
-                file.new(file_properties(file: file))
+                file.new(file_properties(file:))
               end
             )
           )

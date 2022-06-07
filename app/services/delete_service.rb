@@ -28,7 +28,7 @@ class DeleteService
     cleanup_purl_doc_cache
     remove_active_workflows
     delete_from_dor
-    event_factory.create(druid: druid, event_type: 'delete', data: { request: cocina_object.to_h, source_id: cocina_object&.identification&.sourceId, user_name: user_name })
+    event_factory.create(druid:, event_type: 'delete', data: { request: cocina_object.to_h, source_id: cocina_object&.identification&.sourceId, user_name: })
   end
 
   private
@@ -53,8 +53,8 @@ class DeleteService
   def delete_from_dor
     CocinaObjectStore.destroy(druid)
     AdministrativeTags.destroy_all(identifier: druid)
-    ObjectVersion.where(druid: druid).destroy_all
-    Event.where(druid: druid).destroy_all
+    ObjectVersion.where(druid:).destroy_all
+    Event.where(druid:).destroy_all
   end
 
   def druid

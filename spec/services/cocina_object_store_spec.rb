@@ -242,7 +242,7 @@ RSpec.describe CocinaObjectStore do
         expect(store).to have_received(:merge_access_for).with(requested_cocina_object)
         expect(store).to have_received(:add_project_tag).with(druid, requested_cocina_object)
         expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
-        expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'registration', data: Hash)
+        expect(EventFactory).to have_received(:create).with(druid:, event_type: 'registration', data: Hash)
         expect(RefreshMetadataAction).not_to have_received(:run)
       end
     end
@@ -259,7 +259,7 @@ RSpec.describe CocinaObjectStore do
         expect(store).to have_received(:merge_access_for).with(requested_cocina_object)
         expect(store).to have_received(:add_project_tag).with(druid, requested_cocina_object)
         expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
-        expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'registration', data: Hash)
+        expect(EventFactory).to have_received(:create).with(druid:, event_type: 'registration', data: Hash)
         expect(RefreshMetadataAction).not_to have_received(:run)
       end
     end
@@ -269,7 +269,7 @@ RSpec.describe CocinaObjectStore do
       let(:description_props) do
         {
           title: [{ value: 'The Well-Grounded Rubyist' }],
-          purl: Purl.for(druid: druid)
+          purl: Purl.for(druid:)
         }
       end
 
@@ -291,12 +291,12 @@ RSpec.describe CocinaObjectStore do
 
       it 'adds to description' do
         expect(store.create(requested_cocina_object).description.title.first.value).to eq 'The Well-Grounded Rubyist'
-        expect(RefreshMetadataAction).to have_received(:run).with(identifiers: ['catkey:999123'], cocina_object: requested_cocina_object, druid: druid)
+        expect(RefreshMetadataAction).to have_received(:run).with(identifiers: ['catkey:999123'], cocina_object: requested_cocina_object, druid:)
       end
     end
 
     context 'when skips refreshing from symphony with a refresh=false catkey' do
-      let(:requested_cocina_object) { build(:request_dro).new(identification: identification) }
+      let(:requested_cocina_object) { build(:request_dro).new(identification:) }
       let(:identification) do
         { sourceId: 'sul:1234', catalogLinks: [{ catalog: 'symphony', catalogRecordId: '999123', refresh: false }] }
       end
@@ -316,7 +316,7 @@ RSpec.describe CocinaObjectStore do
 
       it 'does not cause a failure' do
         store.create(requested_cocina_object)
-        expect(RefreshMetadataAction).to have_received(:run).with(identifiers: ['catkey:999123'], cocina_object: requested_cocina_object, druid: druid)
+        expect(RefreshMetadataAction).to have_received(:run).with(identifiers: ['catkey:999123'], cocina_object: requested_cocina_object, druid:)
       end
     end
 

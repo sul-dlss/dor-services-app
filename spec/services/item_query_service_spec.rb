@@ -128,7 +128,7 @@ RSpec.describe ItemQueryService do
 
     context 'with a collection' do
       let(:cocina_object) do
-        build(:collection, id: druid).new(access: access)
+        build(:collection, id: druid).new(access:)
       end
 
       it 'raises an error' do

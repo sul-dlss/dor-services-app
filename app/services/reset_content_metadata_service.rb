@@ -3,7 +3,7 @@
 # Clears member orders from structural metadata within the Cocina cocina_item data model and adds new constituents
 class ResetContentMetadataService
   def self.reset(cocina_item:, constituent_druids: [])
-    new(cocina_item: cocina_item).reset(constituent_druids: constituent_druids)
+    new(cocina_item:).reset(constituent_druids:)
   end
 
   attr_reader :cocina_item, :notifier

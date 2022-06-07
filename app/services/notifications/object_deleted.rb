@@ -8,7 +8,7 @@ module Notifications
       return unless Settings.rabbitmq.enabled
 
       Rails.logger.debug "Publishing Rabbitmq Message for deleting #{model.externalIdentifier}"
-      new(model: model, deleted_at: deleted_at, channel: RabbitChannel.instance).publish
+      new(model:, deleted_at:, channel: RabbitChannel.instance).publish
       Rails.logger.debug "Published Rabbitmq Message for deleting #{model.externalIdentifier}"
     end
 
@@ -23,7 +23,7 @@ module Notifications
         druid: model.externalIdentifier,
         deleted_at: deleted_at.to_datetime.httpdate
       }
-      exchange.publish(message.to_json, routing_key: routing_key)
+      exchange.publish(message.to_json, routing_key:)
     end
 
     private

@@ -9,11 +9,11 @@ class MarcService
   class TransformError < MarcServiceError; end
 
   def self.mods(catkey: nil, barcode: nil)
-    new(catkey: catkey, barcode: barcode).mods
+    new(catkey:, barcode:).mods
   end
 
   def self.marcxml(catkey: nil, barcode: nil)
-    new(catkey: catkey, barcode: barcode).marcxml
+    new(catkey:, barcode:).marcxml
   end
 
   def initialize(catkey: nil, barcode: nil)
@@ -57,7 +57,7 @@ class MarcService
   # @raises CatalogResponseError
   # @raises CatalogRecordNotFoundError
   def marc_record
-    SymphonyReader.new(catkey: catkey, barcode: barcode).to_marc
+    SymphonyReader.new(catkey:, barcode:).to_marc
   rescue SymphonyReader::NotFound
     raise CatalogRecordNotFoundError, "Catalog record not found. Catkey: #{catkey} | Barcode: #{barcode}"
   rescue SymphonyReader::ResponseError => e

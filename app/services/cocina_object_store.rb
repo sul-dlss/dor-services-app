@@ -39,7 +39,7 @@ class CocinaObjectStore
   # @raise [StateLockError] raised if optimistic lock failed.
   # @return [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] normalized cocina object
   def self.save(cocina_object, event_factory: EventFactory, skip_lock: false)
-    new(event_factory: event_factory).save(cocina_object, skip_lock: skip_lock)
+    new(event_factory:).save(cocina_object, skip_lock:)
   end
 
   # Removes a Cocina object from the datastore.
@@ -67,7 +67,7 @@ class CocinaObjectStore
   # @raises [SymphonyReader::ResponseError] if symphony connection failed
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
   def self.create(cocina_request_object, assign_doi: false, event_factory: EventFactory)
-    new(event_factory: event_factory).create(cocina_request_object, assign_doi: assign_doi)
+    new(event_factory:).create(cocina_request_object, assign_doi:)
   end
 
   def initialize(event_factory: EventFactory)
@@ -82,14 +82,14 @@ class CocinaObjectStore
   def save(cocina_object, skip_lock: false)
     validate(cocina_object)
     # Only update if already exists in PG (i.e., added by create or migration).
-    (created_at, modified_at, lock) = cocina_to_ar_save(cocina_object, skip_lock: skip_lock)
+    (created_at, modified_at, lock) = cocina_to_ar_save(cocina_object, skip_lock:)
 
     cocina_object_without_metadata = Cocina::Models.without_metadata(cocina_object)
 
     event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update', data: { success: true, request: cocina_object_without_metadata.to_h })
 
     # Broadcast this update action to a topic
-    Notifications::ObjectUpdated.publish(model: cocina_object_without_metadata, created_at: created_at, modified_at: modified_at)
+    Notifications::ObjectUpdated.publish(model: cocina_object_without_metadata, created_at:, modified_at:)
     Cocina::Models.with_metadata(cocina_object, lock, created: created_at, modified: modified_at)
   rescue Cocina::ValidationError => e
     event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update',
@@ -110,12 +110,12 @@ class CocinaObjectStore
     (created_at, modified_at, lock) = cocina_to_ar_save(cocina_object, skip_lock: true)
     add_project_tag(druid, cocina_request_object)
     # This creates version 1.0.0 (Initial Version)
-    ObjectVersion.initial_version(druid: druid)
+    ObjectVersion.initial_version(druid:)
 
-    event_factory.create(druid: druid, event_type: 'registration', data: cocina_object.to_h)
+    event_factory.create(druid:, event_type: 'registration', data: cocina_object.to_h)
 
     # Broadcast this to a topic
-    Notifications::ObjectCreated.publish(model: cocina_object, created_at: created_at, modified_at: modified_at)
+    Notifications::ObjectCreated.publish(model: cocina_object, created_at:, modified_at:)
     Cocina::Models.with_metadata(cocina_object, lock, created: created_at, modified: modified_at)
   end
 
@@ -241,7 +241,7 @@ class CocinaObjectStore
     return if cocina_request_object.admin_policy? || !cocina_request_object.administrative.partOfProject
 
     tags = ["Project : #{cocina_request_object.administrative.partOfProject}"]
-    AdministrativeTags.create(identifier: druid, tags: tags)
+    AdministrativeTags.create(identifier: druid, tags:)
   end
 
   # Synch from symphony if a catkey is present
@@ -252,14 +252,14 @@ class CocinaObjectStore
     catkeys = RefreshMetadataAction.identifiers(cocina_object: cocina_request_object)
     return cocina_request_object if catkeys.blank?
 
-    result = RefreshMetadataAction.run(identifiers: catkeys, cocina_object: cocina_request_object, druid: druid)
+    result = RefreshMetadataAction.run(identifiers: catkeys, cocina_object: cocina_request_object, druid:)
     return cocina_request_object if result.failure?
 
     description_props = result.value!.description_props
     # Remove PURL since this is still a request
     description_props.delete(:purl)
     label = ModsUtils.label(result.value!.mods_ng_xml)
-    cocina_request_object.new(label: label, description: description_props)
+    cocina_request_object.new(label:, description: description_props)
   end
 
   # Converts from Cocina::Models::RequestDRO|RequestCollection|RequestAdminPolicy to Cocina::Models::DRO|Collection||AdminPolicy
@@ -272,7 +272,7 @@ class CocinaObjectStore
 
     # Add purl to description
     if props[:description].present?
-      purl = Purl.for(druid: druid)
+      purl = Purl.for(druid:)
       props[:description][:purl] = purl
       # This replaces the :link: placeholder in the citation with the purl, which we are now able to derive.
       # This is specifically for H2, but could be utilized by any client that provides preferred citation.
@@ -283,10 +283,10 @@ class CocinaObjectStore
 
     # Add externalIdentifiers to structural
     Array(props.dig(:structural, :contains)).each do |fileset_props|
-      fileset_id = fileset_props[:externalIdentifier] || Cocina::IdGenerator.generate_or_existing_fileset_id(druid: druid)
+      fileset_id = fileset_props[:externalIdentifier] || Cocina::IdGenerator.generate_or_existing_fileset_id(druid:)
       fileset_props[:externalIdentifier] = fileset_id
       Array(fileset_props.dig(:structural, :contains)).each do |file_props|
-        file_id = file_props[:externalIdentifier] || Cocina::IdGenerator.generate_or_existing_file_id(druid: druid, resource_id: fileset_id, file_id: file_props[:filename])
+        file_id = file_props[:externalIdentifier] || Cocina::IdGenerator.generate_or_existing_file_id(druid:, resource_id: fileset_id, file_id: file_props[:filename])
         file_props[:externalIdentifier] = file_id
       end
     end

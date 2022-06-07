@@ -30,14 +30,14 @@ RSpec.describe "Looking up an item's catkey by its barcode" do
            {
              resource: '/catalog/bib',
              key: catkey,
-             barcode: barcode
+             barcode:
            }
         }
     }
   end
 
   it 'looks up an item by barcode' do
-    stub_request(:get, format(barcode_url, barcode: barcode)).to_return(body: barcode_body.to_json, headers: { 'Content-Length': 157 })
+    stub_request(:get, format(barcode_url, barcode:)).to_return(body: barcode_body.to_json, headers: { 'Content-Length': 157 })
 
     get "/v1/catalog/catkey?barcode=#{barcode}", headers: { 'Authorization' => "Bearer #{jwt}" }
 
@@ -66,7 +66,7 @@ RSpec.describe "Looking up an item's catkey by its barcode" do
 
   context 'when response error from Symphony not found' do
     it 'returns a 500 error when looking up catkey by barcode' do
-      stub_request(:get, format(barcode_url, barcode: barcode)).to_return(status: 500)
+      stub_request(:get, format(barcode_url, barcode:)).to_return(status: 500)
 
       get "/v1/catalog/catkey?barcode=#{barcode}", headers: { 'Authorization' => "Bearer #{jwt}" }
 

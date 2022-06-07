@@ -6,7 +6,7 @@ class ModsServiceError < RuntimeError; end
 # Service for fetching MODS from the catalog and associated helper methods.
 class ModsService
   VALID_PREFIXES = %w[catkey barcode].freeze
-  CATKEY_REGEX = /^\d+(:\d+)*$/.freeze
+  CATKEY_REGEX = /^\d+(:\d+)*$/
 
   class << self
     @@cache = Cache.new(nil, nil, 250, 300)

@@ -11,7 +11,7 @@ module Notifications
       return if model.is_a? Cocina::Models::AdminPolicy
 
       Rails.logger.debug "Publishing Rabbitmq Message for creating #{model.externalIdentifier}"
-      new(model: model, created_at: created_at, modified_at: modified_at, channel: RabbitChannel.instance).publish
+      new(model:, created_at:, modified_at:, channel: RabbitChannel.instance).publish
       Rails.logger.debug "Published Rabbitmq Message for creating #{model.externalIdentifier}"
     end
 

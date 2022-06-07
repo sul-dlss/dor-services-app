@@ -19,7 +19,7 @@ module Preserve
     # @return [Boolean] true if all required files exist
     # @raises [StandardError] a required file is missing
     def self.verify(directory:)
-      new(directory: directory).verify
+      new(directory:).verify
     end
 
     def initialize(directory:)

@@ -8,9 +8,9 @@ module Preserve
     # @param [Integer] version_id The version number
     # @return [Moab::FileInventory] Generate and return a version inventory for the object
     def self.build(metadata_dir:, druid:, version_id:)
-      new(metadata_dir: metadata_dir,
-          druid: druid,
-          version_id: version_id).build
+      new(metadata_dir:,
+          druid:,
+          version_id:).build
     end
 
     def initialize(metadata_dir:, druid:, version_id:)
@@ -33,7 +33,7 @@ module Preserve
       if content_metadata
         Stanford::ContentInventory.new.inventory_from_cm(content_metadata, druid, 'preserve', version_id)
       else
-        Moab::FileInventory.new(type: 'version', digital_object_id: druid, version_id: version_id)
+        Moab::FileInventory.new(type: 'version', digital_object_id: druid, version_id:)
       end
     end
 

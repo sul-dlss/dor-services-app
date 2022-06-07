@@ -35,8 +35,8 @@ RSpec.describe 'Add and retrieve events' do
 
     context 'when there are multiple events' do
       before do
-        create(:event, druid: druid, event_type: 'publish')
-        create(:event, druid: druid, event_type: 'unpublish')
+        create(:event, druid:, event_type: 'publish')
+        create(:event, druid:, event_type: 'unpublish')
       end
 
       it 'returns events in chronological order, newest first' do

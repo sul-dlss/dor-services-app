@@ -4,11 +4,11 @@ require 'rails_helper'
 
 RSpec.describe LogFailureJob, type: :job do
   subject(:perform) do
-    described_class.perform_now(druid: druid,
+    described_class.perform_now(druid:,
                                 background_job_result: result,
-                                workflow: workflow,
-                                workflow_process: workflow_process,
-                                output: output)
+                                workflow:,
+                                workflow_process:,
+                                output:)
   end
 
   let(:output) { { 'errors' => [{ 'title' => 'hah!' }] } }

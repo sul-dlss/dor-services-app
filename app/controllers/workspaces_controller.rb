@@ -18,13 +18,13 @@ class WorkspacesController < ApplicationController
     druid = params[:object_id]
     CleanupService.cleanup_by_druid druid
 
-    EventFactory.create(druid: druid,
+    EventFactory.create(druid:,
                         event_type: 'cleanup-workspace',
                         data: { status: 'success' })
 
     head :no_content
   rescue Errno::ENOENT, Errno::ENOTEMPTY => e
-    EventFactory.create(druid: druid, event_type: 'cleanup-workspace',
+    EventFactory.create(druid:, event_type: 'cleanup-workspace',
                         data: { status: 'failure', message: e.message, backtrace: e.backtrace })
 
     render build_error('Unable to remove directory', e)

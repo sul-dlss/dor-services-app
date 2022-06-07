@@ -14,7 +14,7 @@ RSpec.describe UnpublishService do
       end
 
       it 'removes from purl' do
-        described_class.unpublish(druid: druid)
+        described_class.unpublish(druid:)
         expect(WebMock).to have_requested(:delete, 'example.com/purl/purls/ab123cd4567')
       end
     end

@@ -30,7 +30,7 @@ require 'webmock/rspec'
 # directory. Alternatively, in the individual `*_spec.rb` files, manually
 # require only the support files necessary.
 #
-Dir[Rails.root.join('spec/support/**/*.rb')].sort.each { |f| require f }
+Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 MODS_ATTRIBUTES = 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" version="3.7"
     xmlns:xlink="http://www.w3.org/1999/xlink"

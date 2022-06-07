@@ -42,22 +42,22 @@ RSpec.describe "Looking up an item's marcxml" do
            {
              resource: '/catalog/bib',
              key: catkey,
-             barcode: barcode
+             barcode:
            }
         }
     }
   end
 
   it 'looks up an item by catkey' do
-    stub_request(:get, format(marc_url, catkey: catkey)).to_return(body: body.to_json, headers: { 'Content-Length': 394 })
+    stub_request(:get, format(marc_url, catkey:)).to_return(body: body.to_json, headers: { 'Content-Length': 394 })
 
     get "/v1/catalog/marcxml?catkey=#{catkey}", headers: { 'Authorization' => "Bearer #{jwt}" }
     expect(response.body).to start_with "<?xml version=\"1.0\"?>\n<record xmlns=\"http://www.loc.gov/MARC21/slim\">"
   end
 
   it 'looks up an item by barcode' do
-    stub_request(:get, format(barcode_url, barcode: barcode)).to_return(body: barcode_body.to_json, headers: { 'Content-Length': 157 })
-    stub_request(:get, format(marc_url, catkey: catkey)).to_return(body: body.to_json, headers: { 'Content-Length': 394 })
+    stub_request(:get, format(barcode_url, barcode:)).to_return(body: barcode_body.to_json, headers: { 'Content-Length': 157 })
+    stub_request(:get, format(marc_url, catkey:)).to_return(body: body.to_json, headers: { 'Content-Length': 394 })
 
     get "/v1/catalog/marcxml?barcode=#{barcode}", headers: { 'Authorization' => "Bearer #{jwt}" }
 
@@ -67,7 +67,7 @@ RSpec.describe "Looking up an item's marcxml" do
   describe 'errors in response from Symphony' do
     context 'when incomplete response' do
       before do
-        stub_request(:get, format(marc_url, catkey: catkey)).to_return(body: '{}', headers: { 'Content-Length': 0 })
+        stub_request(:get, format(marc_url, catkey:)).to_return(body: '{}', headers: { 'Content-Length': 0 })
       end
 
       it 'returns a 500 error' do
@@ -102,7 +102,7 @@ RSpec.describe "Looking up an item's marcxml" do
       end
 
       before do
-        stub_request(:get, format(marc_url, catkey: catkey)).to_return(status: 403, body: err_body.to_json)
+        stub_request(:get, format(marc_url, catkey:)).to_return(status: 403, body: err_body.to_json)
       end
 
       it 'returns a 500 error' do

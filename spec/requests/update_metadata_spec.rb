@@ -25,13 +25,13 @@ RSpec.describe 'Update object' do
   let(:view) { 'world' }
   let(:download) { 'world' }
   let(:cocina_access) do
-    Cocina::Models::DROAccess.new(view: view, download: download)
+    Cocina::Models::DROAccess.new(view:, download:)
   end
   let(:expected) do
-    build(:dro, id: druid, label: label, admin_policy_id: apo_druid, type: Cocina::Models::ObjectType.book).new(
-      description: description,
-      identification: identification,
-      structural: structural,
+    build(:dro, id: druid, label:, admin_policy_id: apo_druid, type: Cocina::Models::ObjectType.book).new(
+      description:,
+      identification:,
+      structural:,
       access: {
         copyright: 'All rights reserved unless otherwise indicated.',
         useAndReproductionStatement: 'Property rights reside with the repository...'
@@ -107,7 +107,7 @@ RSpec.describe 'Update object' do
     expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
     expect(Cocina::ObjectValidator).to have_received(:validate)
 
-    expect(EventFactory).to have_received(:create).with(druid: druid, data: hash_including(:request, success: true), event_type: 'update')
+    expect(EventFactory).to have_received(:create).with(druid:, data: hash_including(:request, success: true), event_type: 'update')
   end
 
   context 'with a non-matching druid (Cocina::Models::ValidationError)' do
@@ -191,7 +191,7 @@ RSpec.describe 'Update object' do
     let(:description) do
       {
         title: [{ value: 'Not a title' }],
-        purl: purl
+        purl:
       }
     end
 
@@ -215,15 +215,15 @@ RSpec.describe 'Update object' do
     end
     let(:view) { 'world' }
     let(:expected) do
-      build(:dro, id: druid, type: Cocina::Models::ObjectType.image, label: expected_label, title: title, admin_policy_id: 'druid:dd999df4567').new(
+      build(:dro, id: druid, type: Cocina::Models::ObjectType.image, label: expected_label, title:, admin_policy_id: 'druid:dd999df4567').new(
         access: {
-          view: view,
+          view:,
           download: 'world',
           copyright: 'All rights reserved unless otherwise indicated.',
           useAndReproductionStatement: 'Property rights reside with the repository...'
         },
-        identification: identification,
-        structural: structural
+        identification:,
+        structural:
       )
     end
     let(:data) do
@@ -583,7 +583,7 @@ RSpec.describe 'Update object' do
     let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
     let(:expected) do
-      build(:dro, id: druid, type: Cocina::Models::ObjectType.book, label: label, title: title, admin_policy_id: 'druid:dd999df4567').new(
+      build(:dro, id: druid, type: Cocina::Models::ObjectType.book, label:, title:, admin_policy_id: 'druid:dd999df4567').new(
         identification: { sourceId: 'googlebooks:999999' },
         structural: {
           hasMemberOrders: [
@@ -638,8 +638,8 @@ RSpec.describe 'Update object' do
     let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
     let(:expected) do
-      build(:collection, id: druid, label: label, title: title, admin_policy_id: 'druid:dd999df4567').new(
-        identification: identification
+      build(:collection, id: druid, label:, title:, admin_policy_id: 'druid:dd999df4567').new(
+        identification:
       )
     end
     let(:identification) do

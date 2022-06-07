@@ -10,7 +10,7 @@ module Cocina
         # @param [Cocina::Models::DROStructural] structural structural metadata in Cocina
         # @return [Array<Nokogiri::XML::Element>]
         def self.generate(root:, access:, structural:)
-          new(root: root, access: access, structural: structural).generate
+          new(root:, access:, structural:).generate
         end
 
         # @param [Nokogiri::XML::Element] root Element that is the root of the access assertions.

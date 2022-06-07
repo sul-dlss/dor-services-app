@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe StartPreservationWorkflowJob, type: :job do
   subject(:perform) do
-    described_class.perform_now(druid: druid,
+    described_class.perform_now(druid:,
                                 version: '7',
                                 background_job_result: result)
   end
@@ -12,7 +12,7 @@ RSpec.describe StartPreservationWorkflowJob, type: :job do
   let(:druid) { 'druid:mk420bs7601' }
   let(:result) { create(:background_job_result) }
   let(:process) { instance_double(Dor::Workflow::Response::Process, lane_id: 'default') }
-  let(:client) { instance_double(Dor::Workflow::Client, create_workflow_by_name: nil, process: process) }
+  let(:client) { instance_double(Dor::Workflow::Client, create_workflow_by_name: nil, process:) }
 
   before do
     allow(LogSuccessJob).to receive(:perform_later)
@@ -25,7 +25,7 @@ RSpec.describe StartPreservationWorkflowJob, type: :job do
       .with(druid, 'preservationIngestWF', version: '7', lane_id: 'default')
     expect(LogSuccessJob).to have_received(:perform_later)
       .with(
-        druid: druid,
+        druid:,
         background_job_result: result,
         workflow: 'accessionWF',
         workflow_process: 'sdr-ingest-transfer'

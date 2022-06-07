@@ -3,12 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe Notifications::ObjectUpdated do
-  subject(:publish) { described_class.publish(model: model, created_at: created_at, modified_at: modified_at) }
+  subject(:publish) { described_class.publish(model:, created_at:, modified_at:) }
 
   let(:data) { { data: '455' } }
   let(:created_at) { '04 Feb 2022' }
   let(:modified_at) { '04 Feb 2022' }
-  let(:channel) { instance_double(Notifications::RabbitChannel, topic: topic) }
+  let(:channel) { instance_double(Notifications::RabbitChannel, topic:) }
   let(:topic) { instance_double(Bunny::Exchange, publish: true) }
   let(:message) { "{\"model\":{\"data\":\"455\"},\"created_at\":\"#{created_at.to_datetime.httpdate}\",\"modified_at\":\"#{modified_at.to_datetime.httpdate}\"}" }
 

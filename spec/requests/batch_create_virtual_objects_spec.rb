@@ -8,7 +8,7 @@ RSpec.describe 'Batch creation of virtual objects' do
   # We use `#with_indifferent_access` here to mimic how Rails parses JSON parameters
   let(:body) { JSON.parse(response.body).with_indifferent_access }
   let(:virtual_object_id) { 'druid:mk420bs7601' }
-  let(:virtual_objects) { [{ virtual_object_id: virtual_object_id, constituent_ids: [constituent1_id, constituent2_id] }] }
+  let(:virtual_objects) { [{ virtual_object_id:, constituent_ids: [constituent1_id, constituent2_id] }] }
   let(:druid_pattern) { '^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$' }
 
   before do
@@ -19,10 +19,10 @@ RSpec.describe 'Batch creation of virtual objects' do
   context 'when virtual_objects param is provided' do
     it 'queues a background job to create a virtual object' do
       post '/v1/virtual_objects',
-           params: { virtual_objects: virtual_objects }.to_json,
+           params: { virtual_objects: }.to_json,
            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(CreateVirtualObjectsJob).to have_received(:perform_later)
-        .with(virtual_objects: virtual_objects, background_job_result: instance_of(BackgroundJobResult)).once
+        .with(virtual_objects:, background_job_result: instance_of(BackgroundJobResult)).once
       expect(response).to have_http_status(:created)
       expect(response.location).to match(%r{http://www.example.com/v1/background_job_results/\d+})
     end

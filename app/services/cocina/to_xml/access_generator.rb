@@ -9,7 +9,7 @@ module Cocina
       # @param [Cocina::Models::DROStructural] structural structural metadata in Cocina
       # @return [String] Fedora rights metadata XML
       def self.generate(root:, access:, structural: nil)
-        new(root: root, access: access, structural: structural).generate
+        new(root:, access:, structural:).generate
       end
 
       def initialize(root:, access:, structural:)
@@ -25,12 +25,12 @@ module Cocina
         # Remove existing access nodes to begin rebuilding them from Cocina
         root.search('//access').each(&:remove)
 
-        Rights::ObjectLevel.generate(root: root, access: access).each do |object_access_node|
+        Rights::ObjectLevel.generate(root:, access:).each do |object_access_node|
           root.add_child(object_access_node)
         end
 
         if structural
-          Rights::FileLevel.generate(root: root, access: access, structural: structural).each do |file_access_node|
+          Rights::FileLevel.generate(root:, access:, structural:).each do |file_access_node|
             root.add_child(file_access_node)
           end
         end

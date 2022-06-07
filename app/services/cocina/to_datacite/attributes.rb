@@ -35,12 +35,12 @@ module Cocina
         {
           event: 'publish', # Makes a findable DOI
           url: purl,
-          descriptions: descriptions,
+          descriptions:,
           alternateIdentifiers: alternate_identifiers,
           dates: [], # to be implemented from event_h2 mapping
-          identifiers: identifiers,
-          subjects: subjects,
-          titles: titles,
+          identifiers:,
+          subjects:,
+          titles:,
           rightsList: rights_list,
           types: types_attributes,
           publicationYear: publication_year,

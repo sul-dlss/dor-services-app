@@ -35,17 +35,17 @@ class ConstituentService
                                VersionService.open(virtual_object,
                                                    description: VERSION_DESCRIPTION,
                                                    significance: VERSION_SIGNIFICANCE,
-                                                   event_factory: event_factory)
+                                                   event_factory:)
                              end
 
-    updated_virtual_object = ResetContentMetadataService.reset(cocina_item: updated_virtual_object, constituent_druids: constituent_druids)
+    updated_virtual_object = ResetContentMetadataService.reset(cocina_item: updated_virtual_object, constituent_druids:)
 
     VersionService.close(updated_virtual_object,
-                         event_factory: event_factory)
+                         event_factory:)
 
     CocinaObjectStore.save(updated_virtual_object)
 
-    SynchronousIndexer.reindex_remotely_from_cocina(cocina_object: updated_virtual_object, created_at: created_at, updated_at: updated_at)
+    SynchronousIndexer.reindex_remotely_from_cocina(cocina_object: updated_virtual_object, created_at:, updated_at:)
 
     publish_constituents!(constituent_druids)
 

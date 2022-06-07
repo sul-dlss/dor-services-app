@@ -31,26 +31,26 @@ RSpec.describe ResetWorkspaceService do
     end
 
     it 'renames the directory tree with the directory not empty' do
-      described_class.reset_workspace_druid_tree(druid: druid, version: '2', workspace_root: workspace_root)
+      described_class.reset_workspace_druid_tree(druid:, version: '2', workspace_root:)
       expect(File).to exist("#{druid_tree_path}_v2")
       expect(File).not_to exist(druid_tree_path)
     end
 
     it 'does nothing with truncated druid' do
       truncated_druid = 'druid:tr111tr1111'
-      described_class.reset_workspace_druid_tree(druid: truncated_druid, version: '2', workspace_root: workspace_root)
+      described_class.reset_workspace_druid_tree(druid: truncated_druid, version: '2', workspace_root:)
       truncated_druid_tree_path = "#{workspace_root}/tr/111/tr/1111/"
       expect(File).not_to exist("#{truncated_druid_tree_path}_v2")
       expect(File).to exist(truncated_druid_tree_path)
     end
 
     it 'throws an error if the directory is already archived' do
-      expect { described_class.reset_workspace_druid_tree(druid: archived_druid, version: '2', workspace_root: workspace_root) }
+      expect { described_class.reset_workspace_druid_tree(druid: archived_druid, version: '2', workspace_root:) }
         .to raise_error(ResetWorkspaceService::DirectoryAlreadyExists)
     end
 
     it "archiveds the current directory even if there is an older archived that hasn't been cleaned up" do
-      described_class.reset_workspace_druid_tree(druid: archived_druid, version: '3', workspace_root: workspace_root)
+      described_class.reset_workspace_druid_tree(druid: archived_druid, version: '3', workspace_root:)
       expect(File).to exist("#{archived_druid_tree_path}_v2")
       expect(File).to exist("#{archived_druid_tree_path}_v3")
       expect(File).not_to exist(archived_druid_tree_path.to_s)
@@ -73,7 +73,7 @@ RSpec.describe ResetWorkspaceService do
     end
 
     it 'renames the export bags directory and tar files' do
-      described_class.reset_export_bag(druid: druid, version: '2', export_root: export_root)
+      described_class.reset_export_bag(druid:, version: '2', export_root:)
       expect(File).to exist("#{bag_path}_v2")
       expect(File).to exist("#{bag_path}_v2.tar")
       expect(File).not_to exist(bag_path.to_s)
@@ -86,7 +86,7 @@ RSpec.describe ResetWorkspaceService do
       create_bag_dir(existent_id)
       bag_path = "#{export_root}/#{existent_id}"
       FileUtils.mv(bag_path, "#{bag_path}_v2") unless File.exist?("#{bag_path}_v2")
-      expect { described_class.reset_export_bag(druid: existent_druid, version: '2', export_root: export_root) }
+      expect { described_class.reset_export_bag(druid: existent_druid, version: '2', export_root:) }
         .to raise_error(ResetWorkspaceService::BagAlreadyExists)
     end
   end

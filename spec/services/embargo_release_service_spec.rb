@@ -40,7 +40,7 @@ RSpec.describe EmbargoReleaseService do
       it 'skips' do
         service.release
         expect(Rails.logger).to have_received(:warn).with("Skipping #{druid} - not yet accessioned")
-        expect(workflow_client).to have_received(:lifecycle).with(druid: druid, milestone_name: 'accessioned')
+        expect(workflow_client).to have_received(:lifecycle).with(druid:, milestone_name: 'accessioned')
         expect(VersionService).not_to have_received(:can_open?)
       end
     end
@@ -62,7 +62,7 @@ RSpec.describe EmbargoReleaseService do
         expect(VersionService).to have_received(:open).with(cocina_object, description: 'embargo released', significance: 'admin')
         expect(service).to have_received(:release_cocina_object).with(open_cocina_object)
         expect(VersionService).to have_received(:close).with(released_cocina_object)
-        expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'embargo_released', data: {})
+        expect(EventFactory).to have_received(:create).with(druid:, event_type: 'embargo_released', data: {})
         expect(Notifications::EmbargoLifted).to have_received(:publish).with(model: released_cocina_object)
       end
     end
@@ -82,7 +82,7 @@ RSpec.describe EmbargoReleaseService do
 
   describe '#release_cocina_object' do
     let(:embargoed_cocina_object) do
-      build(:dro).new(access: access, structural: structural)
+      build(:dro).new(access:, structural:)
     end
 
     let(:structural) do
@@ -202,7 +202,7 @@ RSpec.describe EmbargoReleaseService do
 
     context 'when structural is nil' do
       let(:embargoed_cocina_object) do
-        build(:dro).new(access: access)
+        build(:dro).new(access:)
       end
 
       let(:access) do

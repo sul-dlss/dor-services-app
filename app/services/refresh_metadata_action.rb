@@ -9,7 +9,7 @@ class RefreshMetadataAction
   # @return [Dry::Monads::Results] returns Failure if there was no resolvable metadata id, otherwise Success (Result with description_props and mods)
   # @raises SymphonyReader::ResponseError
   def self.run(identifiers:, cocina_object:, druid:)
-    new(identifiers: identifiers, cocina_object: cocina_object, druid: druid).run
+    new(identifiers:, cocina_object:, druid:).run
   end
 
   # @param [Cocina::Models::DRO|Collection|APO|Agreement|RequestDRO|RequestCollection|RequestAPO|RequestAgreement] cocina_object
@@ -32,7 +32,7 @@ class RefreshMetadataAction
   def run
     return Failure() if mods.nil?
 
-    description_props = Cocina::Models::Mapping::FromMods::Description.props(mods: mods_ng_xml, druid: druid, label: cocina_object.label)
+    description_props = Cocina::Models::Mapping::FromMods::Description.props(mods: mods_ng_xml, druid:, label: cocina_object.label)
     return Failure() if description_props.nil?
 
     Success(Result.new(description_props, mods_ng_xml))

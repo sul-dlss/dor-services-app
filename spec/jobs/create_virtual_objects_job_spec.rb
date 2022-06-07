@@ -8,7 +8,7 @@ RSpec.describe CreateVirtualObjectsJob, type: :job do
   let(:virtual_object_id) { 'druid:mk420bs7601' }
   let(:result) { create(:background_job_result) }
   let(:service) { instance_double(ConstituentService, add: nil) }
-  let(:virtual_objects) { [{ virtual_object_id: virtual_object_id, constituent_ids: [constituent1_id, constituent2_id] }] }
+  let(:virtual_objects) { [{ virtual_object_id:, constituent_ids: [constituent1_id, constituent2_id] }] }
 
   before do
     allow(ConstituentService).to receive(:new)
@@ -19,7 +19,7 @@ RSpec.describe CreateVirtualObjectsJob, type: :job do
 
   context 'with no errors' do
     before do
-      described_class.perform_now(virtual_objects: virtual_objects,
+      described_class.perform_now(virtual_objects:,
                                   background_job_result: result)
     end
 
@@ -43,7 +43,7 @@ RSpec.describe CreateVirtualObjectsJob, type: :job do
   context 'with errors returned by constituent service' do
     before do
       allow(service).to receive(:add).and_return(virtual_object_id => ['One thing was not combinable', 'And another'])
-      described_class.perform_now(virtual_objects: virtual_objects,
+      described_class.perform_now(virtual_objects:,
                                   background_job_result: result)
     end
 
@@ -70,7 +70,7 @@ RSpec.describe CreateVirtualObjectsJob, type: :job do
     let(:other_virtual_object_id) { 'druid:foo' }
     let(:virtual_objects) do
       [
-        { virtual_object_id: virtual_object_id, constituent_ids: [constituent1_id, constituent2_id] },
+        { virtual_object_id:, constituent_ids: [constituent1_id, constituent2_id] },
         { virtual_object_id: other_virtual_object_id, constituent_ids: [other_constituent1_id, other_constituent2_id] }
       ]
     end
@@ -79,7 +79,7 @@ RSpec.describe CreateVirtualObjectsJob, type: :job do
       allow(ConstituentService).to receive(:new)
         .with(virtual_object_druid: other_virtual_object_id, event_factory: EventFactory).and_return(service)
       allow(service).to receive(:add).and_return(nil, virtual_object_id => ['One thing was not combinable', 'And another'])
-      described_class.perform_now(virtual_objects: virtual_objects,
+      described_class.perform_now(virtual_objects:,
                                   background_job_result: result)
     end
 

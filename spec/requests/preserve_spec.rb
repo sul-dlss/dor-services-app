@@ -16,7 +16,7 @@ RSpec.describe 'Preserve object' do
     post "/v1/objects/#{druid}/preserve?lane-id=low", headers: { 'Authorization' => "Bearer #{jwt}" }
 
     expect(PreserveJob).to have_received(:set).with(queue: :low)
-    expect(job).to have_received(:perform_later).with(druid: druid, background_job_result: BackgroundJobResult)
+    expect(job).to have_received(:perform_later).with(druid:, background_job_result: BackgroundJobResult)
     expect(response.status).to eq(201)
   end
 end

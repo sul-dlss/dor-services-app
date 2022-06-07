@@ -9,9 +9,9 @@ RSpec.describe 'Release tags' do
   before do
     allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
 
-    ObjectVersion.create(druid: druid, version: 1, tag: '1.0.0', description: 'Initial Version')
-    ObjectVersion.create(druid: druid, version: 2, tag: '2.0.0', description: 'pre-assembly re-accession')
-    ObjectVersion.create(druid: druid, version: 3, tag: '3.0.0', description: 'pre-assembly re-accession')
+    ObjectVersion.create(druid:, version: 1, tag: '1.0.0', description: 'Initial Version')
+    ObjectVersion.create(druid:, version: 2, tag: '2.0.0', description: 'pre-assembly re-accession')
+    ObjectVersion.create(druid:, version: 3, tag: '3.0.0', description: 'pre-assembly re-accession')
   end
 
   it 'returns a 200' do

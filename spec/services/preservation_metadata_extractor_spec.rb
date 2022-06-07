@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe PreservationMetadataExtractor do
   let(:workspace) { instance_double(DruidTools::Druid, path: 'foo') }
   let(:druid) { 'druid:nc893zj8956' }
-  let(:instance) { described_class.new(workspace: workspace, cocina_object: cocina_object) }
+  let(:instance) { described_class.new(workspace:, cocina_object:) }
   let(:cocina_object) { build(:dro, id: druid) }
 
   describe '.extract' do

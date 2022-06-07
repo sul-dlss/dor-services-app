@@ -11,6 +11,6 @@ class WorkflowClientFactory
                  Settings.workflow.shift_age
                )
              end
-    Dor::Workflow::Client.new(url: Settings.workflow_url, logger: logger, timeout: Settings.workflow.timeout)
+    Dor::Workflow::Client.new(url: Settings.workflow_url, logger:, timeout: Settings.workflow.timeout)
   end
 end

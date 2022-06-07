@@ -2,7 +2,7 @@
 
 # This class passes data to the Goobi server using a custom XML message that was developed by Intranda
 class GoobiService
-  SERVER_ERROR_STATUSES = (500...600).freeze
+  SERVER_ERROR_STATUSES = (500...600)
   class ServerError < StandardError; end
 
   # Any status that is a 500 or greater and timeouts

@@ -41,13 +41,13 @@ RSpec.describe ApplyAdminPolicyDefaults do
       let(:cocina_object) { build(:collection) }
 
       it 'validates the object type and creates an instance' do
-        expect { described_class.new(cocina_object: cocina_object) }.not_to raise_error
+        expect { described_class.new(cocina_object:) }.not_to raise_error
       end
     end
 
     context 'with a DRO' do
       it 'validates the object type and creates an instance' do
-        expect { described_class.new(cocina_object: cocina_object) }.not_to raise_error
+        expect { described_class.new(cocina_object:) }.not_to raise_error
       end
     end
 
@@ -55,7 +55,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
       let(:cocina_object) { build(:admin_policy, id: object_druid) }
 
       it 'invalidates the object type and raises a custom exception' do
-        expect { described_class.new(cocina_object: cocina_object) }.to raise_error(
+        expect { described_class.new(cocina_object:) }.to raise_error(
           described_class::UnsupportedObjectTypeError,
           "#{object_druid} is a Cocina::Models::AdminPolicy and this type cannot have APO defaults applied"
         )
@@ -67,7 +67,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         let(:workflow_state) { workflow_state }
 
         it 'validates the object type and creates an instance' do
-          expect { described_class.new(cocina_object: cocina_object) }.not_to raise_error
+          expect { described_class.new(cocina_object:) }.not_to raise_error
         end
       end
     end
@@ -77,7 +77,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         let(:workflow_state) { workflow_state }
 
         it 'invalidates the object type and raises a custom exception' do
-          expect { described_class.new(cocina_object: cocina_object) }.to raise_error(
+          expect { described_class.new(cocina_object:) }.to raise_error(
             described_class::UnsupportedWorkflowStateError,
             "#{object_druid} is in a state in which it cannot be modified (#{workflow_state}): " \
             'APO defaults can only be applied when an object is either registered or opened for versioning'
@@ -88,7 +88,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
   end
 
   describe '#apply' do
-    let(:instance) { described_class.new(cocina_object: cocina_object) }
+    let(:instance) { described_class.new(cocina_object:) }
 
     let(:cocina_admin_policy) do
       build(:admin_policy).new(

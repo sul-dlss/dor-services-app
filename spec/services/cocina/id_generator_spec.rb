@@ -12,7 +12,7 @@ RSpec.describe Cocina::IdGenerator do
   end
 
   describe '.generate_or_existing_fileset_id' do
-    subject(:file_set_id) { described_class.generate_or_existing_fileset_id(druid: druid, resource_id: resource_id) }
+    subject(:file_set_id) { described_class.generate_or_existing_fileset_id(druid:, resource_id:) }
 
     context 'with a fully-qualified Cocina resource ID' do
       let(:resource_id) { "https://cocina.sul.stanford.edu/fileSet/#{bare_druid}/resource123" }
@@ -48,7 +48,7 @@ RSpec.describe Cocina::IdGenerator do
   end
 
   describe '.generate_or_existing_file_id' do
-    subject(:file_id) { described_class.generate_or_existing_file_id(druid: druid, resource_id: resource_id, file_id: given_file_id) }
+    subject(:file_id) { described_class.generate_or_existing_file_id(druid:, resource_id:, file_id: given_file_id) }
 
     let(:given_file_id) { 'file123.txt' }
 

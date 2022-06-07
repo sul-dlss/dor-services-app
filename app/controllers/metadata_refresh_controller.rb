@@ -5,7 +5,7 @@ class MetadataRefreshController < ApplicationController
   before_action :load_cocina_object
 
   def refresh
-    result = RefreshMetadataAction.run(identifiers: identifiers,
+    result = RefreshMetadataAction.run(identifiers:,
                                        cocina_object: @cocina_object, druid: @cocina_object.externalIdentifier)
     if result.failure?
       return json_api_error(status: :unprocessable_entity, title: 'No available catkeys or barcodes',

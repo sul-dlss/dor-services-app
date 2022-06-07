@@ -20,15 +20,15 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     let(:cocina_item) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::ObjectType.object,
-                              label: label,
+                              label:,
                               version: 1,
                               description: {
                                 title: [{ value: title }],
-                                purl: purl
+                                purl:
                               },
                               identification: {
                                 sourceId: 'sul:8.559351',
-                                doi: doi
+                                doi:
                               },
                               access: {},
                               administrative: {
@@ -48,7 +48,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           dates: [],
           publicationYear: '2011',
           publisher: 'Stanford Digital Repository',
-          titles: [{ title: title }],
+          titles: [{ title: }],
           alternateIdentifiers: [
             {
               alternateIdentifier: purl,
@@ -64,15 +64,15 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     let(:cocina_item) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::ObjectType.object,
-                              label: label,
+                              label:,
                               version: 1,
                               description: {
                                 title: [{ value: title }],
-                                purl: purl
+                                purl:
                               },
                               identification: {
                                 sourceId: 'sul:8.559351',
-                                doi: doi
+                                doi:
                               },
                               access: {
                                 embargo: {
@@ -96,7 +96,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           dates: [],
           publicationYear: '2031',
           publisher: 'Stanford Digital Repository',
-          titles: [{ title: title }],
+          titles: [{ title: }],
           alternateIdentifiers: [
             {
               alternateIdentifier: purl,
@@ -112,7 +112,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     let(:cocina_item) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::ObjectType.object,
-                              label: label,
+                              label:,
                               version: 1,
                               description: {
                                 contributor: [
@@ -239,7 +239,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                     value: 'My paper is about dolphins.'
                                   }
                                 ],
-                                purl: purl,
+                                purl:,
                                 relatedResource: [
                                   {
                                     note: [
@@ -265,7 +265,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                               },
                               identification: {
                                 sourceId: 'sul:8.559351',
-                                doi: doi
+                                doi:
                               },
                               access: {
                                 license: 'https://creativecommons.org/publicdomain/mark/1.0/'
@@ -346,7 +346,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
               schemeURI: 'http://id.worldcat.org/fast/'
             }
           ],
-          titles: [{ title: title }],
+          titles: [{ title: }],
           types: {
             resourceTypeGeneral: 'Dataset',
             resourceType: 'Data'
@@ -368,11 +368,11 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     let(:cocina_item) do
       Cocina::Models::Collection.new(externalIdentifier: druid,
                                      type: Cocina::Models::ObjectType.collection,
-                                     label: label,
+                                     label:,
                                      version: 1,
                                      description: {
                                        title: [{ value: title }],
-                                       purl: purl
+                                       purl:
                                      },
                                      identification: { sourceId: 'sul:123' },
                                      access: {},
@@ -390,11 +390,11 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     let(:cocina_item) do
       Cocina::Models::AdminPolicy.new(externalIdentifier: druid,
                                       type: Cocina::Models::ObjectType.admin_policy,
-                                      label: label,
+                                      label:,
                                       version: 1,
                                       description: {
                                         title: [{ value: title }],
-                                        purl: purl
+                                        purl:
                                       },
                                       administrative: {
                                         hasAdminPolicy: apo_druid,

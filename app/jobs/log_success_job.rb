@@ -15,8 +15,8 @@ class LogSuccessJob < ApplicationJob
 
     return unless workflow
 
-    WorkflowClientFactory.build.update_status(druid: druid,
-                                              workflow: workflow,
+    WorkflowClientFactory.build.update_status(druid:,
+                                              workflow:,
                                               process: workflow_process,
                                               status: 'completed',
                                               elapsed: 1,

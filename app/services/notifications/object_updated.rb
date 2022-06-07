@@ -8,7 +8,7 @@ module Notifications
       return unless Settings.rabbitmq.enabled
 
       Rails.logger.debug "Publishing Rabbitmq Message for updating #{model.externalIdentifier}"
-      new(model: model, created_at: created_at, modified_at: modified_at, channel: RabbitChannel.instance).publish
+      new(model:, created_at:, modified_at:, channel: RabbitChannel.instance).publish
       Rails.logger.debug "Published Rabbitmq Message for updating #{model.externalIdentifier}"
     end
 
@@ -25,7 +25,7 @@ module Notifications
         created_at: created_at.to_datetime.httpdate,
         modified_at: modified_at.to_datetime.httpdate
       }
-      exchange.publish(message.to_json, routing_key: routing_key)
+      exchange.publish(message.to_json, routing_key:)
     end
 
     private

@@ -6,7 +6,7 @@ RSpec.describe Publish::DublinCoreService do
   subject(:service) { described_class.new(desc_md_xml) }
 
   let(:cocina_object) do
-    build(:dro, id: 'druid:bc123df4567').new(description: description)
+    build(:dro, id: 'druid:bc123df4567').new(description:)
   end
   let(:desc_md_xml) { Publish::PublicDescMetadataService.new(cocina_object).ng_xml(include_access_conditions: false) }
   let(:solr_client) { instance_double(RSolr::Client, get: solr_response) }
