@@ -23,11 +23,13 @@ gem 'config'
 gem 'deprecation'
 gem 'dry-monads'
 gem 'dry-schema', '~> 1.4'
+gem 'edtf', '~> 3.0' # used for metadata reports
 gem 'equivalent-xml' # for diffing MODS
 gem 'faraday', '~> 2.0'
 gem 'faraday-retry'
 gem 'honeybadger'
 gem 'jbuilder'
+gem 'jsonpath', '~> 1.1' # used for metadata reports
 gem 'jwt' # json web token
 gem 'lograge'
 gem 'okcomputer'
@@ -38,6 +40,7 @@ gem 'puma', '~> 5.3' # app server
 gem 'rails', '~> 6.1'
 gem 'retries' # for Goobi
 gem 'rsolr'
+gem 'rss', '~> 0.2' # used for metadata reports
 gem 'ruby-cache', '~> 0.3.0'
 gem 'sidekiq', '~> 6.0'
 gem 'sidekiq-statistic'
@@ -79,5 +82,3 @@ group :deployment do
   gem 'capistrano-shared_configs'
   gem 'dlss-capistrano', require: false
 end
-
-gem 'jsonpath', '~> 1.1'
