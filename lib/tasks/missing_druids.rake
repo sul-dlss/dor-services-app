@@ -7,23 +7,16 @@ namespace :missing_druids do
     druids_from_db = []
     druids_from_solr = []
 
-    loop do
-      results = SolrService.query('id:*', fl: 'id', rows: 10_000_000, sort: 'id asc', wt: 'csv')
-      break unless results.empty?
-
-      results.each { |r| druids_from_solr << r['id'] }
-      sleep(0.5)
-    end
+    results = SolrService.query('id:*', fl: 'id', rows: 10_000_000, wt: 'csv')
+    results.each { |r| druids_from_solr << r['id'] }
     puts "Retrieved #{druids_from_solr.length} druids from SOLR"
 
     models.each do |model|
-      model.find_each do |object|
-        druids_from_db << object.external_identifier
-      end
+      druids_from_db << model.all.pluck(:external_identifier)
     end
     puts "Retrieved #{druids_from_db.length} druids from DB"
 
-    missing_druids = druids_from_db - druids_from_solr
+    missing_druids = druids_from_db.flatten.sort - druids_from_solr.sort
     puts "Missing #{missing_druids.length} druids in SOLR"
 
     File.open('missing_druids.txt', 'w') do |file|
