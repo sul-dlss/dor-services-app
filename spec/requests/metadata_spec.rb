@@ -117,6 +117,7 @@ RSpec.describe 'Display metadata' do
           <identityMetadata>
             <objectType>item</objectType>
             <objectLabel>Hello</objectLabel>
+            <sourceId source="sul">sul:1234</sourceId>
           </identityMetadata>
           <rightsMetadata>
             <access type="discover">

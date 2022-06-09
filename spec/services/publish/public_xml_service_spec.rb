@@ -131,6 +131,7 @@ RSpec.describe Publish::PublicXmlService do
           description:,
           structural:,
           identification: {
+            barcode: '36105132211504',
             catalogLinks: [
               { catalog: 'previous symphony', catalogRecordId: '9001001001', refresh: false },
               { catalog: 'symphony', catalogRecordId: '129483625', refresh: true }
@@ -161,12 +162,14 @@ RSpec.describe Publish::PublicXmlService do
         expect(ng_xml.at_xpath('/publicObject/@publishVersion').value).to eq("cocina-models/#{Cocina::Models::VERSION}")
       end
 
-      it 'has identityMetadata with catkeys' do
+      it 'has identityMetadata with catkeys, barcode and sourceId' do
         expected = <<~XML
           <identityMetadata>
             <objectType>item</objectType>
             <objectLabel>Constituent label &amp; A Special character</objectLabel>
+            <sourceId source="sul">sul:123</sourceId>
             <otherId name="catkey">129483625</otherId>
+            <otherId name="barcode">36105132211504</otherId>
           </identityMetadata>
         XML
         expect(ng_xml.at_xpath('/publicObject/identityMetadata').to_xml).to be_equivalent_to expected

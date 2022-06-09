@@ -80,13 +80,15 @@ module Publish
     def public_identity_metadata
       catkeys = Array(public_cocina.identification&.catalogLinks).filter_map { |link| link.catalogRecordId if link.catalog == SYMPHONY }
       nodes = catkeys.map { |catkey| "  <otherId name=\"catkey\">#{catkey}</otherId>" }
+      nodes << "  <otherId name=\"barcode\">#{public_cocina.identification.barcode}</otherId>" if public_cocina.dro? && public_cocina.identification.barcode
 
       Nokogiri::XML(
         <<~XML
           <identityMetadata>
             <objectType>#{public_cocina.collection? ? 'collection' : 'item'}</objectType>
             <objectLabel>#{Cocina::Models::Builders::TitleBuilder.build(public_cocina.description.title)}</objectLabel>
-          #{nodes.join("\n")}
+            <sourceId source="sul">#{public_cocina.identification.sourceId}</sourceId>
+            #{nodes.join("\n")}
           </identityMetadata>
         XML
       )
