@@ -16,7 +16,7 @@ class BadEdtfDates
   end
 
   def report
-    bad_values = path.on(dro.description.to_json).filter_map do |date_value|
+    bad_values = path.on(dro.description.to_json).uniq.filter_map do |date_value|
       Date.edtf!(date_value)
       nil
     rescue ArgumentError
@@ -33,7 +33,7 @@ class BadEdtfDates
   attr_reader :dro
 
   def path
-    @path ||= JsonPath.new('$..date[*][?(@.encoding.code == "edtf")]*.value')
+    @path ||= JsonPath.new('$..date..[?(@.encoding.code == "edtf")]..value')
   end
 
   def collection_id
