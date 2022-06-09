@@ -28,7 +28,7 @@ class BadEdtfDates
       #
       # So we catch the false positives from the upstream gem and allow
       # this pattern to validate
-      /\AY(-)?\d{5,}\Z/.match?(date_value) ? nil : date_value
+      /\AY-?\d{5,}\Z/.match?(date_value) ? nil : date_value
     end
 
     return if bad_values.empty?
