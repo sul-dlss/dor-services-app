@@ -20,7 +20,15 @@ class BadEdtfDates
       Date.edtf!(date_value)
       nil
     rescue ArgumentError
-      date_value
+      # NOTE: the upstream EDTF implementation in the `edtf` gem does not
+      #       allow a valid pattern that we use (possibly because only level
+      #       0 of the spec was implemented?):
+      #
+      # * Y-20555
+      #
+      # So we catch the false positives from the upstream gem and allow
+      # this pattern to validate
+      /\AY(-)?\d{5,}\Z/.match?(date_value) ? nil : date_value
     end
 
     return if bad_values.empty?
