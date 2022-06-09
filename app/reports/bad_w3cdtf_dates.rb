@@ -16,7 +16,7 @@ class BadW3cdtfDates
   end
 
   def report
-    bad_values = path.on(dro.description.to_json).filter_map do |date_value|
+    bad_values = path.on(dro.description.to_json).uniq.filter_map do |date_value|
       Time.w3cdtf(date_value)
       nil
     rescue ArgumentError
@@ -28,7 +28,7 @@ class BadW3cdtfDates
       #
       # So we catch the false positives from the upstream gem and allow
       # these two patterns to validate
-      /\A\d{4}(-0[1-9]|1[0-2])?\Z/.match?(date_value)
+      /\A\d{4}(-0[1-9]|1[0-2])?\Z/.match(date_value)&.to_s
     end
 
     return if bad_values.empty?
@@ -41,7 +41,7 @@ class BadW3cdtfDates
   attr_reader :dro
 
   def path
-    @path ||= JsonPath.new('$..date[*][?(@.encoding.code == "w3cdtf")]*.value')
+    @path ||= JsonPath.new('$..date..[?(@.encoding.code == "w3cdtf")]..value')
   end
 
   def collection_id

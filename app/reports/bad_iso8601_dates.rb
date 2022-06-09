@@ -16,7 +16,7 @@ class BadIso8601Dates
   end
 
   def report
-    bad_values = path.on(dro.description.to_json).filter_map do |date_value|
+    bad_values = path.on(dro.description.to_json).uniq.filter_map do |date_value|
       DateTime.iso8601(date_value)
       nil
     rescue Date::Error
@@ -33,7 +33,7 @@ class BadIso8601Dates
   attr_reader :dro
 
   def path
-    @path ||= JsonPath.new('$..date[*][?(@.encoding.code == "iso8601")]*.value')
+    @path ||= JsonPath.new('$..date..[?(@.encoding.code == "iso8601")]..value')
   end
 
   def collection_id
