@@ -274,6 +274,16 @@ RSpec.describe Publish::PublicXmlService do
         expect(ng_xml.at_xpath('/publicObject/rdf:RDF', 'rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')).to be
         expect(ng_xml.at_xpath('/publicObject/oai_dc:dc', 'oai_dc' => 'http://www.openarchives.org/OAI/2.0/oai_dc/')).to be
       end
+
+      it 'has identityMetadata without a sourceId' do
+        expected = <<~XML
+          <identityMetadata>
+            <objectType>collection</objectType>
+            <objectLabel>Constituent label &amp; A Special character</objectLabel>
+          </identityMetadata>
+        XML
+        expect(ng_xml.at_xpath('/publicObject/identityMetadata').to_xml).to be_equivalent_to expected
+      end
     end
 
     context 'with external references' do
