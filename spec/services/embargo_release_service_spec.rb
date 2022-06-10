@@ -131,7 +131,7 @@ RSpec.describe EmbargoReleaseService do
 
     before do
       # This allows getting back the cocina object that was saved.
-      allow(CocinaObjectStore).to receive(:save) { |cocina_object| cocina_object }
+      allow(UpdateObjectService).to receive(:update) { |cocina_object| cocina_object }
     end
 
     context 'when embargo access is world' do
@@ -163,7 +163,7 @@ RSpec.describe EmbargoReleaseService do
             download: 'world'
           ).to_h
         )
-        expect(CocinaObjectStore).to have_received(:save)
+        expect(UpdateObjectService).to have_received(:update)
       end
     end
 
@@ -196,7 +196,7 @@ RSpec.describe EmbargoReleaseService do
             download: 'none'
           ).to_h
         )
-        expect(CocinaObjectStore).to have_received(:save)
+        expect(UpdateObjectService).to have_received(:update)
       end
     end
 
@@ -227,7 +227,7 @@ RSpec.describe EmbargoReleaseService do
             useAndReproductionStatement: 'Free!'
           ).to_h
         )
-        expect(CocinaObjectStore).to have_received(:save)
+        expect(UpdateObjectService).to have_received(:update)
       end
     end
   end

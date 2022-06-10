@@ -20,7 +20,7 @@ RSpec.describe ConstituentService do
       allow(VersionService).to receive(:open).and_return(virtual_object)
       allow(VersionService).to receive(:close)
       allow(ResetContentMetadataService).to receive(:reset).and_return(virtual_object)
-      allow(CocinaObjectStore).to receive(:save)
+      allow(UpdateObjectService).to receive(:update)
       allow(CocinaObjectStore).to receive(:find).and_return(mock_item)
       allow(SynchronousIndexer).to receive(:reindex_remotely_from_cocina)
       allow(Publish::MetadataTransferService).to receive(:publish)
@@ -36,7 +36,7 @@ RSpec.describe ConstituentService do
         expect(VersionService).not_to have_received(:open)
         expect(VersionService).not_to have_received(:close)
         expect(ResetContentMetadataService).not_to have_received(:reset)
-        expect(CocinaObjectStore).not_to have_received(:save)
+        expect(UpdateObjectService).not_to have_received(:update)
         expect(SynchronousIndexer).not_to have_received(:reindex_remotely_from_cocina)
       end
     end

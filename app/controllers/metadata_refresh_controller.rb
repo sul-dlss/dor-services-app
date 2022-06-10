@@ -12,7 +12,7 @@ class MetadataRefreshController < ApplicationController
                             message: "#{@cocina_object.externalIdentifier} had no catkeys marked as refreshable: #{identifiers.inspect}")
     end
 
-    CocinaObjectStore.save(@cocina_object.new(description: result.value!.description_props))
+    UpdateObjectService.update(@cocina_object.new(description: result.value!.description_props))
   rescue MarcService::CatalogRecordNotFoundError => e
     json_api_error(status: :bad_request, title: 'Catkey not found in Symphony', message: e.message)
   rescue MarcService::MarcServiceError => e

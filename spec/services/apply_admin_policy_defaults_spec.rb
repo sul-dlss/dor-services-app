@@ -103,14 +103,14 @@ RSpec.describe ApplyAdminPolicyDefaults do
     before do
       allow(CocinaObjectStore).to receive(:find).with(object_druid).and_return(cocina_object)
       allow(CocinaObjectStore).to receive(:find).with(apo_druid).and_return(cocina_admin_policy)
-      allow(CocinaObjectStore).to receive(:save)
+      allow(UpdateObjectService).to receive(:update)
       instance.apply
     end
 
     context 'with a DRO that lack structural metadata' do
       context 'with dark access' do
         it 'copies APO accessTemplate to item access' do
-          expect(CocinaObjectStore).to have_received(:save)
+          expect(UpdateObjectService).to have_received(:update)
             .once
             .with(cocina_object_with(access: default_access))
         end
@@ -126,7 +126,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         end
 
         it 'copies APO accessTemplate to item access' do
-          expect(CocinaObjectStore).to have_received(:save)
+          expect(UpdateObjectService).to have_received(:update)
             .once
             .with(cocina_object_with(access: default_access))
         end
@@ -152,7 +152,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         end
 
         it 'maps to world collection access' do
-          expect(CocinaObjectStore).to have_received(:save)
+          expect(UpdateObjectService).to have_received(:update)
             .once
             .with(cocina_object_with(access: expected_access))
         end
@@ -173,7 +173,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         end
 
         it 'maps to world collection access' do
-          expect(CocinaObjectStore).to have_received(:save)
+          expect(UpdateObjectService).to have_received(:update)
             .once
             .with(cocina_object_with(access: expected_access))
         end
@@ -194,7 +194,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         end
 
         it 'maps to world collection access' do
-          expect(CocinaObjectStore).to have_received(:save)
+          expect(UpdateObjectService).to have_received(:update)
             .once
             .with(cocina_object_with(access: expected_access))
         end
@@ -214,7 +214,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         end
 
         it 'maps to dark collection access' do
-          expect(CocinaObjectStore).to have_received(:save)
+          expect(UpdateObjectService).to have_received(:update)
             .once
             .with(cocina_object_with(access: expected_access))
         end
@@ -290,7 +290,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         end
 
         it 'copies APO accessTemplate to item access' do
-          expect(CocinaObjectStore).to have_received(:save)
+          expect(UpdateObjectService).to have_received(:update)
             .once
             .with(cocina_object_with(access: default_access, structural: { contains: [file_set_with_default_access] }))
         end
@@ -334,7 +334,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         end
 
         it 'copies APO accessTemplate to item access' do
-          expect(CocinaObjectStore).to have_received(:save)
+          expect(UpdateObjectService).to have_received(:update)
             .once
             .with(cocina_object_with(access: default_access, structural: { contains: [file_set_with_custom_access] }))
         end

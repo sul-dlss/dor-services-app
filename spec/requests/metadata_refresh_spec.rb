@@ -56,7 +56,7 @@ RSpec.describe 'Refresh metadata' do
   before do
     allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
     allow(CocinaObjectStore).to receive(:find).with(apo_druid).and_return(cocina_apo_object)
-    allow(CocinaObjectStore).to receive(:save).and_return(updated_cocina_object)
+    allow(UpdateObjectService).to receive(:update).and_return(updated_cocina_object)
   end
 
   context 'when happy path' do
@@ -68,7 +68,7 @@ RSpec.describe 'Refresh metadata' do
       post '/v1/objects/druid:mk420bs7601/refresh_metadata',
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
-      expect(CocinaObjectStore).to have_received(:save).with(updated_cocina_object)
+      expect(UpdateObjectService).to have_received(:update).with(updated_cocina_object)
     end
   end
 
@@ -88,7 +88,7 @@ RSpec.describe 'Refresh metadata' do
       post '/v1/objects/druid:mk420bs7601/refresh_metadata',
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
-      expect(CocinaObjectStore).to have_received(:save).with(updated_cocina_object)
+      expect(UpdateObjectService).to have_received(:update).with(updated_cocina_object)
     end
   end
 

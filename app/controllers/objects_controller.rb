@@ -44,9 +44,9 @@ class ObjectsController < ApplicationController
     # ETag / optimistic locking is optional.
     etag = from_etag(request.headers['If-Match'])
     updated_cocina_object = if etag
-                              CocinaObjectStore.save(Cocina::Models.with_metadata(cocina_object, etag))
+                              UpdateObjectService.update(Cocina::Models.with_metadata(cocina_object, etag))
                             else
-                              CocinaObjectStore.save(cocina_object, skip_lock: true)
+                              UpdateObjectService.update(cocina_object, skip_lock: true)
                             end
 
     add_headers(updated_cocina_object)
