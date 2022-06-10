@@ -17,7 +17,7 @@ class ObjectsController < ApplicationController
     return json_api_error(status: :service_unavailable, message: 'Registration is temporarily disabled') unless Settings.enabled_features.registration
 
     model_request = Cocina::Models.build_request(params.except(:action, :controller, :assign_doi).to_unsafe_h)
-    cocina_object = CocinaObjectStore.create(model_request, assign_doi: params[:assign_doi])
+    cocina_object = CreateObjectService.create(model_request, assign_doi: params[:assign_doi])
 
     add_headers(cocina_object)
     render status: :created, location: object_path(cocina_object.externalIdentifier), json: Cocina::Models.without_metadata(cocina_object)
