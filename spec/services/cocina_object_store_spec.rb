@@ -159,7 +159,7 @@ RSpec.describe CocinaObjectStore do
 
       it 'saves to datastore' do
         expect(AdminPolicy.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
-        expect(store.send(:cocina_to_ar_save, cocina_object, skip_lock: true)).to match([kind_of(Time), kind_of(Time), kind_of(String)])
+        expect(store.save(cocina_object, skip_lock: true)).to be_kind_of Cocina::Models::AdminPolicyWithMetadata
         expect(AdminPolicy.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
       end
     end
@@ -186,7 +186,7 @@ RSpec.describe CocinaObjectStore do
 
       it 'saves to datastore' do
         expect(Collection.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
-        expect(store.send(:cocina_to_ar_save, cocina_object, skip_lock: true)).to match([kind_of(Time), kind_of(Time), kind_of(String)])
+        expect(store.save(cocina_object, skip_lock: true)).to be_kind_of Cocina::Models::CollectionWithMetadata
         expect(Collection.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
       end
     end
