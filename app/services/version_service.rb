@@ -73,7 +73,7 @@ class VersionService
       new_object_version = ObjectVersion.increment_version(druid:, description:, significance: significance.to_sym)
     end
     update_cocina_object = cocina_object
-    update_cocina_object = CocinaObjectStore.save(cocina_object.new(version: new_object_version.version)) if cocina_object.version != new_object_version.version
+    update_cocina_object = UpdateObjectService.update(cocina_object.new(version: new_object_version.version)) if cocina_object.version != new_object_version.version
 
     workflow_client.create_workflow_by_name(druid, 'versioningWF', version: new_object_version.version.to_s)
 

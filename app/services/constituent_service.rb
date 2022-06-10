@@ -43,7 +43,7 @@ class ConstituentService
     VersionService.close(updated_virtual_object,
                          event_factory:)
 
-    CocinaObjectStore.save(updated_virtual_object)
+    UpdateObjectService.update(updated_virtual_object)
 
     SynchronousIndexer.reindex_remotely_from_cocina(cocina_object: updated_virtual_object, created_at:, updated_at:)
 

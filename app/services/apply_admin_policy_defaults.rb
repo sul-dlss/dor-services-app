@@ -37,7 +37,7 @@ class ApplyAdminPolicyDefaults
   end
 
   def apply
-    CocinaObjectStore.save(updated_cocina_object)
+    UpdateObjectService.update(updated_cocina_object)
   end
 
   private

@@ -73,7 +73,7 @@ class EmbargoReleaseService
 
     structural_props = structural_props_for(cocina_object, access_props)
 
-    CocinaObjectStore.save(cocina_object.new({ access: access_props, structural: structural_props }.compact))
+    UpdateObjectService.update(cocina_object.new({ access: access_props, structural: structural_props }.compact))
   end
 
   def access_props_for(cocina_object)

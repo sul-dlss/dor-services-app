@@ -50,7 +50,7 @@ RSpec.describe VersionService do
     before do
       allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
-      allow(CocinaObjectStore).to receive(:save)
+      allow(UpdateObjectService).to receive(:update)
       ObjectVersion.create(druid:, version: 1, tag: '1.0.0', description: 'new version')
       allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
     end
@@ -60,7 +60,7 @@ RSpec.describe VersionService do
         open
         expect(cocina_object).to have_received(:new).with(version: 2)
         expect(ObjectVersion.current_version(druid).version).to eq(2)
-        expect(CocinaObjectStore).to have_received(:save)
+        expect(UpdateObjectService).to have_received(:update)
         expect(workflow_client).to have_received(:lifecycle).with(druid:, milestone_name: 'accessioned')
         expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'opened', version: '1')
         expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'submitted', version: '1')
@@ -88,7 +88,7 @@ RSpec.describe VersionService do
         expect(cocina_object).to have_received(:new).with(version: 2)
         expect(ObjectVersion.current_version(druid).version).to eq(2)
         expect(ObjectVersion).not_to have_received(:sync_then_increment_version)
-        expect(CocinaObjectStore).to have_received(:save)
+        expect(UpdateObjectService).to have_received(:update)
         expect(workflow_client).to have_received(:lifecycle).with(druid:, milestone_name: 'accessioned')
         expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'opened', version: '1')
         expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'submitted', version: '1')
