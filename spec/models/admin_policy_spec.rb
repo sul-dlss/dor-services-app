@@ -84,4 +84,13 @@ RSpec.describe AdminPolicy do
       end
     end
   end
+
+  describe 'presence validation' do
+    subject(:apo) { described_class.create }
+
+    it 'tells you if fields are missing' do
+      expect(apo.errors.attribute_names).to eq %i[external_identifier cocina_version
+                                                  label version administrative]
+    end
+  end
 end

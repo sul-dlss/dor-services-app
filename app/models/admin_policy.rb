@@ -2,6 +2,8 @@
 
 # Model for an AdminPolicy.
 class AdminPolicy < RepositoryRecord
+  validates :administrative, presence: true
+
   # @return [Cocina::Models::AdminPolicy] Cocina Administrative Policy
   def to_cocina
     Cocina::Models::AdminPolicy.new(to_h)

@@ -91,4 +91,15 @@ RSpec.describe Collection do
       end
     end
   end
+
+  describe 'presence validation' do
+    subject(:collection) { described_class.create }
+
+    it 'tells you if fields are missing' do
+      expect(collection.errors.attribute_names).to eq %i[external_identifier
+                                                         cocina_version label
+                                                         version access administrative
+                                                         description identification]
+    end
+  end
 end
