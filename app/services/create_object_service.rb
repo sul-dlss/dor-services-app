@@ -12,15 +12,17 @@ class CreateObjectService
   # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object
   # @param [boolean] assign_doi
   # @param [#create] event_factory creates events
+  # @param [#call] id_minter assigns identifiers. You can provide your own minter if you want to use a specific druid for an item.
   # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
   # @raises [SymphonyReader::ResponseError] if symphony connection failed
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
-  def self.create(cocina_request_object, assign_doi: false, event_factory: EventFactory)
-    new(event_factory:).create(cocina_request_object, assign_doi:)
+  def self.create(cocina_request_object, assign_doi: false, event_factory: EventFactory, id_minter: -> { SuriService.mint_id })
+    new(event_factory:, id_minter:).create(cocina_request_object, assign_doi:)
   end
 
-  def initialize(event_factory: EventFactory)
+  def initialize(event_factory: EventFactory, id_minter: -> { SuriService.mint_id })
     @event_factory = event_factory
+    @id_minter = id_minter
   end
 
   # @raises MarcService::MarcServiceError
@@ -28,7 +30,7 @@ class CreateObjectService
     ensure_ur_admin_policy_exists(cocina_request_object)
     Cocina::ObjectValidator.validate(cocina_request_object)
     updated_cocina_request_object = merge_access_for(cocina_request_object)
-    druid = SuriService.mint_id
+    druid = id_minter.call
     updated_cocina_request_object = sync_from_symphony(updated_cocina_request_object, druid)
     updated_cocina_request_object = add_description(updated_cocina_request_object)
     cocina_object = cocina_from_request(updated_cocina_request_object, druid)
@@ -47,7 +49,7 @@ class CreateObjectService
 
   private
 
-  attr_reader :event_factory
+  attr_reader :event_factory, :id_minter
 
   # If an object references the Ur-AdminPolicy, it has to exist first.
   # This is particularly important in testing, where the repository may be empty.
