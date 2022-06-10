@@ -7,6 +7,7 @@ FactoryBot.define do
     content_type { Cocina::Models::ObjectType.book }
     label { 'Test DRO' }
     version { 1 }
+    lock { 0 }
     access do
       { view: 'world', download: 'world' }
     end

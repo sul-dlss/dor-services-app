@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 # Model for an AdminPolicy.
-class AdminPolicy < ApplicationRecord
-  self.locking_column = 'lock'
-
+class AdminPolicy < RepositoryRecord
   # @return [Cocina::Models::AdminPolicy] Cocina Administrative Policy
   def to_cocina
     Cocina::Models::AdminPolicy.new(to_h)

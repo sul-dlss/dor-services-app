@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 # Model for a Collection.
-class Collection < ApplicationRecord
-  self.locking_column = 'lock'
-
+class Collection < RepositoryRecord
   # @return [Cocina::Models::Collection] Cocina collection
   def to_cocina
     Cocina::Models::Collection.new(to_h)
