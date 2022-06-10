@@ -82,15 +82,15 @@ class CocinaObjectStore
   def save(cocina_object, skip_lock: false)
     validate(cocina_object)
     # Only update if already exists in PG (i.e., added by create or migration).
-    (created_at, modified_at, lock) = cocina_to_ar_save(cocina_object, skip_lock:)
+    cocina_object_with_metadata = cocina_to_ar_save(cocina_object, skip_lock:)
 
     cocina_object_without_metadata = Cocina::Models.without_metadata(cocina_object)
 
     event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update', data: { success: true, request: cocina_object_without_metadata.to_h })
 
     # Broadcast this update action to a topic
-    Notifications::ObjectUpdated.publish(model: cocina_object_without_metadata, created_at:, modified_at:)
-    Cocina::Models.with_metadata(cocina_object, lock, created: created_at, modified: modified_at)
+    Notifications::ObjectUpdated.publish(model: cocina_object_with_metadata)
+    cocina_object_with_metadata
   rescue Cocina::ValidationError => e
     event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update',
                          data: { success: false, error: e.message, request: Cocina::Models.without_metadata(cocina_object).to_h })
@@ -107,7 +107,7 @@ class CocinaObjectStore
     updated_cocina_request_object = add_description(updated_cocina_request_object)
     cocina_object = cocina_from_request(updated_cocina_request_object, druid)
     cocina_object = assign_doi(cocina_object) if assign_doi
-    (created_at, modified_at, lock) = cocina_to_ar_save(cocina_object, skip_lock: true)
+    cocina_object_with_metadata = cocina_to_ar_save(cocina_object, skip_lock: true)
     add_project_tag(druid, cocina_request_object)
     # This creates version 1.0.0 (Initial Version)
     ObjectVersion.initial_version(druid:)
@@ -115,8 +115,8 @@ class CocinaObjectStore
     event_factory.create(druid:, event_type: 'registration', data: cocina_object.to_h)
 
     # Broadcast this to a topic
-    Notifications::ObjectCreated.publish(model: cocina_object, created_at:, modified_at:)
-    Cocina::Models.with_metadata(cocina_object, lock, created: created_at, modified: modified_at)
+    Notifications::ObjectCreated.publish(model: cocina_object_with_metadata)
+    cocina_object_with_metadata
   end
 
   def exists?(druid)
@@ -145,7 +145,7 @@ class CocinaObjectStore
 
   # Persist a Cocina object with ActiveRecord.
   # @param [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy] cocina_object
-  # @return [Array] array consisting of created date, modified date, and lock
+  # @return [Cocina::Models::AdminPolicyWithMetadata,Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata] the saved object with its metadata
   # @raise [Cocina::ValidationError] if externalIdentifier or sourceId not unique
   def cocina_to_ar_save(cocina_object, skip_lock: false)
     ar_check_lock(cocina_object) unless skip_lock
@@ -161,7 +161,7 @@ class CocinaObjectStore
                     raise CocinaObjectStoreError, "unsupported type #{cocina_object&.type}"
                   end
     ar_cocina_object = model_clazz.upsert_cocina(Cocina::Models.without_metadata(cocina_object))
-    [ar_cocina_object.created_at.utc, ar_cocina_object.updated_at.utc, ar_cocina_object.external_lock]
+    ar_cocina_object.to_cocina_with_metadata
   rescue ActiveRecord::RecordNotUnique => e
     message = if e.message.include?('dro_source_id_idx')
                 source_id = cocina_object.identification.sourceId
@@ -184,8 +184,7 @@ class CocinaObjectStore
   # @param [String] druid to find
   # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
   def ar_to_cocina_find(druid)
-    ar_cocina_object = ar_find(druid)
-    Cocina::Models.with_metadata(ar_cocina_object.to_cocina, ar_cocina_object.external_lock, created: ar_cocina_object.created_at.utc, modified: ar_cocina_object.updated_at.utc)
+    ar_find(druid).to_cocina_with_metadata
   end
 
   # Find an ActiveRecord Cocina object.

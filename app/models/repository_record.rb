@@ -12,4 +12,8 @@ class RepositoryRecord < ApplicationRecord
     # lock column is just an integer sequence.
     [external_identifier, lock.to_s].join('=')
   end
+
+  def to_cocina_with_metadata
+    Cocina::Models.with_metadata(to_cocina, external_lock, created: created_at.utc, modified: updated_at.utc)
+  end
 end

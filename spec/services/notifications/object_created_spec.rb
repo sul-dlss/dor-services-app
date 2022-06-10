@@ -3,12 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe Notifications::ObjectCreated do
-  subject(:publish) { described_class.publish(model:, created_at:, modified_at:) }
+  subject(:publish) { described_class.publish(model: model.to_cocina_with_metadata) }
 
-  let(:data) { { data: '455' } }
   let(:created_at) { '04 Feb 2022' }
-  let(:modified_at) { '04 Feb 2022' }
-  let(:message) { "{\"model\":{\"data\":\"455\"},\"created_at\":\"#{created_at.to_datetime.httpdate}\",\"modified_at\":\"#{modified_at.to_datetime.httpdate}\"}" }
+  let(:updated_at) { '04 Feb 2022' }
+  let(:message) { "{\"model\":#{model_json},\"created_at\":\"Fri, 04 Feb 2022 00:00:00 GMT\",\"modified_at\":\"Fri, 04 Feb 2022 00:00:00 GMT\"}" }
+  let(:model_json) { model.to_cocina.to_json }
 
   let(:channel) { instance_double(Notifications::RabbitChannel, topic:) }
   let(:topic) { instance_double(Bunny::Exchange, publish: true) }
@@ -20,10 +20,7 @@ RSpec.describe Notifications::ObjectCreated do
     end
 
     context 'when called with a DRO' do
-      let(:model) do
-        instance_double(Cocina::Models::DRO,
-                        externalIdentifier: 'druid:123', to_h: data)
-      end
+      let(:model) { build(:ar_dro, created_at:, updated_at:) }
 
       before do
         allow(AdministrativeTags).to receive(:project).and_return(['h2'])
@@ -32,12 +29,12 @@ RSpec.describe Notifications::ObjectCreated do
       it 'is successful' do
         publish
         expect(topic).to have_received(:publish).with(message, routing_key: 'h2')
-        expect(AdministrativeTags).to have_received(:project).with(identifier: 'druid:123')
+        expect(AdministrativeTags).to have_received(:project).with(identifier: model.external_identifier)
       end
     end
 
     context 'when called with an AdminPolicy' do
-      let(:model) { build(:admin_policy) }
+      let(:model) { build(:ar_admin_policy, created_at:, updated_at:) }
 
       it 'is successful' do
         publish
@@ -52,10 +49,7 @@ RSpec.describe Notifications::ObjectCreated do
     end
 
     context 'when called with a DRO' do
-      let(:model) do
-        instance_double(Cocina::Models::DRO,
-                        externalIdentifier: 'druid:123', to_h: data)
-      end
+      let(:model) { build(:ar_dro, created_at:, updated_at:) }
 
       it 'does not receive a message' do
         publish
