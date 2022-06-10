@@ -2,6 +2,9 @@
 
 # Model for a Digital Repository Object.
 class Dro < RepositoryRecord
+  validates :content_type, :access, :administrative, :description,
+            :identification, :structural, presence: true
+
   # @return [Cocina::Models::DRO] Cocina Digital Repository Object
   def to_cocina
     Cocina::Models::DRO.new(to_h)

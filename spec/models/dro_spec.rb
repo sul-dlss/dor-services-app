@@ -203,4 +203,14 @@ RSpec.describe Dro do
       end
     end
   end
+
+  describe 'presence validation' do
+    subject(:dro) { described_class.create }
+
+    it 'tells you if fields are missing' do
+      expect(dro.errors.attribute_names).to eq %i[external_identifier cocina_version label version
+                                                  content_type access administrative
+                                                  description identification structural]
+    end
+  end
 end

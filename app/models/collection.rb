@@ -2,6 +2,8 @@
 
 # Model for a Collection.
 class Collection < RepositoryRecord
+  validates :access, :administrative, :description, :identification, presence: true
+
   # @return [Cocina::Models::Collection] Cocina collection
   def to_cocina
     Cocina::Models::Collection.new(to_h)
