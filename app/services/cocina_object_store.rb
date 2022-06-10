@@ -161,7 +161,7 @@ class CocinaObjectStore
                     raise CocinaObjectStoreError, "unsupported type #{cocina_object&.type}"
                   end
     ar_cocina_object = model_clazz.upsert_cocina(Cocina::Models.without_metadata(cocina_object))
-    [ar_cocina_object.created_at.utc, ar_cocina_object.updated_at.utc, ar_lock_for(ar_cocina_object)]
+    [ar_cocina_object.created_at.utc, ar_cocina_object.updated_at.utc, ar_cocina_object.external_lock]
   rescue ActiveRecord::RecordNotUnique => e
     message = if e.message.include?('dro_source_id_idx')
                 source_id = cocina_object.identification.sourceId
@@ -174,13 +174,10 @@ class CocinaObjectStore
   end
 
   def ar_check_lock(cocina_object)
-    ar_object = Dro.find_by(external_identifier: cocina_object.externalIdentifier) ||
-                AdminPolicy.find_by(external_identifier: cocina_object.externalIdentifier) ||
-                Collection.find_by(external_identifier: cocina_object.externalIdentifier)
-    lock = ar_lock_for(ar_object)
-    return if cocina_object.respond_to?(:lock) && lock == cocina_object.lock
+    ar_object = ar_find(cocina_object.externalIdentifier)
+    return if cocina_object.respond_to?(:lock) && ar_object.external_lock == cocina_object.lock
 
-    raise StaleLockError, "Expected lock of #{lock} but received #{cocina_object.lock}."
+    raise StaleLockError, "Expected lock of #{ar_object.external_lock} but received #{cocina_object.lock}."
   end
 
   # Find a Cocina object persisted by ActiveRecord.
@@ -188,12 +185,7 @@ class CocinaObjectStore
   # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
   def ar_to_cocina_find(druid)
     ar_cocina_object = ar_find(druid)
-    Cocina::Models.with_metadata(ar_cocina_object.to_cocina, ar_lock_for(ar_cocina_object), created: ar_cocina_object.created_at.utc, modified: ar_cocina_object.updated_at.utc)
-  end
-
-  def ar_lock_for(ar_cocina_object)
-    # This should be opaque, but this makes troubeshooting easier.
-    [ar_cocina_object.external_identifier, ar_cocina_object.lock.to_s].join('=')
+    Cocina::Models.with_metadata(ar_cocina_object.to_cocina, ar_cocina_object.external_lock, created: ar_cocina_object.created_at.utc, modified: ar_cocina_object.updated_at.utc)
   end
 
   # Find an ActiveRecord Cocina object.
