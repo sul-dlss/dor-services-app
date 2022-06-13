@@ -1,6 +1,7 @@
 FROM ruby:3.1.2-alpine
 
 ENV RAILS_ENV=production
+ENV BUNDLER_WITHOUT="development test"
 
 # postgresql-client is required for invoke.sh
 RUN apk add --update --no-cache  \
@@ -18,7 +19,7 @@ WORKDIR /app
 
 COPY Gemfile Gemfile.lock ./
 
-RUN bundle install --without development test
+RUN bundle install
 
 COPY . .
 
