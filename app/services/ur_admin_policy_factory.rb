@@ -24,9 +24,7 @@ class UrAdminPolicyFactory
       }
     )
 
-    ar_apo = AdminPolicy.upsert_cocina(admin_policy_cocina)
-    Notifications::ObjectCreated.publish(model: admin_policy_cocina,
-                                         created_at: ar_apo.created_at.utc,
-                                         modified_at: ar_apo.updated_at.utc)
+    cocina_object_with_metadata = CocinaObjectStore.store(admin_policy_cocina, skip_lock: true)
+    Notifications::ObjectCreated.publish(model: cocina_object_with_metadata)
   end
 end
