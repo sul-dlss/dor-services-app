@@ -8,7 +8,6 @@ services:
     working_dir: /app
     depends_on:
       - solr
-      - fcrepo
       - suri
       - workflow
       - redis
@@ -27,12 +26,8 @@ services:
       # We don't actually use this anywhere but the rails server needs it in production env
       SECRET_KEY_BASE: e0221b0233dbe4914fae9405c1e179eb1db71379fd999c51265123a6dde45c8281235307dda0b8c06633b702a05679391a950a483f8c624642eb3c3211d4241d
       SOLR_URL: http://solr:8983/solr/dorservices
-      SETTINGS__SSL__CERT_FILE: /app/spec/support/certs/spec.crt
-      SETTINGS__SSL__KEY_FILE: /app/spec/support/certs/spec.key
-      SETTINGS__SSL__KEY_PASS: thisisatleast4bytes
       SETTINGS__REDIS_URL: redis://redis:6379/
       SETTINGS__SOLR__URL: http://solr:8983/solr/dorservices
-      SETTINGS__FEDORA_URL: http://fedoraAdmin:fedoraAdmin@fcrepo:8080/fedora
       SETTINGS__SURI__URL: http://suri:3000
       SETTINGS__WORKFLOW_URL: http://workflow:3000
   workers:
@@ -46,12 +41,8 @@ services:
     environment:
       REDIS_URL: redis://redis:6379/
       SOLR_URL: http://solr:8983/solr/dorservices
-      SETTINGS__SSL__CERT_FILE: /app/spec/support/certs/spec.crt
-      SETTINGS__SSL__KEY_FILE: /app/spec/support/certs/spec.key
-      SETTINGS__SSL__KEY_PASS: thisisatleast4bytes
       SETTINGS__REDIS_URL: redis://redis:6379/
       SETTINGS__SOLR__URL: http://solr:8983/solr/dorservices
-      SETTINGS__FEDORA_URL: http://fedoraAdmin:fedoraAdmin@fcrepo:8080/fedora
       SETTINGS__SURI__URL: http://suri:3000
       SETTINGS__WORKFLOW_URL: http://workflow:3000
   redis:
@@ -65,10 +56,6 @@ services:
     command: solr-create -c dorservices -d /myconfig
     ports:
       - 8984:8983
-  fcrepo:
-    image: suldlss/fcrepo:no-messaging-latest
-    ports:
-      - 8983:8080
   suri:
     image: suldlss/suri-rails:latest
     ports:
