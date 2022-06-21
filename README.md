@@ -108,3 +108,12 @@ Usage: bin/clean-druid-list [options]
     -h, --help                       Displays help.
 
 Solr is used to determine if an item still exists.
+
+### Find druids missing from the SOLR index
+
+Run the missing druid rake task:
+```
+bundle exec rake missing_druids:unindexed_objects
+```
+This produces a `missing_druids.txt` file in the application root.
+

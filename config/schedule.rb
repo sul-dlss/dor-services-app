@@ -27,3 +27,8 @@ env 'RUBYOPT', '-W0'
 every :day, at: '2:16am' do
   rake 'dsa:embargo_release'
 end
+
+# Run this an on off minute to avoid Google Books every 15 minutes
+every :day, at: '8:35pm' do
+  rake 'missing_druids:unindexed_objects'
+end
