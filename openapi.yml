@@ -1603,7 +1603,7 @@ components:
         - catalogRecordId
         - refresh
     CatkeyBarcode:
-      description: The barcode associated with a DRO object based on catkey, prefixed with 36105
+      description: The barcode associated with a DRO object based on catkey, prefixed with a catkey followed by a hyphen
       type: string
       pattern: '^[0-9]+-[0-9]+$'
       example: '6772719-1001'
