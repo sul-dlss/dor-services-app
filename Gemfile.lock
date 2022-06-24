@@ -396,6 +396,8 @@ GEM
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
     scrub_rb (1.0.1)
+    serverengine (2.0.7)
+      sigdump (~> 0.2.2)
     set (1.0.2)
     sidekiq (6.5.1)
       connection_pool (>= 2.2.2)
@@ -404,12 +406,19 @@ GEM
     sidekiq-statistic (1.4.0)
       sidekiq (>= 5.0)
       tilt (~> 2.0)
+    sigdump (0.2.4)
     simplecov (0.21.2)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.12.3)
     simplecov_json_formatter (0.1.4)
+    sneakers (2.11.0)
+      bunny (~> 2.12)
+      concurrent-ruby (~> 1.0)
+      rake
+      serverengine (~> 2.0.5)
+      thor
     sorted_set (1.0.3)
       rbtree
       set (~> 1.0)
@@ -525,6 +534,7 @@ DEPENDENCIES
   sidekiq (~> 6.0)
   sidekiq-statistic
   simplecov
+  sneakers (~> 2.11)
   spring
   spring-watcher-listen (~> 2.0.0)
   stanford-mods (~> 2.6)

@@ -44,6 +44,7 @@ gem 'rss', '~> 0.2' # used for metadata reports
 gem 'ruby-cache', '~> 0.3.0'
 gem 'sidekiq', '~> 6.0'
 gem 'sidekiq-statistic'
+gem 'sneakers', '~> 2.11'
 gem 'tty-progressbar' # to show progress when running migration script
 gem 'uuidtools', '~> 2.1.4'
 gem 'whenever', require: false
