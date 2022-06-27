@@ -297,8 +297,8 @@ RSpec.describe Publish::PublicDescMetadataService do
                               { access: { physicalLocation: [{ value: 'Series 15 | Box 1 | Folder 1', type: 'location' }] },
                                 type: 'part of' }],
             access: { accessContact: [
-              { value: 'Stanford University. Libraries. Dept. of Special Collections and Stanford University Archives.', type: 'repository' }
-            ],
+                        { value: 'Stanford University. Libraries. Dept. of Special Collections and Stanford University Archives.', type: 'repository' }
+                      ],
                       note: [{ value: 'Property rights reside with the repository.' }] } }
         end
 
