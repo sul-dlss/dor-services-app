@@ -9,6 +9,10 @@ ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
 # Default deploy_to directory is /var/www/my_app
 set :deploy_to, "/opt/app/dor_services/#{fetch(:application)}"
 
+# Manage sneakers via systemd (from dlss-capistrano gem)
+set :sneakers_systemd_role, :worker
+set :sneakers_systemd_use_hooks, true
+
 # Default value for :scm is :git
 # set :scm, :git
 

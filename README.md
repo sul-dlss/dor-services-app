@@ -92,6 +92,30 @@ To spin up a local development server:
 
   `bundle exec rails s`
 
+## Setup RabbitMQ
+You must set up the durable rabbitmq queues that bind to the exchange where workflow messages are published.
+
+```sh
+RAILS_ENV=production bin/rake rabbitmq:setup
+```
+This is going to create queues for this application that bind to some topics.
+
+## RabbitMQ queue workers
+In a development environment you can start sneakers this way:
+```sh
+WORKERS=CreateEventJob bin/rake sneakers:run
+```
+
+but on the production machines we use systemd to do the same:
+```sh
+sudo /usr/bin/systemctl start sneakers
+sudo /usr/bin/systemctl stop sneakers
+sudo /usr/bin/systemctl status sneakers
+```
+
+This is started automatically during a deploy via capistrano
+
+
 ## Other tools
 ### Generating a list of druids from Solr query
 ```
