@@ -39,6 +39,30 @@ RSpec.describe CocinaObjectStore do
     end
   end
 
+  describe '#find_by_source_id' do
+    context 'when object is not found in datastore' do
+      it 'raises' do
+        expect { store.find('sul:abc123') }.to raise_error(CocinaObjectStore::CocinaObjectNotFoundError)
+      end
+    end
+
+    context 'when object is a DRO' do
+      let(:ar_cocina_object) { create(:ar_dro) }
+
+      it 'returns Cocina::Models::DROWithMetadata' do
+        expect(store.find_by_source_id(ar_cocina_object.identification['sourceId'])).to be_instance_of(Cocina::Models::DROWithMetadata)
+      end
+    end
+
+    context 'when object is a Collection' do
+      let(:ar_cocina_object) { create(:ar_collection) }
+
+      it 'returns Cocina::Models::Collection' do
+        expect(store.find_by_source_id(ar_cocina_object.identification['sourceId'])).to be_instance_of(Cocina::Models::CollectionWithMetadata)
+      end
+    end
+  end
+
   describe '#exists?' do
     context 'when object is not found in datastore' do
       it 'returns false' do
