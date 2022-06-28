@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Most of the indexing happens when Fedora sends an activeMQ message to dor_indexing_app
+# Most of the indexing happens when dor_indexing_app receives a RabbitMQ message from dor-services-app
 # When we can't have latency in the indexing, we can use this class to directly call dor-indexing-app
 class SynchronousIndexer
   def self.reindex_remotely_from_cocina(cocina_object:, created_at:, updated_at:)
