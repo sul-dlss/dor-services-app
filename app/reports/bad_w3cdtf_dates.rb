@@ -28,7 +28,7 @@ class BadW3cdtfDates
       #
       # So we catch the false positives from the upstream gem and allow
       # these two patterns to validate
-      /\A\d{4}(-0[1-9]|1[0-2])?\Z/.match(date_value)&.to_s
+      /\A\d{4}(-0[1-9]|-1[0-2])?\Z/.match?(date_value) ? nil : date_value
     end
 
     return if bad_values.empty?
