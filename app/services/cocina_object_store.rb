@@ -21,6 +21,14 @@ class CocinaObjectStore
     new.find(druid)
   end
 
+  # Retrieves a Cocina object from the datastore by sourceID.
+  # @param [String] source_id
+  # @return [Cocina::Models::DROWithMetadata, Cocina::Models::CollectionWithMetadata] cocina_object
+  # @raise [CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
+  def self.find_by_source_id(source_id)
+    new.find_by_source_id(source_id)
+  end
+
   # Determine if an object exists in the datastore.
   # @param [String] druid
   # @return [boolean] true if object exists
@@ -60,6 +68,15 @@ class CocinaObjectStore
   # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
   def find(druid)
     ar_to_cocina_find(druid)
+  end
+
+  def find_by_source_id(source_id)
+    ar_cocina_object = Dro.find_by_source_id(source_id).presence ||
+                       Collection.find_by_source_id(source_id).presence
+
+    raise CocinaObjectNotFoundError unless ar_cocina_object
+
+    ar_cocina_object.to_cocina_with_metadata
   end
 
   def store(cocina_object, skip_lock:)
@@ -110,7 +127,7 @@ class CocinaObjectStore
   rescue ActiveRecord::RecordNotUnique => e
     message = if e.message.include?('dro_source_id_idx')
                 source_id = cocina_object.identification.sourceId
-                druid = Dro.find_by("identification->>'sourceId' = ?", source_id).external_identifier
+                druid = Dro.find_by_source_id(source_id).external_identifier
                 "An object (#{druid}) with the source ID '#{cocina_object.identification.sourceId}' has already been registered."
               else
                 'ExternalIdentifier or sourceId is not unique.'

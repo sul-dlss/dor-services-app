@@ -48,6 +48,13 @@ Performance/CollectionLiteralInLoop:
     - 'app/services/update_marc_record_service.rb'
     - 'app/models/symphony_reader.rb'
 
+Rails/DynamicFindBy:
+  Enabled: true
+  Exclude:
+    - 'app/services/cocina_object_store.rb'
+    - 'app/controllers/objects_controller.rb'
+    - 'spec/services/cocina_object_store_spec.rb'
+
 Rails/EagerEvaluationLogMessage: # (new in 2.11)
   Enabled: false
 

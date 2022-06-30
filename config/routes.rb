@@ -45,6 +45,11 @@ Rails.application.routes.draw do
         post 'refresh_metadata', to: 'metadata_refresh#refresh'
         post 'apply_admin_policy_defaults', to: 'admin_policy_defaults#apply'
       end
+
+      collection do
+        get 'find'
+      end
+
       resources :members, only: [:index], defaults: { format: :json }
 
       resource :query, only: [], defaults: { format: :json } do

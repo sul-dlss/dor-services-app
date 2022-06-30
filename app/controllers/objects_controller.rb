@@ -66,6 +66,13 @@ class ObjectsController < ApplicationController
     render json: Cocina::Models.without_metadata(@cocina_object)
   end
 
+  def find
+    cocina_object = CocinaObjectStore.find_by_source_id(params[:sourceId])
+
+    add_headers(cocina_object)
+    render json: Cocina::Models.without_metadata(cocina_object)
+  end
+
   # Initialize specified workflow (assemblyWF by default), and also version if needed
   # called by pre-assembly and goobi kick off accessioning for a new or existing object
   #

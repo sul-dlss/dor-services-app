@@ -5,6 +5,8 @@ class Dro < RepositoryRecord
   validates :content_type, :access, :administrative, :description,
             :identification, :structural, presence: true
 
+  scope :find_by_source_id, ->(source_id) { find_by("identification->>'sourceId' = ?", source_id) }
+
   # @return [Cocina::Models::DRO] Cocina Digital Repository Object
   def to_cocina
     Cocina::Models::DRO.new(to_h)

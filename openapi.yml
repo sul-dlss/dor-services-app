@@ -1213,6 +1213,43 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /v1/objects/find:
+    get:
+      tags:
+        - objects
+      summary: Finds an object
+      operationId: 'objects#find'
+      parameters:
+        - in: query
+          name: sourceId
+          required: true
+          schema:
+            $ref: '#/components/schemas/SourceId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/DRO'
+                  - $ref: '#/components/schemas/Collection'
+          headers:
+            ETag:
+              schema:
+                type: string
+            Last-Modified:
+              schema:
+                type: string
+            X-Created-At:
+              schema:
+                type: string
+        '404':
+          description: Object not found in DOR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   '/v1/objects/{id}':
     patch:
       tags:
