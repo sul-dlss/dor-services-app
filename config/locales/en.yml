@@ -30,4 +30,18 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  activerecord:
+    errors:
+      models:
+        admin_policy:
+          attributes:
+            label:
+              invalid: can't be nil
+        collection:
+          attributes:
+            label:
+              invalid: can't be nil
+        dro:
+          attributes:
+            label:
+              invalid: can't be nil

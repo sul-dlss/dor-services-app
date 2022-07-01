@@ -208,9 +208,17 @@ RSpec.describe Dro do
     subject(:dro) { described_class.create }
 
     it 'tells you if fields are missing' do
-      expect(dro.errors.attribute_names).to eq %i[external_identifier cocina_version label version
-                                                  content_type access administrative
-                                                  description identification structural]
+      expect(dro.errors.attribute_names).to match_array %i[external_identifier cocina_version label version
+                                                           content_type access administrative
+                                                           description identification structural]
+    end
+
+    context 'when label is an empty string' do
+      subject(:dro) { described_class.create(label: '') }
+
+      it 'is not an error' do
+        expect(dro.errors.attribute_names).not_to include(:label)
+      end
     end
   end
 end
