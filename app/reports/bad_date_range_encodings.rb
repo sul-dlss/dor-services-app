@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 # Written for https://github.com/sul-dlss/dor-services-app/issues/4130
+# This is for finding a structured date ranges where the second point has no encoding
 # Invoke via:
-# bin/rails r -e production "BadEdtfDateEncodings.report"
-class BadEdtfDateEncodings
+# bin/rails r -e production "BadDateRangeEncodings.report"
+class BadDateRangeEncodings
   def self.report
     puts "item_druid,collection_druid,catkey,values\n" # rubocop:disable Rails/Output
 
-    # find all objects that an edtf date encoding
-    Dro.where("jsonb_path_exists(description, '$.**.date.encoding.code ? (@ ==  \"edtf\")')").find_each do |dro|
+    # find all objects that have an edtf date encoding in structuredValue
+    Dro.where("jsonb_path_exists(description, '$.**.date.structuredValue.encoding.code ? (@ ==  \"edtf\")')").find_each do |dro|
       new(dro:).report
     end
   end
