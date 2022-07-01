@@ -4,7 +4,9 @@
 class Collection < RepositoryRecord
   validates :access, :administrative, :description, :identification, presence: true
 
-  scope :find_by_source_id, ->(source_id) { find_by("identification->>'sourceId' = ?", source_id) }
+  def self.find_by_source_id(source_id)
+    find_by("identification->>'sourceId' = ?", source_id)
+  end
 
   # @return [Cocina::Models::Collection] Cocina collection
   def to_cocina
