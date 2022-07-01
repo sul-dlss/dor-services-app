@@ -20,7 +20,9 @@ class BadDateRangeEncodings
 
   def report
     # extract date values for which there is no encoding
-    bad_values = path.on(dro.description.to_json).filter_map { |date_node| date_node['value'] if date_node['encoding'].blank? }
+    bad_values = path.on(dro.description.to_json).map do |date_nodes|
+      date_nodes.filter_map { |date_node| date_node['value'] if date_node['encoding'].blank? }
+    end.flatten
 
     return if bad_values.empty?
 
@@ -31,9 +33,9 @@ class BadDateRangeEncodings
 
   attr_reader :dro
 
-  # locate the nodes with the EDTF date encoding
+  # locate the date nodes within the structuredValue
   def path
-    @path ||= JsonPath.new('$..date..[?(@.encoding.code == "edtf")]')
+    @path ||= JsonPath.new('$..date..structuredValue')
   end
 
   def collection_id
