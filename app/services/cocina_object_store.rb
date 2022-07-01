@@ -71,8 +71,8 @@ class CocinaObjectStore
   end
 
   def find_by_source_id(source_id)
-    ar_cocina_object = Dro.find_by_source_id(source_id).presence ||
-                       Collection.find_by_source_id(source_id).presence
+    ar_cocina_object = Dro.find_by_source_id(source_id) ||
+                       Collection.find_by_source_id(source_id)
 
     raise CocinaObjectNotFoundError unless ar_cocina_object
 
