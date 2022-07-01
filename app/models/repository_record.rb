@@ -5,7 +5,8 @@ class RepositoryRecord < ApplicationRecord
   self.abstract_class = true
   self.locking_column = 'lock'
 
-  validates :external_identifier, :cocina_version, :label, :version, presence: true
+  validates :external_identifier, :cocina_version, :version, presence: true
+  validates :label, length: { minimum: 0, allow_nil: false }
 
   def external_lock
     # This should be opaque, but this makes troubeshooting easier.

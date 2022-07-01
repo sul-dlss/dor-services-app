@@ -89,8 +89,8 @@ RSpec.describe AdminPolicy do
     subject(:apo) { described_class.create }
 
     it 'tells you if fields are missing' do
-      expect(apo.errors.attribute_names).to eq %i[external_identifier cocina_version
-                                                  label version administrative]
+      expect(apo.errors.attribute_names).to match_array %i[external_identifier cocina_version
+                                                           label version administrative]
     end
   end
 end
