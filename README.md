@@ -137,7 +137,11 @@ Solr is used to determine if an item still exists.
 
 Run the missing druid rake task:
 ```
-bundle exec rake missing_druids:unindexed_objects
+RAILS_ENV=production bundle exec rake missing_druids:unindexed_objects
 ```
 This produces a `missing_druids.txt` file in the application root.
 
+Missing druids can be indexed with:
+```
+RAILS_ENV=production bundle exec rake missing_druids:index_unindexed_objects
+```

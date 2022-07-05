@@ -35,6 +35,7 @@ Metrics/BlockLength:
     - 'spec/**/*'
     - 'config/routes.rb'
     - 'config/initializers/dor_config.rb'
+    - 'lib/tasks/missing_druids.rake'
 
 Metrics/ClassLength:
   Exclude:
