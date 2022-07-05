@@ -4,10 +4,10 @@
 class BackgroundJobResultsController < ApplicationController
   rescue_from ActiveRecord::RecordNotFound do |exception|
     render json: {
-             errors: [
-               { title: 'not found', detail: exception.message }
-             ]
-           }, status: :not_found
+      errors: [
+        { title: 'not found', detail: exception.message }
+      ]
+    }, status: :not_found
   end
 
   def show
