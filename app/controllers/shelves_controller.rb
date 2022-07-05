@@ -14,10 +14,10 @@ class ShelvesController < ApplicationController
       head :created, location: result
     else
       render json: {
-               errors: [
-                 { title: 'Invalid item type', detail: "A DRO is required but you provided '#{@cocina_object.type}'" }
-               ]
-             }, status: :unprocessable_entity
+        errors: [
+          { title: 'Invalid item type', detail: "A DRO is required but you provided '#{@cocina_object.type}'" }
+        ]
+      }, status: :unprocessable_entity
     end
   end
 end
