@@ -19,7 +19,11 @@ namespace :missing_druids do
       missing_druids.map { |druid| file.write("#{druid}\n") }
     end
 
-    message = "Retrieved #{druids_from_solr.length} druids from SOLR\nRetrieved #{druids_from_db.flatten.length} druids from DB\nMissing #{missing_druids.length} druids in SOLR"
+    message = "Retrieved #{druids_from_solr.length} druids from SOLR\n"
+    message << "Retrieved #{druids_from_db.flatten.length} druids from DB\n"
+    message << "Missing #{missing_druids.length} druids in SOLR:\n\n"
+    message << missing_druids.join("\n")
+
     puts message unless missing_druids.empty?
   end
 
