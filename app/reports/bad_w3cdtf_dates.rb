@@ -4,7 +4,7 @@
 # bin/rails r -e production "BadW3cdtfDates.report"
 class BadW3cdtfDates
   def self.report
-    puts "item_druid,collection_druid,catkey,invalid_values\n" # rubocop:disable Rails/Output
+    puts "item_druid,collection_druid,catkey,invalid_values\n"
 
     Dro.where("jsonb_path_exists(description, '$.**.date.encoding.code ? (@ ==  \"w3cdtf\")')").find_each do |dro|
       new(dro:).report
@@ -33,7 +33,7 @@ class BadW3cdtfDates
 
     return if bad_values.empty?
 
-    puts "#{dro.external_identifier},#{collection_id},#{catkey},#{bad_values.join(';')}\n" # rubocop:disable Rails/Output
+    puts "#{dro.external_identifier},#{collection_id},#{catkey},#{bad_values.join(';')}\n"
   end
 
   private

@@ -4,7 +4,7 @@
 # bin/rails r -e production "EdtfLowerXDates.report"
 class EdtfLowerXDates
   def self.report
-    puts "item_druid,collection_druid,catkey,values\n" # rubocop:disable Rails/Output
+    puts "item_druid,collection_druid,catkey,values\n"
 
     Dro.where("jsonb_path_exists(description, '$.**.date.encoding.code ? (@ ==  \"edtf\")')").find_each do |dro|
       new(dro:).report
@@ -22,7 +22,7 @@ class EdtfLowerXDates
 
     return if matching_values.empty?
 
-    puts "#{dro.external_identifier},#{collection_id},#{catkey},#{matching_values.join(';')}\n" # rubocop:disable Rails/Output
+    puts "#{dro.external_identifier},#{collection_id},#{catkey},#{matching_values.join(';')}\n"
   end
 
   private
