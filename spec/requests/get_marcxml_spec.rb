@@ -72,7 +72,7 @@ RSpec.describe "Looking up an item's marcxml" do
 
       it 'returns a 500 error' do
         get "/v1/catalog/marcxml?catkey=#{catkey}", headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.status).to eq(500)
+        expect(response).to have_http_status(:internal_server_error)
         expect(response.body).to match("Incomplete response received from Symphony for #{catkey} - expected 0 bytes but got 2")
       end
     end
@@ -107,7 +107,7 @@ RSpec.describe "Looking up an item's marcxml" do
 
       it 'returns a 500 error' do
         get "/v1/catalog/marcxml?catkey=#{catkey}", headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.status).to eq(500)
+        expect(response).to have_http_status(:internal_server_error)
         expect(response.body).to match(/Got HTTP Status-Code 403.*:.*Something somewhere went wrong./)
       end
     end

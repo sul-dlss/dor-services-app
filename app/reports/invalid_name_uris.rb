@@ -4,7 +4,7 @@
 # bin/rails r -e production "InvalidNameUris.report"
 class InvalidNameUris
   JSON_PATH = '$.**.contributor.name.uri'
-  SQL = <<~SQL.squish.freeze.squish
+  SQL = <<~SQL.squish.freeze
     SELECT (jsonb_path_query_array(description, '#{JSON_PATH} ? (@ like_regex "^.*\.html$")') ||
             jsonb_path_query_array(description, '#{JSON_PATH} ? (@ like_regex "^(?!https?://).*$")')) ->> 0 as contrib,
            external_identifier,

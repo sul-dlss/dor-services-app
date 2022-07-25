@@ -23,7 +23,7 @@ RSpec.describe 'Notify Goobi' do
     it 'notifies goobi of a new registration by making a web service call' do
       post "/v1/objects/#{druid}/notify_goobi", headers: { 'Authorization' => "Bearer #{jwt}" }
 
-      expect(response.status).to eq(201)
+      expect(response).to have_http_status(:created)
     end
   end
 
@@ -36,7 +36,7 @@ RSpec.describe 'Notify Goobi' do
 
     it 'returns the conflict code' do
       post "/v1/objects/#{druid}/notify_goobi", headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response.status).to eq 409
+      expect(response).to have_http_status :conflict
       expect(response.body).to eq '{"errors":[{"status":"409","title":"Conflict","detail":"conflict"}]}'
     end
   end

@@ -6,7 +6,7 @@ class InvalidLanguageUris
   JSON_PATH1 = '$.**.language.**.uri' # both language.uri and language.script.uri
   JSON_PATH2 = '$.**.valueLanguage.**.uri' # both valueLanguage.uri and valueLanguage.valueScript.uri
 
-  SQL = <<~SQL.squish.freeze.squish
+  SQL = <<~SQL.squish.freeze
     SELECT (jsonb_path_query_array(description, '#{JSON_PATH1} ? (@ like_regex "^.*\.html$")') ||
             jsonb_path_query_array(description, '#{JSON_PATH1} ? (@ like_regex "^(?!https?://).*$")') ||
             jsonb_path_query_array(description, '#{JSON_PATH2} ? (@ like_regex "^.*\.html$")') ||

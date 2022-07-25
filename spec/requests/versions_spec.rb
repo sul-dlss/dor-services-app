@@ -47,7 +47,7 @@ RSpec.describe 'Operations regarding object versions' do
         post '/v1/objects/druid:mx123qw2323/versions/current/close',
              params: close_params,
              headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.status).to eq 200
+        expect(response).to have_http_status :ok
         expect(response.body).to match(/version 1 closed/)
         expect(VersionService).to have_received(:close)
           .with(cocina_object_with_metadata,
@@ -65,7 +65,7 @@ RSpec.describe 'Operations regarding object versions' do
         post '/v1/objects/druid:mx123qw2323/versions/current/close',
              params: close_params,
              headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
         expect(response.body).to eq(
           '{"errors":[{"status":"422","title":"Unable to close version",' \
           '"detail":"Trying to close version on an object not opened for versioning"}]}'
@@ -118,7 +118,7 @@ RSpec.describe 'Operations regarding object versions' do
              params: incomplete_params,
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to match('missing required parameters: description, significance')
-        expect(response.status).to eq 400
+        expect(response).to have_http_status :bad_request
       end
     end
 
@@ -133,7 +133,7 @@ RSpec.describe 'Operations regarding object versions' do
              params: open_params,
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('{"errors":[{"status":"422","title":"Unable to open version","detail":"Object net yet accessioned"}]}')
-        expect(response.status).to eq 422
+        expect(response).to have_http_status :unprocessable_entity
       end
     end
 
@@ -147,7 +147,7 @@ RSpec.describe 'Operations regarding object versions' do
              params: open_params,
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('{"errors":[{"status":"500","title":"Unable to open version due to preservation client error","detail":"Oops, a 500"}]}')
-        expect(response.status).to eq 500
+        expect(response).to have_http_status :internal_server_error
       end
     end
   end
@@ -188,7 +188,7 @@ RSpec.describe 'Operations regarding object versions' do
         get '/v1/objects/druid:mx123qw2323/versions/openable',
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('{"errors":[{"status":"500","title":"Unable to check if openable due to preservation client error","detail":"Oops, a 500"}]}')
-        expect(response.status).to eq 500
+        expect(response).to have_http_status :internal_server_error
       end
     end
   end

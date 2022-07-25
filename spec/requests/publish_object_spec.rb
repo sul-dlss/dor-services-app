@@ -19,7 +19,7 @@ RSpec.describe 'Publish object' do
       expect(PublishJob).to have_received(:set).with(queue: :low)
       expect(job).to have_received(:perform_later)
         .with(druid:, background_job_result: BackgroundJobResult, workflow: 'releaseWF')
-      expect(response.status).to eq(201)
+      expect(response).to have_http_status(:created)
     end
   end
 
@@ -40,7 +40,7 @@ RSpec.describe 'Publish object' do
 
       expect(job).to have_received(:perform_later)
         .with(druid:, background_job_result: BackgroundJobResult, workflow: nil)
-      expect(response.status).to eq(201)
+      expect(response).to have_http_status(:created)
     end
   end
 end

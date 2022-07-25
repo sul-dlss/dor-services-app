@@ -27,7 +27,7 @@ RSpec.describe 'Administrative tags' do
       get "/v1/objects/#{druid}/administrative_tags",
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(AdministrativeTags).to have_received(:for).with(identifier: druid).once
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(:ok)
       expect(response.body).to eq(tags.to_json)
     end
   end
@@ -46,7 +46,7 @@ RSpec.describe 'Administrative tags' do
         expect(AdministrativeTags).to have_received(:create)
           .with(identifier: druid, tags:, replace: nil)
         expect(Notifications::ObjectUpdated).to have_received(:publish)
-        expect(response.status).to eq(201)
+        expect(response).to have_http_status(:created)
       end
     end
 
@@ -58,7 +58,7 @@ RSpec.describe 'Administrative tags' do
         expect(AdministrativeTags).to have_received(:create)
           .with(identifier: druid, tags:, replace: true)
         expect(Notifications::ObjectUpdated).to have_received(:publish)
-        expect(response.status).to eq(201)
+        expect(response).to have_http_status(:created)
       end
     end
 
@@ -72,7 +72,7 @@ RSpec.describe 'Administrative tags' do
         post "/v1/objects/#{druid}/administrative_tags",
              params: %( {"administrative_tags":#{tags.to_json}} ),
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.status).to eq(404)
+        expect(response).to have_http_status(:not_found)
         expect(response.body).to eq('Unable to find \'druid:mx123qw2323\' in fedora. See logger for details.')
         expect(Notifications::ObjectUpdated).not_to have_received(:publish)
       end
@@ -83,7 +83,7 @@ RSpec.describe 'Administrative tags' do
         post "/v1/objects/#{druid}/administrative_tags",
              params: %( {"administrative_tags":#{tags.to_json}} ),
              headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.status).to eq(400)
+        expect(response).to have_http_status(:bad_request)
         expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":"\"Content-Type\" request header must be set to \"application/json\"."}]}')
       end
     end
@@ -93,7 +93,7 @@ RSpec.describe 'Administrative tags' do
         post "/v1/objects/#{druid}/administrative_tags",
              params: %( {"foo":"bar"} ),
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.status).to eq(400)
+        expect(response).to have_http_status(:bad_request)
         expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":' \
                                     '"#/paths/~1v1~1objects~1{object_id}~1administrative_tags/post/requestBody/content/application~1json/schema ' \
                                     'missing required parameters: administrative_tags"}]}')
@@ -105,7 +105,7 @@ RSpec.describe 'Administrative tags' do
         post "/v1/objects/#{druid}/administrative_tags",
              params: %( {"administrative_tags":[]} ),
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.status).to eq(400)
+        expect(response).to have_http_status(:bad_request)
         expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":' \
                                     '"#/paths/~1v1~1objects~1{object_id}~1administrative_tags/post/requestBody/content/application~1json/schema' \
                                     '/properties/administrative_tags [] contains fewer than min items"}]}')
@@ -130,7 +130,7 @@ RSpec.describe 'Administrative tags' do
         expect(AdministrativeTags).to have_received(:update)
           .with(identifier: druid, current: current_tag, new: new_tag)
         expect(Notifications::ObjectUpdated).to have_received(:publish)
-        expect(response.status).to eq(204)
+        expect(response).to have_http_status(:no_content)
       end
     end
 
@@ -144,7 +144,7 @@ RSpec.describe 'Administrative tags' do
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(AdministrativeTags).to have_received(:update)
           .with(identifier: druid, current: current_tag, new: new_tag)
-        expect(response.status).to eq(204)
+        expect(response).to have_http_status(:no_content)
       end
     end
 
@@ -158,7 +158,7 @@ RSpec.describe 'Administrative tags' do
         put "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(current_tag)}",
             params: %( {"administrative_tag":"#{new_tag}"} ),
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.status).to eq(404)
+        expect(response).to have_http_status(:not_found)
         expect(response.body).to eq('Unable to find \'druid:mx123qw2323\' in fedora. See logger for details.')
       end
     end
@@ -173,7 +173,7 @@ RSpec.describe 'Administrative tags' do
         put "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(current_tag)}",
             params: %( {"administrative_tag":"#{new_tag}"} ),
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.status).to eq(404)
+        expect(response).to have_http_status(:not_found)
         expect(response.body).to eq('Couldn\'t find AdministrativeTag')
       end
     end
@@ -183,7 +183,7 @@ RSpec.describe 'Administrative tags' do
         put "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(current_tag)}",
             params: %( {"administrative_tag":"#{new_tag}"} ),
             headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.status).to eq(400)
+        expect(response).to have_http_status(:bad_request)
         expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":"\"Content-Type\" request header must be set to \"application/json\"."}]}')
       end
     end
@@ -193,7 +193,7 @@ RSpec.describe 'Administrative tags' do
         put "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(current_tag)}",
             params: %( {"foo":"bar"} ),
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.status).to eq(400)
+        expect(response).to have_http_status(:bad_request)
         expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":' \
                                     '"#/paths/~1v1~1objects~1{object_id}~1administrative_tags~1{id}/put/requestBody/content/application~1json/schema ' \
                                     'missing required parameters: administrative_tag"}]}')
@@ -205,7 +205,7 @@ RSpec.describe 'Administrative tags' do
         put "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(current_tag)}",
             params: %( {"administrative_tag":""} ),
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.status).to eq(400)
+        expect(response).to have_http_status(:bad_request)
         expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":' \
                                     '"#/components/schemas/AdministrativeTag pattern ^.+( : .+)+$ does not match value: \\"\\", example: Foo : Bar : Baz"}]}')
       end
@@ -242,7 +242,7 @@ RSpec.describe 'Administrative tags' do
         put "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(current_tag)}",
             params: %( {"administrative_tag":"#{new_tag}"} ),
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.status).to eq(409)
+        expect(response).to have_http_status(:conflict)
         expect(response.body).to eq('Validation failed: Tag has already been assigned to the given druid (no duplicate tags for a druid)')
       end
     end
@@ -263,7 +263,7 @@ RSpec.describe 'Administrative tags' do
         expect(AdministrativeTags).to have_received(:destroy)
           .with(identifier: druid, tag:)
         expect(Notifications::ObjectUpdated).to have_received(:publish)
-        expect(response.status).to eq(204)
+        expect(response).to have_http_status(:no_content)
       end
     end
 
@@ -275,7 +275,7 @@ RSpec.describe 'Administrative tags' do
                headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(AdministrativeTags).to have_received(:destroy)
           .with(identifier: druid, tag:)
-        expect(response.status).to eq(204)
+        expect(response).to have_http_status(:no_content)
       end
     end
 
@@ -288,7 +288,7 @@ RSpec.describe 'Administrative tags' do
       it 'returns a 404' do
         delete "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(tag)}",
                headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.status).to eq(404)
+        expect(response).to have_http_status(:not_found)
         expect(response.body).to eq('Unable to find \'druid:mx123qw2323\' in fedora. See logger for details.')
       end
     end
@@ -302,7 +302,7 @@ RSpec.describe 'Administrative tags' do
       it 'returns an error' do
         delete "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(tag)}",
                headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.status).to eq(404)
+        expect(response).to have_http_status(:not_found)
         expect(response.body).to eq('Couldn\'t find AdministrativeTag')
       end
     end

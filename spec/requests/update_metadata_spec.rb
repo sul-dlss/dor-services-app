@@ -98,7 +98,7 @@ RSpec.describe 'Update object' do
     patch "/v1/objects/#{druid}",
           params: data,
           headers: headers
-    expect(response.status).to eq(200)
+    expect(response).to have_http_status(:ok)
     expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
     expect(response.headers['Last-Modified']).to end_with 'GMT'
     expect(response.headers['X-Created-At']).to end_with 'GMT'
@@ -145,7 +145,7 @@ RSpec.describe 'Update object' do
       patch "/v1/objects/#{druid}",
             params: data,
             headers: headers
-      expect(response.status).to eq(400)
+      expect(response).to have_http_status(:bad_request)
     end
   end
 
@@ -158,7 +158,7 @@ RSpec.describe 'Update object' do
       patch "/v1/objects/#{druid}",
             params: data,
             headers: headers
-      expect(response.status).to eq(400)
+      expect(response).to have_http_status(:bad_request)
     end
   end
 
@@ -171,7 +171,7 @@ RSpec.describe 'Update object' do
               'Content-Type' => 'application/json',
               'If-Match' => 'W/"BAD LOCK"'
             }
-      expect(response.status).to eq(412)
+      expect(response).to have_http_status(:precondition_failed)
     end
   end
 
@@ -183,7 +183,7 @@ RSpec.describe 'Update object' do
               'Authorization' => "Bearer #{jwt}",
               'Content-Type' => 'application/json'
             }
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(:ok)
     end
   end
 
@@ -199,7 +199,7 @@ RSpec.describe 'Update object' do
       patch "/v1/objects/#{druid}",
             params: data,
             headers: headers
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(:ok)
       expect(response.body).to include('Not a title')
     end
   end
@@ -267,7 +267,7 @@ RSpec.describe 'Update object' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: headers
-        expect(response.status).to eq 200
+        expect(response).to have_http_status :ok
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
         expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
 
@@ -285,7 +285,7 @@ RSpec.describe 'Update object' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: headers
-        expect(response.status).to eq(200)
+        expect(response).to have_http_status(:ok)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
         expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
       end
@@ -521,7 +521,7 @@ RSpec.describe 'Update object' do
           patch "/v1/objects/#{druid}",
                 params: data,
                 headers: headers
-          expect(response.status).to eq(200)
+          expect(response).to have_http_status(:ok)
           expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
           cocina_item = Cocina::Models.without_metadata(CocinaObjectStore.find(druid))
           expect(cocina_item.to_json).to equal_cocina_model(expected)
@@ -537,7 +537,7 @@ RSpec.describe 'Update object' do
           patch "/v1/objects/#{druid}",
                 params: data,
                 headers: headers
-          expect(response.status).to eq 400
+          expect(response).to have_http_status :bad_request
         end
       end
     end
@@ -572,7 +572,7 @@ RSpec.describe 'Update object' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: headers
-        expect(response.status).to eq(200)
+        expect(response).to have_http_status(:ok)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
         expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
       end
@@ -627,7 +627,7 @@ RSpec.describe 'Update object' do
             params: data,
             headers: headers
 
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(:ok)
       expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
       expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
     end
@@ -676,7 +676,7 @@ RSpec.describe 'Update object' do
       patch "/v1/objects/#{druid}",
             params: data,
             headers: headers
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(:ok)
       expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
       expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
     end
@@ -750,7 +750,7 @@ RSpec.describe 'Update object' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: headers
-        expect(response.status).to eq(200)
+        expect(response).to have_http_status(:ok)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
         expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
       end
@@ -772,7 +772,7 @@ RSpec.describe 'Update object' do
         patch "/v1/objects/#{druid}",
               params: data,
               headers: headers
-        expect(response.status).to eq(200)
+        expect(response).to have_http_status(:ok)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
         expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
       end
@@ -829,7 +829,7 @@ RSpec.describe 'Update object' do
       patch "/v1/objects/#{druid}",
             params: data,
             headers: headers
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(:ok)
       expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
       expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
     end

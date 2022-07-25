@@ -318,7 +318,7 @@ RSpec.describe GoobiService do
       end
 
       it 'makes a call to the goobi server with the appropriate xml params' do
-        expect(response.status).to eq 201
+        expect(response.status).to eq 201 # rubocop:disable RSpec/Rails/HaveHttpStatus
       end
     end
 
@@ -330,7 +330,7 @@ RSpec.describe GoobiService do
       end
 
       it 'makes a call to the goobi server with the appropriate xml params' do
-        expect(response.status).to eq 409
+        expect(response.status).to eq 409 # rubocop:disable RSpec/Rails/HaveHttpStatus
         expect(Faraday).to have_received(:post).once # Don't retry request errors
       end
     end
