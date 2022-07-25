@@ -12,7 +12,7 @@ class InvalidLanguageUris
             jsonb_path_query_array(description, '#{JSON_PATH2} ? (@ like_regex "^.*\.html$")') ||
             jsonb_path_query_array(description, '#{JSON_PATH2} ? (@ like_regex "^(?!https?://).*$")')) ->> 0 as contrib,
            external_identifier,
-           jsonb_path_query(identification, '$.catalogLinks.catalogRecordId') ->> 0 as catkey,
+           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "symphony").catalogRecordId') ->> 0 as catkey,
            jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_id
            FROM "dros" WHERE
            (jsonb_path_exists(description, '#{JSON_PATH1} ? (@ like_regex "^(?!https?://).*$")') OR
