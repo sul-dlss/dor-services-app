@@ -80,7 +80,7 @@ RSpec.describe 'Create object' do
         post '/v1/objects',
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-        expect(response.status).to eq 503
+        expect(response).to have_http_status :service_unavailable
         expect(response.body).to eq '{"errors":[{"status":"503","title":"Service Unavailable","detail":"Registration is temporarily disabled"}]}'
       end
     end
@@ -137,7 +137,7 @@ RSpec.describe 'Create object' do
                  headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           end.to change(Event, :count).by(1)
           expect(response.body).to equal_cocina_model(expected)
-          expect(response.status).to eq(201)
+          expect(response).to have_http_status(:created)
           expect(response.location).to eq "/v1/objects/#{druid}"
           expect(ModsService).to have_received(:fetch).with('catkey:8888')
           expect(response.headers['Last-Modified']).to end_with 'GMT'
@@ -157,7 +157,7 @@ RSpec.describe 'Create object' do
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           expect(response.body).to eq '{"errors":[{"status":"502","title":"Catalog connection error",' \
                                       '"detail":"Unable to read descriptive metadata from the catalog"}]}'
-          expect(response.status).to eq 502
+          expect(response).to have_http_status :bad_gateway
         end
       end
 
@@ -172,7 +172,7 @@ RSpec.describe 'Create object' do
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           expect(response.body).to eq '{"errors":[{"status":"400","title":"Catkey not found in Symphony",' \
                                       '"detail":"unable to find catkey"}]}'
-          expect(response.status).to eq 400
+          expect(response).to have_http_status :bad_request
         end
       end
 
@@ -186,7 +186,7 @@ RSpec.describe 'Create object' do
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           expect(response.body).to match 'MarcService::MarcServiceError'
-          expect(response.status).to eq 500
+          expect(response).to have_http_status :internal_server_error
         end
       end
     end
@@ -198,7 +198,7 @@ RSpec.describe 'Create object' do
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           expect(response.body).to equal_cocina_model(expected)
-          expect(response.status).to eq(201)
+          expect(response).to have_http_status(:created)
           expect(response.location).to eq "/v1/objects/#{druid}"
 
           item = CocinaObjectStore.find(druid)
@@ -227,7 +227,7 @@ RSpec.describe 'Create object' do
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           expect(response.body).to equal_cocina_model(expected)
-          expect(response.status).to eq(201)
+          expect(response).to have_http_status(:created)
 
           item = CocinaObjectStore.find(druid)
           # Metadata persisted correctly.
@@ -422,7 +422,7 @@ RSpec.describe 'Create object' do
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           expect(response.body).to equal_cocina_model(expected)
-          expect(response.status).to eq(201)
+          expect(response).to have_http_status(:created)
           expect(response.location).to eq "/v1/objects/#{druid}"
 
           item = CocinaObjectStore.find(druid)
@@ -451,7 +451,7 @@ RSpec.describe 'Create object' do
           post '/v1/objects',
                params: access_mismatch_data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(response.status).to eq 400
+          expect(response).to have_http_status :bad_request
           expect(response.body).to eq '{"errors":[' \
                                       '{"status":"400","title":"Bad Request",' \
                                       '"detail":"Not all files have dark access and/or are unshelved when object access is dark: ' \
@@ -470,7 +470,7 @@ RSpec.describe 'Create object' do
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to equal_cocina_model(expected)
-        expect(response.status).to eq(201)
+        expect(response).to have_http_status(:created)
         expect(response.location).to eq "/v1/objects/#{druid}"
 
         item = CocinaObjectStore.find(druid)
@@ -499,7 +499,7 @@ RSpec.describe 'Create object' do
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
 
         expect(response.body).to equal_cocina_model(expected)
-        expect(response.status).to eq(201)
+        expect(response).to have_http_status(:created)
         expect(response.location).to eq "/v1/objects/#{druid}"
 
         item = CocinaObjectStore.find(druid)
@@ -552,7 +552,7 @@ RSpec.describe 'Create object' do
            params: data,
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.body).to equal_cocina_model(expected)
-      expect(response.status).to eq(201)
+      expect(response).to have_http_status(:created)
       expect(response.location).to eq "/v1/objects/#{druid}"
     end
   end
@@ -627,7 +627,7 @@ RSpec.describe 'Create object' do
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to equal_cocina_model(expected)
-        expect(response.status).to eq(201)
+        expect(response).to have_http_status(:created)
         expect(response.location).to eq "/v1/objects/#{druid}"
       end
     end
@@ -649,7 +649,7 @@ RSpec.describe 'Create object' do
         expect(response.body).to equal_cocina_model(expected)
         expect(UrAdminPolicyFactory).to have_received(:create)
 
-        expect(response.status).to eq(201)
+        expect(response).to have_http_status(:created)
         expect(response.location).to eq "/v1/objects/#{druid}"
       end
     end
@@ -707,7 +707,7 @@ RSpec.describe 'Create object' do
            params: data,
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.body).to equal_cocina_model(expected)
-      expect(response.status).to eq(201)
+      expect(response).to have_http_status(:created)
       expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
     end
   end
@@ -764,7 +764,7 @@ RSpec.describe 'Create object' do
            params: data,
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
       expect(response.body).to equal_cocina_model(expected)
-      expect(response.status).to eq(201)
+      expect(response).to have_http_status(:created)
       expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
     end
   end
@@ -810,7 +810,7 @@ RSpec.describe 'Create object' do
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
 
       expect(response.body).to equal_cocina_model(expected)
-      expect(response.status).to eq(201)
+      expect(response).to have_http_status(:created)
       expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
     end
   end
@@ -845,7 +845,7 @@ RSpec.describe 'Create object' do
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to equal_cocina_model(expected)
-        expect(response.status).to eq(201)
+        expect(response).to have_http_status(:created)
         expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
       end
     end
@@ -880,7 +880,7 @@ RSpec.describe 'Create object' do
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to equal_cocina_model(expected)
-        expect(response.status).to eq(201)
+        expect(response).to have_http_status(:created)
         expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
       end
     end
@@ -916,7 +916,7 @@ RSpec.describe 'Create object' do
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response.body).to equal_cocina_model(expected)
-        expect(response.status).to eq(201)
+        expect(response).to have_http_status(:created)
         expect(response.location).to eq '/v1/objects/druid:gg777gg7777'
       end
     end

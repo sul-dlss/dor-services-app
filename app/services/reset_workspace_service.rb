@@ -30,6 +30,6 @@ class ResetWorkspaceService
 
     FileUtils.rm_r(bag_dir) if File.exist?(bag_dir)
 
-    FileUtils.rm("#{bag_dir}.tar") if File.exist?("#{bag_dir}.tar")
+    FileUtils.rm_f("#{bag_dir}.tar")
   end
 end

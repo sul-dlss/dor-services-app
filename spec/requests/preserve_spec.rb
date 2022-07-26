@@ -17,6 +17,6 @@ RSpec.describe 'Preserve object' do
 
     expect(PreserveJob).to have_received(:set).with(queue: :low)
     expect(job).to have_received(:perform_later).with(druid:, background_job_result: BackgroundJobResult)
-    expect(response.status).to eq(201)
+    expect(response).to have_http_status(:created)
   end
 end

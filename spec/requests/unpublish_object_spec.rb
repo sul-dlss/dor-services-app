@@ -13,7 +13,7 @@ RSpec.describe 'Unpublishes an Object' do
   context 'when an unpublish request is successful' do
     it 'returns a 202 response' do
       post "/v1/objects/#{druid}/unpublish", headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response.status).to eq(202)
+      expect(response).to have_http_status(:accepted)
     end
   end
 end
