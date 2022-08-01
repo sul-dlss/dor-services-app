@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-gem 'rails', '~> 6.1'
+gem 'rails', '~> 7.0'
 
 # DLSS/domain-specific dependencies
 gem 'cocina-models', '~> 0.83.0'
@@ -26,7 +26,10 @@ gem 'edtf', '~> 3.0' # used for metadata reports
 gem 'equivalent-xml' # for diffing MODS
 gem 'faraday', '~> 2.0'
 gem 'faraday-retry'
-gem 'honeybadger'
+
+# Fix for https://github.com/honeybadger-io/honeybadger-ruby/issues/435
+gem 'honeybadger', github: 'honeybadger-io/honeybadger-ruby', branch: 'fix-invalid-sessions'
+
 gem 'jbuilder'
 gem 'jsonpath', '~> 1.1' # used for metadata reports
 gem 'jwt' # json web token

@@ -4,7 +4,7 @@ module Cocina
   module ToDatacite
     # Transform the Cocina::Models::DROAccess attributes to the DataCite rightsList attributes
     #  see https://support.datacite.org/reference/dois-2#put_dois-id
-    class DROAccess
+    class DroAccess
       # @param [Cocina::Models::DROAccess] cocina_item_access
       # @return [NilClass,Array<Hash>] list of DataCite rightsList attributes, conforming to the expectations of HTTP PUT request to DataCite
       def self.rights_list_attributes(cocina_item_access)
