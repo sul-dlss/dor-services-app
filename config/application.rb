@@ -79,8 +79,6 @@ module DorServices
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
-    # If an object isn't found in DOR, return a 404
-    config.action_dispatch.rescue_responses['ActiveFedora::ObjectNotFoundError'] = :not_found
     # This makes sure our Postgres enums function are persisted to the schema
     config.active_record.schema_format = :sql
     # Set up a session store so we can access the Sidekiq Web UI
