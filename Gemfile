@@ -39,7 +39,7 @@ gem 'puma', '~> 5.3' # app server
 gem 'rails', '~> 6.1'
 gem 'retries' # for Goobi
 gem 'rsolr'
-gem 'rss', '~> 0.2' # used for metadata reports
+gem 'rss', '~> 0.2' # Provides Time.w3cdtf used for BadW3cdtfDates report
 gem 'ruby-cache', '~> 0.3.0'
 gem 'sidekiq', '~> 6.0'
 gem 'sidekiq-statistic'
