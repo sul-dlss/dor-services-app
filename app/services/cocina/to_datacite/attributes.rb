@@ -91,7 +91,7 @@ module Cocina
       # end
 
       def rights_list
-        DROAccess.rights_list_attributes(access)
+        DroAccess.rights_list_attributes(access)
       end
 
       def subjects

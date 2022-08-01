@@ -5,7 +5,7 @@ require 'rails_helper'
 # Top-level access section, not part of description.access
 RSpec.describe 'Cocina --> DataCite mappings for DROAccess (H2 specific)' do
   let(:cocina_item_access) { Cocina::Models::DROAccess.new(cocina_access) }
-  let(:rights_list_attributes) { Cocina::ToDatacite::DROAccess.rights_list_attributes(cocina_item_access) }
+  let(:rights_list_attributes) { Cocina::ToDatacite::DroAccess.rights_list_attributes(cocina_item_access) }
 
   describe 'License' do
     # Top-level access section, not part of description
