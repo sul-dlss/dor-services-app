@@ -219,7 +219,6 @@ GEM
     faraday-net_http (2.1.0)
     faraday-retry (2.0.0)
       faraday (~> 2.0)
-    ffi (1.15.5)
     globalid (1.0.0)
       activesupport (>= 5.0)
     hashdiff (1.0.1)
@@ -235,9 +234,6 @@ GEM
     jsonpath (1.1.2)
       multi_json
     jwt (2.4.1)
-    listen (3.0.8)
-      rb-fsevent (~> 0.9, >= 0.9.4)
-      rb-inotify (~> 0.9, >= 0.9.7)
     lograge (0.12.0)
       actionpack (>= 4)
       activesupport (>= 4)
@@ -359,9 +355,6 @@ GEM
       zeitwerk (~> 2.5)
     rainbow (3.1.1)
     rake (13.0.6)
-    rb-fsevent (0.11.1)
-    rb-inotify (0.10.1)
-      ffi (~> 1.0)
     rbtree (0.4.5)
     redis (4.7.1)
     regexp_parser (2.5.0)
@@ -444,10 +437,6 @@ GEM
     sorted_set (1.0.3)
       rbtree
       set (~> 1.0)
-    spring (2.1.1)
-    spring-watcher-listen (2.0.1)
-      listen (>= 2.7, < 4.0)
-      spring (>= 1.2, < 3.0)
     sshkit (1.21.2)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
@@ -520,7 +509,6 @@ DEPENDENCIES
   jbuilder
   jsonpath (~> 1.1)
   jwt
-  listen (~> 3.0.5)
   lograge
   marc
   moab-versioning (~> 5.0)
@@ -546,8 +534,6 @@ DEPENDENCIES
   sidekiq-statistic
   simplecov
   sneakers (~> 2.11)
-  spring
-  spring-watcher-listen (~> 2.0.0)
   stanford-mods (~> 2.6)
   tty-progressbar
   uuidtools (~> 2.1.4)
