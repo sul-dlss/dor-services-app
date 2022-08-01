@@ -142,8 +142,6 @@ GEM
       capistrano-one_time_key
       capistrano-shared_configs
     docile (1.4.0)
-    dor-rights-auth (1.7.0)
-      nokogiri
     dor-workflow-client (4.0.0)
       activesupport (>= 3.2.1, < 8)
       deprecation (>= 0.99.0)
@@ -491,7 +489,6 @@ DEPENDENCIES
   datacite (~> 0.3.0)
   diffy
   dlss-capistrano
-  dor-rights-auth (>= 1.5.0)
   dor-workflow-client (~> 4.0)
   druid-tools (~> 2.2)
   dry-monads
