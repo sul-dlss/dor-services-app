@@ -241,7 +241,6 @@ GEM
       rexml
       scrub_rb (>= 1.0.1, < 2)
       unf
-    marc-vocab (0.3.0)
     marcel (1.0.2)
     method_source (1.0.0)
     mini_mime (1.1.2)
@@ -291,7 +290,6 @@ GEM
       faraday (~> 2.0)
       moab-versioning (~> 5.0)
       zeitwerk (~> 2.1)
-    progressbar (1.11.0)
     pry (0.13.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -394,7 +392,6 @@ GEM
     ruby-cache (0.3.0)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
-    rubyzip (2.3.2)
     scrub_rb (1.0.1)
     serverengine (2.0.7)
       sigdump (~> 0.2.2)
@@ -495,7 +492,6 @@ DEPENDENCIES
   dor-workflow-client (~> 4.0)
   druid-tools (~> 2.2)
   dry-monads
-  dry-schema (~> 1.4)
   edtf (~> 3.0)
   equivalent-xml
   factory_bot_rails
@@ -508,13 +504,11 @@ DEPENDENCIES
   listen (~> 3.0.5)
   lograge
   marc
-  marc-vocab
   moab-versioning (~> 5.0)
   okcomputer
   parallel
   pg
   preservation-client (~> 4.0)
-  progressbar
   pry-byebug
   puma (~> 5.3)
   rack-console
@@ -529,7 +523,6 @@ DEPENDENCIES
   rubocop-rails
   rubocop-rspec
   ruby-cache (~> 0.3.0)
-  rubyzip (>= 1.0.0)
   sidekiq (~> 6.0)
   sidekiq-statistic
   simplecov

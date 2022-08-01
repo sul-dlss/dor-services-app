@@ -3,6 +3,8 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
+gem 'rails', '~> 6.1'
+
 # DLSS/domain-specific dependencies
 gem 'cocina-models', '~> 0.83.0'
 gem 'datacite', '~> 0.3.0'
@@ -21,7 +23,6 @@ gem 'bunny', '~> 2.17' # Send messages to RabbitMQ
 gem 'committee', '~> 4.4' # validates Open API spec (OAS)
 gem 'config'
 gem 'dry-monads'
-gem 'dry-schema', '~> 1.4'
 gem 'edtf', '~> 3.0' # used for metadata reports
 gem 'equivalent-xml' # for diffing MODS
 gem 'faraday', '~> 2.0'
@@ -34,9 +35,7 @@ gem 'lograge'
 gem 'okcomputer'
 gem 'parallel' # used for validating cocina tools
 gem 'pg'
-gem 'progressbar' # for the cleaner rake task
 gem 'puma', '~> 5.3' # app server
-gem 'rails', '~> 6.1'
 gem 'retries' # for Goobi
 gem 'rsolr'
 gem 'rss', '~> 0.2' # used for metadata reports
@@ -44,14 +43,12 @@ gem 'ruby-cache', '~> 0.3.0'
 gem 'sidekiq', '~> 6.0'
 gem 'sidekiq-statistic'
 gem 'sneakers', '~> 2.11'
-gem 'tty-progressbar' # to show progress when running migration script
+gem 'tty-progressbar' # to show progress when running validate-cocina script
 gem 'uuidtools', '~> 2.1.4'
 gem 'whenever', require: false
 
 group :development do
   gem 'listen', '~> 3.0.5'
-  gem 'marc-vocab' # used by bin/reports/report-desc-marcgac
-  gem 'rubyzip', '>= 1.0.0'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
