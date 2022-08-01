@@ -8,11 +8,6 @@ class ObjectsController < ApplicationController
     json_api_error(status: :not_found, message: e.message)
   end
 
-  rescue_from(Dry::Struct::Error) do |e|
-    json_api_error(status: :internal_server_error, message: e.message)
-    raise e
-  end
-
   def create
     return json_api_error(status: :service_unavailable, message: 'Registration is temporarily disabled') unless Settings.enabled_features.registration
 
