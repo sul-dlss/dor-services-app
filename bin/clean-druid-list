@@ -23,7 +23,7 @@ count = 0
 File.open(options[:output], 'w') do |file|
   druids.each_with_index do |druid, index|
     puts "Finding #{druid} (#{index + 1})"
-    next if ActiveFedora::SolrService.query('*:*', fl: 'id', rows: 1, fq: "id:\"#{druid}\"").empty?
+    next if SolrService.query('*:*', fl: 'id', rows: 1, fq: "id:\"#{druid}\"").empty?
 
     file.write("#{druid}\n")
     count += 1
