@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/honeybadger-io/honeybadger-ruby.git
+  revision: 887592a3aab27735e6a1f83446347ea5c50d9736
+  branch: fix-invalid-sessions
+  specs:
+    honeybadger (4.12.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -216,7 +223,6 @@ GEM
     globalid (1.0.0)
       activesupport (>= 5.0)
     hashdiff (1.0.1)
-    honeybadger (4.12.1)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
@@ -510,7 +516,7 @@ DEPENDENCIES
   factory_bot_rails
   faraday (~> 2.0)
   faraday-retry
-  honeybadger
+  honeybadger!
   jbuilder
   jsonpath (~> 1.1)
   jwt
