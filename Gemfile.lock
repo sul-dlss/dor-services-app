@@ -489,7 +489,6 @@ DEPENDENCIES
   committee (~> 4.4)
   config
   datacite (~> 0.3.0)
-  deprecation
   diffy
   dlss-capistrano
   dor-rights-auth (>= 1.5.0)
