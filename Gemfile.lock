@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/honeybadger-io/honeybadger-ruby.git
-  revision: 887592a3aab27735e6a1f83446347ea5c50d9736
-  branch: fix-invalid-sessions
+  revision: 77542a6d5978c9042d47c699f1f13987c27b1953
+  branch: master
   specs:
     honeybadger (4.12.1)
 
