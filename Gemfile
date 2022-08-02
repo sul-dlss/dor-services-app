@@ -27,8 +27,8 @@ gem 'equivalent-xml' # for diffing MODS
 gem 'faraday', '~> 2.0'
 gem 'faraday-retry'
 
-# Fix for https://github.com/honeybadger-io/honeybadger-ruby/issues/435
-gem 'honeybadger', github: 'honeybadger-io/honeybadger-ruby', branch: 'fix-invalid-sessions'
+# Fix for https://github.com/honeybadger-io/honeybadger-ruby/issues/435 (fix has been merged to master, but a new gem release has yet to be cut)
+gem 'honeybadger', github: 'honeybadger-io/honeybadger-ruby', branch: 'master'
 
 gem 'jbuilder'
 gem 'jsonpath', '~> 1.1' # used for metadata reports
