@@ -176,7 +176,7 @@ Style/BisectedAttrAccessor:
   Enabled: true
 
 Style/CaseLikeIf:
-  Enabled: false # Here be dragons https://github.com/rubocop-hq/rubocop/issues/8508
+  Enabled: true
 
 Style/ExplicitBlockArgument:
   Enabled: true
