@@ -154,8 +154,10 @@ class VersionService
     false
   end
 
-  # Checks if the current version has any incomplete wf steps and there is an accessionWF.
-  # @return [Boolean] true if object is currently being accessioned
+  # Checks if the active (latest) version has any incomplete workflow steps and there is an accessionWF (known by the presence of a submitted milestone).
+  # If so we don't want to start another acceession workflow.  This is also true if a preservationAuditWF has returned an error, so that no further
+  # accessioning can take place until that is resolved.
+  # @return [Boolean] true if object is currently being accessioned or is failing an audit
   def accessioning?
     return true if workflow_client.active_lifecycle(druid:, milestone_name: 'submitted', version: cocina_object.version.to_s)
 
