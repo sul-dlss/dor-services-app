@@ -70,16 +70,16 @@ class SymphonyReader
   def symphony_response(url)
     resp = client.get(url)
 
-    if resp.status == 200
+    case resp.status
+    when 200
       validate_response(resp)
-      return resp
-    elsif resp.status == 404
-      raise NotFound, "Record not found in Symphony. Catkey: #{catkey}. API call: #{url}"
+      resp
+    when 404
+      raise NotFound, "Record not found in Symphony. Catkey: #{catkey}. API call: #{url}" if resp.status == 404
     else
       errmsg = "Got HTTP Status-Code #{resp.status} calling #{url}: #{resp.body}"
+      raise ResponseError, errmsg
     end
-
-    raise ResponseError, errmsg
   rescue Faraday::TimeoutError => e
     errmsg = "Timeout for Symphony response for API call #{url}: #{e}"
     Honeybadger.notify(errmsg)
