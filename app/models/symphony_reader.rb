@@ -75,7 +75,7 @@ class SymphonyReader
       validate_response(resp)
       resp
     when 404
-      raise NotFound, "Record not found in Symphony. Catkey: #{catkey}. API call: #{url}" if resp.status == 404
+      raise NotFound, "Record not found in Symphony. Catkey: #{catkey}. API call: #{url}"
     else
       errmsg = "Got HTTP Status-Code #{resp.status} calling #{url}: #{resp.body}"
       raise ResponseError, errmsg
