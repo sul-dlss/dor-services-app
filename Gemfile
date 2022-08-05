@@ -8,7 +8,7 @@ gem 'rails', '~> 7.0'
 # DLSS/domain-specific dependencies
 gem 'cocina-models', '~> 0.83.0'
 gem 'datacite', '~> 0.3.0'
-gem 'dor-workflow-client', '~> 4.0'
+gem 'dor-workflow-client', '~> 5.0'
 gem 'druid-tools', '~> 2.2'
 gem 'marc'
 gem 'moab-versioning', '~> 5.0', require: 'moab/stanford'
