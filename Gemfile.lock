@@ -156,11 +156,11 @@ GEM
       capistrano-one_time_key
       capistrano-shared_configs
     docile (1.4.0)
-    dor-workflow-client (4.0.0)
+    dor-workflow-client (5.0.0)
       activesupport (>= 3.2.1, < 8)
       deprecation (>= 0.99.0)
       faraday (~> 2.0)
-      faraday-retry
+      faraday-retry (~> 1.0)
       nokogiri (~> 1.6)
       zeitwerk (~> 2.1)
     druid-tools (2.2.1)
@@ -217,8 +217,7 @@ GEM
       faraday-net_http (~> 2.0)
       ruby2_keywords (>= 0.0.4)
     faraday-net_http (2.1.0)
-    faraday-retry (2.0.0)
-      faraday (~> 2.0)
+    faraday-retry (1.0.3)
     globalid (1.0.0)
       activesupport (>= 5.0)
     hashdiff (1.0.1)
@@ -497,7 +496,7 @@ DEPENDENCIES
   datacite (~> 0.3.0)
   diffy
   dlss-capistrano
-  dor-workflow-client (~> 4.0)
+  dor-workflow-client (~> 5.0)
   druid-tools (~> 2.2)
   dry-monads
   edtf (~> 3.0)
