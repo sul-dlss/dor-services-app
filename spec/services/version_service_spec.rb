@@ -234,7 +234,8 @@ RSpec.describe VersionService do
       before do
         # stub out calls for open_for_versioning?
         allow(workflow_client).to receive(:active_lifecycle).and_return(true, false)
-        allow(workflow_client).to receive(:workflow_status).with(hash_including(workflow: 'assemblyWF')).and_return('completed')
+        allow(workflow_client).to receive(:workflow_status).with(druid:, workflow: 'assemblyWF', process: 'accessioning-initiate')
+                                                           .and_return('completed')
         allow(workflow_client).to receive(:close_version)
       end
 
