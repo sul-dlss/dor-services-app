@@ -5,7 +5,7 @@
 class UnusualLanguageSourceUris
   JSON_PATH1 = '$.**.language.**.uri' # both language.uri and language.script.uri
   JSON_PATH2 = '$.**.valueLanguage.**.uri' # both valueLanguage.uri and valueLanguage.valueScript.uri
-  REGEX = '^(?!(http|https)(://id\.loc\.gov/vocabulary/(iso639-2|languages)/)).*' # not "http(s)://id.loc.gov/vocabulary/iso639-2(/)"
+  REGEX = '^(?!(http|https)(://id\.loc\.gov/vocabulary/(iso639-2|languages)/?)).*' # not "http(s)://id.loc.gov/vocabulary/iso639-2(/)"
   # or "http(s)://id.loc.gov/vocabulary/languages(/)"
   SQL = <<~SQL.squish.freeze
     SELECT (jsonb_path_query_array(description, '#{JSON_PATH1} ? (@ like_regex "#{REGEX}")') ||
