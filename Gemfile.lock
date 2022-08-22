@@ -1,10 +1,3 @@
-GIT
-  remote: https://github.com/honeybadger-io/honeybadger-ruby.git
-  revision: e8fe201150c3f42a75f383fb6de2122e6320110d
-  branch: master
-  specs:
-    honeybadger (5.0.0.beta1)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -222,6 +215,7 @@ GEM
     globalid (1.0.0)
       activesupport (>= 5.0)
     hashdiff (1.0.1)
+    honeybadger (4.12.2)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
@@ -505,7 +499,7 @@ DEPENDENCIES
   factory_bot_rails
   faraday (~> 2.0)
   faraday-retry
-  honeybadger!
+  honeybadger (~> 4.12)
   jbuilder
   jsonpath (~> 1.1)
   jwt
