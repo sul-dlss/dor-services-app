@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/honeybadger-io/honeybadger-ruby.git
-  revision: 77542a6d5978c9042d47c699f1f13987c27b1953
+  revision: e8fe201150c3f42a75f383fb6de2122e6320110d
   branch: master
   specs:
-    honeybadger (4.12.1)
+    honeybadger (5.0.0.beta1)
 
 GEM
   remote: https://rubygems.org/
@@ -73,8 +73,8 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
-    addressable (2.8.0)
-      public_suffix (>= 2.0.2, < 5.0)
+    addressable (2.8.1)
+      public_suffix (>= 2.0.2, < 6.0)
     airbrussh (1.4.1)
       sshkit (>= 1.6.1, != 1.7.0)
     amq-protocol (2.3.2)
@@ -252,7 +252,7 @@ GEM
     method_source (1.0.0)
     mini_mime (1.1.2)
     mini_portile2 (2.8.0)
-    minitest (5.16.2)
+    minitest (5.16.3)
     moab-versioning (5.2.0)
       druid-tools (>= 1.0.0)
       json
@@ -311,13 +311,13 @@ GEM
       faraday (~> 2.0)
       moab-versioning (~> 5.0)
       zeitwerk (~> 2.1)
-    pry (0.13.1)
+    pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    pry-byebug (3.9.0)
+    pry-byebug (3.10.1)
       byebug (~> 11.0)
-      pry (~> 0.13.0)
-    public_suffix (4.0.7)
+      pry (>= 0.13, < 0.15)
+    public_suffix (5.0.0)
     puma (5.6.4)
       nio4r (~> 2.0)
     racc (1.6.0)
@@ -386,7 +386,7 @@ GEM
       rspec-core (>= 2, < 4, != 2.12.0)
     rss (0.2.9)
       rexml
-    rubocop (1.35.0)
+    rubocop (1.35.1)
       json (~> 2.3)
       parallel (~> 1.10)
       parser (>= 3.1.2.1)
@@ -466,7 +466,7 @@ GEM
     unf_ext (0.0.8.2)
     unicode-display_width (2.2.0)
     uuidtools (2.1.5)
-    webmock (3.17.1)
+    webmock (3.18.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
