@@ -26,10 +26,7 @@ gem 'edtf', '~> 3.0' # used for metadata reports
 gem 'equivalent-xml' # for diffing MODS
 gem 'faraday', '~> 2.0'
 gem 'faraday-retry'
-
-# Fix for https://github.com/honeybadger-io/honeybadger-ruby/issues/435 (fix has been merged to master, but a new gem release has yet to be cut)
-gem 'honeybadger', github: 'honeybadger-io/honeybadger-ruby', branch: 'master'
-
+gem 'honeybadger', '~> 4.12'
 gem 'jbuilder'
 gem 'jsonpath', '~> 1.1' # used for metadata reports
 gem 'jwt' # json web token
