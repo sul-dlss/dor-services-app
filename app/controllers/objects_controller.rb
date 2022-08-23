@@ -144,9 +144,7 @@ class ObjectsController < ApplicationController
                                      'Datacite requires that this object have creators and a datacite extension with resourceTypeGeneral')
     end
 
-    # We can remove this line when we upgrade to Rails 6 and just pass cocina_object.
-    serialized_item = Cocina::Serializer.new.serialize(@cocina_object)
-    UpdateDoiMetadataJob.perform_later(serialized_item)
+    UpdateDoiMetadataJob.perform_later(@cocina_object)
 
     head :accepted
   end
