@@ -2138,8 +2138,18 @@ components:
               # description: An alphabet or other notation used to represent a
               #   language or other symbolic system of the descriptive element value.
     DOI:
-      type: string
       description: Digital Object Identifier (https://www.doi.org)
+      oneOf:
+        - $ref: '#/components/schemas/DoiPattern'
+        - $ref: '#/components/schemas/DoiExceptions'
+    DoiExceptions:
+      type: string
+      description: pre-existing Digital Object Identifiers (https://www.doi.org) not matching the pattern (case insensitive)
+      pattern: '^10\.(25740\/([vV][aA]90-[cC][tT]15|[sS][yY][xX][aA]-[mM]256|12[qQ][fF]-5243|65[jJ]8-6114)|25936\/629[tT]-[bB][xX]79)$'
+      example: '10.25740/12qF-5243'
+    DoiPattern:
+      type: string
+      description: Digital Object Identifier (https://www.doi.org) regex pattern # The prod and test prefixes are permitted
       pattern: '^10\.(25740|80343)\/[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$'
       example: '10.25740/bc123df4567'
     DRO:
