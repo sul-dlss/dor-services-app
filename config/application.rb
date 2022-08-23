@@ -42,7 +42,7 @@ end
 module DorServices
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 5.0
+    config.load_defaults 7.0
 
     accept_proc = proc { |request| request.path.start_with?('/v1') }
     config.middleware.use(
