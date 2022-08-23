@@ -4,11 +4,6 @@
 class MembersController < ApplicationController
   # Return the published members of this collection
   def index
-    query = "is_member_of_collection_ssim:\"info:fedora/#{params[:object_id]}\" published_dttsim:[* TO *]"
-    args = {
-      fl: 'id,objectType_ssim',
-      rows: 100_000_000
-    }
-    @members = SolrService.query query, args
+    @members = MemberService.for(params[:object_id], only_published: true)
   end
 end

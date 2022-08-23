@@ -26,6 +26,10 @@ class UpdateObjectService
 
   def update
     Cocina::ObjectValidator.validate(cocina_object)
+
+    # If this is a collection and the title has changed, then reindex the children.
+    update_items = need_to_update_members?
+
     # Only update if already exists in PG (i.e., added by create or migration).
     cocina_object_with_metadata = CocinaObjectStore.store(cocina_object, skip_lock:)
 
@@ -35,6 +39,9 @@ class UpdateObjectService
 
     # Broadcast this update action to a topic
     Notifications::ObjectUpdated.publish(model: cocina_object_with_metadata)
+
+    # Update all items in the collection if necessary
+    PublishItemsModifiedJob.perform_later(cocina_object.externalIdentifier) if update_items
     cocina_object_with_metadata
   rescue Cocina::ValidationError => e
     event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update',
@@ -45,4 +52,10 @@ class UpdateObjectService
   private
 
   attr_reader :cocina_object, :skip_lock, :event_factory
+
+  def need_to_update_members?
+    cocina_object.collection? &&
+      Cocina::Models::Builders::TitleBuilder.build(CocinaObjectStore.find(cocina_object.externalIdentifier).description.title) !=
+        Cocina::Models::Builders::TitleBuilder.build(cocina_object.description.title)
+  end
 end

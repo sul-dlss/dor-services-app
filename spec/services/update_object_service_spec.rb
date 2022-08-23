@@ -46,7 +46,7 @@ RSpec.describe UpdateObjectService do
 
         let(:cocina_object) do
           Cocina::Models.with_metadata(ar_cocina_object.to_cocina, lock, created: ar_cocina_object.created_at.utc, modified: ar_cocina_object.updated_at.utc)
-            .new(label: 'new label')
+                        .new(label: 'new label')
         end
 
         it 'saves to datastore' do
@@ -62,7 +62,7 @@ RSpec.describe UpdateObjectService do
 
         let(:cocina_object) do
           Cocina::Models.with_metadata(ar_cocina_object.to_cocina, lock, created: ar_cocina_object.updated_at.utc, modified: ar_cocina_object.updated_at.utc)
-            .new(label: 'new label')
+                        .new(label: 'new label')
         end
 
         it 'saves to datastore' do
@@ -104,7 +104,7 @@ RSpec.describe UpdateObjectService do
                                          type: Cocina::Models::ObjectType.collection,
                                          label: 'Test Collection',
                                          description: {
-                                           title: [{ value: 'Test Collection' }],
+                                           title: [{ value: 'Updated title' }],
                                            purl: 'https://purl.stanford.edu/hp308wm0436'
                                          },
                                          version: 1,
@@ -116,10 +116,23 @@ RSpec.describe UpdateObjectService do
                                        })
       end
 
+      before do
+        # Create a existing record with a different title
+        CocinaObjectStore.store(cocina_object.new(
+                                  description: {
+                                    title: [{ value: 'Original title' }],
+                                    purl: 'https://purl.stanford.edu/hp308wm0436'
+                                  }
+                                ), skip_lock: true)
+
+        allow(PublishItemsModifiedJob).to receive(:perform_later)
+      end
+
       it 'saves to datastore' do
-        expect(Collection.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
         expect(store.update).to be_kind_of Cocina::Models::CollectionWithMetadata
-        expect(Collection.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
+        updated_row = Collection.find_by(external_identifier: cocina_object.externalIdentifier)
+        expect(updated_row.to_cocina.description.title.first.value).to eq 'Updated title'
+        expect(PublishItemsModifiedJob).to have_received(:perform_later)
       end
     end
 
@@ -129,6 +142,9 @@ RSpec.describe UpdateObjectService do
       end
 
       before do
+        # Create a existing record without a source id
+        CocinaObjectStore.store(cocina_object.new(identification: {}), skip_lock: true)
+
         # Create a duplicate record with the same sourceId
         CocinaObjectStore.store(cocina_object.new(
                                   externalIdentifier: 'druid:dd645sg2172',
@@ -137,10 +153,13 @@ RSpec.describe UpdateObjectService do
                                     purl: 'https://purl.stanford.edu/dd645sg2172'
                                   }
                                 ), skip_lock: true)
+
+        allow(PublishItemsModifiedJob).to receive(:perform_later)
       end
 
       it 'raises' do
         expect { store.update }.to raise_error(Cocina::ValidationError)
+        expect(PublishItemsModifiedJob).not_to have_received(:perform_later)
       end
     end
   end
