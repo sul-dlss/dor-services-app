@@ -15,14 +15,16 @@ class UpdateObjectService
   # @raise [StateLockError] raised if optimistic lock failed.
   # @return [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] normalized cocina object
   def self.update(cocina_object, event_factory: EventFactory, skip_lock: false)
-    new(event_factory:).update(cocina_object, skip_lock:)
+    new(cocina_object:, skip_lock:, event_factory:).update
   end
 
-  def initialize(event_factory: EventFactory)
+  def initialize(cocina_object:, skip_lock:, event_factory: EventFactory)
+    @cocina_object = cocina_object
+    @skip_lock = skip_lock
     @event_factory = event_factory
   end
 
-  def update(cocina_object, skip_lock: false)
+  def update
     Cocina::ObjectValidator.validate(cocina_object)
     # Only update if already exists in PG (i.e., added by create or migration).
     cocina_object_with_metadata = CocinaObjectStore.store(cocina_object, skip_lock:)
@@ -42,5 +44,5 @@ class UpdateObjectService
 
   private
 
-  attr_reader :event_factory
+  attr_reader :cocina_object, :skip_lock, :event_factory
 end

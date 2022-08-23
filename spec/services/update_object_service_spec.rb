@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe UpdateObjectService do
   include Dry::Monads[:result]
-  let(:store) { described_class.new }
+  let(:store) { described_class.new(cocina_object:, skip_lock: true) }
 
   describe '#update' do
     before do
@@ -33,45 +33,42 @@ RSpec.describe UpdateObjectService do
 
         it 'saves to datastore' do
           expect(Dro.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
-          expect(store.update(cocina_object, skip_lock: true)).to be_kind_of Cocina::Models::DROWithMetadata
+          expect(store.update).to be_kind_of Cocina::Models::DROWithMetadata
           expect(Dro.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
         end
       end
 
       context 'when checking lock succeeds' do
+        let(:store) { described_class.new(cocina_object:, skip_lock: false) }
+
         let(:ar_cocina_object) { create(:ar_dro) }
         let(:lock) { "#{ar_cocina_object.external_identifier}=0" }
 
         let(:cocina_object) do
           Cocina::Models.with_metadata(ar_cocina_object.to_cocina, lock, created: ar_cocina_object.created_at.utc, modified: ar_cocina_object.updated_at.utc)
-        end
-
-        let(:changed_cocina_object) do
-          cocina_object.new(label: 'new label')
+            .new(label: 'new label')
         end
 
         it 'saves to datastore' do
-          expect(store.update(changed_cocina_object)).to be_kind_of Cocina::Models::DROWithMetadata
+          expect(store.update).to be_kind_of Cocina::Models::DROWithMetadata
           expect(Dro.find_by(external_identifier: ar_cocina_object.external_identifier).label).to eq('new label')
         end
       end
 
       context 'when checking lock fails' do
+        let(:store) { described_class.new(cocina_object:, skip_lock: false) }
         let!(:ar_cocina_object) { create(:ar_dro) }
         let(:lock) { '64e8320d19d62ddb73c501276c5655cf' }
 
         let(:cocina_object) do
           Cocina::Models.with_metadata(ar_cocina_object.to_cocina, lock, created: ar_cocina_object.updated_at.utc, modified: ar_cocina_object.updated_at.utc)
-        end
-
-        let(:changed_cocina_object) do
-          cocina_object.new(label: 'new label')
+            .new(label: 'new label')
         end
 
         it 'saves to datastore' do
           ar_cocina_object.label = 'someone else changed this label'
           ar_cocina_object.save!
-          expect { store.update(changed_cocina_object) }.to raise_error(CocinaObjectStore::StaleLockError)
+          expect { store.update }.to raise_error(CocinaObjectStore::StaleLockError)
         end
       end
     end
@@ -94,7 +91,7 @@ RSpec.describe UpdateObjectService do
 
       it 'saves to datastore' do
         expect(AdminPolicy.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
-        expect(store.update(cocina_object, skip_lock: true)).to be_kind_of Cocina::Models::AdminPolicyWithMetadata
+        expect(store.update).to be_kind_of Cocina::Models::AdminPolicyWithMetadata
         expect(AdminPolicy.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
       end
     end
@@ -121,7 +118,7 @@ RSpec.describe UpdateObjectService do
 
       it 'saves to datastore' do
         expect(Collection.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
-        expect(store.update(cocina_object, skip_lock: true)).to be_kind_of Cocina::Models::CollectionWithMetadata
+        expect(store.update).to be_kind_of Cocina::Models::CollectionWithMetadata
         expect(Collection.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
       end
     end
@@ -143,7 +140,7 @@ RSpec.describe UpdateObjectService do
       end
 
       it 'raises' do
-        expect { store.update(cocina_object, skip_lock: true) }.to raise_error(Cocina::ValidationError)
+        expect { store.update }.to raise_error(Cocina::ValidationError)
       end
     end
   end
