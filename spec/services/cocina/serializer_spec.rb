@@ -3,8 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::Serializer do
-  let(:serializer) { described_class.new }
-
   let(:dro) do
     Cocina::Models.build(
       {
@@ -68,8 +66,9 @@ RSpec.describe Cocina::Serializer do
 
   let(:dro_with_metadata) { Cocina::Models.with_metadata(dro, '1', created: DateTime.now) }
 
-  let(:json) do
+  let(:expected_serialized) do
     {
+      '_aj_serialized' => 'Cocina::Serializer',
       cocinaVersion: Cocina::Models::VERSION,
       type: Cocina::Models::ObjectType.object,
       externalIdentifier: 'druid:ft609gr4031',
@@ -156,36 +155,22 @@ RSpec.describe Cocina::Serializer do
         hasMemberOrders: [],
         isMemberOf: []
       }
-    }.to_json
-  end
-
-  describe '.serialize?' do
-    it 'serializes DROs' do
-      expect(serializer.serialize?(dro)).to be true
-    end
-
-    it 'serializes DROWithMetadatas' do
-      expect(serializer.serialize?(dro_with_metadata)).to be true
-    end
-
-    it 'does not serialize non-DROs' do
-      expect(serializer.serialize?('not a DRO')).to be false
-    end
+    }
   end
 
   describe '.serialize' do
     it 'serializes DROs' do
-      expect(serializer.serialize(dro)).to eq json
+      expect(ActiveJob::Serializers.serialize(dro)).to eq expected_serialized
     end
 
     it 'serializes DROWithMetadatas' do
-      expect(serializer.serialize(dro_with_metadata)).to eq json
+      expect(ActiveJob::Serializers.serialize(dro_with_metadata)).to eq expected_serialized
     end
   end
 
   describe '.deserializes' do
     it 'deserializes DROs' do
-      expect(serializer.deserialize(json)).to eq dro
+      expect(ActiveJob::Serializers.deserialize(expected_serialized)).to eq dro
     end
   end
 end
