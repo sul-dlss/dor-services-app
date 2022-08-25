@@ -4,15 +4,21 @@
 # bin/rails r -e production "InvalidRoleUris.report"
 class InvalidRoleUris
   JSON_PATH = '$.**.contributor.role.uri'
+  # These URIs have at least 2 trailing characters
+  URL_PATTERNS = [
+    'id\.loc\.gov/vocabulary/relators/..',
+    'id\.loc\.gov/authorities/performanceMediums/..',
+    'nomisma\.org/id/..'
+  ].freeze
+  REGEX = "\"^https?://(?!#{URL_PATTERNS.join('|')}).*$\"".freeze
+
   SQL = <<~SQL.squish.freeze
-    SELECT (jsonb_path_query_array(description, '#{JSON_PATH} ? (@ like_regex "^.*\.html$")') ||
-            jsonb_path_query_array(description, '#{JSON_PATH} ? (@ like_regex "^(?!https?://).*$")')) ->> 0 as value,
+    SELECT jsonb_path_query_array(description, '#{JSON_PATH} ? (@ like_regex #{REGEX})') as value,
            external_identifier,
            jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "symphony").catalogRecordId') ->> 0 as catkey,
            jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_id
            FROM "dros" WHERE
-           (jsonb_path_exists(description, '#{JSON_PATH} ? (@ like_regex "^(?!https?://).*$")') OR
-           jsonb_path_exists(description, '#{JSON_PATH} ? (@ like_regex "^.*\.html$")'))
+           jsonb_path_exists(description, '#{JSON_PATH} ? (@ like_regex #{REGEX})')
   SQL
 
   def self.report
@@ -27,7 +33,7 @@ class InvalidRoleUris
 
     grouped = result.to_a.group_by { |row| row['external_identifier'] }
     grouped.map do |id, rows|
-      value = rows.map { |row| row['value'] }.join(';')
+      value = rows.map { |row| JSON.parse(row['value']) }.join(';')
       [id, rows.first['catkey'], rows.first['collection_id'], value].join(',')
     end
   end
