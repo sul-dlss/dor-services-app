@@ -672,11 +672,12 @@ RSpec.describe 'Update object' do
       allow(AdministrativeTags).to receive(:project).and_return([])
     end
 
-    it 'creates the collection' do
+    it 'updates the collection' do
       patch "/v1/objects/#{druid}",
             params: data,
             headers: headers
       expect(response).to have_http_status(:ok)
+      expect(PublishItemsModifiedJob).to have_been_enqueued
       expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
       expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
     end
