@@ -213,6 +213,113 @@ RSpec.describe 'Cocina --> DataCite contributor mappings (H2 specific)' do
     end
   end
 
+  describe 'Contributor with multiple roles' do
+    # Authors to include in citation
+    ## Jane Stanford. Author.
+    ## Leland Stanford. Author.
+
+    let(:cocina) do
+      {
+        contributor: [
+          {
+            name: [
+              {
+                structuredValue: [
+                  {
+                    value: 'Jane',
+                    type: 'forename'
+                  },
+                  {
+                    value: 'Stanford',
+                    type: 'surname'
+                  }
+                ]
+              }
+            ],
+            type: 'person',
+            status: 'primary',
+            role: [
+              {
+                value: 'Author',
+                source: {
+                  value: 'H2 contributor role terms'
+                }
+              },
+              {
+                value: 'author',
+                code: 'aut',
+                uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                source: {
+                  code: 'marcrelator',
+                  uri: 'http://id.loc.gov/vocabulary/relators/'
+                }
+              }
+            ]
+          },
+          {
+            name: [
+              {
+                structuredValue: [
+                  {
+                    value: 'Jane',
+                    type: 'forename'
+                  },
+                  {
+                    value: 'Stanford',
+                    type: 'surname'
+                  }
+                ]
+              }
+            ],
+            type: 'person',
+            role: [
+              {
+                value: 'Editor',
+                source: {
+                  value: 'H2 contributor role terms'
+                }
+              },
+              {
+                value: 'editor',
+                code: 'edt',
+                uri: 'http://id.loc.gov/vocabulary/relators/edt',
+                source: {
+                  code: 'marcrelator',
+                  uri: 'http://id.loc.gov/vocabulary/relators/'
+                }
+              }
+            ]
+          }
+        ]
+      }
+    end
+
+    # let(:datacite_xml) do
+    #   <<~XML
+    #     <creators>
+    #       <creator>
+    #         <creatorName nameType="Personal">Stanford, Jane</creatorName>
+    #         <givenName>Jane</givenName>
+    #         <familyName>Stanford</familyName>
+    #       </creator>
+    #     </creators>
+    #   XML
+    # end
+
+    it 'deduplicates creator attributes correctly' do
+      expect(creator_attributes).to eq(
+        [
+          {
+            name: 'Stanford, Jane',
+            nameType: 'Personal',
+            givenName: 'Jane',
+            familyName: 'Stanford'
+          }
+        ]
+      )
+    end
+  end
+
   describe 'Cited contributor with cited organization' do
     # Authors to include in citation
     ## Jane Stanford. Data collector.

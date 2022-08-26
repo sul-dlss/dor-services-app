@@ -50,7 +50,7 @@ module Cocina
       end
 
       def datacite_creators
-        @datacite_creators ||= cocina_creators.map { |cocina_creator| datacite_creator(cocina_creator) }
+        @datacite_creators ||= cocina_creators.map { |cocina_creator| datacite_creator(cocina_creator) }.uniq
       end
 
       def datacite_contributors
