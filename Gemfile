@@ -35,6 +35,7 @@ gem 'okcomputer'
 gem 'parallel' # used for validating cocina tools
 gem 'pg'
 gem 'puma', '~> 5.3' # app server
+gem 'redis', '~> 4.0' # redis 5.x has breaking changes with resque, see https://github.com/resque/resque/issues/1821
 gem 'retries' # for Goobi
 gem 'rsolr'
 gem 'rss', '~> 0.2' # Provides Time.w3cdtf used for BadW3cdtfDates report

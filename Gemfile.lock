@@ -514,6 +514,7 @@ DEPENDENCIES
   puma (~> 5.3)
   rack-console
   rails (~> 7.0)
+  redis (~> 4.0)
   retries
   rsolr
   rspec-rails
