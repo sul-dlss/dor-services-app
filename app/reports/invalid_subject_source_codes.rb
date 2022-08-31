@@ -32,6 +32,7 @@ class InvalidSubjectSourceCodes
     csht
     czenas
     dcs
+    ddc
     ddcrit
     dtict
     eclas
@@ -58,6 +59,7 @@ class InvalidSubjectSourceCodes
     jlabsh/3
     jlabsh/4
     larpcal
+    lcc
     lcgft
     lcsh
     lcshac
