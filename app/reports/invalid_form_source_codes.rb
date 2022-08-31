@@ -3,6 +3,14 @@
 # Invoke via:
 # bin/rails r -e production "InvalidFormSourceCodes.report"
 class InvalidFormSourceCodes
+  # NOTE: Prefer strict JSON querying over lax when using the `.**` operator, per
+  #       https://www.postgresql.org/docs/14/functions-json.html#STRICT-AND-LAX-MODES
+  #
+  # > The .** accessor can lead to surprising results when using the lax mode.
+  # > ... This happens because the .** accessor selects both the segments array
+  # > and each of its elements, while the .HR accessor automatically unwraps
+  # > arrays when using the lax mode. To avoid surprising results, we recommend
+  # > using the .** accessor only in the strict mode.
   JSON_PATH = 'strict $.**.form.**.source.code'
   VALID_CODES = %w[
     aat EPSG eurovoc fast ftamc gcipmedia gmd gmgpc gnd gnd-content gsafd gtlm gtt
