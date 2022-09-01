@@ -1850,17 +1850,17 @@
 						<xsl:call-template name="reformattingQuality"/>
 						<!-- SUL edit 20210420 issue #2711 -->
 						<xsl:for-each select="
-							marc:datafield[@tag = '130'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'h'] |
-							marc:datafield[@tag = '240'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'h'] |
-							marc:datafield[@tag = '242'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'h'] |
-							marc:datafield[@tag = '245'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'h'] |
-							marc:datafield[@tag = '246'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'h'] |
-							marc:datafield[@tag = '730'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'h'] |
-							marc:datafield[@tag = '256'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'a'] |
-							marc:datafield[@tag = '337'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'a'] |
-							marc:datafield[@tag = '338'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'a'] |
-							marc:datafield[@tag = '300'][not(marc:subfield[@code = '6'])] |
-							marc:datafield[@tag = '856'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'q']">
+								marc:datafield[@tag = '130'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'h'] |
+								marc:datafield[@tag = '240'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'h'] |
+								marc:datafield[@tag = '242'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'h'] |
+								marc:datafield[@tag = '245'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'h'] |
+								marc:datafield[@tag = '246'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'h'] |
+								marc:datafield[@tag = '730'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'h'] |
+								marc:datafield[@tag = '256'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'a'] |
+								marc:datafield[@tag = '337'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'a'] |
+								marc:datafield[@tag = '338'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'a'] |
+								marc:datafield[@tag = '300'][not(marc:subfield[@code = '6'])] |
+								marc:datafield[@tag = '856'][not(marc:subfield[@code = '6'])]/marc:subfield[@code = 'q']">
 							<xsl:apply-templates select="." mode="physDesc"/>
 						</xsl:for-each>
 						<!-- SUL edit 20210420 issue #2711
@@ -5920,9 +5920,29 @@
 	<xsl:template name="createGenreFrom336">
 		<genre>
 			<!-- 1.110 -->
+			<!-- SUL edit 20220901 issue #4211
 			<xsl:if test="marc:subfield[@code = '2']">
 				<xsl:attribute name="authority">
 					<xsl:value-of select="marc:subfield[@code = '2']"/>
+				</xsl:attribute>
+			</xsl:if> -->
+			<xsl:if test="marc:subfield[@code = '2']">
+				<xsl:attribute name="authority">
+					<xsl:call-template name="chopPunctuation">
+						<xsl:with-param name="chopString">
+							<xsl:call-template name="chopPunctuationFront">
+								<xsl:with-param name="chopString">
+									<xsl:value-of select="marc:subfield[@code = '2']"/>
+								</xsl:with-param>
+								<xsl:with-param name="punctuation">
+									<text>., </text>
+								</xsl:with-param>
+							</xsl:call-template>
+						</xsl:with-param>
+						<xsl:with-param name="punctuation">
+							<text>., </text>
+						</xsl:with-param>
+					</xsl:call-template>
 				</xsl:attribute>
 			</xsl:if>
 			<!-- Template checks for altRepGroup - 880 $6 -->
@@ -5932,7 +5952,6 @@
 				<xsl:with-param name="delimeter">-</xsl:with-param>
 			</xsl:call-template>
 		</genre>
-
 	</xsl:template>
 
 	<xsl:template name="createGenreFrom655">
@@ -5941,9 +5960,29 @@
 		<genre>
 			<!-- 1.109 -->
 			<xsl:choose>
+				<!-- SUL edit 20220901 issue #4211
 				<xsl:when test="marc:subfield[@code = '2']">
 					<xsl:attribute name="authority">
 						<xsl:value-of select="marc:subfield[@code = '2']"/>
+					</xsl:attribute>
+				</xsl:when> -->
+				<xsl:when test="marc:subfield[@code = '2']">
+					<xsl:attribute name="authority">
+						<xsl:call-template name="chopPunctuation">
+							<xsl:with-param name="chopString">
+								<xsl:call-template name="chopPunctuationFront">
+									<xsl:with-param name="chopString">
+										<xsl:value-of select="marc:subfield[@code = '2']"/>
+									</xsl:with-param>
+									<xsl:with-param name="punctuation">
+										<text>., </text>
+									</xsl:with-param>
+								</xsl:call-template>
+							</xsl:with-param>
+							<xsl:with-param name="punctuation">
+								<text>., </text>
+							</xsl:with-param>
+						</xsl:call-template>
 					</xsl:attribute>
 				</xsl:when>
 				<!-- SUL edit 20200819 issue #988 and #1007 -->
@@ -6099,8 +6138,8 @@
 				</xsl:if>
 				<!-- SUL edit 20220603 issue #2747 -->
 				<xsl:if test="
-					preceding-sibling::marc:datafield[@tag = '245'][marc:subfield[@code = 'c']]">
-<!--				<xsl:if test="
+						preceding-sibling::marc:datafield[@tag = '245'][marc:subfield[@code = 'c']]">
+					<!--				<xsl:if test="
 						preceding-sibling::marc:datafield[@tag = '245']"> -->
 					<xsl:call-template name="xxx880"/>
 				</xsl:if>
@@ -6502,7 +6541,9 @@
 					</xsl:attribute>
 					<!-- SUL edit 20220603 issue #2845
 					<xsl:value-of select="self::marc:subfield"/> -->
-					<xsl:value-of select="translate(self::marc:subfield, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')" />
+					<xsl:value-of
+						select="translate(self::marc:subfield, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"
+					/>
 				</geographicCode>
 				<!-- SUL edit 20210315 issue #2452
 			</xsl:for-each> -->
@@ -7336,7 +7377,7 @@
 	<xsl:template name="createLocationFrom856">
 		<!-- SUL edit 20220603 issue #2710 -->
 		<xsl:if test="self::marc:datafield[@tag = 856][@ind2 != 2][marc:subfield[@code = 'u']]">
-		<!-- <xsl:if test="//marc:datafield[@tag = 856][@ind2 != 2][marc:subfield[@code = 'u']]"> -->
+			<!-- <xsl:if test="//marc:datafield[@tag = 856][@ind2 != 2][marc:subfield[@code = 'u']]"> -->
 			<location>
 				<!-- 1.121 -->
 				<xsl:call-template name="xxx880"/>
@@ -7553,24 +7594,29 @@
 	<!-- SUL edit 20220602 issue #3006 -->
 	<!-- 340 note-->
 	<xsl:template match="marc:datafield[@tag = '340']" mode="physDesc">
-		<xsl:for-each select="marc:subfield[@code = 'a'] | marc:subfield[@code = 'b'] | marc:subfield[@code = 'c']
-			| marc:subfield[@code = 'd'] | marc:subfield[@code = 'i'] | marc:subfield[@code = 'j']">
-			<note>		
+		<xsl:for-each select="
+				marc:subfield[@code = 'a'] | marc:subfield[@code = 'b'] | marc:subfield[@code = 'c']
+				| marc:subfield[@code = 'd'] | marc:subfield[@code = 'i'] | marc:subfield[@code = 'j']">
+			<note>
 				<xsl:choose>
 					<xsl:when test="self::marc:subfield[@code = 'a']">
-						<xsl:attribute name="displayLabel">Material base and configuration</xsl:attribute>
+						<xsl:attribute name="displayLabel">Material base and
+							configuration</xsl:attribute>
 					</xsl:when>
 					<xsl:when test="self::marc:subfield[@code = 'b']">
 						<xsl:attribute name="displayLabel">Dimensions</xsl:attribute>
 					</xsl:when>
 					<xsl:when test="self::marc:subfield[@code = 'c']">
-						<xsl:attribute name="displayLabel">Materials applied to surface</xsl:attribute>
+						<xsl:attribute name="displayLabel">Materials applied to
+							surface</xsl:attribute>
 					</xsl:when>
 					<xsl:when test="self::marc:subfield[@code = 'd']">
-						<xsl:attribute name="displayLabel">Information recording technique</xsl:attribute>
+						<xsl:attribute name="displayLabel">Information recording
+							technique</xsl:attribute>
 					</xsl:when>
 					<xsl:when test="self::marc:subfield[@code = 'i']">
-						<xsl:attribute name="displayLabel">Technical specifications of medium</xsl:attribute>
+						<xsl:attribute name="displayLabel">Technical specifications of
+							medium</xsl:attribute>
 					</xsl:when>
 					<xsl:when test="self::marc:subfield[@code = 'j']">
 						<xsl:attribute name="displayLabel">Generation</xsl:attribute>
@@ -7581,16 +7627,17 @@
 					<xsl:text>: </xsl:text>
 				</xsl:for-each>
 				<xsl:apply-templates/>
-			</note>	
+			</note>
 		</xsl:for-each>
 	</xsl:template>
 	<!-- SUL edit 20220602 issue #3006 -->
 	<!-- 344 note-->
 	<xsl:template match="marc:datafield[@tag = '344']" mode="physDesc">
-		<xsl:for-each select="marc:subfield[@code = 'a'] | marc:subfield[@code = 'b'] | marc:subfield[@code = 'c']
-			| marc:subfield[@code = 'd'] | marc:subfield[@code = 'e'] | marc:subfield[@code = 'f']
-			| marc:subfield[@code = 'g'] | marc:subfield[@code = 'h']">
-			<note>		
+		<xsl:for-each select="
+				marc:subfield[@code = 'a'] | marc:subfield[@code = 'b'] | marc:subfield[@code = 'c']
+				| marc:subfield[@code = 'd'] | marc:subfield[@code = 'e'] | marc:subfield[@code = 'f']
+				| marc:subfield[@code = 'g'] | marc:subfield[@code = 'h']">
+			<note>
 				<xsl:choose>
 					<xsl:when test="self::marc:subfield[@code = 'a']">
 						<xsl:attribute name="displayLabel">Type of recording</xsl:attribute>
@@ -7611,10 +7658,12 @@
 						<xsl:attribute name="displayLabel">Tape configuration</xsl:attribute>
 					</xsl:when>
 					<xsl:when test="self::marc:subfield[@code = 'g']">
-						<xsl:attribute name="displayLabel">Configuration of playback channels</xsl:attribute>
+						<xsl:attribute name="displayLabel">Configuration of playback
+							channels</xsl:attribute>
 					</xsl:when>
 					<xsl:when test="self::marc:subfield[@code = 'h']">
-						<xsl:attribute name="displayLabel">Special playback characteristics</xsl:attribute>
+						<xsl:attribute name="displayLabel">Special playback
+							characteristics</xsl:attribute>
 					</xsl:when>
 				</xsl:choose>
 				<xsl:for-each select="../marc:subfield[@code = '3']">
@@ -7622,7 +7671,7 @@
 					<xsl:text>: </xsl:text>
 				</xsl:for-each>
 				<xsl:apply-templates/>
-			</note>	
+			</note>
 		</xsl:for-each>
 	</xsl:template>
 	<!-- 856 internetMediaType -->
@@ -8073,8 +8122,26 @@
 			<xsl:attribute name="type">
 				<xsl:text>media</xsl:text>
 			</xsl:attribute>
+			<!-- SUL edit 2022-09-01 issue #4211
 			<xsl:attribute name="authority">
 				<xsl:value-of select="../marc:subfield[@code = '2']"/>
+			</xsl:attribute> -->
+			<xsl:attribute name="authority">
+				<xsl:call-template name="chopPunctuation">
+					<xsl:with-param name="chopString">
+						<xsl:call-template name="chopPunctuationFront">
+							<xsl:with-param name="chopString">
+								<xsl:value-of select="../marc:subfield[@code = '2']"/>
+							</xsl:with-param>
+							<xsl:with-param name="punctuation">
+								<text>., </text>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:with-param>
+					<xsl:with-param name="punctuation">
+						<text>., </text>
+					</xsl:with-param>
+				</xsl:call-template>
 			</xsl:attribute>
 			<xsl:apply-templates/>
 		</form>
@@ -8086,8 +8153,26 @@
 			<xsl:attribute name="type">
 				<xsl:text>carrier</xsl:text>
 			</xsl:attribute>
+			<!-- SUL edit 20220901 issue #4211
 			<xsl:attribute name="authority">
 				<xsl:value-of select="../marc:subfield[@code = '2']"/>
+			</xsl:attribute> -->
+			<xsl:attribute name="authority">
+				<xsl:call-template name="chopPunctuation">
+					<xsl:with-param name="chopString">
+						<xsl:call-template name="chopPunctuationFront">
+							<xsl:with-param name="chopString">
+								<xsl:value-of select="../marc:subfield[@code = '2']"/>
+							</xsl:with-param>
+							<xsl:with-param name="punctuation">
+								<text>., </text>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:with-param>
+					<xsl:with-param name="punctuation">
+						<text>., </text>
+					</xsl:with-param>
+				</xsl:call-template>
 			</xsl:attribute>
 			<xsl:apply-templates/>
 		</form>
