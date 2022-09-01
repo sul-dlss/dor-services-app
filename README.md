@@ -117,6 +117,13 @@ This is started automatically during a deploy via capistrano
 
 
 ## Other tools
+
+### Running Reports
+
+There is information about how to run reports on the sdr-infra VM in the [cocina-models README](https://github.com/sul-dlss/cocina-models#running-reports-in-dsa).  This approach has two advantages:
+- sdr-infra connects to the DSA database as read-only
+- no resource competition with production DSA processing
+
 ### Generating a list of druids from Solr query
 ```
 $ bin/generate-druid-list 'is_governed_by_ssim:"info:fedora/druid:rp029yq2361"'
