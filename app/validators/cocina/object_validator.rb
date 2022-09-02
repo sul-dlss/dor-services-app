@@ -17,7 +17,7 @@ module Cocina
     end
 
     # @raise [ValidationError] if not valid
-    def validate # rubocop:disable Metrics/AbcSize
+    def validate # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength
       validator = Cocina::ApoExistenceValidator.new(cocina_object)
       raise ValidationError, validator.error unless validator.valid?
 
@@ -30,6 +30,20 @@ module Cocina
       # Only DROs have files
       validator = Cocina::FileHierarchyValidator.new(cocina_object)
       raise ValidationError, validator.error unless validator.valid?
+
+      return if cocina_object.is_a?(Cocina::Models::RequestDRO) # RequestDROs have no identifiers to validate
+
+      # A "soft" validation of file ids
+      cocina_object.structural.contains.each do |file_set|
+        file_set.structural.contains.each do |file|
+          next if Cocina::IdGenerator.valid_file_id?(file.externalIdentifier)
+
+          Honeybadger.notify(
+            "File ID is not in the expected format. It should begin with #{Cocina::IdGenerator::ID_NAMESPACE}",
+            context: { file_id: file.externalIdentifier, external_identifier: cocina_object.externalIdentifier }
+          )
+        end
+      end
     end
 
     private

@@ -28,6 +28,10 @@ module Cocina
       "#{ID_NAMESPACE}/file/#{druid}-#{resource_id}/#{file_id}"
     end
 
+    def self.valid_file_id?(identifier)
+      identifier.start_with?("#{ID_NAMESPACE}/file/")
+    end
+
     private
 
     attr_reader :druid, :file_id, :resource_id
