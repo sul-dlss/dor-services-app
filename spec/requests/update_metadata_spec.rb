@@ -292,7 +292,7 @@ RSpec.describe 'Update object' do
     end
     # rubocop:enable Layout/LineLength
 
-    context 'when files are provided' do
+    context 'when files are provided with valid identifiers' do
       let(:file1_id) { 'https://cocina.sul.stanford.edu/file/123-456-789' }
       let(:file2_id) { 'https://cocina.sul.stanford.edu/file/223-456-789' }
       let(:file3_id) { 'https://cocina.sul.stanford.edu/file/323-456-789' }
@@ -517,7 +517,7 @@ RSpec.describe 'Update object' do
           }
         end
 
-        it 'creates contentMetadata' do
+        it 'creates structural metadata' do
           patch "/v1/objects/#{druid}",
                 params: data,
                 headers: headers
@@ -538,6 +538,101 @@ RSpec.describe 'Update object' do
                 params: data,
                 headers: headers
           expect(response).to have_http_status :bad_request
+        end
+      end
+
+      context 'when some file identifiers are not valid' do
+        let(:file2_id) { 'druid:223-456-789' }
+        let(:file3_id) { '323-456-789' }
+
+        let(:structural) do
+          {
+            isMemberOf: [],
+            contains: [
+              {
+                type: Cocina::Models::FileSetType.file,
+                externalIdentifier: fileset1_id, label: 'Page 1', version: 1,
+                structural: {
+                  contains: [
+                    {
+                      type: Cocina::Models::ObjectType.file,
+                      externalIdentifier: file1_id,
+                      label: '00001.html',
+                      filename: '00001.html',
+                      version: 1,
+                      hasMimeType: 'text/html',
+                      use: 'transcription',
+                      hasMessageDigests: [
+                        {
+                          type: 'sha1', digest: 'cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7'
+                        }, {
+                          type: 'md5', digest: 'e6d52da47a5ade91ae31227b978fb023'
+                        }
+                      ],
+                      access: { view: 'dark', download: 'none' },
+                      administrative: { publish: false, sdrPreserve: true, shelve: false }
+                    }, {
+                      type: Cocina::Models::ObjectType.file,
+                      externalIdentifier: file2_id,
+                      label: '00001.jp2',
+                      filename: '00001.jp2',
+                      version: 1,
+                      hasMimeType: 'image/jp2', hasMessageDigests: [],
+                      access: { view: 'stanford', download: 'stanford' },
+                      administrative: { publish: true, sdrPreserve: true, shelve: true }
+                    }
+                  ]
+                }
+              }, {
+                type: Cocina::Models::FileSetType.file,
+                externalIdentifier: fileset2_id,
+                label: 'Page 2', version: 1,
+                structural: {
+                  contains: [
+                    {
+                      type: Cocina::Models::ObjectType.file,
+                      externalIdentifier: file3_id,
+                      label: '00002.html', filename: '00002.html',
+                      version: 1, hasMimeType: 'text/html',
+                      hasMessageDigests: [],
+                      access: { view: 'dark', download: 'none' },
+                      administrative: { publish: false, sdrPreserve: true, shelve: false }
+                    }, {
+                      type: Cocina::Models::ObjectType.file,
+                      externalIdentifier: file4_id,
+                      label: '00002.jp2',
+                      filename: '00002.jp2',
+                      version: 1,
+                      hasMimeType: 'image/jp2',
+                      hasMessageDigests: [],
+                      access: { view: 'world', download: 'world' },
+                      administrative: { publish: true, sdrPreserve: true, shelve: true }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        end
+
+        before do
+          allow(Honeybadger).to receive(:notify)
+          allow(Cocina::ApoExistenceValidator).to receive(:new).and_return(instance_double(Cocina::ApoExistenceValidator, valid?: true))
+          allow(Cocina::ObjectValidator).to receive(:validate).and_call_original
+        end
+
+        it 'creates structural metadata' do
+          patch "/v1/objects/#{druid}",
+                params: data,
+                headers: headers
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+          cocina_item = Cocina::Models.without_metadata(CocinaObjectStore.find(druid))
+          expect(cocina_item.to_json).to equal_cocina_model(expected)
+          expect(cocina_item.structural.contains.map { |fs| fs.structural.contains.size }).to eq [2, 2]
+          expect(Honeybadger).to have_received(:notify)
+            .with('File ID is not in the expected format. It should begin with https://cocina.sul.stanford.edu',
+                  { file_id: String, external_identifier: druid }).twice
         end
       end
     end
