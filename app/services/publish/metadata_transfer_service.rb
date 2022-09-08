@@ -15,6 +15,7 @@ module Publish
 
     # Appends contentMetadata file resources from the source objects to this object
     def publish
+      republish_members!
       return unpublish unless discoverable?
 
       # Retrieve release tags from identityMetadata and all collections this item is a member of
@@ -48,6 +49,16 @@ module Publish
       cocina_object.access.view != 'dark'
     end
 
+    def republish_members!
+      return unless cocina_object&.collection?
+
+      Array.wrap(
+        MemberService.for(cocina_object.externalIdentifier, exclude_opened: true, only_published: true)
+      ).each do |member|
+        self.class.publish(CocinaObjectStore.find(member['id']))
+      end
+    end
+
     # Create a file inside the content directory under the stacks.local_document_cache_root
     # @param [String] content The contents of the file to be created
     # @param [String] filename The name of the file to be created
@@ -77,7 +88,7 @@ module Publish
     end
 
     def purl_services_url
-      raise 'You have not configured perl-fetcher (Settings.purl_services_url).' unless Settings.purl_services_url
+      raise 'You have not configured purl-fetcher (Settings.purl_services_url).' unless Settings.purl_services_url
 
       "#{Settings.purl_services_url}/purls/#{cocina_object.externalIdentifier.delete_prefix('druid:')}"
     end
