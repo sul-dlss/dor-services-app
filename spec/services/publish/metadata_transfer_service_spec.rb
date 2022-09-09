@@ -4,9 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Publish::MetadataTransferService do
   let(:druid) { 'bc123df4567' }
-
   let(:access) { {} }
-
   let(:cocina_object) do
     build(:dro, id: "druid:#{druid}").new(
       access:,
@@ -44,6 +42,57 @@ RSpec.describe Publish::MetadataTransferService do
       allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
     end
 
+    describe 'publishing a collection with members' do
+      let(:cocina_object) do
+        build(:collection, id: 'druid:xh235dd9059').new(
+          access: { view: 'world' }
+        )
+      end
+      let(:fake_instance) { instance_double(described_class, publish: nil) }
+      let(:member_druid) { 'druid:hx532dd9509' }
+      let(:member_item) do
+        build(:dro, id: member_druid).new(
+          access: { view: 'world' },
+          structural: { contains: [], isMemberOf: ['druid:xh235dd9059'] },
+          administrative: {
+            hasAdminPolicy: 'druid:fg890hx1234',
+            releaseTags: [
+              {
+                who: 'dhartwig',
+                what: 'collection',
+                date: '2019-01-18T17:03:35.000+00:00',
+                to: 'Searchworks',
+                release: true
+              },
+              {
+                who: 'dhartwig',
+                what: 'collection',
+                date: '2020-01-18T17:03:35.000+00:00',
+                to: 'Some_special_place',
+                release: true
+              }
+            ]
+          }
+        )
+      end
+
+      before do
+        allow_any_instance_of(described_class).to receive(:transfer_to_document_store)
+        allow_any_instance_of(described_class).to receive(:transfer_metadata)
+        allow_any_instance_of(described_class).to receive(:publish_notify_on_success)
+        allow(MemberService).to receive(:for).and_return({ 'id' => member_druid })
+        allow(CocinaObjectStore).to receive(:find).with(member_druid).and_return(member_item)
+        allow(described_class).to receive(:new).with(cocina_object).and_call_original
+        allow(described_class).to receive(:new).with(member_item).and_return(fake_instance)
+      end
+
+      it 'republishes member items' do
+        service.publish
+        expect(MemberService).to have_received(:for).once
+        expect(fake_instance).to have_received(:publish).once
+      end
+    end
+
     context 'with no world discover access in rightsMetadata' do
       let(:purl_root) { Dir.mktmpdir }
 
@@ -69,7 +118,7 @@ RSpec.describe Publish::MetadataTransferService do
       end
     end
 
-    context 'copies to the document cache' do
+    describe 'copies to the document cache' do
       let(:mods) do
         <<-EOXML
           <mods:mods xmlns:mods="http://www.loc.gov/mods/v3"
@@ -116,17 +165,6 @@ RSpec.describe Publish::MetadataTransferService do
           build(:collection, id: 'druid:xh235dd9059').new(
             access: { view: 'world' }
           )
-          # Cocina::Models::Collection.new(externalIdentifier: 'druid:xh235dd9059',
-          #                                type: Cocina::Models::ObjectType.collection,
-          #                                label: 'some collection object',
-          #                                version: 1,
-          #                                description: {
-          #                                  title: [{ value: 'Constituent label &amp; A Special character' }],
-          #                                  purl: 'https://purl.stanford.edu/xh235dd9059'
-          #                                },
-          #                                identification: { sourceId: 'sul:123' },
-          #                                access: { view: 'world' },
-          #                                administrative: { hasAdminPolicy: 'druid:fg890hx1234' })
         end
 
         before do
@@ -134,6 +172,7 @@ RSpec.describe Publish::MetadataTransferService do
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<mods:mods/, 'mods')
           expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(no_args)
+          expect_any_instance_of(described_class).to receive(:republish_members!).with(no_args)
         end
 
         it 'ignores missing data' do
@@ -172,7 +211,7 @@ RSpec.describe Publish::MetadataTransferService do
       end
 
       it 'writes empty notification file' do
-        expect { notify }.to raise_error 'You have not configured perl-fetcher (Settings.purl_services_url).'
+        expect { notify }.to raise_error 'You have not configured purl-fetcher (Settings.purl_services_url).'
       end
     end
   end
