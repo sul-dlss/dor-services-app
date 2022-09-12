@@ -14,6 +14,7 @@ class InvalidSubjectSourceCodes
   # > arrays when using the lax mode. To avoid surprising results, we recommend
   # > using the .** accessor only in the strict mode.
   JSON_PATH = 'strict $.**.subject.**.source.code'
+  OMIT_JSON_PATH = 'strict $.**.subject.**.valueLanguage.**.source.code'
   VALID_CODES = %w[
     aat
     abne
@@ -22,24 +23,33 @@ class InvalidSubjectSourceCodes
     aiatsisl
     aiatsisp
     aiatsiss
+    anscr
     ascl
+    bcl
+    bcmc
     bidex
     bisacsh
+    bkl
     blmlsh
+    blsrissc
+    cadocs
     cct
     cdcng
+    clc
     csh
     csht
     czenas
     dcs
     ddc
     ddcrit
+    dopaed
     dtict
     eclas
     eflch
     embne
     ericd
     eurovocen
+    farl
     fast
     fmesh
     fssh
@@ -52,12 +62,15 @@ class InvalidSubjectSourceCodes
     idsbb
     idszbz
     idszbzzk
+    ifzs
     ISO19115TopicCategory
     itrt
     jhpb
     jhpk
     jlabsh/3
     jlabsh/4
+    kktb
+    kssb
     larpcal
     lcc
     lcgft
@@ -66,16 +79,22 @@ class InvalidSubjectSourceCodes
     lctgm
     lemb
     local
+    loovs
     ltcsh
     marcgac
     marcrelator
     mesh
+    moys
     msc
     naf
     nal
     nasat
+    ncsclt
     ndlsh
+    njb
+    njb/9
     nli
+    nlm
     nta
     precis
     psychit
@@ -85,15 +104,24 @@ class InvalidSubjectSourceCodes
     renib
     reo
     rero
+    rpb
     rswk
+    rvk
     rvm
     sao
+    sbb
     scgdst
+    sdnb
     sears
+    sfb
     sigle
     sk
     ssg
+    ssgn
+    sswd
+    stub
     stw
+    sudocs
     swd
     swd/690
     tgn
@@ -105,10 +133,12 @@ class InvalidSubjectSourceCodes
     unbist
     wikidata
     wot
+    zdbs
   ].freeze
   REGEX = "^(?!#{VALID_CODES.map { |code| "#{code}$" }.join('|')})".freeze
   SQL = <<~SQL.squish.freeze
     SELECT jsonb_path_query(description, '#{JSON_PATH} ? (@ like_regex "#{REGEX}")') ->> 0 as value,
+           jsonb_path_query(description, '#{OMIT_JSON_PATH} ? (@ like_regex "#{REGEX}")') ->> 0 as omit_value,
            external_identifier,
            jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "symphony").catalogRecordId') ->> 0 as catkey,
            jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_id
@@ -119,7 +149,7 @@ class InvalidSubjectSourceCodes
   def self.report
     puts "item_druid,catkey,collection_druid,collection_name,value\n"
 
-    rows(SQL).each { |row| puts row }
+    rows(SQL).each { |row| puts row if row }
   end
 
   def self.rows(sql)
@@ -129,17 +159,21 @@ class InvalidSubjectSourceCodes
       .to_a
       .group_by { |row| row['external_identifier'] }
       .map do |id, rows|
-      collection_druid = rows.first['collection_id']
-      collection_name = Collection.find_by(external_identifier: collection_druid)&.label
+        collection_druid = rows.first['collection_id']
+        collection_name = Collection.find_by(external_identifier: collection_druid)&.label
 
-      [
-        id,
-        rows.first['catkey'],
-        collection_druid,
-        "\"#{collection_name}\"",
-        rows.map { |row| row['value'] }.join(';')
-      ].join(',')
-    end
+        omit_values = rows.filter_map { |row| row['omit_value'] }.uniq
+        keep_values = rows.filter_map { |row| row['value'] unless omit_values.include?(row['value']) }
+        next if keep_values.empty?
+
+        [
+          id,
+          rows.first['catkey'],
+          collection_druid,
+          "\"#{collection_name}\"",
+          keep_values.join(';')
+        ].join(',')
+      end
   end
 end
 # rubocop:enable Metrics/ClassLength
