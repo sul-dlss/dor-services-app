@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
-# This report does NOT find the structuredValues with value level encoding on only ONE
-#   of the values;  invalid_edtf_structured_dates.rb finds those cases.
-#
 # Invoke via:
-# bin/rails r -e production "InvalidEdtfDates.report"
-class InvalidEdtfDates
+# bin/rails r -e production "InvalidIso8601Dates.report"
+class InvalidIso8601Dates
   # NOTE: Prefer strict JSON querying over lax when using the `.**` operator, per
   #       https://www.postgresql.org/docs/14/functions-json.html#STRICT-AND-LAX-MODES
   #
@@ -16,9 +13,9 @@ class InvalidEdtfDates
   # > using the .** accessor only in the strict mode.
 
   # find cocina objects that have at least one date with the encoding
-  DATE_JSONB_PATH = 'strict $.**.date ? (@.**.encoding.code == "edtf")'
+  DATE_JSONB_PATH = 'strict $.**.date ? (@.**.encoding.code == "iso8601")'
   # find individual cocina date objects that match the encoding
-  DATE_ENCODING_JSON_PATH = JsonPath.new('$..encoding.code[?(@ == "edtf")]').freeze
+  DATE_ENCODING_JSON_PATH = JsonPath.new('$..encoding.code[?(@ == "iso8601")]').freeze
   # find all the values for a cocina date object (e.g. there may be a structuredValue)
   DATE_VALUE_JSON_PATH = JsonPath.new('$..value').freeze
 
@@ -80,23 +77,14 @@ class InvalidEdtfDates
   def self.invalid_values(cocina_date)
     invalid_values = []
     DATE_VALUE_JSON_PATH.on(cocina_date).each do |value|
-      invalid_values << value unless valid_edtf?(value)
+      invalid_values << value unless valid_iso8601?(value)
     end
     invalid_values
   end
 
-  def self.valid_edtf?(date_value)
-    # edtf! raises error if it can't parse it
-    Date.edtf!(date_value) ? true : false
-  rescue ArgumentError
-    # NOTE: the upstream EDTF implementation in the `edtf` gem does not
-    #       allow a valid pattern that we use (possibly because only level
-    #       0 of the spec was implemented?):
-    #
-    # * Y-20555
-    #
-    # So we catch the false positives from the upstream gem and allow
-    # this pattern to validate
-    /\AY-?\d{5,}\Z/.match?(date_value)
+  def self.valid_iso8601?(date_value)
+    DateTime.iso8601(date_value)
+  rescue Date::Error
+    false
   end
 end
