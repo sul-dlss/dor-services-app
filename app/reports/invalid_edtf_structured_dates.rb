@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+# This report is incomplete, as it only finds edtf dates with structuredValues, per its spec
+#   (https://github.com/sul-dlss/dor-services-app/issues/4218)
+#  NOTE:  this report DOES find the structuredValues with value level encoding on only ONE
+#   of the values;  invalid_edtf_dates.rb does NOT find those cases.
+#
 # Invoke via:
 # bin/rails r -e production "InvalidEdtfStructuredDates.report"
 class InvalidEdtfStructuredDates

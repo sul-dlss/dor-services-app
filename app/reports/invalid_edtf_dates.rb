@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# This report does NOT find the structuredValues with value level encoding on only ONE
+#   of the values;  invalid_edtf_structured_dates.rb finds those cases.
+#
 # Invoke via:
 # bin/rails r -e production "InvalidEdtfDates.report"
 class InvalidEdtfDates
@@ -22,7 +25,7 @@ class InvalidEdtfDates
   SQL
 
   def self.report
-    puts "item_druid,catkey,collection_druid,collection_name,value\n"
+    puts "item_druid,catkey,collection_druid,collection_name,invalid_values\n"
 
     rows(SQL).compact.each { |row| puts row }
   end
@@ -54,7 +57,7 @@ class InvalidEdtfDates
   def self.sql_result_bad_values(rows)
     bad_values = []
     # get the value of the date, which is json, for each row
-    # FIXME: to be perfect, this would check if the encoding applies to each date,
+    # FIXME: to be perfect, this would check if the encoding applies to each date value,
     #   but that's a whole separate hell of structuredValues and whether
     #   encoding is at the level of the individual value or for the structuredValue yadda yadda
     rows.map { |row| row['date'] }.each do |date_str|
