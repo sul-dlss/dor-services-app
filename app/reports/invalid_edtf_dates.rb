@@ -1,5 +1,12 @@
 # frozen_string_literal: true
 
+# This report is hopefully complete, finding dates with *indicated* edtf encoding
+#   - with the encoding as a direct property of date
+#   - with structuredValues
+#   etc.
+#  NOTE:  it does NOT find the structuredValues with value level encoding on only ONE
+#   of the values;  invalid_edtf_structured_dates.rb finds those cases.
+#  NOTE:  it is believed that this report supersedes bad_edtf_dates.rb
 # Invoke via:
 # bin/rails r -e production "InvalidEdtfDates.report"
 class InvalidEdtfDates

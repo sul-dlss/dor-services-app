@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# This report is incomplete, as it only finds edtf dates with the encoding as a direct property of date
+#   (i.e.  date.structuredValue.encoding is not found -- see invalid_edtf_structured_dates.rb)
+# This report may have been superseded by invalid_edtf_dates.rb.
 # Invoke via:
 # bin/rails r -e production "BadEdtfDates.report"
 class BadEdtfDates
