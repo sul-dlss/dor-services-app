@@ -199,5 +199,21 @@ RSpec.describe CreateObjectService do
         expect(result.identification.doi).to eq '10.80343/bc123df4567'
       end
     end
+
+    context 'when the citation includes placeholders' do
+      let(:requested_cocina_object) { build(:request_dro).new(description:) }
+      let(:description) do
+        {
+          title: [{ value: 'My Work' }],
+          note: [{ type: 'preferred citation', value: 'Keller, Michael. (2022). My Work. Stanford Digital Repository. Available at :link:. :doi:' }]
+        }
+      end
+
+      it 'replaces the placeholders with the PURL and DOI' do
+        result = store.create(requested_cocina_object, assign_doi: true)
+        expect(result.description.note.first.value).to include 'https://purl.stanford.edu/bc123df4567'
+        expect(result.description.note.first.value).to include 'https://doi.org/10.80343/bc123df4567'
+      end
+    end
   end
 end

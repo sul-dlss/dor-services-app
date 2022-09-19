@@ -33,7 +33,7 @@ class CreateObjectService
     druid = id_minter.call
     updated_cocina_request_object = sync_from_symphony(updated_cocina_request_object, druid)
     updated_cocina_request_object = add_description(updated_cocina_request_object)
-    cocina_object = cocina_from_request(updated_cocina_request_object, druid)
+    cocina_object = cocina_from_request(updated_cocina_request_object, druid, assign_doi)
     cocina_object = assign_doi(cocina_object) if assign_doi
     cocina_object_with_metadata = CocinaObjectStore.store(cocina_object, skip_lock: true)
     add_project_tag(druid, cocina_request_object)
@@ -104,18 +104,21 @@ class CreateObjectService
   # rubocop:disable Metrics/AbcSize
   # rubocop:disable Metrics/CyclomaticComplexity
   # rubocop:disable Metrics/PerceivedComplexity
-  def cocina_from_request(cocina_request_object, druid)
+  def cocina_from_request(cocina_request_object, druid, assign_doi)
     props = cocina_request_object.to_h.with_indifferent_access
     props[:externalIdentifier] = druid
 
-    # Add purl to description
+    # Add purl and DOI to description and citation
     if props[:description].present?
       purl = Purl.for(druid:)
       props[:description][:purl] = purl
-      # This replaces the :link: placeholder in the citation with the purl, which we are now able to derive.
+
+      # This replaces the :link: and :doi: placeholders in the citation.
       # This is specifically for H2, but could be utilized by any client that provides preferred citation.
+      doi = assign_doi ? "https://doi.org/#{Doi.for(druid:)}." : ''
       Array(props[:description][:note]).each do |note|
         note[:value] = note[:value].gsub(/:link:/, purl) if note[:type] == 'preferred citation' && note[:value]
+        note[:value] = note[:value].gsub(/:doi:/, doi) if note[:type] == 'preferred citation' && note[:value]
       end
     end
 
