@@ -25,6 +25,18 @@ module Cocina
       # Only DROs have collection membership
       validator = Cocina::CollectionExistenceValidator.new(cocina_object)
       raise ValidationError, validator.error unless validator.valid?
+
+      return if cocina_object.is_a?(Cocina::Models::RequestDRO) # RequestDROs have no identifiers to validate
+
+      # A "soft" validation of file ids
+      cocina_object.structural.contains.each do |file_set|
+        file_set.structural.contains.each do |file|
+          unless Cocina::IdGenerator.valid_file_id?(file.externalIdentifier)
+            Honeybadger.notify("File ID is not in the expected format. It should begin with #{Cocina::IdGenerator::ID_NAMESPACE}",
+                               { file_id: file.externalIdentifier, external_identifier: cocina_object.externalIdentifier })
+          end
+        end
+      end
     end
 
     private
