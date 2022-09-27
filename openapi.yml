@@ -1791,6 +1791,11 @@ components:
         valueAt:
           description: URL or other pointer to the location of the contributor information.
           type: string
+        parallelContributor:
+          description: For multiple representations of information about the same contributor (e.g. in different languages).
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveParallelContributor"
     ControlledDigitalLendingAccess:
       type: object
       properties:
@@ -2014,6 +2019,44 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DescriptiveValue"
+    DescriptiveParallelContributor:
+      description: Value model for multiple representations of information about the same contributor (e.g. in different languages).
+      deprecated: true
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          description: Names associated with a contributor.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        type:
+          description: Entity type of the contributor (person, organization, etc.).
+          type: string
+        status:
+          description: Status of the contributor relative to other parallel contributors (e.g. the primary author among a group of contributors).
+          type: string
+        role:
+          description: Relationships of the contributor to the resource or to an event in its history.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        identifier:
+          description: Identifiers and URIs associated with the contributor entity.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        note:
+          description: Other information associated with the contributor.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        valueAt:
+          description: URL or other pointer to the location of the contributor information.
+          type: string
+        valueLanguage:
+          # description: Language of the descriptive element value
+          $ref: "#/components/schemas/DescriptiveValueLanguage"
     DescriptiveParallelEvent:
       description: Value model for multiple representations of information about the same event (e.g. in different languages).
       type: object
