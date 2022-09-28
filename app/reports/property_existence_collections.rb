@@ -13,8 +13,9 @@ class PropertyExistenceCollections
   # > and each of its elements, while the .HR accessor automatically unwraps
   # > arrays when using the lax mode. To avoid surprising results, we recommend
   # > using the .** accessor only in the strict mode.
+  # NOTE:  checking the size allows checking for only non-empty arrays;  we may have empty arrays, too.
   JSONB_PATH = 'strict $.**.groupedValue ? (@.size() > 0)' # when property is array
-  # JSONB_PATH = 'strict $.**.contributor.type' # when property is a string - maybe keep size check to avoid empty values
+  # JSONB_PATH = 'strict $.**.contributor.type' # when property is a string
   SQL = <<~SQL.squish.freeze
     SELECT external_identifier as collection_druid,
            jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "symphony").catalogRecordId') ->> 0 as catkey
