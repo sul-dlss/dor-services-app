@@ -3,7 +3,7 @@
 module Cocina
   module ToDatacite
     # Transform the Cocina::Models::DRO schema to DataCite attributes
-    #  see https://support.datacite.org/reference/dois-2#put_dois-id
+    # @see https://support.datacite.org/reference/put_dois-id
     class Attributes
       # @param [Cocina::Models::DRO] cocina_item
       # @return [Hash] Hash of DataCite attributes, conforming to the expectations of HTTP PUT request to DataCite
@@ -26,6 +26,7 @@ module Cocina
 
       def initialize(cocina_item)
         @access = cocina_item.access
+        @admin_policy_druid = cocina_item.administrative.hasAdminPolicy
         @description = cocina_item.description
         @purl = Purl.for(druid: cocina_item.externalIdentifier)
       end
@@ -33,7 +34,7 @@ module Cocina
       # @return [Hash] Hash of DataCite attributes, conforming to the expectations of HTTP PUT request to DataCite
       def mapped_from_cocina
         {
-          event: 'publish', # Makes a findable DOI
+          event:,
           url: purl,
           descriptions:,
           alternateIdentifiers: alternate_identifiers,
@@ -53,7 +54,15 @@ module Cocina
 
       private
 
-      attr :access, :description, :purl
+      attr :access, :admin_policy_druid, :description, :purl
+
+      def event
+        # Makes a findable DOI switch back to the registered state, hiding it
+        return 'hide' if admin_policy_druid == Settings.graveyard_admin_policy.druid
+
+        # Makes a findable DOI
+        'publish'
+      end
 
       def publication_year
         date = if access.embargo

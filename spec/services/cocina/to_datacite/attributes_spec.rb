@@ -58,6 +58,32 @@ RSpec.describe Cocina::ToDatacite::Attributes do
         }
       )
     end
+
+    context 'when APO is graveyard APO' do
+      let(:apo_druid) { Settings.graveyard_admin_policy.druid }
+
+      it 'creates the attributes hash' do
+        expect(attributes).to eq(
+          {
+            event: 'hide',
+            url: 'https://purl.stanford.edu/bb666bb1234',
+            creators: [],
+            contributors: [],
+            fundingReferences: [],
+            dates: [],
+            publicationYear: '2011',
+            publisher: 'Stanford Digital Repository',
+            titles: [{ title: }],
+            alternateIdentifiers: [
+              {
+                alternateIdentifier: purl,
+                alternateIdentifierType: 'PURL'
+              }
+            ]
+          }
+        )
+      end
+    end
   end
 
   context 'with an embargo' do
