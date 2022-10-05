@@ -33,7 +33,7 @@ RSpec.describe UpdateObjectService do
 
         it 'saves to datastore' do
           expect(Dro.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
-          expect(store.update).to be_kind_of Cocina::Models::DROWithMetadata
+          expect(store.update).to be_a Cocina::Models::DROWithMetadata
           expect(Dro.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
         end
       end
@@ -50,7 +50,7 @@ RSpec.describe UpdateObjectService do
         end
 
         it 'saves to datastore' do
-          expect(store.update).to be_kind_of Cocina::Models::DROWithMetadata
+          expect(store.update).to be_a Cocina::Models::DROWithMetadata
           expect(Dro.find_by(external_identifier: ar_cocina_object.external_identifier).label).to eq('new label')
         end
       end
@@ -91,7 +91,7 @@ RSpec.describe UpdateObjectService do
 
       it 'saves to datastore' do
         expect(AdminPolicy.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
-        expect(store.update).to be_kind_of Cocina::Models::AdminPolicyWithMetadata
+        expect(store.update).to be_a Cocina::Models::AdminPolicyWithMetadata
         expect(AdminPolicy.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
       end
     end
@@ -129,7 +129,7 @@ RSpec.describe UpdateObjectService do
       end
 
       it 'saves to datastore' do
-        expect(store.update).to be_kind_of Cocina::Models::CollectionWithMetadata
+        expect(store.update).to be_a Cocina::Models::CollectionWithMetadata
         updated_row = Collection.find_by(external_identifier: cocina_object.externalIdentifier)
         expect(updated_row.to_cocina.description.title.first.value).to eq 'Updated title'
         expect(PublishItemsModifiedJob).to have_received(:perform_later)

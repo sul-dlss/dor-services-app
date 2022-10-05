@@ -176,7 +176,7 @@ RSpec.describe Publish::MetadataTransferService do
         end
 
         it 'ignores missing data' do
-          service.publish
+          expect { service.publish }.not_to raise_error
         end
       end
     end

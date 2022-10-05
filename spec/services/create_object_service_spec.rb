@@ -27,7 +27,7 @@ RSpec.describe CreateObjectService do
 
       it 'persists it' do
         expect do
-          expect(store.create(requested_cocina_object)).to be_kind_of Cocina::Models::DROWithMetadata
+          expect(store.create(requested_cocina_object)).to be_a Cocina::Models::DROWithMetadata
         end.to change(Dro, :count).by(1)
 
         expect(Notifications::ObjectCreated).to have_received(:publish)
@@ -45,7 +45,7 @@ RSpec.describe CreateObjectService do
 
       it 'persists it' do
         expect do
-          expect(store.create(requested_cocina_object)).to be_kind_of Cocina::Models::CollectionWithMetadata
+          expect(store.create(requested_cocina_object)).to be_a Cocina::Models::CollectionWithMetadata
         end.to change(Collection, :count).by(1)
         expect(Notifications::ObjectCreated).to have_received(:publish)
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
