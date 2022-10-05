@@ -11,7 +11,7 @@ class ObjectsController < ApplicationController
   def create
     return json_api_error(status: :service_unavailable, message: 'Registration is temporarily disabled') unless Settings.enabled_features.registration
 
-    model_request = Cocina::Models.build_request(params.except(:action, :controller, :assign_doi).to_unsafe_h)
+    model_request = Cocina::Models.build_request(params.except!(:action, :controller, :assign_doi).to_unsafe_h)
     cocina_object = CreateObjectService.create(model_request, assign_doi: params[:assign_doi])
 
     add_headers(cocina_object)
@@ -31,7 +31,7 @@ class ObjectsController < ApplicationController
   end
 
   def update
-    cocina_object = Cocina::Models.build(params.except(:action, :controller, :id).to_unsafe_h)
+    cocina_object = Cocina::Models.build(params.except!(:action, :controller, :id).to_unsafe_h)
 
     # Ensure the id in the path matches the id in the post body.
     raise Cocina::ValidationError, "Identifier on the query and in the body don't match" if params[:id] != cocina_object.externalIdentifier
