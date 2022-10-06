@@ -223,7 +223,7 @@ RSpec.describe DigitalStacksService do
         stacks_pathname = @tmpdir.join('stacks-name.txt')
         FileUtils.touch(workspace_pathname.to_s)
         FileUtils.chmod 0o640, workspace_pathname.to_s
-        expect(File::Stat.new(workspace_pathname.to_s).mode.to_s(8)).to eq('100640')
+        expect(File::Stat.new(workspace_pathname.to_s).mode.to_fs(8)).to eq('100640')
         moab_signature = Moab::FileSignature.new.signature_from_file(workspace_pathname)
         expect(workspace_pathname).to exist
         expect(stacks_pathname).not_to exist
@@ -231,7 +231,7 @@ RSpec.describe DigitalStacksService do
         # if file exists, and has expected signature
         expect(workspace_pathname).to exist
         expect(stacks_pathname).to exist
-        expect(File::Stat.new(stacks_pathname.to_s).mode.to_s(8)).to eq('100644')
+        expect(File::Stat.new(stacks_pathname.to_s).mode.to_fs(8)).to eq('100644')
         moab_signature = Moab::FileSignature.new.signature_from_file(stacks_pathname)
         expect(described_class.copy_file(workspace_pathname, stacks_pathname, moab_signature)).to be_falsey
         # if file exists, but has unexpected signature

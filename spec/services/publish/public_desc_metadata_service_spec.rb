@@ -86,7 +86,7 @@ RSpec.describe Publish::PublicDescMetadataService do
       end
 
       it 'has no errors' do
-        doc
+        expect { doc }.not_to raise_error
       end
     end
   end

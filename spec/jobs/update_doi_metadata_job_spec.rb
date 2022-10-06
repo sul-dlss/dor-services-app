@@ -45,7 +45,7 @@ RSpec.describe UpdateDoiMetadataJob, type: :job do
     end
 
     it 'is successful' do
-      perform
+      expect { perform }.not_to raise_error
     end
   end
 

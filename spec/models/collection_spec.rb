@@ -68,8 +68,10 @@ RSpec.describe Collection do
       end
 
       it 'does not raise' do
-        described_class.upsert_cocina(cocina_object1)
-        described_class.upsert_cocina(cocina_object2)
+        expect do
+          described_class.upsert_cocina(cocina_object1)
+          described_class.upsert_cocina(cocina_object2)
+        end.not_to raise_error
       end
     end
 

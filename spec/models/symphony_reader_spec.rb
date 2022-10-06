@@ -42,7 +42,7 @@ RSpec.describe SymphonyReader do
     let(:headers) { { 'Content-Length': 394 } }
 
     it 'converts symphony json to marc records' do
-      expect(marc_reader.to_marc).to be_a_kind_of MARC::Record
+      expect(marc_reader.to_marc).to be_a MARC::Record
     end
 
     it 'parses leader information' do
@@ -74,7 +74,7 @@ RSpec.describe SymphonyReader do
       let(:headers) { { 'Content-Length': 0, 'Transfer-Encoding': 'chunked' } }
 
       it 'does not validate content length' do
-        expect(marc_reader.to_marc).to be_a_kind_of MARC::Record
+        expect(marc_reader.to_marc).to be_a MARC::Record
       end
     end
 
