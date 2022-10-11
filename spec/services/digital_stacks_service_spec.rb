@@ -96,7 +96,7 @@ RSpec.describe DigitalStacksService do
       rename_list = get_rename_list(content_diff)
       expect(rename_list.map { |file| file[0, 3] }).to eq([
                                                             [:renamed, 'SUB2_b2000_2.nii.gz', 'SUB2_b2000_1.nii.gz'],
-                                                            [:renamed, 'SUB2_b2000_2.bvecs', 'SUB2_b2000_1.bvecs']
+                                                            [:renamed, 'dir/SUB2_b2000_2.bvecs', 'SUB2_b2000_1.bvecs']
                                                           ])
       rename_list.each do |_change_type, oldname, newname, signature|
         tempname = signature.checksums.values.last
@@ -141,7 +141,7 @@ RSpec.describe DigitalStacksService do
       content_diff = @ng782rw8378_content_diff
       shelve_list = get_shelve_list(content_diff)
       expect(shelve_list.map { |file| file[0, 2] }).to eq([
-                                                            [:added, 'SUB2_b2000_2.bvecs'],
+                                                            [:added, 'dir/SUB2_b2000_2.bvecs'],
                                                             [:added, 'SUB2_b2000_2.nii.gz'],
                                                             [:copyadded, 'SUB2_b2000_1.bvals']
                                                           ])

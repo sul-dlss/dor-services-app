@@ -58,6 +58,7 @@ class ShelvableFilesStager
 
   # Copy from preservation into the workspace
   def copy_file_from_preservation(file)
+    FileUtils.mkdir_p(filepath(file).dirname)
     File.open(filepath(file), 'wb') do |streamed|
       writer = proc do |chunk, _overall_received_bytes|
         streamed.write chunk

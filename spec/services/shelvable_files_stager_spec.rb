@@ -28,10 +28,10 @@ RSpec.describe ShelvableFilesStager do
     end
 
     context 'when the file is not already in preservation' do
-      let(:file_deltas) { { added: ['SUB2_b2000_2.bvecs', 'SUB2_b2000_2.nii.gz'] } }
+      let(:file_deltas) { { added: ['dir/SUB2_b2000_2.bvecs', 'SUB2_b2000_2.nii.gz'] } }
 
       it 'raises an error' do
-        expect { stage }.to raise_error('Unable to find SUB2_b2000_2.bvecs in the content directory')
+        expect { stage }.to raise_error('Unable to find dir/SUB2_b2000_2.bvecs in the content directory')
       end
     end
 
@@ -45,7 +45,7 @@ RSpec.describe ShelvableFilesStager do
       end
 
       it 'copies the file into the staging area' do
-        expect { stage }.to change { content_dir.join('SUB2_b2000_2.bvecs').exist? }.from(false).to(true)
+        expect { stage }.to change { content_dir.join('dir/SUB2_b2000_2.bvecs').exist? }.from(false).to(true)
       end
     end
   end
@@ -55,7 +55,11 @@ RSpec.describe ShelvableFilesStager do
       # put the content files in the content_pathname location .../ng/782/rw/8378/ng782rw8378/content
       deltas = shelve_diff.file_deltas
       filelist = deltas[:modified] + deltas[:added] + deltas[:copyadded].collect { |_old, new| new }
-      filelist.each { |file| FileUtils.touch(content_dir.join(file)) }
+      filelist.each do |file|
+        filepath = content_dir.join(file)
+        FileUtils.mkdir_p(File.dirname(filepath))
+        FileUtils.touch(filepath)
+      end
     end
 
     it { is_expected.to be true }
