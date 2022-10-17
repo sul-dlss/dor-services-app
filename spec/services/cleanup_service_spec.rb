@@ -58,39 +58,14 @@ RSpec.describe CleanupService do
 
   describe '.cleanup_export' do
     before do
-      allow(described_class).to receive(:remove_branch)
+      allow(FileUtils).to receive(:rm_rf)
+      allow(FileUtils).to receive(:rm_f)
     end
 
     it 'removes the files exported to preservation' do
       described_class.send(:cleanup_export, druid)
-      expect(described_class).to have_received(:remove_branch).once.with(fixtures.join('export/aa123bb4567').to_s)
-      expect(described_class).to have_received(:remove_branch).once.with(fixtures.join('export/aa123bb4567.tar').to_s)
-    end
-  end
-
-  describe '.remove_branch' do
-    context 'with a non-existing branch' do
-      before do
-        bag_pathname.rmtree if bag_pathname.exist?
-        allow(bag_pathname).to receive(:rmtree)
-      end
-
-      it "doesn't remove the tree" do
-        described_class.send(:remove_branch, bag_pathname)
-        expect(bag_pathname).not_to have_received(:rmtree)
-      end
-    end
-
-    context 'with an existing branch' do
-      before do
-        bag_pathname.mkpath
-        allow(bag_pathname).to receive(:rmtree)
-      end
-
-      it 'removes the tree' do
-        described_class.send(:remove_branch, bag_pathname)
-        expect(bag_pathname).to have_received(:rmtree)
-      end
+      expect(FileUtils).to have_received(:rm_rf).once.with(fixtures.join('export/aa123bb4567').to_s)
+      expect(FileUtils).to have_received(:rm_f).once.with(fixtures.join('export/aa123bb4567.tar').to_s)
     end
   end
 
