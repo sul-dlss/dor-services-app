@@ -148,8 +148,7 @@ RSpec.describe 'Cocina --> DataCite mappings for relatedItem' do
     let(:cocina) do
       {
         relatedResource: [
-          {
-          }
+          {}
         ]
       }
     end
@@ -173,8 +172,7 @@ RSpec.describe 'Cocina --> DataCite mappings for relatedItem' do
 
   context 'when cocina has no relatedResource' do
     let(:cocina) do
-      {
-      }
+      {}
     end
 
     it 'related_item_attributes is empty hash' do

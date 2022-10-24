@@ -257,7 +257,7 @@ RSpec.describe Publish::PublicXmlService do
         it 'includes releaseData element from release tags' do
           releases = ng_xml.xpath('/publicObject/releaseData/release')
           expect(releases.map(&:inner_text)).to eq %w[true true]
-          expect(releases.map { |r| r['to'] }).to eq %w[Searchworks Some_special_place]
+          expect(releases.pluck('to')).to eq %w[Searchworks Some_special_place]
         end
       end
     end

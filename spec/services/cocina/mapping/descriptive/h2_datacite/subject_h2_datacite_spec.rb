@@ -454,8 +454,7 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
     let(:cocina) do
       {
         subject: [
-          {
-          }
+          {}
         ]
       }
     end
@@ -479,8 +478,7 @@ RSpec.describe 'Cocina --> DataCite mappings for FAST subjects' do
 
   context 'when cocina has no subject' do
     let(:cocina) do
-      {
-      }
+      {}
     end
 
     it 'subjects_attributes is nil' do

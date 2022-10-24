@@ -45,7 +45,7 @@ class InvalidSubjectNonSourceUris
           rows.first['catkey'],
           collection_druid,
           "\"#{collection_name}\"",
-          rows.map { |row| row['invalid_values'] }.join(';')
+          rows.pluck('invalid_values').join(';')
         ].join(',')
       end
   end

@@ -55,8 +55,7 @@ RSpec.describe 'Cocina --> DataCite mappings for identifier and alternateIdentif
     let(:cocina) do
       {
         identifier: [
-          {
-          }
+          {}
         ]
       }
     end
@@ -80,8 +79,7 @@ RSpec.describe 'Cocina --> DataCite mappings for identifier and alternateIdentif
 
   context 'when cocina has no identifier' do
     let(:cocina) do
-      {
-      }
+      {}
     end
 
     it 'identifier_attributes is nil' do

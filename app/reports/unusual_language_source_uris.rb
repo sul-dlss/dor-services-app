@@ -31,7 +31,7 @@ class UnusualLanguageSourceUris
 
     grouped = result.to_a.group_by { |row| row['external_identifier'] }
     grouped.map do |id, rows|
-      value = rows.map { |row| row['value'] }.join(';')
+      value = rows.pluck('value').join(';')
       [id, rows.first['catkey'], rows.first['collection_id'], value].join(',')
     end
   end
