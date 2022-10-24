@@ -259,8 +259,7 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
     let(:cocina) do
       {
         form: [
-          {
-          }
+          {}
         ]
       }
     end
@@ -284,8 +283,7 @@ RSpec.describe 'Cocina --> DataCite mappings for form (H2 specific)' do
 
   context 'when cocina has no form' do
     let(:cocina) do
-      {
-      }
+      {}
     end
 
     it 'returns nil' do

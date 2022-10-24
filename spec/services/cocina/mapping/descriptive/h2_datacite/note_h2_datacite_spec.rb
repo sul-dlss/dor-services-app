@@ -42,8 +42,7 @@ RSpec.describe 'Cocina --> DataCite mappings for note' do
     let(:cocina) do
       {
         note: [
-          {
-          }
+          {}
         ]
       }
     end
@@ -67,8 +66,7 @@ RSpec.describe 'Cocina --> DataCite mappings for note' do
 
   context 'when cocina has no note' do
     let(:cocina) do
-      {
-      }
+      {}
     end
 
     it 'descriptions_attributes is nil' do

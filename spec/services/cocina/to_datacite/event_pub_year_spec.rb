@@ -950,8 +950,7 @@ RSpec.describe Cocina::ToDatacite::Event do
       let(:cocina) do
         {
           event: [
-            {
-            }
+            {}
           ]
         }
       end
@@ -977,8 +976,7 @@ RSpec.describe Cocina::ToDatacite::Event do
 
     context 'when cocina has no event attribute' do
       let(:cocina) do
-        {
-        }
+        {}
       end
       let(:cocina_access) { {} }
 

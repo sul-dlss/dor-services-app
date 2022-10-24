@@ -52,7 +52,7 @@ class InvalidFormSourceCodes
         rows.first['catkey'],
         collection_druid,
         "\"#{collection_name}\"",
-        rows.map { |row| row['value'] }.join(';')
+        rows.pluck('value').join(';')
       ].join(',')
     end
   end
