@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe ObjectVersion, type: :model do
+RSpec.describe ObjectVersion do
   let(:druid) { 'druid:xz456jk0987' }
 
   describe '#current_version' do

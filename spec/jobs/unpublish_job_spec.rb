@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe UnpublishJob, type: :job do
+RSpec.describe UnpublishJob do
   subject(:perform) do
     described_class.perform_now(druid:, background_job_result: result)
   end

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe VersionsController, type: :routing do
+RSpec.describe VersionsController do
   describe 'routing' do
     it 'routes to #create' do
       expect(post: '/v1/objects/druid:mk420bs7601/versions')

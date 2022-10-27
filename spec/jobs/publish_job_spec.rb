@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe PublishJob, type: :job do
+RSpec.describe PublishJob do
   subject(:perform) do
     described_class.perform_now(druid:, background_job_result: result, workflow:)
   end

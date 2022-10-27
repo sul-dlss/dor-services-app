@@ -8,6 +8,13 @@ class ObjectsController < ApplicationController
     json_api_error(status: :not_found, message: e.message)
   end
 
+  def show
+    return head :not_modified if from_etag(request.headers['If-None-Match']) == @cocina_object.lock
+
+    add_headers(@cocina_object)
+    render json: Cocina::Models.without_metadata(@cocina_object)
+  end
+
   def create
     return json_api_error(status: :service_unavailable, message: 'Registration is temporarily disabled') unless Settings.enabled_features.registration
 
@@ -52,13 +59,6 @@ class ObjectsController < ApplicationController
     json_api_error(status: :precondition_failed,
                    title: 'ETag mismatch',
                    message: "You are attempting to update a stale copy of the object: #{e.message} Refetch the object and attempt your change again.")
-  end
-
-  def show
-    return head :not_modified if from_etag(request.headers['If-None-Match']) == @cocina_object.lock
-
-    add_headers(@cocina_object)
-    render json: Cocina::Models.without_metadata(@cocina_object)
   end
 
   def find

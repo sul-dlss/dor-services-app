@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe TagLabel, type: :model do
+RSpec.describe TagLabel do
   describe 'tag format validation' do
     context 'with invalid values' do
       ['Configured With', 'Registered By:mjg'].each do |tag_string|

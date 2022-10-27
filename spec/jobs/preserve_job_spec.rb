@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe PreserveJob, type: :job do
+RSpec.describe PreserveJob do
   include ActiveJob::TestHelper
 
   let(:druid) { 'druid:mk420bs7601' }
