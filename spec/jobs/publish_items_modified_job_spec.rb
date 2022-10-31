@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe PublishItemsModifiedJob, type: :job do
+RSpec.describe PublishItemsModifiedJob do
   subject(:perform) do
     described_class.perform_now(collection_identifier)
   end

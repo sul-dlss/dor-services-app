@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe CreateVirtualObjectsJob, type: :job do
+RSpec.describe CreateVirtualObjectsJob do
   let(:constituent1_id) { 'druid:constituent1' }
   let(:constituent2_id) { 'druid:constituent2' }
   let(:virtual_object_id) { 'druid:mk420bs7601' }

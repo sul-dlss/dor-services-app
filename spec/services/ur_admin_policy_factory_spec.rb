@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe UrAdminPolicyFactory do
-  subject(:create) { described_class.create }
+  subject(:policy) { described_class.create }
 
   let(:druid) { Settings.ur_admin_policy.druid }
 
@@ -13,7 +13,7 @@ RSpec.describe UrAdminPolicyFactory do
 
   it 'creates the Ur-AdminPolicy' do
     expect(AdminPolicy.exists?(external_identifier: druid)).to be false
-    create
+    policy
     expect(AdminPolicy.exists?(external_identifier: druid)).to be true
     expect(Notifications::ObjectCreated).to have_received(:publish)
   end

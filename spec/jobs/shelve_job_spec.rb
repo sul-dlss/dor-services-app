@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe ShelveJob, type: :job do
+RSpec.describe ShelveJob do
   subject(:perform) { described_class.perform_now(druid:, background_job_result: result) }
 
   let(:druid) { 'druid:mk420bs7601' }

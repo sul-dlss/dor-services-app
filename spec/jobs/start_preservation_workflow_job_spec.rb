@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe StartPreservationWorkflowJob, type: :job do
+RSpec.describe StartPreservationWorkflowJob do
   subject(:perform) do
     described_class.perform_now(druid:,
                                 version: '7',

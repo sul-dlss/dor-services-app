@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe LogSuccessJob, type: :job do
+RSpec.describe LogSuccessJob do
   subject(:perform) do
     described_class.perform_now(druid:,
                                 background_job_result: result,

@@ -88,6 +88,12 @@ RSpec/ExpectActual:
 RSpec/NestedGroups:
   Max: 5
 
+Style/RedundantStringEscape:
+  Enabled: true
+  Exclude:
+    # Does not play well with raw SQL.
+    - 'app/reports/**'
+
 Style/WordArray:
   MinSize: 3
 
@@ -549,4 +555,25 @@ Rails/ToSWithArgument: # new in 2.16
 Rails/TopLevelHashWithIndifferentAccess: # new in 2.16
   Enabled: true
 Rails/WhereMissing: # new in 2.16
+  Enabled: true
+
+Lint/DuplicateMagicComment: # new in 1.37
+  Enabled: true
+Style/OperatorMethodCall: # new in 1.37
+  Enabled: true  
+RSpec/SortMetadata: # new in 2.14
+  Enabled: true
+RSpec/Capybara/NegationMatcher: # new in 2.14
+  Enabled: true
+RSpec/Capybara/SpecificActions: # new in 2.14
+  Enabled: true
+RSpec/FactoryBot/ConsistentParenthesesStyle: # new in 2.14
+  Enabled: true
+RSpec/Rails/InferredSpecType: # new in 2.14
+  Enabled: true
+Rails/ActionOrder: # new in 2.17
+  Enabled: true
+Rails/IgnoredColumnsAssignment: # new in 2.17
+  Enabled: true
+Rails/WhereNotWithMultipleConditions: # new in 2.17
   Enabled: true

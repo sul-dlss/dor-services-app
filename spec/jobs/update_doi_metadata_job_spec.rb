@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe UpdateDoiMetadataJob, type: :job do
+RSpec.describe UpdateDoiMetadataJob do
   subject(:perform) do
     described_class.perform_now(cocina_item)
   end

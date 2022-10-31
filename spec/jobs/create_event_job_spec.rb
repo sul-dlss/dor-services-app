@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe CreateEventJob, type: :job do
+RSpec.describe CreateEventJob do
   subject(:perform) { described_class.new.work(msg.to_json) }
 
   let(:msg) do

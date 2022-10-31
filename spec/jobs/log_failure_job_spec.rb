@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe LogFailureJob, type: :job do
+RSpec.describe LogFailureJob do
   subject(:perform) do
     described_class.perform_now(druid:,
                                 background_job_result: result,
