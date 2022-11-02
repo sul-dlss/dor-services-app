@@ -15,19 +15,10 @@ class WorkspacesController < ApplicationController
   end
 
   def destroy
-    druid = params[:object_id]
-    CleanupService.cleanup_by_druid druid
-
-    EventFactory.create(druid:,
-                        event_type: 'cleanup-workspace',
-                        data: { status: 'success' })
-
-    head :no_content
-  rescue Errno::ENOENT, Errno::ENOTEMPTY => e
-    EventFactory.create(druid:, event_type: 'cleanup-workspace',
-                        data: { status: 'failure', message: e.message, backtrace: e.backtrace })
-
-    render build_error('Unable to remove directory', e)
+    result = BackgroundJobResult.create
+    EventFactory.create(druid: params[:object_id], event_type: 'cleanup_request_received', data: { background_job_result_id: result.id })
+    CleanupJob.set(queue: params['lane-id']).perform_later(druid: params[:object_id], background_job_result: result, workflow: params[:workflow])
+    head :created, location: result
   end
 
   # Once an object has been transferred to preservation, reset the workspace by
