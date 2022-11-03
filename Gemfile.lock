@@ -412,9 +412,6 @@ GEM
       connection_pool (>= 2.2.5)
       rack (~> 2.0)
       redis (>= 4.5.0, < 5)
-    sidekiq-statistic (1.4.0)
-      sidekiq (>= 5.0)
-      tilt (~> 2.0)
     sigdump (0.2.4)
     simplecov (0.21.2)
       docile (~> 1.1)
@@ -443,7 +440,6 @@ GEM
       diff-lcs
       patience_diff
     thor (1.2.1)
-    tilt (2.0.11)
     timeout (0.3.0)
     tty-cursor (0.7.1)
     tty-progressbar (0.18.2)
@@ -524,7 +520,6 @@ DEPENDENCIES
   rubocop-rspec
   ruby-cache (~> 0.3.0)
   sidekiq (~> 6.0)
-  sidekiq-statistic
   simplecov
   sneakers (~> 2.11)
   stanford-mods (~> 2.6)
@@ -534,4 +529,4 @@ DEPENDENCIES
   whenever
 
 BUNDLED WITH
-   2.3.17
+   2.3.25
