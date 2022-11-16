@@ -19,9 +19,15 @@ class ShelvableFilesStager
 
   # Ensure all the files are found in the object's content files in the workspace area
   def stage
+    Rails.logger.info("File deltas: #{file_deltas}")
     return true if filelist.empty?
+    Rails.logger.info("File list: #{filelist}")
 
     filelist.each do |file|
+      Rails.logger.info("Staging #{file}")
+      Rails.logger.info("Added: #{file_deltas[:added]}")
+      Rails.logger.info("Pres added: #{ preserve_diff.file_deltas[:added]}")
+      Rails.logger.info("File previously in pres: #{file_previously_in_preservation?(file)}")
       next if file_in_staging?(file)
 
       # If they preserved the file in a previous version, but didn't shelve it, we can copy it to staging.
