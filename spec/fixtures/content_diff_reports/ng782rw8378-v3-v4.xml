@@ -114,11 +114,11 @@
         <fileSignature size="96605505" md5="9d863cde9162795423ffe565bb62c100" sha1="bd1f9f1d0034061a30c1ab527cf7387c3fdad06a" sha256=""/>
       </file>
     </subset>
-    <subset change="renamed" count="2">
+    <subset change="renamed" count="1">
       <file change="renamed" basisPath="SUB2_b2000_2.nii.gz" otherPath="SUB2_b2000_1.nii.gz">
         <fileSignature size="89656328" md5="ddc3c9845ef7545baae3dd1f39262ca5" sha1="d8ad22d4dd07eaf038f7b7cf6c23f2d707dc4255" sha256=""/>
       </file>
-      <file change="renamed" basisPath="SUB2_b2000_2.bvecs" otherPath="SUB2_b2000_1.bvecs">
+      <file change="renamed" basisPath="dir/SUB2_b2000_2.bvecs" otherPath="SUB2_b2000_1.bvecs">
         <fileSignature size="3863" md5="6749ec9f45c08001e46fe848433f8fe3" sha1="926f2dd7d18b40d92d5e2d14ec03c16dc88de69b" sha256=""/>
       </file>
     </subset>
@@ -128,7 +128,7 @@
       </file>
     </subset>
     <subset change="added" count="2">
-      <file change="added" basisPath="" otherPath="SUB2_b2000_2.bvecs">
+      <file change="added" basisPath="" otherPath="dir/SUB2_b2000_2.bvecs">
         <fileSignature size="3883" md5="89539f101339b42e570517f12932af90" sha1="309a04c1b19b1e569bcf3bbc9836dd8b93242d7d" sha256=""/>
       </file>
       <file change="added" basisPath="" otherPath="SUB2_b2000_2.nii.gz">
