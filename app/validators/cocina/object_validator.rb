@@ -25,6 +25,10 @@ module Cocina
       # Only DROs have collection membership
       validator = Cocina::CollectionExistenceValidator.new(cocina_object)
       raise ValidationError, validator.error unless validator.valid?
+
+      # Only DROs hav files
+      validator = Cocina::FileHierarchyValidator.new(cocina_object)
+      raise ValidationError, validator.error unless validator.valid?
     end
 
     private
