@@ -59,4 +59,14 @@ RSpec.describe Cocina::FileHierarchyValidator do
       expect(validator.error).to be 'File hierarchy present, but content type is not file'
     end
   end
+
+  context 'when no structural' do
+    let(:structural) { nil }
+    let(:type) { Cocina::Models::ObjectType.object }
+
+    it 'is valid' do
+      expect(validator.valid?).to be true
+      expect(validator.error).to be_nil
+    end
+  end
 end
