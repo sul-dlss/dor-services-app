@@ -19,9 +19,9 @@ RSpec.describe 'Destroy Object' do
 
   context 'when the request is successful' do
     it 'returns a 204 response' do
-      delete "/v1/objects/#{druid}",
-             params: params,
-             headers: { 'Authorization' => "Bearer #{jwt}" }
+      delete("/v1/objects/#{druid}",
+             params:,
+             headers: { 'Authorization' => "Bearer #{jwt}" })
       expect(response).to have_http_status(:no_content)
       expect(DeleteService).to have_received(:destroy).with(cocina_object, **params)
     end
@@ -33,9 +33,9 @@ RSpec.describe 'Destroy Object' do
     end
 
     it 'returns a 500 response' do
-      delete "/v1/objects/#{druid}",
-             params: params,
-             headers: { 'Authorization' => "Bearer #{jwt}" }
+      delete("/v1/objects/#{druid}",
+             params:,
+             headers: { 'Authorization' => "Bearer #{jwt}" })
       expect(response).to have_http_status(:internal_server_error)
       expect(response.message).to eq 'Internal Server Error'
     end

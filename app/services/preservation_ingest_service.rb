@@ -77,6 +77,6 @@ class PreservationIngestService
     doc = Nokogiri::XML(File.read(pathname.to_s))
     nodeset = doc.xpath('/versionMetadata/version')
     version_id = nodeset.last['versionId']
-    version_id.nil? ? nil : version_id.to_i
+    version_id&.to_i
   end
 end

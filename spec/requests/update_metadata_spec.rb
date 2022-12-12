@@ -95,9 +95,9 @@ RSpec.describe 'Update object' do
   end
 
   it 'updates the object' do
-    patch "/v1/objects/#{druid}",
+    patch("/v1/objects/#{druid}",
           params: data,
-          headers: headers
+          headers:)
     expect(response).to have_http_status(:ok)
     expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
     expect(response.headers['Last-Modified']).to end_with 'GMT'
@@ -142,9 +142,9 @@ RSpec.describe 'Update object' do
     end
 
     it 'is a bad request' do
-      patch "/v1/objects/#{druid}",
+      patch("/v1/objects/#{druid}",
             params: data,
-            headers: headers
+            headers:)
       expect(response).to have_http_status(:bad_request)
     end
   end
@@ -155,9 +155,9 @@ RSpec.describe 'Update object' do
     end
 
     it 'is a bad request' do
-      patch "/v1/objects/#{druid}",
+      patch("/v1/objects/#{druid}",
             params: data,
-            headers: headers
+            headers:)
       expect(response).to have_http_status(:bad_request)
     end
   end
@@ -196,9 +196,9 @@ RSpec.describe 'Update object' do
     end
 
     it 'returns the updated object' do
-      patch "/v1/objects/#{druid}",
+      patch("/v1/objects/#{druid}",
             params: data,
-            headers: headers
+            headers:)
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('Not a title')
     end
@@ -264,9 +264,9 @@ RSpec.describe 'Update object' do
       let(:expected_label) { 'This is a new label' }
 
       it 'updates the object' do
-        patch "/v1/objects/#{druid}",
+        patch("/v1/objects/#{druid}",
               params: data,
-              headers: headers
+              headers:)
         expect(response).to have_http_status :ok
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
         expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
@@ -282,9 +282,9 @@ RSpec.describe 'Update object' do
       let(:truncated_label) { 'Hearings before the Subcommittee on Elementary, Secondary, and Vocational Education of the Committee on Education and Labor, House of Representatives, Ninety-fifth Congress, first session, on H.R. 15, to extend for five years certain elementary, secondar' }
 
       it 'truncates the title' do
-        patch "/v1/objects/#{druid}",
+        patch("/v1/objects/#{druid}",
               params: data,
-              headers: headers
+              headers:)
         expect(response).to have_http_status(:ok)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
         expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
@@ -518,9 +518,9 @@ RSpec.describe 'Update object' do
         end
 
         it 'creates contentMetadata' do
-          patch "/v1/objects/#{druid}",
+          patch("/v1/objects/#{druid}",
                 params: data,
-                headers: headers
+                headers:)
           expect(response).to have_http_status(:ok)
           expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
           cocina_item = Cocina::Models.without_metadata(CocinaObjectStore.find(druid))
@@ -534,9 +534,9 @@ RSpec.describe 'Update object' do
         let(:download) { 'none' }
 
         it 'returns 400' do
-          patch "/v1/objects/#{druid}",
+          patch("/v1/objects/#{druid}",
                 params: data,
-                headers: headers
+                headers:)
           expect(response).to have_http_status :bad_request
         end
       end
@@ -569,9 +569,9 @@ RSpec.describe 'Update object' do
       end
 
       it 'creates collection relationship' do
-        patch "/v1/objects/#{druid}",
+        patch("/v1/objects/#{druid}",
               params: data,
-              headers: headers
+              headers:)
         expect(response).to have_http_status(:ok)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
         expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
@@ -623,9 +623,9 @@ RSpec.describe 'Update object' do
     end
 
     it 'registers the book and sets the viewing direction' do
-      patch "/v1/objects/#{druid}",
+      patch("/v1/objects/#{druid}",
             params: data,
-            headers: headers
+            headers:)
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
@@ -673,9 +673,9 @@ RSpec.describe 'Update object' do
     end
 
     it 'updates the collection' do
-      patch "/v1/objects/#{druid}",
+      patch("/v1/objects/#{druid}",
             params: data,
-            headers: headers
+            headers:)
       expect(response).to have_http_status(:ok)
       expect(PublishItemsModifiedJob).to have_been_enqueued
       expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
@@ -748,9 +748,9 @@ RSpec.describe 'Update object' do
 
     context 'when the request is successful' do
       it 'registers the object with the registration service' do
-        patch "/v1/objects/#{druid}",
+        patch("/v1/objects/#{druid}",
               params: data,
-              headers: headers
+              headers:)
         expect(response).to have_http_status(:ok)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
         expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
@@ -770,9 +770,9 @@ RSpec.describe 'Update object' do
       end
 
       it 'updates the metadata' do
-        patch "/v1/objects/#{druid}",
+        patch("/v1/objects/#{druid}",
               params: data,
-              headers: headers
+              headers:)
         expect(response).to have_http_status(:ok)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
         expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
@@ -827,9 +827,9 @@ RSpec.describe 'Update object' do
     end
 
     it 'registers the book and sets the rights' do
-      patch "/v1/objects/#{druid}",
+      patch("/v1/objects/#{druid}",
             params: data,
-            headers: headers
+            headers:)
       expect(response).to have_http_status(:ok)
       expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
       expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
