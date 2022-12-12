@@ -42,9 +42,9 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     end
 
     it 'does not open or close a version and starts default workflow' do
-      post "/v1/objects/#{druid}/accession",
-           params: params,
-           headers: { 'Authorization' => "Bearer #{jwt}" }
+      post("/v1/objects/#{druid}/accession",
+           params:,
+           headers: { 'Authorization' => "Bearer #{jwt}" })
       expect(response).to be_successful
       expect(EventFactory).to have_received(:create).with(
         { data: { workflow: 'assemblyWF' },
@@ -74,9 +74,9 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     end
 
     it 'opens and closes a version and starts default workflow' do
-      post "/v1/objects/#{druid}/accession",
-           params: params,
-           headers: { 'Authorization' => "Bearer #{jwt}" }
+      post("/v1/objects/#{druid}/accession",
+           params:,
+           headers: { 'Authorization' => "Bearer #{jwt}" })
       expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, default_start_accession_workflow, version: '2')
       expect(VersionService).to have_received(:open).with(cocina_object, **params)
       expect(VersionService).to have_received(:close).with(updated_cocina_object, **close_params)
@@ -100,9 +100,9 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     end
 
     it 'closes a version and starts default workflow' do
-      post "/v1/objects/#{druid}/accession",
-           params: params,
-           headers: { 'Authorization' => "Bearer #{jwt}" }
+      post("/v1/objects/#{druid}/accession",
+           params:,
+           headers: { 'Authorization' => "Bearer #{jwt}" })
       expect(response).to have_http_status(:success)
       expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, default_start_accession_workflow, version: '1')
       expect(VersionService).not_to have_received(:open)
@@ -116,9 +116,9 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     end
 
     it 'returns an unacceptable response and does not start any workflows' do
-      post "/v1/objects/#{druid}/accession",
-           params: params,
-           headers: { 'Authorization' => "Bearer #{jwt}" }
+      post("/v1/objects/#{druid}/accession",
+           params:,
+           headers: { 'Authorization' => "Bearer #{jwt}" })
       expect(EventFactory).to have_received(:create).with(
         { data: { workflow: 'assemblyWF' },
           druid: 'druid:mx123qw2323',
