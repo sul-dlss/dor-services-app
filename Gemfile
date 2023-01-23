@@ -12,7 +12,8 @@ gem 'dor-workflow-client', '~> 5.0'
 gem 'druid-tools', '~> 2.2'
 gem 'marc'
 gem 'moab-versioning', '~> 5.0', require: 'moab/stanford'
-gem 'preservation-client', '~> 5.0'
+gem 'preservation-client', github: 'sul-dlss/preservation-client', branch: 'longer-timeout'
+# gem 'preservation-client', '~> 5.0'
 # Pinning stanford-mods since >=3 breaks dor-services.
 gem 'stanford-mods', '~> 2.6'
 

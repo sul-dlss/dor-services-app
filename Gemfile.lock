@@ -1,3 +1,14 @@
+GIT
+  remote: https://github.com/sul-dlss/preservation-client.git
+  revision: 097695f6a7868148ca046a82975893941674f8a3
+  branch: longer-timeout
+  specs:
+    preservation-client (5.1.0)
+      activesupport (>= 4.2, < 8)
+      faraday (~> 2.0)
+      moab-versioning (>= 5.0.0, < 7)
+      zeitwerk (~> 2.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -124,7 +135,7 @@ GEM
       openapi_parser (>= 0.11.1, < 1.0)
       rack (>= 1.5)
     commonmarker (0.23.6)
-    concurrent-ruby (1.1.10)
+    concurrent-ruby (1.2.0)
     config (4.1.0)
       deep_merge (~> 1.2, >= 1.2.1)
       dry-validation (~> 1.0, >= 1.0.0)
@@ -301,11 +312,6 @@ GEM
     patience_diff (1.2.0)
       optimist (~> 3.0)
     pg (1.4.5)
-    preservation-client (5.1.0)
-      activesupport (>= 4.2, < 8)
-      faraday (~> 2.0)
-      moab-versioning (>= 5.0.0, < 7)
-      zeitwerk (~> 2.1)
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -508,7 +514,7 @@ DEPENDENCIES
   okcomputer
   parallel
   pg
-  preservation-client (~> 5.0)
+  preservation-client!
   pry-byebug
   puma (~> 5.3)
   rack-console
