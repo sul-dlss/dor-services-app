@@ -60,7 +60,7 @@ class UpdateMarcRecordService
     # now add the current ckey
     if @cocina_object.identification.catalogLinks.find { |link| link.catalog == 'symphony' }.present?
       catalog_record_id = @cocina_object.identification.catalogLinks.find { |link| link.catalog == 'symphony' }.catalogRecordId
-      records << (released_to_searchworks? ? new_856_record(catalog_record_id) : get_identifier(catalog_record_id))
+      records << (released_to_searchworks?(@cocina_object) ? new_856_record(catalog_record_id) : get_identifier(catalog_record_id))
     end
 
     records
@@ -150,6 +150,8 @@ class UpdateMarcRecordService
 
     collections.each do |collection_druid|
       collection = CocinaObjectStore.find(collection_druid)
+      next unless released_to_searchworks?(collection)
+
       catkey = collection.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
       collection_info += "|xcollection:#{collection.externalIdentifier.sub('druid:',
                                                                            '')}:#{catkey&.catalogRecordId}:#{Cocina::Models::Builders::TitleBuilder.build(collection.description.title)}"
@@ -191,16 +193,13 @@ class UpdateMarcRecordService
     BORN_DIGITAL_APOS.include? @cocina_object.administrative.hasAdminPolicy
   end
 
-  def released_to_searchworks?
+  def released_to_searchworks?(cocina_object)
+    released_for = ::ReleaseTags.for(cocina_object:)
     rel = released_for.transform_keys { |key| key.to_s.upcase } # upcase all release tags to make the check case insensitive
     rel.dig('SEARCHWORKS', 'release').presence || false
   end
 
   private
-
-  def released_for
-    ::ReleaseTags.for(cocina_object: @cocina_object)
-  end
 
   # adapted from mods_display
   def parts_delimiter(elements)
