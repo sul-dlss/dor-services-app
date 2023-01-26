@@ -506,12 +506,42 @@ RSpec.describe UpdateMarcRecordService do
       end
     end
 
-    context 'when an object with a collection' do
+    context 'when an object with a collection has no release tags' do
       let(:cocina_object) do
         build(:dro, id: druid).new(
           structural: structural_metadata
         )
       end
+
+      it 'does not return information for the collection object' do
+        allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
+        expect(umrs.get_x2_collection_info).to eq('')
+      end
+    end
+
+    context 'when an object with a collection that is not released to searchworks' do
+      let(:cocina_object) do
+        build(:dro, id: druid).new(
+          structural: structural_metadata
+        )
+      end
+
+      let(:release_data) { { 'Searchworks' => { 'release' => false } } }
+
+      it 'does not return information for the collection object' do
+        allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
+        expect(umrs.get_x2_collection_info).to eq('')
+      end
+    end
+
+    context 'when an object with a collection that is released to searchworks' do
+      let(:cocina_object) do
+        build(:dro, id: druid).new(
+          structural: structural_metadata
+        )
+      end
+
+      let(:release_data) { { 'Searchworks' => { 'release' => true } } }
 
       it 'returns the appropriate information for the collection object' do
         allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
@@ -939,7 +969,7 @@ RSpec.describe UpdateMarcRecordService do
       let(:release_data) { { 'Searchworks' => { 'release' => true } } }
 
       it 'returns true' do
-        expect(umrs.released_to_searchworks?).to be true
+        expect(umrs.released_to_searchworks?(cocina_object)).to be true
       end
     end
 
@@ -947,7 +977,7 @@ RSpec.describe UpdateMarcRecordService do
       let(:release_data) { { 'searchworks' => { 'release' => true } } }
 
       it 'returns true' do
-        expect(umrs.released_to_searchworks?).to be true
+        expect(umrs.released_to_searchworks?(cocina_object)).to be true
       end
     end
 
@@ -955,7 +985,7 @@ RSpec.describe UpdateMarcRecordService do
       let(:release_data) { { 'SearchWorks' => { 'release' => true } } }
 
       it 'returns true' do
-        expect(umrs.released_to_searchworks?).to be true
+        expect(umrs.released_to_searchworks?(cocina_object)).to be true
       end
     end
 
@@ -963,7 +993,7 @@ RSpec.describe UpdateMarcRecordService do
       let(:release_data) { { 'Searchworks' => { 'release' => false } } }
 
       it 'returns false' do
-        expect(umrs.released_to_searchworks?).to be false
+        expect(umrs.released_to_searchworks?(cocina_object)).to be false
       end
     end
 
@@ -971,7 +1001,7 @@ RSpec.describe UpdateMarcRecordService do
       let(:release_data) { { 'Searchworks' => { 'bogus' => 'yup' } } }
 
       it 'returns false' do
-        expect(umrs.released_to_searchworks?).to be false
+        expect(umrs.released_to_searchworks?(cocina_object)).to be false
       end
     end
 
@@ -979,7 +1009,7 @@ RSpec.describe UpdateMarcRecordService do
       let(:release_data) { {} }
 
       it 'returns false' do
-        expect(umrs.released_to_searchworks?).to be false
+        expect(umrs.released_to_searchworks?(cocina_object)).to be false
       end
     end
 
@@ -987,7 +1017,7 @@ RSpec.describe UpdateMarcRecordService do
       let(:release_data) { { 'Revs' => { 'release' => true } } }
 
       it 'returns false' do
-        expect(umrs.released_to_searchworks?).to be false
+        expect(umrs.released_to_searchworks?(cocina_object)).to be false
       end
     end
   end
