@@ -13,7 +13,12 @@ class FileCounts
   SQL = <<~SQL.squish.freeze
     SELECT DISTINCT(external_identifier),
       content_type,
-      JSONB_ARRAY_LENGTH(JSONB_PATH_QUERY(structural, '$.contains.structural.contains')) AS count
+      JSONB_ARRAY_LENGTH(
+        JSONB_PATH_QUERY_ARRAY(
+          structural,
+          '$.contains[*].structural.contains[*].filename'
+        )
+      ) AS count
     FROM dros
     ORDER BY count DESC
   SQL
