@@ -301,7 +301,7 @@ GEM
     patience_diff (1.2.0)
       optimist (~> 3.0)
     pg (1.4.5)
-    preservation-client (5.1.0)
+    preservation-client (5.1.1)
       activesupport (>= 4.2, < 8)
       faraday (~> 2.0)
       moab-versioning (>= 5.0.0, < 7)
