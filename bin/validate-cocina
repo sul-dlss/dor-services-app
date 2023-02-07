@@ -69,8 +69,8 @@ def validate(clazz, sample_size, processes)
   end.flatten
 end
 
-results = validate(Dro, options[:sample_size],
-                   options[:processes]) + validate(Collection, options[:sample_size], options[:processes]) + validate(AdminPolicy, options[:sample_size], options[:processes])
+results = validate(Dro, options[:sample],
+                   options[:processes]) + validate(Collection, options[:sample], options[:processes]) + validate(AdminPolicy, options[:sample], options[:processes])
 
 CSV.open('validate-cocina.csv', 'w') do |writer|
   writer << %w[druid type message]
