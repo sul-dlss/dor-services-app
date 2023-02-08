@@ -63,7 +63,7 @@ def validate(clazz, sample_size, processes)
     clazz.find(slice_obj_ids).map do |obj|
       obj.to_cocina
       [obj.external_identifier, nil]
-    rescue Cocina::Models::ValidationError => e
+    rescue Dry::Struct::Error, Cocina::Models::ValidationError => e
       [obj.external_identifier, clazz.name, e.message]
     end
   end.flatten
