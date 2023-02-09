@@ -74,6 +74,8 @@ namespace :catkeys do
     druid_not_found_list = []
     catkey_exists_list = []
     cannot_version_list = []
+    cocina_validation_error_list = []
+    other_error_list = []
 
     rows.each_with_index do |row, i|
       druid = row['druid']
@@ -102,17 +104,23 @@ namespace :catkeys do
             cannot_version_list << druid
           end
         end
+      rescue Cocina::ValidationError
+        cocina_validation_error_list << druid
       rescue CocinaObjectStore::CocinaObjectNotFoundError
         druid_not_found_list << druid
+      rescue StandardError
+        other_error_list << druid
       end
     end
 
     puts "Num rows: #{num_rows}"
-    puts "Num catkey already exists in record: #{catkey_exists_list.size}; num no druid found: #{druid_not_found_list.size}; num cannot version: #{cannot_version_list.size}"
+    puts "Num catkey already exists in record: #{catkey_exists_list.size}; num no druid found: #{druid_not_found_list.size}"
+    puts "Num other errors: #{other_error_list.size}; num cannot version: #{cannot_version_list.size}; num cocina validation error: #{cocina_validation_error_list.size}"
     puts "Catkey exists: #{catkey_exists_list.join(', ')}"
+    puts "Cocina validation error: #{cocina_validation_error_list.join(', ')}"
     puts "Cannot version: #{cannot_version_list.join(', ')}"
     puts "Druid not found: #{druid_not_found_list.join(', ')}"
-    puts "Results written to: #{output_file}"
+    puts "Other errors: #{other_error_list.join(', ')}"
   end
 end
 # rubocop:enable Metrics/BlockLength
