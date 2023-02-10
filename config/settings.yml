@@ -98,6 +98,12 @@ catalog:
     headers:
       SD-ORIGINATING-APP-ID: DOR-SERVICES-APP
       SD-PREFERRED-ROLE: GUEST
+  folio:
+    okapi:
+      url: "https://okapi-dev.example.com"
+      username: "app_sdr"
+      password: "supersecret"
+    tenant_id: "example_tenant"
 
 # Whether to notify on data errors encountered when mapping from MODS to Cocina. See DataErrorNotifier.
 from_fedora_data_errors:
