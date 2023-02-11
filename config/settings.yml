@@ -4,6 +4,7 @@ enabled_features:
   create_ur_admin_policy: false
   datacite_update: false
   postgres: false
+  file_hierarchy_validation: true
 
 # Ur Admin Policy
 ur_admin_policy:

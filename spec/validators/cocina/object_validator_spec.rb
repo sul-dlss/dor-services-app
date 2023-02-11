@@ -13,27 +13,47 @@ RSpec.describe Cocina::ObjectValidator do
     allow(Cocina::FileHierarchyValidator).to receive(:new).and_return(file_hierarchy_validator)
   end
 
-  context 'when a request DRO' do
-    let(:cocina_object) { instance_double(Cocina::Models::RequestDRO, dro?: true) }
+  context 'with file_hierarchy_validation on' do
+    before { allow(Settings.enabled_features).to receive(:file_hierarchy_validation).and_return(true) }
 
-    it 'validates' do
-      described_class.validate(cocina_object)
+    context 'when a request DRO' do
+      let(:cocina_object) { instance_double(Cocina::Models::RequestDRO, dro?: true) }
 
-      expect(apo_existence_validator).to have_received(:valid?)
-      expect(collection_existence_validator).to have_received(:valid?)
-      expect(file_hierarchy_validator).to have_received(:valid?)
+      it 'validates' do
+        described_class.validate(cocina_object)
+
+        expect(apo_existence_validator).to have_received(:valid?)
+        expect(collection_existence_validator).to have_received(:valid?)
+        expect(file_hierarchy_validator).to have_received(:valid?)
+      end
+    end
+
+    context 'when a DRO' do
+      let(:cocina_object) { instance_double(Cocina::Models::DRO, dro?: true, externalIdentifier: nil) }
+
+      it 'validates' do
+        described_class.validate(cocina_object)
+
+        expect(apo_existence_validator).to have_received(:valid?)
+        expect(collection_existence_validator).to have_received(:valid?)
+        expect(file_hierarchy_validator).to have_received(:valid?)
+      end
     end
   end
 
-  context 'when a DRO' do
-    let(:cocina_object) { instance_double(Cocina::Models::DRO, dro?: true, externalIdentifier: nil) }
+  context 'with file_hierarchy_validation off' do
+    before { allow(Settings.enabled_features).to receive(:file_hierarchy_validation).and_return(false) }
 
-    it 'validates' do
-      described_class.validate(cocina_object)
+    context 'when a DRO' do
+      let(:cocina_object) { instance_double(Cocina::Models::DRO, dro?: true, externalIdentifier: nil) }
 
-      expect(apo_existence_validator).to have_received(:valid?)
-      expect(collection_existence_validator).to have_received(:valid?)
-      expect(file_hierarchy_validator).to have_received(:valid?)
+      it 'does not validate the file_hierarchy' do
+        described_class.validate(cocina_object)
+
+        expect(apo_existence_validator).to have_received(:valid?)
+        expect(collection_existence_validator).to have_received(:valid?)
+        expect(file_hierarchy_validator).not_to have_received(:valid?)
+      end
     end
   end
 
