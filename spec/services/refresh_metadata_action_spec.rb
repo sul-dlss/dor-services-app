@@ -77,7 +77,7 @@ RSpec.describe RefreshMetadataAction do
   end
 
   describe '#identifiers' do
-    subject(:indentifiers) { described_class.identifiers(cocina_object:) }
+    subject(:identifiers) { described_class.identifiers(cocina_object:) }
 
     let(:identification) { instance_double(Cocina::Models::RequestIdentification, catalogLinks: catalog_links) }
     let(:cocina_object) do
@@ -86,13 +86,13 @@ RSpec.describe RefreshMetadataAction do
 
     context 'when a valid identifier' do
       let(:catalog_links) do
-        [Cocina::Models::CatalogLink.new(catalog: 'symphony', catalogRecordId: 'nope123', refresh: false),
-         Cocina::Models::CatalogLink.new(catalog: 'symphony', catalogRecordId: 'yup123', refresh: true),
-         Cocina::Models::CatalogLink.new(catalog: 'previous symphony', catalogRecordId: 'old123', refresh: true)]
+        [Cocina::Models::CatalogLink[catalog: 'folio', catalogRecordId: 'a123', refresh: false],
+         Cocina::Models::CatalogLink[catalog: 'symphony', catalogRecordId: '123', refresh: true],
+         Cocina::Models::CatalogLink[catalog: 'previous symphony', catalogRecordId: '1234', refresh: true]]
       end
 
       it 'returns only the valid symphony identifier with refresh == true' do
-        expect(indentifiers).to eq(['catkey:yup123'])
+        expect(identifiers).to eq(['catkey:123'])
       end
     end
 
@@ -100,17 +100,17 @@ RSpec.describe RefreshMetadataAction do
       let(:catalog_links) { [] }
 
       it 'returns an empty array' do
-        expect(indentifiers).to eq([])
+        expect(identifiers).to eq([])
       end
     end
 
     context 'when no valid identifiers' do
       let(:catalog_links) do
-        [Cocina::Models::CatalogLink.new(catalog: 'symphony', catalogRecordId: 'nope123', refresh: false)]
+        [Cocina::Models::CatalogLink[catalog: 'previous folio', catalogRecordId: 'in123', refresh: false]]
       end
 
       it 'returns an empty array' do
-        expect(indentifiers).to eq([])
+        expect(identifiers).to eq([])
       end
     end
   end

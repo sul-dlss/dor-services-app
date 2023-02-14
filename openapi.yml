@@ -1454,19 +1454,6 @@ components:
       required:
         - identifier
         - type
-    Administrative:
-      type: object
-      additionalProperties: false
-      properties:
-        hasAdminPolicy:
-          $ref: '#/components/schemas/Druid'
-        releaseTags:
-          description: Tags for release
-          type: array
-          items:
-            $ref: '#/components/schemas/ReleaseTag'
-      required:
-        - hasAdminPolicy
     AdminPolicy:
       type: object
       additionalProperties: true
@@ -1494,40 +1481,19 @@ components:
         - label
         - type
         - version
-    AdminPolicyAdministrative:
-      description: Administrative properties for an AdminPolicy
+    Administrative:
       type: object
       additionalProperties: false
       properties:
-        accessTemplate:
-          $ref: '#/components/schemas/AdminPolicyAccessTemplate'
-        registrationWorkflow:
-          description: When you register an item with this admin policy, these are the workflows that are available.
-          type: array
-          items:
-            type: string
-        disseminationWorkflow:
-          description: An additional workflow to start for objects managed by this admin policy once the end-accession workflow step is complete
-          example: wasCrawlPreassemblyWF
-          type: string
-        collectionsForRegistration:
-          description: When you register an item with this admin policy, these are the collections that are available.
-          type: array
-          items:
-            type: string
         hasAdminPolicy:
           $ref: '#/components/schemas/Druid'
-        hasAgreement:
-          $ref: '#/components/schemas/Druid'
-        roles:
-          description: The access roles conferred by this AdminPolicy (used by Argo)
+        releaseTags:
+          description: Tags for release
           type: array
           items:
-            $ref: '#/components/schemas/AccessRole'
+            $ref: '#/components/schemas/ReleaseTag'
       required:
         - hasAdminPolicy
-        - hasAgreement
-        - accessTemplate
     AdminPolicyAccessTemplate:
       description: 'Provides the template of access settings that is copied to the items goverend by an AdminPolicy. This is almost the same as DROAccess, but it provides no defaults and has no embargo.'
       type: object
@@ -1586,6 +1552,40 @@ components:
           description: The license governing reuse of the Collection. Should be an IRI for known licenses (i.e. CC, RightsStatement.org URI, etc.).
           type: string
           nullable: true
+    AdminPolicyAdministrative:
+      description: Administrative properties for an AdminPolicy
+      type: object
+      additionalProperties: false
+      properties:
+        accessTemplate:
+          $ref: '#/components/schemas/AdminPolicyAccessTemplate'
+        registrationWorkflow:
+          description: When you register an item with this admin policy, these are the workflows that are available.
+          type: array
+          items:
+            type: string
+        disseminationWorkflow:
+          description: An additional workflow to start for objects managed by this admin policy once the end-accession workflow step is complete
+          example: wasCrawlPreassemblyWF
+          type: string
+        collectionsForRegistration:
+          description: When you register an item with this admin policy, these are the collections that are available.
+          type: array
+          items:
+            type: string
+        hasAdminPolicy:
+          $ref: '#/components/schemas/Druid'
+        hasAgreement:
+          $ref: '#/components/schemas/Druid'
+        roles:
+          description: The access roles conferred by this AdminPolicy (used by Argo)
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessRole'
+      required:
+        - hasAdminPolicy
+        - hasAgreement
+        - accessTemplate
     AppliesTo:
       description: Property model for indicating the parts, aspects, or versions of the resource to which a
         descriptive element is applicable.
@@ -1608,37 +1608,11 @@ components:
       type: string
       pattern: '^2050[0-9]{7}$'
       example: '20503740296'
-    LaneMedicalBarcode:
-      description: The barcode associated with a Lane Medical Library DRO object, prefixed with 245
-      type: string
-      pattern: '^245[0-9]{8}$'
-      example: '24503259768'
     CatalogLink:
-      type: object
-      additionalProperties: false
-      properties:
-        catalog:
-          description: Catalog that is the source of the linked record.
-          type: string
-          enum:
-            - symphony
-            - previous symphony
-          example: symphony
-        refresh:
-          description: Only one of the catkeys should be designated for refreshing.
-            This means that this key is the one used to pull metadata from the catalog
-            if there is more than one key present.
-          type: boolean
-          default: false
-        catalogRecordId:
-          description: Record identifier that is unique within the context of the linked record's catalog.
-          type: string
-          pattern: '^\d+(:\d+)*$'
-          example: '11403803'
-      required:
-        - catalog
-        - catalogRecordId
-        - refresh
+      description: 'A linkage between an object and a catalog record'
+      oneOf:
+        - $ref: '#/components/schemas/FolioCatalogLink'
+        - $ref: '#/components/schemas/SymphonyCatalogLink'
     CatkeyBarcode:
       description: The barcode associated with a DRO object based on catkey, prefixed with a catkey followed by a hyphen
       type: string
@@ -1682,7 +1656,7 @@ components:
       additionalProperties: true
       properties:
         cocinaVersion:
-            $ref: '#/components/schemas/CocinaVersion'
+          $ref: '#/components/schemas/CocinaVersion'
         type:
           description: The content type of the Collection. Selected from an established set of values.
           type: string
@@ -1766,7 +1740,7 @@ components:
           items:
             $ref: "#/components/schemas/DescriptiveValue"
         type:
-          description: Entity type of the contributor (person, organization, etc.).
+          description: Entity type of the contributor (person, organization, etc.). See https://github.com/sul-dlss/cocina-models/blob/main/docs/description_types.md for valid types.
           type: string
         status:
           description: Status of the contributor relative to other parallel contributors
@@ -1822,336 +1796,16 @@ components:
       required:
         - view
         - download
-    DarkAccess:
-      type: object
-      properties:
-        view:
-          description: Access level.
-          type: string
-          default: 'dark'
-          enum:
-            - dark
-        download:
-          description: Download access level.
-          type: string
-          default: 'none'
-          enum:
-            - 'none'
-        location:
-          description: If access is "location-based", which location should have access.
-          type: string
-          nullable: true
-          default: null
-          enum:
-            - null
-        controlledDigitalLending:
-          type: boolean
-          default: false
-          enum:
-            - false
-    Description:
-      type: object
-      additionalProperties: false
-      allOf:
-        - $ref: "#/components/schemas/RequestDescription"
-        - type: object
-          additionalProperties: false
-          properties:
-            purl:
-              $ref: "#/components/schemas/Purl"
-          required:
-            - purl
-    DescriptiveAccessMetadata:
-      description: Information about how to access digital and physical versions of the object.
-      type: object
-      additionalProperties: false
-      properties:
-        url:
-          description: URLs where the resource may be accessed in full or part.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        physicalLocation:
-          description: Location of a physical version of the resource.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        digitalLocation:
-          description: Location of a digital version of the resource, such as a file path for a born digital resource.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        accessContact:
-          description: The library, organization, or person responsible for access to the resource.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        digitalRepository:
-          description: The digital repositories that hold the resource.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        note:
-          description: Other information related to accessing the resource.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-    DescriptiveAdminMetadata:
-      description: Information about this resource description.
-      type: object
-      additionalProperties: false
-      properties:
-        contributor:
-          description: Contributors to this resource description.
-          type: array
-          items:
-            $ref: "#/components/schemas/Contributor"
-        event:
-          description: Events in the history of this resource description.
-          type: array
-          items:
-            $ref: "#/components/schemas/Event"
-        language:
-          description: Languages, scripts, symbolic systems, and notations used
-            in this resource description.
-          type: array
-          items:
-            $ref: "#/components/schemas/Language"
-        note:
-          description: Other information related to this resource description.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        metadataStandard:
-          description: Descriptive or content standard(s) to which this resource description conforms.
-          type: array
-          items:
-            $ref: "#/components/schemas/Standard"
-        identifier:
-          description: Identifiers associated with this resource description.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-    DescriptiveBasicValue:
-      description: Basic value model for descriptive elements.
-      type: object
-      # additionalProperties breaks the validator, unclear as to why.
-      # additionalProperties: false
-      allOf:
-        - $ref: "#/components/schemas/DescriptiveStructuredValue"
-        - $ref: "#/components/schemas/DescriptiveParallelValue"
-        - $ref: "#/components/schemas/DescriptiveGroupedValue"
-        - type: object
-          # additionalProperties breaks the validator for DescriptiveValue, unclear as to why.
-          # additionalProperties: false
-          properties:
-            value:
-              description: String or integer value of the descriptive element.
-              oneOf:
-                - type: string
-              # Title note (nonsorting character count) was supposed to be able to accept an integer value,
-              # but this triggered a bug in committee:
-              # https://github.com/interagent/committee/issues/286
-              # - type: integer
-            type:
-              description: Type of value provided by the descriptive element.
-              type: string
-            status:
-              description: Status of the descriptive element value relative to other instances
-                of the element.
-              type: string
-            code:
-              description: Code value of the descriptive element.
-              type: string
-            uri:
-              description: URI value of the descriptive element.
-              type: string
-              format: uri
-            standard:
-              # description: Descriptive or content standard to which the value conforms.
-              $ref: "#/components/schemas/Standard"
-            encoding:
-              # description: Encoding schema, standard, or syntax to which the value conforms.
-              $ref: "#/components/schemas/Standard"
-            identifier:
-              description: Identifiers and URIs associated with the descriptive element.
-              type: array
-              items:
-                $ref: "#/components/schemas/DescriptiveValue"
-            source:
-              $ref: "#/components/schemas/Source"
-            displayLabel:
-              description: The preferred display label to use for the descriptive element in access systems.
-              type: string
-            qualifier:
-              description: A term providing information about the circumstances of the statement (e.g., approximate dates).
-              type: string
-            note:
-              description: Other information related to the descriptive element.
-              type: array
-              items:
-                $ref: "#/components/schemas/DescriptiveValue"
-            valueLanguage:
-              $ref: "#/components/schemas/DescriptiveValueLanguage"
-            valueAt:
-              description: URL or other pointer to the location of the value of the descriptive element.
-              type: string
-    DescriptiveGeographicMetadata:
-      description: Value model for mods geographic extension metadata
-      type: object
-      additionalProperties: false
-      properties:
-        form:
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        subject:
-          description: Terms associated with the intellectual content of the related resource.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-    DescriptiveGroupedValue:
-      description: Value model for a set of descriptive elements grouped together in an unstructured way.
-      type: object
-      additionalProperties: false
-      properties:
-        groupedValue:
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-    DescriptiveParallelContributor:
-      description: Value model for multiple representations of information about the same contributor (e.g. in different languages).
-      deprecated: true
-      type: object
-      additionalProperties: false
-      properties:
-        name:
-          description: Names associated with a contributor.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        type:
-          description: Entity type of the contributor (person, organization, etc.).
-          type: string
-        status:
-          description: Status of the contributor relative to other parallel contributors (e.g. the primary author among a group of contributors).
-          type: string
-        role:
-          description: Relationships of the contributor to the resource or to an event in its history.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        identifier:
-          description: Identifiers and URIs associated with the contributor entity.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        note:
-          description: Other information associated with the contributor.
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-        valueAt:
-          description: URL or other pointer to the location of the contributor information.
-          type: string
-        valueLanguage:
-          # description: Language of the descriptive element value
-          $ref: "#/components/schemas/DescriptiveValueLanguage"
-    DescriptiveParallelEvent:
-      description: Value model for multiple representations of information about the same event (e.g. in different languages).
-      type: object
-      additionalProperties: false
-      allOf:
-        - $ref: "#/components/schemas/DescriptiveStructuredValue"
-        - type: object
-          additionalProperties: false
-          properties:
-            type:
-              description: Description of the event (creation, publication, etc.).
-              type: string
-            displayLabel:
-              description: The preferred display label to use for the event in access systems.
-              type: string
-            date:
-              description: Dates associated with the event.
-              type: array
-              items:
-                $ref: "#/components/schemas/DescriptiveValue"
-            contributor:
-              description: Contributors associated with the event.
-              type: array
-              items:
-                $ref: "#/components/schemas/Contributor"
-            location:
-              description: Locations associated with the event.
-              type: array
-              items:
-                $ref: "#/components/schemas/DescriptiveValue"
-            identifier:
-              description: Identifiers and URIs associated with the event.
-              type: array
-              items:
-                $ref: "#/components/schemas/DescriptiveValue"
-            note:
-              description: Other information about the event.
-              type: array
-              items:
-                $ref: "#/components/schemas/DescriptiveValue"
-            valueLanguage:
-              # description: Language of the descriptive element value
-              $ref: "#/components/schemas/DescriptiveValueLanguage"
-    DescriptiveParallelValue:
-      description: Value model for multiple representations of the same information (e.g. in different languages).
-      type: object
-      additionalProperties: false
-      properties:
-        parallelValue:
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-    DescriptiveStructuredValue:
-      description: Value model for descriptive elements structured as typed, ordered values.
-      type: object
-      additionalProperties: false
-      properties:
-        structuredValue:
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptiveValue"
-    DescriptiveValue:
-      description: Default value model for descriptive elements.
-      type: object
-      additionalProperties: false
-      allOf:
-        - $ref: "#/components/schemas/DescriptiveBasicValue"
-        - $ref: "#/components/schemas/AppliesTo"
-    DescriptiveValueLanguage:
-      description: Language of the descriptive element value
-      type: object
-      additionalProperties: false
-      allOf:
-        - $ref: "#/components/schemas/Standard"
-        - type: object
-          properties:
-            valueScript:
-              $ref: '#/components/schemas/Standard'
-              # description: An alphabet or other notation used to represent a
-              #   language or other symbolic system of the descriptive element value.
+    CreatedInFolioIdentifier:
+      description: A record identifier created in Folio
+      type: string
+      pattern: '^in\d+$'
+      example: 'in11403803'
     DOI:
       description: Digital Object Identifier (https://www.doi.org)
       oneOf:
         - $ref: '#/components/schemas/DoiPattern'
         - $ref: '#/components/schemas/DoiExceptions'
-    DoiExceptions:
-      type: string
-      description: pre-existing Digital Object Identifiers (https://www.doi.org) not matching the pattern (case insensitive)
-      pattern: '^10\.(25740\/([vV][aA]90-[cC][tT]15|[sS][yY][xX][aA]-[mM]256|12[qQ][fF]-5243|65[jJ]8-6114)|25936\/629[tT]-[bB][xX]79)$'
-      example: '10.25740/12qF-5243'
-    DoiPattern:
-      type: string
-      description: Digital Object Identifier (https://www.doi.org) regex pattern # The prod and test prefixes are permitted
-      pattern: '^10\.(25740|80343)\/[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$'
-      example: '10.25740/bc123df4567'
     DRO:
       description: Domain-defined abstraction of a 'work'. Digital Repository Objects' abstraction is describable for our domain’s purposes, i.e. for management needs within our system.
       type: object
@@ -2283,6 +1937,332 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Druid'
+    DarkAccess:
+      type: object
+      properties:
+        view:
+          description: Access level.
+          type: string
+          default: 'dark'
+          enum:
+            - dark
+        download:
+          description: Download access level.
+          type: string
+          default: 'none'
+          enum:
+            - 'none'
+        location:
+          description: Not used for this access type, must be null.
+          type: string
+          nullable: true
+          default: null
+          enum:
+            - null
+        controlledDigitalLending:
+          type: boolean
+          default: false
+          enum:
+            - false
+    Description:
+      type: object
+      additionalProperties: false
+      allOf:
+        - $ref: "#/components/schemas/RequestDescription"
+        - type: object
+          additionalProperties: false
+          properties:
+            purl:
+              $ref: "#/components/schemas/Purl"
+          required:
+            - purl
+    DescriptiveAccessMetadata:
+      description: Information about how to access digital and physical versions of the object.
+      type: object
+      additionalProperties: false
+      properties:
+        url:
+          description: URLs where the resource may be accessed in full or part.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        physicalLocation:
+          description: Location of a physical version of the resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        digitalLocation:
+          description: Location of a digital version of the resource, such as a file path for a born digital resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        accessContact:
+          description: The library, organization, or person responsible for access to the resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        digitalRepository:
+          description: The digital repositories that hold the resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        note:
+          description: Other information related to accessing the resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+    DescriptiveAdminMetadata:
+      description: Information about this resource description.
+      type: object
+      additionalProperties: false
+      properties:
+        contributor:
+          description: Contributors to this resource description.
+          type: array
+          items:
+            $ref: "#/components/schemas/Contributor"
+        event:
+          description: Events in the history of this resource description.
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        language:
+          description: Languages, scripts, symbolic systems, and notations used
+            in this resource description.
+          type: array
+          items:
+            $ref: "#/components/schemas/Language"
+        note:
+          description: Other information related to this resource description.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        metadataStandard:
+          description: Descriptive or content standard(s) to which this resource description conforms.
+          type: array
+          items:
+            $ref: "#/components/schemas/Standard"
+        identifier:
+          description: Identifiers associated with this resource description.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+    DescriptiveBasicValue:
+      description: Basic value model for descriptive elements. Can only have one of value, parallelValue, groupedValue, or structuredValue.
+      type: object
+      # additionalProperties breaks the validator for allOf, unclear as to why.
+      # additionalProperties: false
+      allOf:
+        - $ref: "#/components/schemas/DescriptiveStructuredValue"
+        - $ref: "#/components/schemas/DescriptiveParallelValue"
+        - $ref: "#/components/schemas/DescriptiveGroupedValue"
+        - type: object
+          # additionalProperties breaks the validator for DescriptiveValue, unclear as to why.
+          # additionalProperties: false
+          properties:
+            value:
+              description: String or integer value of the descriptive element.
+              oneOf:
+              - type: string
+              # Title note (nonsorting character count) was supposed to be able to accept an integer value,
+              # but this triggered a bug in committee:
+              # https://github.com/interagent/committee/issues/286
+              # - type: integer
+            type:
+              description: Type of value provided by the descriptive element. See https://github.com/sul-dlss/cocina-models/blob/main/docs/description_types.md for valid types.
+              type: string
+            status:
+              description: Status of the descriptive element value relative to other instances
+                of the element.
+              type: string
+            code:
+              description: Code value of the descriptive element.
+              type: string
+            uri:
+              description: URI value of the descriptive element.
+              type: string
+              format: uri
+            standard:
+              # description: Descriptive or content standard to which the value conforms.
+              $ref: "#/components/schemas/Standard"
+            encoding:
+              # description: Encoding schema, standard, or syntax to which the value conforms.
+              $ref: "#/components/schemas/Standard"
+            identifier:
+              description: Identifiers and URIs associated with the descriptive element.
+              type: array
+              items:
+                  $ref: "#/components/schemas/DescriptiveValue"
+            source:
+              $ref: "#/components/schemas/Source"
+            displayLabel:
+              description: The preferred display label to use for the descriptive element in access systems.
+              type: string
+            qualifier:
+              description: A term providing information about the circumstances of the statement (e.g., approximate dates).
+              type: string
+            note:
+              description: Other information related to the descriptive element.
+              type: array
+              items:
+                $ref: "#/components/schemas/DescriptiveValue"
+            valueLanguage:
+              $ref: "#/components/schemas/DescriptiveValueLanguage"
+            valueAt:
+              description: URL or other pointer to the location of the value of the descriptive element.
+              type: string
+    DescriptiveGeographicMetadata:
+      description: Value model for mods geographic extension metadata
+      type: object
+      additionalProperties: false
+      properties:
+        form:
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        subject:
+          description: Terms associated with the intellectual content of the related resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+    DescriptiveGroupedValue:
+      description: Value model for a set of descriptive elements grouped together in an unstructured way.
+      type: object
+      additionalProperties: false
+      properties:
+        groupedValue:
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+    DescriptiveParallelContributor:
+      description: Value model for multiple representations of information about the same contributor (e.g. in different languages).
+      deprecated: true
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          description: Names associated with a contributor.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        type:
+          description: Entity type of the contributor (person, organization, etc.). See https://github.com/sul-dlss/cocina-models/blob/main/docs/description_types.md for valid types.
+          type: string
+        status:
+          description: Status of the contributor relative to other parallel contributors (e.g. the primary author among a group of contributors).
+          type: string
+        role:
+          description: Relationships of the contributor to the resource or to an event in its history.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        identifier:
+          description: Identifiers and URIs associated with the contributor entity.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        note:
+          description: Other information associated with the contributor.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+        valueAt:
+          description: URL or other pointer to the location of the contributor information.
+          type: string
+        valueLanguage:
+          # description: Language of the descriptive element value
+          $ref: "#/components/schemas/DescriptiveValueLanguage"
+    DescriptiveParallelEvent:
+      description: Value model for multiple representations of information about the same event (e.g. in different languages).
+      type: object
+      additionalProperties: false
+      allOf:
+        - $ref: "#/components/schemas/DescriptiveStructuredValue"
+        - type: object
+          additionalProperties: false
+          properties:
+            type:
+              description: Description of the event (creation, publication, etc.).
+              type: string
+            displayLabel:
+              description: The preferred display label to use for the event in access systems.
+              type: string
+            date:
+              description: Dates associated with the event.
+              type: array
+              items:
+                $ref: "#/components/schemas/DescriptiveValue"
+            contributor:
+              description: Contributors associated with the event.
+              type: array
+              items:
+                $ref: "#/components/schemas/Contributor"
+            location:
+              description: Locations associated with the event.
+              type: array
+              items:
+                $ref: "#/components/schemas/DescriptiveValue"
+            identifier:
+              description: Identifiers and URIs associated with the event.
+              type: array
+              items:
+                $ref: "#/components/schemas/DescriptiveValue"
+            note:
+              description: Other information about the event.
+              type: array
+              items:
+                $ref: "#/components/schemas/DescriptiveValue"
+            valueLanguage:
+              # description: Language of the descriptive element value
+              $ref: "#/components/schemas/DescriptiveValueLanguage"
+    DescriptiveParallelValue:
+      description: Value model for multiple representations of the same information (e.g. in different languages).
+      type: object
+      additionalProperties: false
+      properties:
+        parallelValue:
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+    DescriptiveStructuredValue:
+      description: Value model for descriptive elements structured as typed, ordered values.
+      type: object
+      additionalProperties: false
+      properties:
+        structuredValue:
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
+    DescriptiveValue:
+      description: Default value model for descriptive elements.
+      type: object
+      additionalProperties: false
+      allOf:
+        - $ref: "#/components/schemas/DescriptiveBasicValue"
+        - $ref: "#/components/schemas/AppliesTo"
+    DescriptiveValueLanguage:
+      description: Language of the descriptive element value
+      type: object
+      additionalProperties: false
+      allOf:
+        - $ref: "#/components/schemas/Standard"
+        - type: object
+          properties:
+            valueScript:
+              $ref: '#/components/schemas/Standard'
+              # description: An alphabet or other notation used to represent a
+              #   language or other symbolic system of the descriptive element value.
+    DoiExceptions:
+      type: string
+      description: pre-existing Digital Object Identifiers (https://www.doi.org) not matching the pattern (case insensitive)
+      pattern: '^10\.(25740\/([vV][aA]90-[cC][tT]15|[sS][yY][xX][aA]-[mM]256|12[qQ][fF]-5243|65[jJ]8-6114)|25936\/629[tT]-[bB][xX]79)$'
+      example: '10.25740/12qF-5243'
+    DoiPattern:
+      type: string
+      description: Digital Object Identifier (https://www.doi.org) regex pattern
+      # The prod and test prefixes are permitted
+      pattern: '^10\.(25740|80343)\/[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$'
+      example: '10.25740/bc123df4567'
     Druid:
       type: string
       pattern: '^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$'
@@ -2483,6 +2463,34 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/File'
+    FolioCatalogLink:
+      description: A linkage between an object and a Folio catalog record
+      type: object
+      additionalProperties: false
+      properties:
+        catalog:
+          description: Catalog that is the source of the linked record.
+          type: string
+          enum:
+            - folio
+            - previous folio
+          example: folio
+        refresh:
+          description: Only one of the catkeys should be designated for refreshing.
+            This means that this key is the one used to pull metadata from the catalog
+            if there is more than one key present.
+          type: boolean
+          default: false
+        catalogRecordId:
+          description: Record identifier that is unique within the context of the linked record's catalog.
+          oneOf:
+            - $ref: '#/components/schemas/MigratedFromSymphonyIdentifier'
+            - $ref: '#/components/schemas/MigratedFromVoyagerIdentifier'
+            - $ref: '#/components/schemas/CreatedInFolioIdentifier'
+      required:
+        - catalog
+        - catalogRecordId
+        - refresh
     Geographic:
       description: Geographic metadata
       type: object
@@ -2509,6 +2517,11 @@ components:
           $ref: '#/components/schemas/SourceId'
       required:
         - sourceId
+    LaneMedicalBarcode:
+      description: The barcode associated with a Lane Medical Library DRO object, prefixed with 245
+      type: string
+      pattern: '^245[0-9]{8}$'
+      example: '24503259768'
     Language:
       description: Languages, scripts, symbolic systems, and notations used in all
         or part of a resource or its descriptive metadata.
@@ -2661,6 +2674,16 @@ components:
       required:
         - type
         - digest
+    MigratedFromSymphonyIdentifier:
+      description: A record identifier migrated from Symphony
+      type: string
+      pattern: '^a\d+$'
+      example: 'a11403803'
+    MigratedFromVoyagerIdentifier:
+      description: A record identifier migrated from Voyager
+      type: string
+      pattern: '^L\d+$'
+      example: 'L11403803'
     Presentation:
       description: Presentation data for the File.
       type: object
@@ -2673,7 +2696,7 @@ components:
           description: Width in pixels
           type: integer
     Purl:
-      description: Stanford persistent URL associated with the related resource. Note this is http, not https.
+      description: Stanford persistent URL associated with the related resource.
       type: string
       format: uri
       # Canonical URI is https
@@ -2783,18 +2806,6 @@ components:
           example: Searchworks
         release:
           type: boolean
-    RequestAdministrative:
-      type: object
-      additionalProperties: false
-      allOf:
-        - $ref: "#/components/schemas/Administrative"
-        - type: object
-          additionalProperties: false
-          properties:
-            partOfProject:
-              description: Internal project this resource is a part of. This governs routing of messages about this object.
-              example: Google Books
-              type: string
     RequestAdminPolicy:
       description: Same as an AdminPolicy, but doesn't have an externalIdentifier as one will be created
       type: object
@@ -2823,10 +2834,22 @@ components:
         - label
         - type
         - version
+    RequestAdministrative:
+      type: object
+      additionalProperties: false
+      allOf:
+        - $ref: "#/components/schemas/Administrative"
+        - type: object
+          additionalProperties: false
+          properties:
+            partOfProject:
+              description: Internal project this resource is a part of. This governs routing of messages about this object.
+              example: Google Books
+              type: string
     RequestCollection:
       description: Same as a Collection, but doesn't have an externalIdentifier as one will be created
       type: object
-      additionalProperties: false
+      additionalProperties: true
       properties:
         cocinaVersion:
           $ref: '#/components/schemas/CocinaVersion'
@@ -2860,6 +2883,75 @@ components:
         - label
         - type
         - version
+    RequestDRO:
+      description: A request to create a DRO.  This has the same general structure as a DRO but doesn't have externalIdentifier and doesn't require the access subschema. If no access subschema is provided, these values will be inherited from the AdminPolicy.
+      type: object
+      additionalProperties: true
+      properties:
+        cocinaVersion:
+          $ref: '#/components/schemas/CocinaVersion'
+        type:
+          type: string
+          enum:
+            - 'https://cocina.sul.stanford.edu/models/object'
+            - 'https://cocina.sul.stanford.edu/models/3d'
+            - 'https://cocina.sul.stanford.edu/models/agreement'
+            - 'https://cocina.sul.stanford.edu/models/book'
+            - 'https://cocina.sul.stanford.edu/models/document'
+            - 'https://cocina.sul.stanford.edu/models/geo'
+            - 'https://cocina.sul.stanford.edu/models/image'
+            - 'https://cocina.sul.stanford.edu/models/page'
+            - 'https://cocina.sul.stanford.edu/models/photograph'
+            - 'https://cocina.sul.stanford.edu/models/manuscript'
+            - 'https://cocina.sul.stanford.edu/models/map'
+            - 'https://cocina.sul.stanford.edu/models/media'
+            - 'https://cocina.sul.stanford.edu/models/track'
+            - 'https://cocina.sul.stanford.edu/models/webarchive-binary'
+            - 'https://cocina.sul.stanford.edu/models/webarchive-seed'
+        label:
+          type: string
+        version:
+          type: integer
+          default: 1
+          enum:
+            - 1
+        access:
+          $ref: '#/components/schemas/DROAccess'
+        administrative:
+          $ref: '#/components/schemas/RequestAdministrative'
+        description:
+          $ref: '#/components/schemas/RequestDescription'
+        identification:
+          $ref: '#/components/schemas/RequestIdentification'
+        structural:
+          $ref: '#/components/schemas/RequestDROStructural'
+        geographic:
+          $ref: '#/components/schemas/Geographic'
+      required:
+        - cocinaVersion
+        - administrative
+        - identification
+        - label
+        - type
+        - version
+    RequestDROStructural:
+      description: Structural metadata
+      type: object
+      additionalProperties: false
+      properties:
+        contains:
+          type: array
+          items:
+            $ref: '#/components/schemas/RequestFileSet'
+        hasMemberOrders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sequence'
+        isMemberOf:
+          description: Collections that this DRO is a member of
+          type: array
+          items:
+            $ref: '#/components/schemas/Druid'
     RequestDescription:
       description: Description that is included in a request to create a DRO. This is the same as a Description, except excludes PURL.
       type: object
@@ -2933,78 +3025,6 @@ components:
           type: string
       required:
         - title
-    RequestDRO:
-      description: A request to create a DRO.  This has the same general structure as a DRO but doesn't have externalIdentifier and doesn't require the access subschema. If no access subschema is provided, these values will be inherited from the AdminPolicy.
-      type: object
-      # There is a bug in Committee (https://github.com/interagent/committee/issues/328) that causes validation errors when
-      # validating a request that has query parameters and a request body.
-      # Since POST /v1/objects has both, setting additionalProperties to true.
-      additionalProperties: true
-      properties:
-        cocinaVersion:
-          $ref: '#/components/schemas/CocinaVersion'
-        type:
-          type: string
-          enum:
-            - 'https://cocina.sul.stanford.edu/models/object'
-            - 'https://cocina.sul.stanford.edu/models/3d'
-            - 'https://cocina.sul.stanford.edu/models/agreement'
-            - 'https://cocina.sul.stanford.edu/models/book'
-            - 'https://cocina.sul.stanford.edu/models/document'
-            - 'https://cocina.sul.stanford.edu/models/geo'
-            - 'https://cocina.sul.stanford.edu/models/image'
-            - 'https://cocina.sul.stanford.edu/models/page'
-            - 'https://cocina.sul.stanford.edu/models/photograph'
-            - 'https://cocina.sul.stanford.edu/models/manuscript'
-            - 'https://cocina.sul.stanford.edu/models/map'
-            - 'https://cocina.sul.stanford.edu/models/media'
-            - 'https://cocina.sul.stanford.edu/models/track'
-            - 'https://cocina.sul.stanford.edu/models/webarchive-binary'
-            - 'https://cocina.sul.stanford.edu/models/webarchive-seed'
-        label:
-          type: string
-        version:
-          type: integer
-          default: 1
-          enum:
-            - 1
-        access:
-          $ref: '#/components/schemas/DROAccess'
-        administrative:
-          $ref: '#/components/schemas/RequestAdministrative'
-        description:
-          $ref: '#/components/schemas/RequestDescription'
-        identification:
-          $ref: '#/components/schemas/RequestIdentification'
-        structural:
-          $ref: '#/components/schemas/RequestDROStructural'
-        geographic:
-          $ref: '#/components/schemas/Geographic'
-      required:
-        - cocinaVersion
-        - administrative
-        - identification
-        - label
-        - type
-        - version
-    RequestDROStructural:
-      description: Structural metadata
-      type: object
-      additionalProperties: false
-      properties:
-        contains:
-          type: array
-          items:
-            $ref: '#/components/schemas/RequestFileSet'
-        hasMemberOrders:
-          type: array
-          items:
-            $ref: '#/components/schemas/Sequence'
-        isMemberOf:
-          description: Collections that this DRO is a member of
-          type: array
-          items:
-            $ref: '#/components/schemas/Druid'
     RequestFile:
       type: object
       additionalProperties: false
@@ -3089,7 +3109,9 @@ components:
           items:
             $ref: '#/components/schemas/RequestFile'
     RequestIdentification:
-      description: Same as a Identification, but requires a sourceId.
+      # Doesn't permit a DOI because our DOIs all use the DRUID as part of the DOI.
+      # You have to register the object in order to get the DRUID before you can mint a DOI
+      description: Same as a Identification, but requires a sourceId and doesn't permit a DOI.
       type: object
       additionalProperties: false
       properties:
@@ -3213,6 +3235,33 @@ components:
       required:
         - view
         - download
+    SymphonyCatalogLink:
+      description: A linkage between an object and a Symphony catalog record
+      type: object
+      additionalProperties: false
+      properties:
+        catalog:
+          description: Catalog that is the source of the linked record.
+          type: string
+          enum:
+            - symphony
+            - previous symphony
+          example: symphony
+        refresh:
+          description: Only one of the catkeys should be designated for refreshing.
+            This means that this key is the one used to pull metadata from the catalog
+            if there is more than one key present.
+          type: boolean
+          default: false
+        catalogRecordId:
+          description: Record identifier that is unique within the context of the linked record's catalog.
+          type: string
+          pattern: '^\d+$'
+          example: '11403803'
+      required:
+        - catalog
+        - catalogRecordId
+        - refresh
     Title:
       type: object
       additionalProperties: false
