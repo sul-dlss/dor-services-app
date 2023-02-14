@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Cocina --> DataCite mappings for identifier and alternateIdentifier (H2 specific)' do
   # NOTE: Because we haven't set a title in this Cocina::Models::Description, it will not validate against the openapi.
-  let(:cocina_description) { Cocina::Models::Description.new(cocina.merge(purl: cocina.fetch(:purl, 'https://purl.stanford.edu/aa666bb1234')), false, false) }
+  let(:cocina_description) { Cocina::Models::Description.new(cocina.merge(purl: cocina.fetch(:purl, 'https://purl.stanford.edu/gz708sf9862')), false, false) }
   let(:identifier_attributes) { Cocina::ToDatacite::Identifier.identifier_attributes(cocina_description) }
   let(:alternate_identifier_attributes) { Cocina::ToDatacite::Identifier.alternate_identifier_attributes(cocina_description) }
 
@@ -32,17 +32,17 @@ RSpec.describe 'Cocina --> DataCite mappings for identifier and alternateIdentif
   end
 
   describe 'purl' do
-    # purl: http://purl.stanford.edu/gz708sf9862
+    # purl: https://purl.stanford.edu/gz708sf9862
     let(:cocina) do
       {
-        purl: 'http://purl.stanford.edu/gz708sf9862'
+        purl: 'https://purl.stanford.edu/gz708sf9862'
       }
     end
 
     it 'populates alternate_identifier_attributes correctly' do
       expect(alternate_identifier_attributes).to eq [
         {
-          alternateIdentifier: 'http://purl.stanford.edu/gz708sf9862',
+          alternateIdentifier: 'https://purl.stanford.edu/gz708sf9862',
           alternateIdentifierType: 'PURL'
         }
       ]
