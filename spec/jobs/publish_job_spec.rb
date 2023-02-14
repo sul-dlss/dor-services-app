@@ -43,7 +43,7 @@ RSpec.describe PublishJob do
     end
   end
 
-  context 'when fails dark validation', skip: 'not sure why this is skipped - flaky?' do
+  context 'when fails dark validation', skip: 'turned off while preassembly could not make valid dark objects; see https://github.com/sul-dlss/dor-services-app/issues/4366' do
     let(:valid) { false }
     let(:invalid_filenames) { ['foo.txt', 'bar.txt'] }
 
