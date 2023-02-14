@@ -63,7 +63,7 @@ RSpec.describe ShelveJob do
     end
   end
 
-  context 'when fails dark validation', skip: 'turned off until preassembly can make valid dark objects' do
+  context 'when fails dark validation' do
     let(:valid) { false }
     let(:invalid_filenames) { ['foo.txt', 'bar.txt'] }
 

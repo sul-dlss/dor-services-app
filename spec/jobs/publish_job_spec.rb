@@ -43,7 +43,7 @@ RSpec.describe PublishJob do
     end
   end
 
-  context 'when fails dark validation', skip: 'not sure why this is skipped - flaky?' do
+  context 'when fails dark validation' do
     let(:valid) { false }
     let(:invalid_filenames) { ['foo.txt', 'bar.txt'] }
 
