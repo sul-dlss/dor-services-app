@@ -265,11 +265,8 @@ RSpec.describe ResetContentMetadataService do
             structural: {
               hasMemberOrders: [
                 {
-                  members: [],
+                  members: constituent_druids,
                   viewingDirection: 'left-to-right'
-                },
-                {
-                  members: constituent_druids
                 }
               ]
             }
