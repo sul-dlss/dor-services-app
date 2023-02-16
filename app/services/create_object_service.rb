@@ -31,7 +31,7 @@ class CreateObjectService
     Cocina::ObjectValidator.validate(cocina_request_object)
     updated_cocina_request_object = merge_access_for(cocina_request_object)
     druid = id_minter.call
-    updated_cocina_request_object = sync_from_symphony(updated_cocina_request_object, druid)
+    updated_cocina_request_object = sync_from_catalog(updated_cocina_request_object, druid)
     updated_cocina_request_object = add_description(updated_cocina_request_object)
     cocina_object = cocina_from_request(updated_cocina_request_object, druid, assign_doi)
     cocina_object = assign_doi(cocina_object) if assign_doi
@@ -69,9 +69,9 @@ class CreateObjectService
     cocina_object.new(access: AccessMergeService.merge(cocina_object, apo_object))
   end
 
-  # Synch from symphony if a catkey is present
+  # Synch from catalog if a catalog identifier (e.g. catkey) is present
   # @raises MarcService::MarcServiceError
-  def sync_from_symphony(cocina_request_object, druid)
+  def sync_from_catalog(cocina_request_object, druid)
     return cocina_request_object if cocina_request_object.admin_policy?
 
     catkeys = RefreshMetadataAction.identifiers(cocina_object: cocina_request_object)
