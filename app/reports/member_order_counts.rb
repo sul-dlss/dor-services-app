@@ -3,7 +3,7 @@
 # Generates a report of SDR objects with more than one member order
 #
 # bin/rails r -e production "MemberOrderCounts.report"
-class FileCounts
+class MemberOrderCounts
   JSON_PATH = 'strict $.hasMemberOrders[*]'
   SQL = <<~SQL.squish.freeze
     SELECT DISTINCT(external_identifier),
