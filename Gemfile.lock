@@ -187,11 +187,11 @@ GEM
       dry-types (>= 1.7, < 2)
       ice_nine (~> 0.11)
       zeitwerk (~> 2.6)
-    dry-types (1.7.0)
+    dry-types (1.7.1)
       concurrent-ruby (~> 1.0)
-      dry-core (~> 1.0, < 2)
-      dry-inflector (~> 1.0, < 2)
-      dry-logic (>= 1.4, < 2)
+      dry-core (~> 1.0)
+      dry-inflector (~> 1.0)
+      dry-logic (~> 1.4)
       zeitwerk (~> 2.6)
     dry-validation (1.10.0)
       concurrent-ruby (~> 1.0)
@@ -215,7 +215,7 @@ GEM
     faraday-net_http (3.0.2)
     faraday-retry (2.0.0)
       faraday (~> 2.0)
-    folio_client (0.1.0)
+    folio_client (0.2.0)
       activesupport (>= 4.2, < 8)
       faraday
       zeitwerk
@@ -397,7 +397,7 @@ GEM
       unicode-display_width (>= 2.4.0, < 3.0)
     rubocop-ast (1.26.0)
       parser (>= 3.2.1.0)
-    rubocop-capybara (2.17.0)
+    rubocop-capybara (2.17.1)
       rubocop (~> 1.41)
     rubocop-performance (1.16.0)
       rubocop (>= 1.7.0, < 2.0)
@@ -436,7 +436,7 @@ GEM
     sorted_set (1.0.3)
       rbtree
       set (~> 1.0)
-    sshkit (1.21.3)
+    sshkit (1.21.4)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
     stanford-mods (2.6.4)
@@ -448,7 +448,7 @@ GEM
       diff-lcs
       patience_diff
     thor (1.2.1)
-    timeout (0.3.1)
+    timeout (0.3.2)
     tty-cursor (0.7.1)
     tty-progressbar (0.18.2)
       strings-ansi (~> 0.2)
