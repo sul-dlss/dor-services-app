@@ -30,6 +30,8 @@ class UpdateObjectService
     # If this is a collection and the title has changed, then reindex the children.
     update_items = need_to_update_members?
 
+    @cocina_object = Catalog::AddFolioCatalogLinksService.add(cocina_object) if Settings.enabled_features.sync_cataloglinks
+
     # Only update if already exists in PG (i.e., added by create or migration).
     cocina_object_with_metadata = CocinaObjectStore.store(cocina_object, skip_lock:)
 

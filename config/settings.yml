@@ -6,6 +6,7 @@ enabled_features:
   postgres: false
   file_hierarchy_validation: true
   read_folio: false
+  sync_cataloglinks: false
 
 # Ur Admin Policy
 ur_admin_policy:
