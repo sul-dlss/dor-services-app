@@ -41,35 +41,6 @@ paths:
       responses:
         '200':
           description: The status of the service
-  /v1/catalog/catkey:
-    get:
-      tags:
-        - integrations
-      summary: Lookup the catkey for an item given the barcode
-      description: ''
-      operationId: 'marcxml#catkey'
-      responses:
-        '200':
-          description: OK
-        '400':
-          description: Catkey not found in Symphony.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      parameters:
-        - name: barcode
-          in: query
-          description: barcode of an item
-          required: false
-          schema:
-            type: string
   /v1/catalog/marcxml:
     get:
       tags:
