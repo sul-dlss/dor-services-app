@@ -99,11 +99,11 @@ RSpec.describe SymphonyReader do
 
       it 'returns the catkey given a barcode' do
         stub_request(:get, format(barcode_url, barcode:)).to_return(body: barcode_body.to_json, headers: { 'Content-Length': 162 })
-        expect(barcode_reader.fetch_catkey).to eq catkey
+        expect(barcode_reader.send(:fetch_catkey)).to eq catkey
       end
 
       it 'raises an error if no barcode is provided' do
-        expect { described_class.new.fetch_catkey }.to raise_error(RuntimeError, 'no barcode supplied')
+        expect { described_class.new.send :fetch_catkey }.to raise_error(RuntimeError, 'no barcode supplied')
       end
     end
 

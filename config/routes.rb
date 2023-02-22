@@ -16,7 +16,6 @@ Rails.application.routes.draw do
 
     scope :catalog do
       get 'marcxml', to: 'marcxml#marcxml'
-      get 'catkey', to: 'marcxml#catkey'
     end
 
     resources :virtual_objects, only: [:create], defaults: { format: :json }
