@@ -1,16 +1,14 @@
 # frozen_string_literal: true
 
-require 'open3'
-require 'shellwords'
-
-# Updates a MARC record based on cocina object.
-class UpdateMarcRecordService
-  def self.update(cocina_object, thumbnail_service:)
-    new(cocina_object, thumbnail_service:).update
-  end
-
+# Creates a stub MARC 856 field (currently for transferring to symphony only) given a cocina object.
+# rubocop:disable Metrics/ClassLength
+class Marc856Generator
   # objects goverened by these APOs (ETD and EEMs) will get indicator 2 = 0, else 1
   BORN_DIGITAL_APOS = %w[druid:bx911tp9024 druid:jj305hm5259].freeze
+
+  def self.create(cocina_object, thumbnail_service:)
+    new(cocina_object, thumbnail_service:).create
+  end
 
   def initialize(cocina_object, thumbnail_service:)
     @cocina_object = cocina_object
@@ -19,22 +17,7 @@ class UpdateMarcRecordService
     @thumbnail_service = thumbnail_service
   end
 
-  def update
-    push_symphony_records if ckeys?
-  end
-
-  def ckeys?
-    return unless @cocina_object.respond_to?(:identification) && @cocina_object.identification
-
-    @cocina_object.identification.catalogLinks.find { |link| link.catalog.include?('symphony') }.present?
-  end
-
-  def push_symphony_records
-    symphony_records = generate_symphony_records
-    write_symphony_records symphony_records
-  end
-
-  # @return [Array] all 856 records for this object
+  # @return [Array] all stub 856 records for this object (this is not a fully valid 856, but specific for transfer to symphony)
   # catkey: the catalog key that associates a DOR object with a specific Symphony record.
   # druid: the druid
   # .856. 41 or 40 (depending on APO)
@@ -51,41 +34,26 @@ class UpdateMarcRecordService
   # Subfield x #6..n (optional): Collection(s) this object is a member of, recorded as collection:druid-value:ckey-value:title
   # Subfield x #7..n (optional): label and part sort keys for the member
   # Subfield x #8..n (optional): High-level rights summary
-  def generate_symphony_records
-    return [] unless ckeys?
+  def create
+    return [] if ckeys.empty? && previous_ckeys.empty?
 
     # first create "blank" records for any previous catkeys
-    records = previous_ckeys.map { |previous_catkey| get_identifier(previous_catkey) }
+    records = previous_ckeys.map { |previous_catkey| new_identifier_record(previous_catkey) }
 
     # now add the current ckey
-    if @cocina_object.identification.catalogLinks.find { |link| link.catalog == 'symphony' }.present?
-      catalog_record_id = @cocina_object.identification.catalogLinks.find { |link| link.catalog == 'symphony' }.catalogRecordId
-      records << (released_to_searchworks?(@cocina_object) ? new_856_record(catalog_record_id) : get_identifier(catalog_record_id))
+    unless ckeys.empty?
+      catalog_record_id = ckeys.first
+      records << (released_to_searchworks?(@cocina_object) ? new_856_record(catalog_record_id) : new_identifier_record(catalog_record_id))
     end
 
     records
   end
 
-  def write_symphony_records(symphony_records)
-    return if symphony_records.blank?
+  private
 
-    symphony_file_name = "#{Settings.release.symphony_path}/sdr-purl-856s"
-    symphony_records.each do |symphony_record|
-      command = "#{Settings.release.write_marc_script} #{Shellwords.escape(symphony_record)} #{Shellwords.escape(symphony_file_name)}"
-      run_write_script(command)
-    end
-  end
-
-  def run_write_script(command)
-    Open3.popen3(command) do |_stdin, stdout, stderr, _wait_thr|
-      stdout_text = stdout.read
-      stderr_text = stderr.read
-      raise "Error in writing marc_record file using the command #{command}\n#{stdout_text}\n#{stderr_text}" if stdout_text.length.positive? || stderr_text.length.positive?
-    end
-  end
-
+  # NOTE: this is a stub 856 record which is used to communicate with symphony (not a properly formatted 856 field nor a marc record)
   def new_856_record(ckey)
-    new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{get_object_type_from_uri}"
+    new856 = "#{new_identifier_record(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{get_object_type_from_uri}"
     new856 += "|xbarcode:#{@cocina_object.identification.barcode}" if @cocina_object.identification.respond_to?(:barcode) && @cocina_object.identification.barcode
     new856 += "|xfile:#{thumb}" unless thumb.nil?
     new856 += get_x2_collection_info unless get_x2_collection_info.nil?
@@ -94,7 +62,7 @@ class UpdateMarcRecordService
     new856
   end
 
-  def get_identifier(ckey)
+  def new_identifier_record(ckey)
     "#{ckey}\t#{@druid_id}\t"
   end
 
@@ -123,11 +91,9 @@ class UpdateMarcRecordService
 
   # returns text in the z field based on permissions
   def get_z_field
-    if @access.view == 'stanford' || (@access.respond_to?(:location) && @access.location)
-      '|zAvailable to Stanford-affiliated users.'
-    else
-      ''
-    end
+    return '' unless @access.view == 'stanford' || (@access.respond_to?(:location) && @access.location)
+
+    '|zAvailable to Stanford-affiliated users.'
   end
 
   # builds the PURL uri based on the druid id
@@ -199,8 +165,6 @@ class UpdateMarcRecordService
     rel.dig('SEARCHWORKS', 'release').presence || false
   end
 
-  private
-
   # adapted from mods_display
   def parts_delimiter(elements)
     # index will retun nil which is not comparable so we call 100
@@ -212,16 +176,32 @@ class UpdateMarcRecordService
     end
   end
 
-  # the previous ckeys for the current object
-  # @return [Array] previous catkeys for the object in an array, empty array if none exist
+  def ckeys
+    @ckeys ||= fetch_ckeys(current: true)
+  end
+
   def previous_ckeys
-    @cocina_object.identification.catalogLinks.select { |link| link.catalog == 'previous symphony' }.map(&:catalogRecordId)
+    @previous_ckeys ||= fetch_ckeys(current: false)
+  end
+
+  # List of current or previous ckeys for the cocina object (depending on parameter passed)
+  # @param current [boolean] if you want the current or previous ckeys
+  # @return [Array] previous or current catkeys for the object in an array, empty array if none exist
+  def fetch_ckeys(current:)
+    return [] unless @cocina_object.respond_to?(:identification) && @cocina_object.identification
+
+    ckey_type = current ? 'symphony' : 'previous symphony'
+    @cocina_object.identification.catalogLinks.select { |link| link.catalog == ckey_type }.map(&:catalogRecordId)
   end
 
   # the @id attribute of resource/file elements including extension
   # @return [String] thumbnail filename (nil if none found)
   def thumb
     @thumb ||= ERB::Util.url_encode(@thumbnail_service.thumb).presence
+  end
+
+  def part_types
+    ['part name', 'part number']
   end
 
   def part_label
@@ -235,7 +215,7 @@ class UpdateMarcRecordService
       part_parts = []
       structured_values.each do |structured_value|
         structured_value.each do |part|
-          part_parts << part if ['part name', 'part number'].include? part.type
+          part_parts << part if part_types.include? part.type
         end
       end
 
@@ -247,3 +227,4 @@ class UpdateMarcRecordService
     @part_sort ||= @cocina_object.description.note.find { |note| note.type == 'date/sequential designation' }&.value
   end
 end
+# rubocop:enable Metrics/ClassLength
