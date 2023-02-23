@@ -3,7 +3,7 @@
 require 'open3'
 require 'shellwords'
 
-# Writes a MARC record for sending to symphony
+# Writes an 856 record for sending to symphony
 class SymphonyWriter
   def self.save(marc_records)
     new.save(marc_records)

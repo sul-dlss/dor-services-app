@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Creates a MARC record given a cocina object.
+# Creates a MARC 856 field given a cocina object.
 # rubocop:disable Metrics/ClassLength
 class MarcGenerator
   # objects goverened by these APOs (ETD and EEMs) will get indicator 2 = 0, else 1
@@ -38,19 +38,22 @@ class MarcGenerator
     return [] if ckeys.empty? && previous_ckeys.empty?
 
     # first create "blank" records for any previous catkeys
-    records = previous_ckeys.map { |previous_catkey| get_identifier(previous_catkey) }
+    records = previous_ckeys.map { |previous_catkey| new_identifier_record(previous_catkey) }
 
     # now add the current ckey
     unless ckeys.empty?
       catalog_record_id = ckeys.first
-      records << (released_to_searchworks?(@cocina_object) ? new_856_record(catalog_record_id) : get_identifier(catalog_record_id))
+      records << (released_to_searchworks?(@cocina_object) ? new_856_record(catalog_record_id) : new_identifier_record(catalog_record_id))
     end
 
     records
   end
 
+  private
+
+  # NOTE: this is a stub 856 record which is used to communicate with symphony (not a properly formatted 856 field nor a marc record)
   def new_856_record(ckey)
-    new856 = "#{get_identifier(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{get_object_type_from_uri}"
+    new856 = "#{new_identifier_record(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{get_object_type_from_uri}"
     new856 += "|xbarcode:#{@cocina_object.identification.barcode}" if @cocina_object.identification.respond_to?(:barcode) && @cocina_object.identification.barcode
     new856 += "|xfile:#{thumb}" unless thumb.nil?
     new856 += get_x2_collection_info unless get_x2_collection_info.nil?
@@ -59,7 +62,7 @@ class MarcGenerator
     new856
   end
 
-  def get_identifier(ckey)
+  def new_identifier_record(ckey)
     "#{ckey}\t#{@druid_id}\t"
   end
 
@@ -88,11 +91,9 @@ class MarcGenerator
 
   # returns text in the z field based on permissions
   def get_z_field
-    if @access.view == 'stanford' || (@access.respond_to?(:location) && @access.location)
-      '|zAvailable to Stanford-affiliated users.'
-    else
-      ''
-    end
+    return '' unless @access.view == 'stanford' || (@access.respond_to?(:location) && @access.location)
+
+    '|zAvailable to Stanford-affiliated users.'
   end
 
   # builds the PURL uri based on the druid id
@@ -163,8 +164,6 @@ class MarcGenerator
     rel = released_for.transform_keys { |key| key.to_s.upcase } # upcase all release tags to make the check case insensitive
     rel.dig('SEARCHWORKS', 'release').presence || false
   end
-
-  private
 
   # adapted from mods_display
   def parts_delimiter(elements)
