@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe UpdateMarcRecordService do
+RSpec.describe UpdateMarc856RecordService do
   subject(:umrs) { described_class.new(cocina_object, thumbnail_service:) }
 
   let(:druid) { 'druid:bc123dg9393' }
@@ -23,21 +23,21 @@ RSpec.describe UpdateMarcRecordService do
 
   describe '#update' do
     before do
-      allow(MarcGenerator).to receive(:create).and_return(marc_records)
+      allow(Marc856Generator).to receive(:create).and_return(marc_856_records)
       allow(SymphonyWriter).to receive(:save)
       umrs.update
     end
 
-    context 'when there are marc records' do
-      let(:marc_records) { ['abcd1244', 'def5678'] }
+    context 'when there are marc 856 records' do
+      let(:marc_856_records) { ['abcd1244', 'def5678'] }
 
       it 'calls symphony_writer' do
-        expect(SymphonyWriter).to have_received(:save).with(marc_records)
+        expect(SymphonyWriter).to have_received(:save).with(marc_856_records)
       end
     end
 
     context 'when there are no marc records' do
-      let(:marc_records) { [] }
+      let(:marc_856_records) { [] }
 
       it 'does not call symphony_writer' do
         expect(SymphonyWriter).not_to have_received(:save)

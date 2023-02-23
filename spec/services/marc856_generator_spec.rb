@@ -2,8 +2,8 @@
 
 require 'rails_helper'
 
-RSpec.describe MarcGenerator do
-  subject(:marc_generator) { described_class.new(cocina_object, thumbnail_service:) }
+RSpec.describe Marc856Generator do
+  subject(:marc_856_generator) { described_class.new(cocina_object, thumbnail_service:) }
 
   let(:apo_druid) { 'druid:pp000pp0000' }
   let(:druid) { 'druid:bc123dg9393' }
@@ -150,7 +150,7 @@ RSpec.describe MarcGenerator do
   end
 
   describe '#create' do
-    subject(:create) { marc_generator.create }
+    subject(:create) { marc_856_generator.create }
 
     let(:collection) do
       build(:collection, id: collection_druid, title: 'Collection label & A Special character').new(
@@ -296,7 +296,7 @@ RSpec.describe MarcGenerator do
     let(:ckey) { '1234' }
 
     it 'returns a stub identifier record with the catkey and the druid' do
-      expect(marc_generator.send(:new_identifier_record, ckey)).to eq("#{ckey}\t#{bare_druid}\t")
+      expect(marc_856_generator.send(:new_identifier_record, ckey)).to eq("#{ckey}\t#{bare_druid}\t")
     end
   end
 
@@ -309,7 +309,7 @@ RSpec.describe MarcGenerator do
       end
 
       it 'returns a blank z message' do
-        expect(marc_generator.send(:get_z_field)).to eq('')
+        expect(marc_856_generator.send(:get_z_field)).to eq('')
       end
     end
 
@@ -321,7 +321,7 @@ RSpec.describe MarcGenerator do
       end
 
       it 'returns a non-blank z message' do
-        expect(marc_generator.send(:get_z_field)).to eq('|zAvailable to Stanford-affiliated users.')
+        expect(marc_856_generator.send(:get_z_field)).to eq('|zAvailable to Stanford-affiliated users.')
       end
     end
 
@@ -333,27 +333,27 @@ RSpec.describe MarcGenerator do
       end
 
       it 'returns a non-blank z message for a location restricted object' do
-        expect(marc_generator.send(:get_z_field)).to eq('|zAvailable to Stanford-affiliated users.')
+        expect(marc_856_generator.send(:get_z_field)).to eq('|zAvailable to Stanford-affiliated users.')
       end
     end
   end
 
   describe '.get_856_cons' do
     it 'returns a valid sdrpurl constant' do
-      expect(marc_generator.send(:get_856_cons)).to eq('.856.')
+      expect(marc_856_generator.send(:get_856_cons)).to eq('.856.')
     end
   end
 
   describe '.get_1st_indicator' do
     it 'returns 4' do
-      expect(marc_generator.send(:get_1st_indicator)).to eq('4')
+      expect(marc_856_generator.send(:get_1st_indicator)).to eq('4')
     end
   end
 
   describe '.get_2nd_indicator' do
     context 'with a non born digital APO' do
       it 'returns 1 for a non born digital APO' do
-        expect(marc_generator.send(:get_2nd_indicator)).to eq('1')
+        expect(marc_856_generator.send(:get_2nd_indicator)).to eq('1')
       end
     end
 
@@ -361,20 +361,20 @@ RSpec.describe MarcGenerator do
       let(:cocina_object) { build(:dro, id: druid, admin_policy_id: 'druid:bx911tp9024') }
 
       it 'returns 0 for an EEMs APO' do
-        expect(marc_generator.send(:get_2nd_indicator)).to eq('0')
+        expect(marc_856_generator.send(:get_2nd_indicator)).to eq('0')
       end
     end
   end
 
   describe '.get_u_field' do
     it 'returns valid purl url' do
-      expect(marc_generator.send(:get_u_field)).to eq('|uhttps://purl.stanford.edu/bc123dg9393')
+      expect(marc_856_generator.send(:get_u_field)).to eq('|uhttps://purl.stanford.edu/bc123dg9393')
     end
   end
 
   describe '.get_x1_sdrpurl_marker' do
     it 'returns a valid sdrpurl constant' do
-      expect(marc_generator.send(:get_x1_sdrpurl_marker)).to eq('|xSDR-PURL')
+      expect(marc_856_generator.send(:get_x1_sdrpurl_marker)).to eq('|xSDR-PURL')
     end
   end
 
@@ -401,12 +401,12 @@ RSpec.describe MarcGenerator do
     end
 
     it 'returns an empty string for an object without collection' do
-      expect(marc_generator.send(:get_x2_collection_info)).to be_empty
+      expect(marc_856_generator.send(:get_x2_collection_info)).to be_empty
     end
 
     context 'when a collection object' do
       it 'returns an empty string' do
-        expect(marc_generator.send(:get_x2_collection_info)).to be_empty
+        expect(marc_856_generator.send(:get_x2_collection_info)).to be_empty
       end
     end
 
@@ -419,7 +419,7 @@ RSpec.describe MarcGenerator do
 
       it 'does not return information for the collection object' do
         allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
-        expect(marc_generator.send(:get_x2_collection_info)).to eq('')
+        expect(marc_856_generator.send(:get_x2_collection_info)).to eq('')
       end
     end
 
@@ -434,7 +434,7 @@ RSpec.describe MarcGenerator do
 
       it 'does not return information for the collection object' do
         allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
-        expect(marc_generator.send(:get_x2_collection_info)).to eq('')
+        expect(marc_856_generator.send(:get_x2_collection_info)).to eq('')
       end
     end
 
@@ -449,7 +449,7 @@ RSpec.describe MarcGenerator do
 
       it 'returns the appropriate information for the collection object' do
         allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
-        expect(marc_generator.send(:get_x2_collection_info)).to eq('|xcollection:cc111cc1111:8832162:Collection label & A Special character')
+        expect(marc_856_generator.send(:get_x2_collection_info)).to eq('|xcollection:cc111cc1111:8832162:Collection label & A Special character')
       end
     end
   end
@@ -457,7 +457,7 @@ RSpec.describe MarcGenerator do
   describe '#get_x2_part_info' do
     context 'with descMetadata without part information' do
       it 'returns an empty string for objects with part information' do
-        expect(marc_generator.send(:get_x2_part_info)).to be_empty
+        expect(marc_856_generator.send(:get_x2_part_info)).to be_empty
       end
     end
 
@@ -489,7 +489,7 @@ RSpec.describe MarcGenerator do
       end
 
       it 'returns a part label' do
-        expect(marc_generator.send(:get_x2_part_info)).to eq '|xlabel:55th legislature, 1997-1998'
+        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:55th legislature, 1997-1998'
       end
     end
 
@@ -521,7 +521,7 @@ RSpec.describe MarcGenerator do
       end
 
       it 'returns a part label' do
-        expect(marc_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011'
+        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011'
       end
     end
 
@@ -559,7 +559,7 @@ RSpec.describe MarcGenerator do
       end
 
       it 'returns both the label and part number' do
-        expect(marc_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011|xsort:123'
+        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011|xsort:123'
       end
     end
 
@@ -591,7 +591,7 @@ RSpec.describe MarcGenerator do
       end
 
       it 'returns both the label and part number' do
-        expect(marc_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011'
+        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011'
       end
     end
 
@@ -629,7 +629,7 @@ RSpec.describe MarcGenerator do
       end
 
       it 'returns both the label and part number' do
-        expect(marc_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011|xsort:2011'
+        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011|xsort:2011'
       end
     end
 
@@ -674,7 +674,7 @@ RSpec.describe MarcGenerator do
       end
 
       it 'returns the label from the primary title' do
-        expect(marc_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011'
+        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011'
       end
     end
 
@@ -718,7 +718,7 @@ RSpec.describe MarcGenerator do
       end
 
       it 'returns the label from the first title' do
-        expect(marc_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011'
+        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011'
       end
     end
 
@@ -753,7 +753,7 @@ RSpec.describe MarcGenerator do
       end
 
       it 'returns the label from the parallel title' do
-        expect(marc_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3'
+        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3'
       end
     end
 
@@ -794,13 +794,13 @@ RSpec.describe MarcGenerator do
       end
 
       it 'returns the label from the parallel title' do
-        expect(marc_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3|xsort:123'
+        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3|xsort:123'
       end
     end
   end
 
   describe '#get_x2_rights_info' do
-    subject(:rights_info) { marc_generator.send :get_x2_rights_info }
+    subject(:rights_info) { marc_856_generator.send :get_x2_rights_info }
 
     context 'with world rights' do
       let(:cocina_object) do
@@ -873,7 +873,7 @@ RSpec.describe MarcGenerator do
       let(:release_data) { { 'Searchworks' => { 'release' => true } } }
 
       it 'returns true' do
-        expect(marc_generator.send(:released_to_searchworks?, cocina_object)).to be true
+        expect(marc_856_generator.send(:released_to_searchworks?, cocina_object)).to be true
       end
     end
 
@@ -881,7 +881,7 @@ RSpec.describe MarcGenerator do
       let(:release_data) { { 'searchworks' => { 'release' => true } } }
 
       it 'returns true' do
-        expect(marc_generator.send(:released_to_searchworks?, cocina_object)).to be true
+        expect(marc_856_generator.send(:released_to_searchworks?, cocina_object)).to be true
       end
     end
 
@@ -889,7 +889,7 @@ RSpec.describe MarcGenerator do
       let(:release_data) { { 'SearchWorks' => { 'release' => true } } }
 
       it 'returns true' do
-        expect(marc_generator.send(:released_to_searchworks?, cocina_object)).to be true
+        expect(marc_856_generator.send(:released_to_searchworks?, cocina_object)).to be true
       end
     end
 
@@ -897,7 +897,7 @@ RSpec.describe MarcGenerator do
       let(:release_data) { { 'Searchworks' => { 'release' => false } } }
 
       it 'returns false' do
-        expect(marc_generator.send(:released_to_searchworks?, cocina_object)).to be false
+        expect(marc_856_generator.send(:released_to_searchworks?, cocina_object)).to be false
       end
     end
 
@@ -905,7 +905,7 @@ RSpec.describe MarcGenerator do
       let(:release_data) { { 'Searchworks' => { 'bogus' => 'yup' } } }
 
       it 'returns false' do
-        expect(marc_generator.send(:released_to_searchworks?, cocina_object)).to be false
+        expect(marc_856_generator.send(:released_to_searchworks?, cocina_object)).to be false
       end
     end
 
@@ -913,7 +913,7 @@ RSpec.describe MarcGenerator do
       let(:release_data) { {} }
 
       it 'returns false' do
-        expect(marc_generator.send(:released_to_searchworks?, cocina_object)).to be false
+        expect(marc_856_generator.send(:released_to_searchworks?, cocina_object)).to be false
       end
     end
 
@@ -921,13 +921,13 @@ RSpec.describe MarcGenerator do
       let(:release_data) { { 'Revs' => { 'release' => true } } }
 
       it 'returns false' do
-        expect(marc_generator.send(:released_to_searchworks?, cocina_object)).to be false
+        expect(marc_856_generator.send(:released_to_searchworks?, cocina_object)).to be false
       end
     end
   end
 
   describe '#thumb' do
-    subject(:thumb) { marc_generator.send(:thumb) }
+    subject(:thumb) { marc_856_generator.send(:thumb) }
 
     context 'with valid structural metadata' do
       let(:cocina_object) { build(:dro, id: druid).new(structural: structural_metadata) }
@@ -952,7 +952,7 @@ RSpec.describe MarcGenerator do
     end
 
     it 'returns values for catkeys in identityMetadata' do
-      expect(marc_generator.send(:ckeys)).to eq(%w[8832162])
+      expect(marc_856_generator.send(:ckeys)).to eq(%w[8832162])
     end
   end
 
@@ -964,12 +964,12 @@ RSpec.describe MarcGenerator do
     end
 
     it 'returns values for catkeys in identityMetadata' do
-      expect(marc_generator.send(:previous_ckeys)).to eq(%w[123 456])
+      expect(marc_856_generator.send(:previous_ckeys)).to eq(%w[123 456])
     end
   end
 
   describe '#fetch_ckeys' do
-    subject(:ckeys) { marc_generator.send :fetch_ckeys, current: }
+    subject(:ckeys) { marc_856_generator.send :fetch_ckeys, current: }
 
     context 'when using previous ckeys' do
       let(:current) { false }

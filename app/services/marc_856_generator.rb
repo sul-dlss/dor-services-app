@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-# Creates a MARC 856 field given a cocina object.
+# Creates a stub MARC 856 field (currently for transferring to symphony only) given a cocina object.
 # rubocop:disable Metrics/ClassLength
-class MarcGenerator
+class Marc856Generator
   # objects goverened by these APOs (ETD and EEMs) will get indicator 2 = 0, else 1
   BORN_DIGITAL_APOS = %w[druid:bx911tp9024 druid:jj305hm5259].freeze
 
@@ -17,7 +17,7 @@ class MarcGenerator
     @thumbnail_service = thumbnail_service
   end
 
-  # @return [Array] all 856 records for this object
+  # @return [Array] all stub 856 records for this object (this is not a fully valid 856, but specific for transfer to symphony)
   # catkey: the catalog key that associates a DOR object with a specific Symphony record.
   # druid: the druid
   # .856. 41 or 40 (depending on APO)

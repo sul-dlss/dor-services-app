@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-# Creates and writes a MARC record based on cocina object.
-class UpdateMarcRecordService
+# Creates and writes a MARC 856 stub record based on cocina object.
+class UpdateMarc856RecordService
   def self.update(cocina_object, thumbnail_service:)
     new(cocina_object, thumbnail_service:).update
   end
@@ -12,10 +12,10 @@ class UpdateMarcRecordService
   end
 
   def update
-    marc_records = MarcGenerator.create(@cocina_object, thumbnail_service: @thumbnail_service)
+    marc_856_records = Marc856Generator.create(@cocina_object, thumbnail_service: @thumbnail_service)
 
-    return if marc_records.blank?
+    return if marc_856_records.blank?
 
-    SymphonyWriter.save(marc_records)
+    SymphonyWriter.save(marc_856_records)
   end
 end

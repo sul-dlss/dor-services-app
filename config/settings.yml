@@ -80,7 +80,7 @@ dor:
 
 release:
   symphony_path: './'
-  write_marc_script: 'bin/write_marc_record'
+  write_856_script: 'bin/write_856_record'
   purl_base_url: 'https://purl.stanford.edu'
 
 goobi:
