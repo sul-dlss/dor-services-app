@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Marc856Generator do
+RSpec.describe Catalog::Marc856Generator do
   subject(:marc_856_generator) { described_class.new(cocina_object, thumbnail_service:) }
 
   let(:apo_druid) { 'druid:pp000pp0000' }

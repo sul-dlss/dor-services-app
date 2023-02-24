@@ -23,12 +23,12 @@ class ObjectsController < ApplicationController
 
     add_headers(cocina_object)
     render status: :created, location: object_path(cocina_object.externalIdentifier), json: Cocina::Models.without_metadata(cocina_object)
-  rescue MarcService::CatalogResponseError => e
+  rescue Catalog::MarcService::CatalogResponseError => e
     Honeybadger.notify(e)
     json_api_error(status: :bad_gateway, title: 'Catalog connection error', message: 'Unable to read descriptive metadata from the catalog')
-  rescue MarcService::CatalogRecordNotFoundError => e
+  rescue Catalog::MarcService::CatalogRecordNotFoundError => e
     json_api_error(status: :bad_request, title: 'Catkey not found in Symphony', message: e.message)
-  rescue MarcService::MarcServiceError => e
+  rescue Catalog::MarcService::MarcServiceError => e
     Honeybadger.notify(e)
     json_api_error(status: :internal_server_error, message: e.message)
   rescue Cocina::ValidationError => e
@@ -129,7 +129,7 @@ class ObjectsController < ApplicationController
   end
 
   def update_marc_record
-    UpdateMarc856RecordService.update(@cocina_object, thumbnail_service: ThumbnailService.new(@cocina_object))
+    Catalog::UpdateMarc856RecordService.update(@cocina_object, thumbnail_service: ThumbnailService.new(@cocina_object))
     head :created
   end
 

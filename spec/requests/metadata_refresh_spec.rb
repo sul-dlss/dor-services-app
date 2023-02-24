@@ -51,7 +51,7 @@ RSpec.describe 'Refresh metadata' do
     end
   end
 
-  let(:symphony_reader) { instance_double(SymphonyReader, to_marc: marc) }
+  let(:symphony_reader) { instance_double(Catalog::SymphonyReader, to_marc: marc) }
 
   before do
     allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
@@ -61,7 +61,7 @@ RSpec.describe 'Refresh metadata' do
 
   context 'when happy path' do
     before do
-      allow(SymphonyReader).to receive(:new).and_return(symphony_reader)
+      allow(Catalog::SymphonyReader).to receive(:new).and_return(symphony_reader)
     end
 
     it 'updates the metadata and saves the changes' do
@@ -81,7 +81,7 @@ RSpec.describe 'Refresh metadata' do
     end
 
     before do
-      allow(SymphonyReader).to receive(:new).and_return(symphony_reader)
+      allow(Catalog::SymphonyReader).to receive(:new).and_return(symphony_reader)
     end
 
     it 'updates the metadata and saves the changes' do
@@ -98,7 +98,7 @@ RSpec.describe 'Refresh metadata' do
     end
 
     before do
-      allow(SymphonyReader).to receive(:new).and_return(symphony_reader)
+      allow(Catalog::SymphonyReader).to receive(:new).and_return(symphony_reader)
     end
 
     it 'returns a 422 error' do
@@ -177,7 +177,7 @@ RSpec.describe 'Refresh metadata' do
       let(:xslt) { instance_double(Nokogiri::XSLT::Stylesheet) }
 
       before do
-        allow(SymphonyReader).to receive(:new).and_return(symphony_reader)
+        allow(Catalog::SymphonyReader).to receive(:new).and_return(symphony_reader)
         allow(Nokogiri).to receive(:XSLT).and_return(xslt)
         allow(xslt).to receive(:transform).and_raise(RuntimeError, 'Cannot add attributes to an element if children have been already added to the element.')
       end

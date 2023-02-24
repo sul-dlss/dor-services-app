@@ -13,9 +13,9 @@ class MetadataRefreshController < ApplicationController
     end
 
     UpdateObjectService.update(@cocina_object.new(description: result.value!.description_props))
-  rescue MarcService::CatalogRecordNotFoundError => e
+  rescue Catalog::MarcService::CatalogRecordNotFoundError => e
     json_api_error(status: :bad_request, title: 'Catkey not found in Symphony', message: e.message)
-  rescue MarcService::MarcServiceError => e
+  rescue Catalog::MarcService::MarcServiceError => e
     Honeybadger.notify(e)
     json_api_error(status: :internal_server_error, message: e.message)
   end

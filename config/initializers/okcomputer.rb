@@ -23,7 +23,7 @@ end
 class SymphonyCheck < OkComputer::HttpCheck
   def perform_request
     Timeout.timeout(request_timeout) do
-      SymphonyReader.client.get(url.to_s)
+      Catalog::SymphonyReader.client.get(url.to_s)
     end
   end
 end

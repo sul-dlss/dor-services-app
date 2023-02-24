@@ -14,7 +14,7 @@ class CreateObjectService
   # @param [#create] event_factory creates events
   # @param [#call] id_minter assigns identifiers. You can provide your own minter if you want to use a specific druid for an item.
   # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
-  # @raises [SymphonyReader::ResponseError] if symphony connection failed
+  # @raises [Catalog::SymphonyReader::ResponseError] if symphony connection failed
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
   def self.create(cocina_request_object, assign_doi: false, event_factory: EventFactory, id_minter: -> { SuriService.mint_id })
     new(event_factory:, id_minter:).create(cocina_request_object, assign_doi:)
@@ -25,7 +25,7 @@ class CreateObjectService
     @id_minter = id_minter
   end
 
-  # @raises MarcService::MarcServiceError
+  # @raises Catalog::MarcService::MarcServiceError
   def create(cocina_request_object, assign_doi: false)
     ensure_ur_admin_policy_exists(cocina_request_object)
     Cocina::ObjectValidator.validate(cocina_request_object)
@@ -70,7 +70,7 @@ class CreateObjectService
   end
 
   # Synch from catalog if a catalog identifier (e.g. catkey) is present
-  # @raises MarcService::MarcServiceError
+  # @raises Catalog::MarcService::MarcServiceError
   def sync_from_catalog(cocina_request_object, druid)
     return cocina_request_object if cocina_request_object.admin_policy?
 

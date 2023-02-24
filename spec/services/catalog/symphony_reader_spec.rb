@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe SymphonyReader do
+RSpec.describe Catalog::SymphonyReader do
   let(:marc_reader) { described_class.new(catkey:) }
   let(:barcode_reader) { described_class.new(barcode:) }
 
@@ -114,7 +114,7 @@ RSpec.describe SymphonyReader do
         it 'raises ResponseError and notifies Honeybadger' do
           msg = 'Incomplete response received from Symphony for 482660 - expected 268 bytes but got 394'
           allow(Honeybadger).to receive(:notify)
-          expect { marc_reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg)
+          expect { marc_reader.to_marc }.to raise_error(Catalog::SymphonyReader::ResponseError, msg)
           expect(Honeybadger).to have_received(:notify).with(msg)
         end
       end
@@ -127,7 +127,7 @@ RSpec.describe SymphonyReader do
         it 'raises NotFound and does not notify Honeybadger' do
           msg = 'Record not found in Symphony. Catkey: 482660. API call: https://sirsi.example.com/symws/catalog/bib/key/482660?includeFields=bib'
           allow(Honeybadger).to receive(:notify)
-          expect { marc_reader.to_marc }.to raise_error(SymphonyReader::NotFound, msg)
+          expect { marc_reader.to_marc }.to raise_error(Catalog::SymphonyReader::NotFound, msg)
           expect(Honeybadger).not_to have_received(:notify).with(msg)
         end
       end
@@ -150,7 +150,7 @@ RSpec.describe SymphonyReader do
 
         it 'raises ResponseError' do
           msg_regex = %r{Got HTTP Status-Code 403 calling https://sirsi.example.com/symws/catalog/bib/key/482660\?includeFields=bib:.*Something somewhere went wrong.}
-          expect { marc_reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg_regex)
+          expect { marc_reader.to_marc }.to raise_error(Catalog::SymphonyReader::ResponseError, msg_regex)
         end
       end
 
@@ -164,7 +164,7 @@ RSpec.describe SymphonyReader do
         it 'raises ResponseError and notifies Honeybadger' do
           msg_regex = %r{^Timeout for Symphony response for API call https://sirsi.example.com/symws/catalog/bib/key/482660\?includeFields=bib: #{faraday_msg}}
           allow(Honeybadger).to receive(:notify)
-          expect { marc_reader.to_marc }.to raise_error(SymphonyReader::ResponseError, msg_regex)
+          expect { marc_reader.to_marc }.to raise_error(Catalog::SymphonyReader::ResponseError, msg_regex)
           expect(Honeybadger).to have_received(:notify).with(msg_regex)
         end
       end
