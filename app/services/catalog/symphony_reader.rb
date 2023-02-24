@@ -30,7 +30,7 @@ module Catalog
       record.leader = leader
 
       fields.uniq.each do |field|
-        record << marc_field(field) unless FIELDS_TO_REMOVE.include? field['tag'] # explicitly remove all 001 and 003 fields from the record
+        record << marc_field(field) unless FIELDS_TO_REMOVE.include? field['tag'] # explicitly remove all listed tags from the record
       end
 
       # explicitly inject the catkey into the 001 field
