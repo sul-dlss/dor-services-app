@@ -3,9 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Migrators::AddLaneHrid do
-  subject(:migrator) { described_class.new(obj) }
+  subject(:migrator) { described_class.new(ar_cocina_object) }
 
-  let(:obj) { create(:ar_dro) }
+  let(:ar_cocina_object) { create(:ar_dro) }
 
   describe '.druids' do
     it 'returns an array' do
@@ -15,7 +15,7 @@ RSpec.describe Migrators::AddLaneHrid do
 
   describe '#migrate?' do
     context 'when a matching druid and no hrid' do
-      let(:obj) { create(:ar_dro, external_identifier: 'druid:bc836hv7886') }
+      let(:ar_cocina_object) { create(:ar_dro, external_identifier: 'druid:bc836hv7886') }
 
       it 'returns true' do
         expect(migrator.migrate?).to be true
@@ -23,7 +23,7 @@ RSpec.describe Migrators::AddLaneHrid do
     end
 
     context 'when a matching druid and has hrid' do
-      let(:obj) do
+      let(:ar_cocina_object) do
         create(:ar_dro, external_identifier: 'druid:bc836hv7886', identification:)
       end
 
@@ -42,7 +42,7 @@ RSpec.describe Migrators::AddLaneHrid do
     end
 
     context 'when a non-matching druid' do
-      let(:obj) do
+      let(:ar_cocina_object) do
         create(:ar_dro, external_identifier: 'druid:bc836hv7887')
       end
 
@@ -54,7 +54,7 @@ RSpec.describe Migrators::AddLaneHrid do
 
   describe 'migrate' do
     context 'when no existing catalog links' do
-      let(:obj) { create(:ar_dro, external_identifier: 'druid:bc836hv7886', identification:) }
+      let(:ar_cocina_object) { create(:ar_dro, external_identifier: 'druid:bc836hv7886', identification:) }
 
       let(:identification) do
         {
@@ -67,7 +67,7 @@ RSpec.describe Migrators::AddLaneHrid do
 
       it 'adds catalog link' do
         migrator.migrate
-        expect(obj.identification['catalogLinks']).to eq [
+        expect(ar_cocina_object.identification['catalogLinks']).to eq [
           { 'catalog' => 'symphony', 'catalogRecordId' => '123456' },
           { 'catalog' => 'folio', 'catalogRecordId' => 'L123456', 'refresh' => true }
         ]
@@ -75,11 +75,11 @@ RSpec.describe Migrators::AddLaneHrid do
     end
 
     context 'when existing catalog links' do
-      let(:obj) { create(:ar_dro, external_identifier: 'druid:bc836hv7886') }
+      let(:ar_cocina_object) { create(:ar_dro, external_identifier: 'druid:bc836hv7886') }
 
       it 'appends catalog link' do
         migrator.migrate
-        expect(obj.identification['catalogLinks']).to eq [{ 'catalog' => 'folio', 'catalogRecordId' => 'L123456', 'refresh' => true }]
+        expect(ar_cocina_object.identification['catalogLinks']).to eq [{ 'catalog' => 'folio', 'catalogRecordId' => 'L123456', 'refresh' => true }]
       end
     end
   end

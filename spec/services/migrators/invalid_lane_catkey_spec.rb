@@ -107,7 +107,7 @@ RSpec.describe Migrators::InvalidLaneCatkey do
 
   describe '#version_description' do
     it 'returns description' do
-      expect(migrator.version_description).to eq 'Invalidate Lane catkeys'
+      expect(migrator.version_description).to eq 'Change Invalid Lane catkey to "previous symphony" identifier'
     end
   end
 end

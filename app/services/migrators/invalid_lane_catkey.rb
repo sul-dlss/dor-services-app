@@ -9,7 +9,7 @@ module Migrators
     end
 
     def migrate?
-      CATKEY_MAP.key?(obj.external_identifier) && catkey_catalog_link.present?
+      CATKEY_MAP.key?(ar_cocina_object.external_identifier) && catkey_catalog_link.present?
     end
 
     def migrate
@@ -22,13 +22,13 @@ module Migrators
     end
 
     def version_description
-      'Invalidate Lane catkeys'
+      'Change Invalid Lane catkey to "previous symphony" identifier'
     end
 
     private
 
     def catkey
-      @catkey ||= CATKEY_MAP.fetch(obj.external_identifier)
+      @catkey ||= CATKEY_MAP.fetch(ar_cocina_object.external_identifier)
     end
 
     def catkey_catalog_link
@@ -36,7 +36,7 @@ module Migrators
     end
 
     def catalog_links
-      @catalog_links ||= Array(obj.identification['catalogLinks'])
+      @catalog_links ||= Array(ar_cocina_object.identification['catalogLinks'])
     end
 
     CATKEY_MAP = {
