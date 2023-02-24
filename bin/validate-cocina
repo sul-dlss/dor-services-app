@@ -16,7 +16,7 @@ end
 
 options = { processes: 4 }
 parser = OptionParser.new do |option_parser|
-  option_parser.banner = 'Usage: bin/migrate [options]'
+  option_parser.banner = 'Usage: bin/validate-cocina [options]'
   option_parser.on('-pPROCESSES', '--processes PROCESSES', Integer, "Number of processes. Default is #{options[:processes]}.")
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size per type, otherwise all objects.')
   option_parser.on('-h', '--help', 'Displays help.') do

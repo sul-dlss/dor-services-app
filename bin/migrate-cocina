@@ -1,0 +1,123 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Migrates cocina objects.
+# Migration is performed by a Migrator class that is provided as an argument.
+# The Migrator class must implement the following methods:
+#   initialize(active_record_object)
+#   migrate? - true if the object should be migrated
+#   migrate - migrates the object and returns the result
+#   version? - true if the object should be versioned
+#   publish? - true if the object should be published
+#   version_description - description for the version (if versioning)
+# See app/services/migrators/test.rb for an example.
+
+require_relative '../config/environment'
+require 'optparse'
+require 'tty-progressbar'
+
+options = { processes: 4, mode: :dryrun, sample: nil }
+
+parser = OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/migrate-cocina MIGRATION_CLASS [options]'
+  option_parser.on('--mode [MODE]', %i[dryrun migrate verify],
+                   'Migration mode (dryrun, migrate, verify). Default is dryrun')
+  option_parser.on('-pPROCESSES', '--processes PROCESSES', Integer, "Number of processes. Default is #{options[:processes]}.")
+  option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size per type, otherwise all objects.')
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
+end
+
+if ARGV.empty?
+  puts 'You must provide a migration class'
+  puts parser
+  exit
+end
+
+parser.parse!(into: options)
+migrator_class = ARGV.shift
+
+# how many druids to process as a single advance unit of the progress bar
+def num_for_progress_advance(count)
+  return 1 if count < 100
+
+  count / 100
+end
+
+def on_finish(results, progress_bar)
+  progress_bar.advance(results.size)
+end
+
+def tty_progress_bar(count, clazz_name, mode)
+  TTY::ProgressBar.new(
+    "#{mode} #{clazz_name} [:bar] (:percent (:current/:total), rate: :rate/s, mean rate: :mean_rate/s, :elapsed total, ETA: :eta_time)",
+    bar_format: :crate,
+    advance: num_for_progress_advance(count),
+    total: count
+  )
+end
+
+def perform_version(cocina_object:, version_description:)
+  version_open_params = { significance: 'admin', description: version_description }
+  # if this is an existing versionable object, open and close it, which will start accessionWF
+  if VersionService.can_open?(cocina_object)
+    opened_cocina_object = VersionService.open(cocina_object, **version_open_params)
+    VersionService.close(opened_cocina_object)
+  # if this is an existing accessioned object that is currently open, just close it
+  else
+    VersionService.close(cocina_object, **version_open_params)
+  end
+end
+
+def perform_migrate(migrator_class:, obj:, mode:)
+  migrator = migrator_class.new(obj)
+
+  return [obj.id, obj.external_identifier, migrator.migrate? ? 'ERROR' : 'SUCCESS'] if mode == :verify
+  return [obj.id, obj.external_identifier, 'SKIPPED'] unless migrator.migrate?
+
+  migrator.migrate
+  updated_cocina_object = obj.to_cocina # This validates the cocina object
+  raise 'Cannot version' if migrator.version? && !(VersionService.can_open?(updated_cocina_object) || VersionService.open?(updated_cocina_object))
+
+  if mode == :migrate
+    UpdateObjectService.update(updated_cocina_object, skip_lock: true)
+    Publish::MetadataTransferService.publish(updated_cocina_object) if migrator.publish?
+    perform_version(cocina_object: updated_cocina_object, version_description: migrator.version_description) if migrator.version?
+  end
+  [obj.id, obj.external_identifier, 'SUCCESS']
+rescue Dry::Struct::Error, Cocina::Models::ValidationError => e
+  [obj.id, obj.external_identifier, 'ERROR', e.message]
+end
+
+def druids_for(ar_class:, migrator_class:, sample:)
+  druids = (migrator_class.druids.presence || ar_class.pluck(:external_identifier))
+  sample ? druids.take(sample) : druids
+end
+
+def migrate(ar_class:, migrator_class:, sample:, processes:, mode:)
+  druids = druids_for(ar_class:, migrator_class:, sample:)
+
+  progress_bar = tty_progress_bar(druids.length, ar_class.name, mode)
+  progress_bar.start
+
+  Parallel.map(druids.each_slice(100),
+               in_processes: processes,
+               finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |druids_slice|
+    ar_class.where(external_identifier: druids_slice).map do |obj|
+      perform_migrate(migrator_class:, obj:, mode:)
+    end
+  end.flatten(1)
+end
+results = [[], Dro, Collection, AdminPolicy].inject do |memo_results, clazz|
+  memo_results + migrate(ar_class: clazz,
+                         migrator_class: migrator_class.constantize, **options)
+end
+
+CSV.open('migrate-cocina.csv', 'w') do |writer|
+  writer << %w[id druid result message]
+  results.each do |result|
+    writer << result
+  end
+end
