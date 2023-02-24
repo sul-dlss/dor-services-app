@@ -2,10 +2,10 @@
 
 require 'rails_helper'
 
-RSpec.describe Migrators::Test do
-  subject(:migrator) { described_class.new(obj) }
+RSpec.describe Migrators::Exemplar do
+  subject(:migrator) { described_class.new(ar_cocina_object) }
 
-  let(:obj) { create(:ar_dro) }
+  let(:ar_cocina_object) { create(:ar_dro) }
 
   describe '.druids' do
     it 'returns an array' do
@@ -15,7 +15,7 @@ RSpec.describe Migrators::Test do
 
   describe '#migrate?' do
     context 'when a matching druid' do
-      let(:obj) { create(:ar_dro, external_identifier: 'druid:bc177tq6734') }
+      let(:ar_cocina_object) { create(:ar_dro, external_identifier: 'druid:bc177tq6734') }
 
       it 'returns true' do
         expect(migrator.migrate?).to be true
@@ -30,29 +30,29 @@ RSpec.describe Migrators::Test do
   end
 
   describe 'migrate' do
-    let(:obj) { create(:ar_dro, label: 'Test DRO - migrated XYZ') }
+    let(:ar_cocina_object) { create(:ar_dro, label: 'Test DRO - migrated XYZ') }
 
     it 'updates label and title' do
       migrator.migrate
-      expect(obj.label).to match(/Test DRO - migrated \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/)
-      expect(obj.description['title'].first['value']).to match(/Test DRO - migrated \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/)
+      expect(ar_cocina_object.label).to match(/Test DRO - migrated \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/)
+      expect(ar_cocina_object.description['title'].first['value']).to match(/Test DRO - migrated \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/)
     end
   end
 
   describe '#publish?' do
-    it 'returns false' do
+    it 'returns false as migrated SDR objects should not be published' do
       expect(migrator.publish?).to be false
     end
   end
 
   describe '#version?' do
-    it 'returns false' do
+    it 'returns false as migrated SDR objects should not be versioned' do
       expect(migrator.version?).to be false
     end
   end
 
   describe '#version_description' do
-    it 'raises an error' do
+    it 'raises an error as version? is never true' do
       expect { migrator.version_description }.to raise_error(NotImplementedError)
     end
   end
