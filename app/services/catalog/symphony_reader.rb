@@ -25,20 +25,15 @@ module Catalog
       @catkey = fetch_catkey if catkey.nil? # we need a catkey to do this lookup, so fetch it from the barcode if none exists
 
       record = MARC::Record.new
-
       # NOTE: that new record already has default leader, but we don't want it unless it's from Symphony
       record.leader = leader
-
       fields.uniq.each do |field|
         record << marc_field(field) unless FIELDS_TO_REMOVE.include? field['tag'] # explicitly remove all listed tags from the record
       end
-
       # explicitly inject the catkey into the 001 field
       record << marc_field('tag' => '001', 'subfields' => [{ 'code' => '_', 'data' => "a#{catkey}" }])
-
       # explicitly inject SIRSI into the 003 field
       record << marc_field('tag' => '003', 'subfields' => [{ 'code' => '_', 'data' => 'SIRSI' }])
-
       record
     end
 

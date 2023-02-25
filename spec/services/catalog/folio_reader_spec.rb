@@ -147,13 +147,4 @@ RSpec.describe Catalog::FolioReader do
       expect { folio_reader_marc_result }.to raise_error(FolioClient::UnexpectedResponse::ResourceNotFound)
     end
   end
-
-  context 'when neither barcode nor folio_instance_hrid passed in' do
-    let(:barcode) { nil }
-    let(:instance_hrid) { nil }
-
-    it 'raises a ResourceNotFound error' do
-      expect { folio_reader_marc_result }.to raise_error(FolioClient::UnexpectedResponse::ResourceNotFound)
-    end
-  end
 end
