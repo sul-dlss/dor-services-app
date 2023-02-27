@@ -17,9 +17,14 @@ RSpec.describe 'Create object' do
   end
   let(:data) { item.to_json }
   let(:druid) { 'druid:gg777gg7777' }
+  let(:marc_service) do
+    instance_double(Catalog::MarcService, mods:, mods_ng: Nokogiri::XML(mods))
+  end
+  let(:mods) { nil }
 
   before do
     allow(SuriService).to receive(:mint_id).and_return(druid)
+    allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
   end
 
   context 'when a DRO is provided' do
@@ -113,7 +118,7 @@ RSpec.describe 'Create object' do
       end
 
       context 'when no object with the source id exists and the save is successful' do
-        let(:mods_from_symphony) do
+        let(:mods) do
           <<~XML
             <mods xmlns:xlink="http://www.w3.org/1999/xlink"
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -126,10 +131,6 @@ RSpec.describe 'Create object' do
           XML
         end
 
-        before do
-          allow(ModsService).to receive(:fetch).and_return(mods_from_symphony)
-        end
-
         it 'registers the object with the registration service' do
           expect do
             post '/v1/objects',
@@ -139,16 +140,16 @@ RSpec.describe 'Create object' do
           expect(response.body).to equal_cocina_model(expected)
           expect(response).to have_http_status(:created)
           expect(response.location).to eq "/v1/objects/#{druid}"
-          expect(ModsService).to have_received(:fetch).with('catkey:8888')
+          expect(Catalog::MarcService).to have_received(:new).with(catkey: '8888')
           expect(response.headers['Last-Modified']).to end_with 'GMT'
           expect(response.headers['X-Created-At']).to end_with 'GMT'
           expect(response.headers['ETag']).to match(%r{W/".+"})
         end
       end
 
-      context 'when connecting to symphony fails' do
+      context 'when connecting to catalog fails' do
         before do
-          allow(ModsService).to receive(:fetch).and_raise(Catalog::MarcService::CatalogResponseError)
+          allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogResponseError)
         end
 
         it 'draws an error message' do
@@ -163,7 +164,7 @@ RSpec.describe 'Create object' do
 
       context 'when symphony returns a 404' do
         before do
-          allow(ModsService).to receive(:fetch).and_raise(Catalog::MarcService::CatalogRecordNotFoundError, 'unable to find catkey')
+          allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogRecordNotFoundError, 'unable to find catkey')
         end
 
         it 'draws an error message' do
@@ -178,7 +179,7 @@ RSpec.describe 'Create object' do
 
       context 'when other error refreshing MARC' do
         before do
-          allow(ModsService).to receive(:fetch).and_raise(Catalog::MarcService::MarcServiceError)
+          allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::MarcServiceError)
         end
 
         it 'draws an error message' do

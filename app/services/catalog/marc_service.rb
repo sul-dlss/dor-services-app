@@ -26,16 +26,15 @@ module Catalog
     # @return [String] MODS XML
     # @raise CatalogResponseError
     def mods
-      mods_ng.to_xml
+      @mods ||= mods_ng.to_xml
     end
 
     # @return [Nokogiri::XML::Document] MODS XML
     # @raise CatalogResponseError
     # @raise CatalogRecordNotFoundError
     def mods_ng
-      marc_xml = marcxml_ng
-      begin
-        marc_to_mods_xslt.transform(marc_xml)
+      @mods_ng ||= begin
+        marc_to_mods_xslt.transform(marcxml_ng)
       rescue RuntimeError => e
         raise TransformError, "Error transforming MARC to MODS: #{e.message}"
       end
@@ -45,25 +44,25 @@ module Catalog
     # @raise CatalogResponseError
     # @raise CatalogRecordNotFoundError
     def marcxml
-      marcxml_ng.to_xml
+      @marcxml ||= marcxml_ng.to_xml
     end
 
     # @return [Nokogiri::XML::Document] MARCXML XML
     # @raise CatalogResponseError
     # @raise CatalogRecordNotFoundError
     def marcxml_ng
-      Nokogiri::XML(marc_record.to_xml.to_s)
+      @marcxml_ng ||= Nokogiri::XML(marc_record.to_xml.to_s)
     end
 
     # @return [MARC::Record] MARC record
     # @raise CatalogResponseError
     # @raise CatalogRecordNotFoundError
     def marc_record
-      if Settings.enabled_features.read_folio
-        marc_record_from_folio
-      else
-        marc_record_from_symphony
-      end
+      @marc_record ||= if Settings.enabled_features.read_folio
+                         marc_record_from_folio
+                       else
+                         marc_record_from_symphony
+                       end
     end
 
     private

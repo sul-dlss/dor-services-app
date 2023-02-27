@@ -47,7 +47,7 @@ RSpec.describe 'Create object' do
         ]
       }
     end
-    let(:mods_from_symphony) do
+    let(:mods) do
       <<~XML
         <mods xmlns:xlink="http://www.w3.org/1999/xlink"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -60,8 +60,12 @@ RSpec.describe 'Create object' do
       XML
     end
 
+    let(:marc_service) do
+      instance_double(Catalog::MarcService, mods:, mods_ng: Nokogiri::XML(mods))
+    end
+
     before do
-      allow(ModsService).to receive(:fetch).and_return(mods_from_symphony)
+      allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
     end
 
     it 'creates the collection' do
@@ -71,7 +75,7 @@ RSpec.describe 'Create object' do
       expect(response.body).to equal_cocina_model(expected)
       expect(response).to have_http_status(:created)
       expect(response.location).to eq "/v1/objects/#{druid}"
-      expect(ModsService).to have_received(:fetch).with('catkey:8888')
+      expect(Catalog::MarcService).to have_received(:new).with(catkey: '8888')
     end
   end
 
