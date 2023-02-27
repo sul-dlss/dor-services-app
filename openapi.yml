@@ -81,7 +81,10 @@ paths:
           description: Folio identifier of an item
           required: false
           schema:
-            type: string            
+            oneOf:
+              - $ref: '#/components/schemas/MigratedFromSymphonyIdentifier'
+              - $ref: '#/components/schemas/MigratedFromVoyagerIdentifier'
+              - $ref: '#/components/schemas/CreatedInFolioIdentifier'
   '/v1/background_job_results/{id}':
     get:
       tags:
