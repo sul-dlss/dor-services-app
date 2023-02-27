@@ -164,9 +164,10 @@ RAILS_ENV=production bundle exec rake missing_druids:index_unindexed_objects
 ```
 
 ## Data migrations / bulk remediations
+
 `bin/migrate-cocina` provides a framework for data migrations and bulk remediations. It supports optional versioning and publishing of objects after migration.
 
-```
+```sh
 Usage: bin/migrate-cocina MIGRATION_CLASS [options]
         --mode [MODE]                Migration mode (dryrun, migrate, verify). Default is dryrun
     -p, --processes PROCESSES        Number of processes. Default is 4.
@@ -175,12 +176,14 @@ Usage: bin/migrate-cocina MIGRATION_CLASS [options]
 ```
 
 The process for performing a migration/remediation is:
-1. Implement a Migrator (`app/services/migrators/`). See `Migrators::Base` and `Migrators::Test` for the requirements of a Migrator class. Migrators should be unit tested.
-2. Perform a dry run: `bin/migrate-cocina Migrators::Test --mode dryrun` and inspect `migrate-cocina.csv` for any errors.
-3. Perform migration/remediation: `bin/migrate-cocina Migrators::Test --mode migrate` and inspect `migrate-cocina.csv` for any errors.
-4. Perform verification: `bin/migrate-cocina Migrators::Test --mode verify` and inspect `migrate-cocina.csv` for any errors.
+
+1. Implement a Migrator (`app/services/migrators/`). See `Migrators::Base` and `Migrators::Exemplar` for the requirements of a Migrator class. Migrators should be unit tested.
+2. Perform a dry run: `bin/migrate-cocina Migrators::Exemplar --mode dryrun` and inspect `migrate-cocina.csv` for any errors.
+3. Perform migration/remediation: `bin/migrate-cocina Migrators::Exemplar --mode migrate` and inspect `migrate-cocina.csv` for any errors.
+4. Perform verification: `bin/migrate-cocina Migrators::Exemplar --mode verify` and inspect `migrate-cocina.csv` for any errors.
 
 Additional notes:
+
 * The dry run and the verification can be performed on `sdr-infra`. See the [existing documentation](https://github.com/sul-dlss/cocina-models#testing-validation-changes) on setting up db connections.
 * The migration/remediation must be performed on the DSA server since it requires a read/write DB connection. (`sdr-infra` has a read-only DB connection.)
 * Migrations are performed on an ActiveRecord object, not a Cocina object. This always remediating invalid items (i.e., that cannot be instantiated as Cocina objects).
