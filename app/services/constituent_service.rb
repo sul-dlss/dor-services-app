@@ -75,6 +75,9 @@ class ConstituentService
 
       next unless cocina_item.identification&.catalogLinks&.any? { |link| link.catalog == 'symphony' }
 
+      msg = "ConstituentService is about to call Catalog::UpdateMarc856RecordService for #{constituent_druid} in #{virtual_object_druid}"
+      Honeybadger.notify("[DEBUG NOTIFICATION] #{msg}")
+
       Catalog::UpdateMarc856RecordService.update(cocina_item, thumbnail_service: ThumbnailService.new(cocina_item))
     end
   end
