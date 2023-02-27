@@ -97,11 +97,11 @@ RSpec.describe Catalog::FolioReader do
 
       context 'when folio_client encounters an unexpected response and raises an error' do
         before do
-          allow(FolioClient).to receive(:fetch_marc_hash).with(instance_hrid:).and_raise(FolioClient::UnexpectedResponse::ResourceNotFound, "No records found for #{instance_hrid}")
+          allow(FolioClient).to receive(:fetch_marc_hash).with(instance_hrid:).and_raise(FolioClient::ResourceNotFound, "No records found for #{instance_hrid}")
         end
 
         it 'lets the exception bubble up to the caller' do
-          expect { folio_reader_marc_result }.to raise_error(FolioClient::UnexpectedResponse::ResourceNotFound, "No records found for #{instance_hrid}")
+          expect { folio_reader_marc_result }.to raise_error(FolioClient::ResourceNotFound, "No records found for #{instance_hrid}")
         end
       end
     end
@@ -144,7 +144,7 @@ RSpec.describe Catalog::FolioReader do
     end
 
     it 'raises a ResourceNotFound error' do
-      expect { folio_reader_marc_result }.to raise_error(FolioClient::UnexpectedResponse::ResourceNotFound)
+      expect { folio_reader_marc_result }.to raise_error(FolioClient::ResourceNotFound)
     end
   end
 end

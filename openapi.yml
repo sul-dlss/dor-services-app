@@ -72,10 +72,16 @@ paths:
             type: string
         - name: catkey
           in: query
-          description: catalog identifier of an item
+          description: Symphony identifier of an item
           required: false
           schema:
             type: string
+        - name: folio_instance_hrid
+          in: query
+          description: Folio identifier of an item
+          required: false
+          schema:
+            type: string            
   '/v1/background_job_results/{id}':
     get:
       tags:

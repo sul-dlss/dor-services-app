@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe "Looking up an item's marcxml" do
+RSpec.describe "Looking up an item's marcxml (Symphony)" do
   let(:barcode_url) { Settings.catalog.symphony.base_url + Settings.catalog.symphony.barcode_path }
   let(:marc_url) { Settings.catalog.symphony.base_url + Settings.catalog.symphony.marcxml_path }
   let(:barcode) { '101' }
@@ -85,7 +85,7 @@ RSpec.describe "Looking up an item's marcxml" do
         get "/v1/catalog/marcxml?catkey=#{bogus_value}", headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:bad_request)
         json = JSON.parse(response.body)
-        expect(json.dig('errors', 0, 'title')).to eq 'Record not found in Symphony'
+        expect(json.dig('errors', 0, 'title')).to eq 'Record not found in catalog'
       end
     end
 
