@@ -14,7 +14,7 @@ RSpec.describe 'Status (okcomputer)' do
     let(:symphony_client) { instance_double(Faraday::Connection, get: true) }
 
     before do
-      allow(SymphonyReader).to receive(:client).and_return(symphony_client)
+      allow(Catalog::SymphonyReader).to receive(:client).and_return(symphony_client)
     end
 
     it 'is successful' do

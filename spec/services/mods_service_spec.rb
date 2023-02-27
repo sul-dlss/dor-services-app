@@ -35,7 +35,7 @@ RSpec.describe ModsService do
 
   describe '#fetch' do
     before do
-      allow(MarcService).to receive(:mods).and_return(mods)
+      allow(Catalog::MarcService).to receive(:mods).and_return(mods)
     end
 
     it 'raises an exception if an unknown metadata type is requested' do
@@ -48,12 +48,12 @@ RSpec.describe ModsService do
 
     it 'fetches a record based on barcode' do
       expect(described_class.fetch('barcode:12345')).to be_equivalent_to(mods)
-      expect(MarcService).to have_received(:mods).with(barcode: '12345')
+      expect(Catalog::MarcService).to have_received(:mods).with(barcode: '12345')
     end
 
     it 'fetches a record based on catkey' do
       expect(described_class.fetch('catkey:12345')).to be_equivalent_to(mods)
-      expect(MarcService).to have_received(:mods).with(catkey: '12345')
+      expect(Catalog::MarcService).to have_received(:mods).with(catkey: '12345')
     end
   end
 

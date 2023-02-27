@@ -19,13 +19,13 @@ class ModsService
       #       preferred order specified above in KNOWN_PREFIXES, so that the .first is the preferred one
     end
 
-    # @raises MarcService::MarcServiceError
+    # @raises Catalog::MarcService::MarcServiceError
     def fetch(identifier)
       @@cache.fetch(identifier) do
         (prefix, identifier) = parse_identifier(identifier)
         valid_identifier!(prefix, identifier)
 
-        MarcService.mods(prefix.to_sym => identifier)
+        Catalog::MarcService.mods(prefix.to_sym => identifier)
       end
     end
 

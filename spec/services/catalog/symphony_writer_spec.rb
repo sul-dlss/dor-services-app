@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe SymphonyWriter do
+RSpec.describe Catalog::SymphonyWriter do
   subject(:symphony_writer) { described_class.new }
 
   describe '.write_symphony_records' do

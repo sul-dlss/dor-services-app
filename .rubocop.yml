@@ -47,7 +47,7 @@ Performance/CollectionLiteralInLoop:
   Enabled: true
   Exclude:
     - 'app/services/update_marc_record_service.rb'
-    - 'app/models/symphony_reader.rb'
+    - 'app/services/symphony_reader.rb'
 
 Rails/DynamicFindBy:
   Enabled: true
