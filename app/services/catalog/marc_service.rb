@@ -9,17 +9,18 @@ module Catalog
     class CatalogRecordNotFoundError < MarcServiceError; end
     class TransformError < MarcServiceError; end
 
-    def self.mods(catkey: nil, barcode: nil)
-      new(catkey:, barcode:).mods
+    def self.mods(catkey: nil, barcode: nil, folio_instance_hrid: nil)
+      new(catkey:, barcode:, folio_instance_hrid:).mods
     end
 
-    def self.marcxml(catkey: nil, barcode: nil)
-      new(catkey:, barcode:).marcxml
+    def self.marcxml(catkey: nil, barcode: nil, folio_instance_hrid: nil)
+      new(catkey:, barcode:, folio_instance_hrid:).marcxml
     end
 
-    def initialize(catkey: nil, barcode: nil)
+    def initialize(catkey: nil, barcode: nil, folio_instance_hrid: nil)
       @catkey = catkey
       @barcode = barcode
+      @folio_instance_hrid = folio_instance_hrid
     end
 
     # @return [String] MODS XML
@@ -58,6 +59,22 @@ module Catalog
     # @raises CatalogResponseError
     # @raises CatalogRecordNotFoundError
     def marc_record
+      if Settings.enabled_features.read_folio
+        marc_record_from_folio
+      else
+        marc_record_from_symphony
+      end
+    end
+
+    private
+
+    attr_reader :catkey, :barcode, :folio_instance_hrid
+
+    def marc_to_mods_xslt
+      @marc_to_mods_xslt ||= Nokogiri::XSLT(File.open(Rails.root.join('app', 'xslt', 'MARC21slim2MODS3-7_SDR_v2-7.xsl')))
+    end
+
+    def marc_record_from_symphony
       SymphonyReader.new(catkey:, barcode:).to_marc
     rescue SymphonyReader::NotFound
       raise CatalogRecordNotFoundError, "Catalog record not found. Catkey: #{catkey} | Barcode: #{barcode}"
@@ -65,12 +82,12 @@ module Catalog
       raise CatalogResponseError, "Error getting record from catalog: #{e.message}"
     end
 
-    private
-
-    attr_reader :catkey, :barcode
-
-    def marc_to_mods_xslt
-      @marc_to_mods_xslt ||= Nokogiri::XSLT(File.open(Rails.root.join('app', 'xslt', 'MARC21slim2MODS3-7_SDR_v2-7.xsl')))
+    def marc_record_from_folio
+      FolioReader.to_marc(folio_instance_hrid:, barcode:)
+    rescue FolioClient::ResourceNotFound
+      raise CatalogRecordNotFoundError, "Catalog record not found. HRID: #{folio_instance_hrid} | Barcode: #{barcode}"
+    rescue FolioClient::Error => e
+      raise CatalogResponseError, "Error getting record from catalog: #{e.message}"
     end
   end
 end

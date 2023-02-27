@@ -124,7 +124,7 @@ GEM
       openapi_parser (>= 0.11.1, < 1.0)
       rack (>= 1.5)
     commonmarker (0.23.8)
-    concurrent-ruby (1.2.0)
+    concurrent-ruby (1.2.2)
     config (4.1.0)
       deep_merge (~> 1.2, >= 1.2.1)
       dry-validation (~> 1.0, >= 1.0.0)
@@ -215,7 +215,7 @@ GEM
     faraday-net_http (3.0.2)
     faraday-retry (2.0.0)
       faraday (~> 2.0)
-    folio_client (0.3.0)
+    folio_client (0.5.0)
       activesupport (>= 4.2, < 8)
       faraday
       zeitwerk
@@ -282,6 +282,8 @@ GEM
     net-ssh (7.0.1)
     nio4r (2.5.8)
     nokogiri (1.14.2-x86_64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.14.2-x86_64-linux)
       racc (~> 1.4)
     nokogiri-happymapper (0.9.0)
       nokogiri (~> 1.5)
@@ -469,9 +471,9 @@ GEM
     zeitwerk (2.6.7)
 
 PLATFORMS
-  ruby
   x86_64-darwin-19
   x86_64-darwin-20
+  x86_64-darwin-21
   x86_64-linux
 
 DEPENDENCIES
@@ -497,7 +499,7 @@ DEPENDENCIES
   factory_bot_rails
   faraday (~> 2.0)
   faraday-retry
-  folio_client (~> 0.3)
+  folio_client (~> 0.5)
   honeybadger (~> 4.12)
   jbuilder
   jsonpath (~> 1.1)

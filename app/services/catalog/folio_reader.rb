@@ -3,6 +3,10 @@
 module Catalog
   # Reader from Folio's JSON API to fetch marc json given a HRID or barcode
   class FolioReader
+    def self.to_marc(folio_instance_hrid: nil, barcode: nil)
+      new(folio_instance_hrid:, barcode:).to_marc
+    end
+
     attr_reader :folio_instance_hrid, :barcode
 
     FIELDS_TO_REMOVE = %w[001 003].freeze
@@ -13,12 +17,12 @@ module Catalog
     end
 
     # @return [MARC::Record]
-    # @raises FolioClient::UnexpectedResponse::ResourceNotFound, and FolioClient::UnexpectedResponse::MultipleResourcesFound, and Catalog::FolioReader::NotFound
+    # @raises FolioClient::ResourceNotFound, and FolioClient::MultipleResourcesFound
     def to_marc
       # we need an instance_hrid to do a marc lookup, so fetch from the barcode if no instance_hrid was passed in
       @folio_instance_hrid ||= FolioClient.fetch_hrid(barcode:)
 
-      raise FolioClient::UnexpectedResponse::ResourceNotFound if folio_instance_hrid.blank?
+      raise FolioClient::ResourceNotFound if folio_instance_hrid.blank?
 
       # fetch the record from folio
       marc = MARC::Record.new_from_hash(FolioClient.fetch_marc_hash(instance_hrid: folio_instance_hrid))

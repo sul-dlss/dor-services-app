@@ -5,6 +5,7 @@ enabled_features:
   datacite_update: false
   postgres: false
   file_hierarchy_validation: true
+  read_folio: false
 
 # Ur Admin Policy
 ur_admin_policy:
