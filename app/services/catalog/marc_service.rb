@@ -24,14 +24,14 @@ module Catalog
     end
 
     # @return [String] MODS XML
-    # @raises CatalogResponseError
+    # @raise CatalogResponseError
     def mods
       mods_ng.to_xml
     end
 
     # @return [Nokogiri::XML::Document] MODS XML
-    # @raises CatalogResponseError
-    # @raises CatalogRecordNotFoundError
+    # @raise CatalogResponseError
+    # @raise CatalogRecordNotFoundError
     def mods_ng
       marc_xml = marcxml_ng
       begin
@@ -42,22 +42,22 @@ module Catalog
     end
 
     # @return [String] MARCXML XML
-    # @raises CatalogResponseError
-    # @raises CatalogRecordNotFoundError
+    # @raise CatalogResponseError
+    # @raise CatalogRecordNotFoundError
     def marcxml
       marcxml_ng.to_xml
     end
 
     # @return [Nokogiri::XML::Document] MARCXML XML
-    # @raises CatalogResponseError
-    # @raises CatalogRecordNotFoundError
+    # @raise CatalogResponseError
+    # @raise CatalogRecordNotFoundError
     def marcxml_ng
       Nokogiri::XML(marc_record.to_xml.to_s)
     end
 
     # @return [MARC::Record] MARC record
-    # @raises CatalogResponseError
-    # @raises CatalogRecordNotFoundError
+    # @raise CatalogResponseError
+    # @raise CatalogRecordNotFoundError
     def marc_record
       if Settings.enabled_features.read_folio
         marc_record_from_folio

@@ -7,7 +7,7 @@ class RefreshMetadataAction
   Result = Struct.new('Result', :description_props, :mods_ng_xml)
 
   # @return [Dry::Monads::Results] returns Failure if there was no resolvable metadata id, otherwise Success (Result with description_props and mods)
-  # @raises Catalog::SymphonyReader::ResponseError
+  # @raise Catalog::MarcService::MarcServiceError
   def self.run(identifiers:, cocina_object:, druid:)
     new(identifiers:, cocina_object:, druid:).run
   end
@@ -28,7 +28,7 @@ class RefreshMetadataAction
   end
 
   # @return [Dry::Monads::Results] Returns Failure if it didn't retrieve anything, otherwise Success (Result with description_props and mods)
-  # @raises Catalog::SymphonyReader::ResponseError
+  # @raise Catalog::MarcService::MarcServiceError
   def run
     return Failure() if mods.nil?
 
@@ -42,7 +42,7 @@ class RefreshMetadataAction
 
   attr_reader :identifiers, :cocina_object, :druid
 
-  # @raises Catalog::SymphonyReader::ResponseError
+  # @raise Catalog::MarcService::MarcServiceError
   def mods
     @mods ||= begin
       metadata_id = ModsService.resolvable(identifiers).first

@@ -17,7 +17,7 @@ module Preserve
 
     # @param [Pathname] bag_dir the location of the bag to be verified
     # @return [Boolean] true if all required files exist
-    # @raises [StandardError] a required file is missing
+    # @raise [StandardError] a required file is missing
     def self.verify(directory:)
       new(directory:).verify
     end

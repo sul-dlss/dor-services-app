@@ -11,7 +11,7 @@ class ResetWorkspaceService
     remove_export_bag(druid:, export_root: Settings.sdr.local_export_home)
   end
 
-  # @raises [Errno::ENOENT] if the directory doesn't exist
+  # @raise [Errno::ENOENT] if the directory doesn't exist
   def self.reset_workspace_druid_tree(druid:, version:, workspace_root:)
     druid_tree_path = DruidTools::Druid.new(druid, workspace_root).pathname.to_s
 
