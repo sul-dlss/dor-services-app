@@ -47,11 +47,11 @@ RSpec.describe RefreshMetadataAction do
 
     context 'when fetch_metadata fails' do
       before do
-        allow(ModsService).to receive(:fetch).and_raise(Catalog::SymphonyReader::ResponseError)
+        allow(ModsService).to receive(:fetch).and_raise(Catalog::MarcService::MarcServiceError)
       end
 
       it 'gets the data and puts it in descMetadata and Honeybadger notifies' do
-        expect { refresh }.to raise_error(Catalog::SymphonyReader::ResponseError)
+        expect { refresh }.to raise_error(Catalog::MarcService::MarcServiceError)
       end
     end
 

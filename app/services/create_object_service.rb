@@ -14,7 +14,7 @@ class CreateObjectService
   # @param [#create] event_factory creates events
   # @param [#call] id_minter assigns identifiers. You can provide your own minter if you want to use a specific druid for an item.
   # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
-  # @raises [Catalog::SymphonyReader::ResponseError] if symphony connection failed
+  # @raises [Catalog::MarcService::MarcServiceError] if cannot refresh descMetadata from source
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
   def self.create(cocina_request_object, assign_doi: false, event_factory: EventFactory, id_minter: -> { SuriService.mint_id })
     new(event_factory:, id_minter:).create(cocina_request_object, assign_doi:)
