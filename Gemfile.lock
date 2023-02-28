@@ -103,7 +103,7 @@ GEM
       capistrano-bundler (>= 1.1, < 3)
     capistrano-shared_configs (0.2.2)
     chronic (0.10.2)
-    cocina-models (0.88.0)
+    cocina-models (0.89.0)
       activesupport
       deprecation
       dry-struct (~> 1.0)
@@ -485,7 +485,7 @@ DEPENDENCIES
   capistrano-passenger
   capistrano-rails
   capistrano-shared_configs
-  cocina-models (~> 0.88.0)
+  cocina-models (~> 0.89.0)
   committee (~> 4.4)
   config
   datacite (~> 0.3.0)

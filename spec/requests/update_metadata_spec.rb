@@ -716,7 +716,7 @@ RSpec.describe 'Update object' do
         download: 'location-based',
         location: 'ars',
         copyright: 'My copyright statement',
-        license: 'http://opendatacommons.org/licenses/by/1.0/',
+        license: 'https://opendatacommons.org/licenses/by/1-0/',
         useAndReproductionStatement: 'Whatever makes you happy'
       }
     end
