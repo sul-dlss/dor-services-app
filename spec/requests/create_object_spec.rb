@@ -572,7 +572,7 @@ RSpec.describe 'Create object' do
                                           download: 'location-based',
                                           location: 'ars',
                                           copyright: 'My copyright statement',
-                                          license: 'http://opendatacommons.org/licenses/by/1.0/',
+                                          license: 'https://opendatacommons.org/licenses/by/1-0/',
                                           useAndReproductionStatement: 'Whatever makes you happy'
                                         },
                                         hasAdminPolicy: admin_policy_id,
@@ -607,7 +607,7 @@ RSpec.describe 'Create object' do
               "download":"location-based",
               "location":"ars",
               "copyright":"My copyright statement",
-              "license":"http://opendatacommons.org/licenses/by/1.0/",
+              "license":"https://opendatacommons.org/licenses/by/1-0/",
               "useAndReproductionStatement":"Whatever makes you happy"
             },
             "disseminationWorkflow":"assemblyWF",

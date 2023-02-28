@@ -1475,63 +1475,24 @@ components:
       required:
         - hasAdminPolicy
     AdminPolicyAccessTemplate:
-      description: 'Provides the template of access settings that is copied to the items goverend by an AdminPolicy. This is almost the same as DROAccess, but it provides no defaults and has no embargo.'
+      description: 'Provides the template of access settings that is copied to the items governed by an AdminPolicy. This is almost the same as DROAccess, but it provides no defaults and has no embargo.'
       type: object
       additionalProperties: false
+      oneOf:
+        - $ref: '#/components/schemas/DarkAccess'
+        - $ref: '#/components/schemas/CitationOnlyAccess'
+        - $ref: '#/components/schemas/ControlledDigitalLendingAccess'
+        - $ref: '#/components/schemas/LocationBasedAccess'
+        - $ref: '#/components/schemas/LocationBasedDownloadAccess'
+        - $ref: '#/components/schemas/StanfordAccess'
+        - $ref: '#/components/schemas/WorldAccess'
       properties:
-        view:
-          type: string
-          enum:
-            - 'world'
-            - 'stanford'
-            - 'location-based'
-            - 'citation-only'
-            - 'dark'
-        controlledDigitalLending:
-          description: Available for controlled digital lending.
-          type: boolean
         copyright:
-          description: The human readable copyright statement that applies
-          example: Copyright World Trade Organization
-          type: string
-          nullable: true
-        download:
-          description: >
-            Download access level. This is used in the transition from Fedora as
-            a way to set a default download level at registration that is copied
-            down to all the files.
-
-          type: string
-          enum:
-            - 'world'
-            - 'stanford'
-            - 'location-based'
-            - 'none'
-        location:
-          description: >
-            If access or download is "location-based", this indicates which
-            location should have access. This is used in the transition from
-            Fedora as a way to set a default location at registration that is
-            copied down to all the files.
-
-          type: string
-          nullable: true
-          enum:
-            - 'spec'
-            - 'music'
-            - 'ars'
-            - 'art'
-            - 'hoover'
-            - 'm&m'
+          $ref: "#/components/schemas/Copyright"
         useAndReproductionStatement:
-          description: The human readable use and reproduction statement that applies
-          example: Property rights reside with the repository. Literary rights reside with the creators of the documents or their heirs. To obtain permission to publish or reproduce, please contact the Public Services Librarian of the Dept. of Special Collections (http://library.stanford.edu/spc).
-          type: string
-          nullable: true
+          $ref: "#/components/schemas/UseAndReproductionStatement"
         license:
-          description: The license governing reuse of the Collection. Should be an IRI for known licenses (i.e. CC, RightsStatement.org URI, etc.).
-          type: string
-          nullable: true
+          $ref: "#/components/schemas/License"
     AdminPolicyAdministrative:
       description: Administrative properties for an AdminPolicy
       type: object
@@ -1685,19 +1646,11 @@ components:
             - 'dark'
           default: 'dark'
         copyright:
-          description: The human readable copyright statement that applies
-          example: Copyright World Trade Organization
-          type: string
-          nullable: true
+          $ref: "#/components/schemas/Copyright"
         useAndReproductionStatement:
-          description: The human readable use and reproduction statement that applies
-          example: Property rights reside with the repository. Literary rights reside with the creators of the documents or their heirs. To obtain permission to publish or reproduce, please contact the Public Services Librarian of the Dept. of Special Collections (http://library.stanford.edu/spc).
-          type: string
-          nullable: true
+          $ref: "#/components/schemas/UseAndReproductionStatement"
         license:
-          description: The license governing reuse of the Collection. Should be an IRI for known licenses (i.e. CC, RightsStatement.org URI, etc.).
-          type: string
-          nullable: true
+          $ref: "#/components/schemas/License"
     CollectionIdentification:
       type: object
       additionalProperties: false
@@ -1776,6 +1729,11 @@ components:
       required:
         - view
         - download
+    Copyright:
+      description: The human readable copyright statement that applies
+      example: Copyright World Trade Organization
+      type: string
+      nullable: true
     CreatedInFolioIdentifier:
       description: A record identifier created in Folio
       type: string
@@ -1851,52 +1809,13 @@ components:
         - type: object
           properties:
             copyright:
-              description: The human readable copyright statement that applies
-              example: Copyright World Trade Organization
-              type: string
-              nullable: true
+              $ref: "#/components/schemas/Copyright"
             embargo:
               $ref: '#/components/schemas/Embargo'
             useAndReproductionStatement:
-              description: The human readable use and reproduction statement that applies
-              example: Property rights reside with the repository. Literary rights reside with the creators of the documents or their heirs. To obtain permission to publish or reproduce, please contact the Public Services Librarian of the Dept. of Special Collections (http://library.stanford.edu/spc).
-              type: string
-              nullable: true
+              $ref: "#/components/schemas/UseAndReproductionStatement"
             license:
-              description: The license governing reuse of the DRO. Should be an IRI for known licenses (i.e. CC, RightsStatement.org URI, etc.).
-              type: string
-              nullable: true
-              enum:
-                - 'https://www.gnu.org/licenses/agpl.txt'
-                - 'https://www.apache.org/licenses/LICENSE-2.0'
-                - 'https://opensource.org/licenses/BSD-2-Clause'
-                - 'https://opensource.org/licenses/BSD-3-Clause'
-                - 'https://creativecommons.org/licenses/by/4.0/legalcode'
-                - 'https://creativecommons.org/licenses/by-nc/4.0/legalcode'
-                - 'https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode'
-                - 'https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode'
-                - 'https://creativecommons.org/licenses/by-nd/4.0/legalcode'
-                - 'https://creativecommons.org/licenses/by-sa/4.0/legalcode'
-                - 'https://creativecommons.org/publicdomain/zero/1.0/legalcode'
-                - 'https://opensource.org/licenses/cddl1'
-                - 'https://www.eclipse.org/legal/epl-2.0'
-                - 'https://www.gnu.org/licenses/gpl-3.0-standalone.html'
-                - 'https://www.isc.org/downloads/software-support-policy/isc-license/'
-                - 'https://www.gnu.org/licenses/lgpl-3.0-standalone.html'
-                - 'https://opensource.org/licenses/MIT'
-                - 'https://www.mozilla.org/MPL/2.0/'
-                - 'https://opendatacommons.org/licenses/by/1-0/'
-                - 'http://opendatacommons.org/licenses/odbl/1.0/' # Non cannonical, but in some of our data
-                - 'https://opendatacommons.org/licenses/odbl/1-0/'
-                - 'https://creativecommons.org/publicdomain/mark/1.0/'
-                - 'https://opendatacommons.org/licenses/pddl/1-0/'
-                - 'https://creativecommons.org/licenses/by/3.0/legalcode'
-                - 'https://creativecommons.org/licenses/by-sa/3.0/legalcode'
-                - 'https://creativecommons.org/licenses/by-nd/3.0/legalcode'
-                - 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
-                - 'https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode'
-                - 'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode'
-                - 'https://cocina.sul.stanford.edu/licenses/none' # Only used in some legacy ETDs and not actually permitted per the Project Chimera docs.
+              $ref: "#/components/schemas/License"
     DROStructural:
       description: Structural metadata
       type: object
@@ -2260,10 +2179,7 @@ components:
               format: date-time
               example: '2029-06-22T07:00:00.000+00:00'
             useAndReproductionStatement:
-              description: The human readable use and reproduction statement that applies when the embargo expires.
-              example: These materials are in the public domain.
-              type: string
-              nullable: true
+              $ref: "#/components/schemas/UseAndReproductionStatement"
           required:
             - releaseDate
     Event:
@@ -2571,6 +2487,41 @@ components:
         valueLanguage:
           # description: present for mapping to additional schemas in the future and for consistency but not otherwise used
           $ref: "#/components/schemas/DescriptiveValueLanguage"
+    License:
+      description: The license governing reuse of the DRO. Should be an IRI for known licenses (i.e. CC, RightsStatement.org URI, etc.).
+      type: string
+      nullable: true
+      enum:
+        - 'https://www.gnu.org/licenses/agpl.txt'
+        - 'https://www.apache.org/licenses/LICENSE-2.0'
+        - 'https://opensource.org/licenses/BSD-2-Clause'
+        - 'https://opensource.org/licenses/BSD-3-Clause'
+        - 'https://creativecommons.org/licenses/by/4.0/legalcode'
+        - 'https://creativecommons.org/licenses/by-nc/4.0/legalcode'
+        - 'https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode'
+        - 'https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode'
+        - 'https://creativecommons.org/licenses/by-nd/4.0/legalcode'
+        - 'https://creativecommons.org/licenses/by-sa/4.0/legalcode'
+        - 'https://creativecommons.org/publicdomain/zero/1.0/legalcode'
+        - 'https://opensource.org/licenses/cddl1'
+        - 'https://www.eclipse.org/legal/epl-2.0'
+        - 'https://www.gnu.org/licenses/gpl-3.0-standalone.html'
+        - 'https://www.isc.org/downloads/software-support-policy/isc-license/'
+        - 'https://www.gnu.org/licenses/lgpl-3.0-standalone.html'
+        - 'https://opensource.org/licenses/MIT'
+        - 'https://www.mozilla.org/MPL/2.0/'
+        - 'https://opendatacommons.org/licenses/by/1-0/'
+        - 'http://opendatacommons.org/licenses/odbl/1.0/' # Non cannonical, but in some of our data
+        - 'https://opendatacommons.org/licenses/odbl/1-0/'
+        - 'https://creativecommons.org/publicdomain/mark/1.0/'
+        - 'https://opendatacommons.org/licenses/pddl/1-0/'
+        - 'https://creativecommons.org/licenses/by/3.0/legalcode'
+        - 'https://creativecommons.org/licenses/by-sa/3.0/legalcode'
+        - 'https://creativecommons.org/licenses/by-nd/3.0/legalcode'
+        - 'https://creativecommons.org/licenses/by-nc/3.0/legalcode'
+        - 'https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode'
+        - 'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode'
+        - 'https://cocina.sul.stanford.edu/licenses/none' # Only used in some legacy ETDs and not actually permitted per the Project Chimera docs.
     LocationBasedAccess:
       type: object
       properties:
@@ -3263,6 +3214,11 @@ components:
             - type: object
               required:
                 - valueAt
+    UseAndReproductionStatement:
+      description: The human readable use and reproduction statement that applies
+      example: Property rights reside with the repository. Literary rights reside with the creators of the documents or their heirs. To obtain permission to publish or reproduce, please contact the Public Services Librarian of the Dept. of Special Collections (http://library.stanford.edu/spc).
+      type: string
+      nullable: true
     WorldAccess:
       type: object
       properties:
