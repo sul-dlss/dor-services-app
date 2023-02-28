@@ -71,6 +71,28 @@ RSpec.describe UpdateObjectService do
           expect { store.update }.to raise_error(CocinaObjectStore::StaleLockError)
         end
       end
+
+      context 'when syncing catalog links' do
+        let(:store) { described_class.new(cocina_object:, skip_lock: true) }
+
+        let(:ar_cocina_object) { create(:ar_dro) }
+
+        let(:cocina_object) do
+          Cocina::Models.with_metadata(ar_cocina_object.to_cocina, 'lock', created: ar_cocina_object.created_at.utc, modified: ar_cocina_object.updated_at.utc)
+                        .new(label: 'new label')
+        end
+
+        before do
+          allow(Catalog::AddFolioCatalogLinksService).to receive(:add).and_call_original
+          allow(Settings.enabled_features).to receive(:sync_cataloglinks).and_return(true)
+        end
+
+        it 'invokes AddFolioCatalogLinksService' do
+          expect(store.update).to be_a Cocina::Models::DROWithMetadata
+
+          expect(Catalog::AddFolioCatalogLinksService).to have_received(:add).with(Cocina::Models::DROWithMetadata)
+        end
+      end
     end
 
     context 'when object is an AdminPolicy' do

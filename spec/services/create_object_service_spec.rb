@@ -100,6 +100,20 @@ RSpec.describe CreateObjectService do
       end
     end
 
+    context 'when syncing catalog links' do
+      let(:requested_cocina_object) { build(:request_dro) }
+
+      before do
+        allow(Catalog::AddFolioCatalogLinksService).to receive(:add).and_call_original
+        allow(Settings.enabled_features).to receive(:sync_cataloglinks).and_return(true)
+      end
+
+      it 'invokes AddFolioCatalogLinksService' do
+        store.create(requested_cocina_object)
+        expect(Catalog::AddFolioCatalogLinksService).to have_received(:add).with(Cocina::Models::DRO)
+      end
+    end
+
     context 'when fails refreshing from symphony' do
       let(:requested_cocina_object) { build(:request_dro, catkeys: ['999123']) }
 
