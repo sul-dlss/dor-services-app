@@ -79,6 +79,7 @@ def perform_migrate(migrator_class:, obj:, mode:)
 
   migrator.migrate
   updated_cocina_object = obj.to_cocina_with_metadata # This validates the cocina object
+  Cocina::ObjectValidator.validate(updated_cocina_object) # This validation is performed by UpdateObjectService.
   raise 'Cannot version' if migrator.version? && !(VersionService.can_open?(updated_cocina_object) || VersionService.open?(updated_cocina_object))
 
   if mode == :migrate
@@ -87,7 +88,7 @@ def perform_migrate(migrator_class:, obj:, mode:)
     perform_version(cocina_object: updated_cocina_object, version_description: migrator.version_description) if migrator.version?
   end
   [obj.id, obj.external_identifier, 'SUCCESS']
-rescue Dry::Struct::Error, Cocina::Models::ValidationError => e
+rescue Dry::Struct::Error, Cocina::Models::ValidationError, Cocina::ValidationError => e
   [obj.id, obj.external_identifier, 'ERROR', e.message]
 end
 
