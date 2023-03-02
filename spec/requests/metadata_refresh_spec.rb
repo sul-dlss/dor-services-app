@@ -51,19 +51,17 @@ RSpec.describe 'Refresh metadata' do
     end
   end
 
-  let(:symphony_reader) { instance_double(Catalog::SymphonyReader, to_marc: marc) }
+  let(:marc_service) { Catalog::MarcService.new }
 
   before do
     allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
     allow(CocinaObjectStore).to receive(:find).with(apo_druid).and_return(cocina_apo_object)
     allow(UpdateObjectService).to receive(:update).and_return(updated_cocina_object)
+    allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
+    allow(marc_service).to receive(:marc_record).and_return(marc)
   end
 
   context 'when happy path' do
-    before do
-      allow(Catalog::SymphonyReader).to receive(:new).and_return(symphony_reader)
-    end
-
     it 'updates the metadata and saves the changes' do
       post '/v1/objects/druid:mk420bs7601/refresh_metadata',
            headers: { 'Authorization' => "Bearer #{jwt}" }
@@ -80,10 +78,6 @@ RSpec.describe 'Refresh metadata' do
       }
     end
 
-    before do
-      allow(Catalog::SymphonyReader).to receive(:new).and_return(symphony_reader)
-    end
-
     it 'updates the metadata and saves the changes' do
       post '/v1/objects/druid:mk420bs7601/refresh_metadata',
            headers: { 'Authorization' => "Bearer #{jwt}" }
@@ -97,20 +91,15 @@ RSpec.describe 'Refresh metadata' do
       build(:collection, id: druid)
     end
 
-    before do
-      allow(Catalog::SymphonyReader).to receive(:new).and_return(symphony_reader)
-    end
-
     it 'returns a 422 error' do
       post '/v1/objects/druid:mk420bs7601/refresh_metadata',
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(response.body).to match("#{druid} had no catkeys marked as refreshable")
+      expect(response.body).to match("#{druid} has no catalog links marked as refreshable")
     end
   end
 
-  describe 'errors in response from Symphony' do
-    let(:marc_url) { Settings.catalog.symphony.base_url + Settings.catalog.symphony.marcxml_path }
+  describe 'errors in response from catalog' do
     let(:identification) do
       {
         catalogLinks: [{
@@ -122,22 +111,11 @@ RSpec.describe 'Refresh metadata' do
       }
     end
 
-    context 'when incomplete response' do
-      before do
-        stub_request(:get, format(marc_url, catkey: '666')).to_return(body: '{}', headers: { 'Content-Length': 0 })
-      end
-
-      it 'returns a 500 error' do
-        post '/v1/objects/druid:mk420bs7601/refresh_metadata',
-             headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response).to have_http_status(:internal_server_error)
-        expect(response.body).to match('Incomplete response received from Symphony for 666 - expected 0 bytes but got 2')
-      end
-    end
+    let(:marc_service) { instance_double(Catalog::MarcService) }
 
     context 'when catkey not found' do
       before do
-        stub_request(:get, format(marc_url, catkey: '666')).to_return(status: 404)
+        allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogRecordNotFoundError)
       end
 
       it 'returns a 400 error' do
@@ -145,7 +123,7 @@ RSpec.describe 'Refresh metadata' do
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:bad_request)
         json = JSON.parse(response.body)
-        expect(json.dig('errors', 0, 'title')).to eq 'Catkey not found in Symphony'
+        expect(json.dig('errors', 0, 'title')).to eq 'Not found in catalog'
       end
     end
 
@@ -162,22 +140,24 @@ RSpec.describe 'Refresh metadata' do
       end
 
       before do
-        stub_request(:get, format(marc_url, catkey: '666')).to_return(status: 403, body: err_body.to_json)
+        allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogResponseError, 'Something went wrong')
       end
 
       it 'returns a 500 error' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:internal_server_error)
-        expect(response.body).to match(%r{Got HTTP Status-Code 403 calling https://sirsi.example.com/symws/catalog/bib/key/666\?includeFields=bib:.*Something somewhere went wrong.})
+        expect(response.body).to match('Something went wrong')
       end
     end
 
     context 'when transform error' do
       let(:xslt) { instance_double(Nokogiri::XSLT::Stylesheet) }
 
+      let(:marc_service) { Catalog::MarcService.new(barcode: '1234') }
+
       before do
-        allow(Catalog::SymphonyReader).to receive(:new).and_return(symphony_reader)
+        allow(marc_service).to receive(:marc_record).and_return(MARC::Record.new)
         allow(Nokogiri).to receive(:XSLT).and_return(xslt)
         allow(xslt).to receive(:transform).and_raise(RuntimeError, 'Cannot add attributes to an element if children have been already added to the element.')
       end

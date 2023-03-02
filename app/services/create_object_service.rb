@@ -76,10 +76,7 @@ class CreateObjectService
   def sync_from_catalog(cocina_request_object, druid)
     return cocina_request_object if cocina_request_object.admin_policy?
 
-    catkeys = RefreshMetadataAction.identifiers(cocina_object: cocina_request_object)
-    return cocina_request_object if catkeys.blank?
-
-    result = RefreshMetadataAction.run(identifiers: catkeys, cocina_object: cocina_request_object, druid:)
+    result = RefreshDescriptionFromCatalog.run(cocina_object: cocina_request_object, druid:)
     return cocina_request_object if result.failure?
 
     description_props = result.value!.description_props

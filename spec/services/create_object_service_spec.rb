@@ -11,6 +11,10 @@ RSpec.describe CreateObjectService do
     let(:catalog_links) { [] }
 
     let(:lock) { "#{druid}=0" }
+    let(:marc_service) do
+      instance_double(Catalog::MarcService, mods:, mods_ng: Nokogiri::XML(mods))
+    end
+    let(:mods) { nil }
 
     before do
       allow(Cocina::ObjectValidator).to receive(:validate)
@@ -19,7 +23,7 @@ RSpec.describe CreateObjectService do
       allow(store).to receive(:add_project_tag)
       allow(SuriService).to receive(:mint_id).and_return(druid)
       allow(EventFactory).to receive(:create)
-      allow(RefreshMetadataAction).to receive(:run)
+      allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
     end
 
     context 'when a DRO' do
@@ -36,7 +40,7 @@ RSpec.describe CreateObjectService do
         expect(store).to have_received(:add_project_tag).with(druid, requested_cocina_object)
         expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
         expect(EventFactory).to have_received(:create).with(druid:, event_type: 'registration', data: Hash)
-        expect(RefreshMetadataAction).not_to have_received(:run)
+        expect(Catalog::MarcService).not_to have_received(:new)
       end
     end
 
@@ -53,38 +57,27 @@ RSpec.describe CreateObjectService do
         expect(store).to have_received(:add_project_tag).with(druid, requested_cocina_object)
         expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
         expect(EventFactory).to have_received(:create).with(druid:, event_type: 'registration', data: Hash)
-        expect(RefreshMetadataAction).not_to have_received(:run)
+        expect(Catalog::MarcService).not_to have_received(:new)
       end
     end
 
     context 'when refreshing from symphony with a refresh=true catkey' do
       let(:requested_cocina_object) { build(:request_dro, catkeys: ['999123']) }
-      let(:description_props) do
-        {
-          title: [{ value: 'The Well-Grounded Rubyist' }],
-          purl: Purl.for(druid:)
-        }
-      end
 
       let(:mods) do
-        Nokogiri::XML(
-          <<~XML
-            <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.7">
-              <titleInfo>
-                <title>The Well-Grounded Rubyist</title>
-              </titleInfo>
-            </mods>
-          XML
-        )
-      end
-
-      before do
-        allow(RefreshMetadataAction).to receive(:run).and_return(Success(RefreshMetadataAction::Result.new(description_props, mods)))
+        <<~XML
+          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.7">
+            <titleInfo>
+              <title>The Well-Grounded Rubyist</title>
+            </titleInfo>
+          </mods>
+        XML
       end
 
       it 'adds to description' do
         expect(store.create(requested_cocina_object).description.title.first.value).to eq 'The Well-Grounded Rubyist'
-        expect(RefreshMetadataAction).to have_received(:run).with(identifiers: ['catkey:999123'], cocina_object: requested_cocina_object, druid:)
+        expect(Catalog::MarcService).to have_received(:new).with(catkey: '999123')
+        expect(marc_service).to have_received(:mods)
       end
     end
 
@@ -96,7 +89,7 @@ RSpec.describe CreateObjectService do
 
       it 'does not add to description' do
         store.create(requested_cocina_object)
-        expect(RefreshMetadataAction).not_to have_received(:run)
+        expect(Catalog::MarcService).not_to have_received(:new)
       end
     end
 
@@ -118,12 +111,12 @@ RSpec.describe CreateObjectService do
       let(:requested_cocina_object) { build(:request_dro, catkeys: ['999123']) }
 
       before do
-        allow(RefreshMetadataAction).to receive(:run).and_return(Failure())
+        allow(RefreshDescriptionFromCatalog).to receive(:run).and_return(Failure())
       end
 
       it 'does not cause a failure' do
         store.create(requested_cocina_object)
-        expect(RefreshMetadataAction).to have_received(:run).with(identifiers: ['catkey:999123'], cocina_object: requested_cocina_object, druid:)
+        expect(RefreshDescriptionFromCatalog).to have_received(:run).with(cocina_object: requested_cocina_object, druid:)
       end
     end
 
