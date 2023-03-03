@@ -18,53 +18,46 @@ module Catalog
       @thumbnail_service = thumbnail_service
     end
 
-    # @return [Array] all stub 856 records for this object (this is not a fully valid 856, but specific for transfer to symphony)
-    # catkey: the catalog key that associates a DOR object with a specific Symphony record.
-    # druid: the druid
-    # .856. 41 or 40 (depending on APO)
-    # Subfield u (required): the full Purl URL
-    # Subfield x #1 (required): The string SDR-PURL as a marker to identify 856 entries managed through DOR
-    # Subfield x #2 (required): Object type (<identityMetadata><objectType>) - item, collection,
-    #     (future types of sets to describe other aggregations like albums, atlases, etc)
-    # Subfield x #3 (required): The display type of the object.
-    #     use an explicit display type from the object if present (<identityMetadata><displayType>)
-    #     else use the value of the <contentMetadata> "type" attribute if present, e.g., image, book, file
-    #     else use the value "citation"
-    # Subfield x #4 (optional): the barcode if known (<identityMetadata><otherId name="barcode">, recorded as barcode:barcode-value
-    # Subfield x #5 (optional): the file-id to be used as thumb if available, recorded as file:file-id-value
-    # Subfield x #6..n (optional): Collection(s) this object is a member of, recorded as collection:druid-value:ckey-value:title
-    # Subfield x #7..n (optional): label and part sort keys for the member
-    # Subfield x #8..n (optional): High-level rights summary
+    # @return [Hash] all data required to create stub 856 records for this object
     def create
-      return [] if ckeys.empty? && previous_ckeys.empty?
+      return {} if ckeys.empty? && previous_ckeys.empty?
 
       # first create "blank" records for any previous catkeys
-      records = previous_ckeys.map { |previous_catkey| new_identifier_record(previous_catkey) }
+      record = {
+        previous_ckeys: previous_ckeys.map { |previous_catkey| new_identifier_record(previous_catkey) }
+      }
 
-      # now add the current ckey
       unless ckeys.empty?
         catalog_record_id = ckeys.first
-        records << (released_to_searchworks?(@cocina_object) ? new_856_record(catalog_record_id) : new_identifier_record(catalog_record_id))
+        record.merge!(released_to_searchworks?(@cocina_object) ? new_856_data(catalog_record_id) : new_identifier_record(catalog_record_id))
       end
 
-      records
+      record
     end
 
     private
 
-    # NOTE: this is a stub 856 record which is used to communicate with symphony (not a properly formatted 856 field nor a marc record)
-    def new_856_record(ckey)
-      new856 = "#{new_identifier_record(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{get_object_type_from_uri}"
-      new856 += "|xbarcode:#{@cocina_object.identification.barcode}" if @cocina_object.identification.respond_to?(:barcode) && @cocina_object.identification.barcode
-      new856 += "|xfile:#{thumb}" unless thumb.nil?
-      new856 += get_x2_collection_info unless get_x2_collection_info.nil?
-      new856 += get_x2_part_info unless get_x2_part_info.nil?
-      new856 += get_x2_rights_info unless get_x2_rights_info.nil?
-      new856
+    # NOTE: this is the data to serialize a stub 856 record which is used to communicate with symphony (not a properly formatted 856 field nor a marc record)
+    def new_856_data(ckey)
+      {
+        identifiers: new_identifier_record(ckey),
+        indicator: born_digital?, ## true => 40, false => 41
+        purl: "#{Settings.release.purl_base_url}/#{@druid_id}",
+        object_type: get_object_type_from_uri,
+        barcode:,
+        thumb:,
+        permissions: get_permissions_info,
+        collections: get_collection_info,
+        part: get_part_info,
+        rights: get_rights_info
+      }
     end
 
     def new_identifier_record(ckey)
-      "#{ckey}\t#{@druid_id}\t"
+      {
+        ckey:,
+        druid: @druid_id
+      }
     end
 
     # This should only be reached for dro and collection objects
@@ -75,85 +68,67 @@ module Catalog
       nil
     end
 
-    # returns 856 constants
-    def get_856_cons
-      '.856.'
-    end
-
-    # returns First Indicator for HTTP (4)
-    def get_1st_indicator
-      '4'
-    end
-
-    # returns Second Indicator for Version of resource
-    def get_2nd_indicator
-      born_digital? ? '0' : '1'
-    end
-
-    # returns text in the z field based on permissions
-    def get_z_field
+    def get_permissions_info
       return '' unless @access.view == 'stanford' || (@access.respond_to?(:location) && @access.location)
 
-      '|zAvailable to Stanford-affiliated users.'
+      'Available to Stanford-affiliated users.'
     end
 
-    # builds the PURL uri based on the druid id
-    def get_u_field
-      "|u#{Settings.release.purl_base_url}/#{@druid_id}"
-    end
-
-    # returns the SDR-PURL subfield
-    def get_x1_sdrpurl_marker
-      '|xSDR-PURL'
+    def barcode
+      @cocina_object.identification.barcode if @cocina_object.identification.respond_to?(:barcode)
     end
 
     # returns the collection information subfields if exists
     # @return [String] the collection information druid-value:catkey-value:title format
-    def get_x2_collection_info
+    # def get_x2_collection_info
+    def get_collection_info
       return unless @cocina_object.respond_to?(:structural) && @cocina_object.structural
 
       collections = @cocina_object.structural.isMemberOf
-      collection_info = ''
+      collection_info = []
 
       collections.each do |collection_druid|
         collection = CocinaObjectStore.find(collection_druid)
         next unless released_to_searchworks?(collection)
 
         catkey = collection.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
-        collection_info += "|xcollection:#{collection.externalIdentifier.sub('druid:',
-                                                                             '')}:#{catkey&.catalogRecordId}:#{Cocina::Models::Builders::TitleBuilder.build(collection.description.title)}"
+        collection_info << {
+          druid: collection.externalIdentifier.sub('druid:', ''),
+          ckey: catkey&.catalogRecordId,
+          label: Cocina::Models::Builders::TitleBuilder.build(collection.description.title)
+        }
       end
 
       collection_info
     end
 
-    def get_x2_part_info
-      str = ''
-      str += "|xlabel:#{part_label}" if part_label.present?
-      str += "|xsort:#{part_sort}" if part_sort.present?
-      str
+    def get_part_info
+      {}.tap do |part|
+        part[:label] = part_label if part_label.present?
+        part[:sort] = part_sort if part_sort.present?
+      end
     end
 
-    def get_x2_rights_info
-      return get_x2_collection_rights_info unless @access.respond_to?(:download)
+    def get_rights_info
+      return get_collection_rights_info unless @access.respond_to?(:download)
 
       values = []
 
-      values << 'rights:dark' if @access.view == 'dark'
+      values << 'dark' if @access.view == 'dark'
 
       if @access.view == 'world'
-        values << 'rights:world' if @access.download == 'world'
-        values << 'rights:citation' if @access.download == 'none'
+        values << 'world' if @access.download == 'world'
+        values << 'citation' if @access.download == 'none'
       end
-      values << 'rights:cdl' if @access.controlledDigitalLending
-      values << 'rights:group=stanford' if @access.view == 'stanford' && @access.download == 'stanford'
-      values << "rights:location=#{@access.location}" if @access.location
+      values << 'cdl' if @access.controlledDigitalLending
+      values << 'group=stanford' if @access.view == 'stanford' && @access.download == 'stanford'
+      values << "location=#{@access.location}" if @access.location
 
-      values.map { |value| "|x#{value}" }.join
+      values
     end
 
-    def get_x2_collection_rights_info
-      "|xrights:#{@access.view}"
+    def get_collection_rights_info
+      [@access.view]
     end
 
     def born_digital?
@@ -162,7 +137,7 @@ module Catalog
 
     def released_to_searchworks?(cocina_object)
       released_for = ::ReleaseTags.for(cocina_object:)
-      rel = released_for.transform_keys { |key| key.to_s.upcase } # upcase all release tags to make the check case insensitive
+      rel = released_for.transform_keys { |key| key.to_s.upcase }
       rel.dig('SEARCHWORKS', 'release').presence || false
     end
 
