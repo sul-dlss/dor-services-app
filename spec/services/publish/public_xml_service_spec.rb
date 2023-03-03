@@ -134,7 +134,9 @@ RSpec.describe Publish::PublicXmlService do
             barcode: '36105132211504',
             catalogLinks: [
               { catalog: 'previous symphony', catalogRecordId: '9001001001', refresh: false },
-              { catalog: 'symphony', catalogRecordId: '129483625', refresh: true }
+              { catalog: 'symphony', catalogRecordId: '129483625', refresh: true },
+              { catalog: 'previous folio', catalogRecordId: 'a9001001001', refresh: false },
+              { catalog: 'folio', catalogRecordId: 'a129483625', refresh: true }
             ],
             sourceId: 'sul:123'
           }
@@ -169,6 +171,7 @@ RSpec.describe Publish::PublicXmlService do
             <objectLabel>Constituent label &amp; A Special character</objectLabel>
             <sourceId source="sul">sul:123</sourceId>
             <otherId name="catkey">129483625</otherId>
+            <otherId name="folio_instance_hrid">a129483625</otherId>
             <otherId name="barcode">36105132211504</otherId>
           </identityMetadata>
         XML

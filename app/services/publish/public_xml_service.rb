@@ -73,14 +73,15 @@ module Publish
     end
 
     SYMPHONY = 'symphony'
+    FOLIO = 'folio'
 
     # catkeys are used by PURL
     # objectType is used by purl-fetcher
     # objectLabel is used by https://github.com/sul-dlss/searchworks_traject_indexer/blob/b5ed9906a5a0130eca5e68fbb0e8633bdbe6ffd6/lib/sdr_stuff.rb#L54
     # Barcode and sourceId are used by the CdlController in Stacks https://github.com/sul-dlss/stacks/blame/master/app/controllers/cdl_controller.rb#L121
     def public_identity_metadata
-      catkeys = Array(public_cocina.identification&.catalogLinks).filter_map { |link| link.catalogRecordId if link.catalog == SYMPHONY }
-      nodes = catkeys.map { |catkey| "  <otherId name=\"catkey\">#{catkey}</otherId>" }
+      nodes = catalog_record_ids(SYMPHONY).map { |catkey| "  <otherId name=\"catkey\">#{catkey}</otherId>" }
+      catalog_record_ids(FOLIO).each { |folio_instance_hrid| nodes << "  <otherId name=\"folio_instance_hrid\">#{folio_instance_hrid}</otherId>" }
       nodes << "  <sourceId source=\"sul\">#{public_cocina.identification.sourceId}</sourceId>" if public_cocina.identification.sourceId.present?
       nodes << "  <otherId name=\"barcode\">#{public_cocina.identification.barcode}</otherId>" if public_cocina.dro? && public_cocina.identification.barcode
 
@@ -93,6 +94,10 @@ module Publish
           </identityMetadata>
         XML
       )
+    end
+
+    def catalog_record_ids(catalog)
+      Array(public_cocina.identification&.catalogLinks).filter_map { |link| link.catalogRecordId if link.catalog == catalog }
     end
 
     # @return [Nokogiri::XML::Document] sanitized for public consumption
