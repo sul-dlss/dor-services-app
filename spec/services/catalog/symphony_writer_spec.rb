@@ -30,32 +30,21 @@ RSpec.describe Catalog::SymphonyWriter do
       let(:marc_records) do
         {
           previous_ckeys: [],
-          identifiers: {
-            ckey: '8832162',
-            druid: bare_druid
-          },
-          indicator: false,
-          permissions: '',
-          purl: "https://purl.stanford.edu/#{bare_druid}",
-          sdr_purl_marker: 'SDR-PURL',
-          object_type: 'item',
-          barcode: '36105216275185',
-          thumb: "#{bare_druid}%2Fwt183gy6220_00_0001.jp2",
-          collections: [
-            {
-              druid: collection_bare_druid,
-              ckey: '8832162',
-              label: 'Collection label & A Special character'
-            }
-          ],
-          part: {},
-          rights: [
-            'world'
-          ]
+          identifier: "8832162\t#{bare_druid}\t",
+          indicators: '41',
+          subfield_u: "|uhttps://purl.stanford.edu/#{bare_druid}",
+          subfield_z: '',
+          subfield_x1: '|xSDR-PURL',
+          subfield_x2: '|xitem',
+          subfield_x4: '|xbarcode:36105216275185',
+          subfield_x5: "|xfile:#{bare_druid}%2Fwt183gy6220_00_0001.jp2",
+          subfield_x6: "|xcollection:#{collection_bare_druid}:8832162:Collection label & A Special character",
+          subfield_x7: '',
+          subfield_x8: '|xrights:world'
         }
       end
       let(:marc856) do
-        Shellwords.escape('8832162.856. 41|z|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xworld')
+        Shellwords.escape("8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label & A Special character|xrights:world")
       end
 
       it 'writes the record' do
@@ -70,41 +59,21 @@ RSpec.describe Catalog::SymphonyWriter do
       let(:marc_records) do
         {
           previous_ckeys: [
-            {
-              ckey: '123',
-              druid: 'bc123dg9393'
-            },
-            {
-              ckey: '456',
-              druid: 'bc123dg9393'
-            }
+            "123\tbc123dg9393",
+            "456\tbc123dg9393"
           ],
-          identifiers: {
-            ckey: '8832162',
-            druid: bare_druid
-          },
-          indicator: false,
-          permissions: '',
-          purl: "https://purl.stanford.edu/#{bare_druid}",
-          sdr_purl_marker: 'SDR-PURL',
-          object_type: 'item',
-          barcode: '36105216275185',
-          thumb: "#{bare_druid}%2Fwt183gy6220_00_0001.jp2",
-          collections: [
-            {
-              druid: collection_bare_druid,
-              ckey: '8832162',
-              label: 'Collection label & A Special character'
-            }
-          ],
-          part: {},
-          rights: [
-            'world'
-          ]
+          identifier: "8832162\t#{bare_druid}\t",
+          indicators: '41',
+          subfield_u: "|uhttps://purl.stanford.edu/#{bare_druid}",
+          subfield_z: '',
+          subfield_x1: '|xSDR-PURL',
+          subfield_x2: '|xitem',
+          subfield_x4: '|xbarcode:36105216275185',
+          subfield_x5: "|xfile:#{bare_druid}%2Fwt183gy6220_00_0001.jp2",
+          subfield_x6: "|xcollection:#{collection_bare_druid}:8832162:Collection label & A Special character",
+          subfield_x7: '',
+          subfield_x8: '|xrights:world'
         }
-      end
-      let(:marc856) do
-        Shellwords.escape('8832162.856. 41|z|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xworld')
       end
 
       it 'writes the record' do
@@ -113,7 +82,7 @@ RSpec.describe Catalog::SymphonyWriter do
         file_output = File.read(output_file)
         expect(file_output).to include '123'
         expect(file_output).to include '456'
-        expect(file_output).to include "#{marc856}\n"
+        expect(file_output).to include '8832162'
       end
     end
 

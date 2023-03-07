@@ -19,6 +19,22 @@ module Catalog
     end
 
     # @return [Hash] all data required to create stub 856 records for this object
+    # catkey: the catalog key that associates a DOR object with a specific Symphony record.
+    # druid: the druid
+    # .856. 41 or 40 (depending on APO)
+    # Subfield u (required): the full Purl URL
+    # Subfield x #1 (required): The string SDR-PURL as a marker to identify 856 entries managed through DOR
+    # Subfield x #2 (required): Object type (<identityMetadata><objectType>) - item, collection,
+    #     (future types of sets to describe other aggregations like albums, atlases, etc)
+    # Subfield x #3 (required): The display type of the object.
+    #     use an explicit display type from the object if present (<identityMetadata><displayType>)
+    #     else use the value of the <contentMetadata> "type" attribute if present, e.g., image, book, file
+    #     else use the value "citation"
+    # Subfield x #4 (optional): the barcode if known (<identityMetadata><otherId name="barcode">, recorded as barcode:barcode-value
+    # Subfield x #5 (optional): the file-id to be used as thumb if available, recorded as file:file-id-value
+    # Subfield x #6..n (optional): Collection(s) this object is a member of, recorded as collection:druid-value:ckey-value:title
+    # Subfield x #7..n (optional): label and part sort keys for the member
+    # Subfield x #8..n (optional): High-level rights summary
     def create
       return {} if ckeys.empty? && previous_ckeys.empty?
 
@@ -40,95 +56,109 @@ module Catalog
     # NOTE: this is the data to serialize a stub 856 record which is used to communicate with symphony (not a properly formatted 856 field nor a marc record)
     def new_856_data(ckey)
       {
-        identifiers: new_identifier_record(ckey),
-        indicator: born_digital?, ## true => 40, false => 41
-        purl: "#{Settings.release.purl_base_url}/#{@druid_id}",
-        object_type: get_object_type_from_uri,
-        barcode:,
-        thumb:,
-        permissions: get_permissions_info,
-        collections: get_collection_info,
-        part: get_part_info,
-        rights: get_rights_info
+        identifier: new_identifier_record(ckey),
+        indicators: [first_indicator, second_indicator].join,
+        subfield_z:,
+        subfield_u:,
+        subfield_x1:,
+        subfield_x2:,
+        subfield_x4:,
+        subfield_x5:,
+        subfield_x6:,
+        subfield_x7:,
+        subfield_x8:
       }
     end
 
     def new_identifier_record(ckey)
-      {
-        ckey:,
-        druid: @druid_id
-      }
+      "#{ckey}\t#{@druid_id}\t"
     end
 
     # This should only be reached for dro and collection objects
-    def get_object_type_from_uri
-      return 'item' if @cocina_object.dro?
-      return 'collection' if @cocina_object.collection?
+    def subfield_x2
+      return '|xitem' if @cocina_object.dro?
+      return '|xcollection' if @cocina_object.collection?
 
       nil
     end
 
-    def get_permissions_info
-      return '' unless @access.view == 'stanford' || (@access.respond_to?(:location) && @access.location)
-
-      'Available to Stanford-affiliated users.'
+    # returns the SDR-PURL subfield
+    def subfield_x1
+      '|xSDR-PURL'
     end
 
-    def barcode
-      @cocina_object.identification.barcode if @cocina_object.identification.respond_to?(:barcode)
+    def subfield_z
+      return '' unless @access.view == 'stanford' || (@access.respond_to?(:location) && @access.location)
+
+      '|zAvailable to Stanford-affiliated users.'
+    end
+
+    def subfield_u
+      "|u#{Settings.release.purl_base_url}/#{@druid_id}"
+    end
+
+    def subfield_x4
+      return unless @cocina_object.identification.respond_to?(:barcode) && @cocina_object.identification.barcode
+
+      "|xbarcode:#{@cocina_object.identification.barcode}"
     end
 
     # returns the collection information subfields if exists
     # @return [String] the collection information druid-value:catkey-value:title format
     # def get_x2_collection_info
-    def get_collection_info
+    def subfield_x6
       return unless @cocina_object.respond_to?(:structural) && @cocina_object.structural
 
       collections = @cocina_object.structural.isMemberOf
-      collection_info = []
+      collection_info = ''
 
       collections.each do |collection_druid|
         collection = CocinaObjectStore.find(collection_druid)
         next unless released_to_searchworks?(collection)
 
         catkey = collection.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
-        collection_info << {
-          druid: collection.externalIdentifier.sub('druid:', ''),
-          ckey: catkey&.catalogRecordId,
-          label: Cocina::Models::Builders::TitleBuilder.build(collection.description.title)
-        }
+        collection_info += "|xcollection:#{collection.externalIdentifier.sub('druid:',
+                                                                             '')}:#{catkey&.catalogRecordId}:#{Cocina::Models::Builders::TitleBuilder.build(collection.description.title)}"
       end
 
       collection_info
     end
 
-    def get_part_info
-      {}.tap do |part|
-        part[:label] = part_label if part_label.present?
-        part[:sort] = part_sort if part_sort.present?
-      end
+    def subfield_x7
+      str = ''
+      str += "|xlabel:#{part_label}" if part_label.present?
+      str += "|xsort:#{part_sort}" if part_sort.present?
+      str
     end
 
-    def get_rights_info
+    def subfield_x8
       return get_collection_rights_info unless @access.respond_to?(:download)
 
       values = []
 
-      values << 'dark' if @access.view == 'dark'
+      values << 'rights:dark' if @access.view == 'dark'
 
       if @access.view == 'world'
-        values << 'world' if @access.download == 'world'
-        values << 'citation' if @access.download == 'none'
+        values << 'rights:world' if @access.download == 'world'
+        values << 'rights:citation' if @access.download == 'none'
       end
-      values << 'cdl' if @access.controlledDigitalLending
-      values << 'group=stanford' if @access.view == 'stanford' && @access.download == 'stanford'
-      values << "location=#{@access.location}" if @access.location
+      values << 'rights:cdl' if @access.controlledDigitalLending
+      values << 'rights:group=stanford' if @access.view == 'stanford' && @access.download == 'stanford'
+      values << "rights:location=#{@access.location}" if @access.location
 
-      values
+      values.map { |value| "|x#{value}" }.join
     end
 
     def get_collection_rights_info
-      [@access.view]
+      "|xrights:#{@access.view}"
+    end
+
+    def first_indicator
+      '4'
+    end
+
+    def second_indicator
+      born_digital? ? '0' : '1'
     end
 
     def born_digital?
@@ -172,8 +202,10 @@ module Catalog
 
     # the @id attribute of resource/file elements including extension
     # @return [String] thumbnail filename (nil if none found)
-    def thumb
-      @thumb ||= ERB::Util.url_encode(@thumbnail_service.thumb).presence
+    def subfield_x5
+      return unless @thumbnail_service.thumb
+
+      "|xfile:#{ERB::Util.url_encode(@thumbnail_service.thumb)}"
     end
 
     def part_types

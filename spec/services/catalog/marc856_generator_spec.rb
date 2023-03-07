@@ -180,27 +180,17 @@ RSpec.describe Catalog::Marc856Generator do
       let(:result) do
         {
           previous_ckeys: [],
-          identifiers: {
-            ckey: '8832162',
-            druid: bare_druid
-          },
-          indicator: false,
-          permissions: '',
-          purl: "https://purl.stanford.edu/#{bare_druid}",
-          object_type: 'item',
-          barcode: '36105216275185',
-          thumb: "#{bare_druid}%2Fwt183gy6220_00_0001.jp2",
-          collections: [
-            {
-              druid: collection_bare_druid,
-              ckey: '8832162',
-              label: 'Collection label & A Special character'
-            }
-          ],
-          part: {},
-          rights: [
-            'world'
-          ]
+          identifier: "8832162\t#{bare_druid}\t",
+          indicators: '41',
+          subfield_u: "|uhttps://purl.stanford.edu/#{bare_druid}",
+          subfield_x2: '|xitem',
+          subfield_x4: '|xbarcode:36105216275185',
+          subfield_x5: "|xfile:#{bare_druid}%2Fwt183gy6220_00_0001.jp2",
+          subfield_z: '',
+          subfield_x1: '|xSDR-PURL',
+          subfield_x6: "|xcollection:#{collection_bare_druid}:8832162:Collection label & A Special character",
+          subfield_x7: '',
+          subfield_x8: '|xrights:world'
         }
       end
 
@@ -220,27 +210,17 @@ RSpec.describe Catalog::Marc856Generator do
       let(:result) do
         {
           previous_ckeys: [],
-          identifiers: {
-            ckey: '8832162',
-            druid: bare_druid
-          },
-          indicator: false,
-          permissions: 'Available to Stanford-affiliated users.',
-          purl: "https://purl.stanford.edu/#{bare_druid}",
-          object_type: 'item',
-          barcode: '36105216275185',
-          thumb: "#{bare_druid}%2Fwt183gy6220_00_0001.jp2",
-          collections: [
-            {
-              druid: collection_bare_druid,
-              ckey: '8832162',
-              label: 'Collection label & A Special character'
-            }
-          ],
-          part: {},
-          rights: [
-            'group=stanford'
-          ]
+          identifier: "8832162\t#{bare_druid}\t",
+          indicators: '41',
+          subfield_u: "|uhttps://purl.stanford.edu/#{bare_druid}",
+          subfield_x2: '|xitem',
+          subfield_x4: '|xbarcode:36105216275185',
+          subfield_x5: "|xfile:#{bare_druid}%2Fwt183gy6220_00_0001.jp2",
+          subfield_z: '|zAvailable to Stanford-affiliated users.',
+          subfield_x1: '|xSDR-PURL',
+          subfield_x6: "|xcollection:#{collection_bare_druid}:8832162:Collection label & A Special character",
+          subfield_x7: '',
+          subfield_x8: '|xrights:group=stanford'
         }
       end
 
@@ -260,36 +240,20 @@ RSpec.describe Catalog::Marc856Generator do
       let(:result) do
         {
           previous_ckeys: [
-            {
-              ckey: '123',
-              druid: 'bc123dg9393'
-            },
-            {
-              ckey: '456',
-              druid: 'bc123dg9393'
-            }
+            "123\tbc123dg9393\t",
+            "456\tbc123dg9393\t"
           ],
-          identifiers: {
-            ckey: '8832162',
-            druid: bare_druid
-          },
-          indicator: false,
-          permissions: '',
-          purl: "https://purl.stanford.edu/#{bare_druid}",
-          object_type: 'item',
-          barcode: nil,
-          thumb: "#{bare_druid}%2Fwt183gy6220_00_0001.jp2",
-          collections: [
-            {
-              druid: collection_bare_druid,
-              ckey: '8832162',
-              label: 'Collection label & A Special character'
-            }
-          ],
-          part: {},
-          rights: [
-            'world'
-          ]
+          identifier: "8832162\t#{bare_druid}\t",
+          indicators: '41',
+          subfield_u: "|uhttps://purl.stanford.edu/#{bare_druid}",
+          subfield_x2: '|xitem',
+          subfield_x4: nil,
+          subfield_x5: "|xfile:#{bare_druid}%2Fwt183gy6220_00_0001.jp2",
+          subfield_z: '',
+          subfield_x1: '|xSDR-PURL',
+          subfield_x6: "|xcollection:#{collection_bare_druid}:8832162:Collection label & A Special character",
+          subfield_x7: '',
+          subfield_x8: '|xrights:world'
         }
       end
 
@@ -322,14 +286,8 @@ RSpec.describe Catalog::Marc856Generator do
       let(:result) do
         {
           previous_ckeys: [
-            {
-              ckey: '123',
-              druid: 'bc123dg9393'
-            },
-            {
-              ckey: '456',
-              druid: 'bc123dg9393'
-            }
+            "123\tbc123dg9393\t",
+            "456\tbc123dg9393\t"
           ]
         }
       end
@@ -351,21 +309,17 @@ RSpec.describe Catalog::Marc856Generator do
       let(:result) do
         {
           previous_ckeys: [],
-          identifiers: {
-            ckey: '8832162',
-            druid: collection_bare_druid
-          },
-          indicator: false,
-          permissions: '',
-          purl: "https://purl.stanford.edu/#{collection_bare_druid}",
-          object_type: 'collection',
-          barcode: nil,
-          thumb: nil,
-          collections: nil,
-          part: {},
-          rights: [
-            'world'
-          ]
+          identifier: "8832162\t#{collection_bare_druid}\t",
+          indicators: '41',
+          subfield_u: "|uhttps://purl.stanford.edu/#{collection_bare_druid}",
+          subfield_x2: '|xcollection',
+          subfield_x4: nil,
+          subfield_x5: nil,
+          subfield_z: '',
+          subfield_x1: '|xSDR-PURL',
+          subfield_x6: nil,
+          subfield_x7: '',
+          subfield_x8: '|xrights:world'
         }
       end
 
@@ -407,19 +361,14 @@ RSpec.describe Catalog::Marc856Generator do
 
   describe '.new_identifier_record' do
     let(:ckey) { '1234' }
-    let(:result) do
-      {
-        ckey:,
-        druid: bare_druid
-      }
-    end
+    let(:result) { "#{ckey}\t#{bare_druid}\t" }
 
     it 'returns a stub identifier record with the catkey and the druid' do
       expect(marc_856_generator.send(:new_identifier_record, ckey)).to eq result
     end
   end
 
-  describe '.get_z_field' do
+  describe '.subfield_z' do
     context 'with rights metadata world' do
       let(:cocina_object) do
         build(:dro, id: druid).new(
@@ -428,7 +377,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns a blank z message' do
-        expect(marc_856_generator.send(:get_permissions_info)).to eq('')
+        expect(marc_856_generator.send(:subfield_z)).to eq('')
       end
     end
 
@@ -440,7 +389,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns a non-blank z message' do
-        expect(marc_856_generator.send(:get_permissions_info)).to eq('Available to Stanford-affiliated users.')
+        expect(marc_856_generator.send(:subfield_z)).to eq('|zAvailable to Stanford-affiliated users.')
       end
     end
 
@@ -452,12 +401,12 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns a non-blank z message for a location restricted object' do
-        expect(marc_856_generator.send(:get_permissions_info)).to eq('Available to Stanford-affiliated users.')
+        expect(marc_856_generator.send(:subfield_z)).to eq('|zAvailable to Stanford-affiliated users.')
       end
     end
   end
 
-  describe '.get_collection_info' do
+  describe '.subfield_x6' do
     let(:cocina_object) do
       build(:dro, id: druid).new(
         structural: {
@@ -480,12 +429,12 @@ RSpec.describe Catalog::Marc856Generator do
     end
 
     it 'returns an empty string for an object without collection' do
-      expect(marc_856_generator.send(:get_collection_info)).to be_empty
+      expect(marc_856_generator.send(:subfield_x6)).to be_empty
     end
 
     context 'when a collection object' do
       it 'returns an empty string' do
-        expect(marc_856_generator.send(:get_collection_info)).to be_empty
+        expect(marc_856_generator.send(:subfield_x6)).to be_empty
       end
     end
 
@@ -498,7 +447,7 @@ RSpec.describe Catalog::Marc856Generator do
 
       it 'does not return information for the collection object' do
         allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
-        expect(marc_856_generator.send(:get_collection_info)).to eq([])
+        expect(marc_856_generator.send(:subfield_x6)).to eq('')
       end
     end
 
@@ -513,7 +462,7 @@ RSpec.describe Catalog::Marc856Generator do
 
       it 'does not return information for the collection object' do
         allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
-        expect(marc_856_generator.send(:get_collection_info)).to eq([])
+        expect(marc_856_generator.send(:subfield_x6)).to eq('')
       end
     end
 
@@ -525,28 +474,19 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       let(:release_data) { { 'Searchworks' => { 'release' => true } } }
-
-      let(:result) do
-        [
-          {
-            druid: 'cc111cc1111',
-            ckey: '8832162',
-            label: 'Collection label & A Special character'
-          }
-        ]
-      end
+      let(:result) { "|xcollection:#{collection_bare_druid}:8832162:Collection label & A Special character" }
 
       it 'returns the appropriate information for the collection object' do
         allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
-        expect(marc_856_generator.send(:get_collection_info)).to eq result
+        expect(marc_856_generator.send(:subfield_x6)).to eq result
       end
     end
   end
 
-  describe '#get_x2_part_info' do
+  describe '#subfield_x7' do
     context 'with descMetadata without part information' do
       it 'returns an empty string for objects with part information' do
-        expect(marc_856_generator.send(:get_part_info)).to be_empty
+        expect(marc_856_generator.send(:subfield_x7)).to be_empty
       end
     end
 
@@ -578,7 +518,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns a part label' do
-        expect(marc_856_generator.send(:get_part_info)).to eq({ label: '55th legislature, 1997-1998' })
+        expect(marc_856_generator.send(:subfield_x7)).to eq('|xlabel:55th legislature, 1997-1998')
       end
     end
 
@@ -610,7 +550,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns a part label' do
-        expect(marc_856_generator.send(:get_part_info)).to eq({ label: 'Issue #3. 2011' })
+        expect(marc_856_generator.send(:subfield_x7)).to eq('|xlabel:Issue #3. 2011')
       end
     end
 
@@ -648,7 +588,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns both the label and part number' do
-        expect(marc_856_generator.send(:get_part_info)).to eq({ label: 'Issue #3. 2011', sort: '123' })
+        expect(marc_856_generator.send(:subfield_x7)).to eq('|xlabel:Issue #3. 2011|xsort:123')
       end
     end
 
@@ -680,7 +620,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns both the label and part number' do
-        expect(marc_856_generator.send(:get_part_info)).to eq({ label: 'Issue #3. 2011' })
+        expect(marc_856_generator.send(:subfield_x7)).to eq('|xlabel:Issue #3. 2011')
       end
     end
 
@@ -718,7 +658,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns both the label and part number' do
-        expect(marc_856_generator.send(:get_part_info)).to eq({ label: 'Issue #3. 2011', sort: '2011' })
+        expect(marc_856_generator.send(:subfield_x7)).to eq('|xlabel:Issue #3. 2011|xsort:2011')
       end
     end
 
@@ -763,7 +703,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns the label from the primary title' do
-        expect(marc_856_generator.send(:get_part_info)).to eq({ label: 'Issue #3. 2011' })
+        expect(marc_856_generator.send(:subfield_x7)).to eq('|xlabel:Issue #3. 2011')
       end
     end
 
@@ -807,7 +747,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns the label from the first title' do
-        expect(marc_856_generator.send(:get_part_info)).to eq({ label: 'Issue #3. 2011' })
+        expect(marc_856_generator.send(:subfield_x7)).to eq('|xlabel:Issue #3. 2011')
       end
     end
 
@@ -842,7 +782,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns the label from the parallel title' do
-        expect(marc_856_generator.send(:get_part_info)).to eq({ label: 'Issue #3' })
+        expect(marc_856_generator.send(:subfield_x7)).to eq('|xlabel:Issue #3')
       end
     end
 
@@ -883,20 +823,20 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns the label from the parallel title' do
-        expect(marc_856_generator.send(:get_part_info)).to eq({ label: 'Issue #3', sort: '123' })
+        expect(marc_856_generator.send(:subfield_x7)).to eq('|xlabel:Issue #3|xsort:123')
       end
     end
   end
 
-  describe '#get_rights_info' do
-    subject(:rights_info) { marc_856_generator.send :get_rights_info }
+  describe '#subfield_x8' do
+    subject(:rights_info) { marc_856_generator.send :subfield_x8 }
 
     context 'with world rights' do
       let(:cocina_object) do
         build(:dro, id: druid).new(access: access_world)
       end
 
-      it { is_expected.to eq ['world'] }
+      it { is_expected.to eq '|xrights:world' }
     end
 
     context 'with stanford-only rights' do
@@ -904,7 +844,7 @@ RSpec.describe Catalog::Marc856Generator do
         build(:dro, id: druid).new(access: access_stanford_only)
       end
 
-      it { is_expected.to eq ['group=stanford'] }
+      it { is_expected.to eq '|xrights:group=stanford' }
     end
 
     context 'with view-world stanford-download rights' do
@@ -912,7 +852,7 @@ RSpec.describe Catalog::Marc856Generator do
         build(:dro, id: druid).new(access: access_world_stanford)
       end
 
-      it { is_expected.to eq [] }
+      it { is_expected.to eq '' }
     end
 
     context 'with stanford-only download none rights' do
@@ -920,7 +860,7 @@ RSpec.describe Catalog::Marc856Generator do
         build(:dro, id: druid).new(access: access_stanford_download_none)
       end
 
-      it { is_expected.to eq [] }
+      it { is_expected.to eq '' }
     end
 
     context 'with CDL rights' do
@@ -928,7 +868,7 @@ RSpec.describe Catalog::Marc856Generator do
         build(:dro, id: druid).new(access: access_stanford_cdl)
       end
 
-      it { is_expected.to eq ['cdl'] }
+      it { is_expected.to eq '|xrights:cdl' }
     end
 
     context 'with location rights' do
@@ -936,7 +876,7 @@ RSpec.describe Catalog::Marc856Generator do
         build(:dro, id: druid).new(access: access_location)
       end
 
-      it { is_expected.to eq ['location=spec'] }
+      it { is_expected.to eq '|xrights:location=spec' }
     end
 
     context 'with citation rights' do
@@ -949,11 +889,11 @@ RSpec.describe Catalog::Marc856Generator do
         )
       end
 
-      it { is_expected.to eq ['citation'] }
+      it { is_expected.to eq '|xrights:citation' }
     end
 
     context 'with dark rights' do
-      it { is_expected.to eq ['dark'] }
+      it { is_expected.to eq '|xrights:dark' }
     end
   end
 
@@ -1015,14 +955,14 @@ RSpec.describe Catalog::Marc856Generator do
     end
   end
 
-  describe '#thumb' do
-    subject(:thumb) { marc_856_generator.send(:thumb) }
+  describe '#subfield_x5' do
+    subject(:thumb) { marc_856_generator.send(:subfield_x5) }
 
     context 'with valid structural metadata' do
       let(:cocina_object) { build(:dro, id: druid).new(structural: structural_metadata) }
 
       it 'returns a thumb' do
-        expect(thumb).to eq 'bc123dg9393%2Fwt183gy6220_00_0001.jp2'
+        expect(thumb).to eq '|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2'
       end
     end
 

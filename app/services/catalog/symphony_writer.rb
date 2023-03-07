@@ -37,74 +37,23 @@ module Catalog
     def generate_856_record
       [
         previous_identifiers,
-        data_for_marc[:identifiers][:ckey],
+        data_for_marc[:identifier],
         '.856. ',
-        indicator,
-        permissions,
-        purl,
-        type,
-        barcode,
-        thumb,
-        collections,
-        parts,
-        rights
+        data_for_marc[:indicators],
+        data_for_marc[:subfield_z],
+        data_for_marc[:subfield_u],
+        data_for_marc[:subfield_x1],
+        data_for_marc[:subfield_x2],
+        data_for_marc[:subfield_x4],
+        data_for_marc[:subfield_x5],
+        data_for_marc[:subfield_x6],
+        data_for_marc[:subfield_x7],
+        data_for_marc[:subfield_x8]
       ].join
     end
 
     def previous_identifiers
-      data_for_marc[:previous_ckeys].map { |previous_ckey| "#{previous_ckey[:ckey]}\\t#{previous_ckey[:druid]} \\n" }.join
-    end
-
-    def indicator
-      data_for_marc[:indicator] ? '40' : '41'
-    end
-
-    def permissions
-      "|z#{data_for_marc[:permissions]}"
-    end
-
-    def purl
-      "|u#{data_for_marc[:purl]}|xSDR-PURL"
-    end
-
-    def type
-      "|x#{data_for_marc[:object_type]}"
-    end
-
-    def barcode
-      return if data_for_marc[:barcode].nil?
-
-      "|xbarcode:#{data_for_marc[:barcode]}"
-    end
-
-    def thumb
-      return if data_for_marc[:thumb].nil?
-
-      "|xfile:#{data_for_marc[:thumb]}"
-    end
-
-    def collections
-      return unless data_for_marc[:collections]
-
-      ''.tap do |coll_string|
-        data_for_marc[:collections].each do |collection|
-          coll_string += "|x#{collection[:druid]}:#{collection[:ckey]}:#{collection[:label]}"
-        end
-      end
-    end
-
-    def parts
-      return unless data_for_marc[:part]
-
-      part_string = ''
-      part_string += "|x#{data_for_marc[:part][:label]}" if data_for_marc[:part][:label]
-      part_string += "|x#{data_for_marc[:part][:sort]}" if data_for_marc[:part][:sort]
-
-      part_string
-    end
-
-    def rights
-      data_for_marc[:rights].map { |value| "|x#{value}" }.join
+      data_for_marc[:previous_ckeys].map { |previous_ckey| "#{previous_ckey}\\n" }.join
     end
   end
 end
