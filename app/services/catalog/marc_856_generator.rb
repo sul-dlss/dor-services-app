@@ -18,7 +18,7 @@ module Catalog
       @thumbnail_service = thumbnail_service
     end
 
-    # @return [Array] all stub 856 records for this object (this is not a fully valid 856, but specific for transfer to symphony)
+    # @return [Hash] all data required to create stub 856 records for this object
     # catkey: the catalog key that associates a DOR object with a specific Symphony record.
     # druid: the druid
     # .856. 41 or 40 (depending on APO)
@@ -36,31 +36,38 @@ module Catalog
     # Subfield x #7..n (optional): label and part sort keys for the member
     # Subfield x #8..n (optional): High-level rights summary
     def create
-      return [] if ckeys.empty? && previous_ckeys.empty?
+      return {} if ckeys.empty? && previous_ckeys.empty?
 
       # first create "blank" records for any previous catkeys
-      records = previous_ckeys.map { |previous_catkey| new_identifier_record(previous_catkey) }
+      record = {
+        previous_ckeys: previous_ckeys.map { |previous_catkey| new_identifier_record(previous_catkey) }
+      }
 
-      # now add the current ckey
       unless ckeys.empty?
         catalog_record_id = ckeys.first
-        records << (released_to_searchworks?(@cocina_object) ? new_856_record(catalog_record_id) : new_identifier_record(catalog_record_id))
+        record.merge!(released_to_searchworks?(@cocina_object) ? new_856_data(catalog_record_id) : new_identifier_record(catalog_record_id))
       end
 
-      records
+      record
     end
 
     private
 
-    # NOTE: this is a stub 856 record which is used to communicate with symphony (not a properly formatted 856 field nor a marc record)
-    def new_856_record(ckey)
-      new856 = "#{new_identifier_record(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{get_object_type_from_uri}"
-      new856 += "|xbarcode:#{@cocina_object.identification.barcode}" if @cocina_object.identification.respond_to?(:barcode) && @cocina_object.identification.barcode
-      new856 += "|xfile:#{thumb}" unless thumb.nil?
-      new856 += get_x2_collection_info unless get_x2_collection_info.nil?
-      new856 += get_x2_part_info unless get_x2_part_info.nil?
-      new856 += get_x2_rights_info unless get_x2_rights_info.nil?
-      new856
+    # NOTE: this is the data to serialize a stub 856 record which is used to communicate with symphony (not a properly formatted 856 field nor a marc record)
+    def new_856_data(ckey)
+      {
+        identifier: new_identifier_record(ckey),
+        indicators: [first_indicator, second_indicator].join,
+        subfield_z:,
+        subfield_u:,
+        subfield_x1:,
+        subfield_x2:,
+        subfield_x4:,
+        subfield_x5:,
+        subfield_x6:,
+        subfield_x7:,
+        subfield_x8:
+      }
     end
 
     def new_identifier_record(ckey)
@@ -68,48 +75,38 @@ module Catalog
     end
 
     # This should only be reached for dro and collection objects
-    def get_object_type_from_uri
-      return 'item' if @cocina_object.dro?
-      return 'collection' if @cocina_object.collection?
+    def subfield_x2
+      return '|xitem' if @cocina_object.dro?
+      return '|xcollection' if @cocina_object.collection?
 
       nil
     end
 
-    # returns 856 constants
-    def get_856_cons
-      '.856.'
+    # returns the SDR-PURL subfield
+    def subfield_x1
+      '|xSDR-PURL'
     end
 
-    # returns First Indicator for HTTP (4)
-    def get_1st_indicator
-      '4'
-    end
-
-    # returns Second Indicator for Version of resource
-    def get_2nd_indicator
-      born_digital? ? '0' : '1'
-    end
-
-    # returns text in the z field based on permissions
-    def get_z_field
+    def subfield_z
       return '' unless @access.view == 'stanford' || (@access.respond_to?(:location) && @access.location)
 
       '|zAvailable to Stanford-affiliated users.'
     end
 
-    # builds the PURL uri based on the druid id
-    def get_u_field
+    def subfield_u
       "|u#{Settings.release.purl_base_url}/#{@druid_id}"
     end
 
-    # returns the SDR-PURL subfield
-    def get_x1_sdrpurl_marker
-      '|xSDR-PURL'
+    def subfield_x4
+      return unless @cocina_object.identification.respond_to?(:barcode) && @cocina_object.identification.barcode
+
+      "|xbarcode:#{@cocina_object.identification.barcode}"
     end
 
     # returns the collection information subfields if exists
     # @return [String] the collection information druid-value:catkey-value:title format
-    def get_x2_collection_info
+    # def get_x2_collection_info
+    def subfield_x6
       return unless @cocina_object.respond_to?(:structural) && @cocina_object.structural
 
       collections = @cocina_object.structural.isMemberOf
@@ -127,15 +124,15 @@ module Catalog
       collection_info
     end
 
-    def get_x2_part_info
+    def subfield_x7
       str = ''
       str += "|xlabel:#{part_label}" if part_label.present?
       str += "|xsort:#{part_sort}" if part_sort.present?
       str
     end
 
-    def get_x2_rights_info
-      return get_x2_collection_rights_info unless @access.respond_to?(:download)
+    def subfield_x8
+      return get_collection_rights_info unless @access.respond_to?(:download)
 
       values = []
 
@@ -152,8 +149,16 @@ module Catalog
       values.map { |value| "|x#{value}" }.join
     end
 
-    def get_x2_collection_rights_info
+    def get_collection_rights_info
       "|xrights:#{@access.view}"
+    end
+
+    def first_indicator
+      '4'
+    end
+
+    def second_indicator
+      born_digital? ? '0' : '1'
     end
 
     def born_digital?
@@ -162,7 +167,7 @@ module Catalog
 
     def released_to_searchworks?(cocina_object)
       released_for = ::ReleaseTags.for(cocina_object:)
-      rel = released_for.transform_keys { |key| key.to_s.upcase } # upcase all release tags to make the check case insensitive
+      rel = released_for.transform_keys { |key| key.to_s.upcase }
       rel.dig('SEARCHWORKS', 'release').presence || false
     end
 
@@ -197,8 +202,10 @@ module Catalog
 
     # the @id attribute of resource/file elements including extension
     # @return [String] thumbnail filename (nil if none found)
-    def thumb
-      @thumb ||= ERB::Util.url_encode(@thumbnail_service.thumb).presence
+    def subfield_x5
+      return unless @thumbnail_service.thumb
+
+      "|xfile:#{ERB::Util.url_encode(@thumbnail_service.thumb)}"
     end
 
     def part_types
