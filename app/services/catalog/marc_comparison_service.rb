@@ -2,7 +2,7 @@
 
 module Catalog
   # service for comparing MARC retrieved from Symphony vs MARC retrieved from Folio
-  # This class is not permanent - it is only useful for preparing for the Folio migration.  Therefore, it does not have specs.
+  # This class is not permanent - it is only useful for preparing for the Folio migration.  Therefore, it does not have thorough specs.
   class MarcComparisonService
     def initialize(sort_field_list_before_comparing: false)
       @sort_field_list_before_comparing = sort_field_list_before_comparing
