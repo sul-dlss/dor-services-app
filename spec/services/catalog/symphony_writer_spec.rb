@@ -75,6 +75,7 @@ RSpec.describe Catalog::SymphonyWriter do
           subfield_x8: '|xrights:world'
         }
       end
+      let(:expected) { '123\tbc123dg9393\n456\tbc123dg9393\n8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393\\|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label & A Special character|xrights:world\n' }
 
       it 'writes the record' do
         expect(writer).to be_nil
@@ -83,6 +84,7 @@ RSpec.describe Catalog::SymphonyWriter do
         expect(file_output).to include '123'
         expect(file_output).to include '456'
         expect(file_output).to include '8832162'
+        expect(file_output).to eq expected
       end
     end
 
