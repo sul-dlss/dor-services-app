@@ -300,7 +300,7 @@ RSpec.describe Catalog::Marc856Generator do
     end
   end
 
-  describe '.get_z_field' do
+  describe '.z_subfield' do
     context 'with rights metadata world' do
       let(:cocina_object) do
         build(:dro, id: druid).new(
@@ -309,7 +309,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns a blank z message' do
-        expect(marc_856_generator.send(:get_z_field)).to eq('')
+        expect(marc_856_generator.send(:z_subfield)).to eq('')
       end
     end
 
@@ -321,7 +321,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns a non-blank z message' do
-        expect(marc_856_generator.send(:get_z_field)).to eq('|zAvailable to Stanford-affiliated users.')
+        expect(marc_856_generator.send(:z_subfield)).to eq('|zAvailable to Stanford-affiliated users.')
       end
     end
 
@@ -333,27 +333,27 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns a non-blank z message for a location restricted object' do
-        expect(marc_856_generator.send(:get_z_field)).to eq('|zAvailable to Stanford-affiliated users.')
+        expect(marc_856_generator.send(:z_subfield)).to eq('|zAvailable to Stanford-affiliated users.')
       end
     end
   end
 
-  describe '.get_856_cons' do
+  describe '.tag856' do
     it 'returns a valid sdrpurl constant' do
-      expect(marc_856_generator.send(:get_856_cons)).to eq('.856.')
+      expect(marc_856_generator.send(:tag856)).to eq('.856.')
     end
   end
 
-  describe '.get_1st_indicator' do
+  describe '.first_indicator' do
     it 'returns 4' do
-      expect(marc_856_generator.send(:get_1st_indicator)).to eq('4')
+      expect(marc_856_generator.send(:first_indicator)).to eq('4')
     end
   end
 
-  describe '.get_2nd_indicator' do
+  describe '.second_indicator' do
     context 'with a non born digital APO' do
       it 'returns 1 for a non born digital APO' do
-        expect(marc_856_generator.send(:get_2nd_indicator)).to eq('1')
+        expect(marc_856_generator.send(:second_indicator)).to eq('1')
       end
     end
 
@@ -361,24 +361,24 @@ RSpec.describe Catalog::Marc856Generator do
       let(:cocina_object) { build(:dro, id: druid, admin_policy_id: 'druid:bx911tp9024') }
 
       it 'returns 0 for an EEMs APO' do
-        expect(marc_856_generator.send(:get_2nd_indicator)).to eq('0')
+        expect(marc_856_generator.send(:second_indicator)).to eq('0')
       end
     end
   end
 
-  describe '.get_u_field' do
+  describe '.u_subfield' do
     it 'returns valid purl url' do
-      expect(marc_856_generator.send(:get_u_field)).to eq('|uhttps://purl.stanford.edu/bc123dg9393')
+      expect(marc_856_generator.send(:u_subfield)).to eq('|uhttps://purl.stanford.edu/bc123dg9393')
     end
   end
 
-  describe '.get_x1_sdrpurl_marker' do
+  describe '.x_subfield_sdrpurl' do
     it 'returns a valid sdrpurl constant' do
-      expect(marc_856_generator.send(:get_x1_sdrpurl_marker)).to eq('|xSDR-PURL')
+      expect(marc_856_generator.send(:x_subfield_sdrpurl)).to eq('|xSDR-PURL')
     end
   end
 
-  describe '.get_x2_collection_info' do
+  describe '.x_subfields_for_collections' do
     let(:cocina_object) do
       build(:dro, id: druid).new(
         structural: {
@@ -401,12 +401,12 @@ RSpec.describe Catalog::Marc856Generator do
     end
 
     it 'returns an empty string for an object without collection' do
-      expect(marc_856_generator.send(:get_x2_collection_info)).to be_empty
+      expect(marc_856_generator.send(:x_subfields_for_collections)).to be_empty
     end
 
     context 'when a collection object' do
       it 'returns an empty string' do
-        expect(marc_856_generator.send(:get_x2_collection_info)).to be_empty
+        expect(marc_856_generator.send(:x_subfields_for_collections)).to be_empty
       end
     end
 
@@ -419,7 +419,7 @@ RSpec.describe Catalog::Marc856Generator do
 
       it 'does not return information for the collection object' do
         allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
-        expect(marc_856_generator.send(:get_x2_collection_info)).to eq('')
+        expect(marc_856_generator.send(:x_subfields_for_collections)).to eq('')
       end
     end
 
@@ -434,7 +434,7 @@ RSpec.describe Catalog::Marc856Generator do
 
       it 'does not return information for the collection object' do
         allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
-        expect(marc_856_generator.send(:get_x2_collection_info)).to eq('')
+        expect(marc_856_generator.send(:x_subfields_for_collections)).to eq('')
       end
     end
 
@@ -449,15 +449,15 @@ RSpec.describe Catalog::Marc856Generator do
 
       it 'returns the appropriate information for the collection object' do
         allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
-        expect(marc_856_generator.send(:get_x2_collection_info)).to eq('|xcollection:cc111cc1111:8832162:Collection label & A Special character')
+        expect(marc_856_generator.send(:x_subfields_for_collections)).to eq('|xcollection:cc111cc1111:8832162:Collection label & A Special character')
       end
     end
   end
 
-  describe '#get_x2_part_info' do
+  describe '#x_subfields_part_info' do
     context 'with descMetadata without part information' do
       it 'returns an empty string for objects with part information' do
-        expect(marc_856_generator.send(:get_x2_part_info)).to be_empty
+        expect(marc_856_generator.send(:x_subfields_part_info)).to be_empty
       end
     end
 
@@ -489,7 +489,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns a part label' do
-        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:55th legislature, 1997-1998'
+        expect(marc_856_generator.send(:x_subfields_part_info)).to eq '|xlabel:55th legislature, 1997-1998'
       end
     end
 
@@ -521,7 +521,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns a part label' do
-        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011'
+        expect(marc_856_generator.send(:x_subfields_part_info)).to eq '|xlabel:Issue #3. 2011'
       end
     end
 
@@ -559,7 +559,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns both the label and part number' do
-        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011|xsort:123'
+        expect(marc_856_generator.send(:x_subfields_part_info)).to eq '|xlabel:Issue #3. 2011|xsort:123'
       end
     end
 
@@ -591,7 +591,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns both the label and part number' do
-        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011'
+        expect(marc_856_generator.send(:x_subfields_part_info)).to eq '|xlabel:Issue #3. 2011'
       end
     end
 
@@ -629,7 +629,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns both the label and part number' do
-        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011|xsort:2011'
+        expect(marc_856_generator.send(:x_subfields_part_info)).to eq '|xlabel:Issue #3. 2011|xsort:2011'
       end
     end
 
@@ -674,7 +674,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns the label from the primary title' do
-        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011'
+        expect(marc_856_generator.send(:x_subfields_part_info)).to eq '|xlabel:Issue #3. 2011'
       end
     end
 
@@ -718,7 +718,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns the label from the first title' do
-        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3. 2011'
+        expect(marc_856_generator.send(:x_subfields_part_info)).to eq '|xlabel:Issue #3. 2011'
       end
     end
 
@@ -753,7 +753,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns the label from the parallel title' do
-        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3'
+        expect(marc_856_generator.send(:x_subfields_part_info)).to eq '|xlabel:Issue #3'
       end
     end
 
@@ -794,13 +794,13 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns the label from the parallel title' do
-        expect(marc_856_generator.send(:get_x2_part_info)).to eq '|xlabel:Issue #3|xsort:123'
+        expect(marc_856_generator.send(:x_subfields_part_info)).to eq '|xlabel:Issue #3|xsort:123'
       end
     end
   end
 
-  describe '#get_x2_rights_info' do
-    subject(:rights_info) { marc_856_generator.send :get_x2_rights_info }
+  describe '#x_subfields_rights_info' do
+    subject(:rights_info) { marc_856_generator.send :x_subfields_rights_info }
 
     context 'with world rights' do
       let(:cocina_object) do
