@@ -2,7 +2,7 @@
 
 # rubocop:disable Metrics/ClassLength
 module Catalog
-  # Creates a stub MARC 856 field (currently for transferring to symphony only) given a cocina object.
+  # Creates a hash of identifiers and MARC 856 field data given a cocina object.
   class Marc856Generator
     # objects goverened by these APOs (ETD and EEMs) will get indicator 2 = 0, else 1
     BORN_DIGITAL_APOS = %w[druid:bx911tp9024 druid:jj305hm5259].freeze
@@ -18,33 +18,33 @@ module Catalog
       @thumbnail_service = thumbnail_service
     end
 
-    # @return [Array] all stub 856 records for this object (this is not a fully valid 856, but specific for transfer to symphony)
-    # catkey: the catalog key that associates a DOR object with a specific Symphony record.
+    # @return [Array<Hash>] of data required to update 856 fields for purls pertaining to this object
+    # catalog_record_id: the catalog key that associates a DOR object with a specific Symphony record.
     # druid: the druid
-    # .856. 41 or 40 (depending on APO)
-    # Subfield u (required): the full Purl URL
-    # Subfield x #1 (required): The string SDR-PURL as a marker to identify 856 entries managed through DOR
-    # Subfield x #2 (required): Object type (<identityMetadata><objectType>) - item, collection,
-    #     (future types of sets to describe other aggregations like albums, atlases, etc)
-    # Subfield x #3 (required): The display type of the object.
-    #     use an explicit display type from the object if present (<identityMetadata><displayType>)
-    #     else use the value of the <contentMetadata> "type" attribute if present, e.g., image, book, file
-    #     else use the value "citation"
-    # Subfield x #4 (optional): the barcode if known (<identityMetadata><otherId name="barcode">, recorded as barcode:barcode-value
-    # Subfield x #5 (optional): the file-id to be used as thumb if available, recorded as file:file-id-value
-    # Subfield x #6..n (optional): Collection(s) this object is a member of, recorded as collection:druid-value:ckey-value:title
-    # Subfield x #7..n (optional): label and part sort keys for the member
-    # Subfield x #8..n (optional): High-level rights summary
+    # indicators: 40 or 41 (depending on APO)
+    # subfields: (ordered)
+    # u - access:
+    # z - purl: the full Purl URL
+    # x - sdr_purl_marker (required): The string SDR-PURL as a marker to identify 856 entries managed through DOR
+    # x - object_type (required): Object type (<identityMetadata><objectType>) - item, collection,
+    #                         (future types of sets to describe other aggregations like albums, atlases, etc)
+    # x - barcode (optional): the barcode if known (<identityMetadata><otherId name="barcode">, recorded as barcode:barcode-value
+    # x - thumbnail (optional): the file-id to be used as thumb if available, recorded as file:file-id-value
+    # x - collections (optional): Collection(s) this object is a member of, formatted as: druid:catkey:label
+    # x - parts-label (optional):
+    # x - parts-sort (optional):
+    # x- rights (optional): High-level rights summary
     def create
-      return [] if ckeys.empty? && previous_ckeys.empty?
+      return [] if catalog_record_ids.empty? && previous_catalog_record_ids.empty?
 
       # first create "blank" records for any previous catkeys
-      records = previous_ckeys.map { |previous_catkey| new_identifier_record(previous_catkey) }
+      records = previous_catalog_record_ids.map { |previous_catkey| new_identifier_record(previous_catkey) }
 
-      # now add the current ckey
-      unless ckeys.empty?
-        catalog_record_id = ckeys.first
-        records << (released_to_searchworks?(@cocina_object) ? new_856_record(catalog_record_id) : new_identifier_record(catalog_record_id))
+      unless catalog_record_ids.empty?
+        catalog_record_id = catalog_record_ids.first
+        record = new_identifier_record(catalog_record_id)
+        record.merge!(new_856_data) if released_to_searchworks?(@cocina_object)
+        records << record
       end
 
       records
@@ -52,90 +52,112 @@ module Catalog
 
     private
 
-    # NOTE: this is a stub 856 record which is used to communicate with symphony (not a properly formatted 856 field nor a marc record)
-    def new_856_record(ckey)
-      new856 = "#{new_identifier_record(ckey)}#{get_856_cons} #{get_1st_indicator}#{get_2nd_indicator}#{get_z_field}#{get_u_field}#{get_x1_sdrpurl_marker}|x#{get_object_type_from_uri}"
-      new856 += "|xbarcode:#{@cocina_object.identification.barcode}" if @cocina_object.identification.respond_to?(:barcode) && @cocina_object.identification.barcode
-      new856 += "|xfile:#{thumb}" unless thumb.nil?
-      new856 += get_x2_collection_info unless get_x2_collection_info.nil?
-      new856 += get_x2_part_info unless get_x2_part_info.nil?
-      new856 += get_x2_rights_info unless get_x2_rights_info.nil?
-      new856
+    # NOTE: this is the data to go in an 856 field (not a properly formatted 856 field nor a marc record)
+    def new_856_data
+      {
+        indicators:,
+        subfields: [
+          subfield_z_access,
+          subfield_u_purl,
+          subfield_x_sdr_purl_marker,
+          subfield_x_object_type,
+          subfield_x_barcode,
+          subfield_x_thumbnail,
+          subfield_x_collections,
+          subfield_x_parts,
+          subfield_x_rights
+        ].compact.flatten
+      }
     end
 
-    def new_identifier_record(ckey)
-      "#{ckey}\t#{@druid_id}\t"
+    def new_identifier_record(catalog_record_id)
+      {
+        catalog_record_id:,
+        druid: @druid_id
+      }
     end
 
-    # This should only be reached for dro and collection objects
-    def get_object_type_from_uri
-      return 'item' if @cocina_object.dro?
-      return 'collection' if @cocina_object.collection?
-
-      nil
+    def indicators
+      "#{first_indicator}#{second_indicator}"
     end
 
-    # returns 856 constants
-    def get_856_cons
-      '.856.'
-    end
-
-    # returns First Indicator for HTTP (4)
-    def get_1st_indicator
+    def first_indicator
       '4'
     end
 
-    # returns Second Indicator for Version of resource
-    def get_2nd_indicator
+    def second_indicator
       born_digital? ? '0' : '1'
     end
 
-    # returns text in the z field based on permissions
-    def get_z_field
-      return '' unless @access.view == 'stanford' || (@access.respond_to?(:location) && @access.location)
-
-      '|zAvailable to Stanford-affiliated users.'
+    def born_digital?
+      BORN_DIGITAL_APOS.include? @cocina_object.administrative.hasAdminPolicy
     end
 
-    # builds the PURL uri based on the druid id
-    def get_u_field
-      "|u#{Settings.release.purl_base_url}/#{@druid_id}"
+    def subfield_z_access
+      return unless @access.view == 'stanford' || (@access.respond_to?(:location) && @access.location)
+
+      { code: 'z', value: 'Available to Stanford-affiliated users.' }
+    end
+
+    def subfield_u_purl
+      { code: 'u', value: "#{Settings.release.purl_base_url}/#{@druid_id}" }
     end
 
     # returns the SDR-PURL subfield
-    def get_x1_sdrpurl_marker
-      '|xSDR-PURL'
+    def subfield_x_sdr_purl_marker
+      { code: 'x', value: 'SDR-PURL' }
+    end
+
+    # This should only be reached for dro and collection objects
+    def subfield_x_object_type
+      return { code: 'x', value: 'item' } if @cocina_object.dro?
+      return { code: 'x', value: 'collection' } if @cocina_object.collection?
+    end
+
+    def subfield_x_barcode
+      return unless @cocina_object.identification.respond_to?(:barcode) && @cocina_object.identification.barcode
+
+      { code: 'x', value: "barcode:#{@cocina_object.identification.barcode}" }
+    end
+
+    # the @id attribute of resource/file elements including extension
+    # @return [String] thumbnail filename (nil if none found)
+    def subfield_x_thumbnail
+      return unless @thumbnail_service.thumb
+
+      { code: 'x', value: "file:#{ERB::Util.url_encode(@thumbnail_service.thumb)}" }
     end
 
     # returns the collection information subfields if exists
     # @return [String] the collection information druid-value:catkey-value:title format
-    def get_x2_collection_info
+    def subfield_x_collections
       return unless @cocina_object.respond_to?(:structural) && @cocina_object.structural
 
       collections = @cocina_object.structural.isMemberOf
-      collection_info = ''
+      collection_info = []
 
       collections.each do |collection_druid|
         collection = CocinaObjectStore.find(collection_druid)
         next unless released_to_searchworks?(collection)
 
         catkey = collection.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
-        collection_info += "|xcollection:#{collection.externalIdentifier.sub('druid:',
-                                                                             '')}:#{catkey&.catalogRecordId}:#{Cocina::Models::Builders::TitleBuilder.build(collection.description.title)}"
+        collection_info << { code: 'x', value: "collection:#{collection.externalIdentifier.sub('druid:', '')}:#{catkey&.catalogRecordId}:#{Cocina::Models::Builders::TitleBuilder.build(collection.description.title)}" }
       end
 
       collection_info
     end
 
-    def get_x2_part_info
-      str = ''
-      str += "|xlabel:#{part_label}" if part_label.present?
-      str += "|xsort:#{part_sort}" if part_sort.present?
-      str
+    def subfield_x_parts
+      return unless part_label.present? || part_sort.present?
+
+      [].tap do |part|
+        part << { code: 'x', value: "label:#{part_label}" } if part_label.present?
+        part << { code: 'x', value: "sort:#{part_sort}" } if part_sort.present?
+      end
     end
 
-    def get_x2_rights_info
-      return get_x2_collection_rights_info unless @access.respond_to?(:download)
+    def subfield_x_rights
+      return [{ code: 'x', value: "rights:#{@access.view}" }] unless @access.respond_to?(:download)
 
       values = []
 
@@ -149,20 +171,12 @@ module Catalog
       values << 'rights:group=stanford' if @access.view == 'stanford' && @access.download == 'stanford'
       values << "rights:location=#{@access.location}" if @access.location
 
-      values.map { |value| "|x#{value}" }.join
-    end
-
-    def get_x2_collection_rights_info
-      "|xrights:#{@access.view}"
-    end
-
-    def born_digital?
-      BORN_DIGITAL_APOS.include? @cocina_object.administrative.hasAdminPolicy
+      values.map { |right| { code: 'x', value: right } }
     end
 
     def released_to_searchworks?(cocina_object)
       released_for = ::ReleaseTags.for(cocina_object:)
-      rel = released_for.transform_keys { |key| key.to_s.upcase } # upcase all release tags to make the check case insensitive
+      rel = released_for.transform_keys { |key| key.to_s.upcase }
       rel.dig('SEARCHWORKS', 'release').presence || false
     end
 
@@ -177,28 +191,22 @@ module Catalog
       end
     end
 
-    def ckeys
-      @ckeys ||= fetch_ckeys(current: true)
+    def catalog_record_ids
+      @catalog_record_ids ||= fetch_catalog_record_ids(current: true)
     end
 
-    def previous_ckeys
-      @previous_ckeys ||= fetch_ckeys(current: false)
+    def previous_catalog_record_ids
+      @previous_catalog_record_ids ||= fetch_catalog_record_ids(current: false)
     end
 
     # List of current or previous ckeys for the cocina object (depending on parameter passed)
     # @param current [boolean] if you want the current or previous ckeys
     # @return [Array] previous or current catkeys for the object in an array, empty array if none exist
-    def fetch_ckeys(current:)
+    def fetch_catalog_record_ids(current:)
       return [] unless @cocina_object.respond_to?(:identification) && @cocina_object.identification
 
       ckey_type = current ? 'symphony' : 'previous symphony'
       @cocina_object.identification.catalogLinks.select { |link| link.catalog == ckey_type }.map(&:catalogRecordId)
-    end
-
-    # the @id attribute of resource/file elements including extension
-    # @return [String] thumbnail filename (nil if none found)
-    def thumb
-      @thumb ||= ERB::Util.url_encode(@thumbnail_service.thumb).presence
     end
 
     def part_types
