@@ -1,4 +1,6 @@
+# This is only used locally. shared_configs overrides.
 :concurrency: 6
 :queues:
   - default
   - low
+  - publish
