@@ -500,6 +500,7 @@ DEPENDENCIES
   faraday (~> 2.0)
   faraday-retry
   folio_client (~> 0.6)
+  hashdiff
   honeybadger (~> 4.12)
   jbuilder
   jsonpath (~> 1.1)
