@@ -32,9 +32,7 @@ RSpec.describe Catalog::AddFolioCatalogLinksService do
                           { catalog: 'symphony', catalogRecordId: '10872078', refresh: false },
                           { catalog: 'previous symphony', catalogRecordId: '34567', refresh: false },
                           { catalog: 'folio', catalogRecordId: 'a45678', refresh: false },
-                          { catalog: 'previous folio', catalogRecordId: 'a56789', refresh: false },
-                          # Lane record should not be dropped.
-                          { catalog: 'folio', catalogRecordId: 'L6789', refresh: false }
+                          { catalog: 'previous folio', catalogRecordId: 'a56789', refresh: false }
                         ]
                       })
     end
@@ -47,8 +45,7 @@ RSpec.describe Catalog::AddFolioCatalogLinksService do
         { catalog: 'symphony', catalogRecordId: '23456', refresh: false },
         { catalog: 'symphony', catalogRecordId: '10872078', refresh: false },
         { catalog: 'previous symphony', catalogRecordId: '34567', refresh: false },
-        { catalog: 'previous folio', catalogRecordId: 'a56789', refresh: false },
-        { catalog: 'folio', catalogRecordId: 'L6789', refresh: false }
+        { catalog: 'previous folio', catalogRecordId: 'a56789', refresh: false }
       ]
     end
   end
@@ -68,6 +65,22 @@ RSpec.describe Catalog::AddFolioCatalogLinksService do
         { catalog: 'folio', catalogRecordId: 'a12345', refresh: true },
         { catalog: 'symphony', catalogRecordId: '12345', refresh: true }
       ]
+    end
+  end
+
+  context 'when there is a Lane catalog links' do
+    let(:cocina_object) do
+      build(:dro).new(identification: {
+                        sourceId: 'sul:1234',
+                        catalogLinks: [
+                          { catalog: 'symphony', catalogRecordId: '12345', refresh: true },
+                          { catalog: 'folio', catalogRecordId: 'L45678', refresh: true }
+                        ]
+                      })
+    end
+
+    it 'does not change the object' do
+      expect(synced_object).to eq cocina_object
     end
   end
 
