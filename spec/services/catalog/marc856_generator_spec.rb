@@ -195,9 +195,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'generates marc record with a z subfield' do
-        expect(create).to match_array [
-          "8832162\tbc123dg9393\t.856. 41|zAvailable to Stanford-affiliated users.|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label & A Special character|xrights:group=stanford"
-        ]
+        expect(create).to contain_exactly("8832162\tbc123dg9393\t.856. 41|zAvailable to Stanford-affiliated users.|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xbarcode:36105216275185|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label & A Special character|xrights:group=stanford")
       end
     end
 
@@ -211,11 +209,8 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'generates blank marc records and a regular marc record' do
-        expect(create).to match_array [
-          "123\tbc123dg9393\t",
-          "456\tbc123dg9393\t",
-          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label & A Special character|xrights:world"
-        ]
+        expect(create).to contain_exactly("123\tbc123dg9393\t", "456\tbc123dg9393\t",
+                                          "8832162\tbc123dg9393\t.856. 41|uhttps://purl.stanford.edu/bc123dg9393|xSDR-PURL|xitem|xfile:bc123dg9393%2Fwt183gy6220_00_0001.jp2|xcollection:cc111cc1111:8832162:Collection label & A Special character|xrights:world")
       end
     end
 
@@ -257,7 +252,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'generates a single marc record' do
-        expect(create).to match_array ["8832162\tcc111cc1111\t.856. 41|uhttps://purl.stanford.edu/cc111cc1111|xSDR-PURL|xcollection|xrights:world"]
+        expect(create).to contain_exactly("8832162\tcc111cc1111\t.856. 41|uhttps://purl.stanford.edu/cc111cc1111|xSDR-PURL|xcollection|xrights:world")
       end
     end
 
@@ -271,7 +266,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'generates an empty marc record' do
-        expect(create).to match_array []
+        expect(create).to eq([])
       end
     end
 
@@ -287,7 +282,7 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'generates an empty marc record' do
-        expect(create).to match_array []
+        expect(create).to eq([])
       end
     end
   end

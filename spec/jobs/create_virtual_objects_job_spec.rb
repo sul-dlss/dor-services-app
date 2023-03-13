@@ -60,7 +60,7 @@ RSpec.describe CreateVirtualObjectsJob do
     end
 
     it 'has output with errors' do
-      expect(result.output[:errors].first[virtual_object_id]).to match_array(['One thing was not combinable', 'And another'])
+      expect(result.output[:errors].first[virtual_object_id]).to contain_exactly('One thing was not combinable', 'And another')
     end
   end
 
@@ -97,7 +97,7 @@ RSpec.describe CreateVirtualObjectsJob do
     end
 
     it 'has output with errors' do
-      expect(result.output[:errors].first[virtual_object_id]).to match_array(['One thing was not combinable', 'And another'])
+      expect(result.output[:errors].first[virtual_object_id]).to contain_exactly('One thing was not combinable', 'And another')
     end
   end
 end
