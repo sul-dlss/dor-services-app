@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Catalog::Marc856Generator do
-  subject(:marc_856_generator) { described_class.new(cocina_object, thumbnail_service:) }
+  subject(:marc_856_generator) { described_class.new(cocina_object, thumbnail_service:, catalog: 'symphony') }
 
   let(:apo_druid) { 'druid:pp000pp0000' }
   let(:druid) { 'druid:bc123dg9393' }
@@ -136,21 +136,21 @@ RSpec.describe Catalog::Marc856Generator do
   end
 
   describe '.create' do
-    let(:instance) { described_class.new(cocina_object, thumbnail_service:) }
+    let(:instance) { instance_double(described_class, create: true) }
 
     before do
       allow(described_class).to receive(:new).and_return(instance)
-      allow(instance).to receive(:create)
     end
 
     it 'invokes #create on a new instance' do
-      described_class.create(cocina_object, thumbnail_service:)
+      described_class.create(cocina_object, thumbnail_service:, catalog: 'symphony')
+      expect(described_class).to have_received(:new).with(cocina_object, thumbnail_service:, catalog: 'symphony')
       expect(instance).to have_received(:create).once
     end
   end
 
   describe '#create' do
-    subject(:create) { marc_856_generator.create }
+    subject(:marc_856_data) { marc_856_generator.create }
 
     let(:collection) do
       build(:collection, id: collection_druid, title: 'Collection label & A Special character').new(
@@ -163,12 +163,6 @@ RSpec.describe Catalog::Marc856Generator do
       allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
     end
 
-    context "when the druid object doesn't have catkey or previous catkeys" do
-      it 'generates an empty array' do
-        expect(create).to eq([])
-      end
-    end
-
     context 'when an item object has a catkey' do
       let(:cocina_object) do
         build(:dro, id: druid, title: 'Constituent label & A Special character').new(
@@ -178,26 +172,22 @@ RSpec.describe Catalog::Marc856Generator do
         )
       end
       let(:result) do
-        [
-          {
-            catalog_record_id: '8832162',
-            druid: bare_druid,
-            indicators: '41',
-            subfields: [
-              { code: 'u', value: "https://purl.stanford.edu/#{bare_druid}" },
-              { code: 'x', value: 'SDR-PURL' },
-              { code: 'x', value: 'item' },
-              { code: 'x', value: 'barcode:36105216275185' },
-              { code: 'x', value: "file:#{bare_druid}%2Fwt183gy6220_00_0001.jp2" },
-              { code: 'x', value: "collection:#{collection_bare_druid}:8832162:Collection label & A Special character" },
-              { code: 'x', value: 'rights:world' }
-            ]
-          }
-        ]
+        {
+          indicators: '41',
+          subfields: [
+            { code: 'u', value: "https://purl.stanford.edu/#{bare_druid}" },
+            { code: 'x', value: 'SDR-PURL' },
+            { code: 'x', value: 'item' },
+            { code: 'x', value: 'barcode:36105216275185' },
+            { code: 'x', value: "file:#{bare_druid}%2Fwt183gy6220_00_0001.jp2" },
+            { code: 'x', value: "collection:#{collection_bare_druid}:8832162:Collection label & A Special character" },
+            { code: 'x', value: 'rights:world' }
+          ]
+        }
       end
 
-      it 'generates a single marc record' do
-        expect(create).to eq result
+      it 'generates a MARC 856 data' do
+        expect(marc_856_data).to eq result
       end
     end
 
@@ -210,105 +200,23 @@ RSpec.describe Catalog::Marc856Generator do
         )
       end
       let(:result) do
-        [
-          {
-            catalog_record_id: '8832162',
-            druid: bare_druid,
-            indicators: '41',
-            subfields: [
-              { code: 'z', value: 'Available to Stanford-affiliated users.' },
-              { code: 'u', value: "https://purl.stanford.edu/#{bare_druid}" },
-              { code: 'x', value: 'SDR-PURL' },
-              { code: 'x', value: 'item' },
-              { code: 'x', value: 'barcode:36105216275185' },
-              { code: 'x', value: "file:#{bare_druid}%2Fwt183gy6220_00_0001.jp2" },
-              { code: 'x', value: "collection:#{collection_bare_druid}:8832162:Collection label & A Special character" },
-              { code: 'x', value: 'rights:group=stanford' }
-            ]
-          }
-        ]
+        {
+          indicators: '41',
+          subfields: [
+            { code: 'z', value: 'Available to Stanford-affiliated users.' },
+            { code: 'u', value: "https://purl.stanford.edu/#{bare_druid}" },
+            { code: 'x', value: 'SDR-PURL' },
+            { code: 'x', value: 'item' },
+            { code: 'x', value: 'barcode:36105216275185' },
+            { code: 'x', value: "file:#{bare_druid}%2Fwt183gy6220_00_0001.jp2" },
+            { code: 'x', value: "collection:#{collection_bare_druid}:8832162:Collection label & A Special character" },
+            { code: 'x', value: 'rights:group=stanford' }
+          ]
+        }
       end
 
       it 'generates marc record with a z subfield' do
-        expect(create).to eq result
-      end
-    end
-
-    context 'when an object has both previous and current catkeys' do
-      let(:cocina_object) do
-        build(:dro, id: druid, title: 'Constituent label & A Special character').new(
-          identification: identity_metadata_previous_ckey,
-          access: access_world,
-          structural: structural_metadata
-        )
-      end
-      let(:result) do
-        [
-          {
-            catalog_record_id: '123',
-            druid: bare_druid
-          },
-          {
-            catalog_record_id: '456',
-            druid: bare_druid
-          },
-          {
-            catalog_record_id: '8832162',
-            druid: bare_druid,
-            indicators: '41',
-            subfields: [
-              { code: 'u', value: "https://purl.stanford.edu/#{bare_druid}" },
-              { code: 'x', value: 'SDR-PURL' },
-              { code: 'x', value: 'item' },
-              { code: 'x', value: "file:#{bare_druid}%2Fwt183gy6220_00_0001.jp2" },
-              { code: 'x', value: "collection:#{collection_bare_druid}:8832162:Collection label & A Special character" },
-              { code: 'x', value: 'rights:world' }
-            ]
-          }
-        ]
-      end
-
-      it 'generates blank marc records and a regular marc record' do
-        expect(create).to eq result
-      end
-    end
-
-    context 'when an object has only previous catkeys' do
-      let(:cocina_object) do
-        build(:dro, id: druid, title: 'Constituent label & A Special character').new(
-          identification: {
-            sourceId: 'sul:36105216275185',
-            barcode: '36105216275185',
-            catalogLinks: [
-              {
-                catalog: 'previous symphony',
-                catalogRecordId: '123',
-                refresh: false
-              },
-              {
-                catalog: 'previous symphony',
-                catalogRecordId: '456',
-                refresh: false
-              }
-            ]
-          }
-        )
-      end
-      let(:result) do
-        [
-          {
-            catalog_record_id: '123',
-            druid: bare_druid
-          },
-          {
-            catalog_record_id: '456',
-            druid: bare_druid
-          }
-        ]
-      end
-
-      it 'generates identifier only marc records for an item object' do
-        expect(create).to eq result
+        expect(marc_856_data).to eq result
       end
     end
 
@@ -322,65 +230,20 @@ RSpec.describe Catalog::Marc856Generator do
         )
       end
       let(:result) do
-        [
-          {
-            catalog_record_id: '8832162',
-            druid: collection_bare_druid,
-            indicators: '41',
-            subfields: [
-              { code: 'u', value: "https://purl.stanford.edu/#{collection_bare_druid}" },
-              { code: 'x', value: 'SDR-PURL' },
-              { code: 'x', value: 'collection' },
-              { code: 'x', value: 'rights:world' }
-            ]
-          }
-        ]
+        {
+          indicators: '41',
+          subfields: [
+            { code: 'u', value: "https://purl.stanford.edu/#{collection_bare_druid}" },
+            { code: 'x', value: 'SDR-PURL' },
+            { code: 'x', value: 'collection' },
+            { code: 'x', value: 'rights:world' }
+          ]
+        }
       end
 
       it 'generates a single marc record' do
-        expect(create).to eq result
+        expect(marc_856_data).to eq result
       end
-    end
-
-    context 'when an collection object does not include identification' do
-      let(:cocina_object) do
-        build(:collection, id: collection_druid, title: 'Collection label & A Special character').new(
-          access: {
-            view: 'world'
-          }
-        )
-      end
-
-      it 'generates an empty marc record' do
-        expect(create).to eq([])
-      end
-    end
-
-    context 'when an APO object is passed' do
-      let(:cocina_object) do
-        build(:admin_policy, id: collection_druid).new(
-          administrative: {
-            hasAdminPolicy: apo_druid,
-            hasAgreement: apo_druid,
-            accessTemplate: { view: 'world', download: 'world' }
-          }
-        )
-      end
-
-      it 'generates an empty marc record' do
-        expect(create).to eq([])
-      end
-    end
-  end
-
-  describe '.new_identifier_record' do
-    let(:ckey) { '1234' }
-    let(:result) do
-      { catalog_record_id: '1234', druid: 'bc123dg9393' }
-    end
-
-    it 'returns a stub identifier record with the catkey and the druid' do
-      expect(marc_856_generator.send(:new_identifier_record, ckey)).to eq result
     end
   end
 
@@ -987,78 +850,6 @@ RSpec.describe Catalog::Marc856Generator do
     context 'with no structural metadata' do
       it 'returns nil' do
         expect(thumb).to be_nil
-      end
-    end
-  end
-
-  describe '#catalog_record_ids' do
-    let(:cocina_object) do
-      build(:dro, id: druid).new(
-        identification: identity_metadata_previous_ckey
-      )
-    end
-
-    it 'returns values for catkeys in identityMetadata' do
-      expect(marc_856_generator.send(:catalog_record_ids)).to eq(%w[8832162])
-    end
-  end
-
-  describe '#previous_catalog_record_ids' do
-    let(:cocina_object) do
-      build(:dro, id: druid).new(
-        identification: identity_metadata_previous_ckey
-      )
-    end
-
-    it 'returns values for catkeys in identityMetadata' do
-      expect(marc_856_generator.send(:previous_catalog_record_ids)).to eq(%w[123 456])
-    end
-  end
-
-  describe '#fetch_catalog_record_ids' do
-    subject(:ckeys) { marc_856_generator.send :fetch_catalog_record_ids, current: }
-
-    context 'when using previous ckeys' do
-      let(:current) { false }
-
-      context 'when previous_catkeys exists' do
-        let(:cocina_object) do
-          build(:dro, id: druid).new(
-            identification: identity_metadata_previous_ckey
-          )
-        end
-
-        it 'returns values for previous catkeys in identityMetadata' do
-          expect(ckeys).to eq(%w[123 456])
-        end
-      end
-
-      context 'when previous_catkeys are empty' do
-        it 'returns an empty array for previous catkeys in identityMetadata without either' do
-          expect(ckeys).to eq([])
-        end
-      end
-
-      context 'when using current ckeys' do
-        let(:current) { true }
-
-        context 'when previous_catkeys exists' do
-          let(:cocina_object) do
-            build(:dro, id: druid).new(
-              identification: identity_metadata_previous_ckey
-            )
-          end
-
-          it 'returns values for catkeys in identityMetadata' do
-            expect(ckeys).to eq(%w[8832162])
-          end
-        end
-
-        context 'when catkeys are empty' do
-          it 'returns an empty array for catkeys in identityMetadata without either' do
-            expect(ckeys).to eq([])
-          end
-        end
       end
     end
   end

@@ -7,20 +7,22 @@ module Catalog
     # objects goverened by these APOs (ETD and EEMs) will get indicator 2 = 0, else 1
     BORN_DIGITAL_APOS = %w[druid:bx911tp9024 druid:jj305hm5259].freeze
 
-    def self.create(cocina_object, thumbnail_service:)
-      new(cocina_object, thumbnail_service:).create
+    def self.create(cocina_object, thumbnail_service:, catalog: 'folio')
+      new(cocina_object, thumbnail_service:, catalog:).create
     end
 
-    def initialize(cocina_object, thumbnail_service:)
+    # @param [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy] cocina_object
+    # @param [ThumbnailService] thumbnail_service
+    # @param [String] catalog used to determine the catalog record id to use for the collection
+    def initialize(cocina_object, thumbnail_service:, catalog: 'folio')
       @cocina_object = cocina_object
       @druid_id = cocina_object.externalIdentifier.delete_prefix('druid:')
       @access = cocina_object.access if cocina_object.respond_to?(:access)
       @thumbnail_service = thumbnail_service
+      @catalog = catalog
     end
 
-    # @return [Array<Hash>] of data required to update 856 fields for purls pertaining to this object
-    # catalog_record_id: the catalog key that associates a DOR object with a specific Symphony record.
-    # druid: the druid
+    # @return [Hash] of data required to update 856 fields for purls pertaining to this object
     # indicators: 40 or 41 (depending on APO)
     # subfields: (ordered)
     # u - access:
@@ -30,30 +32,12 @@ module Catalog
     #                         (future types of sets to describe other aggregations like albums, atlases, etc)
     # x - barcode (optional): the barcode if known (<identityMetadata><otherId name="barcode">, recorded as barcode:barcode-value
     # x - thumbnail (optional): the file-id to be used as thumb if available, recorded as file:file-id-value
-    # x - collections (optional): Collection(s) this object is a member of, formatted as: druid:catkey:label
+    # x - collections (optional): Collection(s) this object is a member of, formatted as: druid:catalog_record_id:label
     # x - parts-label (optional):
     # x - parts-sort (optional):
     # x- rights (optional): High-level rights summary
     def create
-      return [] if catalog_record_ids.empty? && previous_catalog_record_ids.empty?
-
-      # first create "blank" records for any previous catkeys
-      records = previous_catalog_record_ids.map { |previous_catkey| new_identifier_record(previous_catkey) }
-
-      unless catalog_record_ids.empty?
-        catalog_record_id = catalog_record_ids.first
-        record = new_identifier_record(catalog_record_id)
-        record.merge!(new_856_data) if released_to_searchworks?(@cocina_object)
-        records << record
-      end
-
-      records
-    end
-
-    private
-
-    # NOTE: this is the data to go in an 856 field (not a properly formatted 856 field nor a marc record)
-    def new_856_data
+      # NOTE: this is the data to go in an 856 field (not a properly formatted 856 field nor a marc record)
       {
         indicators:,
         subfields: [
@@ -70,12 +54,7 @@ module Catalog
       }
     end
 
-    def new_identifier_record(catalog_record_id)
-      {
-        catalog_record_id:,
-        druid: @druid_id
-      }
-    end
+    private
 
     def indicators
       "#{first_indicator}#{second_indicator}"
@@ -129,7 +108,7 @@ module Catalog
     end
 
     # returns the collection information subfields if exists
-    # @return [String] the collection information druid-value:catkey-value:title format
+    # @return [String] the collection information druid-value:catalog-record-id-value:title format
     def subfield_x_collections
       return unless @cocina_object.respond_to?(:structural) && @cocina_object.structural
 
@@ -140,8 +119,8 @@ module Catalog
         collection = CocinaObjectStore.find(collection_druid)
         next unless released_to_searchworks?(collection)
 
-        catkey = collection.identification&.catalogLinks&.find { |link| link.catalog == 'symphony' }
-        collection_info << { code: 'x', value: "collection:#{collection.externalIdentifier.sub('druid:', '')}:#{catkey&.catalogRecordId}:#{Cocina::Models::Builders::TitleBuilder.build(collection.description.title)}" }
+        catalog_link = collection.identification&.catalogLinks&.find { |link| link.catalog == @catalog }
+        collection_info << { code: 'x', value: "collection:#{collection.externalIdentifier.sub('druid:', '')}:#{catalog_link&.catalogRecordId}:#{Cocina::Models::Builders::TitleBuilder.build(collection.description.title)}" }
       end
 
       collection_info
@@ -189,24 +168,6 @@ module Catalog
       else
         '. '
       end
-    end
-
-    def catalog_record_ids
-      @catalog_record_ids ||= fetch_catalog_record_ids(current: true)
-    end
-
-    def previous_catalog_record_ids
-      @previous_catalog_record_ids ||= fetch_catalog_record_ids(current: false)
-    end
-
-    # List of current or previous ckeys for the cocina object (depending on parameter passed)
-    # @param current [boolean] if you want the current or previous ckeys
-    # @return [Array] previous or current catkeys for the object in an array, empty array if none exist
-    def fetch_catalog_record_ids(current:)
-      return [] unless @cocina_object.respond_to?(:identification) && @cocina_object.identification
-
-      ckey_type = current ? 'symphony' : 'previous symphony'
-      @cocina_object.identification.catalogLinks.select { |link| link.catalog == ckey_type }.map(&:catalogRecordId)
     end
 
     def part_types

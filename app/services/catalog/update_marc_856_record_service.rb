@@ -13,11 +13,15 @@ module Catalog
     end
 
     def update
-      marc_856_records = Marc856Generator.create(@cocina_object, thumbnail_service: @thumbnail_service)
+      return if cocina_object.admin_policy?
 
-      return if marc_856_records.blank?
+      marc_856_data = Marc856Generator.create(cocina_object, thumbnail_service:, catalog: 'symphony')
 
-      SymphonyWriter.save(marc_856_records)
+      SymphonyWriter.save(cocina_object:, marc_856_data:)
     end
+
+    private
+
+    attr_reader :cocina_object, :thumbnail_service
   end
 end
