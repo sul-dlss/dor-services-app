@@ -17,5 +17,5 @@ rescue StandardError => e
   # prevent running tests or rails console on laptop.  would also prevent deployment or startup
   # of dor-services-app if configuration was incorrect (missing settings, stale password, etc).
   Rails.logger.warn("Error configuring FolioClient: #{e}")
-  Honeybadger.notify('Error configuring FolioClient')
+  Honeybadger.notify(e)
 end
