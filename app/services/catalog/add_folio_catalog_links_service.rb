@@ -16,6 +16,7 @@ module Catalog
     def add
       return cocina_object if cocina_object.admin_policy?
       return cocina_object if cocina_object.identification.catalogLinks.blank?
+      return cocina_object if has_lane_folio_link?
 
       cocina_object.new(identification: cocina_object.identification.new(catalogLinks: synced_catalog_links))
     end
@@ -58,6 +59,12 @@ module Catalog
     def non_lane_folio_link?(catalog_link)
       # Keep Lane folio catalog links (start with L)
       catalog_link.catalog == 'folio' && !catalog_link.catalogRecordId.start_with?('L')
+    end
+
+    def has_lane_folio_link?
+      cocina_object.identification.catalogLinks.any? do |catalog_link|
+        catalog_link.catalog == 'folio' && catalog_link.catalogRecordId.start_with?('L')
+      end
     end
 
     def migrate_catalog_link?(catalog_link)
