@@ -110,7 +110,7 @@ class ObjectsController < ApplicationController
   def publish
     result = BackgroundJobResult.create
     EventFactory.create(druid: params[:id], event_type: 'publish_request_received', data: { background_job_result_id: result.id })
-    PublishJob.set(queue:).perform_later(druid: params[:id], background_job_result: result, workflow: params[:workflow])
+    PublishJob.set(queue: publish_queue).perform_later(druid: params[:id], background_job_result: result, workflow: params[:workflow])
     head :created, location: result
   end
 
@@ -124,7 +124,7 @@ class ObjectsController < ApplicationController
   def unpublish
     result = BackgroundJobResult.create
     EventFactory.create(druid: params[:id], event_type: 'unpublish_request_received', data: { background_job_result_id: result.id })
-    UnpublishJob.set(queue:).perform_later(druid: params[:id], background_job_result: result)
+    UnpublishJob.set(queue: publish_queue).perform_later(druid: params[:id], background_job_result: result)
     head :accepted, location: result
   end
 
@@ -172,6 +172,10 @@ class ObjectsController < ApplicationController
 
   def queue
     params['lane-id'] == 'low' ? :low : :default
+  end
+
+  def publish_queue
+    params['lane-id'] == 'low' ? :publish_low : :publish_default
   end
 
   def workflow_client

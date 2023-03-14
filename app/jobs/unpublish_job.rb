@@ -2,7 +2,7 @@
 
 # Unpublished Druid in the background
 class UnpublishJob < ApplicationJob
-  queue_as :default
+  queue_as :publish_default
 
   def perform(druid:, background_job_result:)
     background_job_result.processing!

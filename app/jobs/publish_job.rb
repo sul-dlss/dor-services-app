@@ -3,7 +3,7 @@
 # Publish metadata for an object as a background job
 # Both accessionWF and releaseWF use this step.
 class PublishJob < ApplicationJob
-  queue_as :publish
+  queue_as :publish_default
 
   # @param [String] druid the identifier of the fedora_item to be published
   # @param [BackgroundJobResult] background_job_result identifier of a background job result to store status info
