@@ -138,8 +138,6 @@ RSpec.describe Catalog::MarcComparisonService do
   before do
     allow(Catalog::SymphonyReader).to receive(:new).with(catkey: symphony_catkey).and_return(mock_symphony_reader)
     allow(Catalog::FolioReader).to receive(:new).with(folio_instance_hrid: "a#{symphony_catkey}").and_return(mock_folio_reader)
-    # allow(symphony_marc_obj).to_receive(:is_a?).with(MARC::Record).and_return(true)
-    # allow(folio_marc_obj).to_receive(:is_a?).with(MARC::Record).and_return(true)
   end
 
   describe '#diff_marc_for_catkey' do
