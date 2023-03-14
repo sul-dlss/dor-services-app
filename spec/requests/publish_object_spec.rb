@@ -16,7 +16,7 @@ RSpec.describe 'Publish object' do
     it 'calls Publish::MetadataTransferService and returns 201' do
       post "/v1/objects/#{druid}/publish?workflow=releaseWF&lane-id=low", headers: { 'Authorization' => "Bearer #{jwt}" }
 
-      expect(PublishJob).to have_received(:set).with(queue: :low)
+      expect(PublishJob).to have_received(:set).with(queue: :publish_low)
       expect(job).to have_received(:perform_later)
         .with(druid:, background_job_result: BackgroundJobResult, workflow: 'releaseWF')
       expect(response).to have_http_status(:created)
