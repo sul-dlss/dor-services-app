@@ -16,8 +16,6 @@ module Catalog
     # @param [String] catalog used to determine the catalog record id to use for the collection
     def initialize(cocina_object, thumbnail_service:, catalog: 'folio')
       @cocina_object = cocina_object
-      @druid_id = cocina_object.externalIdentifier.delete_prefix('druid:')
-      @access = cocina_object.access if cocina_object.respond_to?(:access)
       @thumbnail_service = thumbnail_service
       @catalog = catalog
     end
@@ -56,6 +54,16 @@ module Catalog
 
     private
 
+    attr_reader :catalog, :thumbnail_service, :cocina_object
+
+    def bare_druid
+      @bare_druid ||= cocina_object.externalIdentifier.delete_prefix('druid:')
+    end
+
+    def access
+      @access ||= cocina_object.access if cocina_object.respond_to?(:access)
+    end
+
     def indicators
       "#{first_indicator}#{second_indicator}"
     end
@@ -69,17 +77,17 @@ module Catalog
     end
 
     def born_digital?
-      BORN_DIGITAL_APOS.include? @cocina_object.administrative.hasAdminPolicy
+      BORN_DIGITAL_APOS.include? cocina_object.administrative.hasAdminPolicy
     end
 
     def subfield_z_access
-      return unless @access.view == 'stanford' || (@access.respond_to?(:location) && @access.location)
+      return unless access.view == 'stanford' || (access.respond_to?(:location) && access.location)
 
       { code: 'z', value: 'Available to Stanford-affiliated users.' }
     end
 
     def subfield_u_purl
-      { code: 'u', value: "#{Settings.release.purl_base_url}/#{@druid_id}" }
+      { code: 'u', value: "#{Settings.release.purl_base_url}/#{bare_druid}" }
     end
 
     # returns the SDR-PURL subfield
@@ -89,37 +97,37 @@ module Catalog
 
     # This should only be reached for dro and collection objects
     def subfield_x_object_type
-      return { code: 'x', value: 'item' } if @cocina_object.dro?
-      return { code: 'x', value: 'collection' } if @cocina_object.collection?
+      return { code: 'x', value: 'item' } if cocina_object.dro?
+      return { code: 'x', value: 'collection' } if cocina_object.collection?
     end
 
     def subfield_x_barcode
-      return unless @cocina_object.identification.respond_to?(:barcode) && @cocina_object.identification.barcode
+      return unless cocina_object.identification.respond_to?(:barcode) && cocina_object.identification.barcode
 
-      { code: 'x', value: "barcode:#{@cocina_object.identification.barcode}" }
+      { code: 'x', value: "barcode:#{cocina_object.identification.barcode}" }
     end
 
     # the @id attribute of resource/file elements including extension
     # @return [String] thumbnail filename (nil if none found)
     def subfield_x_thumbnail
-      return unless @thumbnail_service.thumb
+      return unless thumbnail_service.thumb
 
-      { code: 'x', value: "file:#{ERB::Util.url_encode(@thumbnail_service.thumb)}" }
+      { code: 'x', value: "file:#{ERB::Util.url_encode(thumbnail_service.thumb)}" }
     end
 
     # returns the collection information subfields if exists
     # @return [String] the collection information druid-value:catalog-record-id-value:title format
     def subfield_x_collections
-      return unless @cocina_object.respond_to?(:structural) && @cocina_object.structural
+      return unless cocina_object.respond_to?(:structural) && cocina_object.structural
 
-      collections = @cocina_object.structural.isMemberOf
+      collections = cocina_object.structural.isMemberOf
       collection_info = []
 
       collections.each do |collection_druid|
         collection = CocinaObjectStore.find(collection_druid)
         next unless released_to_searchworks?(collection)
 
-        catalog_link = collection.identification&.catalogLinks&.find { |link| link.catalog == @catalog }
+        catalog_link = collection.identification&.catalogLinks&.find { |link| link.catalog == catalog }
         collection_info << { code: 'x', value: "collection:#{collection.externalIdentifier.sub('druid:', '')}:#{catalog_link&.catalogRecordId}:#{Cocina::Models::Builders::TitleBuilder.build(collection.description.title)}" }
       end
 
@@ -136,19 +144,19 @@ module Catalog
     end
 
     def subfield_x_rights
-      return [{ code: 'x', value: "rights:#{@access.view}" }] unless @access.respond_to?(:download)
+      return [{ code: 'x', value: "rights:#{access.view}" }] unless access.respond_to?(:download)
 
       values = []
 
-      values << 'rights:dark' if @access.view == 'dark'
+      values << 'rights:dark' if access.view == 'dark'
 
-      if @access.view == 'world'
-        values << 'rights:world' if @access.download == 'world'
-        values << 'rights:citation' if @access.download == 'none'
+      if access.view == 'world'
+        values << 'rights:world' if access.download == 'world'
+        values << 'rights:citation' if access.download == 'none'
       end
-      values << 'rights:cdl' if @access.controlledDigitalLending
-      values << 'rights:group=stanford' if @access.view == 'stanford' && @access.download == 'stanford'
-      values << "rights:location=#{@access.location}" if @access.location
+      values << 'rights:cdl' if access.controlledDigitalLending
+      values << 'rights:group=stanford' if access.view == 'stanford' && access.download == 'stanford'
+      values << "rights:location=#{access.location}" if access.location
 
       values.map { |right| { code: 'x', value: right } }
     end
@@ -176,7 +184,7 @@ module Catalog
 
     def part_label
       @part_label ||= begin
-        title_info = @cocina_object.description.title.first
+        title_info = cocina_object.description.title.first
         # Need to check both structuredValue on title_info and in parallelValues
         structured_values = []
         structured_values << title_info.structuredValue if title_info.structuredValue.present?
@@ -194,7 +202,7 @@ module Catalog
     end
 
     def part_sort
-      @part_sort ||= @cocina_object.description.note.find { |note| note.type == 'date/sequential designation' }&.value
+      @part_sort ||= cocina_object.description.note.find { |note| note.type == 'date/sequential designation' }&.value
     end
   end
 end
