@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Catalog::UpdateMarc856RecordService do
-  subject(:umrs) { described_class.new(cocina_object, thumbnail_service:) }
+  subject(:service) { described_class.new(cocina_object, thumbnail_service:) }
 
   let(:druid) { 'druid:bc123dg9393' }
   let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
@@ -11,35 +11,38 @@ RSpec.describe Catalog::UpdateMarc856RecordService do
 
   describe '.update' do
     before do
-      allow(described_class).to receive(:new).and_return(umrs)
-      allow(umrs).to receive(:update)
+      allow(described_class).to receive(:new).and_return(service)
+      allow(service).to receive(:update)
     end
 
     it 'invokes #update on a new instance' do
       described_class.update(cocina_object, thumbnail_service:)
-      expect(umrs).to have_received(:update).once
+      expect(service).to have_received(:update).once
     end
   end
 
   describe '#update' do
     before do
-      allow(Catalog::Marc856Generator).to receive(:create).and_return(marc_856_records)
+      allow(Catalog::Marc856Generator).to receive(:create).and_return(marc_856_data)
       allow(Catalog::SymphonyWriter).to receive(:save)
-      umrs.update
     end
 
-    context 'when there are marc 856 records' do
-      let(:marc_856_records) { ['abcd1244', 'def5678'] }
+    let(:marc_856_data) { { indicators: [], subfields: [] } }
 
-      it 'calls symphony_writer' do
-        expect(Catalog::SymphonyWriter).to have_received(:save).with(marc_856_records)
+    context 'when not an admin policy' do
+      it 'calls Marc856Generator and SymphonyWriter' do
+        service.update
+        expect(Catalog::Marc856Generator).to have_received(:create).with(cocina_object, thumbnail_service:, catalog: 'symphony')
+        expect(Catalog::SymphonyWriter).to have_received(:save).with(cocina_object:, marc_856_data:)
       end
     end
 
-    context 'when there are no marc records' do
-      let(:marc_856_records) { [] }
+    context 'when an admin policy' do
+      let(:cocina_object) { build(:admin_policy) }
 
-      it 'does not call symphony_writer' do
+      it 'does nothing' do
+        service.update
+        expect(Catalog::Marc856Generator).not_to have_received(:create)
         expect(Catalog::SymphonyWriter).not_to have_received(:save)
       end
     end
