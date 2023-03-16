@@ -215,7 +215,7 @@ GEM
     faraday-net_http (3.0.2)
     faraday-retry (2.1.0)
       faraday (~> 2.0)
-    folio_client (0.7.0)
+    folio_client (0.8.0)
       activesupport (>= 4.2, < 8)
       dry-monads
       faraday
@@ -501,7 +501,7 @@ DEPENDENCIES
   factory_bot_rails
   faraday (~> 2.0)
   faraday-retry
-  folio_client (~> 0.6)
+  folio_client (~> 0.8)
   hashdiff
   honeybadger (~> 4.12)
   jbuilder
