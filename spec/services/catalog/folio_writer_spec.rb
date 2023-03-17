@@ -16,8 +16,6 @@ RSpec.describe Catalog::FolioWriter do
         { code: 'x', value: 'SDR-PURL' },
         { code: 'x', value: 'item' },
         { code: 'x', value: 'barcode:36105216275185' },
-        { code: 'x', value: 'file:cc111cc1111%2Fwt183gy6220_00_0001.jp2' },
-        { code: 'x', value: 'collection:cc111cc1111:8832162:Collection label & A Special character' },
         { code: 'x', value: 'rights:world' }
       ]
     }

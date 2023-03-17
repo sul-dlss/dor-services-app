@@ -25,7 +25,6 @@ Rails:
 Layout/LineLength:
   Exclude:
     - 'spec/services/cocina/mapping/descriptive/h2_datacite/subject_h2_datacite_spec.rb'
-    - 'spec/services/update_marc_record_service_spec.rb'
 
 Lint/UnusedMethodArgument:
   AllowUnusedKeywordArguments: true
@@ -41,12 +40,10 @@ Metrics/ClassLength:
   Exclude:
     - 'app/services/cocina/to_datacite/event.rb'
     - 'app/services/cocina/to_xml/content_metadata_generator.rb'
-    - 'app/services/update_marc_record_service.rb'
 
 Performance/CollectionLiteralInLoop:
   Enabled: true
   Exclude:
-    - 'app/services/update_marc_record_service.rb'
     - 'app/services/symphony_reader.rb'
 
 Rails/DynamicFindBy:
@@ -85,8 +82,16 @@ RSpec/ExpectActual:
   Exclude:
     - 'spec/routing/**'
 
+RSpec/FilePath:
+  Exclude:
+    - 'spec/services/catalog/update_marc_856_record_service_spec.rb'
+
 RSpec/NestedGroups:
   Max: 5
+
+RSpec/SubjectStub:
+  Exclude:
+    - 'spec/services/catalog/update_marc_856_record_service_spec.rb'
 
 Style/RedundantStringEscape:
   Enabled: true
