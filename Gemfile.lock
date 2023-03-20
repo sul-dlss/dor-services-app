@@ -501,7 +501,7 @@ DEPENDENCIES
   factory_bot_rails
   faraday (~> 2.0)
   faraday-retry
-  folio_client (~> 0.6)
+  folio_client (~> 0.8)
   hashdiff
   honeybadger (~> 4.12)
   jbuilder
