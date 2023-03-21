@@ -21,16 +21,16 @@ module Publish
       # Retrieve release tags from identityMetadata and all collections this item is a member of
       release_tags = ReleaseTags.for(cocina_object:)
 
-      transfer_metadata(release_tags)
-      publish_notify_on_success
+      public_cocina = PublicCocinaService.create(cocina_object)
+      transfer_metadata(release_tags, public_cocina)
+      publish_notify_on_success(public_cocina)
     end
 
     private
 
     attr_reader :cocina_object
 
-    def transfer_metadata(release_tags)
-      public_cocina = PublicCocinaService.create(cocina_object)
+    def transfer_metadata(release_tags, public_cocina)
       public_nokogiri = PublicXmlService.new(public_cocina:,
                                              released_for: release_tags,
                                              thumbnail_service: @thumbnail_service)
@@ -76,8 +76,8 @@ module Publish
     ##
     # When publishing a PURL, we notify purl-fetcher of changes.
     #
-    def publish_notify_on_success
-      Faraday.post(purl_services_url)
+    def publish_notify_on_success(public_cocina)
+      Faraday.post(purl_services_url, public_cocina.to_json, { 'Content-Type' => 'application/json' })
     end
 
     ##

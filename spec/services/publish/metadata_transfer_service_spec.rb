@@ -144,7 +144,7 @@ RSpec.describe Publish::MetadataTransferService do
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/{"cocinaVersion"/, 'cocina.json')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<mods:mods/, 'mods')
-          expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(no_args)
+          expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(cocina_object)
         end
 
         let(:release_tags) do
@@ -171,7 +171,7 @@ RSpec.describe Publish::MetadataTransferService do
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/{"cocinaVersion"/, 'cocina.json')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<mods:mods/, 'mods')
-          expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(no_args)
+          expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(cocina_object)
           expect_any_instance_of(described_class).to receive(:republish_members!).with(no_args)
         end
 
@@ -183,7 +183,7 @@ RSpec.describe Publish::MetadataTransferService do
   end
 
   describe '#publish_notify_on_success' do
-    subject(:notify) { service.send(:publish_notify_on_success) }
+    subject(:notify) { service.send(:publish_notify_on_success, cocina_object) }
 
     context 'when purl-fetcher is configured' do
       before do
