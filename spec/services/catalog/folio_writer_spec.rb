@@ -6,6 +6,8 @@ RSpec.describe Catalog::FolioWriter do
   subject(:folio_writer) { described_class.new(cocina_object:, marc_856_data:) }
 
   let(:druid) { 'druid:bc123dg9393' }
+  let(:bare_druid) { druid.delete_prefix('druid:') }
+
   let(:marc_856_data) do
     {
       indicators: '41',

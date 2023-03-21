@@ -57,8 +57,8 @@ module Catalog
     # @param current [boolean] if you want the current or previous catalog record ids
     # @return [Array] previous or current catalog_record_ids for the object in an array, empty array if none exist
     def fetch_catalog_record_ids(current:)
-      id_type = current ? 'folio' : 'previous folio'
-      @cocina_object.identification.catalogLinks.filter_map { |link| link.catalogRecordId if link.catalog == id_type }
+      catalog_record_id_type = current ? 'folio' : 'previous folio'
+      @cocina_object.identification.catalogLinks.filter_map { |link| link.catalogRecordId if link.catalog == catalog_record_id_type }
     end
 
     def released_to_searchworks?(cocina_object)

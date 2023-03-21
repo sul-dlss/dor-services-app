@@ -133,11 +133,6 @@ RSpec/StubbedMock:
     - 'spec/services/preservation_metadata_extractor_spec.rb'
     - 'spec/services/version_service_spec.rb'
 
-# Offense count: 2
-RSpec/SubjectStub:
-  Exclude:
-    - 'spec/services/catalog/update_marc856_record_service_spec.rb'
-
 # Offense count: 1
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: slashes, arguments
