@@ -37,6 +37,16 @@ RSpec.describe Preserve::FileInventoryBuilder do
       expect(result).to be_instance_of Moab::FileInventory
       expect(result.groups.size).to eq 2
     end
+
+    it 'includes the correct content files from contentMetadata' do
+      expect(result.groups[0].file_count).to eq(4) # four content files
+      expect(result.groups[0].path_list).to eq(['00000001.jp2', '00000001.jp2', '1.html', '2.html'])
+    end
+
+    it 'excludes .nfs files from inventory of metadata files' do
+      expect(result.groups[1].file_count).to eq(2) # two metadata files (excludes the .nfs file!)
+      expect(result.groups[1].path_list).to eq(['contentMetadata.xml', 'descMetadata.xml'])
+    end
   end
 
   describe '#content_inventory' do
