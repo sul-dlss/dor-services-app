@@ -48,7 +48,14 @@ module Preserve
 
     # @return [Moab::FileGroup] Traverse the metadata directory and generate a metadata group
     def metadata_file_group
-      Moab::FileGroup.new(group_id: 'metadata').group_from_directory(metadata_dir)
+      metadata_file_group = Moab::FileGroup.new(group_id: 'metadata').group_from_directory(metadata_dir)
+
+      return unless metadata_file_group # this can be nil if there are no metadata files
+
+      # reject any files in the metadata folder that start with .nfs followed by digits (e.g. .nfsNNNNNN)
+      #  see https://github.com/sul-dlss/dor-services-app/issues/4450
+      metadata_file_group.signature_hash.reject! { |_, file_sig| file_sig.paths.any?(/\A(.nfs)\d+\z/) }
+      metadata_file_group
     end
   end
 end
