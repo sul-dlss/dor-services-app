@@ -54,7 +54,7 @@ module Preserve
 
       # reject any files in the metadata folder that start with .nfs followed by digits (e.g. .nfsNNNNNN)
       #  see https://github.com/sul-dlss/dor-services-app/issues/4450
-      metadata_file_group.signature_hash.reject! { |_, file_sig| file_sig.paths.any?(/\A(.nfs)\d+\z/) }
+      metadata_file_group.signature_hash.reject! { |_, file_sig| file_sig.paths.any?(/\A\.nfs\d+\z/) }
       metadata_file_group
     end
   end
