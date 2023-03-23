@@ -19,9 +19,9 @@ class ReleaseTags
   # @return [Hash{String => Boolean}] all namespaces, keys are Project name Strings, values are Boolean
   def released_for
     # Get the most recent self tag for all targets and retain their result since most recent self always trumps any other non self tags
-    latest_self_tags = newest_release_tag self_release_tags(release_tags)
+    latest_self_tags = newest_release_tag self_release_tags(release_tags_by_project)
     released_hash = latest_self_tags.transform_values do |payload|
-      { 'release' => payload['release'] }
+      { 'release' => payload.release }
     end
 
     # With Self Tags resolved we now need to deal with tags on all sets this object is part of.
@@ -36,7 +36,7 @@ class ReleaseTags
       latest_tag = newest_release_tag_in_an_array(potential_applicable_release_tags[key])
       next if latest_tag.nil? # Otherwise, we have a valid tag, record it
 
-      released_hash[key] = { 'release' => latest_tag['release'] }
+      released_hash[key] = { 'release' => latest_tag.release }
     end
     released_hash
   end
@@ -44,7 +44,7 @@ class ReleaseTags
   # Take an item and get all of its release tags and all tags on collections it is a member of it
   # @return [Hash] a hash of all tags
   def release_tags_for_item_and_all_governing_sets
-    return_tags = release_tags # this objects initial release tags
+    return_tags = release_tags_by_project # this objects initial release tags
 
     return return_tags unless cocina_object.dro? # no need to continue if this is a collection, since they don't nest anymore
 
@@ -64,14 +64,9 @@ class ReleaseTags
   end
 
   # create hash structure from cocina administrative release tags, aggregates all releases for a specific target into an array of hashes
-  # e.g. {"Searchworks"=>[{"what"=>"self", "who"=>"cspitzer", "when"=>2021-02-18 21:46:36 UTC, "release"=>true}]}
-  def release_tags
-    tags = {}
-    cocina_object.administrative.releaseTags.each do |tag|
-      tags[tag.to] ||= []
-      tags[tag.to] << { 'what' => tag.what, 'who' => tag.who, 'when' => tag.date.utc, 'release' => tag.release }
-    end
-    tags
+  # e.g. {"Searchworks"=>[#<Cocina::Models::ReleaseTag "what"=>"self", "who"=>"cspitzer", "when"=>2021-02-18 21:46:36 UTC, "release"=>true>]}
+  def release_tags_by_project
+    cocina_object.administrative.releaseTags.group_by(&:to)
   end
 
   private
@@ -89,7 +84,7 @@ class ReleaseTags
   # @return [Hash] a hash of self tags for each to value
   def tags_for_what_value(tags, what_target)
     tags.transform_values do |tag_list|
-      tag_list.select { |tag| tag['what'].casecmp(what_target).zero? }.presence
+      tag_list.select { |tag| tag.what.casecmp(what_target).zero? }.presence
     end.compact
   end
 
@@ -111,7 +106,7 @@ class ReleaseTags
   def newest_release_tag_in_an_array(array_of_tags)
     latest_tag_in_array = array_of_tags[0] || {}
     array_of_tags.each do |tag|
-      latest_tag_in_array = tag if tag['when'] > latest_tag_in_array['when']
+      latest_tag_in_array = tag if tag.date.utc > latest_tag_in_array.date.utc
     end
     latest_tag_in_array
   end
