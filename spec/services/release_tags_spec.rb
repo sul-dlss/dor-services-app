@@ -89,7 +89,7 @@ RSpec.describe ReleaseTags do
     end
 
     describe '#newest_release_tag' do
-      subject { releases.newest_release_tag(dummy_hash) }
+      subject { releases.send(:newest_release_tag, dummy_hash) }
 
       let(:dummy_hash) { { 'Revs' => dummy_tags, 'FRDA' => dummy_tags } }
 
@@ -118,7 +118,7 @@ RSpec.describe ReleaseTags do
   end
 
   describe '#release_tags_by_project' do
-    subject(:release_tags) { releases.release_tags_by_project }
+    subject(:release_tags) { releases.send(:release_tags_by_project) }
 
     context 'when an item does not have any release tags' do
       let(:cocina_object) do
@@ -166,7 +166,7 @@ RSpec.describe ReleaseTags do
     it 'gets tags from collections and the item' do
       # NOTE: Revs comes from the item, Searchworks comes from the collection
       expect(collection_release_tags.keys).not_to include('Revs')
-      expect(releases.release_tags_for_item_and_all_governing_sets.keys).to include('Revs', 'Searchworks')
+      expect(releases.send(:release_tags_for_item_and_all_governing_sets).keys).to include('Revs', 'Searchworks')
     end
   end
 end
