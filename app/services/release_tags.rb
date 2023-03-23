@@ -41,6 +41,8 @@ class ReleaseTags
     released_hash
   end
 
+  private
+
   # Take an item and get all of its release tags and all tags on collections it is a member of it
   # @return [Hash] a hash of all tags
   def release_tags_for_item_and_all_governing_sets
@@ -68,8 +70,6 @@ class ReleaseTags
   def release_tags_by_project
     cocina_object.administrative.releaseTags.group_by(&:to)
   end
-
-  private
 
   # Take a hash of tags as obtained via release_tags method and returns all self tags
   # @param tags [Hash] a hash of tags obtained via release_tags method or matching format
