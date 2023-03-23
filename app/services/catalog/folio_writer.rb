@@ -3,6 +3,8 @@
 module Catalog
   # Updates the FOLIO MARC record's 856 fields
   class FolioWriter
+    MAX_TRIES = 3
+
     def self.save(cocina_object:, marc_856_data:)
       new(cocina_object:, marc_856_data:).save
     end
@@ -29,16 +31,40 @@ module Catalog
     attr_reader :marc_856_data, :cocina_object
 
     def delete_previous_ids(catalog_record_id:)
-      FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
-        marc_json['fields'].reject! { |field| (field['tag'] == '856') && (field['content'].include? purl_subfield) }
+      retry_connection do
+        FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
+          marc_json['fields'].reject! { |field| (field['tag'] == '856') && (field['content'].include? purl_subfield) }
+        end
       end
     end
 
     def update_current_ids(catalog_record_id:)
-      FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
-        marc_json['fields'].reject! { |field| (field['tag'] == '856') && (field['content'].include? purl_subfield) }
-        marc_json['fields'] << marc_856_field if released_to_searchworks?(cocina_object)
+      retry_connection do
+        FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
+          marc_json['fields'].reject! { |field| (field['tag'] == '856') && (field['content'].include? purl_subfield) }
+          marc_json['fields'] << marc_856_field if released_to_searchworks?(cocina_object)
+        end
       end
+    end
+
+    def retry_connection
+      @try_count ||= 0
+      yield
+    rescue StandardError => e
+      @try_count += 1
+      Rails.logger.warn "Retrying Folio client operation for #{cocina_object.externalIdentifier} (#{@try_count} tries)"
+      retry if @try_count <= MAX_TRIES
+
+      Honeybadger.notify(
+        'Error retrying Folio edit operations',
+        error_message: e.message,
+        error_class: e.class,
+        backtrace: e.backtrace,
+        context: {
+          druid: cocina_object.externalIdentifier,
+          try_count: @try_count
+        }
+      )
     end
 
     def purl_subfield
