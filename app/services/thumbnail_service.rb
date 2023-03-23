@@ -24,8 +24,8 @@ class ThumbnailService
       end
     end
 
-    return if object.structural.hasMemberOrders.empty?
+    return if object.structural.hasMemberOrders.empty? || object.structural.hasMemberOrders.first.members.empty?
 
-    object.structural.hasMemberOrders.first.members.first
+    self.class.new(CocinaObjectStore.find(object.structural.hasMemberOrders.first.members.first)).thumb
   end
 end
