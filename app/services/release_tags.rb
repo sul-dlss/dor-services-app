@@ -28,13 +28,12 @@ class ReleaseTags
     # Get all release tags on the item and strip out the what = self ones, we've already processed all the self tags on this item.
     # This will be where we store all tags that apply, regardless of their timestamp:
     potential_applicable_release_tags = tags_for_what_value(release_tags_for_item_and_all_governing_sets, 'collection')
-    administrative_tags = AdministrativeTags.for(identifier: cocina_object.externalIdentifier) # Get admin tags once here and pass them down
 
     # We now have the keys for all potential releases, we need to check the tags: the most recent timestamp with an explicit true or false wins.
     # In a nil case, the lack of an explicit false tag we do nothing.
     # Don't bother checking if already added to the release hash, they were added due to a self tag so that has won
     (potential_applicable_release_tags.keys - released_hash.keys).each do |key|
-      latest_tag = latest_applicable_release_tag_in_array(potential_applicable_release_tags[key], administrative_tags)
+      latest_tag = newest_release_tag_in_an_array(potential_applicable_release_tags[key])
       next if latest_tag.nil? # Otherwise, we have a valid tag, record it
 
       released_hash[key] = { 'release' => latest_tag['release'] }
@@ -115,34 +114,6 @@ class ReleaseTags
       latest_tag_in_array = tag if tag['when'] > latest_tag_in_array['when']
     end
     latest_tag_in_array
-  end
-
-  # Takes a tag and returns true or false if it applies to the specific item
-  # @param release_tag [Hash] the tag in a hashed form
-  # @param admin_tags [Array] the administrative tags on an item, if not supplied it will attempt to retrieve them
-  # @return [Boolean] true or false if it applies (not true or false if it is released, that is the release_tag data)
-  def does_release_tag_apply?(release_tag, admin_tags)
-    # Is the tag global or restricted
-    return true if release_tag['tag'].nil? # no specific tag specificied means this tag is global to all members of the collection
-
-    admin_tags.include?(release_tag['tag'])
-  end
-
-  # Takes an array of release tags and returns the most recent one that applies to this item
-  # @param release_tags [Array] an array of release tags in hashed form
-  # @param admin_tags [Array] the administrative tags on an on item
-  # @return [Hash] the tag, or nil if none applicable
-  def latest_applicable_release_tag_in_array(release_tags, admin_tags)
-    newest_tag = newest_release_tag_in_an_array(release_tags)
-    return newest_tag if does_release_tag_apply?(newest_tag, admin_tags)
-
-    # The latest tag wasn't applicable, slice it off and try again
-    # This could be optimized by reordering on the timestamp and just running down it instead of constantly resorting, at least if we end up getting numerous release tags on an item
-    release_tags.slice!(release_tags.index(newest_tag))
-
-    return latest_applicable_release_tag_in_array(release_tags, admin_tags) unless release_tags.empty? # Try again after dropping the inapplicable
-
-    nil # We're out of tags, no applicable ones
   end
 
   attr_reader :cocina_object
