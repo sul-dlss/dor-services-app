@@ -4,11 +4,9 @@ module Publish
   # Exports the full object XML that we display on purl.stanford.edu
   class PublicXmlService
     # @param [Cocina::Models::DRO, Cocina::Models::Collection] public_cocina a cocina object stripped of non-public data
-    # @param [Hash{String => Boolean}] released_for keys are Project name strings, values are boolean
     # @param [ThumbnailService] thumbnail_service
-    def initialize(public_cocina:, released_for:, thumbnail_service:)
+    def initialize(public_cocina:, thumbnail_service:)
       @public_cocina = public_cocina
-      @released_for = released_for
       @thumbnail_service = thumbnail_service
     end
 
@@ -41,7 +39,7 @@ module Publish
 
     private
 
-    attr_reader :released_for, :public_cocina
+    attr_reader :public_cocina
 
     # Generate XML structure for inclusion to Purl. This data is read by purl-fetcher.
     # @return [String] The XML release node as a string, with ReleaseDigest as the root document
@@ -49,8 +47,8 @@ module Publish
       @release_xml ||= begin
         builder = Nokogiri::XML::Builder.new do |xml|
           xml.releaseData do
-            released_for.each do |project, released_value|
-              xml.release(released_value['release'], to: project)
+            public_cocina.administrative.releaseTags.each do |tag|
+              xml.release(tag.release, to: tag.to)
             end
           end
         end

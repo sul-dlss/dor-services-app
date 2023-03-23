@@ -42,7 +42,7 @@ module Catalog
       retry_connection do
         FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
           marc_json['fields'].reject! { |field| (field['tag'] == '856') && (field['content'].include? purl_subfield) }
-          marc_json['fields'] << marc_856_field if released_to_searchworks?(cocina_object)
+          marc_json['fields'] << marc_856_field if ReleaseTags.released_to_searchworks?(cocina_object:)
         end
       end
     end
@@ -85,12 +85,6 @@ module Catalog
     def fetch_catalog_record_ids(current:)
       catalog_record_id_type = current ? 'folio' : 'previous folio'
       @cocina_object.identification.catalogLinks.filter_map { |link| link.catalogRecordId if link.catalog == catalog_record_id_type }
-    end
-
-    def released_to_searchworks?(cocina_object)
-      released_for = ::ReleaseTags.for(cocina_object:)
-      rel = released_for.transform_keys { |key| key.to_s.upcase } # upcase all release tags to make the check case insensitive
-      rel.dig('SEARCHWORKS', 'release').presence || false
     end
 
     def marc_856_field

@@ -26,8 +26,11 @@ module Publish
     attr_reader :cocina
 
     # remove partOfProject (similar to how we remove tags from identityMetadata)
+    # and rewrite release tags with the tags from the collection.
     def build_administrative
-      Cocina::Models::Administrative.new(cocina.administrative.to_h.except(:partOfProject))
+      Cocina::Models::Administrative.new(cocina.administrative.to_h
+        .except(:partOfProject)
+        .merge(releaseTags: ReleaseTags.for(cocina_object: cocina)))
     end
 
     def build_structural

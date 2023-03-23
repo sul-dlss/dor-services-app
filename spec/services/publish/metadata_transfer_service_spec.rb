@@ -147,15 +147,11 @@ RSpec.describe Publish::MetadataTransferService do
           expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(cocina_object)
         end
 
-        let(:release_tags) do
-          { 'Searchworks' => { 'release' => true }, 'Some_special_place' => { 'release' => true } }
-        end
-
         let(:access) { { view: 'citation-only', download: 'none' } }
 
         it 'identityMetadta, contentMetadata, rightsMetadata, generated dublin core, and public xml' do
           service.publish
-          expect(Publish::PublicXmlService).to have_received(:new).with(public_cocina: Cocina::Models::DRO, released_for: release_tags, thumbnail_service:)
+          expect(Publish::PublicXmlService).to have_received(:new).with(public_cocina: Cocina::Models::DRO, thumbnail_service:)
           expect(Publish::PublicDescMetadataService).to have_received(:new).with(Cocina::Models::DRO)
         end
       end

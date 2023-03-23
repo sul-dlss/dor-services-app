@@ -18,11 +18,8 @@ module Publish
       republish_members!
       return unpublish unless discoverable?
 
-      # Retrieve release tags from identityMetadata and all collections this item is a member of
-      release_tags = ReleaseTags.for(cocina_object:)
-
       public_cocina = PublicCocinaService.create(cocina_object)
-      transfer_metadata(release_tags, public_cocina)
+      transfer_metadata(public_cocina)
       publish_notify_on_success(public_cocina)
     end
 
@@ -30,9 +27,8 @@ module Publish
 
     attr_reader :cocina_object
 
-    def transfer_metadata(release_tags, public_cocina)
+    def transfer_metadata(public_cocina)
       public_nokogiri = PublicXmlService.new(public_cocina:,
-                                             released_for: release_tags,
                                              thumbnail_service: @thumbnail_service)
       transfer_to_document_store(public_cocina.to_json, 'cocina.json')
       transfer_to_document_store(public_nokogiri.to_xml, 'public')
