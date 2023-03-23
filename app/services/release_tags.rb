@@ -124,7 +124,7 @@ class ReleaseTags
   # @param release_tag [Hash] the tag in a hashed form
   # @param admin_tags [Array] the administrative tags on an item, if not supplied it will attempt to retrieve them
   # @return [Boolean] true or false if it applies (not true or false if it is released, that is the release_tag data)
-  def does_release_tag_apply(release_tag, admin_tags)
+  def does_release_tag_apply?(release_tag, admin_tags)
     # Is the tag global or restricted
     return true if release_tag['tag'].nil? # no specific tag specificied means this tag is global to all members of the collection
 
@@ -141,7 +141,7 @@ class ReleaseTags
   # @return [Hash] the tag, or nil if none applicable
   def latest_applicable_release_tag_in_array(release_tags, admin_tags)
     newest_tag = newest_release_tag_in_an_array(release_tags)
-    return newest_tag if does_release_tag_apply(newest_tag, admin_tags)
+    return newest_tag if does_release_tag_apply?(newest_tag, admin_tags)
 
     # The latest tag wasn't applicable, slice it off and try again
     # This could be optimized by reordering on the timestamp and just running down it instead of constantly resorting, at least if we end up getting numerous release tags on an item

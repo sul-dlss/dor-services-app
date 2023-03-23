@@ -122,16 +122,16 @@ RSpec.describe ReleaseTags do
       end
     end
 
-    describe '#does_release_tag_apply' do
+    describe '#does_release_tag_apply?' do
       it 'recognizes a release tag with no tag attribute applies' do
         local_dummy_tag = { 'when' => array_of_times[0], 'who' => 'carrickr' }
-        expect(releases.send(:does_release_tag_apply, local_dummy_tag, bryar_trans_am_admin_tags)).to be_truthy
+        expect(releases.send(:does_release_tag_apply?, local_dummy_tag, bryar_trans_am_admin_tags)).to be_truthy
       end
 
       it 'does not require admin tags to have members' do
         local_dummy_tag = { 'when' => array_of_times[0], 'who' => 'carrickr' }
-        expect(releases.send(:does_release_tag_apply, local_dummy_tag, [])).to be_truthy
-        expect(releases.send(:does_release_tag_apply, dummy_tags[0], [])).to be_falsey
+        expect(releases.send(:does_release_tag_apply?, local_dummy_tag, [])).to be_truthy
+        expect(releases.send(:does_release_tag_apply?, dummy_tags[0], [])).to be_falsey
       end
     end
 
