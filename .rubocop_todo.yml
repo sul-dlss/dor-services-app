@@ -88,7 +88,6 @@ RSpec/ContextWording:
     - 'spec/services/digital_stacks_service_spec.rb'
     - 'spec/services/publish/public_desc_metadata_service_spec.rb'
     - 'spec/services/publish/public_xml_service_spec.rb'
-    - 'spec/services/release_tags/identity_metadata_spec.rb'
     - 'spec/services/thumbnail_service_spec.rb'
 
 # Offense count: 12
@@ -161,7 +160,6 @@ Style/Documentation:
     - 'app/controllers/objects_controller.rb'
     - 'app/controllers/versions_controller.rb'
     - 'app/services/publish/dublin_core_service.rb'
-    - 'app/services/release_tags/identity_metadata.rb'
     - 'config/application.rb'
     - 'config/initializers/okcomputer.rb'
 
@@ -170,21 +168,6 @@ Style/Documentation:
 # Configuration parameters: Strict, AllowedNumbers, AllowedPatterns.
 Style/NumericLiterals:
   MinDigits: 7
-
-# Offense count: 1
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: EnforcedStyle, AllowedMethods, AllowedPatterns.
-# SupportedStyles: predicate, comparison
-Style/NumericPredicate:
-  Exclude:
-    - 'app/services/release_tags/identity_metadata.rb'
-
-# Offense count: 1
-# Configuration parameters: AllowedMethods.
-# AllowedMethods: respond_to_missing?
-Style/OptionalBooleanParameter:
-  Exclude:
-    - 'app/services/release_tags/identity_metadata.rb'
 
 # Offense count: 7
 # This cop supports safe autocorrection (--autocorrect).

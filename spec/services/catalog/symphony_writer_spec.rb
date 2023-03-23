@@ -34,12 +34,11 @@ RSpec.describe Catalog::SymphonyWriter do
     end
 
     let(:cocina_object) { build(:dro, id: druid).new(identification:) }
-    let(:release_service) { instance_double(ReleaseTags::IdentityMetadata, released_for: release_data) }
     let(:release_data) { { 'Searchworks' => { 'release' => true } } }
 
     before do
       Settings.release.symphony_path = "#{fixtures}/sdr_purl"
-      allow(ReleaseTags::IdentityMetadata).to receive(:for).and_return(release_service)
+      allow(ReleaseTags).to receive(:for).and_return(release_data)
     end
 
     after do

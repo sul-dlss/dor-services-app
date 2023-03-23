@@ -71,14 +71,13 @@ RSpec.describe Catalog::FolioWriter do
 
   describe '.save' do
     let(:cocina_object) { build(:dro, id: druid).new(identification:) }
-    let(:release_service) { instance_double(ReleaseTags::IdentityMetadata, released_for: release_data) }
     let(:release_data) { { 'Searchworks' => { 'release' => true } } }
     let(:hrid) { 'a8832162' }
 
     before do
       allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
       allow(FolioClient).to receive(:edit_marc_json).and_yield(folio_response_json)
-      allow(ReleaseTags::IdentityMetadata).to receive(:for).and_return(release_service)
+      allow(ReleaseTags).to receive(:for).and_return(release_data)
     end
 
     context 'when a single catalog record has been released to Searchworks' do
