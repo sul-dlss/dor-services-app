@@ -48,29 +48,109 @@ RSpec.describe ReleaseTags do
   end
 
   describe '.for' do
-    let(:cocina_object) do
-      build(:dro).new(
-        administrative: {
-          hasAdminPolicy: 'druid:fg890hx1234',
-          releaseTags: [
-            {
-              who: 'dhartwig',
-              what: 'collection',
-              date: '2019-01-18T17:03:35.000+00:00',
-              to: 'Searchworks',
-              release: true
-            }
-          ]
-        }
-      )
+    subject(:releases) { described_class.for(cocina_object:) }
+
+    context 'when item has a self tag' do
+      let(:cocina_object) do
+        build(:dro).new(
+          administrative: {
+            hasAdminPolicy: 'druid:fg890hx1234',
+            releaseTags: [
+              {
+                who: 'dhartwig',
+                what: 'collection',
+                date: '2019-01-18T17:03:35.000+00:00',
+                to: 'Searchworks',
+                release: true
+              }
+            ]
+          }
+        )
+      end
+
+      it 'returns the hash of release tags' do
+        expect(releases).to eq(
+          'Searchworks' => {
+            'release' => true
+          }
+        )
+      end
     end
 
-    it 'returns the hash of release tags' do
-      expect(described_class.for(cocina_object:)).to eq(
-        'Searchworks' => {
-          'release' => true
-        }
-      )
+    context 'when collection has a self tag' do
+      let(:collection_druid) { 'druid:xh235dd9059' }
+
+      let(:cocina_object) do
+        build(:dro).new(structural: {
+                          isMemberOf: [collection_druid]
+                        })
+      end
+
+      let(:collection_object) do
+        build(:collection, id: collection_druid).new(administrative: {
+                                                       hasAdminPolicy: apo_id,
+                                                       releaseTags: [
+                                                         {
+                                                           who: 'dhartwig',
+                                                           what: 'self',
+                                                           date: '2019-01-18T17:03:35.000+00:00',
+                                                           to: 'Searchworks',
+                                                           release: true
+                                                         }
+                                                       ]
+                                                     })
+      end
+
+      before do
+        allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection_object)
+      end
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'when collection has a collection tag and the item has a self tag' do
+      let(:collection_druid) { 'druid:xh235dd9059' }
+
+      let(:cocina_object) do
+        build(:dro).new(structural: {
+                          isMemberOf: [collection_druid]
+                        },
+                        administrative: {
+                          hasAdminPolicy: apo_id,
+                          releaseTags: [
+                            {
+                              who: 'dhartwig',
+                              what: 'self',
+                              date: '2019-01-18T17:03:35.000+00:00',
+                              to: 'Earthworks',
+                              release: true
+                            }
+                          ]
+                        })
+      end
+
+      let(:collection_object) do
+        build(:collection, id: collection_druid).new(administrative: {
+                                                       hasAdminPolicy: apo_id,
+                                                       releaseTags: [
+                                                         {
+                                                           who: 'dhartwig',
+                                                           what: 'collection',
+                                                           date: '2019-01-18T17:03:35.000+00:00',
+                                                           to: 'Searchworks',
+                                                           release: true
+                                                         }
+                                                       ]
+                                                     })
+      end
+
+      before do
+        allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection_object)
+      end
+
+      it 'gets tags from collections and the item' do
+        expect(releases).to eq('Earthworks' => { 'release' => true }, 'Searchworks' => { 'release' => true })
+      end
     end
   end
 
@@ -118,7 +198,7 @@ RSpec.describe ReleaseTags do
   end
 
   describe '#release_tags_by_project' do
-    subject(:release_tags) { releases.send(:release_tags_by_project) }
+    subject(:release_tags) { releases.release_tags_by_project }
 
     context 'when an item does not have any release tags' do
       let(:cocina_object) do
@@ -142,31 +222,6 @@ RSpec.describe ReleaseTags do
         ]
       }
       expect(release_tags).to eq exp_result
-    end
-  end
-
-  describe '#release_tags_for_item_and_all_governing_sets' do
-    let(:collection_object) do
-      build(:collection, id: collection_druid, admin_policy_id: apo_id)
-    end
-    let(:collection_release_tags) do
-      {
-        'Searchworks' => [
-          { 'what' => 'collection', 'when' => Time.zone.parse('2015-01-06 23:33:47Z'), 'who' => 'carrickr', 'release' => true }
-        ]
-      }
-    end
-
-    before do
-      releases # call releases before subbing the invocation.
-      allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection_object)
-      allow(described_class).to receive(:for).with(cocina_object: collection_object).and_return(collection_release_tags)
-    end
-
-    it 'gets tags from collections and the item' do
-      # NOTE: Revs comes from the item, Searchworks comes from the collection
-      expect(collection_release_tags.keys).not_to include('Revs')
-      expect(releases.send(:release_tags_for_item_and_all_governing_sets).keys).to include('Revs', 'Searchworks')
     end
   end
 end
