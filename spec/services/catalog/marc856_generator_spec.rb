@@ -10,7 +10,6 @@ RSpec.describe Catalog::Marc856Generator do
   let(:bare_druid) { druid.delete_prefix('druid:') }
   let(:collection_druid) { 'druid:cc111cc1111' }
   let(:collection_bare_druid) { collection_druid.delete_prefix('druid:') }
-  let(:release_service) { instance_double(ReleaseTags::IdentityMetadata, released_for: release_data) }
   let(:release_data) { {} }
   let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
 
@@ -132,7 +131,7 @@ RSpec.describe Catalog::Marc856Generator do
   end
 
   before do
-    allow(ReleaseTags::IdentityMetadata).to receive(:for).and_return(release_service)
+    allow(ReleaseTags).to receive(:for).and_return(release_data)
   end
 
   describe '.create' do
