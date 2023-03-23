@@ -128,10 +128,6 @@ class ReleaseTags
     # Is the tag global or restricted
     return true if release_tag['tag'].nil? # no specific tag specificied means this tag is global to all members of the collection
 
-    # We use false instead of [], since an item can have no admin_tags at
-    # which point we'd be passing this var as [] and would not attempt to
-    # retrieve it
-    admin_tags ||= AdministrativeTags.for(identifier: cocina_object.externalIdentifier)
     admin_tags.include?(release_tag['tag'])
   end
 
