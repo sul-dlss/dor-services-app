@@ -3,9 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe ReleaseTags do
-  let(:array_of_times) do
-    ['2015-01-06 23:33:47Z', '2015-01-07 23:33:47Z', '2015-01-08 23:33:47Z', '2015-01-09 23:33:47Z'].map { |x| Time.parse(x).iso8601 }
-  end
   let(:bryar_trans_am_admin_tags) { AdministrativeTags.for(identifier: druid) }
   let(:releases) { described_class.new(cocina_object) }
   let(:cocina_object) do
@@ -80,8 +77,8 @@ RSpec.describe ReleaseTags do
   describe 'Tag sorting, combining, and comparision functions' do
     let(:dummy_tags) do
       [
-        { 'when' => array_of_times[0], 'what' => 'self' },
-        { 'when' => array_of_times[1], 'what' => 'collection' }
+        Cocina::Models::ReleaseTag.new(date: '2015-01-06 23:33:47Z', 'what' => 'self'),
+        Cocina::Models::ReleaseTag.new(date: '2015-01-07 23:33:47Z', 'what' => 'collection')
       ]
     end
 
@@ -120,8 +117,8 @@ RSpec.describe ReleaseTags do
     end
   end
 
-  describe '#release_tags' do
-    subject(:release_tags) { releases.release_tags }
+  describe '#release_tags_by_project' do
+    subject(:release_tags) { releases.release_tags_by_project }
 
     context 'when an item does not have any release tags' do
       let(:cocina_object) do
@@ -139,9 +136,9 @@ RSpec.describe ReleaseTags do
     it 'returns the releases for an item that has release tags' do
       exp_result = {
         'Revs' => [
-          { 'what' => 'collection', 'when' => Time.zone.parse('2015-01-06 23:33:47Z'), 'who' => 'carrickr', 'release' => true },
-          { 'what' => 'self', 'when' => Time.zone.parse('2015-01-06 23:33:54Z'), 'who' => 'carrickr', 'release' => true },
-          { 'what' => 'self', 'when' => Time.zone.parse('2015-01-06 23:40:01Z'), 'who' => 'carrickr', 'release' => false }
+          Cocina::Models::ReleaseTag.new(to: 'Revs', 'what' => 'collection', date: '2015-01-06 23:33:47Z', 'who' => 'carrickr', 'release' => true),
+          Cocina::Models::ReleaseTag.new(to: 'Revs', 'what' => 'self', date: '2015-01-06 23:33:54Z', 'who' => 'carrickr', 'release' => true),
+          Cocina::Models::ReleaseTag.new(to: 'Revs', 'what' => 'self', date: '2015-01-06 23:40:01Z', 'who' => 'carrickr', 'release' => false)
         ]
       }
       expect(release_tags).to eq exp_result
