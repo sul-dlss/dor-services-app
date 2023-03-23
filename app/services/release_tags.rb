@@ -41,6 +41,12 @@ class ReleaseTags
     released_hash
   end
 
+  # create hash structure from cocina administrative release tags, aggregates all releases for a specific target into an array of hashes
+  # e.g. {"Searchworks"=>[#<Cocina::Models::ReleaseTag "what"=>"self", "who"=>"cspitzer", "when"=>2021-02-18 21:46:36 UTC, "release"=>true>]}
+  def release_tags_by_project
+    cocina_object.administrative.releaseTags.group_by(&:to)
+  end
+
   private
 
   # Take an item and get all of its release tags and all tags on collections it is a member of it
@@ -52,8 +58,8 @@ class ReleaseTags
 
     # now go through any collections it is a member of and add them
     cocina_object.structural.isMemberOf.each do |collection_druid|
-      collection_tags = self.class.for(cocina_object: CocinaObjectStore.find(collection_druid))
-      return_tags = combine_two_release_tag_hashes(return_tags, collection_tags)
+      service = self.class.new(CocinaObjectStore.find(collection_druid))
+      return_tags = combine_two_release_tag_hashes(return_tags, service.release_tags_by_project)
     end
     return_tags
   end
@@ -63,12 +69,6 @@ class ReleaseTags
   # @return [Hash] a hash of latest tags for each to value
   def newest_release_tag(tags)
     tags.transform_values { |val| newest_release_tag_in_an_array(val) }
-  end
-
-  # create hash structure from cocina administrative release tags, aggregates all releases for a specific target into an array of hashes
-  # e.g. {"Searchworks"=>[#<Cocina::Models::ReleaseTag "what"=>"self", "who"=>"cspitzer", "when"=>2021-02-18 21:46:36 UTC, "release"=>true>]}
-  def release_tags_by_project
-    cocina_object.administrative.releaseTags.group_by(&:to)
   end
 
   # Take a hash of tags as obtained via release_tags method and returns all self tags
@@ -89,8 +89,8 @@ class ReleaseTags
   end
 
   # Take two hashes of tags and combine them, will not overwrite but will enforce uniqueness of the tags
-  # @param hash_one [Hash] a hash of tags obtained via release_tags method or matching format
-  # @param hash_two [Hash] a hash of tags obtained via release_tags method or matching format
+  # @param hash_one [Hash<String,Array<Cocina::Models::ReleaseTag>>] a hash of tags obtained via release_tags_by_project method or matching format
+  # @param hash_two [Hash<String,Array<Cocina::Models::ReleaseTag>>] a hash of tags obtained via release_tags_by_project method or matching format
   # @return [Hash] the combined hash with uniquiness enforced
   def combine_two_release_tag_hashes(hash_one, hash_two)
     hash_two.each_key do |key|
