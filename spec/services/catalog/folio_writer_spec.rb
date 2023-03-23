@@ -98,6 +98,51 @@ RSpec.describe Catalog::FolioWriter do
         expect(FolioClient).to have_received(:edit_marc_json).with(hrid:)
         expect(folio_response_json).to eq(updated_marc_json)
       end
+
+      context "when Folio operation raises less than #{described_class::MAX_TRIES} times" do
+        before do
+          client_responses = [nil, nil, folio_response_json]
+          allow(FolioClient).to receive(:edit_marc_json) do |_, &block|
+            response = client_responses.shift
+            response.nil? ? raise(FolioClient::Error, 'arbitrary exception') : block.call(response)
+          end
+          allow(Rails.logger).to receive(:warn)
+        end
+
+        it 'updates the MARC record and logs warning messages' do
+          folio_writer.save
+          expect(FolioClient).to have_received(:edit_marc_json).with(hrid:).exactly(3).times
+          expect(Rails.logger).to have_received(:warn).twice
+          expect(folio_response_json).to eq(updated_marc_json)
+        end
+      end
+
+      context "when Folio operation raises more than #{described_class::MAX_TRIES} times" do
+        before do
+          client_responses = [nil, nil, nil, nil, folio_response_json]
+          allow(FolioClient).to receive(:edit_marc_json) do |_, &block|
+            response = client_responses.shift
+            response.nil? ? raise(FolioClient::Error, 'arbitrary exception') : block.call(response)
+          end
+          allow(Rails.logger).to receive(:warn)
+          allow(Honeybadger).to receive(:notify)
+        end
+
+        it 'logs a warning message and notifies Honeybadger' do
+          folio_writer.save
+          expect(FolioClient).to have_received(:edit_marc_json).with(hrid:).exactly(4).times
+          expect(Rails.logger).to have_received(:warn).exactly(4).times
+          expect(Honeybadger).to have_received(:notify)
+            .with(
+              'Error retrying Folio edit operations',
+              backtrace: instance_of(Array),
+              error_class: FolioClient::Error,
+              error_message: 'arbitrary exception',
+              context: { druid:, try_count: 4 }
+            )
+            .once
+        end
+      end
     end
 
     context 'when a single catalog record id that has not been released to Searchworks' do
