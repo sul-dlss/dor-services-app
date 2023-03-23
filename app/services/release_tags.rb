@@ -89,12 +89,9 @@ class ReleaseTags
   # @param what_target [String] the target for the 'what' key, self or collection
   # @return [Hash] a hash of self tags for each to value
   def tags_for_what_value(tags, what_target)
-    return_hash = {}
-    tags.each_key do |key|
-      self_tags = tags[key].select { |tag| tag['what'].casecmp(what_target).zero? }
-      return_hash[key] = self_tags unless self_tags.empty?
-    end
-    return_hash
+    tags.transform_values do |tag_list|
+      tag_list.select { |tag| tag['what'].casecmp(what_target).zero? }.presence
+    end.compact
   end
 
   # Take two hashes of tags and combine them, will not overwrite but will enforce uniqueness of the tags
