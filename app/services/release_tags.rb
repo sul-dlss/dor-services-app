@@ -93,9 +93,8 @@ class ReleaseTags
   # @param hash_two [Hash<String,Array<Cocina::Models::ReleaseTag>>] a hash of tags obtained via release_tags_by_project method or matching format
   # @return [Hash] the combined hash with uniquiness enforced
   def combine_two_release_tag_hashes(hash_one, hash_two)
-    hash_two.each_key do |key|
-      hash_one[key] = hash_two[key] if hash_one[key].nil?
-      hash_one[key] = (hash_one[key] + hash_two[key]).uniq unless hash_one[key].nil?
+    hash_two.each do |key, hash_two_value|
+      hash_one[key] = (hash_one.fetch(key, []) + hash_two_value).uniq
     end
     hash_one
   end
