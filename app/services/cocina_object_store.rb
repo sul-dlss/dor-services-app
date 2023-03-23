@@ -8,7 +8,14 @@ class CocinaObjectStore
   class CocinaObjectStoreError < StandardError; end
 
   # Cocina object not found in datastore.
-  class CocinaObjectNotFoundError < CocinaObjectStoreError; end
+  class CocinaObjectNotFoundError < CocinaObjectStoreError
+    attr_reader :druid
+
+    def initialize(message = nil, druid = nil)
+      @druid = druid
+      super(message)
+    end
+  end
 
   # Cocina object in datastore has been updated since this instance was retrieved.
   class StaleLockError < CocinaObjectStoreError; end
@@ -157,9 +164,8 @@ class CocinaObjectStore
                        AdminPolicy.find_by(external_identifier: druid) ||
                        Collection.find_by(external_identifier: druid)
 
-    raise CocinaObjectNotFoundError unless ar_cocina_object
-
-    ar_cocina_object
+    ar_cocina_object ||
+      raise(CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid))
   end
 
   def ar_destroy(druid)
