@@ -84,7 +84,7 @@ class ReleaseTags
   # @return [Hash] a hash of self tags for each to value
   def tags_for_what_value(tags, what_target)
     tags.transform_values do |tag_list|
-      tag_list.select { |tag| tag.what.casecmp(what_target).zero? }.presence
+      tag_list.select { |tag| tag.what.casecmp?(what_target) }.presence
     end.compact
   end
 
