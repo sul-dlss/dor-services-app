@@ -86,11 +86,9 @@ class GoobiService
   # returns the name of the goobiworkflow in the object by examining the objects tags
   # @return [String] first goobi workflow tag value if one exists (default from config if none)
   def goobi_workflow_name
-    @goobi_workflow_name ||= begin
-      dpg_workflow_tag_id = 'DPG : Workflow : '
-      content_tag = AdministrativeTags.for(identifier: cocina_obj.externalIdentifier).select { |tag| tag.include?(dpg_workflow_tag_id) }
-      content_tag.empty? ? Settings.goobi.default_goobi_workflow_name : content_tag[0].split(':').last.strip
-    end
+    dpg_workflow_tag_id = 'DPG : Workflow : '
+    content_tag = AdministrativeTags.for(identifier: cocina_obj.externalIdentifier).select { |tag| tag.include?(dpg_workflow_tag_id) }
+    content_tag.empty? ? Settings.goobi.default_goobi_workflow_name : content_tag[0].split(':').last.strip
   end
 
   def catkey
@@ -133,10 +131,8 @@ class GoobiService
   # returns true or false depending if the specially defined goobi DPG ocr tag is present in the object
   # @return [boolean]
   def goobi_ocr_tag_present?
-    @goobi_ocr_tag_present ||= begin
-      dpg_goobi_ocr_tag = 'DPG : OCR : TRUE'
-      AdministrativeTags.for(identifier: cocina_obj.externalIdentifier).any? { |tag| tag.casecmp(dpg_goobi_ocr_tag).zero? } # case insensitive compare
-    end
+    dpg_goobi_ocr_tag = 'DPG : OCR : TRUE'
+    AdministrativeTags.for(identifier: cocina_obj.externalIdentifier).any? { |tag| tag.casecmp(dpg_goobi_ocr_tag).zero? } # case insensitive compare
   end
 
   # returns the first collection_id the object is contained in (if any)
@@ -148,7 +144,7 @@ class GoobiService
   # returns the name of the first collection the object is contained in (if any)
   # @return [String] first collection name the item is in (blank if none)
   def collection_name
-    @collection_name ||= collection_id == '' ? '' : CocinaObjectStore.find(collection_id).label
+    collection_id == '' ? '' : CocinaObjectStore.find(collection_id).label
   end
 
   def title_or_label
