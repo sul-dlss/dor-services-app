@@ -80,8 +80,8 @@ RSpec.describe ReleaseTags do
   describe 'Tag sorting, combining, and comparision functions' do
     let(:dummy_tags) do
       [
-        { 'when' => array_of_times[0], 'tag' => "Project: Jim Harbaugh's Finest Moments At Stanford.", 'what' => 'self' },
-        { 'when' => array_of_times[1], 'tag' => "Project: Jim Harbaugh's Even Finer Moments At Michigan.", 'what' => 'collection' }
+        { 'when' => array_of_times[0], 'what' => 'self' },
+        { 'when' => array_of_times[1], 'what' => 'collection' }
       ]
     end
 
@@ -97,42 +97,6 @@ RSpec.describe ReleaseTags do
       let(:dummy_hash) { { 'Revs' => dummy_tags, 'FRDA' => dummy_tags } }
 
       it { is_expected.to eq('Revs' => dummy_tags[1], 'FRDA' => dummy_tags[1]) }
-    end
-
-    describe '#latest_applicable_release_tag_in_array' do
-      it 'returns nil when no tags apply' do
-        expect(releases.send(:latest_applicable_release_tag_in_array, dummy_tags, bryar_trans_am_admin_tags)).to be_nil
-      end
-
-      it 'returns a tag when it does apply' do
-        valid_tag = { 'when' => array_of_times[3], 'tag' => 'Project : Revs' }
-        expect(releases.send(:latest_applicable_release_tag_in_array, dummy_tags << valid_tag, bryar_trans_am_admin_tags)).to eq(valid_tag)
-      end
-
-      it 'returns a valid tag even if there are non applicable older ones in front of it' do
-        valid_tag = { 'when' => array_of_times[2], 'tag' => 'Project : Revs' }
-        newer_no_op_tag = { 'when' => array_of_times[3], 'tag' => "Jim Harbaugh's Nonexistent Moments With The Raiders" }
-        expect(releases.send(:latest_applicable_release_tag_in_array, dummy_tags + [valid_tag, newer_no_op_tag], bryar_trans_am_admin_tags)).to eq(valid_tag)
-      end
-
-      it 'returns the most recent tag when there are two valid tags' do
-        valid_tag = { 'when' => array_of_times[2], 'tag' => 'Project : Revs' }
-        newer_valid_tag = { 'when' => array_of_times[3], 'tag' => 'tag : test1' }
-        expect(releases.send(:latest_applicable_release_tag_in_array, dummy_tags + [valid_tag, newer_valid_tag], bryar_trans_am_admin_tags)).to eq(newer_valid_tag)
-      end
-    end
-
-    describe '#does_release_tag_apply?' do
-      it 'recognizes a release tag with no tag attribute applies' do
-        local_dummy_tag = { 'when' => array_of_times[0], 'who' => 'carrickr' }
-        expect(releases.send(:does_release_tag_apply?, local_dummy_tag, bryar_trans_am_admin_tags)).to be_truthy
-      end
-
-      it 'does not require admin tags to have members' do
-        local_dummy_tag = { 'when' => array_of_times[0], 'who' => 'carrickr' }
-        expect(releases.send(:does_release_tag_apply?, local_dummy_tag, [])).to be_truthy
-        expect(releases.send(:does_release_tag_apply?, dummy_tags[0], [])).to be_falsey
-      end
     end
 
     describe '#tags_for_what_value' do
@@ -191,7 +155,7 @@ RSpec.describe ReleaseTags do
     let(:collection_release_tags) do
       {
         'Searchworks' => [
-          { 'tag' => 'true', 'what' => 'collection', 'when' => Time.zone.parse('2015-01-06 23:33:47Z'), 'who' => 'carrickr', 'release' => true }
+          { 'what' => 'collection', 'when' => Time.zone.parse('2015-01-06 23:33:47Z'), 'who' => 'carrickr', 'release' => true }
         ]
       }
     end
