@@ -46,7 +46,7 @@ module Catalog
       unless catkeys.empty?
         catkey = catkeys.first
         new_record = new_identifier_record(catkey)
-        new_record.merge!(marc_856_data) if released_to_searchworks?
+        new_record.merge!(marc_856_data) if ReleaseTags.released_to_searchworks?(cocina_object:)
         new_records << new_record
       end
       new_records
@@ -100,12 +100,6 @@ module Catalog
 
       ckey_type = current ? 'symphony' : 'previous symphony'
       @cocina_object.identification.catalogLinks.select { |link| link.catalog == ckey_type }.map(&:catalogRecordId)
-    end
-
-    def released_to_searchworks?
-      released_for = ::ReleaseTags.for(cocina_object:)
-      rel = released_for.transform_keys { |key| key.to_s.upcase }
-      rel.dig('SEARCHWORKS', 'release').presence || false
     end
   end
 end

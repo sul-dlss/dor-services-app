@@ -10,7 +10,7 @@ RSpec.describe Catalog::Marc856Generator do
   let(:bare_druid) { druid.delete_prefix('druid:') }
   let(:collection_druid) { 'druid:cc111cc1111' }
   let(:collection_bare_druid) { collection_druid.delete_prefix('druid:') }
-  let(:release_data) { {} }
+  let(:release_data) { false }
   let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
 
   let(:cocina_object) { build(:dro, id: druid) }
@@ -131,7 +131,7 @@ RSpec.describe Catalog::Marc856Generator do
   end
 
   before do
-    allow(ReleaseTags).to receive(:for).and_return(release_data)
+    allow(ReleaseTags).to receive(:released_to_searchworks?).and_return(release_data)
   end
 
   describe '.create' do
@@ -156,7 +156,7 @@ RSpec.describe Catalog::Marc856Generator do
         identification: identity_metadata_collection
       )
     end
-    let(:release_data) { { 'Searchworks' => { 'release' => true } } }
+    let(:release_data) { true }
 
     before do
       allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
@@ -316,27 +316,12 @@ RSpec.describe Catalog::Marc856Generator do
       end
     end
 
-    context 'when an object with a collection has no release tags' do
-      let(:cocina_object) do
-        build(:dro, id: druid).new(
-          structural: structural_metadata
-        )
-      end
-
-      it 'does not return information for the collection object' do
-        allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
-        expect(marc_856_generator.send(:subfield_x_collections)).to eq([])
-      end
-    end
-
     context 'when an object with a collection that is not released to searchworks' do
       let(:cocina_object) do
         build(:dro, id: druid).new(
           structural: structural_metadata
         )
       end
-
-      let(:release_data) { { 'Searchworks' => { 'release' => false } } }
 
       it 'does not return information for the collection object' do
         allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection)
@@ -351,7 +336,7 @@ RSpec.describe Catalog::Marc856Generator do
         )
       end
 
-      let(:release_data) { { 'Searchworks' => { 'release' => true } } }
+      let(:release_data) { true }
       let(:result) do
         [{ code: 'x', value: 'collection:cc111cc1111:8832162:Collection label & A Special character' }]
       end
@@ -774,64 +759,6 @@ RSpec.describe Catalog::Marc856Generator do
 
     context 'with dark rights' do
       it { is_expected.to eq [{ code: 'x', value: 'rights:dark' }] }
-    end
-  end
-
-  describe 'Released to Searchworks' do
-    context 'when release_data tag has release to=Searchworks and value is true' do
-      let(:release_data) { { 'Searchworks' => { 'release' => true } } }
-
-      it 'returns true' do
-        expect(marc_856_generator.send(:released_to_searchworks?, cocina_object)).to be true
-      end
-    end
-
-    context 'when release_data tag has release to=searchworks (all lowercase) and value is true' do
-      let(:release_data) { { 'searchworks' => { 'release' => true } } }
-
-      it 'returns true' do
-        expect(marc_856_generator.send(:released_to_searchworks?, cocina_object)).to be true
-      end
-    end
-
-    context 'when release_data tag has release to=SearchWorks (camcelcase) and value is true' do
-      let(:release_data) { { 'SearchWorks' => { 'release' => true } } }
-
-      it 'returns true' do
-        expect(marc_856_generator.send(:released_to_searchworks?, cocina_object)).to be true
-      end
-    end
-
-    context 'when release_data tag has release to=Searchworks and value is false' do
-      let(:release_data) { { 'Searchworks' => { 'release' => false } } }
-
-      it 'returns false' do
-        expect(marc_856_generator.send(:released_to_searchworks?, cocina_object)).to be false
-      end
-    end
-
-    context 'when release_data tag has release to=Searchworks but no specified release value' do
-      let(:release_data) { { 'Searchworks' => { 'bogus' => 'yup' } } }
-
-      it 'returns false' do
-        expect(marc_856_generator.send(:released_to_searchworks?, cocina_object)).to be false
-      end
-    end
-
-    context 'when there are no release tags at all' do
-      let(:release_data) { {} }
-
-      it 'returns false' do
-        expect(marc_856_generator.send(:released_to_searchworks?, cocina_object)).to be false
-      end
-    end
-
-    context 'when there are non searchworks related release tags' do
-      let(:release_data) { { 'Revs' => { 'release' => true } } }
-
-      it 'returns false' do
-        expect(marc_856_generator.send(:released_to_searchworks?, cocina_object)).to be false
-      end
     end
   end
 

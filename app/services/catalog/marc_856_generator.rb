@@ -125,7 +125,7 @@ module Catalog
 
       collections.each do |collection_druid|
         collection = CocinaObjectStore.find(collection_druid)
-        next unless released_to_searchworks?(collection)
+        next unless ReleaseTags.released_to_searchworks?(cocina_object: collection)
 
         catalog_link = collection.identification&.catalogLinks&.find { |link| link.catalog == catalog }
         collection_info << { code: 'x', value: "collection:#{collection.externalIdentifier.sub('druid:', '')}:#{catalog_link&.catalogRecordId}:#{Cocina::Models::Builders::TitleBuilder.build(collection.description.title)}" }
@@ -159,12 +159,6 @@ module Catalog
       values << "rights:location=#{access.location}" if access.location
 
       values.map { |right| { code: 'x', value: right } }
-    end
-
-    def released_to_searchworks?(cocina_object)
-      released_for = ::ReleaseTags.for(cocina_object:)
-      rel = released_for.transform_keys { |key| key.to_s.upcase }
-      rel.dig('SEARCHWORKS', 'release').presence || false
     end
 
     # adapted from mods_display

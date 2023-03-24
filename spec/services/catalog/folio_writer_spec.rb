@@ -71,13 +71,13 @@ RSpec.describe Catalog::FolioWriter do
 
   describe '.save' do
     let(:cocina_object) { build(:dro, id: druid).new(identification:) }
-    let(:release_data) { { 'Searchworks' => { 'release' => true } } }
+    let(:release_data) { true }
     let(:hrid) { 'a8832162' }
 
     before do
       allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
       allow(FolioClient).to receive(:edit_marc_json).and_yield(folio_response_json)
-      allow(ReleaseTags).to receive(:for).and_return(release_data)
+      allow(ReleaseTags).to receive(:released_to_searchworks?).and_return(release_data)
     end
 
     context 'when a single catalog record has been released to Searchworks' do
@@ -158,18 +158,8 @@ RSpec.describe Catalog::FolioWriter do
         }
       end
 
-      context 'when explicitly not released' do
-        let(:release_data) { { 'Searchworks' => { 'release' => false } } }
-
-        it 'updates the MARC record and does not include the 856' do
-          folio_writer.save
-          expect(FolioClient).to have_received(:edit_marc_json).with(hrid:)
-          expect(folio_response_json).to eq(unreleased_marc_json)
-        end
-      end
-
-      context 'when implicitly not released' do
-        let(:release_data) { {} }
+      context 'when not released' do
+        let(:release_data) { false }
 
         it 'updates the MARC record and does not include the 856' do
           folio_writer.save

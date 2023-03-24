@@ -99,8 +99,10 @@ RSpec.describe 'Display metadata' do
       allow(SolrService.instance).to receive(:conn).and_return(solr_client)
 
       allow(ReleaseTags).to receive(:for).and_return(
-        'SearchWorks' => { 'release' => true },
-        'elsewhere' => { 'release' => false }
+        [
+          Cocina::Models::ReleaseTag.new(to: 'SearchWorks', release: true),
+          Cocina::Models::ReleaseTag.new(to: 'elsewhere', release: false)
+        ]
       )
       allow(Time).to receive(:now).and_return(now)
       allow_any_instance_of(PublishedRelationshipsFilter).to receive(:xml).and_return(relationships_xml)

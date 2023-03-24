@@ -5,7 +5,6 @@ require 'rails_helper'
 RSpec.describe Publish::PublicXmlService do
   subject(:service) do
     described_class.new(public_cocina:,
-                        released_for: release_tags,
                         thumbnail_service:)
   end
 
@@ -43,10 +42,9 @@ RSpec.describe Publish::PublicXmlService do
           }]
         }
       }],
-      isMemberOf: ['druid:xh235dd9059']
+      isMemberOf: []
     }
   end
-  let(:release_tags) { {} }
 
   let(:druid) { 'druid:bc123df4567' }
 
@@ -72,7 +70,6 @@ RSpec.describe Publish::PublicXmlService do
     end
 
     context 'when there are no release tags' do
-      let(:release_tags) { {} }
       let(:cocina_object) do
         build(:dro, id: 'druid:bc123df4567').new(description:)
       end
@@ -225,13 +222,49 @@ RSpec.describe Publish::PublicXmlService do
         expect(ng_xml.at_xpath('/publicObject/oai_dc:dc', 'oai_dc' => 'http://www.openarchives.org/OAI/2.0/oai_dc/')).to be
       end
 
-      it 'exports relationships' do
-        ns = {
-          'rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-          'fedora' => 'info:fedora/fedora-system:def/relations-external#'
-        }
-        expect(ng_xml.at_xpath('/publicObject/rdf:RDF/rdf:Description/fedora:isMemberOfCollection', ns)).to be
-        expect(ng_xml.at_xpath('/publicObject/rdf:RDF/rdf:Description/fedora:isConstituentOf', ns)).to be
+      context 'when a member of a collection' do
+        let(:structural) do
+          {
+            contains: [{
+              type: Cocina::Models::FileSetType.image,
+              externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/9475bc2c-7552-43d8-b8ab-8cd2212d5873',
+              label: 'Image 1',
+              version: 1,
+              structural: {
+                contains: [{
+                  type: Cocina::Models::ObjectType.file,
+                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/15e6e501-d22c-4f96-a824-8a88dd312937',
+                  label: 'Image 1',
+                  filename: 'wt183gy6220_00_0001.jp2',
+                  hasMimeType: 'image/jp2',
+                  size: 3_182_927,
+                  version: 1,
+                  access: {},
+                  administrative: {
+                    publish: false,
+                    sdrPreserve: false,
+                    shelve: false
+                  },
+                  hasMessageDigests: []
+                }]
+              }
+            }],
+            isMemberOf: ['druid:xh235dd9059']
+          }
+        end
+
+        before do
+          allow(CocinaObjectStore).to receive(:find).and_return(build(:collection))
+        end
+
+        it 'exports relationships' do
+          ns = {
+            'rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+            'fedora' => 'info:fedora/fedora-system:def/relations-external#'
+          }
+          expect(ng_xml.at_xpath('/publicObject/rdf:RDF/rdf:Description/fedora:isMemberOfCollection', ns)).to be
+          expect(ng_xml.at_xpath('/publicObject/rdf:RDF/rdf:Description/fedora:isConstituentOf', ns)).to be
+        end
       end
 
       context 'when no thumb is present' do
@@ -248,9 +281,15 @@ RSpec.describe Publish::PublicXmlService do
         expect(ng_xml.at_xpath('/publicObject/thumb').to_xml).to be_equivalent_to('<thumb>bc123df4567/wt183gy6220_00_0001.jp2</thumb>')
       end
 
-      context 'when there is content inside it' do
-        let(:release_tags) do
-          { 'Searchworks' => { 'release' => true }, 'Some_special_place' => { 'release' => true } }
+      context 'when there are release tags' do
+        let(:cocina_object) do
+          build(:dro, id: 'druid:bc123df4567').new(description:, administrative: {
+                                                     hasAdminPolicy: 'druid:qv648vd4392',
+                                                     releaseTags: [
+                                                       { to: 'Searchworks', release: true },
+                                                       { to: 'Some_special_place', release: true }
+                                                     ]
+                                                   })
         end
 
         it 'does not include this release data in identityMetadata' do

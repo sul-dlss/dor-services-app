@@ -68,12 +68,10 @@ RSpec.describe ReleaseTags do
         )
       end
 
-      it 'returns the hash of release tags' do
-        expect(releases).to eq(
-          'Searchworks' => {
-            'release' => true
-          }
-        )
+      it 'returns the list of release tags' do
+        expect(releases).to eq [
+          Cocina::Models::ReleaseTag.new(to: 'Searchworks', release: true, date: '2019-01-18T17:03:35Z', who: 'dhartwig', what: 'collection')
+        ]
       end
     end
 
@@ -148,80 +146,67 @@ RSpec.describe ReleaseTags do
         allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection_object)
       end
 
-      it 'gets tags from collections and the item' do
-        expect(releases).to eq('Earthworks' => { 'release' => true }, 'Searchworks' => { 'release' => true })
-      end
-    end
-  end
-
-  describe 'Tag sorting, combining, and comparision functions' do
-    let(:dummy_tags) do
-      [
-        Cocina::Models::ReleaseTag.new(date: '2015-01-06 23:33:47Z', 'what' => 'self'),
-        Cocina::Models::ReleaseTag.new(date: '2015-01-07 23:33:47Z', 'what' => 'collection')
-      ]
-    end
-
-    describe '#newest_release_tag_in_an_array' do
-      subject { releases.send(:newest_release_tag_in_an_array, dummy_tags) }
-
-      it { is_expected.to eq dummy_tags[1] }
-    end
-
-    describe '#newest_release_tag' do
-      subject { releases.send(:newest_release_tag, dummy_hash) }
-
-      let(:dummy_hash) { { 'Revs' => dummy_tags, 'FRDA' => dummy_tags } }
-
-      it { is_expected.to eq('Revs' => dummy_tags[1], 'FRDA' => dummy_tags[1]) }
-    end
-
-    describe '#tags_for_what_value' do
-      it 'only returns tags for the specific what value' do
-        expect(releases.send(:tags_for_what_value, { 'Revs' => dummy_tags }, 'self')).to eq('Revs' => [dummy_tags[0]])
-        expect(releases.send(:tags_for_what_value, { 'Revs' => dummy_tags, 'FRDA' => dummy_tags }, 'collection')).to eq('Revs' => [dummy_tags[1]], 'FRDA' => [dummy_tags[1]])
-      end
-    end
-
-    describe '#combine_two_release_tag_hashes' do
-      it 'combines two hashes of tags without overwriting any data' do
-        h_one = { 'Revs' => [dummy_tags[0]] }
-        h_two = { 'Revs' => [dummy_tags[1]], 'FRDA' => dummy_tags }
-        expected_result = { 'Revs' => dummy_tags, 'FRDA' => dummy_tags }
-        expect(releases.send(:combine_two_release_tag_hashes, h_one, h_two)).to eq(expected_result)
-      end
-    end
-
-    it 'only returns self release tags' do
-      expect(releases.send(:self_release_tags, 'Revs' => dummy_tags, 'FRDA' => dummy_tags, 'BV' => [dummy_tags[1]])).to eq('Revs' => [dummy_tags[0]], 'FRDA' => [dummy_tags[0]])
-    end
-  end
-
-  describe '#release_tags_by_project' do
-    subject(:release_tags) { releases.release_tags_by_project }
-
-    context 'when an item does not have any release tags' do
-      let(:cocina_object) do
-        build(:dro, id: druid).new(
-          administrative: {
-            hasAdminPolicy: apo_id,
-            releaseTags: []
-          }
-        )
-      end
-
-      it { is_expected.to eq({}) }
-    end
-
-    it 'returns the releases for an item that has release tags' do
-      exp_result = {
-        'Revs' => [
-          Cocina::Models::ReleaseTag.new(to: 'Revs', 'what' => 'collection', date: '2015-01-06 23:33:47Z', 'who' => 'carrickr', 'release' => true),
-          Cocina::Models::ReleaseTag.new(to: 'Revs', 'what' => 'self', date: '2015-01-06 23:33:54Z', 'who' => 'carrickr', 'release' => true),
-          Cocina::Models::ReleaseTag.new(to: 'Revs', 'what' => 'self', date: '2015-01-06 23:40:01Z', 'who' => 'carrickr', 'release' => false)
+      it 'returns the tags from collections and the item' do
+        expect(releases).to eq [
+          Cocina::Models::ReleaseTag.new(to: 'Earthworks', release: true, date: '2019-01-18T17:03:35Z', who: 'dhartwig', what: 'self'),
+          Cocina::Models::ReleaseTag.new(to: 'Searchworks', release: true, date: '2019-01-18T17:03:35Z', who: 'dhartwig', what: 'collection')
         ]
-      }
-      expect(release_tags).to eq exp_result
+      end
+    end
+  end
+
+  describe '.released_to_searchworks?' do
+    subject { described_class.released_to_searchworks?(cocina_object:) }
+
+    let(:cocina_object) do
+      build(:dro).new(
+        administrative: {
+          hasAdminPolicy: apo_id,
+          releaseTags: release_data
+        }
+      )
+    end
+
+    context 'when release_data tag has release to=Searchworks and value is true' do
+      let(:release_data) { [{ to: 'Searchworks', release: true }] }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when release_data tag has release to=searchworks (all lowercase) and value is true' do
+      let(:release_data) { [{ to: 'searchworks', release: true }] }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when release_data tag has release to=SearchWorks (camcelcase) and value is true' do
+      let(:release_data) { [{ to: 'SearchWorks', release: true }] }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when release_data tag has release to=Searchworks and value is false' do
+      let(:release_data) { [{ to: 'Searchworks', release: false }] }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when release_data tag has release to=Searchworks but no specified release value' do
+      let(:release_data) { [{ to: 'Searchworks' }] }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when there are no release tags at all' do
+      let(:release_data) { [] }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when there are non searchworks related release tags' do
+      let(:release_data) { [{ to: 'Revs', release: true }] }
+
+      it { is_expected.to be false }
     end
   end
 end

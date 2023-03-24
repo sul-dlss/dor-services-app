@@ -34,11 +34,11 @@ RSpec.describe Catalog::SymphonyWriter do
     end
 
     let(:cocina_object) { build(:dro, id: druid).new(identification:) }
-    let(:release_data) { { 'Searchworks' => { 'release' => true } } }
+    let(:release_data) { true }
 
     before do
       Settings.release.symphony_path = "#{fixtures}/sdr_purl"
-      allow(ReleaseTags).to receive(:for).and_return(release_data)
+      allow(ReleaseTags).to receive(:released_to_searchworks?).and_return(release_data)
     end
 
     after do
@@ -83,7 +83,7 @@ RSpec.describe Catalog::SymphonyWriter do
         }
       end
 
-      let(:release_data) { {} }
+      let(:release_data) { false }
 
       let(:marc856_file) do
         "8832162\tbc123dg9393\t"
