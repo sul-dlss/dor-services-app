@@ -145,7 +145,7 @@ RSpec.describe Catalog::FolioWriter do
       end
     end
 
-    context 'when a single catalog record id that has not been released to Searchworks' do
+    context 'when a single catalog record id that is unreleased' do
       let(:identification) do
         {
           sourceId: 'sul:8832162',
@@ -157,12 +157,25 @@ RSpec.describe Catalog::FolioWriter do
           ]
         }
       end
-      let(:release_data) { {} }
 
-      it 'updates the MARC record and does not include the 856' do
-        folio_writer.save
-        expect(FolioClient).to have_received(:edit_marc_json).with(hrid:)
-        expect(folio_response_json).to eq(unreleased_marc_json)
+      context 'when explicitly not released' do
+        let(:release_data) { { 'Searchworks' => { 'release' => false } } }
+
+        it 'updates the MARC record and does not include the 856' do
+          folio_writer.save
+          expect(FolioClient).to have_received(:edit_marc_json).with(hrid:)
+          expect(folio_response_json).to eq(unreleased_marc_json)
+        end
+      end
+
+      context 'when implicitly not released' do
+        let(:release_data) { {} }
+
+        it 'updates the MARC record and does not include the 856' do
+          folio_writer.save
+          expect(FolioClient).to have_received(:edit_marc_json).with(hrid:)
+          expect(folio_response_json).to eq(unreleased_marc_json)
+        end
       end
     end
 
