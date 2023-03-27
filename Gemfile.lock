@@ -128,7 +128,7 @@ GEM
     config (4.1.0)
       deep_merge (~> 1.2, >= 1.2.1)
       dry-validation (~> 1.0, >= 1.0.0)
-    connection_pool (2.3.0)
+    connection_pool (2.4.0)
     crack (0.4.5)
       rexml
     crass (1.0.6)
@@ -215,7 +215,7 @@ GEM
     faraday-net_http (3.0.2)
     faraday-retry (2.1.0)
       faraday (~> 2.0)
-    folio_client (0.8.0)
+    folio_client (0.9.0)
       activesupport (>= 4.2, < 8)
       dry-monads
       faraday
@@ -393,7 +393,7 @@ GEM
       rubocop-ast (>= 1.26.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 3.0)
-    rubocop-ast (1.27.0)
+    rubocop-ast (1.28.0)
       parser (>= 3.2.1.0)
     rubocop-capybara (2.17.1)
       rubocop (~> 1.41)
@@ -441,7 +441,7 @@ GEM
       activesupport
       mods (~> 2.2)
     strings-ansi (0.2.0)
-    super_diff (0.9.0)
+    super_diff (0.10.0)
       attr_extras (>= 6.2.4)
       diff-lcs
       patience_diff
