@@ -41,7 +41,7 @@ gem 'retries' # for Goobi
 gem 'rsolr'
 gem 'rss', '~> 0.2' # Provides Time.w3cdtf used for BadW3cdtfDates report
 gem 'ruby-cache', '~> 0.3.0'
-gem 'sidekiq', '~> 6.0'
+gem 'sidekiq', '~> 7.0'
 gem 'sneakers', '~> 2.11'
 gem 'tty-progressbar' # to show progress when running validate-cocina script
 gem 'uuidtools', '~> 2.1.4'
