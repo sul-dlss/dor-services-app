@@ -186,6 +186,6 @@ Additional notes:
 
 * The dry run and the verification can be performed on `sdr-infra`. See the [existing documentation](https://github.com/sul-dlss/cocina-models#testing-validation-changes) on setting up db connections.
 * The migration/remediation must be performed on the DSA server since it requires a read/write DB connection. (`sdr-infra` has a read-only DB connection.)
-* Migrations are performed on an ActiveRecord object, not a Cocina object. This always remediating invalid items (i.e., that cannot be instantiated as Cocina objects).
+* Migrations are performed on an ActiveRecord object, not a Cocina object. This allows the remediation of invalid items (i.e., items that cannot be instantiated as Cocina objects).
 * Migrations can be performed against all items or just a list provided by the Migrator.
 * Breaking changes, especially breaking cocina model changes, are going to require additional steps, e.g., stopping SDR processing. The complete process is to be determined.
