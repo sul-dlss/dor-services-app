@@ -39,6 +39,7 @@ module Migrators
       @catalog_links ||= Array(ar_cocina_object.identification['catalogLinks'])
     end
 
+    # rubocop:disable Metrics/CollectionLiteralLength
     CATKEY_MAP = {
       'druid:bt039cb9484' => '12303413',
       'druid:fk368by4307' => '12303415',
@@ -677,5 +678,6 @@ module Migrators
       # This is on QA only (does not exist on prod)
       'druid:bc640yg4341' => '10065784'
     }.freeze
+    # rubocop:enable Metrics/CollectionLiteralLength
   end
 end

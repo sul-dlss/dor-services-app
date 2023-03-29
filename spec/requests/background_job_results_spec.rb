@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'background job result' do
   let(:background_job_result) { create(:background_job_result) }
-  let(:body) { JSON.parse(response.body).with_indifferent_access }
+  let(:body) { response.parsed_body.with_indifferent_access }
 
   context 'when it does not exist' do
     it 'renders 404' do

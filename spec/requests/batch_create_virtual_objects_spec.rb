@@ -6,7 +6,7 @@ RSpec.describe 'Batch creation of virtual objects' do
   let(:constituent1_id) { 'druid:kx420bs7601' }
   let(:constituent2_id) { 'druid:sb340kx7205' }
   # We use `#with_indifferent_access` here to mimic how Rails parses JSON parameters
-  let(:body) { JSON.parse(response.body).with_indifferent_access }
+  let(:body) { JSON.parse(response.body).with_indifferent_access } # rubocop:disable Rails/ResponseParsedBody
   let(:virtual_object_id) { 'druid:mk420bs7601' }
   let(:virtual_objects) { [{ virtual_object_id:, constituent_ids: [constituent1_id, constituent2_id] }] }
   let(:druid_pattern) { '^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$' }

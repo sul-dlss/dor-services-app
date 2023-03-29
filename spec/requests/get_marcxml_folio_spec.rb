@@ -62,7 +62,7 @@ RSpec.describe "Looking up an item's marcxml (Folio)" do
       it 'returns a 400 error when fetching marcxml' do
         get "/v1/catalog/marcxml?folio_instance_hrid=#{folio_instance_hrid}", headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:bad_request)
-        json = JSON.parse(response.body)
+        json = JSON.parse(response.body) # rubocop:disable Rails/ResponseParsedBody
         expect(json.dig('errors', 0, 'title')).to eq 'Record not found in catalog'
       end
     end
@@ -75,7 +75,7 @@ RSpec.describe "Looking up an item's marcxml (Folio)" do
       it 'returns a 500 error' do
         get "/v1/catalog/marcxml?folio_instance_hrid=#{folio_instance_hrid}", headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:internal_server_error)
-        json = JSON.parse(response.body)
+        json = JSON.parse(response.body) # rubocop:disable Rails/ResponseParsedBody
         expect(json.dig('errors', 0, 'title')).to eq 'Internal Server Error'
       end
     end
