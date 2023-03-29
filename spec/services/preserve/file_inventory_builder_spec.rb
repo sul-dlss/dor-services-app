@@ -44,7 +44,7 @@ RSpec.describe Preserve::FileInventoryBuilder do
     end
 
     it 'excludes .nfs files from inventory of metadata files' do
-      expect(result.groups[1].file_count).to eq(2) # two metadata files (excludes the .nfs file!)
+      expect(result.groups[1].file_count).to eq(2) # two metadata files (excludes the multiple .nfs files!)
       expect(result.groups[1].path_list).to eq(['contentMetadata.xml', 'descMetadata.xml'])
     end
   end
