@@ -144,7 +144,7 @@ class ObjectsController < ApplicationController
                                      'Datacite requires that this object have creators and a datacite extension with resourceTypeGeneral')
     end
 
-    UpdateDoiMetadataJob.perform_later(@cocina_object)
+    UpdateDoiMetadataJob.perform_later(Cocina::Models.without_metadata(@cocina_object).to_json)
 
     head :accepted
   end

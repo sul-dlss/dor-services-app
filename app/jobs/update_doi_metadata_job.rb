@@ -4,7 +4,8 @@
 class UpdateDoiMetadataJob < ApplicationJob
   queue_as :default
 
-  def perform(cocina_item)
+  def perform(cocina_item_json)
+    cocina_item = Cocina::Models.build(JSON.parse(cocina_item_json))
     attributes = Cocina::ToDatacite::Attributes.mapped_from_cocina(cocina_item)
     result = client.update(id: cocina_item.identification.doi, attributes: attributes.deep_stringify_keys)
     return if result.success?
