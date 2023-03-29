@@ -24,7 +24,7 @@ RSpec.describe 'Publish object' do
   end
 
   context 'with an invalid workflow provided' do
-    let(:error) { JSON.parse(response.body)['errors'][0]['detail'] }
+    let(:error) { JSON.parse(response.body)['errors'][0]['detail'] } # rubocop:disable Rails/ResponseParsedBody
 
     it 'is a bad request' do
       post "/v1/objects/#{druid}/publish?workflow=badWF", headers: { 'Authorization' => "Bearer #{jwt}" }

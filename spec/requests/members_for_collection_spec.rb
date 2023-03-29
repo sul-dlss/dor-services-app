@@ -49,7 +49,7 @@ RSpec.describe 'Get the members' do
     }
   end
 
-  let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
+  let(:response_model) { response.parsed_body.deep_symbolize_keys }
 
   it 'sends the correct solr params, returns the druid & type of the members' do
     get "/v1/objects/#{druid}/members",

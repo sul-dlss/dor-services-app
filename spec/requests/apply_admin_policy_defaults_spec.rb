@@ -33,9 +33,11 @@ RSpec.describe 'Apply APO access defaults to a member item' do
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).not_to be_successful
       expect(response).to have_http_status(:bad_request)
+      # rubocop:disable Rails/ResponseParsedBody
       expect(JSON.parse(response.body)['errors'].first['detail']).to include(
         'the error message does not really matter in this context'
       )
+      # rubocop:enable Rails/ResponseParsedBody
     end
   end
 
@@ -52,9 +54,11 @@ RSpec.describe 'Apply APO access defaults to a member item' do
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).not_to be_successful
       expect(response).to have_http_status(:unprocessable_entity)
+      # rubocop:disable Rails/ResponseParsedBody
       expect(JSON.parse(response.body)['errors'].first['detail']).to include(
         'the error message does not really matter in this context'
       )
+      # rubocop:enable Rails/ResponseParsedBody
     end
   end
 end

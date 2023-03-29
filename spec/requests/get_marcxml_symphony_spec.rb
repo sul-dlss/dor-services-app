@@ -84,7 +84,7 @@ RSpec.describe "Looking up an item's marcxml (Symphony)" do
         stub_request(:get, format(marc_url, catkey: bogus_value)).to_return(status: 404)
         get "/v1/catalog/marcxml?catkey=#{bogus_value}", headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:bad_request)
-        json = JSON.parse(response.body)
+        json = JSON.parse(response.body) # rubocop:disable Rails/ResponseParsedBody
         expect(json.dig('errors', 0, 'title')).to eq 'Record not found in catalog'
       end
     end

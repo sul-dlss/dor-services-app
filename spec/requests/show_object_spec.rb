@@ -7,7 +7,7 @@ RSpec.describe 'Get the object' do
   let(:purl) { "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}" }
 
   context 'when the requested object is an item' do
-    let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
+    let(:response_model) { response.parsed_body.deep_symbolize_keys }
     let(:object) { create(:ar_dro, identification: { sourceId: 'googlebooks:d1' }) }
 
     context 'when the object exists with full metadata' do
@@ -217,7 +217,7 @@ RSpec.describe 'Get the object' do
         get "/v1/objects/#{druid}",
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:ok)
-        json = JSON.parse(response.body)
+        json = response.parsed_body
 
         expect(json['type']).to eq Cocina::Models::ObjectType.admin_policy
         expect(json['label']).to eq 'Test Admin Policy'

@@ -24,7 +24,7 @@ RSpec.describe 'Get the object' do
   let(:dro_record) { create(:ar_dro, isMemberOf: collections.map(&:externalIdentifier)) }
   let(:dro) { dro_record.to_cocina }
 
-  let(:response_model) { JSON.parse(response.body).deep_symbolize_keys }
+  let(:response_model) { response.parsed_body.deep_symbolize_keys }
 
   describe 'as used by WAS crawl seed registration' do
     it 'returns the JSON used for the collections' do

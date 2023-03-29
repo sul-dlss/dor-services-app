@@ -27,7 +27,7 @@ RSpec.describe 'Add and retrieve events' do
       get "/v1/objects/#{druid}/events",
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to have_http_status(:ok)
-      json = JSON.parse(response.body)
+      json = response.parsed_body
       expect(json[0]['event_type']).to eq 'publish'
       expect(json[0]['data']).to eq('description' => 'stuff', 'size' => 1900)
       expect(json[0]).to have_key 'created_at'
@@ -43,7 +43,7 @@ RSpec.describe 'Add and retrieve events' do
         get "/v1/objects/#{druid}/events",
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:ok)
-        json = JSON.parse(response.body)
+        json = response.parsed_body
         expect(json[0]['event_type']).to eq 'unpublish'
         expect(json[1]['event_type']).to eq 'publish'
       end

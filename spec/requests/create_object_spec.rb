@@ -100,7 +100,7 @@ RSpec.describe 'Create object' do
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status(:conflict)
-        json = JSON.parse(response.body)
+        json = JSON.parse(response.body) # rubocop:disable Rails/ResponseParsedBody
         expect(json.dig('errors', 0, 'detail')).to eq "An object (druid:bc234fg5678) with the source ID 'googlebooks:999999' has already been registered."
       end
     end

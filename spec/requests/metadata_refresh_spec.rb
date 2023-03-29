@@ -122,7 +122,7 @@ RSpec.describe 'Refresh metadata' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:bad_request)
-        json = JSON.parse(response.body)
+        json = JSON.parse(response.body) # rubocop:disable Rails/ResponseParsedBody
         expect(json.dig('errors', 0, 'title')).to eq 'Not found in catalog'
       end
     end
