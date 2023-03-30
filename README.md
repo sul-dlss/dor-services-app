@@ -178,9 +178,9 @@ Usage: bin/migrate-cocina MIGRATION_CLASS [options]
 The process for performing a migration/remediation is:
 
 1. Implement a Migrator (`app/services/migrators/`). See `Migrators::Base` and `Migrators::Exemplar` for the requirements of a Migrator class. Migrators should be unit tested.
-2. Perform a dry run: `bin/migrate-cocina Migrators::Exemplar --mode dryrun` and inspect `migrate-cocina.csv` for any errors.
+2. Perform a dry run: `bin/migrate-cocina Migrators::Exemplar --mode dryrun` and inspect `migrate-cocina.csv` for any errors.  This is a way to change the cocina and validate the new objects without saving the updated cocina or publishing or versioning.
 3. Perform migration/remediation: `bin/migrate-cocina Migrators::Exemplar --mode migrate` and inspect `migrate-cocina.csv` for any errors.
-4. Perform verification: `bin/migrate-cocina Migrators::Exemplar --mode verify` and inspect `migrate-cocina.csv` for any errors.
+4. Perform verification: `bin/migrate-cocina Migrators::Exemplar --mode verify` and inspect `migrate-cocina.csv` for any errors.  (An error here means that an object matching `.migrate?` has been found ... which is presumably NOT desired after migration.)
 
 Additional notes:
 
