@@ -10,7 +10,7 @@
 #   version? - true if the object should be versioned
 #   publish? - true if the object should be published
 #   version_description - description for the version (if versioning)
-# See app/services/migrators/test.rb for an example.
+# See app/services/migrators/exemplar.rb for an example.
 
 require_relative '../config/environment'
 require 'optparse'
