@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe UpdateDoiMetadataJob do
   subject(:perform) do
-    described_class.perform_now(cocina_item)
+    described_class.perform_now(cocina_item.to_json)
   end
 
   let(:cocina_item) do
