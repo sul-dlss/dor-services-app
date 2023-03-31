@@ -69,7 +69,6 @@ Rails.application.routes.draw do
         collection do
           get 'dublin_core'
           get 'descriptive'
-          get 'public_xml'
         end
 
         resource :mods, only: %i[show]
