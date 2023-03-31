@@ -74,7 +74,7 @@ RSpec.describe Migrators::EtdFilesetVocab do
   let(:permissions_file_name) { 'permissions.txt' }
   let(:permissions_fileset) do
     {
-      type: Cocina::Models::FileSetType.permissions,
+      type: 'https://cocina.sul.stanford.edu/models/resources/permissions',
       externalIdentifier: "https://cocina.sul.stanford.edu/fileSet/#{matching_druid}-permissions",
       label: 'Body of Dissertation',
       version: 1,
@@ -105,7 +105,7 @@ RSpec.describe Migrators::EtdFilesetVocab do
   let(:supplement_file_name) { 'supplement.txt' }
   let(:supplement_fileset) do
     {
-      type: Cocina::Models::FileSetType.supplement,
+      type: 'https://cocina.sul.stanford.edu/models/resources/supplement',
       externalIdentifier: "https://cocina.sul.stanford.edu/fileSet/#{matching_druid}-supplement",
       label: 'Body of Dissertation',
       version: 1,
