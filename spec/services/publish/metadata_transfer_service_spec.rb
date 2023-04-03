@@ -48,7 +48,7 @@ RSpec.describe Publish::MetadataTransferService do
           access: { view: 'world' }
         )
       end
-      let(:fake_instance) { instance_double(described_class, publish: nil) }
+      let(:fake_publish_job) { class_double(PublishJob, perform_later: nil) }
       let(:member_druid) { 'druid:hx532dd9509' }
       let(:member_item) do
         build(:dro, id: member_druid).new(
@@ -83,13 +83,13 @@ RSpec.describe Publish::MetadataTransferService do
         allow(MemberService).to receive(:for).and_return({ 'id' => member_druid })
         allow(CocinaObjectStore).to receive(:find).with(member_druid).and_return(member_item)
         allow(described_class).to receive(:new).with(cocina_object).and_call_original
-        allow(described_class).to receive(:new).with(member_item).and_return(fake_instance)
+        allow(PublishJob).to receive(:set).with(queue: :publish_low).and_return(fake_publish_job)
       end
 
       it 'republishes member items' do
         service.publish
         expect(MemberService).to have_received(:for).once
-        expect(fake_instance).to have_received(:publish).once
+        expect(fake_publish_job).to have_received(:perform_later).once.with(druid: member_druid, background_job_result: BackgroundJobResult.last)
       end
     end
 

@@ -51,7 +51,7 @@ module Publish
       Array.wrap(
         MemberService.for(cocina_object.externalIdentifier, exclude_opened: true, only_published: true)
       ).each do |member|
-        self.class.publish(CocinaObjectStore.find(member['id']))
+        PublishJob.set(queue: :publish_low).perform_later(druid: member['id'], background_job_result: BackgroundJobResult.create)
       end
     end
 
