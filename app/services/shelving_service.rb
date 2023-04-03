@@ -14,17 +14,21 @@ class ShelvingService
     raise ShelvingService::ShelvingError, 'Missing structural' if cocina_object.structural.nil?
 
     @cocina_object = cocina_object
+    @druid = cocina_object.externalIdentifier
   end
 
   def shelve
     # determine the location of the object's files in the stacks area
-    stacks_druid = DruidTools::StacksDruid.new(cocina_object.externalIdentifier, stacks_location)
+    stacks_druid = DruidTools::StacksDruid.new(druid, stacks_location)
     stacks_object_pathname = Pathname(stacks_druid.path)
     # determine the location of the object's content files in the workspace area
-    workspace_druid = DruidTools::Druid.new(cocina_object.externalIdentifier, Settings.stacks.local_workspace_root)
+    workspace_druid = DruidTools::Druid.new(druid, Settings.stacks.local_workspace_root)
+
+    preserve_diff = content_diff('preserve')
+    shelve_diff = content_diff('shelve')
 
     workspace_content_pathname = Pathname(workspace_druid.content_dir(true))
-    ShelvableFilesStager.stage(cocina_object.externalIdentifier, preserve_diff, shelve_diff, workspace_content_pathname)
+    ShelvableFilesStager.stage(druid, preserve_diff, shelve_diff, workspace_content_pathname)
 
     # workspace_content_pathname = workspace_content_dir(shelve_diff, workspace_druid)
     # delete, rename, or copy files to the stacks area
@@ -35,32 +39,29 @@ class ShelvingService
 
   private
 
-  attr_reader :cocina_object
+  attr_reader :cocina_object, :druid
 
   # retrieve the differences between the current contentMetadata and the previously ingested version
-  # (filtering to select only the files that should be preserved)
+  # (filtering to select only the files that should be shelved or preserved to stacks, depending on param passed)
   # @return Moab::FileGroupDifference
-  # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  # @raise [ConfigurationError] if missing local workspace root.
+  # @param [String] subset: 'shelve', 'preserve', 'publish', or 'all' .... filters file diffs
   # @raise [ShelvingService::ShelvingError] if something went wrong.
-  def preserve_diff
-    @preserve_diff ||= begin
-      inventory_diff = Preservation::Client.objects.content_inventory_diff(druid: cocina_object.externalIdentifier, content_metadata:, subset: 'preserve')
-      inventory_diff.group_difference('content')
-    end
-  rescue Preservation::Client::Error => e
+  def content_diff(subset)
+    new_inventory = Stanford::ContentInventory.new.inventory_from_cm(content_metadata, druid, subset)
+    inventory_diff = Moab::FileInventoryDifference.new.compare(base_inventory(subset), new_inventory)
+    inventory_diff.group_difference('content')
+  rescue StandardError => e
     raise ShelvingService::ShelvingError, e
   end
 
-  # retrieve the differences between the current contentMetadata and the previously ingested version
-  # (filtering to select only the files that should be shelved to stacks)
-  # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  # @raise [ConfigurationError] if missing local workspace root.
-  # @raise [ShelvingService::ShelvingError] if something went wrong.
-  def shelve_diff
-    @shelve_diff ||= Preservation::Client.objects.shelve_content_diff(druid: cocina_object.externalIdentifier, content_metadata:)
-  rescue Preservation::Client::Error => e
-    raise ShelvingService::ShelvingError, e
+  def base_inventory(subset)
+    cm_from_pres = Preservation::Client.objects.metadata(druid:, filepath: 'contentMetadata.xml')
+    Stanford::ContentInventory.new.inventory_from_cm(cm_from_pres, druid, subset)
+  rescue Preservation::Client::NotFoundError
+    # Create a skeletal FileInventory object, containing no file entries
+    storage_object = Moab::StorageObject.new(druid, 'dummy')
+    base_version = Moab::StorageObjectVersion.new(storage_object, 0)
+    base_version.file_inventory('version')
   end
 
   def stacks_location
@@ -72,7 +73,7 @@ class ShelvingService
   end
 
   def was?
-    workflow_client.workflows(cocina_object.externalIdentifier).include?('wasCrawlPreassemblyWF')
+    workflow_client.workflows(druid).include?('wasCrawlPreassemblyWF')
   end
 
   def was_stack_location
@@ -84,7 +85,7 @@ class ShelvingService
   end
 
   def content_metadata
-    @content_metadata ||= Cocina::ToXml::ContentMetadataGenerator.generate(druid: cocina_object.externalIdentifier, structural: cocina_object.structural, type: cocina_object.type)
+    @content_metadata ||= Cocina::ToXml::ContentMetadataGenerator.generate(druid:, structural: cocina_object.structural, type: cocina_object.type)
   end
 
   def workflow_client
