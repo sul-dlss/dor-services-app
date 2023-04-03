@@ -4,12 +4,14 @@ module Publish
   # Merges contentMetadata from several objects into one and sends it to PURL
   class MetadataTransferService
     # @param [Cocina::Models::DRO,Cocina::Models::Collection] cocina_object the object to be publshed
-    def self.publish(cocina_object)
-      new(cocina_object).publish
+    # @param [String] workflow (optional) the workflow used for reporting back status to (defaults to 'accessionWF')
+    def self.publish(cocina_object, workflow: 'accessionWF')
+      new(cocina_object, workflow:).publish
     end
 
-    def initialize(cocina_object)
+    def initialize(cocina_object, workflow:)
       @cocina_object = cocina_object
+      @workflow = workflow
       @thumbnail_service = ThumbnailService.new(cocina_object)
     end
 
@@ -25,7 +27,7 @@ module Publish
 
     private
 
-    attr_reader :cocina_object
+    attr_reader :cocina_object, :workflow
 
     def transfer_metadata(public_cocina)
       public_nokogiri = PublicXmlService.new(public_cocina:,
@@ -51,7 +53,7 @@ module Publish
       Array.wrap(
         MemberService.for(cocina_object.externalIdentifier, exclude_opened: true, only_published: true)
       ).each do |member|
-        PublishJob.set(queue: :publish_low).perform_later(druid: member['id'], background_job_result: BackgroundJobResult.create)
+        PublishJob.set(queue: :publish_low).perform_later(druid: member['id'], background_job_result: BackgroundJobResult.create, workflow:)
       end
     end
 
