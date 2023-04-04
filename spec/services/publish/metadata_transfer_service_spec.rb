@@ -5,6 +5,7 @@ require 'rails_helper'
 RSpec.describe Publish::MetadataTransferService do
   let(:druid) { 'bc123df4567' }
   let(:access) { {} }
+  let(:workflow) { 'accessionWF' }
   let(:cocina_object) do
     build(:dro, id: "druid:#{druid}").new(
       access:,
@@ -32,7 +33,7 @@ RSpec.describe Publish::MetadataTransferService do
   end
   let(:cocina_collection) { build(:collection, id: 'druid:xh235dd9059') }
   let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
-  let(:service) { described_class.new(cocina_object) }
+  let(:service) { described_class.new(cocina_object, workflow:) }
 
   describe '#publish' do
     before do
@@ -48,7 +49,7 @@ RSpec.describe Publish::MetadataTransferService do
           access: { view: 'world' }
         )
       end
-      let(:fake_instance) { instance_double(described_class, publish: nil) }
+      let(:fake_publish_job) { class_double(PublishJob, perform_later: nil) }
       let(:member_druid) { 'druid:hx532dd9509' }
       let(:member_item) do
         build(:dro, id: member_druid).new(
@@ -82,14 +83,14 @@ RSpec.describe Publish::MetadataTransferService do
         allow_any_instance_of(described_class).to receive(:publish_notify_on_success)
         allow(MemberService).to receive(:for).and_return({ 'id' => member_druid })
         allow(CocinaObjectStore).to receive(:find).with(member_druid).and_return(member_item)
-        allow(described_class).to receive(:new).with(cocina_object).and_call_original
-        allow(described_class).to receive(:new).with(member_item).and_return(fake_instance)
+        allow(described_class).to receive(:new).with(cocina_object, workflow:).and_call_original
+        allow(PublishJob).to receive(:set).with(queue: :publish_low).and_return(fake_publish_job)
       end
 
       it 'republishes member items' do
         service.publish
         expect(MemberService).to have_received(:for).once
-        expect(fake_instance).to have_received(:publish).once
+        expect(fake_publish_job).to have_received(:perform_later).once.with(druid: member_druid, background_job_result: BackgroundJobResult.last, workflow:)
       end
     end
 
@@ -233,6 +234,26 @@ RSpec.describe Publish::MetadataTransferService do
       file_path = dr.find(:content, 'someMd')
       expect(file_path).to match(%r{4567/someMd$})
       expect(File.read(file_path)).to eq('<xml/>')
+    end
+  end
+
+  describe '.publish' do
+    let(:service) { instance_double(described_class, publish: nil) }
+
+    before do
+      allow(described_class).to receive(:new).and_return(service)
+    end
+
+    it 'calls publish on a new instance with the default workflow' do
+      described_class.publish(cocina_object)
+      expect(described_class).to have_received(:new).with(cocina_object, workflow: 'accessionWF')
+      expect(service).to have_received(:publish)
+    end
+
+    it 'calls publish on a new instance with a specific workflow' do
+      described_class.publish(cocina_object, workflow: 'releaseWF')
+      expect(described_class).to have_received(:new).with(cocina_object, workflow: 'releaseWF')
+      expect(service).to have_received(:publish)
     end
   end
 end
