@@ -65,15 +65,6 @@ Rails.application.routes.draw do
 
       resource :shelve, only: [:create]
 
-      resource :metadata, only: [] do
-        collection do
-          get 'dublin_core'
-          get 'descriptive'
-        end
-
-        resource :mods, only: %i[show]
-      end
-
       resources :events, only: [:create, :index], defaults: { format: :json }
 
       resources :versions, only: [:create, :index] do
