@@ -236,4 +236,18 @@ RSpec.describe Publish::MetadataTransferService do
       expect(File.read(file_path)).to eq('<xml/>')
     end
   end
+
+  describe '.publish' do
+    let(:service) { instance_double(described_class, publish: nil) }
+
+    before do
+      allow(described_class).to receive(:new).and_return(service)
+    end
+
+    it 'calls publish on a new instance' do
+      described_class.publish(cocina_object)
+      expect(described_class).to have_received(:new).with(cocina_object, workflow: 'accessionWF')
+      expect(service).to have_received(:publish)
+    end
+  end
 end
