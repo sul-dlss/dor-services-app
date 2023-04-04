@@ -244,9 +244,15 @@ RSpec.describe Publish::MetadataTransferService do
       allow(described_class).to receive(:new).and_return(service)
     end
 
-    it 'calls publish on a new instance' do
+    it 'calls publish on a new instance with the default workflow' do
       described_class.publish(cocina_object)
       expect(described_class).to have_received(:new).with(cocina_object, workflow: 'accessionWF')
+      expect(service).to have_received(:publish)
+    end
+
+    it 'calls publish on a new instance with a specific workflow' do
+      described_class.publish(cocina_object, workflow: 'releaseWF')
+      expect(described_class).to have_received(:new).with(cocina_object, workflow: 'releaseWF')
       expect(service).to have_received(:publish)
     end
   end
