@@ -72,7 +72,25 @@ RSpec.describe ShelvingService do
     FileUtils.remove_entry workspace_root
   end
 
-  context 'when structural present' do
+  context 'when structural present and previous version exists in preservation' do
+    it 'pushes file changes for shelve-able files into the stacks' do
+      stacks_object_pathname = Pathname(DruidTools::StacksDruid.new(druid, stacks_root).path)
+      # make sure the DigitalStacksService is getting the correct delete, rename, and shelve requests
+      # (These methods are unit tested in digital_stacks_service_spec.rb)
+      described_class.shelve(cocina_object)
+      expect(ShelvableFilesStager).to have_received(:stage).with(druid, Moab::FileGroupDifference, Moab::FileGroupDifference, Pathname)
+      expect(DigitalStacksService).to have_received(:remove_from_stacks).with(stacks_object_pathname, Moab::FileGroupDifference)
+      expect(DigitalStacksService).to have_received(:rename_in_stacks).with(stacks_object_pathname, Moab::FileGroupDifference)
+      expect(DigitalStacksService).to have_received(:shelve_to_stacks).with(Pathname, stacks_object_pathname, Moab::FileGroupDifference)
+      expect(Cocina::ToXml::ContentMetadataGenerator).to have_received(:generate).with(druid:, structural:, type: Cocina::Models::ObjectType.book)
+    end
+  end
+
+  context 'when structural present and initial version' do
+    before do
+      allow(Preservation::Client.objects).to receive(:metadata).and_raise(Preservation::Client::NotFoundError)
+    end
+
     it 'pushes file changes for shelve-able files into the stacks' do
       stacks_object_pathname = Pathname(DruidTools::StacksDruid.new(druid, stacks_root).path)
       # make sure the DigitalStacksService is getting the correct delete, rename, and shelve requests
