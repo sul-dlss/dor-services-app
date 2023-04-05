@@ -45,7 +45,6 @@ version_service:
   sync_with_preservation: true
 
 # URLs
-fedora_url: 'https://user:password@fedora.example.com:1000/fedora'
 solr:
   select_path: 'select'
   timeout: 120

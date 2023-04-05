@@ -5,7 +5,7 @@
 class PublishJob < ApplicationJob
   queue_as :publish_default
 
-  # @param [String] druid the identifier of the fedora_item to be published
+  # @param [String] druid the identifier of the item to be published
   # @param [BackgroundJobResult] background_job_result identifier of a background job result to store status info
   # @param [String] workflow Which workflow should this be reported to?
   def perform(druid:, background_job_result:, workflow:)

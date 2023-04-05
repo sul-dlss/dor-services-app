@@ -65,7 +65,7 @@ RSpec.describe 'Administrative tags' do
     context 'when item is not found' do
       before do
         allow(CocinaObjectStore).to receive(:find)
-          .and_raise(CocinaObjectStore::CocinaObjectNotFoundError, "Unable to find '#{druid}' in fedora. See logger for details.")
+          .and_raise(CocinaObjectStore::CocinaObjectNotFoundError, "Unable to find '#{druid}' in repository. See logger for details.")
       end
 
       it 'returns a 404' do
@@ -73,7 +73,7 @@ RSpec.describe 'Administrative tags' do
              params: %( {"administrative_tags":#{tags.to_json}} ),
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status(:not_found)
-        expect(response.body).to eq('Unable to find \'druid:mx123qw2323\' in fedora. See logger for details.')
+        expect(response.body).to eq('Unable to find \'druid:mx123qw2323\' in repository. See logger for details.')
         expect(Notifications::ObjectUpdated).not_to have_received(:publish)
       end
     end
@@ -151,7 +151,7 @@ RSpec.describe 'Administrative tags' do
     context 'when item is not found' do
       before do
         allow(CocinaObjectStore).to receive(:find)
-          .and_raise(CocinaObjectStore::CocinaObjectNotFoundError, "Unable to find '#{druid}' in fedora. See logger for details.")
+          .and_raise(CocinaObjectStore::CocinaObjectNotFoundError, "Unable to find '#{druid}' in repository. See logger for details.")
       end
 
       it 'returns a 404' do
@@ -159,7 +159,7 @@ RSpec.describe 'Administrative tags' do
             params: %( {"administrative_tag":"#{new_tag}"} ),
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status(:not_found)
-        expect(response.body).to eq('Unable to find \'druid:mx123qw2323\' in fedora. See logger for details.')
+        expect(response.body).to eq('Unable to find \'druid:mx123qw2323\' in repository. See logger for details.')
       end
     end
 
@@ -282,14 +282,14 @@ RSpec.describe 'Administrative tags' do
     context 'when item is not found' do
       before do
         allow(CocinaObjectStore).to receive(:find)
-          .and_raise(CocinaObjectStore::CocinaObjectNotFoundError, "Unable to find '#{druid}' in fedora. See logger for details.")
+          .and_raise(CocinaObjectStore::CocinaObjectNotFoundError, "Unable to find '#{druid}' in repository. See logger for details.")
       end
 
       it 'returns a 404' do
         delete "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(tag)}",
                headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:not_found)
-        expect(response.body).to eq('Unable to find \'druid:mx123qw2323\' in fedora. See logger for details.')
+        expect(response.body).to eq('Unable to find \'druid:mx123qw2323\' in repository. See logger for details.')
       end
     end
 
