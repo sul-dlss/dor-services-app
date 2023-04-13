@@ -51,6 +51,8 @@ class ShelvingService
   def content_diff(subset)
     new_inventory = Stanford::ContentInventory.new.inventory_from_cm(content_metadata, druid, subset)
     inventory_diff = Moab::FileInventoryDifference.new.compare(base_inventory(subset), new_inventory)
+    metadata_diff = inventory_diff.group_difference('metadata')
+    inventory_diff.group_differences.delete(metadata_diff) if metadata_diff
     inventory_diff.group_difference('content')
   rescue StandardError => e
     raise ShelvingService::ShelvingError, e
