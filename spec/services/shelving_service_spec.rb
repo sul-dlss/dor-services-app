@@ -61,6 +61,7 @@ RSpec.describe ShelvingService do
     allow(Settings.stacks).to receive_messages(local_stacks_root: stacks_root, local_workspace_root: workspace_root)
     allow(Cocina::ToXml::ContentMetadataGenerator).to receive(:generate).and_return(content_metadata)
     allow(Preservation::Client.objects).to receive(:metadata).with(druid:, filepath: 'contentMetadata.xml').and_return(previous_content_metadata)
+    allow(Preservation::Client.objects).to receive(:current_version).with(druid).and_return(1)
     allow(ShelvableFilesStager).to receive(:stage)
     allow(DigitalStacksService).to receive(:remove_from_stacks)
     allow(DigitalStacksService).to receive(:rename_in_stacks)
@@ -88,6 +89,7 @@ RSpec.describe ShelvingService do
 
   context 'when structural present and initial version' do
     before do
+      allow(Preservation::Client.objects).to receive(:current_version).with(druid).and_raise(Preservation::Client::NotFoundError)
       allow(Preservation::Client.objects).to receive(:metadata).and_raise(Preservation::Client::NotFoundError)
     end
 
