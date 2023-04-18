@@ -32,8 +32,6 @@
 # .title[].structuredValue[].value,344
 # ...
 #
-# The results will also be written as descriptive-shape.json
-#
 class DescriptiveShape
   def self.report
     new.report
@@ -47,8 +45,6 @@ class DescriptiveShape
     Dro.find_each do |obj|
       trace(obj.description)
     end
-
-    save
     output
   end
 
@@ -75,10 +71,6 @@ class DescriptiveShape
     obj.each do |key, value|
       trace(value, "#{path}.#{key}")
     end
-  end
-
-  def save
-    File.write('descriptive-shape.json', JSON.pretty_generate(@shape))
   end
 
   def output
