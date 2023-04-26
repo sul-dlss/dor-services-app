@@ -87,8 +87,19 @@ class GoobiService
   # @return [String] first goobi workflow tag value if one exists (default from config if none)
   def goobi_workflow_name
     dpg_workflow_tag_id = 'DPG : Workflow : '
-    content_tag = AdministrativeTags.for(identifier: cocina_obj.externalIdentifier).select { |tag| tag.start_with?(dpg_workflow_tag_id) }
-    content_tag.empty? ? Settings.goobi.default_goobi_workflow_name : content_tag[0].split(':').last.strip
+    admin_tags = AdministrativeTags.for(identifier: cocina_obj.externalIdentifier)
+    content_tag = admin_tags.select { |tag| tag.start_with?(dpg_workflow_tag_id) }
+    return content_tag[0].split(':').last.strip unless content_tag.empty?
+
+    Honeybadger.notify(
+      '[DATA ERROR] Unexpected Goobi workflow name',
+      context: {
+        druid: cocina_obj.externalIdentifier,
+        tags: admin_tags
+      }
+    )
+
+    Settings.goobi.default_goobi_workflow_name
   end
 
   def catkey

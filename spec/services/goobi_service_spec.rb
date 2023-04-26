@@ -137,20 +137,43 @@ RSpec.describe GoobiService do
   describe '#goobi_workflow_name' do
     subject(:goobi_workflow_name) { goobi.send(:goobi_workflow_name) }
 
-    it 'returns goobi_workflow_name from a valid identityMetadata' do
-      allow(AdministrativeTags).to receive(:for).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
-      expect(goobi_workflow_name).to eq('book_workflow')
+    before do
+      allow(AdministrativeTags).to receive(:for).and_return(tags)
     end
 
-    it 'returns first goobi_workflow_name if multiple are in the tags' do
-      allow(AdministrativeTags).to receive(:for)
-        .and_return(['DPG : Workflow : book_workflow', 'DPG : Workflow : another_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
-      expect(goobi_workflow_name).to eq('book_workflow')
+    context 'with a single tag' do
+      let(:tags) { ['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)'] }
+
+      it 'returns value parsed from a DPG admin tag' do
+        expect(goobi_workflow_name).to eq('book_workflow')
+      end
     end
 
-    it 'returns blank for goobi_workflow_name if none are found' do
-      allow(AdministrativeTags).to receive(:for).and_return(['Process : Content Type : Book (flipbook, ltr)'])
-      expect(goobi_workflow_name).to eq(Settings.goobi.default_goobi_workflow_name)
+    context 'with multiple tags' do
+      let(:tags) { ['DPG : Workflow : book_workflow', 'DPG : Workflow : another_workflow', 'Process : Content Type : Book (flipbook, ltr)'] }
+
+      it 'returns value parsed from first DPG admin tag' do
+        expect(goobi_workflow_name).to eq('book_workflow')
+      end
+    end
+
+    context 'when none are found' do
+      before do
+        allow(Honeybadger).to receive(:notify)
+      end
+
+      let(:tags) { ['Process : Content Type : Book (flipbook, ltr)'] }
+
+      it 'returns default value' do
+        expect(goobi_workflow_name).to eq(Settings.goobi.default_goobi_workflow_name)
+        expect(Honeybadger).to have_received(:notify).once.with(
+          '[DATA ERROR] Unexpected Goobi workflow name',
+          context: {
+            druid:,
+            tags:
+          }
+        )
+      end
     end
   end
 
