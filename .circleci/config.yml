@@ -10,13 +10,13 @@ workflows:
           name: lint
           executor:
             name: ruby-rails/ruby
-            ruby-tag: '3.1.2'
+            ruby-tag: '3.2.2'
       - ruby-rails/test-rails:
           name: test
           api-only: true
           executor:
             name: ruby-rails/ruby-postgres
-            ruby-tag: '3.1.2'
+            ruby-tag: '3.2.2'
       - ruby-rails/docker-publish:
           context: dlss
           name: publish-latest

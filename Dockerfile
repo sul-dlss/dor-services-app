@@ -1,4 +1,4 @@
-FROM ruby:3.1.2-alpine
+FROM ruby:3.2.2-alpine
 
 ENV RAILS_ENV=production
 ENV BUNDLER_WITHOUT="development test"
