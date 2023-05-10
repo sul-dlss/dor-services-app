@@ -37,8 +37,6 @@ Note that the application has a web UI for monitoring Sidekiq activity at `/queu
 
 ## Running Tests
 
-NOTE: you need to be running at least Ruby 2.7.4 in order for the tests to pass (using the cocina factories).
-
 First, ensure the database container is spun up:
 
 ```shell
