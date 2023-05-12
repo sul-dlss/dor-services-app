@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  ruby-rails: sul-dlss/ruby-rails@3.2.0
+  ruby-rails: sul-dlss/ruby-rails@4.0.0
 workflows:
   build:
     jobs:
@@ -8,15 +8,9 @@ workflows:
           name: validate
       - ruby-rails/lint:
           name: lint
-          executor:
-            name: ruby-rails/ruby
-            ruby-tag: '3.2.2'
       - ruby-rails/test-rails:
           name: test
           api-only: true
-          executor:
-            name: ruby-rails/ruby-postgres
-            ruby-tag: '3.2.2'
       - ruby-rails/docker-publish:
           context: dlss
           name: publish-latest
