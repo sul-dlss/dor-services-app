@@ -38,7 +38,7 @@ module Cocina
 
       private
 
-      attr :cocina_desc
+      attr_reader :cocina_desc
 
       def related_resource_blank?
         return true if cocina_desc&.relatedResource.blank?

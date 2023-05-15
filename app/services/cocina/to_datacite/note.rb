@@ -27,7 +27,7 @@ module Cocina
 
       private
 
-      attr :cocina_desc
+      attr_reader :cocina_desc
 
       def abstract
         @abstract ||= Array(cocina_desc.note).find { |cocina_note| cocina_note.type == 'abstract' }&.value

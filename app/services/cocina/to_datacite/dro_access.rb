@@ -26,7 +26,7 @@ module Cocina
 
       private
 
-      attr :cocina_item_access
+      attr_reader :cocina_item_access
     end
   end
 end

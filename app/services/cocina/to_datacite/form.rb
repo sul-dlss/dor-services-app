@@ -27,7 +27,7 @@ module Cocina
 
       private
 
-      attr :cocina_desc
+      attr_reader :cocina_desc
 
       # @return String DataCite resourceTypeGeneral value
       def resource_type_general

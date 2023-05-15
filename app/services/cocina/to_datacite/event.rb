@@ -46,7 +46,7 @@ module Cocina
 
       private
 
-      attr :cocina_item
+      attr_reader :cocina_item
 
       def embargo?
         cocina_dro_access&.embargo&.releaseDate.presence

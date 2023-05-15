@@ -27,7 +27,7 @@ module Cocina
 
       private
 
-      attr :cocina_desc
+      attr_reader :cocina_desc
 
       def subject(cocina_subject)
         return if cocina_subject.blank?
