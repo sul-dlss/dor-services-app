@@ -53,7 +53,7 @@ module Cocina
 
       private
 
-      attr :access, :description, :purl
+      attr_reader :access, :description, :purl
 
       def publication_year
         date = if access.embargo

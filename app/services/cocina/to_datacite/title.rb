@@ -22,7 +22,7 @@ module Cocina
 
       private
 
-      attr :cocina_desc
+      attr_reader :cocina_desc
     end
   end
 end

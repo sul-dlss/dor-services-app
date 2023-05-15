@@ -43,7 +43,7 @@ module Cocina
 
       private
 
-      attr :cocina_desc
+      attr_reader :cocina_desc
 
       def purl
         @purl ||= cocina_desc.purl
