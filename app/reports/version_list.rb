@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'csv'
-
 # Exports metadata about all versions  in SDR
 #  https://github.com/sul-dlss/dor-services-app/issues/4509
 # Invoke via:
@@ -13,7 +11,7 @@ class VersionList
     CSV.open(output_file, 'w') do |csv|
       csv << %w[druid version tag description]
 
-      num_versions = ObjectVersion.all.count
+      num_versions = ObjectVersion.count
       puts "Found #{num_versions} object versions"
       i = 0
       ObjectVersion.find_each do |object_version|
