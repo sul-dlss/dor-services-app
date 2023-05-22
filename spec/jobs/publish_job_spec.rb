@@ -41,6 +41,32 @@ RSpec.describe PublishJob do
       expect(LogSuccessJob).to have_received(:perform_later)
         .with(druid:, background_job_result: result, workflow: 'accessionWF', workflow_process: 'publish')
     end
+
+    context 'when log_success is set to false' do
+      subject(:perform) do
+        described_class.perform_now(druid:, background_job_result: result, workflow:, log_success: false)
+      end
+
+      it 'does not mark the job as complete' do
+        expect(EventFactory).to have_received(:create)
+
+        expect(LogSuccessJob).not_to have_received(:perform_later)
+          .with(druid:, background_job_result: result, workflow: 'accessionWF', workflow_process: 'publish')
+      end
+    end
+
+    context 'when log_success is set to true' do
+      subject(:perform) do
+        described_class.perform_now(druid:, background_job_result: result, workflow:, log_success: true)
+      end
+
+      it 'mark the job as complete' do
+        expect(EventFactory).to have_received(:create)
+
+        expect(LogSuccessJob).to have_received(:perform_later)
+          .with(druid:, background_job_result: result, workflow: 'accessionWF', workflow_process: 'publish')
+      end
+    end
   end
 
   context 'when fails dark validation', skip: 'turned off while preassembly could not make valid dark objects; see https://github.com/sul-dlss/dor-services-app/issues/4366' do

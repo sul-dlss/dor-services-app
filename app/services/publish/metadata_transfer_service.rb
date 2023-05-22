@@ -53,7 +53,7 @@ module Publish
       Array.wrap(
         MemberService.for(cocina_object.externalIdentifier, exclude_opened: true, only_published: true)
       ).each do |member|
-        PublishJob.set(queue: :publish_low).perform_later(druid: member['id'], background_job_result: BackgroundJobResult.create, workflow:)
+        PublishJob.set(queue: :publish_low).perform_later(druid: member['id'], background_job_result: BackgroundJobResult.create, workflow:, log_success: false)
       end
     end
 

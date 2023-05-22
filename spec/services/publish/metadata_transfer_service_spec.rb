@@ -90,7 +90,7 @@ RSpec.describe Publish::MetadataTransferService do
       it 'republishes member items' do
         service.publish
         expect(MemberService).to have_received(:for).once
-        expect(fake_publish_job).to have_received(:perform_later).once.with(druid: member_druid, background_job_result: BackgroundJobResult.last, workflow:)
+        expect(fake_publish_job).to have_received(:perform_later).once.with(druid: member_druid, background_job_result: BackgroundJobResult.last, workflow:, log_success: false)
       end
     end
 
