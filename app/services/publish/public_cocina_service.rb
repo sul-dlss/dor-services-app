@@ -20,7 +20,7 @@ module Publish
       elsif cocina.collection?
         cocina.new(administrative: build_administrative)
       else
-        cocina
+        raise "unexpected call to PublicCocinaService.build for #{cocina.externalIdentifier}"
       end
     end
 

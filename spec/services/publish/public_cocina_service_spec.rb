@@ -5,9 +5,9 @@ require 'rails_helper'
 RSpec.describe Publish::PublicCocinaService do
   subject(:json) { JSON.parse(create.to_json) }
 
-  let(:create) { described_class.create(cocina_item) }
+  let(:create) { described_class.create(cocina_object) }
 
-  let(:cocina_item) do
+  let(:cocina_object) do
     build(:dro).new(
       structural: {
         contains: [
@@ -118,5 +118,15 @@ RSpec.describe Publish::PublicCocinaService do
 
   it 'discards the non-published filesets and files' do
     expect(json.dig('structural', 'contains').size).to eq 0
+  end
+
+  context 'with an admin_policy' do
+    let(:cocina_object) do
+      build(:admin_policy, id: 'druid:bc123df4567')
+    end
+
+    it 'throws an exception' do
+      expect { create }.to raise_error(RuntimeError, 'unexpected call to PublicCocinaService.build for druid:bc123df4567')
+    end
   end
 end
