@@ -15,7 +15,9 @@ module Publish
     # remove any file_set that doesn't have at least one published file
     # remove partOfProject (similar to how we remove tags from identityMetadata)
     def build
-      return cocina unless cocina.dro?
+      return cocina unless cocina.dro? || cocina.collection?
+
+      return cocina.new(administrative: build_administrative) if cocina.collection?
 
       cocina.new(structural: build_structural,
                  administrative: build_administrative)
