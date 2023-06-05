@@ -21,7 +21,7 @@ class AccessMergeService
       return cocina_object.access || access_class.new
     end
 
-    props = cocina_object.access&.to_h || {}
+    props = cocina_object.access.to_h || {}
 
     # Note for below: For cocina, an omitted value will not have a key in the hash.
 
