@@ -32,17 +32,34 @@
 # .title[].structuredValue[].value,344
 # ...
 #
+# Optionally you can limit the analysis to records that have links to the
+# catalog with:
+#
+# bin/rails r -e production "DescriptiveShape.report(catalog: 'only')"
+#
+# Similarly you can limit to objects that have no link to the catalog with:
+#
+# bin/rails r -e production "DescriptiveShape.report(catalog: 'none')"
+#
 class DescriptiveShape
-  def self.report
-    new.report
+  def self.report(catalog_only: false, catalog: 'all')
+    @catalog = catalog
+    new(catalog).report
   end
 
-  def initialize
+  def initialize(catalog)
+    @catalog = catalog
     @shape = Hash.new(0)
   end
 
   def report
     Dro.find_each do |obj|
+      has_catalog_link = obj.identification['catalogLinks'].present?
+
+      next if @catalog == 'none' && has_catalog_link
+
+      next if @catalog == 'only' && !has_catalog_link
+
       trace(obj.description)
     end
     output
