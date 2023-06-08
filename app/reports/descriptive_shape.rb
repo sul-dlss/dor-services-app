@@ -74,19 +74,19 @@ class DescriptiveShape
     when Hash
       trace_hash(obj, path)
     else
-      @shape[path] += 1
+      @shape[path] += 1 if obj.present?
     end
   end
 
   def trace_array(obj, path)
     obj.each do |item|
-      trace(item, "#{path}[]")
+      trace(item, "#{path}[]") if item.present?
     end
   end
 
   def trace_hash(obj, path)
     obj.each do |key, value|
-      trace(value, "#{path}.#{key}")
+      trace(value, "#{path}.#{key}") if value.present?
     end
   end
 
