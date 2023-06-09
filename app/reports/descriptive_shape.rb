@@ -42,8 +42,7 @@
 # bin/rails r -e production "DescriptiveShape.report(catalog: 'none')"
 #
 class DescriptiveShape
-  def self.report(catalog_only: false, catalog: 'all')
-    @catalog = catalog
+  def self.report(catalog: 'all')
     new(catalog).report
   end
 
