@@ -26,24 +26,15 @@
 # .event[].date[].value,816
 # .event[].location[].value,196
 # .title[].note[].type,161
-# .title[].note[].value,155
-# .title[].status,178
-# .title[].structuredValue[].type,344
-# .title[].structuredValue[].value,344
 # ...
 #
-# Optionally you can limit the analysis to records that have links to the
-# catalog with:
-#
-# bin/rails r -e production "DescriptiveShape.report(catalog: 'only')"
-#
-# Similarly you can limit to objects that have no link to the catalog with:
-#
-# bin/rails r -e production "DescriptiveShape.report(catalog: 'none')"
-#
+# Optionally you can limit the results:
+# - to records that have links to the catalog
+#     bin/rails r -e production "DescriptiveShape.report(catalog: 'only')"
+# - to records that have no link to the catalog with:
+#     bin/rails r -e production "DescriptiveShape.report(catalog: 'none')"
 class DescriptiveShape
-  def self.report(catalog_only: false, catalog: 'all')
-    @catalog = catalog
+  def self.report(catalog: 'all')
     new(catalog).report
   end
 
@@ -74,19 +65,19 @@ class DescriptiveShape
     when Hash
       trace_hash(obj, path)
     else
-      @shape[path] += 1
+      @shape[path] += 1 if obj.present?
     end
   end
 
   def trace_array(obj, path)
     obj.each do |item|
-      trace(item, "#{path}[]")
+      trace(item, "#{path}[]") if item.present?
     end
   end
 
   def trace_hash(obj, path)
     obj.each do |key, value|
-      trace(value, "#{path}.#{key}")
+      trace(value, "#{path}.#{key}") if value.present?
     end
   end
 
