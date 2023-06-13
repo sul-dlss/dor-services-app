@@ -33,13 +33,20 @@
 #     bin/rails r -e production "DescriptiveShape.report(catalog: 'only')"
 # - to records that have no link to the catalog with:
 #     bin/rails r -e production "DescriptiveShape.report(catalog: 'none')"
+# - to indicate presence or absence of a path for a record, instead of the counts:
+#     bin/rails r -e production "DescriptiveShape.report(count: 'presence')"
+#      (note that 'all' is the default)
+#     bin/rails r -e production "DescriptiveShape.report(count: 'all')"
+# - combining both switches:
+#     bin/rails r -e production "DescriptiveShape.report(catalog: 'only', count: 'presence')"
 class DescriptiveShape
-  def self.report(catalog: 'all')
-    new(catalog).report
+  def self.report(catalog: 'all', count: 'all')
+    new(catalog, count).report
   end
 
-  def initialize(catalog)
+  def initialize(catalog: 'all', count: 'all')
     @catalog = catalog
+    @count = count
     @shape = Hash.new(0)
   end
 
@@ -64,8 +71,14 @@ class DescriptiveShape
       trace_array(obj, path)
     when Hash
       trace_hash(obj, path)
-    else
-      @shape[path] += 1 if obj.present?
+    when present?
+      if count == 'presence' &&
+         @shape[path] == 0 &&
+         path.end_with?('value', 'valueAt', 'uri', 'code')
+        @shape[path] = 1
+      else # count == 'all'
+        @shape[path] += 1
+      end
     end
   end
 
