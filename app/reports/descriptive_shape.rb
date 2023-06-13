@@ -41,18 +41,14 @@
 #     bin/rails r -e production "DescriptiveShape.report(catalog: 'only', count: 'presence')"
 class DescriptiveShape
   def self.report(catalog: 'all', count: 'all')
-    # NOTE:  initialize cannot take any arguments as it is a rails runner
-    instance = new
-    instance.catalog = catalog
-    instance.count = count
-    instance.report
+    new(catalog, count).report
   end
 
   attr :catalog, :count
 
-  # NOTE:  initialize cannot take any arguments as it is a rails runner
-  #       so we have to set the instance variables after initialization
-  def initialize
+  def initialize(catalog, count)
+    @catalog = catalog
+    @count = count
     @shape = Hash.new(0)
   end
 
