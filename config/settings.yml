@@ -112,6 +112,11 @@ datacite:
   prefix: '10.80343'
   host: fake.datacite.example.com
 
+sidekiq:
+  latency_threshold: 900 # number of seconds above which okcomputer check for sidekiq latency fails
+                         # latency is expected to be temporarily big if lots of content is accessioned all at once
+                         # see https://github.com/sidekiq/sidekiq/wiki/Monitoring#monitoring-queue-latency
+
 honeybadger_checkins:
   embargo_release: foo
   missing_druids: bar
