@@ -195,7 +195,7 @@ RSpec.describe DescriptiveValueShape do
     end
 
     context 'when contributor property' do
-      context 'when there is a countable value in name, note, and/or identifier' do
+      context 'when there is a countable value in name, note, and/or identifier property' do
         let(:contributor) do
           {
             name: [{ value: 'Pennsylvania' }],
@@ -233,6 +233,113 @@ RSpec.describe DescriptiveValueShape do
 
         it 'returns false' do
           expect(described_class.new({}).send(:countable_property?, :contributor, contributor)).to be_falsey
+        end
+      end
+    end
+
+    context 'when event property' do
+      # only count value if
+      # - direct children properties of date, contributor, location, identifier, note have value per DescriptiveBasicValue
+      # - direct child parallelEvent as above, e.g. parallelEvent[].date[].value
+      context 'when countable value in date, contributor, location, identifier, or note property' do
+        let(:event) do
+          {
+            note: [
+              {
+                value: 'serial',
+                type: 'issuance',
+                source: { value: 'MODS issuance terms' }
+              },
+              {
+                value: 'Annual',
+                type: 'frequency',
+                source: { code: 'marcfrequency' }
+              }
+            ]
+          }
+        end
+
+        it 'returns true' do
+          expect(described_class.new({}).send(:countable_property?, :event, event)).to be_truthy
+        end
+      end
+
+      context 'when parallelEvent' do
+        context 'with countable value in date, contributor, location, identifier, or note property' do
+          let(:event) do
+            {
+              parallelEvent: [
+                {
+                  location: [
+                    {
+                      value: 'Kyōto-shi'
+                    }
+                  ],
+                  contributor: [
+                    {
+                      name: [
+                        {
+                          value: 'Rinsen Shoten'
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  location: [
+                    {
+                      value: '京都市'
+                    }
+                  ],
+                  contributor: [
+                    {
+                      name: [
+                        {
+                          value: '臨川書店'
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          end
+
+          it 'returns true' do
+            expect(described_class.new({}).send(:countable_property?, :event, event)).to be_truthy
+          end
+        end
+
+        context 'without countable value' do
+          let(:event) do
+            {
+              parallelEvent: [
+                {
+                  type: 'publication'
+                },
+                {
+                  type: 'manufacture'
+                }
+              ]
+            }
+          end
+
+          it 'returns false' do
+            expect(described_class.new({}).send(:countable_property?, :event, event)).to be_falsey
+          end
+        end
+      end
+
+      context 'when there is no countable value' do
+        let(:event) do
+          {
+            type: 'publication',
+            displayLabel: 'bogus'
+          }
+        end
+
+        it 'returns false' do
+          expect(described_class.new({}).send(:countable_property?, :event, event)).to be_falsey
         end
       end
     end

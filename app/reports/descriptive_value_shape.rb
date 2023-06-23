@@ -132,16 +132,14 @@ class DescriptiveValueShape
       false
     when :event
       # only count value if
-      # - direct children properties of date, contributor, location, identifier, note have value per DescriptiveBasicValue
+      # - direct child properties of date, contributor, location, identifier, note have value per DescriptiveBasicValue
       # - direct child parallelEvent as above, e.g. parallelEvent[].date[].value
-      value.any? do |event_obj|
-        event_obj.each do |event_key, event_value|
-          return false unless %i[date contributor location identifier note].include?(event_key)
+      value.each do |key, sub_property_values|
+        return true if %i[date contributor location identifier note].include?(key) && sub_property_values.any? { |val| countable?(val) }
 
-          countable?(event_value)
-        end
+        return true if key == :parallelEvent && sub_property_values.any? { |val| countable_property?(:event, val) }
       end
-
+      false
     when 'purl'
       true if value.present? # purl is a String and the cocina has been validated
     else
