@@ -118,27 +118,24 @@ class DescriptiveValueShape
     # if structuredValue, parallelValue or groupedValue, recurse
   end
 
-  def countable_property?(key, value)
+  def countable_property?(property, value)
     return false if value.blank?
 
-    case key
-    when DESCRIPTIVE_BASIC_VALUE_PROPERTIES.include?(key)
-      value.any? { |descriptive_basic_value_obj| countable?(descriptive_basic_value_obj) }
-    when 'contributor'
+    case property
+    when ->(property) { DESCRIPTIVE_BASIC_VALUE_PROPERTIES.include?(property) }
+      countable?(value)
+    when :contributor
       # only count value if direct children properties of name, note, or identifier have value per DescriptiveBasicValue
-      value.any? do | single_contributor_obj |
-        single_contributor_obj.each do |contributor_key, contributor_value|
-          return false unless %i[name note identifier].include?(contributor_key)
-
-          countable?(contributor_value)
-        end
+      value.each do |key, sub_property_values|
+        return true if %i[name note identifier].include?(key) && sub_property_values.any? { |val| countable?(val) }
       end
-    when 'event'
+      false
+    when :event
       # only count value if
       # - direct children properties of date, contributor, location, identifier, note have value per DescriptiveBasicValue
       # - direct child parallelEvent as above, e.g. parallelEvent[].date[].value
-      value.any? do | single_event_obj |
-        single_event_obj.each do |event_key, event_value|
+      value.any? do |event_obj|
+        event_obj.each do |event_key, event_value|
           return false unless %i[date contributor location identifier note].include?(event_key)
 
           countable?(event_value)
@@ -167,8 +164,8 @@ class DescriptiveValueShape
         return countable?(value) if COMPLEX_VALUE_PROPERTIES.include?(key) && value.present?
       end
     elsif descriptive_basic_value.is_a?(Array)
-      descriptive_basic_value.each do |item|
-        return true if countable?(item) && item.present?
+      descriptive_basic_value.each do |val|
+        return true if countable?(val) && val.present?
       end
     end
 

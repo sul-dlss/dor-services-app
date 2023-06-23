@@ -180,20 +180,16 @@ RSpec.describe DescriptiveValueShape do
   end
 
   describe '#countable_property?' do
-    context 'when property is to be treated as DescriptiveBasicValue' do
-      DescriptiveValueShape::DESCRIPTIVE_BASIC_VALUE_PROPERTIES.each do |property|
-        context "when #{property}" do
-          context 'when there is a value' do
-            it 'returns true' do
-              expect(described_class.new({}).send(:countable_property?, property, descriptive_value_with_value)).to be_truthy
-            end
-          end
+    context 'when property is to be treated as DescriptiveBasicValue, e.g. title' do
+      context 'when there is a value' do
+        it 'returns true' do
+          expect(described_class.new({}).send(:countable_property?, :title, descriptive_value_with_value)).to be_truthy
+        end
+      end
 
-          context 'when there is not a value' do
-            it 'returns true' do
-              expect(described_class.new({}).send(:countable_property?, property, descriptive_value_not_countable)).to be_falsey
-            end
-          end
+      context 'when there is not a value' do
+        it 'returns true' do
+          expect(described_class.new({}).send(:countable_property?, :title, descriptive_value_not_countable)).to be_falsey
         end
       end
     end
@@ -209,7 +205,7 @@ RSpec.describe DescriptiveValueShape do
         end
 
         it 'returns true' do
-          expect(described_class.new({}).send(:countable_property?, 'contributor', contributor)).to be_truthy
+          expect(described_class.new({}).send(:countable_property?, :contributor, contributor)).to be_truthy
         end
       end
 
@@ -223,7 +219,7 @@ RSpec.describe DescriptiveValueShape do
         end
 
         it 'returns false' do
-          expect(described_class.new({}).send(:countable_property?, 'contributor', contributor)).to be_falsey
+          expect(described_class.new({}).send(:countable_property?, :contributor, contributor)).to be_falsey
         end
       end
 
@@ -236,7 +232,7 @@ RSpec.describe DescriptiveValueShape do
         end
 
         it 'returns false' do
-          expect(described_class.new({}).send(:countable_property?, 'contributor', contributor)).to be_falsey
+          expect(described_class.new({}).send(:countable_property?, :contributor, contributor)).to be_falsey
         end
       end
     end
