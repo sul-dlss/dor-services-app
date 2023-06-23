@@ -32,9 +32,11 @@
 # - to records that have no link to the catalog with:
 #     bin/rails r -e production "DescriptiveShape.report(catalog: 'none')"
 class DescriptiveValueShape
+  # NOTE:  we are dealing with cocina so we expect symbol keys
+
   # these are the outer properties we want to count if there is a value;
   # there are other properties that we only want to count if the parent has a value (e.g. Encoding)
-  OUTER_PROPERTY_TO_COUNT = %w[
+  OUTER_PROPERTY_TO_COUNT = %i[
     title
     contributor
     event
@@ -51,6 +53,16 @@ class DescriptiveValueShape
     valueAt
     purl
   ].freeze
+
+  # properties we want to count as a vanilla DescriptiveBasicValue - no special handling required
+  DESCRIPTIVE_BASIC_VALUE_PROPERTIES = %i[
+    title
+    form
+    note
+    identifier
+    subject
+  ].freeze
+
 
   def self.report(catalog: 'all')
     new(catalog).report
@@ -96,7 +108,7 @@ class DescriptiveValueShape
   def trace_hash(obj, path)
     obj.each do |key, value|
       if path.blank? && OUTER_PROPERTY_TO_COUNT.include?(key)
-        trace(value, "#{path}.#{key}") if property_countable?(key, value)
+        trace(value, "#{path}.#{key}") if countable_property?(key, value)
       elsif value.present?
         # we are at a nested level; continue only if a value is present
         trace(value, "#{path}.#{key}")
@@ -106,17 +118,17 @@ class DescriptiveValueShape
     # if structuredValue, parallelValue or groupedValue, recurse
   end
 
-  def property_countable?(key, value)
+  def countable_property?(key, value)
     return false if value.blank?
 
     case key
-    when %w[title form note identifier subject].include?(key)
+    when DESCRIPTIVE_BASIC_VALUE_PROPERTIES.include?(key)
       value.any? { |descriptive_basic_value_obj| countable?(descriptive_basic_value_obj) }
     when 'contributor'
       # only count value if direct children properties of name, note, or identifier have value per DescriptiveBasicValue
       value.any? do | single_contributor_obj |
         single_contributor_obj.each do |contributor_key, contributor_value|
-          return false unless %w[name note identifier].include?(contributor_key)
+          return false unless %i[name note identifier].include?(contributor_key)
 
           countable?(contributor_value)
         end
@@ -127,7 +139,7 @@ class DescriptiveValueShape
       # - direct child parallelEvent as above, e.g. parallelEvent[].date[].value
       value.any? do | single_event_obj |
         single_event_obj.each do |event_key, event_value|
-          return false unless %w[date contributor location identifier note].include?(event_key)
+          return false unless %i[date contributor location identifier note].include?(event_key)
 
           countable?(event_value)
         end
@@ -140,8 +152,8 @@ class DescriptiveValueShape
     end
   end
 
-  SIMPLE_VALUE_PROPERTIES = %w[value uri valueAt].freeze
-  COMPLEX_VALUE_PROPERTIES = %w[structuredValue parallelValue groupedValue].freeze
+  SIMPLE_VALUE_PROPERTIES = %i[value uri valueAt].freeze
+  COMPLEX_VALUE_PROPERTIES = %i[structuredValue parallelValue groupedValue].freeze
 
   # a cocina DescriptiveBasicValue is countable if it has:
   #  - a child property of "value", "uri" or "valueAt" with a non-blank value (all of these are Strings or Integers)
@@ -153,8 +165,10 @@ class DescriptiveValueShape
 
     descriptive_basic_value.each do |key, value|
       return true if SIMPLE_VALUE_PROPERTIES.include?(key) && value.present?
-      return countable?(value) if COMPLEX_VALUE_PROPERTIES.include?(key)
+      return countable?(value) if COMPLEX_VALUE_PROPERTIES.include?(key) && value.present?
     end
+
+    false
   end
 
 
