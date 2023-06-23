@@ -161,16 +161,19 @@ class DescriptiveValueShape
   #      with a child or descendent property of "value" or "uri" with a non-blank value BUT
   #      the descendent path can only have "structuredValue" or "parallelValue" between it and the child with the value
   def countable?(descriptive_basic_value)
-    return false unless descriptive_basic_value.is_a?(Hash)
-
-    descriptive_basic_value.each do |key, value|
-      return true if SIMPLE_VALUE_PROPERTIES.include?(key) && value.present?
-      return countable?(value) if COMPLEX_VALUE_PROPERTIES.include?(key) && value.present?
+    if descriptive_basic_value.is_a?(Hash)
+      descriptive_basic_value.each do |key, value|
+        return true if SIMPLE_VALUE_PROPERTIES.include?(key) && value.present?
+        return countable?(value) if COMPLEX_VALUE_PROPERTIES.include?(key) && value.present?
+      end
+    elsif descriptive_basic_value.is_a?(Array)
+      descriptive_basic_value.each do |item|
+        return true if countable?(item) && item.present?
+      end
     end
 
     false
   end
-
 
   def output
     puts 'path,count'
