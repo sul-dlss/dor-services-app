@@ -8,28 +8,13 @@ RSpec.describe 'Reset workspace' do
 
   before do
     allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+    allow(ResetWorkspaceJob).to receive(:perform_later)
   end
 
   context 'when the request is succcessful' do
-    before do
-      allow(ResetWorkspaceService).to receive(:reset)
-    end
-
     it 'is successful' do
       post "/v1/objects/#{druid}/workspace/reset", headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(ResetWorkspaceService).to have_received(:reset).with(druid:, version: 2)
-      expect(response).to be_no_content
-    end
-  end
-
-  context 'when an archive directory exists' do
-    before do
-      allow(ResetWorkspaceService).to receive(:reset)
-        .and_raise(ResetWorkspaceService::DirectoryAlreadyExists.new('dir already exists'))
-    end
-
-    it 'returns nothing' do
-      post "/v1/objects/#{druid}/workspace/reset", headers: { 'Authorization' => "Bearer #{jwt}" }
+      expect(ResetWorkspaceJob).to have_received(:perform_later).with(druid:, version: 2)
       expect(response).to be_no_content
     end
   end
