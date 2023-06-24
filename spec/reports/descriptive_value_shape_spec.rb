@@ -495,5 +495,23 @@ RSpec.describe DescriptiveValueShape do
         end
       end
     end
+
+    context 'when purl' do
+      context 'when it has a value' do
+        let(:purl) { 'http://purl.stanford.edu/bc123df1234' }
+
+        it 'returns true' do
+          expect(described_class.new({}).send(:countable_property?, :purl, purl)).to be_truthy
+        end
+      end
+
+      context 'when it has no value' do
+        let(:purl) { ''}
+
+        it 'returns false' do
+          expect(described_class.new({}).send(:countable_property?, :purl, purl)).to be_falsey
+        end
+      end
+    end
   end
 end
