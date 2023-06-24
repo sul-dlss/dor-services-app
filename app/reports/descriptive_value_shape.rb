@@ -141,7 +141,9 @@ class DescriptiveValueShape
       end
       false
     when :language
-      # add language[].script.value as a value (parallelValue, structuredValue, groupedValue etc. can be in path after script)
+      return true if countable?(value)
+
+      value.any? { |key, sub_property_values| key == :script && countable?(sub_property_values) }
     when :geographic
       value.each do |key, sub_property_values|
         return true if %i[form subject].include?(key) && sub_property_values.any? { |val| countable?(val) }

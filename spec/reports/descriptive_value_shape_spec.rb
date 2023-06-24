@@ -264,6 +264,23 @@ RSpec.describe DescriptiveValueShape do
         end
       end
 
+      context 'when no countable value in date, contributor, location, identifier, or note property' do
+        let(:event) do
+          {
+            note: [
+              {
+                type: 'issuance',
+                source: { value: 'MODS issuance terms' }
+              }
+            ]
+          }
+        end
+
+        it 'returns false' do
+          expect(described_class.new({}).send(:countable_property?, :event, event)).to be_falsey
+        end
+      end
+
       context 'when parallelEvent' do
         context 'with countable value in date, contributor, location, identifier, or note property' do
           let(:event) do
@@ -330,7 +347,7 @@ RSpec.describe DescriptiveValueShape do
         end
       end
 
-      context 'when there is no countable value' do
+      context 'when there is no countable property' do
         let(:event) do
           {
             type: 'publication',
@@ -343,56 +360,103 @@ RSpec.describe DescriptiveValueShape do
         end
       end
     end
-  end
 
-  context 'when geographic property' do
-    context 'when there is a countable value in form and/or subject property' do
-      let(:geographic) do
-        {
-          subject: [
-            {
-              structuredValue: [
-                {
-                  value: '41.893367',
-                  type: 'latitude'
-                },
-                {
-                  value: '12.483736',
-                  type: 'longitude'
+    context 'when geographic property' do
+      context 'when there is a countable value in form and/or subject property' do
+        let(:geographic) do
+          {
+            subject: [
+              {
+                structuredValue: [
+                  {
+                    value: '41.893367',
+                    type: 'latitude'
+                  },
+                  {
+                    value: '12.483736',
+                    type: 'longitude'
+                  }
+                ],
+                type: 'point coordinates',
+                encoding: {
+                  value: 'decimal'
                 }
-              ],
-              type: 'point coordinates',
-              encoding: {
-                value: 'decimal'
               }
-            }
-          ]
-        }
+            ]
+          }
+        end
+
+        it 'returns true' do
+          expect(described_class.new({}).send(:countable_property?, :geographic, geographic)).to be_truthy
+        end
       end
 
-      it 'returns true' do
-        expect(described_class.new({}).send(:countable_property?, :geographic, geographic)).to be_truthy
+      context 'when there is no countable value in form or subject property' do
+        let(:geographic) do
+          {
+            form: [
+              {
+                type: 'media type',
+                source: {
+                  value: 'IANA media type terms'
+                }
+              }
+            ]
+          }
+        end
+
+        it 'returns false' do
+          expect(described_class.new({}).send(:countable_property?, :geographic, geographic)).to be_falsey
+        end
       end
     end
 
-    context 'when there is no countable value in form or subject property' do
-      let(:geographic) do
-        {
-          form: [
-            {
-              type: 'media type',
+    context 'when language property' do
+      context 'when there is a countable value in (sole) script property' do
+        let(:language) do
+          {
+            script: {
+              value: 'Cyrillic',
+              code: 'Cyrl',
               source: {
-                value: 'IANA media type terms'
+                code: 'iso15924'
               }
             }
-          ]
-        }
+          }
+        end
+
+        it 'returns true' do
+          expect(described_class.new({}).send(:countable_property?, :language, language)).to be_truthy
+        end
       end
 
-      it 'returns false' do
-        expect(described_class.new({}).send(:countable_property?, :geographic, geographic)).to be_falsey
+      context 'when there is no countable value in (sole) script property' do
+        let(:language) do
+          {
+            script: {
+              source: {
+                code: 'iso15924'
+              }
+            }
+          }
+        end
+
+        it 'returns false' do
+          expect(described_class.new({}).send(:countable_property?, :language, language)).to be_falsey
+        end
+      end
+
+      context 'when there is a countable non-script property' do
+        let(:language) do
+          {
+            value: 'Pig Latin'
+          }
+        end
+
+        it 'returns true' do
+          expect(described_class.new({}).send(:countable_property?, :language, language)).to be_truthy
+        end
       end
     end
   end
-
 end
