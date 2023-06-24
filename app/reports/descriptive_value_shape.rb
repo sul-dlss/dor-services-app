@@ -125,15 +125,11 @@ class DescriptiveValueShape
     when ->(property) { DESCRIPTIVE_BASIC_VALUE_PROPERTIES.include?(property) }
       countable?(value)
     when :contributor
-      # only count value if direct children properties of name, note, or identifier have value per DescriptiveBasicValue
       value.each do |key, sub_property_values|
         return true if %i[name note identifier].include?(key) && sub_property_values.any? { |val| countable?(val) }
       end
       false
     when :event
-      # only count value if
-      # - direct child properties of date, contributor, location, identifier, note have value per DescriptiveBasicValue
-      # - direct child parallelEvent as above, e.g. parallelEvent[].date[].value
       value.each do |key, sub_property_values|
         return true if %i[date contributor location identifier note].include?(key) && sub_property_values.any? { |val| countable?(val) }
 
