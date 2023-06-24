@@ -148,6 +148,10 @@ class DescriptiveValueShape
     when :purl
       true if value.present? # purl is a String and the cocina has been validated
     when :access
+      value.each do |_key, sub_property_values|
+        return true if sub_property_values.any? { |val| countable?(val) }
+      end
+      false
     when :adminMetadata
     when :relatedResource
     else

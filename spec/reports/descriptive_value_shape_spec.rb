@@ -458,5 +458,42 @@ RSpec.describe DescriptiveValueShape do
         end
       end
     end
+
+    context 'when access property' do
+      # Treat all immediate children
+      # (url, physicalLocation, digitalLocation, accessContact, digitalRepository, note) as DescriptiveBasicValue
+      context 'when there is a countable value in an immediate child' do
+        let(:access) do
+          {
+            note: [
+              {
+                value: 'Available to Stanford researchers only.',
+                type: 'access restriction'
+              }
+            ]
+          }
+        end
+
+        it 'returns true' do
+          expect(described_class.new({}).send(:countable_property?, :access, access)).to be_truthy
+        end
+      end
+
+      context 'when there is no countable value in an immediate child' do
+        let(:access) do
+          {
+            note: [
+              {
+                type: 'access restriction'
+              }
+            ]
+          }
+        end
+
+        it 'returns false' do
+          expect(described_class.new({}).send(:countable_property?, :access, access)).to be_falsey
+        end
+      end
+    end
   end
 end
