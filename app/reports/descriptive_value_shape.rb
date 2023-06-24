@@ -140,8 +140,18 @@ class DescriptiveValueShape
         return true if key == :parallelEvent && sub_property_values.any? { |val| countable_property?(:event, val) }
       end
       false
-    when 'purl'
+    when :language
+      # add language[].script.value as a value (parallelValue, structuredValue, groupedValue etc. can be in path after script)
+    when :geographic
+      value.each do |key, sub_property_values|
+        return true if %i[form subject].include?(key) && sub_property_values.any? { |val| countable?(val) }
+      end
+      false
+    when :purl
       true if value.present? # purl is a String and the cocina has been validated
+    when :access
+    when :adminMetadata
+    when :relatedResource
     else
       false
     end

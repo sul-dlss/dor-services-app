@@ -188,7 +188,7 @@ RSpec.describe DescriptiveValueShape do
       end
 
       context 'when there is not a value' do
-        it 'returns true' do
+        it 'returns false' do
           expect(described_class.new({}).send(:countable_property?, :title, descriptive_value_not_countable)).to be_falsey
         end
       end
@@ -344,4 +344,55 @@ RSpec.describe DescriptiveValueShape do
       end
     end
   end
+
+  context 'when geographic property' do
+    context 'when there is a countable value in form and/or subject property' do
+      let(:geographic) do
+        {
+          subject: [
+            {
+              structuredValue: [
+                {
+                  value: '41.893367',
+                  type: 'latitude'
+                },
+                {
+                  value: '12.483736',
+                  type: 'longitude'
+                }
+              ],
+              type: 'point coordinates',
+              encoding: {
+                value: 'decimal'
+              }
+            }
+          ]
+        }
+      end
+
+      it 'returns true' do
+        expect(described_class.new({}).send(:countable_property?, :geographic, geographic)).to be_truthy
+      end
+    end
+
+    context 'when there is no countable value in form or subject property' do
+      let(:geographic) do
+        {
+          form: [
+            {
+              type: 'media type',
+              source: {
+                value: 'IANA media type terms'
+              }
+            }
+          ]
+        }
+      end
+
+      it 'returns false' do
+        expect(described_class.new({}).send(:countable_property?, :geographic, geographic)).to be_falsey
+      end
+    end
+  end
+
 end
