@@ -33,10 +33,42 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
         {
           contributor: [
             {
-              something: 'something'
-            }
-          ]
-        }
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Smith',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              note: [
+                {
+                  type: 'affiliation',
+                    {
+                      value: 'Stanford University',
+                      identifier: [
+                        {
+                          uri: 'https://ror.org/00f54p054',
+                          type: 'ROR',
+                          source: {
+                            code: 'ror'
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
       end
       let(:expected_hash) do
         [
@@ -83,9 +115,23 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
     context 'when cited organizational creator with identifier' do
       let(:cocina) do
         {
-          creator: [
+          contributor: [
             {
-              something: 'something'
+              name: [
+                {
+                  value: 'Stanford University'
+                }
+              ],
+              type: 'organization',
+              identifier: [
+                {
+                  uri: 'https://ror.org/00f54p054',
+                  type: 'ROR',
+                  source: {
+                    code: 'ror'
+                  }
+                }
+              ]
             }
           ]
         }
@@ -130,10 +176,57 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
         {
           contributor: [
             {
-              something: 'something'
-            }
-          ]
-        }
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Smith',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                {
+                  value: 'thesis advisor',
+                  code: 'ths',
+                  uri: 'http://id.loc.gov/vocabulary/relators/ths',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ],
+              note: [
+                {
+                  type: 'affiliation',
+                    {
+                      value: 'Stanford University',
+                      identifier: [
+                        {
+                          uri: 'https://ror.org/00f54p054',
+                          type: 'ROR',
+                          source: {
+                            code: 'ror'
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    type: 'citation status',
+                    value: 'false'
+                  }
+                ]
+              }
+            ]
+          }
       end
       let(:expected_hash) do
         [
@@ -280,10 +373,40 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
         {
           contributor: [
             {
-              something: 'something'
-            }
-          ]
-        }
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Smith',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              note: [
+                {
+                  type: 'affiliation',
+                    {
+                      structuredValue: [
+                        {
+                          value: 'Stanford University'
+                        },
+                        {
+                          value: 'Woods Institute'
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
       end
       let(:expected_hash) do
         [
@@ -368,10 +491,55 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
         {
           contributor: [
             {
-              something: 'something'
-            }
-          ]
-        }
+              name: [
+                {
+                  structuredValue: [
+                    {
+                      value: 'Jane',
+                      type: 'forename'
+                    },
+                    {
+                      value: 'Smith',
+                      type: 'surname'
+                    }
+                  ]
+                }
+              ],
+              type: 'person',
+              status: 'primary',
+              role: [
+                {
+                  value: 'thesis advisor',
+                  code: 'ths',
+                  uri: 'http://id.loc.gov/vocabulary/relators/ths',
+                  source: {
+                    code: 'marcrelator',
+                    uri: 'http://id.loc.gov/vocabulary/relators/'
+                  }
+                }
+              ],
+              note: [
+                {
+                  type: 'affiliation',
+                    {
+                      structuredValue: [
+                        {
+                          value: 'Stanford University'
+                        },
+                        {
+                          value: 'Woods institute'
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    type: 'citation status',
+                    value: 'false'
+                  }
+                ]
+              }
+            ]
+          }
       end
       let(:expected_hash) do
         [
