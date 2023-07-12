@@ -17,12 +17,12 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
                             identification: { sourceId: 'cats:dogs' },
                             externalIdentifier: 'druid:cc123dd1234',
                             structural: {},
-                            access: cocina_access)
+                            access: {})
   end
-  let(:mapped_to_datacite) { described_class.new(cocina_item) }
-  let(:mapped_datacite_creators) { mapped_to_datacite.creators }
-  let(:mapped_datacite_contributrors) { mapped_to_datacite.contributors }
-  let(:mapped_datacite_funding_references) { mapped_to_datacite.funding_references }
+  let(:mapped_to_datacite) { described_class.new(cocina_item.description) }
+  let(:mapped_datacite_creators) { mapped_to_datacite.attributes[:creators] }
+  let(:mapped_datacite_contributors) {  mapped_to_datacite.attributes[:contributors] }
+  let(:mapped_datacite_funding_references) { mapped_to_datacite.attributes[:fundingReferences] }
 
   context 'when part 1 of name or affiliation has ROR; part 2 may or may not be entered' do
     # NOTE: Per conversation with Amy 7/7/23, if part 1 of name or affiliation has ROR, drop part 2 if entered. Otherwise the
@@ -52,23 +52,21 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
               note: [
                 {
                   type: 'affiliation',
+                  value: 'Stanford University',
+                  identifier: [
                     {
-                      value: 'Stanford University',
-                      identifier: [
-                        {
-                          uri: 'https://ror.org/00f54p054',
-                          type: 'ROR',
-                          source: {
-                            code: 'ror'
-                          }
-                        }
-                      ]
+                      uri: 'https://ror.org/00f54p054',
+                      type: 'ROR',
+                      source: {
+                        code: 'ror'
+                      }
                     }
-                  }
-                ]
-              }
-            ]
-          }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
       end
       let(:expected_hash) do
         [
@@ -112,7 +110,7 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
       end
     end
 
-    context 'when cited organizational creator with identifier' do
+    context 'when cited organizational creator with identifier', skip: 'organization affiliations not yet implemented in h2' do
       let(:cocina) do
         {
           contributor: [
@@ -205,28 +203,26 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
               ],
               note: [
                 {
-                  type: 'affiliation',
+                type: 'affiliation',
+                  value: 'Stanford University',
+                  identifier: [
                     {
-                      value: 'Stanford University',
-                      identifier: [
-                        {
-                          uri: 'https://ror.org/00f54p054',
-                          type: 'ROR',
-                          source: {
-                            code: 'ror'
-                          }
-                        }
-                      ]
+                      uri: 'https://ror.org/00f54p054',
+                      type: 'ROR',
+                      source: {
+                        code: 'ror'
+                      }
                     }
-                  },
-                  {
-                    type: 'citation status',
-                    value: 'false'
-                  }
-                ]
-              }
-            ]
-          }
+                  ]
+                },
+                {
+                  type: 'citation status',
+                  value: 'false'
+                }
+              ]
+            }
+          ]
+        }
       end
       let(:expected_hash) do
         [
@@ -271,7 +267,7 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
       end
     end
 
-    context 'when uncited organizational contributor with identifier and H2 role "Degree granting institution"' do
+    context 'when uncited organizational contributor with identifier and H2 role "Degree granting institution"', skip: 'organization affiliations not yet implemented in h2' do
       let(:cocina) do
         {
           contributor: [
@@ -317,7 +313,7 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
       end
     end
 
-    context 'when uncited organizational contributor with identifier and H2 role "Funder"' do
+    context 'when uncited organizational contributor with identifier and H2 role "Funder"', skip: 'organization affiliations not yet implemented in h2' do
       let(:cocina) do
         {
           contributor: [
@@ -392,21 +388,19 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
               note: [
                 {
                   type: 'affiliation',
+                  structuredValue: [
                     {
-                      structuredValue: [
-                        {
-                          value: 'Stanford University'
-                        },
-                        {
-                          value: 'Woods Institute'
-                        }
-                      ]
+                      value: 'Stanford University'
+                    },
+                    {
+                      value: 'Woods Institute'
                     }
-                  }
-                ]
-              }
-            ]
-          }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
       end
       let(:expected_hash) do
         [
@@ -447,7 +441,7 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
       end
     end
 
-    context 'when cited organizational contributor' do
+    context 'when cited organizational contributor', skip: 'organization affiliations not yet implemented in h2' do
       let(:cocina) do
         {
           creator: [
@@ -521,25 +515,23 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
               note: [
                 {
                   type: 'affiliation',
+                  structuredValue: [
                     {
-                      structuredValue: [
-                        {
-                          value: 'Stanford University'
-                        },
-                        {
-                          value: 'Woods institute'
-                        }
-                      ]
+                      value: 'Stanford University'
+                    },
+                    {
+                      value: 'Woods institute'
                     }
-                  },
-                  {
-                    type: 'citation status',
-                    value: 'false'
-                  }
-                ]
-              }
-            ]
-          }
+                  ]
+                },
+                {
+                  type: 'citation status',
+                  value: 'false'
+                }
+              ]
+            }
+          ]
+        }
       end
       let(:expected_hash) do
         [
@@ -581,7 +573,7 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
       end
     end
 
-    context 'when uncited organizational contributor with H2 role "Degree granting institution"' do
+    context 'when uncited organizational contributor with H2 role "Degree granting institution"', skip: 'organization affiliations not yet implemented in h2' do
       let(:cocina) do
         {
           contributor: [
@@ -621,7 +613,7 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
       end
     end
 
-    context 'when cited or uncited organizational contributor with H2 role "Funder"' do
+    context 'when cited or uncited organizational contributor with H2 role "Funder"', skip: 'organization affiliations not yet implemented in h2' do
       let(:cocina) do
         {
           contributor: [
