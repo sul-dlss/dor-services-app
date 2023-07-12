@@ -70,43 +70,25 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
       end
       let(:expected_hash) do
         [
-          creator: {
-            creatorName: {
-              nameType: 'Personal',
-              value: 'Smith, Jane'
-            },
+          {
+            nameType: 'Personal',
+            name: 'Smith, Jane',
             givenName: 'Jane',
             familyName: 'Smith',
-            affiliation: [
+            affiliations: [
               {
+                name: 'Stanford University',
                 affiliationIdentifier: 'https://ror.org/00f54p054',
                 affiliationIdentifierScheme: 'ROR',
                 schemeURI: 'https://ror.org',
-                value: 'Stanford University'
               }
             ]
           }
         ]
       end
-      let(:expected_xml) do
-        <<~XML
-          <creators>
-            <creator>
-              <creatorName nameType="Personal">Smith, Jane</creatorName>
-              <givenName>Jane</givenName>
-              <familyName>Smith</familyName>
-              <affiliation affiliationIdentifier="https://ror.org/00f54p054" affiliationIdentifierScheme="ROR" schemeURI="https://ror.org">Stanford University</affiliation>
-            </creator>
-          </creators>
-        XML
-      end
 
       it 'maps to the expected hash' do
         expect(mapped_datacite_creators).to eq expected_hash
-      end
-
-      it 'maps to the expected xml' do
-        expect(mapped_datacite_creators.to_xml).to be_equivalent_to_xml(expected_xml)
       end
     end
 
@@ -136,36 +118,22 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
       end
       let(:expected_hash) do
         [
-          creator: {
-            creatorName: {
-              nameType: 'Organizational',
-              value: 'Stanford University'
-            },
-            nameIdentifier: {
-              nameIdentifierScheme: 'ROR',
-              schemeURI: 'https://ror.org',
-              value: 'https://ror.org/00f54p054'
-            }
+          {
+            name: 'Stanford University',
+            nameType: 'Organizational',
+            nameIdentifiers: [
+              {
+                nameIdentifier: 'https://ror.org/00f54p054',
+                nameIdentifierScheme: 'ROR',
+                schemeURI: 'https://ror.org'
+              }
+            ]
           }
         ]
-      end
-      let(:expected_xml) do
-        <<~XML
-          <creators>
-            <creator>
-              <creatorName nameType="Organizational">Stanford University</creatorName>
-              <nameIdentifier nameIdentifierScheme="ROR" schemeURI="https://ror.org">https://ror.org/00f54p054</nameIdentifier>
-            </creator>
-          </creators>
-        XML
       end
 
       it 'maps to the expected hash' do
         expect(mapped_datacite_creators).to eq expected_hash
-      end
-
-      it 'maps to the expected xml' do
-        expect(mapped_datacite_creators.to_xml).to be_equivalent_to_xml(expected_xml)
       end
     end
 
@@ -226,44 +194,26 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
       end
       let(:expected_hash) do
         [
-          contributor: {
-            contributorType: 'Other',
-            contributorName: {
-              nameType: 'Personal',
-              value: 'Smith, Jane'
-            },
+          {
+            nameType: 'Personal',
+            name: 'Smith, Jane',
             givenName: 'Jane',
             familyName: 'Smith',
-            affiliation: [
+            contributorType: 'Other',
+            affiliations: [
               {
+                name: 'Stanford University',
                 affiliationIdentifier: 'https://ror.org/00f54p054',
                 affiliationIdentifierScheme: 'ROR',
-                schemeURI: 'https://ror.org',
-                value: 'Stanford University'
+                schemeURI: 'https://ror.org'
               }
             ]
           }
         ]
       end
-      let(:expected_xml) do
-        <<~XML
-          <contributors>
-            <contributor contributorType="Other">
-              <contributorName nameType="Personal">Smith, Jane</contributorName>
-              <givenName>Jane</givenName>
-              <familyName>Smith</familyName>
-              <affiliation affiliationIdentifier="https://ror.org/00f54p054" affiliationIdentifierScheme="ROR" schemeURI="https://ror.org">Stanford University</affiliation>
-            </contributor>
-          </contributors>
-        XML
-      end
 
       it 'maps to the expected hash' do
         expect(mapped_datacite_contributors).to eq expected_hash
-      end
-
-      it 'maps to the expected xml' do
-        expect(mapped_datacite_contributors.to_xml).to be_equivalent_to_xml(expected_xml)
       end
     end
 
@@ -293,23 +243,9 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
           }
         ]
       end
-      let(:expected_xml) do
-        <<~XML
-          <contributors>
-            <contributor contributorType="Other">
-              <contributorName nameType="Organizational">Stanford University</contributorName>
-              <nameIdentifier nameIdentifierScheme="ROR" schemeURI="https://ror.org">https://ror.org/00f54p054</nameIdentifier>
-            </contributor>
-          </contributors>
-        XML
-      end
 
       it 'maps to the expected hash' do
         expect(mapped_datacite_contributors).to eq expected_hash
-      end
-
-      it 'maps to the expected xml' do
-        expect(mapped_datacite_contributors.to_xml).to be_equivalent_to_xml(expected_xml)
       end
     end
 
@@ -337,23 +273,9 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
           }
         ]
       end
-      let(:expected_xml) do
-        <<~XML
-          <fundingReferences>
-            <fundingReference>
-              <funderName>Stanford University</funderName>
-              <funderIdentifier funderIdentifierType="ROR" schemeURI="https://ror.org">https://ror.org/00f54p054</funderIdentifier>
-            </fundingReference>
-          <fundingReferences>
-        XML
-      end
 
       it 'maps to the expected hash' do
         expect(mapped_datacite_funding_references).to eq expected_hash
-      end
-
-      it 'maps to the expected xml' do
-        expect(mapped_datacite_funding_references.to_xml).to be_equivalent_to_xml(expected_xml)
       end
     end
   end
@@ -404,40 +326,22 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
       end
       let(:expected_hash) do
         [
-          creator: {
-            creatorName: {
-              nameType: 'Personal',
-              value: 'Smith, Jane'
-            },
+          {
+            nameType: 'Personal',
+            name: 'Smith, Jane',
             givenName: 'Jane',
             familyName: 'Smith',
-            affiliation: [
+            affiliations: [
               {
-                value: 'Stanford University, Woods Institute'
+                name: 'Stanford University, Woods Institute'
               }
             ]
           }
         ]
       end
-      let(:expected_xml) do
-        <<~XML
-          <creators>
-            <creator>
-              <creatorName nameType="Personal">Smith, Jane</creatorName>
-              <givenName>Jane</givenName>
-              <familyName>Smith</familyName>
-              <affiliation>Stanford University, Woods Institute</affiliation>
-            </creator>
-          </creators>
-        XML
-      end
 
       it 'maps to the expected hash' do
         expect(mapped_datacite_creators).to eq expected_hash
-      end
-
-      it 'maps to the expected xml' do
-        expect(mapped_datacite_creators.to_xml).to be_equivalent_to_xml(expected_xml)
       end
     end
 
@@ -461,22 +365,9 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
           }
         ]
       end
-      let(:expected_xml) do
-        <<~XML
-          <creators>
-            <creator>
-              <creatorName nameType="Organizational">Stanford University, Woods Institute</creatorName>
-            </creator>
-          </creators>
-        XML
-      end
 
       it 'maps to the expected hash' do
         expect(mapped_datacite_creators).to eq expected_hash
-      end
-
-      it 'maps to the expected xml' do
-        expect(mapped_datacite_creators.to_xml).to be_equivalent_to_xml(expected_xml)
       end
     end
 
@@ -535,41 +426,23 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
       end
       let(:expected_hash) do
         [
-          contributor: {
-            contributorType: 'Other',
-            contributorName: {
-              nameType: 'Personal',
-              value: 'Smith, Jane'
-            },
+          {
+            nameType: 'Personal',
+            name: 'Smith, Jane',
             givenName: 'Jane',
             familyName: 'Smith',
-            affiliation: [
+            contributorType: 'Other',
+            affiliations: [
               {
-                value: 'Stanford University, Woods Institute'
+                name: 'Stanford University, Woods Institute'
               }
             ]
           }
         ]
       end
-      let(:expected_xml) do
-        <<~XML
-          <contributors>
-            <contributor contributorType="Other">
-              <contributorName nameType="Personal">Smith, Jane</contributorName>
-              <givenName>Jane</givenName>
-              <familyName>Smith</familyName>
-              <affiliation>Stanford University, Woods Institute</affiliation>
-            </contributor>
-          </contributors>
-        XML
-      end
 
       it 'maps to the expected hash' do
         expect(mapped_datacite_contributors).to eq expected_hash
-      end
-
-      it 'maps to the expected xml' do
-        expect(mapped_datacite_contributors.to_xml).to be_equivalent_to_xml(expected_xml)
       end
     end
 
@@ -594,23 +467,11 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
           }
         ]
       end
-      let(:expected_xml) do
-        <<~XML
-          <contributors>
-            <contributor contributorType="Other">
-              <contributorName nameType="Organizational">Stanford University, Woods Institute</contributorName>
-            </contributor>
-          </contributors>
-        XML
-      end
 
       it 'maps to the expected hash' do
         expect(mapped_datacite_funding_references).to eq expected_hash
       end
 
-      it 'maps to the expected xml' do
-        expect(mapped_datacite_funding_references.to_xml).to be_equivalent_to_xml(expected_xml)
-      end
     end
 
     context 'when cited or uncited organizational contributor with H2 role "Funder"', skip: 'organization affiliations not yet implemented in h2' do
@@ -632,22 +493,9 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
           }
         ]
       end
-      let(:expected_xml) do
-        <<~XML
-          <fundingReferences>
-            <fundingReference>
-              <funderName>Stanford University, Woods Institute</funderName>
-            </fundingReference>
-          <fundingReferences>
-        XML
-      end
 
       it 'maps to the expected hash' do
         expect(mapped_datacite_funding_references).to eq expected_hash
-      end
-
-      it 'maps to the expected xml' do
-        expect(mapped_datacite_funding_references.to_xml).to be_equivalent_to_xml(expected_xml)
       end
     end
   end
