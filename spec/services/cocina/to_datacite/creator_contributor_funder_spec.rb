@@ -171,7 +171,7 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
               ],
               note: [
                 {
-                type: 'affiliation',
+                  type: 'affiliation',
                   value: 'Stanford University',
                   identifier: [
                     {
@@ -497,6 +497,53 @@ RSpec.describe Cocina::ToDatacite::CreatorContributorFunder do
       it 'maps to the expected hash' do
         expect(mapped_datacite_funding_references).to eq expected_hash
       end
+    end
+  end
+
+  context 'when there is a non-affiliation type note' do
+    let(:cocina) do
+      {
+        contributor: [
+          {
+            name: [
+              {
+                structuredValue: [
+                  {
+                    value: 'Jane',
+                    type: 'forename'
+                  },
+                  {
+                    value: 'Smith',
+                    type: 'surname'
+                  }
+                ]
+              }
+            ],
+            type: 'person',
+            status: 'primary',
+            note: [
+              {
+                type: 'random',
+                value: 'she is awesome'
+              }
+            ]
+          }
+        ]
+      }
+    end
+    let(:expected_hash) do
+      [
+        {
+          nameType: 'Personal',
+          name: 'Smith, Jane',
+          givenName: 'Jane',
+          familyName: 'Smith'
+        }
+      ]
+    end
+
+    it 'does not get mapped' do
+      expect(mapped_datacite_creators).to eq expected_hash
     end
   end
 end

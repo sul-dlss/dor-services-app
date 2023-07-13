@@ -78,13 +78,16 @@ module Cocina
       def personal_name(cocina_contributor)
         forename = cocina_contributor.name.first.structuredValue.find { |part| part.type == 'forename' }
         surname = cocina_contributor.name.first.structuredValue.find { |part| part.type == 'surname' }
+        affiliations = affiliations(cocina_contributor)
         {
           name: "#{surname.value}, #{forename.value}",
           givenName: forename.value,
           familyName: surname.value,
           nameType: 'Personal',
           nameIdentifiers: name_identifiers(cocina_contributor).presence
-        }.compact
+        }.compact.tap do |hash|
+          hash[:affiliations] = affiliations if affiliations.present?
+        end
       end
 
       def organizational_name(cocina_contributor)
@@ -114,6 +117,20 @@ module Cocina
         Array(cocina_contributor.role).find do |role|
           role&.source&.code == 'marcrelator'
         end&.value
+      end
+
+      def affiliations(cocina_contributor)
+        Array(cocina_contributor.note).select { |note| note.type == 'affiliation' }.map do |note|
+          {}.tap do |hash|
+            hash[:name] = note.value if note.value.present?
+            identifier = note.identifier&.first
+            if identifier.present?
+              hash[:affiliationIdentifier] = identifier.uri if identifier.uri
+              hash[:affiliationIdentifierScheme] = identifier.type if identifier.type
+              hash[:schemeURI] = "https://ror.org" if identifier.type == 'ROR'
+            end
+          end
+        end
       end
 
       DATACITE_PERSON_CONTRIBUTOR_TYPES = {
