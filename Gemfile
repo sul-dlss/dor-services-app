@@ -11,9 +11,11 @@ gem 'datacite', '~> 0.3.0'
 gem 'dor-workflow-client', '~> 5.0'
 gem 'druid-tools', '~> 2.2'
 gem 'folio_client', '~> 0.8'
+gem 'mais_orcid_client'
 gem 'marc'
 gem 'moab-versioning', '~> 6.0', require: 'moab/stanford'
 gem 'preservation-client', '~> 6.0'
+gem 'sul_orcid_client', '~> 0.3'
 # Pinning stanford-mods since >=3 breaks dor-services.
 gem 'stanford-mods', '~> 2.6'
 

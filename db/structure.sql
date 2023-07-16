@@ -286,6 +286,40 @@ ALTER SEQUENCE public.object_versions_id_seq OWNED BY public.object_versions.id;
 
 
 --
+-- Name: orcid_works; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.orcid_works (
+    id bigint NOT NULL,
+    orcidid character varying NOT NULL,
+    put_code character varying NOT NULL,
+    druid character varying NOT NULL,
+    md5 character varying NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: orcid_works_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.orcid_works_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: orcid_works_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.orcid_works_id_seq OWNED BY public.orcid_works.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -375,6 +409,13 @@ ALTER TABLE ONLY public.object_versions ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
+-- Name: orcid_works id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.orcid_works ALTER COLUMN id SET DEFAULT nextval('public.orcid_works_id_seq'::regclass);
+
+
+--
 -- Name: tag_labels id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -443,6 +484,14 @@ ALTER TABLE ONLY public.events
 
 ALTER TABLE ONLY public.object_versions
     ADD CONSTRAINT object_versions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orcid_works orcid_works_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.orcid_works
+    ADD CONSTRAINT orcid_works_pkey PRIMARY KEY (id);
 
 
 --
@@ -553,6 +602,13 @@ CREATE UNIQUE INDEX index_object_versions_on_druid_and_version ON public.object_
 
 
 --
+-- Name: index_orcid_works_on_orcidid_and_druid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_orcid_works_on_orcidid_and_druid ON public.orcid_works USING btree (orcidid, druid);
+
+
+--
 -- Name: index_tag_labels_on_tag; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -591,6 +647,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220311015318'),
 ('20220329134023'),
 ('20220422143440'),
-('20220509120943');
+('20220509120943'),
+('20230716202954');
 
 

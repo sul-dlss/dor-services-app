@@ -120,3 +120,15 @@ sidekiq:
 honeybadger_checkins:
   embargo_release: foo
   missing_druids: bar
+
+orcid:
+  client_id: ~
+  client_secret: ~
+  base_url: https://api.sandbox.orcid.org
+  base_public_url: https://pub.sandbox.orcid.org
+  base_auth_url: https://sandbox.orcid.org
+
+mais_orcid:
+  client_id: ~
+  client_secret: ~
+  base_url: https://mais-sandbox.stanford.edu
