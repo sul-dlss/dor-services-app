@@ -2,7 +2,7 @@
 
 # rubocop:disable Metrics/ClassLength
 class ObjectsController < ApplicationController
-  before_action :load_cocina_object, only: %i[update_doi_metadata update_marc_record notify_goobi accession destroy show preserve publish unpublish]
+  before_action :load_cocina_object, only: %i[update_doi_metadata update_marc_record notify_goobi accession destroy show preserve publish unpublish update_orcid_work]
 
   rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
     json_api_error(status: :not_found, message: e.message)
@@ -145,6 +145,15 @@ class ObjectsController < ApplicationController
     end
 
     UpdateDoiMetadataJob.perform_later(Cocina::Models.without_metadata(@cocina_object).to_json)
+
+    head :accepted
+  end
+
+  # Called by the robots.
+  def update_orcid_work
+    return head :no_content unless Settings.enabled_features.orcid_update
+
+    UpdateOrcidWorkJob.perform_later(Cocina::Models.without_metadata(@cocina_object).to_json)
 
     head :accepted
   end

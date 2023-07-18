@@ -8,6 +8,7 @@ enabled_features:
   read_folio: false
   sync_cataloglinks: false
   write_folio: false
+  orcid_update: true
 
 # Ur Admin Policy
 ur_admin_policy:
