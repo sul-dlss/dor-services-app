@@ -3,8 +3,8 @@
 # Report on contributors with no name value that have role information
 
 # Invoke via:
-# bin/rails r -e production "ContributorWithoutNameDros.report"
-class ContributorWithoutNameDros
+# bin/rails r -e production "ContributorWithoutNameCollections.report"
+class ContributorWithoutNameCollections
   # NOTE: Prefer strict JSON querying over lax when using the `.**` operator, per
   #       https://www.postgresql.org/docs/14/functions-json.html#STRICT-AND-LAX-MODES
   #
@@ -13,33 +13,28 @@ class ContributorWithoutNameDros
   # > and each of its elements, while the .HR accessor automatically unwraps
   # > arrays when using the lax mode. To avoid surprising results, we recommend
   # > using the .** accessor only in the strict mode.
-  # NOTE: I never figured out why the following three lines didn't work as expected
+  # NOTE: I never figured out why the following line didn't work as expected
   # JSONB_PATH = 'strict $.**.contributor[*] ? (!(exists(@.name.**.value))) ? ((exists(@.role.code)) || (exists(@.role.value)) || (exists(@.role.uri)))'
-  # JSONB_PATH = 'strict $.**.contributor[*] ? ( !exists(@.name.**.value) && ( exists(@.role.code) || exists(@.role.value) || exists(@.role.uri) ) )'
-  # JSONB_PATH = 'strict $.**.contributor[*] ? ( ( exists(@.role.code) ) && ( !exists(@.name.**.value) ) )'
-  # NOTE: I ended up doing the below because the above was not working as expected
-  # JSONB_PATH = 'strict $.**.contributor[*] ? ( !exists(@.name.**.value) )' # works, but not so useful
-  # NOTE: so I just ran each of the following four lines as separate reports
-  # JSONB_PATH = 'strict $.contributor[*] ? ( !exists(@.name.**.value) )' # top level
+  # NOTE: I ran each of the following four lines as separate reports
+  JSONB_PATH = 'strict $.contributor[*] ? ( !exists(@.name.**.value) )' # top level
   # JSONB_PATH = 'strict $.**.event.contributor[*] ? ( !exists(@.name.**.value) )'
-  JSONB_PATH = 'strict $.**.adminMetadata.contributor[*] ? ( !exists(@.name.**.value) )'
+  # JSONB_PATH = 'strict $.**.adminMetadata.contributor[*] ? ( !exists(@.name.**.value) )'
   # JSONB_PATH = 'strict $.**.relatedResource.contributor[*] ? ( !exists(@.name.**.value) )'
   SQL = <<~SQL.squish.freeze
-    SELECT dros.external_identifier as item_druid,
+    SELECT collections.external_identifier as collection_druid,
            desc_value->'role'->'code' as role_code,
            desc_value->'role'->'value' as role_value,
            desc_value->'role'->'uri' as role_uri,
            desc_value->'value' as name_value,
-           jsonb_path_query(dros.structural, '$.isMemberOf') ->> 0 as collection_druid,
            jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "symphony").catalogRecordId') ->> 0 as catalog_record_id
-           FROM "dros",
-           jsonb_path_query(dros.description, '#{JSONB_PATH}') desc_value
+           FROM "collections",
+           jsonb_path_query(collections.description, '#{JSONB_PATH}') desc_value
            WHERE
-           jsonb_path_exists(dros.description, '#{JSONB_PATH}')
+           jsonb_path_exists(collections.description, '#{JSONB_PATH}')
   SQL
 
   def self.report
-    puts "item_druid,catalog_record_id,collection_druid,collection_name,name_value,role_code,role_value,role_uri\n"
+    puts "collection_druid,catalog_record_id,collection_name,name_value,role_code,role_value,role_uri\n"
     rows(SQL).compact.each { |row| puts row }
   end
 
@@ -51,9 +46,8 @@ class ContributorWithoutNameDros
       collection_name = Collection.find_by(external_identifier: collection_druid)&.label
 
       [
-        row['item_druid'],
-        row['catalog_record_id'],
         collection_druid,
+        row['catalog_record_id'],
         "\"#{collection_name}\"",
         row['name_value'],
         row['role_code'],
