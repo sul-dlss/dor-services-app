@@ -66,7 +66,7 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
-    addressable (2.8.4)
+    addressable (2.8.5)
       public_suffix (>= 2.0.2, < 6.0)
     airbrussh (1.4.1)
       sshkit (>= 1.6.1, != 1.7.0)
@@ -123,7 +123,7 @@ GEM
       json_schema (~> 0.14, >= 0.14.3)
       openapi_parser (>= 0.11.1, < 1.0)
       rack (>= 1.5)
-    commonmarker (0.23.9)
+    commonmarker (0.23.10)
     concurrent-ruby (1.2.2)
     config (4.2.1)
       deep_merge (~> 1.2, >= 1.2.1)
@@ -161,7 +161,7 @@ GEM
     dry-configurable (1.1.0)
       dry-core (~> 1.0, < 2)
       zeitwerk (~> 2.6)
-    dry-core (1.0.0)
+    dry-core (1.0.1)
       concurrent-ruby (~> 1.0)
       zeitwerk (~> 2.6)
     dry-inflector (1.0.0)
@@ -252,7 +252,7 @@ GEM
       net-imap
       net-pop
       net-smtp
-    mais_orcid_client (0.2.0)
+    mais_orcid_client (0.3.0)
       activesupport (>= 4.2, < 8)
       faraday
       faraday-retry
@@ -355,7 +355,7 @@ GEM
       activesupport (= 7.0.6)
       bundler (>= 1.15.0)
       railties (= 7.0.6)
-    rails-dom-testing (2.1.1)
+    rails-dom-testing (2.2.0)
       activesupport (>= 5.0.0)
       minitest
       nokogiri (>= 1.6)
@@ -372,7 +372,7 @@ GEM
     rainbow (3.1.1)
     rake (12.3.3)
     rbtree (0.4.6)
-    redis-client (0.14.1)
+    redis-client (0.15.0)
       connection_pool
     regexp_parser (2.8.1)
     request_store (1.5.1)
@@ -506,7 +506,7 @@ GEM
     websocket-extensions (0.1.5)
     whenever (1.0.0)
       chronic (>= 0.6.3)
-    zeitwerk (2.6.10)
+    zeitwerk (2.6.11)
 
 PLATFORMS
   x86_64-darwin-19
