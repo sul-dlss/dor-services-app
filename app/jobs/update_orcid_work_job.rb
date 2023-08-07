@@ -9,6 +9,11 @@ class UpdateOrcidWorkJob < ApplicationJob
   def perform(cocina_item_json)
     @cocina_item = Cocina::Models.build(JSON.parse(cocina_item_json))
 
+    create_or_update_orcid_works
+    delete_orcid_works
+  end
+
+  def create_or_update_orcid_works
     orcid_users.each do |orcid_user|
       ar_orcid_work = OrcidWork.find_by(orcidid: orcid_user.orcidid, druid: cocina_item.externalIdentifier)
       if ar_orcid_work.nil?
@@ -18,6 +23,16 @@ class UpdateOrcidWorkJob < ApplicationJob
       else
         Rails.logger.info("Orcid work for #{cocina_item.externalIdentifier} / #{orcid_user.orcidid} has not changed")
       end
+    end
+  end
+
+  def delete_orcid_works
+    delete_orcid_users.each do |orcid_user|
+      ar_orcid_work = OrcidWork.find_by(orcidid: orcid_user.orcidid, druid: cocina_item.externalIdentifier)
+
+      Rails.logger.info("Deleting Orcid work for #{cocina_item.externalIdentifier} / #{orcid_user.orcidid}")
+      orcid_client.delete_work(orcidid: orcid_user.orcidid, token: orcid_user.access_token, put_code: ar_orcid_work.put_code)
+      ar_orcid_work.destroy
     end
   end
 
@@ -51,6 +66,20 @@ class UpdateOrcidWorkJob < ApplicationJob
     end
   end
 
+  def delete_orcid_users
+    @delete_orcid_users ||= begin
+      delete_ar_orcid_works = OrcidWork.where(druid: cocina_item.externalIdentifier)
+      orcid_ids = orcid_users.map(&:orcidid)
+      delete_ar_orcid_works = delete_ar_orcid_works.where.not(orcidid: orcid_ids) if orcid_ids.present?
+
+      delete_orcid_users = delete_ar_orcid_works.filter_map do |ar_orcid_work|
+        mais_orcid_client.fetch_orcid_user(orcidid: ar_orcid_work.orcidid)
+      end
+
+      delete_orcid_users.select(&:update?)
+    end
+  end
+
   def work
     @work ||= SulOrcidClient::WorkMapper.map(description: cocina_item.description, doi: cocina_item.identification.doi)
   end
@@ -66,7 +95,7 @@ class UpdateOrcidWorkJob < ApplicationJob
   end
 
   def update(orcid_user, ar_orcid_work)
-    Rails.logger.info("Creating new Orcid work for #{cocina_item.externalIdentifier} / #{orcid_user.orcidid}")
+    Rails.logger.info("Updating Orcid work for #{cocina_item.externalIdentifier} / #{orcid_user.orcidid}")
     orcid_client.update_work(orcidid: orcid_user.orcidid, work:, token: orcid_user.access_token, put_code: ar_orcid_work.put_code)
     ar_orcid_work.update(md5:)
   end

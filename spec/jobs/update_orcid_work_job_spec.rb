@@ -47,7 +47,7 @@ RSpec.describe UpdateOrcidWorkJob do
   end
 
   let(:mais_orcid_client) { instance_double(MaisOrcidClient, fetch_orcid_user: orcid_user) }
-  let(:orcid_client) { instance_double(SulOrcidClient, add_work: '12345', update_work: true) }
+  let(:orcid_client) { instance_double(SulOrcidClient, add_work: '12345', update_work: true, delete_work: true) }
 
   let(:orcid_user) do
     MaisOrcidClient::OrcidUser.new(
@@ -103,6 +103,22 @@ RSpec.describe UpdateOrcidWorkJob do
       expect(mais_orcid_client).to have_received(:fetch_orcid_user).with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X')
       expect(orcid_client).to have_received(:update_work)
         .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X', work:, token: 'FAKE-294e-4bc8-8afd-96315b06ae04', put_code: '45678')
+    end
+  end
+
+  context 'when deleting a work' do
+    let(:identifiers) do
+      []
+    end
+
+    let!(:ar_orcid_work) { OrcidWork.create(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X', druid: 'druid:bc234fg5678', put_code: '45678', md5: 'd41d8cd98f00b204e9800998ecf8427e') }
+
+    it 'deletes orcid work and AR orcid work' do
+      perform
+      expect { ar_orcid_work.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      expect(mais_orcid_client).to have_received(:fetch_orcid_user).with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X')
+      expect(orcid_client).to have_received(:delete_work)
+        .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X', token: 'FAKE-294e-4bc8-8afd-96315b06ae04', put_code: '45678')
     end
   end
 
