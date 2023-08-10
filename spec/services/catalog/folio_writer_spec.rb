@@ -55,6 +55,40 @@ RSpec.describe Catalog::FolioWriter do
       } }.deep_stringify_keys
   end
 
+  let(:source_record) do
+    { fields: [
+      { '001': 'a666' },
+      { '856': { ind1: '4',
+                 ind2: '1',
+                 subfields: [{ u: 'https://purl.stanford.edu/bc123dg9393' },
+                             { x: 'SDR-PURL' },
+                             { x: 'item' },
+                             { x: 'barcode:36105216275185' },
+                             { x: 'rights:world' }] } }
+    ] }.deep_stringify_keys
+  end
+
+  let(:instance_record) do
+    {
+      id: 'db80714e-398c-56f5-b228-7ad0874107cf',
+      _version: '36',
+      hrid: 'a666',
+      electronicAccess: [{
+        uri: 'https://purl.stanford.edu/bc123dg9393',
+        linkText: nil
+      }]
+    }.deep_stringify_keys
+  end
+
+  let(:instance_record_unreleased) do
+    {
+      id: 'db80714e-398c-56f5-b228-7ad0874107cf',
+      _version: '36',
+      hrid: 'a666',
+      electronicAccess: []
+    }.deep_stringify_keys
+  end
+
   let(:unreleased_marc_json) do
     { parsedRecordId: '1ab23862-46db-4da9-af5b-633adbf5f90f',
       fields:
@@ -78,6 +112,8 @@ RSpec.describe Catalog::FolioWriter do
       allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
       allow(FolioClient).to receive(:edit_marc_json).and_yield(folio_response_json)
       allow(ReleaseTags).to receive(:released_to_searchworks?).and_return(release_data)
+      allow(FolioClient).to receive_messages(fetch_instance_info: instance_record, fetch_marc_hash: source_record)
+      allow(Honeybadger).to receive(:notify)
     end
 
     context 'when a single catalog record has been released to Searchworks' do
@@ -96,49 +132,157 @@ RSpec.describe Catalog::FolioWriter do
       it 'updates the MARC record' do
         folio_writer.save
         expect(FolioClient).to have_received(:edit_marc_json).with(hrid:)
+        expect(FolioClient).to have_received(:fetch_marc_hash).with(instance_hrid: hrid)
+        expect(FolioClient).to have_received(:fetch_instance_info).with(hrid:)
         expect(folio_response_json).to eq(updated_marc_json)
       end
 
-      context "when Folio operation raises less than #{described_class::MAX_TRIES} times" do
+      context 'when instance record does not show updates at first' do
+        let(:instance_record_first_lookup) do
+          {
+            id: 'db80714e-398c-56f5-b228-7ad0874107cf',
+            _version: '36',
+            hrid: 'a10',
+            electronicAccess: []
+          }.deep_stringify_keys
+        end
+
         before do
-          client_responses = [nil, nil, folio_response_json]
-          allow(FolioClient).to receive(:edit_marc_json) do |_, &block|
-            response = client_responses.shift
-            response.nil? ? raise(FolioClient::Error, 'arbitrary exception') : block.call(response)
-          end
+          allow(FolioClient).to receive(:fetch_instance_info).and_return(instance_record_first_lookup, instance_record)
+          allow(FolioClient).to receive(:fetch_marc_hash).and_return(source_record)
           allow(Rails.logger).to receive(:warn)
         end
 
-        it 'updates the MARC record and logs warning messages' do
+        it 'updates the MARC record and retries lookup once' do
           folio_writer.save
-          expect(FolioClient).to have_received(:edit_marc_json).with(hrid:).exactly(3).times
+          expect(FolioClient).to have_received(:fetch_instance_info).twice
+          expect(FolioClient).to have_received(:edit_marc_json).with(hrid:)
+          expect(Rails.logger).to have_received(:warn).once
+          expect(folio_response_json).to eq(updated_marc_json)
+        end
+      end
+
+      context 'when instance and source records do not show updates at first' do
+        let(:instance_record_first_lookup) do
+          {
+            id: 'db80714e-398c-56f5-b228-7ad0874107cf',
+            _version: '36',
+            hrid: 'a10',
+            electronicAccess: []
+          }.deep_stringify_keys
+        end
+        let(:source_record_first_lookup) do
+          { fields: [
+            { '001': 'a666' }
+          ] }.deep_stringify_keys
+        end
+
+        before do
+          allow(FolioClient).to receive(:fetch_instance_info).and_return(instance_record_first_lookup, instance_record, instance_record)
+          allow(FolioClient).to receive(:fetch_marc_hash).and_return(source_record_first_lookup, source_record)
+          allow(Rails.logger).to receive(:warn)
+        end
+
+        it 'updates the MARC record and retries lookups' do
+          folio_writer.save
+          expect(FolioClient).to have_received(:fetch_instance_info).exactly(3).times
+          expect(FolioClient).to have_received(:fetch_marc_hash).twice
+          expect(FolioClient).to have_received(:edit_marc_json).with(hrid:)
           expect(Rails.logger).to have_received(:warn).twice
           expect(folio_response_json).to eq(updated_marc_json)
         end
       end
 
-      context "when Folio operation raises more than #{described_class::MAX_TRIES} times" do
-        before do
-          client_responses = [nil, nil, nil, nil, folio_response_json]
-          allow(FolioClient).to receive(:edit_marc_json) do |_, &block|
-            response = client_responses.shift
-            response.nil? ? raise(FolioClient::Error, 'arbitrary exception') : block.call(response)
-          end
-          allow(Rails.logger).to receive(:warn)
-          allow(Honeybadger).to receive(:notify)
+      context 'when source record does not show updated subfields at first' do
+        let(:source_record_first_lookup) do
+          { fields: [
+            { '001': 'a666' },
+            { '856': { ind1: '4',
+                       ind2: '1',
+                       subfields: [{ u: 'https://purl.stanford.edu/bc123dg9393' },
+                                   { x: 'SDR-PURL' },
+                                   { x: 'item' },
+                                   { x: 'barcode:36105216275185' },
+                                   { x: 'rights:stanford' }] } }
+          ] }.deep_stringify_keys
         end
 
-        it 'logs a warning message and notifies Honeybadger' do
+        before do
+          allow(FolioClient).to receive(:fetch_instance_info).and_return(instance_record)
+          allow(FolioClient).to receive(:fetch_marc_hash).and_return(source_record_first_lookup, source_record)
+          allow(Rails.logger).to receive(:warn)
+        end
+
+        it 'updates the MARC record and retries lookups' do
           folio_writer.save
-          expect(FolioClient).to have_received(:edit_marc_json).with(hrid:).exactly(4).times
+          expect(FolioClient).to have_received(:fetch_instance_info).twice
+          expect(FolioClient).to have_received(:fetch_marc_hash).twice
+          expect(FolioClient).to have_received(:edit_marc_json).with(hrid:)
+          expect(Rails.logger).to have_received(:warn).once
+          expect(folio_response_json).to eq(updated_marc_json)
+        end
+      end
+
+      context 'when Folio operation raises more than max_lookup_tries times' do
+        let(:instance_record) do
+          {
+            id: 'db80714e-398c-56f5-b228-7ad0874107cf',
+            _version: '36',
+            hrid: 'a10',
+            electronicAccess: []
+          }.deep_stringify_keys
+        end
+
+        before do
+          allow(FolioClient).to receive_messages(fetch_instance_info: instance_record_unreleased, fetch_marc_hash: source_record)
+          allow(Rails.logger).to receive(:warn)
+        end
+
+        it 'updates the MARC record and retries lookup until max_tries reached' do
+          expect { folio_writer.save }.to raise_error(StandardError, 'FOLIO update not completed.')
+          expect(FolioClient).to have_received(:fetch_instance_info).exactly(4).times
+          expect(FolioClient).to have_received(:edit_marc_json).with(hrid:).once
           expect(Rails.logger).to have_received(:warn).exactly(4).times
           expect(Honeybadger).to have_received(:notify)
             .with(
-              'Error retrying Folio edit operations',
-              backtrace: instance_of(Array),
-              error_class: FolioClient::Error,
-              error_message: 'arbitrary exception',
-              context: { druid:, try_count: 4 }
+              'Error updating Folio record',
+              error_message: 'No matching PURL found in instance record after update.',
+              context: { druid: }
+            )
+            .once
+        end
+      end
+
+      context 'when there are two matching 856s on a source record after update' do
+        let(:source_record_two_856s) do
+          { fields: [
+            { '001': 'a666' },
+            { '856': { ind1: '4',
+                       ind2: '1',
+                       subfields: [{ u: 'https://purl.stanford.edu/bc123dg9393' },
+                                   { x: 'SDR-PURL' },
+                                   { x: 'item' },
+                                   { x: 'barcode:36105216275185' },
+                                   { x: 'rights:stanford' }] } },
+            { '856': { ind1: '4',
+                       ind2: '1',
+                       subfields: [{ u: 'https://purl.stanford.edu/bc123dg9393' },
+                                   { x: 'SDR-PURL' },
+                                   { x: 'item' },
+                                   { x: 'barcode:36105216275185' },
+                                   { x: 'rights:stanford' }] } }
+          ] }.deep_stringify_keys
+        end
+
+        before { allow(FolioClient).to receive(:fetch_marc_hash).and_return(source_record_two_856s) }
+
+        it 'raises an error' do
+          expect { folio_writer.save }.to raise_error(StandardError, 'FOLIO update not completed.')
+          expect(Honeybadger).to have_received(:notify)
+            .with(
+              'Error updating Folio record',
+              error_message: 'More than one matching field with a PURL found on FOLIO record.',
+              context: { druid: }
             )
             .once
         end
@@ -158,13 +302,33 @@ RSpec.describe Catalog::FolioWriter do
         }
       end
 
-      context 'when not released' do
+      context 'when unreleasing' do
         let(:release_data) { false }
 
-        it 'updates the MARC record and does not include the 856' do
+        before { allow(FolioClient).to receive(:fetch_instance_info).and_return(instance_record_unreleased) }
+
+        it 'updates the MARC record and does not add an 856' do
           folio_writer.save
           expect(FolioClient).to have_received(:edit_marc_json).with(hrid:)
           expect(folio_response_json).to eq(unreleased_marc_json)
+        end
+      end
+
+      context 'when unrelease is not successful on a previously released druid' do
+        let(:release_data) { false }
+
+        before { allow(FolioClient).to receive(:fetch_instance_info).and_return(instance_record) }
+
+        it 'raises an error' do
+          expect { folio_writer.save }.to raise_error(StandardError, 'FOLIO update not completed.')
+          expect(FolioClient).to have_received(:edit_marc_json).with(hrid:)
+          expect(Honeybadger).to have_received(:notify)
+            .with(
+              'Error updating Folio record',
+              error_message: 'PURL still found in instance record after update.',
+              context: { druid: }
+            )
+            .once
         end
       end
     end
@@ -184,6 +348,11 @@ RSpec.describe Catalog::FolioWriter do
             }
           ]
         }
+      end
+
+      before do
+        allow(FolioClient).to receive(:fetch_instance_info).with(hrid: 'a8832160').and_return(instance_record_unreleased)
+        allow(FolioClient).to receive(:fetch_instance_info).with(hrid: 'a8832162').and_return(instance_record)
       end
 
       it 'updates the MARC record' do
@@ -220,9 +389,14 @@ RSpec.describe Catalog::FolioWriter do
         }
       end
 
-      it 'updates the MARC record to not include the 856' do
+      before do
+        allow(FolioClient).to receive(:fetch_instance_info).and_return(instance_record_unreleased)
+      end
+
+      it 'updates both MARC records to not include the 856' do
         folio_writer.save
-        expect(FolioClient).to have_received(:edit_marc_json).twice
+        expect(FolioClient).to have_received(:edit_marc_json).with(hrid: 'a8832160')
+        expect(FolioClient).to have_received(:edit_marc_json).with(hrid: 'a8832161')
         expect(folio_response_json).to eq(unreleased_marc_json)
       end
     end
@@ -246,7 +420,7 @@ RSpec.describe Catalog::FolioWriter do
         }
       end
 
-      it 'updates the MARC record' do
+      it 'updates the MARC records' do
         folio_writer.save
         expect(FolioClient).to have_received(:edit_marc_json).with(hrid: hrid1)
         expect(FolioClient).to have_received(:edit_marc_json).with(hrid: hrid2)

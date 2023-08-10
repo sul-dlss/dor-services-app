@@ -128,9 +128,11 @@ class ObjectsController < ApplicationController
     head :accepted, location: result
   end
 
+  # Called by common-accessioning
   def update_marc_record
-    Catalog::UpdateMarc856RecordService.update(@cocina_object, thumbnail_service: ThumbnailService.new(@cocina_object))
-    head :created
+    result = BackgroundJobResult.create
+    UpdateMarcJob.perform_later(Cocina::Models.without_metadata(@cocina_object).to_json, background_job_result: result)
+    head :accepted
   end
 
   # Called by the robots.
