@@ -226,5 +226,31 @@ RSpec.describe Catalog::FolioWriter do
         expect(folio_response_json).to eq(unreleased_marc_json)
       end
     end
+
+    context 'when releasing to SearchWorks multiple catalog records' do
+      let(:hrid1) { 'a102345' }
+      let(:hrid2) { 'a678901' }
+      let(:identification) do
+        {
+          sourceId: 'sul:8832162',
+          catalogLinks: [
+            {
+              catalog: 'folio',
+              catalogRecordId: hrid1
+            },
+            {
+              catalog: 'folio',
+              catalogRecordId: hrid2
+            }
+          ]
+        }
+      end
+
+      it 'updates the MARC record' do
+        folio_writer.save
+        expect(FolioClient).to have_received(:edit_marc_json).with(hrid: hrid1)
+        expect(FolioClient).to have_received(:edit_marc_json).with(hrid: hrid2)
+      end
+    end
   end
 end
