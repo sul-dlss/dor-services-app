@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Given a cocina object, fetch the available refreshable catkey or barcodes and returns the catalog info
+# Given a cocina object, fetch the available refreshable catalogRecordId or barcodes and returns the catalog info
 class MetadataRefreshController < ApplicationController
   before_action :load_cocina_object
 
