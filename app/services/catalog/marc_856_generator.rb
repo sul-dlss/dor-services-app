@@ -98,7 +98,8 @@ module Catalog
     # This should only be reached for dro and collection objects
     def subfield_x_object_type
       return { code: 'x', value: 'item' } if cocina_object.dro?
-      return { code: 'x', value: 'collection' } if cocina_object.collection?
+
+      { code: 'x', value: 'collection' } if cocina_object.collection?
     end
 
     def subfield_x_barcode
