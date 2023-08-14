@@ -27,7 +27,7 @@ class ObjectsController < ApplicationController
     Honeybadger.notify(e)
     json_api_error(status: :bad_gateway, title: 'Catalog connection error', message: 'Unable to read descriptive metadata from the catalog')
   rescue Catalog::MarcService::CatalogRecordNotFoundError => e
-    json_api_error(status: :bad_request, title: 'Catkey not found in Symphony', message: e.message)
+    json_api_error(status: :bad_request, title: 'Record not found in catalog', message: e.message)
   rescue Catalog::MarcService::MarcServiceError => e
     Honeybadger.notify(e)
     json_api_error(status: :internal_server_error, message: e.message)
