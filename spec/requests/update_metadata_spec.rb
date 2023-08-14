@@ -87,8 +87,7 @@ RSpec.describe 'Update object' do
 
   before do
     allow(AdministrativeTags).to receive(:create)
-    allow(AdministrativeTags).to receive(:project).and_return(['Google Books'])
-    allow(AdministrativeTags).to receive(:for).and_return([])
+    allow(AdministrativeTags).to receive_messages(project: ['Google Books'], for: [])
     allow(Cocina::ObjectValidator).to receive(:validate)
 
     allow(EventFactory).to receive(:create)

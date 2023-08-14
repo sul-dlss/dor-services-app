@@ -218,8 +218,7 @@ RSpec.describe Publish::MetadataTransferService do
     let(:workspace_root) { Dir.mktmpdir }
 
     before do
-      allow(Settings.stacks).to receive(:local_document_cache_root).and_return(purl_root)
-      allow(Settings.stacks).to receive(:local_workspace_root).and_return(workspace_root)
+      allow(Settings.stacks).to receive_messages(local_document_cache_root: purl_root, local_workspace_root: workspace_root)
       allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
     end
 

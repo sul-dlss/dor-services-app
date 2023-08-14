@@ -226,11 +226,8 @@ RSpec.describe GoobiService do
     subject(:xml_request) { goobi.send(:xml_request) }
 
     before do
-      allow(goobi).to receive(:goobi_workflow_name).and_return('goobi_workflow')
+      allow(goobi).to receive_messages(goobi_workflow_name: 'goobi_workflow', collection_id: 'druid:oo000oo0001', collection_name: 'collection name', project_name: 'Project Name')
       allow(AdministrativeTags).to receive(:for).and_return(tags)
-      allow(goobi).to receive(:collection_id).and_return('druid:oo000oo0001')
-      allow(goobi).to receive(:collection_name).and_return('collection name')
-      allow(goobi).to receive(:project_name).and_return('Project Name')
     end
 
     context 'without ocr tag present' do

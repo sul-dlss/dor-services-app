@@ -18,6 +18,7 @@ AllCops:
     - 'results/**/*'
     - 'tmp/**/*'
     - 'vendor/**/*'
+  SuggestExtensions: false
 
 Rails:
   Enabled: true
@@ -670,7 +671,7 @@ RSpec/BeEmpty: # new in 2.20
 RSpec/ContainExactly: # new in 2.19
   Enabled: true
 RSpec/IndexedLet: # new in 2.20
-  Enabled: true
+  Enabled: false
 RSpec/MatchArray: # new in 2.19
   Enabled: true
 RSpec/ReceiveMessages: # new in 2.23
