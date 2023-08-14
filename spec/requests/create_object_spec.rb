@@ -171,7 +171,7 @@ RSpec.describe 'Create object' do
           post '/v1/objects',
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(response.body).to eq '{"errors":[{"status":"400","title":"Catkey not found in Symphony",' \
+          expect(response.body).to eq '{"errors":[{"status":"400","title":"Record not found in catalog",' \
                                       '"detail":"unable to find catkey"}]}'
           expect(response).to have_http_status :bad_request
         end
