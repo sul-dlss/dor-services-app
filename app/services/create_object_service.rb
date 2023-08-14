@@ -116,8 +116,8 @@ class CreateObjectService
       # This is specifically for H2, but could be utilized by any client that provides preferred citation.
       doi = assign_doi ? "https://doi.org/#{Doi.for(druid:)}." : ''
       Array(props[:description][:note]).each do |note|
-        note[:value] = note[:value].gsub(/:link:/, purl) if note[:type] == 'preferred citation' && note[:value]
-        note[:value] = note[:value].gsub(/:doi:/, doi) if note[:type] == 'preferred citation' && note[:value]
+        note[:value] = note[:value].gsub(':link:', purl) if note[:type] == 'preferred citation' && note[:value]
+        note[:value] = note[:value].gsub(':doi:', doi) if note[:type] == 'preferred citation' && note[:value]
       end
     end
 
