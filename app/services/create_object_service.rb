@@ -3,7 +3,7 @@
 # This handles all of the business logic around registering an object.
 # This includes:
 #   Minting a druid identifier
-#   Importing metadata from Symphony if there is a catkey
+#   Importing metadata from ILS (Folio) if there is a catalogRecordId
 #   Adding project tags to the project tag store
 #   Adding a default description if none is provided
 #   Importing access from the admin_policy if none is provided
@@ -71,7 +71,7 @@ class CreateObjectService
     cocina_object.new(access: AccessMergeService.merge(cocina_object, apo_object))
   end
 
-  # Synch from catalog if a catalog identifier (e.g. catkey) is present
+  # Sync from ILS (Folio) if a catalog record identifier is present
   # @raise Catalog::MarcService::MarcServiceError
   def sync_from_catalog(cocina_request_object, druid)
     return cocina_request_object if cocina_request_object.admin_policy?
