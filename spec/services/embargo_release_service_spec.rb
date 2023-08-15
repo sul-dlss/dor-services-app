@@ -22,8 +22,7 @@ RSpec.describe EmbargoReleaseService do
 
     before do
       allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
-      allow(VersionService).to receive(:can_open?).and_return(can_open?)
-      allow(VersionService).to receive(:open).and_return(open_cocina_object)
+      allow(VersionService).to receive_messages(can_open?: can_open?, open: open_cocina_object)
       allow(VersionService).to receive(:close)
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
       allow(service).to receive(:release_cocina_object).and_return(released_cocina_object)

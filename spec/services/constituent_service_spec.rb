@@ -14,10 +14,8 @@ RSpec.describe ConstituentService do
     let(:virtual_object_druid) { 'druid:bc123df4567' }
 
     before do
-      allow(ItemQueryService).to receive(:find_combinable_item).and_return(virtual_object)
-      allow(ItemQueryService).to receive(:validate_combinable_items).and_return(item_errors)
-      allow(VersionService).to receive(:open?).and_return(open_for_versioning)
-      allow(VersionService).to receive(:open).and_return(virtual_object)
+      allow(ItemQueryService).to receive_messages(find_combinable_item: virtual_object, validate_combinable_items: item_errors)
+      allow(VersionService).to receive_messages(open?: open_for_versioning, open: virtual_object)
       allow(VersionService).to receive(:close)
       allow(ResetContentMetadataService).to receive(:reset).and_return(virtual_object)
       allow(UpdateObjectService).to receive(:update)
