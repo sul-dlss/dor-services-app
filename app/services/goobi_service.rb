@@ -71,7 +71,7 @@ class GoobiService
             <title>#{title_or_label.encode(xml: :text)}</title>
             <contentType>#{content_type}</contentType>
             <project>#{project_name.encode(xml: :text)}</project>
-            <catkey>#{catkey}</catkey>
+            <catkey>#{catalog_id}</catkey>
             <barcode>#{barcode}</barcode>
             <collectionId>#{collection_id}</collectionId>
             <collectionName>#{collection_name.encode(xml: :text)}</collectionName>
@@ -102,8 +102,12 @@ class GoobiService
     Settings.goobi.default_goobi_workflow_name
   end
 
-  def catkey
-    cocina_obj.identification&.catalogLinks&.filter { |link| link.catalog == 'symphony' }&.first&.catalogRecordId
+  def catalog_id
+    cocina_obj.identification&.catalogLinks&.filter { |link| link.catalog == catalog_id_type }&.first&.catalogRecordId
+  end
+
+  def catalog_id_type
+    Settings.enabled_features.read_folio ? 'folio' : 'symphony'
   end
 
   def barcode
