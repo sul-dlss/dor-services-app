@@ -63,6 +63,11 @@ class ApplicationController < ActionController::API
     @cocina_object = CocinaObjectStore.find(params[:object_id] || params[:id])
   end
 
+  # @raise [CocinaObjectStore::CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
+  def check_cocina_object_exists
+    CocinaObjectStore.exists!(params[:object_id] || params[:id])
+  end
+
   # Adds headers from the cocina object.
   def add_headers(cocina_object)
     headers['X-Created-At'] = cocina_object.created.httpdate

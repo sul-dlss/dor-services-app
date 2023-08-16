@@ -4,11 +4,10 @@ require 'rails_helper'
 
 RSpec.describe 'Unpublishes an Object' do
   let(:druid) { 'druid:mx123qw2323' }
-  let(:object) { build(:ar_dro, external_identifier: druid) }
   let(:job) { class_double(UnpublishJob, perform_later: nil) }
 
   before do
-    allow(CocinaObjectStore).to receive(:find).and_return(object)
+    allow(CocinaObjectStore).to receive(:exists!)
     allow(UnpublishJob).to receive(:set).and_return(job)
   end
 

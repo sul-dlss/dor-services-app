@@ -82,7 +82,7 @@ RSpec.describe CocinaObjectStore do
       let(:ar_cocina_object) { create(:ar_admin_policy) }
 
       it 'returns true' do
-        expect(store.ar_exists?(ar_cocina_object.external_identifier)).to be(true)
+        expect(store.exists?(ar_cocina_object.external_identifier)).to be(true)
       end
     end
 
@@ -90,7 +90,39 @@ RSpec.describe CocinaObjectStore do
       let(:ar_cocina_object) { create(:ar_collection) }
 
       it 'returns true' do
-        expect(store.ar_exists?(ar_cocina_object.external_identifier)).to be(true)
+        expect(store.exists?(ar_cocina_object.external_identifier)).to be(true)
+      end
+    end
+  end
+
+  describe '#exists!' do
+    context 'when object is not found in datastore' do
+      it 'raises' do
+        expect { store.exists!('druid:bc123df4567') }.to raise_error(CocinaObjectStore::CocinaObjectNotFoundError)
+      end
+    end
+
+    context 'when object is a DRO' do
+      let(:ar_cocina_object) { create(:ar_dro) }
+
+      it 'returns true' do
+        expect(store.exists!(ar_cocina_object.external_identifier)).to be(true)
+      end
+    end
+
+    context 'when object is an AdminPolicy' do
+      let(:ar_cocina_object) { create(:ar_admin_policy) }
+
+      it 'returns true' do
+        expect(store.exists!(ar_cocina_object.external_identifier)).to be(true)
+      end
+    end
+
+    context 'when object is a Collection' do
+      let(:ar_cocina_object) { create(:ar_collection) }
+
+      it 'returns true' do
+        expect(store.exists!(ar_cocina_object.external_identifier)).to be(true)
       end
     end
   end

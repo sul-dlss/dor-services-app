@@ -36,11 +36,19 @@ class CocinaObjectStore
     new.find_by_source_id(source_id)
   end
 
-  # Determine if an object exists in the datastore.
+  # Determine if an object exists in the datastore, returning a boolean.
   # @param [String] druid
   # @return [boolean] true if object exists
   def self.exists?(druid)
     new.exists?(druid)
+  end
+
+  # Checks if an object exists in the datastore, raising if it does not exist.
+  # @param [String] druid
+  # @return [boolean] true if object exists
+  # @raise [CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
+  def self.exists!(druid)
+    new.exists!(druid)
   end
 
   # Updates a Cocina object in the datastore.
@@ -92,6 +100,12 @@ class CocinaObjectStore
 
   def exists?(druid)
     ar_exists?(druid)
+  end
+
+  def exists!(druid)
+    return true if exists?(druid)
+
+    raise CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid)
   end
 
   # This is only public for migration use.
