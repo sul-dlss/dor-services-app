@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 class VersionsController < ApplicationController
-  before_action :load_cocina_object
+  before_action :load_cocina_object, except: %i[index]
+  before_action :check_cocina_object_exists, only: %i[index]
 
   def index
-    object_versions = ObjectVersion.where(druid: @cocina_object.externalIdentifier)
+    object_versions = ObjectVersion.where(druid: params[:object_id])
 
     return render json: {} if object_versions.empty?
 

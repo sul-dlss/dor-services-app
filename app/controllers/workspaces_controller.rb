@@ -2,7 +2,8 @@
 
 # Handles API routes for managing the DOR workspace
 class WorkspacesController < ApplicationController
-  before_action :load_cocina_object, only: [:create, :reset]
+  before_action :load_cocina_object, only: [:reset]
+  before_action :check_cocina_object_exists, only: %i[create]
 
   rescue_from(DruidTools::SameContentExistsError, DruidTools::DifferentContentExistsError) do |e|
     render status: :conflict, plain: e.message
@@ -10,7 +11,7 @@ class WorkspacesController < ApplicationController
 
   # POST /v1/objects/:druid/workspace
   def create
-    WorkspaceService.create(@cocina_object, params[:source])
+    WorkspaceService.create(params[:object_id], params[:source])
     head :created
   end
 

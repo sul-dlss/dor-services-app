@@ -2,19 +2,19 @@
 
 # Creates workspaces.  This replaces https://github.com/sul-dlss/dor-services/blob/main/lib/dor/models/concerns/assembleable.rb
 class WorkspaceService
-  # @param [Cocina::Model::DRO] work the work to create the workspace for
+  # @param [String] druid the identifier of the item to create the workspace for
   # @param [String, nil] source the path to create
-  def self.create(work, source)
-    druid = DruidTools::Druid.new(work.externalIdentifier, Settings.stacks.local_workspace_root)
-    return mkdir_with_final_link(druid:, source:) if source
+  def self.create(druid, source)
+    druid_obj = DruidTools::Druid.new(druid, Settings.stacks.local_workspace_root)
+    return mkdir_with_final_link(druid_obj:, source:) if source
 
     Honeybadger.notify('Source was not provided to WorkspaceService.create. ' \
                        "I'm pretty sure that source is always supplied and ought to be required")
-    druid.mkdir
+    druid_obj.mkdir
   end
 
-  def self.mkdir_with_final_link(druid:, source:)
-    new_path = druid.path
+  def self.mkdir_with_final_link(druid_obj:, source:)
+    new_path = druid_obj.path
     raise DruidTools::DifferentContentExistsError, "Unable to create link, directory already exists: #{new_path}" if File.directory?(new_path) && !File.symlink?(new_path)
 
     real_path = File.expand_path('..', new_path)

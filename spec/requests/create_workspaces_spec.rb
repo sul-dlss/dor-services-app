@@ -3,10 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe 'Creating a workspace' do
-  let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: 'druid:mx123qw2323') }
+  let(:druid) { 'druid:mx123qw2323' }
 
   before do
-    allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+    allow(CocinaObjectStore).to receive(:exists!).with(druid)
     clean_workspace
   end
 
@@ -30,8 +30,7 @@ RSpec.describe 'Creating a workspace' do
 
   context 'when the link/directory already exists' do
     before do
-      druid = DruidTools::Druid.new(cocina_object.externalIdentifier, TEST_WORKSPACE)
-      druid.mkdir
+      DruidTools::Druid.new(druid, TEST_WORKSPACE).mkdir
     end
 
     it 'returns a 409 Conflict http status code' do
@@ -44,8 +43,7 @@ RSpec.describe 'Creating a workspace' do
 
   context 'when the workspace already exists with different content' do
     before do
-      druid = DruidTools::Druid.new(cocina_object.externalIdentifier, TEST_WORKSPACE)
-      druid.mkdir
+      DruidTools::Druid.new(druid, TEST_WORKSPACE).mkdir
     end
 
     it 'returns a 409 Conflict http status code' do

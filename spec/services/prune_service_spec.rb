@@ -83,7 +83,7 @@ RSpec.describe PruneService do
       # Nil the create records for this test
       source_dir = File.join workspace, 'src_dir'
       FileUtils.mkdir_p(source_dir)
-      WorkspaceService.send(:mkdir_with_final_link, druid: dr2, source: source_dir)
+      WorkspaceService.send(:mkdir_with_final_link, druid_obj: dr2, source: source_dir)
 
       described_class.new(druid: dr2).prune!
 

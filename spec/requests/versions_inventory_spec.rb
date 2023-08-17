@@ -4,10 +4,9 @@ require 'rails_helper'
 
 RSpec.describe 'Release tags' do
   let(:druid) { 'druid:mx123qw2323' }
-  let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, version: 3) }
 
   before do
-    allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+    allow(CocinaObjectStore).to receive(:exists!).with(druid)
 
     ObjectVersion.create(druid:, version: 1, tag: '1.0.0', description: 'Initial Version')
     ObjectVersion.create(druid:, version: 2, tag: '2.0.0', description: 'pre-assembly re-accession')
