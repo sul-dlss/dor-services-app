@@ -29,10 +29,10 @@ class ConstituentService
     return errors if errors.any?
 
     # Make sure the virtual object is open before making modifications
-    updated_virtual_object = if VersionService.open?(virtual_object)
+    updated_virtual_object = if VersionService.open?(druid: virtual_object.externalIdentifier, version: virtual_object.version)
                                virtual_object
                              else
-                               VersionService.open(virtual_object,
+                               VersionService.open(cocina_object: virtual_object,
                                                    description: VERSION_DESCRIPTION,
                                                    significance: VERSION_SIGNIFICANCE,
                                                    event_factory:)
@@ -40,7 +40,7 @@ class ConstituentService
 
     updated_virtual_object = ResetContentMetadataService.reset(cocina_item: updated_virtual_object, constituent_druids:)
 
-    VersionService.close(updated_virtual_object,
+    VersionService.close(druid: updated_virtual_object.externalIdentifier, version: updated_virtual_object.version,
                          event_factory:)
 
     UpdateObjectService.update(updated_virtual_object)

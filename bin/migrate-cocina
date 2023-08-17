@@ -62,12 +62,12 @@ end
 def perform_version(cocina_object:, version_description:)
   version_open_params = { significance: 'admin', description: version_description }
   # if this is an existing versionable object, open and close it, which will start accessionWF
-  if VersionService.can_open?(cocina_object)
-    opened_cocina_object = VersionService.open(cocina_object, **version_open_params)
-    VersionService.close(opened_cocina_object)
+  if VersionService.can_open?(druid: cocina_object.externalIdentifier, version: cocina_object.version)
+    opened_cocina_object = VersionService.open(cocina_object:, **version_open_params)
+    VersionService.close(druid: opened_cocina_object.externalIdentifier, version: opened_cocina_object.version)
   # if this is an existing accessioned object that is currently open, just close it
   else
-    VersionService.close(cocina_object, **version_open_params)
+    VersionService.close(druid: cocina_object.externalIdentifier, version: cocina_object.version, **version_open_params)
   end
 end
 
@@ -80,7 +80,7 @@ def perform_migrate(migrator_class:, obj:, mode:)
   migrator.migrate
   updated_cocina_object = obj.to_cocina_with_metadata # This validates the cocina object
   Cocina::ObjectValidator.validate(updated_cocina_object) # This validation is performed by UpdateObjectService.
-  raise 'Cannot version' if migrator.version? && !(VersionService.can_open?(updated_cocina_object) || VersionService.open?(updated_cocina_object))
+  raise 'Cannot version' if migrator.version? && !(VersionService.can_open?(druid: updated_cocina_object.externalIdentifier, version: updated_cocina_object.version) || VersionService.open?(druid: updated_cocina_object.externalIdentifier, version: updated_cocina_object.version))
 
   if mode == :migrate
     updated_cocina_object = UpdateObjectService.update(updated_cocina_object)

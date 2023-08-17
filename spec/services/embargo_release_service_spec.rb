@@ -12,7 +12,7 @@ RSpec.describe EmbargoReleaseService do
 
     let(:open_cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, version: 2) }
 
-    let(:released_cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, version: 2) }
+    let(:released_cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, version: 3) }
 
     let(:workflow_client) { instance_double(Dor::Workflow::Client, lifecycle: accessioned?) }
 
@@ -50,7 +50,7 @@ RSpec.describe EmbargoReleaseService do
       it 'skips' do
         service.release
         expect(Rails.logger).to have_received(:warn).with("Skipping #{druid} - object is already open")
-        expect(VersionService).to have_received(:can_open?).with(cocina_object)
+        expect(VersionService).to have_received(:can_open?).with(druid:, version: 1)
         expect(VersionService).not_to have_received(:open)
       end
     end
@@ -58,9 +58,9 @@ RSpec.describe EmbargoReleaseService do
     context 'when not open' do
       it 'lifts embargo' do
         service.release
-        expect(VersionService).to have_received(:open).with(cocina_object, description: 'embargo released', significance: 'admin')
+        expect(VersionService).to have_received(:open).with(cocina_object:, description: 'embargo released', significance: 'admin')
         expect(service).to have_received(:release_cocina_object).with(open_cocina_object)
-        expect(VersionService).to have_received(:close).with(released_cocina_object)
+        expect(VersionService).to have_received(:close).with(druid:, version: 3)
         expect(EventFactory).to have_received(:create).with(druid:, event_type: 'embargo_released', data: {})
         expect(Notifications::EmbargoLifted).to have_received(:publish).with(model: released_cocina_object)
       end

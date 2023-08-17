@@ -80,6 +80,14 @@ class CocinaObjectStore
     end
   end
 
+  # Retrieves the version of a Cocina object from the datastore.
+  # @param [String] druid
+  # @return [Integer] version
+  # @raise [CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
+  def self.version(druid)
+    new.version(druid)
+  end
+
   # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
   def find(druid)
     ar_to_cocina_find(druid)
@@ -111,6 +119,15 @@ class CocinaObjectStore
   # This is only public for migration use.
   def ar_exists?(druid)
     Dro.exists?(external_identifier: druid) || Collection.exists?(external_identifier: druid) || AdminPolicy.exists?(external_identifier: druid)
+  end
+
+  def version(druid)
+    ar_cocina_object = Dro.select(:version).find_by(external_identifier: druid) ||
+                       AdminPolicy.select(:version).find_by(external_identifier: druid) ||
+                       Collection.select(:version).find_by(external_identifier: druid)
+
+    ar_cocina_object&.version ||
+      raise(CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid))
   end
 
   def destroy(druid)

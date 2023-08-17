@@ -2,7 +2,6 @@
 
 # Handles API routes for managing the DOR workspace
 class WorkspacesController < ApplicationController
-  before_action :load_cocina_object, only: [:reset]
   before_action :check_cocina_object_exists, only: %i[create]
 
   rescue_from(DruidTools::SameContentExistsError, DruidTools::DifferentContentExistsError) do |e|
@@ -25,7 +24,8 @@ class WorkspacesController < ApplicationController
   # Once an object has been transferred to preservation, reset the workspace by
   # renaming the druid-tree to a versioned directory and removing the export directory
   def reset
-    ResetWorkspaceJob.perform_later(druid: params[:object_id], version: @cocina_object.version)
+    version = CocinaObjectStore.version(params[:object_id])
+    ResetWorkspaceJob.perform_later(druid: params[:object_id], version:)
     head :no_content
   end
 

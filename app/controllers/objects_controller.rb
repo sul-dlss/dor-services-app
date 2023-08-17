@@ -84,7 +84,7 @@ class ObjectsController < ApplicationController
     EventFactory.create(druid: params[:id], event_type: 'accession_request', data: { workflow: })
 
     # if this object is currently already in accessioning, we cannot start it again
-    if VersionService.in_accessioning?(@cocina_object)
+    if VersionService.in_accessioning?(druid: @cocina_object.externalIdentifier, version: @cocina_object.version)
       EventFactory.create(druid: params[:id], event_type: 'accession_request_aborted', data: { workflow: })
       return json_api_error(status: :conflict,
                             message: 'This object is already in accessioning, it can not be accessioned again until the workflow is complete')
@@ -92,12 +92,12 @@ class ObjectsController < ApplicationController
 
     updated_cocina_object = @cocina_object
     # if this is an existing versionable object, open and close it without starting accessionWF
-    if VersionService.can_open?(@cocina_object)
-      updated_cocina_object = VersionService.open(@cocina_object, **version_open_params)
-      VersionService.close(updated_cocina_object, **version_close_params.merge(start_accession: false))
+    if VersionService.can_open?(druid: @cocina_object.externalIdentifier, version: @cocina_object.version)
+      updated_cocina_object = VersionService.open(cocina_object: @cocina_object, **version_open_params)
+      VersionService.close(druid: updated_cocina_object.externalIdentifier, version: updated_cocina_object.version, **version_close_params.merge(start_accession: false))
     # if this is an existing accessioned object that is currently open, just close it without starting accessionWF
-    elsif VersionService.open?(@cocina_object)
-      VersionService.close(@cocina_object, **version_close_params.merge(start_accession: false))
+    elsif VersionService.open?(druid: @cocina_object.externalIdentifier, version: @cocina_object.version)
+      VersionService.close(druid: @cocina_object.externalIdentifier, version: @cocina_object.version, **version_close_params.merge(start_accession: false))
     end
 
     # initialize workflow
