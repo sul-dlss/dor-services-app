@@ -6,9 +6,8 @@ class UpdateMarcJob < ApplicationJob
   queue_as :update_marc
 
   # @param [BackgroundJobResult] background_job_result identifier of a background job result to store status info
-  def perform(cocina_item_json, background_job_result:)
-    cocina_item = Cocina::Models.build(JSON.parse(cocina_item_json))
-    druid = cocina_item.externalIdentifier
+  def perform(druid:, background_job_result:)
+    cocina_item = CocinaObjectStore.find(druid)
     workflow = 'releaseWF'
     workflow_process = 'update-marc'
     background_job_result.processing!

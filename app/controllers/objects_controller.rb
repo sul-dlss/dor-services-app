@@ -131,7 +131,7 @@ class ObjectsController < ApplicationController
   # Called by common-accessioning
   def update_marc_record
     result = BackgroundJobResult.create
-    UpdateMarcJob.perform_later(Cocina::Models.without_metadata(@cocina_object).to_json, background_job_result: result)
+    UpdateMarcJob.perform_later(druid: params[:id], background_job_result: result)
     head :accepted
   end
 

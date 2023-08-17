@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe UpdateMarcJob do
   subject(:perform) do
-    described_class.perform_now(cocina_object.to_json, background_job_result: result)
+    described_class.perform_now(druid:, background_job_result: result)
   end
 
   let(:result) { create(:background_job_result) }
@@ -12,6 +12,7 @@ RSpec.describe UpdateMarcJob do
   let(:druid) { 'druid:mx123qw2323' }
 
   before do
+    allow(CocinaObjectStore).to receive(:find).with(druid).and_return(cocina_object)
     allow(result).to receive(:processing!)
   end
 
