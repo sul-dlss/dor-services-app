@@ -23,6 +23,11 @@ RSpec.describe GoobiService do
             catalog: 'symphony',
             catalogRecordId: '11403803',
             refresh: true
+          },
+          {
+            catalog: 'folio',
+            catalogRecordId: 'a11403803',
+            refresh: true
           }
         ],
         sourceId: 'some:source_id'
@@ -230,96 +235,127 @@ RSpec.describe GoobiService do
       allow(AdministrativeTags).to receive(:for).and_return(tags)
     end
 
-    context 'without ocr tag present' do
-      let(:tags) { ['DPG : Workflow : book_workflow & stuff', 'Process : Content Type : Book', 'LAB : MAPS'] }
+    context 'when folio enabled' do
+      before { allow(Settings.enabled_features).to receive(:read_folio).and_return(true) }
 
-      it 'creates the correct xml request' do
-        expect(xml_request).to be_equivalent_to <<-XML
-          <stanfordCreationRequest>
-            <objectId>#{druid}</objectId>
-            <objectType>item</objectType>
-            <sourceID>some:source_id</sourceID>
-            <title>Object Title &amp; A Special character</title>
-            <contentType>Book (ltr)</contentType>
-            <project>Project Name</project>
-            <catkey>11403803</catkey>
-            <barcode>#{barcode}</barcode>
-            <collectionId>druid:oo000oo0001</collectionId>
-            <collectionName>collection name</collectionName>
-            <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>
-            <goobiWorkflow>goobi_workflow</goobiWorkflow>
-            <ocr>false</ocr>
-            <tags>
-                <tag name="DPG" value="Workflow : book_workflow &amp; stuff"/>
-                <tag name="Process" value="Content Type : Book"/>
-                <tag name="LAB" value="MAPS"/>
-            </tags>
-          </stanfordCreationRequest>
-        XML
-      end
-    end
+      context 'without ocr tag present' do
+        let(:tags) { ['DPG : Workflow : book_workflow & stuff', 'Process : Content Type : Book', 'LAB : MAPS'] }
 
-    context 'with ocr tag present' do
-      let(:tags) { ['DPG : Workflow : book_workflow', 'DPG : OCR : TRUE'] }
-
-      it 'creates the correct xml request' do
-        expect(xml_request).to be_equivalent_to <<-XML
-          <stanfordCreationRequest>
-            <objectId>#{druid}</objectId>
-            <objectType>item</objectType>
-            <sourceID>some:source_id</sourceID>
-            <title>Object Title &amp; A Special character</title>
-            <contentType>Book (ltr)</contentType>
-            <project>Project Name</project>
-            <catkey>11403803</catkey>
-            <barcode>#{barcode}</barcode>
-            <collectionId>druid:oo000oo0001</collectionId>
-            <collectionName>collection name</collectionName>
-            <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>
-            <goobiWorkflow>goobi_workflow</goobiWorkflow>
-            <ocr>true</ocr>
-            <tags>
-                <tag name="DPG" value="Workflow : book_workflow"/>
-                <tag name="DPG" value="OCR : TRUE"/>
-            </tags>
-          </stanfordCreationRequest>
-        XML
-      end
-    end
-
-    context 'with no tags present' do
-      let(:tags) { [] }
-
-      let(:description) do
-        {
-          title: [
-            {
-              value: 'Constituent label & A Special character'
-            }
-          ],
-          purl: Purl.for(druid:)
-        }
+        it 'creates the correct xml request with folio instance hrid' do
+          expect(xml_request).to be_equivalent_to <<-XML
+            <stanfordCreationRequest>
+              <objectId>#{druid}</objectId>
+              <objectType>item</objectType>
+              <sourceID>some:source_id</sourceID>
+              <title>Object Title &amp; A Special character</title>
+              <contentType>Book (ltr)</contentType>
+              <project>Project Name</project>
+              <catkey>a11403803</catkey>
+              <barcode>#{barcode}</barcode>
+              <collectionId>druid:oo000oo0001</collectionId>
+              <collectionName>collection name</collectionName>
+              <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>
+              <goobiWorkflow>goobi_workflow</goobiWorkflow>
+              <ocr>false</ocr>
+              <tags>
+                  <tag name="DPG" value="Workflow : book_workflow &amp; stuff"/>
+                  <tag name="Process" value="Content Type : Book"/>
+                  <tag name="LAB" value="MAPS"/>
+              </tags>
+            </stanfordCreationRequest>
+          XML
+        end
       end
 
-      it 'creates the correct xml request when MODs title exists with a special character' do
-        expect(xml_request).to be_equivalent_to <<-XML
-          <stanfordCreationRequest>
-            <objectId>#{druid}</objectId>
-            <objectType>item</objectType>
-            <sourceID>some:source_id</sourceID>
-            <title>Constituent label &amp; A Special character</title>
-            <contentType>Book (ltr)</contentType>
-            <project>Project Name</project>
-            <catkey>11403803</catkey>
-            <barcode>#{barcode}</barcode>
-            <collectionId>druid:oo000oo0001</collectionId>
-            <collectionName>collection name</collectionName>
-            <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>
-            <goobiWorkflow>goobi_workflow</goobiWorkflow>
-            <ocr>false</ocr>
-            <tags></tags>
-          </stanfordCreationRequest>
-        XML
+      context 'with ocr tag present' do
+        let(:tags) { ['DPG : Workflow : book_workflow', 'DPG : OCR : TRUE'] }
+
+        it 'creates the correct xml request' do
+          expect(xml_request).to be_equivalent_to <<-XML
+            <stanfordCreationRequest>
+              <objectId>#{druid}</objectId>
+              <objectType>item</objectType>
+              <sourceID>some:source_id</sourceID>
+              <title>Object Title &amp; A Special character</title>
+              <contentType>Book (ltr)</contentType>
+              <project>Project Name</project>
+              <catkey>a11403803</catkey>
+              <barcode>#{barcode}</barcode>
+              <collectionId>druid:oo000oo0001</collectionId>
+              <collectionName>collection name</collectionName>
+              <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>
+              <goobiWorkflow>goobi_workflow</goobiWorkflow>
+              <ocr>true</ocr>
+              <tags>
+                  <tag name="DPG" value="Workflow : book_workflow"/>
+                  <tag name="DPG" value="OCR : TRUE"/>
+              </tags>
+            </stanfordCreationRequest>
+          XML
+        end
+      end
+
+      context 'with no tags present' do
+        let(:tags) { [] }
+
+        let(:description) do
+          {
+            title: [
+              {
+                value: 'Constituent label & A Special character'
+              }
+            ],
+            purl: Purl.for(druid:)
+          }
+        end
+
+        it 'creates the correct xml request when MODs title exists with a special character' do
+          expect(xml_request).to be_equivalent_to <<-XML
+            <stanfordCreationRequest>
+              <objectId>#{druid}</objectId>
+              <objectType>item</objectType>
+              <sourceID>some:source_id</sourceID>
+              <title>Constituent label &amp; A Special character</title>
+              <contentType>Book (ltr)</contentType>
+              <project>Project Name</project>
+              <catkey>a11403803</catkey>
+              <barcode>#{barcode}</barcode>
+              <collectionId>druid:oo000oo0001</collectionId>
+              <collectionName>collection name</collectionName>
+              <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>
+              <goobiWorkflow>goobi_workflow</goobiWorkflow>
+              <ocr>false</ocr>
+              <tags></tags>
+            </stanfordCreationRequest>
+          XML
+        end
+      end
+
+      context 'when symphony enabled' do
+        before { allow(Settings.enabled_features).to receive(:read_folio).and_return(false) }
+
+        let(:tags) { [] }
+
+        it 'creates the correct xml request with symphony catkey' do
+          expect(xml_request).to be_equivalent_to <<-XML
+            <stanfordCreationRequest>
+              <objectId>#{druid}</objectId>
+              <objectType>item</objectType>
+              <sourceID>some:source_id</sourceID>
+              <title>Object Title &amp; A Special character</title>
+              <contentType>Book (ltr)</contentType>
+              <project>Project Name</project>
+              <catkey>11403803</catkey>
+              <barcode>#{barcode}</barcode>
+              <collectionId>druid:oo000oo0001</collectionId>
+              <collectionName>collection name</collectionName>
+              <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>
+              <goobiWorkflow>goobi_workflow</goobiWorkflow>
+              <ocr>false</ocr>
+              <tags></tags>
+            </stanfordCreationRequest>
+          XML
+        end
       end
     end
   end
