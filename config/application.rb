@@ -52,7 +52,8 @@ module DorServices
       error_class: JSONAPIError,
       accept_request_filter: accept_proc,
       parse_response_by_content_type: false,
-      query_hash_key: 'action_dispatch.request.query_parameters'
+      query_hash_key: 'action_dispatch.request.query_parameters',
+      parameter_overwite_by_rails_rule: false
     )
     # Ensure we are passing back valid responses when running tests
     if Rails.env.test?
@@ -61,7 +62,8 @@ module DorServices
         schema_path: 'openapi.yml',
         parse_response_by_content_type: true,
         query_hash_key: 'rack.request.query_hash',
-        raise: true
+        raise: true,
+        parameter_overwite_by_rails_rule: false
       )
     end
 
