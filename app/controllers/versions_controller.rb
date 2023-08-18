@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 class VersionsController < ApplicationController
-  before_action :load_cocina_object, except: %i[index]
+  before_action :load_cocina_object, only: %i[create]
   before_action :check_cocina_object_exists, only: %i[index]
+  before_action :load_version, only: %i[current close_current openable]
 
   def index
     object_versions = ObjectVersion.where(druid: params[:object_id])
@@ -22,7 +23,7 @@ class VersionsController < ApplicationController
   end
 
   def create
-    updated_cocina_object = VersionService.open(@cocina_object, **create_params)
+    updated_cocina_object = VersionService.open(cocina_object: @cocina_object, **create_params)
 
     add_headers(updated_cocina_object)
     render json: Cocina::Models.without_metadata(updated_cocina_object)
@@ -33,18 +34,18 @@ class VersionsController < ApplicationController
   end
 
   def current
-    render plain: @cocina_object.version
+    render plain: @version
   end
 
   def close_current
-    VersionService.close(@cocina_object, **close_params)
-    render plain: "version #{@cocina_object.version} closed"
+    VersionService.close(druid: params[:object_id], version: @version, **close_params)
+    render plain: "version #{@version} closed"
   rescue VersionService::VersioningError => e
     render build_error('Unable to close version', e)
   end
 
   def openable
-    render plain: VersionService.can_open?(@cocina_object).to_s
+    render plain: VersionService.can_open?(druid: params[:object_id], version: @version).to_s
   rescue Preservation::Client::Error => e
     render build_error('Unable to check if openable due to preservation client error', e, status: :internal_server_error)
   end
@@ -93,5 +94,9 @@ class VersionsController < ApplicationController
   def boolean_param(params_hash, key)
     params_hash[key] = ActiveModel::Type::Boolean.new.cast(params_hash[key]) if params_hash.key?(key)
     params_hash
+  end
+
+  def load_version
+    @version = CocinaObjectStore.version(params[:object_id])
   end
 end

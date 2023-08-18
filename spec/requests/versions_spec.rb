@@ -3,11 +3,13 @@
 require 'rails_helper'
 
 RSpec.describe 'Operations regarding object versions' do
-  let(:cocina_object) { build(:dro) }
+  let(:cocina_object) { build(:dro, id: druid) }
 
   let(:date) { Time.zone.now }
 
   let(:lock) { 'abc123' }
+
+  let(:druid) { 'druid:mx123qw2323' }
 
   let(:cocina_object_with_metadata) do
     Cocina::Models.with_metadata(cocina_object, lock, created: date, modified: date)
@@ -16,7 +18,7 @@ RSpec.describe 'Operations regarding object versions' do
   let(:version) { 1 }
 
   before do
-    allow(CocinaObjectStore).to receive(:find).and_return(cocina_object_with_metadata)
+    allow(CocinaObjectStore).to receive_messages(find: cocina_object_with_metadata, version:)
   end
 
   describe '/versions/current' do
@@ -50,7 +52,7 @@ RSpec.describe 'Operations regarding object versions' do
         expect(response).to have_http_status :ok
         expect(response.body).to match(/version 1 closed/)
         expect(VersionService).to have_received(:close)
-          .with(cocina_object_with_metadata,
+          .with(druid:, version:,
                 **close_params)
       end
     end
@@ -101,7 +103,7 @@ RSpec.describe 'Operations regarding object versions' do
         expect(response.headers['Last-Modified']).to end_with 'GMT'
         expect(response.headers['X-Created-At']).to end_with 'GMT'
         expect(response.headers['ETag']).to match(%r{W/".+"})
-        expect(VersionService).to have_received(:open).with(cocina_object_with_metadata, **open_params)
+        expect(VersionService).to have_received(:open).with(cocina_object: cocina_object_with_metadata, **open_params)
       end
     end
 

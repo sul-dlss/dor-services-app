@@ -39,6 +39,38 @@ RSpec.describe CocinaObjectStore do
     end
   end
 
+  describe '#version' do
+    context 'when object is not found in datastore' do
+      it 'raises' do
+        expect { store.version('druid:bc123df4567') }.to raise_error(CocinaObjectStore::CocinaObjectNotFoundError)
+      end
+    end
+
+    context 'when object is a DRO' do
+      let(:ar_cocina_object) { create(:ar_dro, version: 5) }
+
+      it 'returns version' do
+        expect(store.version(ar_cocina_object.external_identifier)).to eq(5)
+      end
+    end
+
+    context 'when object is an AdminPolicy' do
+      let(:ar_cocina_object) { create(:ar_admin_policy, version: 2) }
+
+      it 'returns version' do
+        expect(store.version(ar_cocina_object.external_identifier)).to eq(2)
+      end
+    end
+
+    context 'when object is a Collection' do
+      let(:ar_cocina_object) { create(:ar_collection, version: 4) }
+
+      it 'returns version' do
+        expect(store.version(ar_cocina_object.external_identifier)).to eq(4)
+      end
+    end
+  end
+
   describe '#find_by_source_id' do
     context 'when object is not found in datastore' do
       it 'raises' do

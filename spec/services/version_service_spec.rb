@@ -19,7 +19,7 @@ RSpec.describe VersionService do
     end
 
     it 'creates a new service instance and sends #open_for_versioning?' do
-      described_class.open?(cocina_object)
+      described_class.open?(druid:, version:)
       expect(instance).to have_received(:open_for_versioning?).once
     end
   end
@@ -32,13 +32,13 @@ RSpec.describe VersionService do
     end
 
     it 'creates a new service instance and sends #accessioning?' do
-      described_class.in_accessioning?(cocina_object)
+      described_class.in_accessioning?(druid:, version:)
       expect(instance).to have_received(:accessioning?).once
     end
   end
 
   describe '.open' do
-    subject(:open) { described_class.open(cocina_object, significance: 'major', description: 'same as it ever was', opening_user_name: 'sunetid', event_factory:) }
+    subject(:open) { described_class.open(cocina_object:, significance: 'major', description: 'same as it ever was', opening_user_name: 'sunetid', event_factory:) }
 
     let(:workflow_client) do
       instance_double(Dor::Workflow::Client,
@@ -101,7 +101,7 @@ RSpec.describe VersionService do
     end
 
     context 'when a new version cannot be opened' do
-      let(:instance) { described_class.new(cocina_object) }
+      let(:instance) { described_class.new(druid:, version:) }
 
       before do
         allow(instance).to receive(:ensure_openable!).and_raise(VersionService::VersioningError, 'Object net yet accessioned')
@@ -133,7 +133,7 @@ RSpec.describe VersionService do
   end
 
   describe '.can_open?' do
-    subject(:can_open?) { described_class.can_open?(cocina_object) }
+    subject(:can_open?) { described_class.can_open?(druid:, version:) }
 
     before do
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
@@ -204,7 +204,7 @@ RSpec.describe VersionService do
 
   describe '.close' do
     subject(:close) do
-      described_class.close(cocina_object,
+      described_class.close(druid:, version:,
                             description:,
                             significance:,
                             user_name: 'jcoyne',

@@ -43,17 +43,17 @@ class EmbargoReleaseService
       return
     end
 
-    unless VersionService.can_open?(cocina_object)
+    unless VersionService.can_open?(druid: cocina_object.externalIdentifier, version: cocina_object.version)
       Rails.logger.warn("Skipping #{druid} - object is already open")
       return
     end
     Rails.logger.info("Releasing embargo for #{druid}")
 
-    updated_cocina_object = VersionService.open(cocina_object, description: 'embargo released', significance: 'admin')
+    updated_cocina_object = VersionService.open(cocina_object:, description: 'embargo released', significance: 'admin')
 
     updated_cocina_object = release_cocina_object(updated_cocina_object)
 
-    VersionService.close(updated_cocina_object)
+    VersionService.close(druid: updated_cocina_object.externalIdentifier, version: updated_cocina_object.version)
 
     EventFactory.create(druid:, event_type: 'embargo_released', data: {})
 

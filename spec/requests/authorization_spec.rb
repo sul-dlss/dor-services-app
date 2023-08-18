@@ -3,10 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Authorization' do
-  let(:cocina_object) { instance_double(Cocina::Models::DRO, version: 5) }
-
   before do
-    allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+    allow(CocinaObjectStore).to receive(:version).and_return(5)
     allow(Honeybadger).to receive(:notify)
     allow(Honeybadger).to receive(:context)
   end

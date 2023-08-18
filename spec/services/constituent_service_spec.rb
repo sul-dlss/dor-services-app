@@ -44,7 +44,7 @@ RSpec.describe ConstituentService do
 
       it 'opens virtual object for versioning' do
         service.add(constituent_druids:)
-        expect(VersionService).to have_received(:open).with(virtual_object,
+        expect(VersionService).to have_received(:open).with(cocina_object: virtual_object,
                                                             description: ConstituentService::VERSION_DESCRIPTION,
                                                             significance: ConstituentService::VERSION_SIGNIFICANCE,
                                                             event_factory:)
@@ -58,7 +58,7 @@ RSpec.describe ConstituentService do
 
     it 'closes open version' do
       service.add(constituent_druids:)
-      expect(VersionService).to have_received(:close).with(virtual_object, event_factory:)
+      expect(VersionService).to have_received(:close).with(druid: virtual_object.externalIdentifier, version: virtual_object.version, event_factory:)
     end
 
     it 'indexes virtual object synchronously' do
