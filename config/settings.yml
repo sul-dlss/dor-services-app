@@ -108,6 +108,8 @@ catalog:
       username: "app_sdr"
       password: "supersecret"
     tenant_id: "example_tenant"
+    max_lookup_tries: 5
+    sleep_seconds: 10
 
 datacite:
   prefix: '10.80343'

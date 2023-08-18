@@ -3,7 +3,7 @@
 module Catalog
   # Updates the FOLIO MARC record's 856 fields
   class FolioWriter
-    MAX_TRIES = 3
+    MAX_TRIES = Settings.catalog.folio.max_lookup_tries
 
     def self.save(cocina_object:, marc_856_data:)
       new(cocina_object:, marc_856_data:).save
@@ -31,40 +31,54 @@ module Catalog
     attr_reader :marc_856_data, :cocina_object
 
     def delete_previous_ids(catalog_record_id:)
-      retry_connection do
-        FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
-          marc_json['fields'].reject! { |field| (field['tag'] == '856') && (field['content'].include? purl_subfield) }
-        end
+      FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
+        marc_json['fields'].reject! { |field| (field['tag'] == '856') && (field['content'].include? purl_subfield) }
+      end
+
+      retry_lookup do
+        # check that update has completed in FOLIO
+        raise StandardError, 'PURL still found in instance record after update.' if instance_has_purl?(catalog_record_id:)
       end
     end
 
     def update_current_ids(catalog_record_id:)
-      retry_connection do
-        FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
-          marc_json['fields'].reject! { |field| (field['tag'] == '856') && (field['content'].include? purl_subfield) }
-          marc_json['fields'] << marc_856_field if ReleaseTags.released_to_searchworks?(cocina_object:)
+      FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
+        marc_json['fields'].reject! { |field| (field['tag'] == '856') && (field['content'].include? purl_subfield) }
+        marc_json['fields'] << marc_856_field if ReleaseTags.released_to_searchworks?(cocina_object:)
+      end
+
+      retry_lookup do
+        if ReleaseTags.released_to_searchworks?(cocina_object:)
+          raise StandardError, 'No matching PURL found in instance record after update.' unless instance_has_purl?(catalog_record_id:)
+
+          raise StandardError, 'No completely matching 856 found in source record after update.' unless updated?(catalog_record_id:)
+        elsif instance_has_purl?(catalog_record_id:) # not released_to_searchworks
+          # when unreleasing, checking instance record is sufficient for determining update completed
+          raise StandardError, 'PURL still found in instance record after update.'
         end
       end
     end
 
-    def retry_connection
+    def retry_lookup
       @try_count ||= 0
       yield
     rescue StandardError => e
       @try_count += 1
       Rails.logger.warn "Retrying Folio client operation for #{cocina_object.externalIdentifier} (#{@try_count} tries)"
-      retry if @try_count <= MAX_TRIES
+      if @try_count <= MAX_TRIES
+        sleep Settings.catalog.folio.sleep_seconds
+        retry
+      end
 
       Honeybadger.notify(
-        'Error retrying Folio edit operations',
+        'Error updating Folio record',
         error_message: e.message,
-        error_class: e.class,
-        backtrace: e.backtrace,
         context: {
-          druid: cocina_object.externalIdentifier,
-          try_count: @try_count
+          druid: cocina_object.externalIdentifier
         }
       )
+
+      raise StandardError, 'FOLIO update not completed.'
     end
 
     def purl_subfield
@@ -93,6 +107,50 @@ module Catalog
       field[:indicators] = marc_856_data[:indicators].chars
       field[:content] = content.join(' ')
       field.stringify_keys
+    end
+
+    # check whether PURL is in FOLIO instance record
+    def instance_has_purl?(catalog_record_id:)
+      instance = FolioClient.fetch_instance_info(hrid: catalog_record_id)
+      purls = instance['electronicAccess'].select { |field| field['uri'] == cocina_object.description.purl }
+      purls.present?
+    end
+
+    # transform marc_856_data to source record format which has a different JSON format than what was initially sent in edit_marc_json
+    def source_856_field
+      content = {}
+      content[:ind1] = marc_856_data[:indicators][0]
+      content[:ind2] = marc_856_data[:indicators][1]
+      content[:subfields] = marc_856_data[:subfields].filter_map { |subfield| { subfield[:code] => subfield[:value] } unless subfield[:value].nil? }
+      full_field = { 856 => content }
+      full_field.deep_stringify_keys
+    end
+
+    # compare transformed 856 data sent to FOLIO with the 856 currently on the FOLIO record
+    def updated?(catalog_record_id:)
+      current = current_folio856(catalog_record_id:)
+      intended = source_856_field
+      subfields_match?(intended, current) && indicators_match?(intended, current)
+    end
+
+    # get the matching 856 on the current source record in FOLIO
+    def current_folio856(catalog_record_id:)
+      source_record = FolioClient.fetch_marc_hash(instance_hrid: catalog_record_id)
+      source_record_856s = source_record['fields'].select { |tag| tag.key?('856') }
+      raise StandardError, 'No 856 in source record.' unless source_record_856s
+
+      matching_fields = source_record_856s.select { |field| field['856']['subfields'].any? { |subfield| subfield['u'] == cocina_object.description.purl } }
+      return matching_fields.first unless matching_fields.size > 1
+
+      raise StandardError, 'More than one matching field with a PURL found on FOLIO record.'
+    end
+
+    def subfields_match?(intended, current)
+      intended['856']['subfields'].to_set == current['856']['subfields'].to_set
+    end
+
+    def indicators_match?(intended, current)
+      intended['856']['ind1'] == current['856']['ind1'] && intended['856']['ind2'] == current['856']['ind2']
     end
   end
 end

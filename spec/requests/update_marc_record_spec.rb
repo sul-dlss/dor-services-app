@@ -11,9 +11,9 @@ RSpec.describe 'Update MARC record' do
   end
 
   context 'when the request is successful' do
-    it 'returns a 201 response' do
+    it 'returns a 202 response' do
       post "/v1/objects/#{druid}/update_marc_record", headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response).to have_http_status(:created)
+      expect(response).to have_http_status(:accepted)
     end
   end
 end
