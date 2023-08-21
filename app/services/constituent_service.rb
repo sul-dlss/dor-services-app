@@ -72,10 +72,6 @@ class ConstituentService
     constituent_druids.each do |constituent_druid|
       cocina_item = CocinaObjectStore.find(constituent_druid)
       Publish::MetadataTransferService.publish(cocina_item)
-
-      next unless cocina_item.identification&.catalogLinks&.any? { |link| link.catalog == 'symphony' }
-
-      Catalog::UpdateMarc856RecordService.update(cocina_item, thumbnail_service: ThumbnailService.new(cocina_item))
     end
   end
 end
