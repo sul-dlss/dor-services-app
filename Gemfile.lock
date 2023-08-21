@@ -253,7 +253,7 @@ GEM
       net-imap
       net-pop
       net-smtp
-    mais_orcid_client (0.3.0)
+    mais_orcid_client (0.3.1)
       activesupport (>= 4.2, < 8)
       faraday
       faraday-retry
@@ -333,7 +333,7 @@ GEM
       byebug (~> 11.0)
       pry (>= 0.13, < 0.15)
     public_suffix (5.0.3)
-    puma (5.6.6)
+    puma (5.6.7)
       nio4r (~> 2.0)
     racc (1.7.1)
     rack (2.2.8)
@@ -373,7 +373,7 @@ GEM
     rainbow (3.1.1)
     rake (12.3.3)
     rbtree (0.4.6)
-    redis-client (0.15.0)
+    redis-client (0.16.0)
       connection_pool
     regexp_parser (2.8.1)
     request_store (1.5.1)
@@ -404,7 +404,7 @@ GEM
       rspec-core (>= 2, < 4, != 2.12.0)
     rss (0.3.0)
       rexml
-    rubocop (1.56.0)
+    rubocop (1.56.1)
       base64 (~> 0.1.1)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
