@@ -527,7 +527,7 @@ DEPENDENCIES
   capistrano-rails
   capistrano-shared_configs
   cocina-models (~> 0.90.0)
-  committee (~> 4.4)
+  committee
   config
   datacite (~> 0.3.0)
   diffy
