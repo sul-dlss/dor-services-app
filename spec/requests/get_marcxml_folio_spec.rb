@@ -23,10 +23,6 @@ RSpec.describe "Looking up an item's marcxml (Folio)" do
     }
   end
 
-  before do
-    allow(Settings.enabled_features).to receive(:read_folio).and_return(true)
-  end
-
   context 'when looking up an item by folio_instance_id' do
     before do
       allow(Catalog::FolioReader).to receive(:to_marc).and_return(marc_record)

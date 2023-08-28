@@ -24,6 +24,7 @@ RSpec.describe Catalog::UpdateMarc856RecordService do
   describe '#update' do
     context 'when Symphony' do
       before do
+        allow(Settings.enabled_features).to receive(:write_folio).and_return(false)
         allow(Catalog::Marc856Generator).to receive(:create).and_return(marc_856_data)
         allow(Catalog::SymphonyWriter).to receive(:save)
       end
@@ -51,7 +52,6 @@ RSpec.describe Catalog::UpdateMarc856RecordService do
 
     context 'when Folio' do
       before do
-        allow(Settings.enabled_features).to receive(:write_folio).and_return(true)
         allow(Catalog::Marc856Generator).to receive(:create).and_return(marc_856_data)
         allow(Catalog::FolioWriter).to receive(:save)
       end

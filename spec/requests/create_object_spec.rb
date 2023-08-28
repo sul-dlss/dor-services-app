@@ -105,14 +105,14 @@ RSpec.describe 'Create object' do
       end
     end
 
-    context 'when catkey is provided' do
+    context 'when folio instance hrid is provided' do
       let(:expected_label) { title } # label derived from catalog data
 
       let(:identification) do
         {
           sourceId: 'googlebooks:999999',
           catalogLinks: [
-            { catalog: 'symphony', catalogRecordId: '8888', refresh: true }
+            { catalog: 'folio', catalogRecordId: 'a8888', refresh: true }
           ]
         }
       end
@@ -140,7 +140,7 @@ RSpec.describe 'Create object' do
           expect(response.body).to equal_cocina_model(expected)
           expect(response).to have_http_status(:created)
           expect(response.location).to eq "/v1/objects/#{druid}"
-          expect(Catalog::MarcService).to have_received(:new).with(catkey: '8888')
+          expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a8888')
           expect(response.headers['Last-Modified']).to end_with 'GMT'
           expect(response.headers['X-Created-At']).to end_with 'GMT'
           expect(response.headers['ETag']).to match(%r{W/".+"})
@@ -162,9 +162,9 @@ RSpec.describe 'Create object' do
         end
       end
 
-      context 'when symphony returns a 404' do
+      context 'when catalog returns a 404' do
         before do
-          allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogRecordNotFoundError, 'unable to find catkey')
+          allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogRecordNotFoundError, 'unable to find folio instance hrid')
         end
 
         it 'draws an error message' do
@@ -172,7 +172,7 @@ RSpec.describe 'Create object' do
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           expect(response.body).to eq '{"errors":[{"status":"400","title":"Record not found in catalog",' \
-                                      '"detail":"unable to find catkey"}]}'
+                                      '"detail":"unable to find folio instance hrid"}]}'
           expect(response).to have_http_status :bad_request
         end
       end
@@ -192,7 +192,7 @@ RSpec.describe 'Create object' do
       end
     end
 
-    context 'when catkey is not provided' do
+    context 'when folio instance hrid is not provided' do
       context 'when no object with the source id exists and the save is successful' do
         it 'registers the object with the registration service' do
           post '/v1/objects',

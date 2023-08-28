@@ -5,9 +5,9 @@ enabled_features:
   datacite_update: false
   postgres: false
   file_hierarchy_validation: true
-  read_folio: false
+  read_folio: true
   sync_cataloglinks: false
-  write_folio: false
+  write_folio: true
   orcid_update: true
 
 # Ur Admin Policy
