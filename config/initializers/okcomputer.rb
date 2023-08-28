@@ -20,10 +20,14 @@ class CustomAppVersionCheck < OkComputer::AppVersionCheck
   end
 end
 
-class SymphonyCheck < OkComputer::HttpCheck
-  def perform_request
-    Timeout.timeout(request_timeout) do
-      Catalog::SymphonyReader.client.get(url.to_s)
+class FolioCheck < OkComputer::Check
+  def check
+    if Settings.enabled_features.read_folio
+      Timeout.timeout(5) do
+        Catalog::FolioReader.to_marc(barcode: '12345')
+      end
+    else
+      mark_message 'folio disabled'
     end
   end
 end
@@ -56,7 +60,7 @@ class TablesHaveDataCheck < OkComputer::Check
 end
 
 OkComputer::Registry.register 'version', CustomAppVersionCheck.new
-OkComputer::Registry.register 'external-symphony', SymphonyCheck.new(format(Settings.catalog.symphony.base_url + Settings.catalog.symphony.marcxml_path, catkey: 12345))
+OkComputer::Registry.register 'external-folio', FolioCheck.new
 OkComputer::Registry.register 'background_jobs', OkComputer::SidekiqLatencyCheck.new('default', Settings.sidekiq.latency_threshold)
 OkComputer::Registry.register 'feature-tables-have-data', TablesHaveDataCheck.new
 
@@ -68,4 +72,4 @@ if Settings.rabbitmq.enabled
                                                               password: Settings.rabbitmq.password)
 end
 
-OkComputer.make_optional %w(external-symphony)
+OkComputer.make_optional %w(external-folio) if Settings.enabled_features.read_folio
