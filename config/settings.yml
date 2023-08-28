@@ -5,9 +5,9 @@ enabled_features:
   datacite_update: false
   postgres: false
   file_hierarchy_validation: true
-  read_folio: false
+  read_folio: true
   sync_cataloglinks: false
-  write_folio: false
+  write_folio: true
   orcid_update: true
 
 # Ur Admin Policy
@@ -82,8 +82,8 @@ dor:
   hmac_secret: 'my$ecretK3y'
 
 release:
-  symphony_path: './'
-  write_856_script: 'bin/write_856_record'
+  # symphony_path: './'
+  # write_856_script: 'bin/write_856_record'
   purl_base_url: 'https://purl.stanford.edu'
 
 goobi:
