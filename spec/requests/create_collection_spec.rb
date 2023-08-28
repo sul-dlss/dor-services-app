@@ -17,7 +17,7 @@ RSpec.describe 'Create object' do
     stub_request(:put, 'https://dor-indexing-app.example.edu/dor/reindex_from_cocina')
   end
 
-  context 'when the catkey is provided and save is successful' do
+  context 'when the folio instance hrid is provided and save is successful' do
     let(:expected_label) { title } # label derived from catalog data
     let(:data) do
       <<~JSON
@@ -43,7 +43,7 @@ RSpec.describe 'Create object' do
     let(:identification) do
       {
         catalogLinks: [
-          { catalog: 'symphony', catalogRecordId: '8888', refresh: true }
+          { catalog: 'folio', catalogRecordId: 'a8888', refresh: true }
         ]
       }
     end
@@ -75,11 +75,11 @@ RSpec.describe 'Create object' do
       expect(response.body).to equal_cocina_model(expected)
       expect(response).to have_http_status(:created)
       expect(response.location).to eq "/v1/objects/#{druid}"
-      expect(Catalog::MarcService).to have_received(:new).with(catkey: '8888')
+      expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a8888')
     end
   end
 
-  context 'when the catkey is not provided and save is successful' do
+  context 'when the folio instance hrid is not provided and save is successful' do
     let(:expected) do
       build(:collection, id: druid, label: expected_label, title:, admin_policy_id: 'druid:dd999df4567').new(
         identification: {

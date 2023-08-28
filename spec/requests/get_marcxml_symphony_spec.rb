@@ -48,6 +48,10 @@ RSpec.describe "Looking up an item's marcxml (Symphony)" do
     }
   end
 
+  before do
+    allow(Settings.enabled_features).to receive(:read_folio).and_return(false)
+  end
+
   it 'looks up an item by catkey' do
     stub_request(:get, format(marc_url, catkey:)).to_return(body: body.to_json, headers: { 'Content-Length': 394 })
 

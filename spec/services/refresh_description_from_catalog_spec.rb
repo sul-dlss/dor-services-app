@@ -77,6 +77,10 @@ RSpec.describe RefreshDescriptionFromCatalog do
     end
 
     context 'when reading from Symphony' do
+      before do
+        allow(Settings.enabled_features).to receive(:read_folio).and_return(false)
+      end
+
       it 'gets the data from Symphony and returns success' do
         expect(refresh.success?).to be(true)
         expect(refresh.value!.description_props).to eq({
@@ -90,10 +94,6 @@ RSpec.describe RefreshDescriptionFromCatalog do
     end
 
     context 'when reading from Folio' do
-      before do
-        allow(Settings.enabled_features).to receive(:read_folio).and_return(true)
-      end
-
       it 'gets the data from Folio and returns success' do
         expect(refresh.success?).to be(true)
         expect(refresh.value!.description_props).to eq({
@@ -114,8 +114,8 @@ RSpec.describe RefreshDescriptionFromCatalog do
           barcode: '36105123456789',
           catalogLinks: [
             {
-              catalog: 'symphony',
-              catalogRecordId: '123',
+              catalog: 'folio',
+              catalogRecordId: 'a123',
               refresh: true
             }
           ]
@@ -124,7 +124,7 @@ RSpec.describe RefreshDescriptionFromCatalog do
 
       it 'gets the data from Folio by barcode and returns success' do
         expect(refresh.success?).to be(true)
-        expect(Catalog::MarcService).to have_received(:new).with(barcode: '36105123456789', catkey: '123')
+        expect(Catalog::MarcService).to have_received(:new).with(barcode: '36105123456789', folio_instance_hrid: 'a123')
       end
     end
 
@@ -135,8 +135,8 @@ RSpec.describe RefreshDescriptionFromCatalog do
           barcode: '36105123456789',
           catalogLinks: [
             {
-              catalog: 'symphony',
-              catalogRecordId: '123',
+              catalog: 'folio',
+              catalogRecordId: 'a123',
               refresh: true
             }
           ]
@@ -145,7 +145,7 @@ RSpec.describe RefreshDescriptionFromCatalog do
 
       it 'gets the data from Folio without barcode and returns success' do
         expect(refresh.success?).to be(true)
-        expect(Catalog::MarcService).to have_received(:new).with(catkey: '123')
+        expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a123')
       end
     end
 

@@ -14,8 +14,8 @@ RSpec.describe 'Refresh metadata' do
   let(:identification) do
     {
       catalogLinks: [{
-        catalog: 'symphony',
-        catalogRecordId: '10121797',
+        catalog: 'folio',
+        catalogRecordId: 'a10121797',
         refresh: true
       }],
       sourceId: 'sul:123'
@@ -103,8 +103,8 @@ RSpec.describe 'Refresh metadata' do
     let(:identification) do
       {
         catalogLinks: [{
-          catalog: 'symphony',
-          catalogRecordId: '666',
+          catalog: 'folio',
+          catalogRecordId: 'a666',
           refresh: true
         }],
         sourceId: 'sul:123'
@@ -113,7 +113,7 @@ RSpec.describe 'Refresh metadata' do
 
     let(:marc_service) { instance_double(Catalog::MarcService) }
 
-    context 'when catkey not found' do
+    context 'when folio instance hrid not found' do
       before do
         allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogRecordNotFoundError)
       end

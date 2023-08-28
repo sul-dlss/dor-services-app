@@ -61,8 +61,8 @@ RSpec.describe CreateObjectService do
       end
     end
 
-    context 'when refreshing from symphony with a refresh=true catkey' do
-      let(:requested_cocina_object) { build(:request_dro, catkeys: ['999123']) }
+    context 'when refreshing from folio with a refresh=true folio instance hrid' do
+      let(:requested_cocina_object) { build(:request_dro, folio_instance_hrids: ['a999123']) }
 
       let(:mods) do
         <<~XML
@@ -76,15 +76,15 @@ RSpec.describe CreateObjectService do
 
       it 'adds to description' do
         expect(store.create(requested_cocina_object).description.title.first.value).to eq 'The Well-Grounded Rubyist'
-        expect(Catalog::MarcService).to have_received(:new).with(catkey: '999123')
+        expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a999123')
         expect(marc_service).to have_received(:mods)
       end
     end
 
-    context 'when skips refreshing from symphony with a refresh=false catkey' do
+    context 'when skips refreshing from folio with a refresh=false folio instance hrid' do
       let(:requested_cocina_object) { build(:request_dro).new(identification:) }
       let(:identification) do
-        { sourceId: 'sul:1234', catalogLinks: [{ catalog: 'symphony', catalogRecordId: '999123', refresh: false }] }
+        { sourceId: 'sul:1234', catalogLinks: [{ catalog: 'folio', catalogRecordId: 'a999123', refresh: false }] }
       end
 
       it 'does not add to description' do
@@ -107,8 +107,8 @@ RSpec.describe CreateObjectService do
       end
     end
 
-    context 'when fails refreshing from symphony' do
-      let(:requested_cocina_object) { build(:request_dro, catkeys: ['999123']) }
+    context 'when fails refreshing from folio' do
+      let(:requested_cocina_object) { build(:request_dro, folio_instance_hrids: ['a999123']) }
 
       before do
         allow(RefreshDescriptionFromCatalog).to receive(:run).and_return(Failure())

@@ -82,8 +82,8 @@ dor:
   hmac_secret: 'my$ecretK3y'
 
 release:
-  # symphony_path: './'
-  # write_856_script: 'bin/write_856_record'
+  symphony_path: './'
+  write_856_script: 'bin/write_856_record'
   purl_base_url: 'https://purl.stanford.edu'
 
 goobi:
