@@ -187,3 +187,10 @@ Additional notes:
 * Migrations are performed on an ActiveRecord object, not a Cocina object. This allows the remediation of invalid items (i.e., items that cannot be instantiated as Cocina objects).
 * Migrations can be performed against all items or just a list provided by the Migrator.
 * Breaking changes, especially breaking cocina model changes, are going to require additional steps, e.g., stopping SDR processing. The complete process is to be determined.
+
+## Reset Process (for QA/Stage)
+
+### Steps
+
+1. Reset the database: `bin/rails -e p db:reset`
+
