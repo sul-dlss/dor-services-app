@@ -4,6 +4,8 @@
 require_relative '../config/environment'
 require 'optparse'
 
+# TODO: Figure out if we still want this or not, given how tightly coupled this functionality is to Solr
+
 options = { output: 'druids.txt', quiet: false }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/generate-druid-list \'<QUERY, e.g., project_tag_ssim:"Naxos : born digital audio">\' [options]'

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# TODO: Figure out if we still want this or not, given how tightly coupled this functionality is to Solr
+
 namespace :missing_druids do
   desc 'Find unindexed druids'
   task unindexed_objects: :environment do

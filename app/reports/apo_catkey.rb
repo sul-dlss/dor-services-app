@@ -2,7 +2,7 @@
 
 require 'csv'
 
-# Find items that are goverened by the provided APO and then return all catkeys and refresh status.
+# Find items that are governed by the provided APO and then return all catkeys and refresh status.
 #  https://github.com/sul-dlss/dor-services-app/issues/4373
 # Invoke via:
 # bin/rails r -e production "ApoCatkey.report('druid:bx911tp9024')"
@@ -12,17 +12,7 @@ class ApoCatkey
 
     CSV.open(output_file, 'w') do |csv|
       csv << %w[druid catkey refresh]
-      query = "is_governed_by_ssim:\"info:fedora/#{apo_druid}\"&objectType_ssim:\"item\""
-      druids = []
-      # borrowed from bin/generate-druid-list
-      loop do
-        results = SolrService.query('*:*', fl: 'id', rows: 10000, fq: query, start: druids.length, sort: 'id asc')
-        break if results.empty?
-
-        results.each { |r| druids << r['id'] }
-        sleep(0.5)
-      end
-
+      druids = Dro.has_admin_policy(apo_druid).map(&:external_identifier)
       num_dros = druids.size
       puts "Found #{num_dros} objects that are governed by APO #{apo_druid}"
       druids.each_with_index do |druid, i|

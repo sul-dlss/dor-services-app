@@ -5,6 +5,11 @@ class Dro < RepositoryRecord
   validates :content_type, :access, :administrative, :description,
             :identification, :structural, presence: true
 
+  scope :has_admin_policy, ->(admin_policy_druid) { where("administrative ->> 'hasAdminPolicy' = '#{admin_policy_druid}'").select(:external_identifier).order(:external_identifier) }
+  scope :in_virtual_objects, ->(member_druid) { where("structural #> '{hasMemberOrders,0}' -> 'members' ? :druid", druid: member_druid) }
+  scope :members_of_collection, ->(collection_druid) { where("structural -> 'isMemberOf' ? :druid", druid: collection_druid).select(:external_identifier, :version, :content_type) }
+  scope :embargoed_and_releaseable, -> { where("(access -> 'embargo' ->> 'releaseDate')::timestamp <= ?", Time.zone.now).select(:external_identifier) }
+
   def self.find_by_source_id(source_id)
     find_by("identification->>'sourceId' = ?", source_id)
   end
