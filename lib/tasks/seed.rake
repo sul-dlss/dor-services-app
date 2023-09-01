@@ -48,17 +48,17 @@ namespace :seed do # rubocop:disable Metrics/BlockLength
   task :register, [:input_file] => :environment do |_task, args|
     input_file = args[:input_file] || 'registration.csv'
     puts "Registering objects from #{input_file}"
-    results = RegistrationCsvConverter.convert(csv_string: File.read(input_file), params: {})
+    results = RegistrationCsvConverter.convert(csv_string: File.read(input_file))
     results.each do |parse_result|
-      puts parse_result[:cocina_request_object]
       parse_result[:cocina_request_object].either(lambda { |value|
         CreateObjectService.create(value[:model], id_minter: -> { parse_result[:druid] })
+
+        value[:tags].map { |tag| AdministrativeTags.create(identifier: parse_result[:druid], tags: tag) }
+
         client = WorkflowClientFactory.build
         client.create_workflow_by_name(druid, value[:workflow], version: value[:model][:version])
       },
-                                                  ->(error) { log_error(error, bulk_action:, log:) })
+                                                  ->(error) { Rails.logger.error(error) })
     end
-  rescue Errno::ENOENT => e
-    puts e
   end
 end
