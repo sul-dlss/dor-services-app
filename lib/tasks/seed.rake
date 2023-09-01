@@ -43,7 +43,7 @@ namespace :seed do # rubocop:disable Metrics/BlockLength
     puts "Seeded #{druid}"
   end
 
-  # Takes a registration CSV that includes druid file of Barcode, Folio Instance HRID, Source ID, and Label. Suggested maximum of 500 rows.
+  # Takes a registration CSV that includes druid
   desc 'Register druids from csv template (default: registration.csv)'
   task :register, [:input_file] => :environment do |_task, args|
     input_file = args[:input_file] || 'registration.csv'
