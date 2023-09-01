@@ -137,6 +137,16 @@ RSpec.describe Catalog::FolioWriter do
         expect(folio_response_json).to eq(updated_marc_json)
       end
 
+      context 'when record not found' do
+        before do
+          allow(FolioClient).to receive(:edit_marc_json).and_raise(FolioClient::ResourceNotFound)
+        end
+
+        it 'raises' do
+          expect { folio_writer.save }.to raise_error(FolioClient::ResourceNotFound)
+        end
+      end
+
       context 'when instance record does not show updates at first' do
         let(:instance_record_first_lookup) do
           {
@@ -394,6 +404,46 @@ RSpec.describe Catalog::FolioWriter do
       end
 
       it 'updates both MARC records to not include the 856' do
+        folio_writer.save
+        expect(FolioClient).to have_received(:edit_marc_json).with(hrid: 'a8832160')
+        expect(FolioClient).to have_received(:edit_marc_json).with(hrid: 'a8832161')
+        expect(folio_response_json).to eq(unreleased_marc_json)
+      end
+    end
+
+    context 'when previous catalog record id does not exist' do
+      let(:identification) do
+        {
+          sourceId: 'sul:8832162',
+          catalogLinks: [
+            {
+              catalog: 'previous folio',
+              catalogRecordId: 'a8832160'
+            },
+            {
+              catalog: 'previous folio',
+              catalogRecordId: 'a8832161'
+            }
+          ]
+        }
+      end
+
+      let(:marc_856_data) do
+        {
+          indicators: '41',
+          subfields: [
+            { code: 'z', value: nil }
+          ]
+        }
+      end
+
+      before do
+        allow(FolioClient).to receive(:fetch_instance_info).and_return(instance_record_unreleased)
+        allow(FolioClient).to receive(:edit_marc_json).with(hrid: 'a8832160').and_raise(FolioClient::ResourceNotFound)
+        allow(FolioClient).to receive(:edit_marc_json).with(hrid: 'a8832161').and_yield(folio_response_json)
+      end
+
+      it 'updates MARC record that exists to not include the 856' do
         folio_writer.save
         expect(FolioClient).to have_received(:edit_marc_json).with(hrid: 'a8832160')
         expect(FolioClient).to have_received(:edit_marc_json).with(hrid: 'a8832161')

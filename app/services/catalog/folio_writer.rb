@@ -20,7 +20,7 @@ module Catalog
       return if catalog_record_ids.empty? && previous_catalog_record_ids.empty?
 
       # remove 856 for previous catkeys
-      previous_catalog_record_ids.each { |previous_id| delete_previous_ids(catalog_record_id: previous_id) }
+      previous_catalog_record_ids.each { |previous_id| delete_previous_ids(catalog_record_id: previous_id, ignore_not_found: true) }
 
       # replace 856 for current catkeys
       catalog_record_ids.each { |catalog_record_id| update_current_ids(catalog_record_id:) }
@@ -30,7 +30,7 @@ module Catalog
 
     attr_reader :marc_856_data, :cocina_object
 
-    def delete_previous_ids(catalog_record_id:)
+    def delete_previous_ids(catalog_record_id:, ignore_not_found: false)
       FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
         marc_json['fields'].reject! { |field| (field['tag'] == '856') && (field['content'].include? purl_subfield) }
       end
@@ -39,6 +39,11 @@ module Catalog
         # check that update has completed in FOLIO
         raise StandardError, 'PURL still found in instance record after update.' if instance_has_purl?(catalog_record_id:)
       end
+    rescue FolioClient::ResourceNotFound
+      raise unless ignore_not_found
+
+      # if the previous record is not found in FOLIO, we can ignore it
+      Rails.logger.warn "Previous folio instance id #{catalog_record_id} not found in FOLIO. Skipping."
     end
 
     def update_current_ids(catalog_record_id:)
