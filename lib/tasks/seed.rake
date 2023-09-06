@@ -50,15 +50,22 @@ namespace :seed do # rubocop:disable Metrics/BlockLength
     puts "Registering objects from #{input_file}"
     results = RegistrationCsvConverter.convert(csv_string: File.read(input_file))
     results.each do |parse_result|
+      druid = parse_result[:druid]
       parse_result[:cocina_request_object].either(lambda { |value|
-        CreateObjectService.create(value[:model], id_minter: -> { parse_result[:druid] })
+        begin
+          CreateObjectService.create(value[:model], id_minter: -> { druid })
 
-        value[:tags].map { |tag| AdministrativeTags.create(identifier: parse_result[:druid], tags: tag) }
+          value[:tags].map { |tag| AdministrativeTags.create(identifier: druid, tags: tag) }
 
-        client = WorkflowClientFactory.build
-        client.create_workflow_by_name(druid, value[:workflow], version: value[:model][:version])
+          client = WorkflowClientFactory.build
+          client.create_workflow_by_name(druid, value[:workflow], version: value[:model][:version])
+        rescue Cocina::ValidationError => e
+          puts "#{druid} is invalid: #{e}"
+        rescue ActiveRecord::RecordNotUnique
+          puts "Duplicate druid (#{druid}) found."
+        end
       },
-                                                  ->(error) { Rails.logger.error(error) })
+                                                  ->(error) { puts error })
     end
   end
 end
