@@ -17,17 +17,15 @@ class RegistrationCsvConverter
 
   # @param [String] csv_string CSV string
   # @return [Array<Result>] a list of registration requests suitable for passing off to dor-services-client
-  def self.convert(csv_string:, params: {})
-    new(csv_string:, params:).convert
+  def self.convert(csv_string:)
+    new(csv_string:).convert
   end
 
-  attr_reader :csv_string, :params
+  attr_reader :csv_string
 
   # @param [String] csv_string CSV string
-  # @param [Hash] params that can be used instead of CSV columns. Keys are same as column headers.
-  def initialize(csv_string:, params:)
+  def initialize(csv_string:)
     @csv_string = csv_string
-    @params = params
   end
 
   # @return [Result] an array of dry-monad results
@@ -55,7 +53,7 @@ class RegistrationCsvConverter
   def convert_row(row)
     model = Cocina::Models::RequestDRO.new(model_params(row))
     Success(model:,
-            workflow: params[:initial_workflow] || row.fetch('initial_workflow'),
+            workflow: row.fetch('initial_workflow'),
             tags: tags(row))
   rescue Cocina::Models::ValidationError => e
     Failure(e)
@@ -63,11 +61,11 @@ class RegistrationCsvConverter
 
   def model_params(row)
     model_params = {
-      type: dro_type(params[:content_type] || row.fetch('content_type')),
+      type: dro_type(row.fetch('content_type')),
       version: 1,
       label: row['label'],
       administrative: {
-        hasAdminPolicy: params[:administrative_policy_object] || row.fetch('administrative_policy_object')
+        hasAdminPolicy: row.fetch('administrative_policy_object')
       },
       identification: {
         sourceId: row.fetch('source_id'),
@@ -77,18 +75,16 @@ class RegistrationCsvConverter
 
     model_params[:structural] = structural(row)
     model_params[:access] = access(row)
-    project_name = params[:project_name] || row['project_name']
+    project_name = row['project_name']
     model_params[:administrative][:partOfProject] = project_name if project_name.present?
     model_params
   end
 
   def tags(row)
-    tags = params[:tags] || []
-    if tags.empty?
+    [].tap do |tags|
       tag_count = row.headers.count('tags')
       tag_count.times { |n| tags << row.field('tags', n + row.index('tags')) }
-    end
-    tags.compact
+    end.compact
   end
 
   # rubocop:disable Metrics/CyclomaticComplexity
@@ -125,19 +121,19 @@ class RegistrationCsvConverter
 
   def structural(row)
     {}.tap do |structural|
-      collection = params[:collection] || row['collection']
+      collection = row['collection']
       structural[:isMemberOf] = [collection] if collection
-      reading_order = params[:reading_order] || row['reading_order']
+      reading_order = row['reading_order']
       structural[:hasMemberOrders] = [{ viewingDirection: reading_order }] if reading_order.present?
     end
   end
 
   def access(row)
     {}.tap do |access|
-      access[:view] = params[:rights_view] || row['rights_view']
-      access[:download] = params[:rights_download] || row['rights_download'] || ('none' if %w[citation-only dark].include? access[:view])
-      access[:location] = (params[:rights_location] || row.fetch('rights_location')) if [access[:view], access[:download]].include?('location-based')
-      cdl = params[:rights_controlledDigitalLending] || row['rights_controlledDigitalLending']
+      access[:view] = row['rights_view']
+      access[:download] = row['rights_download'] || ('none' if %w[citation-only dark].include? access[:view])
+      access[:location] = row.fetch('rights_location') if [access[:view], access[:download]].include?('location-based')
+      cdl = row['rights_controlledDigitalLending']
       access[:controlledDigitalLending] = ActiveModel::Type::Boolean.new.cast(cdl) if cdl.present?
     end.compact
   end
