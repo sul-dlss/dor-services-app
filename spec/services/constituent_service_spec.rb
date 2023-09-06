@@ -22,7 +22,6 @@ RSpec.describe ConstituentService do
       allow(CocinaObjectStore).to receive(:find).and_return(mock_item)
       allow(SynchronousIndexer).to receive(:reindex_remotely_from_cocina)
       allow(Publish::MetadataTransferService).to receive(:publish)
-      allow(Catalog::UpdateMarc856RecordService).to receive(:update)
     end
 
     context 'when one or more items are not combinable' do
@@ -70,16 +69,6 @@ RSpec.describe ConstituentService do
       service.add(constituent_druids:)
       expect(CocinaObjectStore).to have_received(:find).exactly(constituent_druids.count).times
       expect(Publish::MetadataTransferService).to have_received(:publish).exactly(constituent_druids.count).times
-      expect(Catalog::UpdateMarc856RecordService).not_to have_received(:update)
-    end
-
-    context 'when constituents have catkeys' do
-      let(:mock_item) { build(:dro, catkeys: ['12345']) }
-
-      it 'updates MARC' do
-        service.add(constituent_druids:)
-        expect(Catalog::UpdateMarc856RecordService).to have_received(:update).exactly(constituent_druids.count).times
-      end
     end
 
     it 'returns nil' do
