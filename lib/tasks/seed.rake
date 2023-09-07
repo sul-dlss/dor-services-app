@@ -42,4 +42,30 @@ namespace :seed do # rubocop:disable Metrics/BlockLength
 
     puts "Seeded #{druid}"
   end
+
+  # Takes a registration CSV that includes druid
+  desc 'Register druids from csv template (default: registration.csv)'
+  task :register, [:input_file] => :environment do |_task, args|
+    input_file = args[:input_file] || 'registration.csv'
+    puts "Registering objects from #{input_file}"
+    results = RegistrationCsvConverter.convert(csv_string: File.read(input_file))
+    results.each do |parse_result|
+      druid = parse_result[:druid]
+      parse_result[:cocina_request_object].either(lambda { |value|
+        begin
+          CreateObjectService.create(value[:model], id_minter: -> { druid })
+
+          value[:tags].map { |tag| AdministrativeTags.create(identifier: druid, tags: tag) }
+
+          client = WorkflowClientFactory.build
+          client.create_workflow_by_name(druid, value[:workflow], version: value[:model][:version])
+        rescue Cocina::ValidationError => e
+          puts "#{druid} is invalid: #{e}"
+        rescue ActiveRecord::RecordNotUnique
+          puts "Duplicate druid (#{druid}) found."
+        end
+      },
+                                                  ->(error) { puts error })
+    end
+  end
 end
