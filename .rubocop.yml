@@ -83,10 +83,6 @@ RSpec/ExpectActual:
   Exclude:
     - 'spec/routing/**'
 
-RSpec/FilePath:
-  Exclude:
-    - 'spec/services/catalog/update_marc_856_record_service_spec.rb'
-
 RSpec/NestedGroups:
   Max: 5
 
@@ -679,4 +675,23 @@ RSpec/ReceiveMessages: # new in 2.23
 RSpec/Rails/NegationBeValid: # new in 2.23
   Enabled: true
 Rails/ThreeStateBooleanColumn: # new in 2.19
+  Enabled: true
+
+RSpec/EmptyMetadata: # new in 2.24
+  Enabled: true
+RSpec/Eq: # new in 2.24
+  Enabled: true
+RSpec/MetadataStyle: # new in 2.24
+  Enabled: true
+RSpec/SpecFilePathFormat: # new in 2.24
+  Enabled: true
+  Exclude:
+  - 'spec/services/catalog/update_marc_856_record_service_spec.rb'
+RSpec/SpecFilePathSuffix: # new in 2.24
+  Enabled: true
+Rails/DangerousColumnNames: # new in 2.21
+  Enabled: true
+Rails/RedundantActiveRecordAllMethod: # new in 2.21
+  Enabled: true
+Rails/UnusedRenderContent: # new in 2.21
   Enabled: true
