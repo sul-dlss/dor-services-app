@@ -11,7 +11,7 @@ namespace :missing_druids do
     results.each { |r| druids_from_solr << r['id'] }
 
     models.each do |model|
-      druids_from_db << model.all.pluck(:external_identifier)
+      druids_from_db << model.pluck(:external_identifier)
     end
 
     missing_druids = druids_from_db.flatten.sort - druids_from_solr.sort
