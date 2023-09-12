@@ -46,8 +46,7 @@ RSpec.describe 'Operations regarding object versions' do
       end
 
       it 'closes the current version when posted to' do
-        post '/v1/objects/druid:mx123qw2323/versions/current/close',
-             params: close_params,
+        post "/v1/objects/druid:mx123qw2323/versions/current/close?#{close_params.to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status :ok
         expect(response.body).to match(/version 1 closed/)
@@ -64,8 +63,7 @@ RSpec.describe 'Operations regarding object versions' do
       end
 
       it 'returns an error' do
-        post '/v1/objects/druid:mx123qw2323/versions/current/close',
-             params: close_params,
+        post "/v1/objects/druid:mx123qw2323/versions/current/close?#{close_params.to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status :unprocessable_entity
         expect(response.body).to eq(
@@ -95,8 +93,7 @@ RSpec.describe 'Operations regarding object versions' do
       end
 
       it 'opens a new object version when posted to' do
-        post '/v1/objects/druid:mx123qw2323/versions',
-             params: open_params,
+        post "/v1/objects/druid:mx123qw2323/versions?#{open_params.to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to be_successful
         expect(response.body).to equal_cocina_model(cocina_object)
@@ -116,8 +113,7 @@ RSpec.describe 'Operations regarding object versions' do
       end
 
       it 'returns a bad request error' do
-        post '/v1/objects/druid:mx123qw2323/versions',
-             params: incomplete_params,
+        post "/v1/objects/druid:mx123qw2323/versions?#{incomplete_params.to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to match('missing required parameters: description, significance')
         expect(response).to have_http_status :bad_request
@@ -131,8 +127,7 @@ RSpec.describe 'Operations regarding object versions' do
       end
 
       it 'returns an error' do
-        post '/v1/objects/druid:mx123qw2323/versions',
-             params: open_params,
+        post "/v1/objects/druid:mx123qw2323/versions?#{open_params.to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('{"errors":[{"status":"422","title":"Unable to open version","detail":"Object net yet accessioned"}]}')
         expect(response).to have_http_status :unprocessable_entity
@@ -145,8 +140,7 @@ RSpec.describe 'Operations regarding object versions' do
       end
 
       it 'returns an error' do
-        post '/v1/objects/druid:mx123qw2323/versions',
-             params: open_params,
+        post "/v1/objects/druid:mx123qw2323/versions?#{open_params.to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('{"errors":[{"status":"500","title":"Unable to open version due to preservation client error","detail":"Oops, a 500"}]}')
         expect(response).to have_http_status :internal_server_error

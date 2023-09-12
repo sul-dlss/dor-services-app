@@ -794,7 +794,7 @@ RSpec.describe 'Update object' do
           embargo: {
             view: 'world',
             download: 'world',
-            releaseDate: '2020-02-29'
+            releaseDate: '2020-02-29T07:00:00.000+00:00'
           }
         }
       )
@@ -807,7 +807,7 @@ RSpec.describe 'Update object' do
           "type":"#{Cocina::Models::ObjectType.book}",
           "label":"This is my label","version":1,
           "access":{"view":"stanford","download":"stanford",
-            "embargo":{"view":"world","download":"world","releaseDate":"2020-02-29"}
+            "embargo":{"view":"world","download":"world","releaseDate":"2020-02-29T07:00:00.000+00:00"}
           },
           "administrative":{"releaseTags":[],"hasAdminPolicy":"#{apo_druid}"},
           "description":{
