@@ -40,8 +40,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     end
 
     it 'does not open or close a version and starts default workflow' do
-      post("/v1/objects/#{druid}/accession",
-           params:,
+      post("/v1/objects/#{druid}/accession?#{params.to_query}",
            headers: { 'Authorization' => "Bearer #{jwt}" })
       expect(response).to be_successful
       expect(EventFactory).to have_received(:create).with(
@@ -55,8 +54,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     end
 
     it 'can override the default workflow' do
-      post "/v1/objects/#{druid}/accession",
-           params: params.merge(workflow: 'accessionWF'),
+      post "/v1/objects/#{druid}/accession?#{params.merge(workflow: 'accessionWF').to_query}",
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'accessionWF', version: '1')
@@ -71,8 +69,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     end
 
     it 'opens and closes a version and starts default workflow' do
-      post("/v1/objects/#{druid}/accession",
-           params:,
+      post("/v1/objects/#{druid}/accession?#{params.to_query}",
            headers: { 'Authorization' => "Bearer #{jwt}" })
       expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, default_start_accession_workflow, version: '2')
       expect(VersionService).to have_received(:open).with(cocina_object:, **params)
@@ -80,8 +77,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     end
 
     it 'can override the default workflow' do
-      post "/v1/objects/#{druid}/accession",
-           params: params.merge(workflow: 'accessionWF'),
+      post "/v1/objects/#{druid}/accession?#{params.merge(workflow: 'accessionWF').to_query}",
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'accessionWF', version: '2')
       expect(VersionService).to have_received(:open).with(cocina_object:, **params)
@@ -95,8 +91,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     end
 
     it 'closes a version and starts default workflow' do
-      post("/v1/objects/#{druid}/accession",
-           params:,
+      post("/v1/objects/#{druid}/accession?#{params.to_query}",
            headers: { 'Authorization' => "Bearer #{jwt}" })
       expect(response).to have_http_status(:success)
       expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, default_start_accession_workflow, version: '1')
@@ -111,8 +106,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     end
 
     it 'returns an unacceptable response and does not start any workflows' do
-      post("/v1/objects/#{druid}/accession",
-           params:,
+      post("/v1/objects/#{druid}/accession?#{params.to_query}",
            headers: { 'Authorization' => "Bearer #{jwt}" })
       expect(EventFactory).to have_received(:create).with(
         { data: { workflow: 'assemblyWF' },

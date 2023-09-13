@@ -679,7 +679,7 @@ RSpec.describe 'Create object' do
                                 view: 'stanford',
                                 download: 'none',
                                 controlledDigitalLending: false,
-                                embargo: { view: 'world', download: 'world', releaseDate: '2020-02-29' }
+                                embargo: { view: 'world', download: 'world', releaseDate: '2020-02-29T07:00:00.000+00:00' }
                               })
     end
     let(:data) do
@@ -688,7 +688,7 @@ RSpec.describe 'Create object' do
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.book}",
           "label":"This is my label","version":1,"access":{"view":"stanford","download":"none","controlledDigitalLending":false,
-          "embargo":{"view":"world","download":"world","releaseDate":"2020-02-29"}},
+          "embargo":{"view":"world","download":"world","releaseDate":"2020-02-29T07:00:00.000+00:00"}},
           "administrative":{"releaseTags":[],"hasAdminPolicy":"#{admin_policy_id}"},
           "description":{"title":[{"value":"This is my title"}]},
           "identification":{"sourceId":"googlebooks:999999"},
