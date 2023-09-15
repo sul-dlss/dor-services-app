@@ -11,7 +11,8 @@ class ApplicationController < ActionController::API
     }, status: :bad_request
   end
 
-  before_action :check_auth_token
+  # Disabling in development so that Graphiql can reach graphql endpoint.
+  before_action :check_auth_token, unless: -> { Rails.env.development? }
 
   TOKEN_HEADER = 'Authorization'
 

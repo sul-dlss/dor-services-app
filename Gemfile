@@ -11,6 +11,7 @@ gem 'datacite', '~> 0.3.0'
 gem 'dor-workflow-client', '~> 5.0'
 gem 'druid-tools', '~> 2.2'
 gem 'folio_client', '~> 0.8'
+gem 'graphql'
 gem 'mais_orcid_client'
 gem 'marc'
 gem 'moab-versioning', '~> 6.0', require: 'moab/stanford'
@@ -64,6 +65,11 @@ group :test, :development do
   gem 'rubocop-rspec'
   gem 'simplecov'
   gem 'webmock'
+end
+
+group :development do
+  gem 'graphiql-rails' # GraphQL IDE
+  gem 'sass-rails' # for GraphiQL
 end
 
 group :deployment do

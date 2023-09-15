@@ -6,7 +6,7 @@
 
 # DOR Services App
 
-This Ruby application provides a REST API for DOR Services.
+This Ruby application provides a REST and GraphQL API for DOR Services.
 There is a [OAS 3.0 spec](http://spec.openapis.org/oas/v3.0.2) that documents the
 API in [openapi.yml](openapi.yml).  You can browse the generated documentation at [http://sul-dlss.github.io/dor-services-app/](http://sul-dlss.github.io/dor-services-app/)
 
@@ -18,6 +18,17 @@ This will use the HMAC secret to sign the token. It will ask you to submit a val
 ```
 {"invoked_by" => "workflow-service"}
 ```
+
+## GraphQL
+DSA exposes a limited GraphQL API at the `/graphql` endpoint. The API is implemented using [graphql-ruby](https://graphql-ruby.org). The purpose of the API is to allow retrieving only the parts of cocina objects that are needed, in particular, to avoid retrieving very large structural metadata.
+
+It is limited in that:
+* It only supports querying, not mutations.
+* Only the first level of attributes (description, structural, etc.) are expressed in the GraphQL schema; the contents of each of these attributes are just typed as JSON.
+
+Developer notes:
+* Most GraphQL code is in `app/graphql`.
+* In local development, the [GraphiQL browser](https://github.com/graphql/graphiql) is available at http://localhost:3000/graphiql.
 
 ## Developer Notes
 
