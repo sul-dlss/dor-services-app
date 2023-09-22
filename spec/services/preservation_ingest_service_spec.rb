@@ -11,6 +11,8 @@ RSpec.describe PreservationIngestService do
       File.read(fixtures.join('sdr_repo/dd116zh0343/v0001/manifests/signatureCatalog.xml'))
     )
   end
+  let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid) }
+  let(:druid) { 'druid:dd116zh0343' }
 
   before do
     allow(Settings.sdr).to receive_messages(local_workspace_root: fixtures.join('workspace').to_s,
@@ -36,8 +38,6 @@ RSpec.describe PreservationIngestService do
   end
 
   describe '.transfer' do
-    let(:druid) { 'druid:dd116zh0343' }
-    let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid) }
     let(:metadata_dir) { fixtures.join('workspace/dd/116/zh/0343/dd116zh0343/metadata') }
 
     before do
@@ -109,8 +109,8 @@ RSpec.describe PreservationIngestService do
     end
   end
 
-  describe '.signature_catalog_from_preservation' do
-    let(:druid) { 'druid:dd116zh0343' }
+  describe '.signature_catalog' do
+    let(:service) { described_class.new(cocina_object) }
 
     context 'when signature_catalog exists in preservation' do
       before do
@@ -118,7 +118,7 @@ RSpec.describe PreservationIngestService do
       end
 
       it 'retrieves it as a Moab::SignatureCatalog object' do
-        sig_cat = described_class.signature_catalog_from_preservation(druid)
+        sig_cat = service.send(:signature_catalog)
         expect(sig_cat).to be_an_instance_of(Moab::SignatureCatalog)
         expect(sig_cat.digital_object_id).to eq druid
         expect(sig_cat.version_id).to eq 1
@@ -132,7 +132,7 @@ RSpec.describe PreservationIngestService do
       end
 
       it 'returns a Moab::SignatureCatalog object for version 0' do
-        sig_cat = described_class.signature_catalog_from_preservation(druid)
+        sig_cat = service.send(:signature_catalog)
         expect(sig_cat).to be_an_instance_of(Moab::SignatureCatalog)
         expect(sig_cat.digital_object_id).to eq druid
         expect(sig_cat.version_id).to eq 0
@@ -141,14 +141,20 @@ RSpec.describe PreservationIngestService do
     end
   end
 
-  specify '.verify_version_id' do
-    expect(described_class.verify_version_id('/mypath/myfile', 2, 2)).to be_truthy
-    expect { described_class.verify_version_id('/mypath/myfile', 1, 2) }.to raise_exception('Version mismatch in /mypath/myfile, expected 1, found 2')
+  describe '.verify_version_id' do
+    let(:service) { described_class.new(cocina_object) }
+
+    it 'verifies the version' do
+      expect(service.send(:verify_version_id, '/mypath/myfile', 2, 2)).to be_truthy
+      expect { service.send(:verify_version_id, '/mypath/myfile', 1, 2) }.to raise_exception('Version mismatch in /mypath/myfile, expected 1, found 2')
+    end
   end
 
-  specify '.vmfile_version_id' do
-    metadata_dir = fixtures.join('workspace/dd/116/zh/0343/dd116zh0343/metadata')
-    vmfile = metadata_dir.join('versionMetadata.xml')
-    expect(described_class.vmfile_version_id(vmfile)).to eq 2
+  describe '.vmfile_version_id' do
+    it 'returns the version' do
+      metadata_dir = fixtures.join('workspace/dd/116/zh/0343/dd116zh0343/metadata')
+      vmfile = metadata_dir.join('versionMetadata.xml')
+      expect(described_class.new(cocina_object).send(:vmfile_version_id, vmfile)).to eq 2
+    end
   end
 end
