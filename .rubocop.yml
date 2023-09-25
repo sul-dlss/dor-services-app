@@ -88,7 +88,7 @@ RSpec/NestedGroups:
 
 RSpec/SubjectStub:
   Exclude:
-    - 'spec/services/catalog/update_marc_856_record_service_spec.rb'
+    - 'spec/services/catalog/update_marc856_record_service_spec.rb'
 
 Style/RedundantStringEscape:
   Enabled: true
@@ -685,8 +685,6 @@ RSpec/MetadataStyle: # new in 2.24
   Enabled: true
 RSpec/SpecFilePathFormat: # new in 2.24
   Enabled: true
-  Exclude:
-  - 'spec/services/catalog/update_marc_856_record_service_spec.rb'
 RSpec/SpecFilePathSuffix: # new in 2.24
   Enabled: true
 Rails/DangerousColumnNames: # new in 2.21
@@ -694,4 +692,13 @@ Rails/DangerousColumnNames: # new in 2.21
 Rails/RedundantActiveRecordAllMethod: # new in 2.21
   Enabled: true
 Rails/UnusedRenderContent: # new in 2.21
+  Enabled: true
+
+Capybara/ClickLinkOrButtonStyle: # new in 2.19
+  Enabled: true
+Capybara/RSpec/HaveSelector: # new in 2.19
+  Enabled: true
+Capybara/RSpec/PredicateMatcher: # new in 2.19
+  Enabled: true
+FactoryBot/IdSequence: # new in <<next>>
   Enabled: true
