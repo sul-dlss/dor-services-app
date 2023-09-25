@@ -152,7 +152,7 @@ RSpec.describe ShelvingService do
           .and_return(read_fixture('content_diff_reports/jq937jp0017/v0002/metadata/contentMetadata.xml'))
       end
 
-      it 'returns expected Moab::FileInventoryDifference' do
+      it 'returns expected Moab::FileGroupDifference' do
         diff = shelving_service.send(:content_diff, 'all')
         diff_ng_xml = Nokogiri::XML(diff.to_xml)
         exp_xml = <<-XML
@@ -186,7 +186,7 @@ RSpec.describe ShelvingService do
               </file>
             </subset>
             <subset change="added" count="0"/>
-        </fileInventoryDifference>
+        </fileGroupDifference>
         XML
         expect(diff_ng_xml).to be_equivalent_to(Nokogiri::XML(exp_xml))
       end
