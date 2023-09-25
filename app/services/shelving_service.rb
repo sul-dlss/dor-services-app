@@ -45,6 +45,11 @@ class ShelvingService
   # (i.e. the version currently accessioned, could be a new object or a new version of an existing object)
   # and the previously ingested version's contentMetadata (if it exists, i.e. could be empty for a new object)
   # We also filter to select only the files that should be shelved or preserved to stacks, depending on param passed
+  # Note: the `content_diff` implementation below mostly re-implements `Stanford::StorageServices.compare_cm_to_version`
+  # in the `moab-versioning` gem, but in a way that uses XML retrieved via preservation-client instead of reading the
+  # XML from disk.  This allows dor-services-app to perform the potentially time expensive diff without requiring
+  # access to preservation disk mounts.
+  # See https://github.com/sul-dlss/dor-services-app/pull/4492 and https://github.com/sul-dlss/dor-services-app/issues/4359
   # @return Moab::FileGroupDifference
   # @param [String] subset: 'shelve', 'preserve', 'publish', or 'all' .... filters file diffs
   # @raise [ShelvingService::ShelvingError] if something went wrong.
