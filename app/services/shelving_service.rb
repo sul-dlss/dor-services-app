@@ -14,17 +14,21 @@ class ShelvingService
     raise ShelvingService::ShelvingError, 'Missing structural' if cocina_object.structural.nil?
 
     @cocina_object = cocina_object
+    @druid = cocina_object.externalIdentifier
   end
 
   def shelve
     # determine the location of the object's files in the stacks area
-    stacks_druid = DruidTools::StacksDruid.new(cocina_object.externalIdentifier, stacks_location)
+    stacks_druid = DruidTools::StacksDruid.new(druid, stacks_location)
     stacks_object_pathname = Pathname(stacks_druid.path)
     # determine the location of the object's content files in the workspace area
-    workspace_druid = DruidTools::Druid.new(cocina_object.externalIdentifier, Settings.stacks.local_workspace_root)
+    workspace_druid = DruidTools::Druid.new(druid, Settings.stacks.local_workspace_root)
+
+    preserve_diff = content_diff('preserve')
+    shelve_diff = content_diff('shelve')
 
     workspace_content_pathname = Pathname(workspace_druid.content_dir(true))
-    ShelvableFilesStager.stage(cocina_object.externalIdentifier, preserve_diff, shelve_diff, workspace_content_pathname)
+    ShelvableFilesStager.stage(druid, preserve_diff, shelve_diff, workspace_content_pathname)
 
     # workspace_content_pathname = workspace_content_dir(shelve_diff, workspace_druid)
     # delete, rename, or copy files to the stacks area
@@ -35,32 +39,39 @@ class ShelvingService
 
   private
 
-  attr_reader :cocina_object
+  attr_reader :cocina_object, :druid
 
-  # retrieve the differences between the current contentMetadata and the previously ingested version
-  # (filtering to select only the files that should be preserved)
+  # retrieve the differences between the SDR object cocina derived contentMetadata
+  # (i.e. the version currently accessioned, could be a new object or a new version of an existing object)
+  # and the previously ingested version's contentMetadata (if it exists, i.e. could be empty for a new object)
+  # We also filter to select only the files that should be shelved or preserved to stacks, depending on param passed
+  # Note: the `content_diff` implementation below mostly re-implements `Stanford::StorageServices.compare_cm_to_version`
+  # in the `moab-versioning` gem, but in a way that uses XML retrieved via preservation-client instead of reading the
+  # XML from disk.  This allows dor-services-app to perform the potentially time expensive diff without requiring
+  # access to preservation disk mounts.
+  # See https://github.com/sul-dlss/dor-services-app/pull/4492 and https://github.com/sul-dlss/dor-services-app/issues/4359
   # @return Moab::FileGroupDifference
-  # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  # @raise [ConfigurationError] if missing local workspace root.
+  # @param [String] subset: 'shelve', 'preserve', 'publish', or 'all' .... filters file diffs
   # @raise [ShelvingService::ShelvingError] if something went wrong.
-  def preserve_diff
-    @preserve_diff ||= begin
-      inventory_diff = Preservation::Client.objects.content_inventory_diff(druid: cocina_object.externalIdentifier, content_metadata:, subset: 'preserve')
-      inventory_diff.group_difference('content')
-    end
-  rescue Preservation::Client::Error => e
+  def content_diff(subset)
+    new_inventory = Stanford::ContentInventory.new.inventory_from_cm(content_metadata, druid, subset)
+    inventory_diff = Moab::FileInventoryDifference.new.compare(base_inventory(subset), new_inventory)
+    metadata_diff = inventory_diff.group_difference('metadata')
+    inventory_diff.group_differences.delete(metadata_diff) if metadata_diff
+    inventory_diff.group_difference('content')
+  rescue StandardError => e
     raise ShelvingService::ShelvingError, e
   end
 
-  # retrieve the differences between the current contentMetadata and the previously ingested version
-  # (filtering to select only the files that should be shelved to stacks)
-  # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  # @raise [ConfigurationError] if missing local workspace root.
-  # @raise [ShelvingService::ShelvingError] if something went wrong.
-  def shelve_diff
-    @shelve_diff ||= Preservation::Client.objects.shelve_content_diff(druid: cocina_object.externalIdentifier, content_metadata:)
-  rescue Preservation::Client::Error => e
-    raise ShelvingService::ShelvingError, e
+  def base_inventory(subset)
+    base_version = Preservation::Client.objects.current_version(druid)
+    cm_from_pres = Preservation::Client.objects.metadata(druid:, filepath: 'contentMetadata.xml')
+    Stanford::ContentInventory.new.inventory_from_cm(cm_from_pres, druid, subset, base_version)
+  rescue Preservation::Client::NotFoundError
+    # Create a skeletal FileInventory object, containing no file entries
+    storage_object = Moab::StorageObject.new(druid, 'dummy')
+    base_version = Moab::StorageObjectVersion.new(storage_object, 0)
+    base_version.file_inventory('version')
   end
 
   def stacks_location
@@ -72,7 +83,7 @@ class ShelvingService
   end
 
   def was?
-    workflow_client.workflows(cocina_object.externalIdentifier).include?('wasCrawlPreassemblyWF')
+    workflow_client.workflows(druid).include?('wasCrawlPreassemblyWF')
   end
 
   def was_stack_location
@@ -83,8 +94,11 @@ class ShelvingService
     "/web-archiving-stacks/data/collections/#{collection_druid.delete_prefix('druid:')}"
   end
 
+  # The SDR object's content metadata before being sent to preservation,
+  # i.e. either initial version if not yet accessioned, or version in the process of being accessioned
+  # Generated by converting from cocina
   def content_metadata
-    @content_metadata ||= Cocina::ToXml::ContentMetadataGenerator.generate(druid: cocina_object.externalIdentifier, structural: cocina_object.structural, type: cocina_object.type)
+    @content_metadata ||= Cocina::ToXml::ContentMetadataGenerator.generate(druid:, structural: cocina_object.structural, type: cocina_object.type)
   end
 
   def workflow_client
