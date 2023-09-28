@@ -567,7 +567,6 @@ DEPENDENCIES
   folio_client (~> 0.8)
   graphiql-rails
   graphql
-  hashdiff
   honeybadger (~> 4.12)
   jbuilder
   jsonpath (~> 1.1)
