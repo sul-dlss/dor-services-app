@@ -62,24 +62,4 @@ RSpec.describe ShelveJob do
               output: { errors: [{ detail: error_message, title: 'Unable to shelve files' }] })
     end
   end
-
-  context 'when fails dark validation', skip: 'turned off while preassembly could not make valid dark objects; see https://github.com/sul-dlss/dor-services-app/issues/4366' do
-    let(:valid) { false }
-    let(:invalid_filenames) { ['foo.txt', 'bar.txt'] }
-
-    before do
-      allow(LogFailureJob).to receive(:perform_later)
-    end
-
-    it 'marks the job as errored' do
-      perform
-      expect(result).to have_received(:processing!).once
-      expect(LogFailureJob).to have_received(:perform_later)
-        .with(druid:,
-              background_job_result: result,
-              workflow: 'accessionWF',
-              workflow_process: 'shelve',
-              output: { errors: [{ detail: 'Not all files have dark access and/or are unshelved when item access is dark: ["foo.txt", "bar.txt"]', title: 'Access mismatch' }] })
-    end
-  end
 end
