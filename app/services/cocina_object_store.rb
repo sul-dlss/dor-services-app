@@ -3,6 +3,7 @@
 # Abstracts persistence operations for Cocina objects.
 # For the actions that are supported, this class includes step that happen regardless of the datastore.
 # For example, publishing a notification upon create.
+# rubocop:disable Metrics/ClassLength
 class CocinaObjectStore
   # Generic base error class.
   class CocinaObjectStoreError < StandardError; end
@@ -193,13 +194,24 @@ class CocinaObjectStore
   def ar_find(druid)
     ar_cocina_object = Dro.find_by(external_identifier: druid) ||
                        AdminPolicy.find_by(external_identifier: druid) ||
-                       Collection.find_by(external_identifier: druid)
+                       Collection.find_by(external_identifier: druid) ||
+                       bootstrap_ur_admin_policy(druid)
 
     ar_cocina_object ||
       raise(CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid))
+  end
+
+  def bootstrap_ur_admin_policy(druid)
+    return unless Settings.enabled_features.create_ur_admin_policy
+    return unless druid == Settings.ur_admin_policy.druid
+
+    UrAdminPolicyFactory.create
+
+    AdminPolicy.find_by(external_identifier: druid)
   end
 
   def ar_destroy(druid)
     ar_find(druid).destroy
   end
 end
+# rubocop:enable Metrics/ClassLength
