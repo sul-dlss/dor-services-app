@@ -30,6 +30,17 @@ RSpec.describe CocinaObjectStore do
       end
     end
 
+    context 'when ur_admin_policy is not found in datastore' do
+      before do
+        allow(Settings.ur_admin_policy).to receive(:druid).and_return('druid:bc123df4567')
+        allow(Settings.enabled_features).to receive(:create_ur_admin_policy).and_return(true)
+      end
+
+      it 'bootstraps' do
+        expect(store.find('druid:bc123df4567').label).to eq('Ur-APO')
+      end
+    end
+
     context 'when object is a Collection' do
       let(:ar_cocina_object) { create(:ar_collection) }
 
