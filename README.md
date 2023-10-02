@@ -203,5 +203,5 @@ Additional notes:
 
 ### Steps
 
-1. Reset the database: `bin/rails -e p db:reset`
+1. [Reset the database](https://github.com/sul-dlss/DeveloperPlaybook/blob/main/best-practices/db_reset.md)
 
