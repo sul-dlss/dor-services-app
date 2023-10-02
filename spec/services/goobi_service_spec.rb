@@ -20,11 +20,6 @@ RSpec.describe GoobiService do
         barcode:,
         catalogLinks: [
           {
-            catalog: 'symphony',
-            catalogRecordId: '11403803',
-            refresh: true
-          },
-          {
             catalog: 'folio',
             catalogRecordId: 'a11403803',
             refresh: true
@@ -319,33 +314,6 @@ RSpec.describe GoobiService do
               <contentType>Book (ltr)</contentType>
               <project>Project Name</project>
               <catkey>a11403803</catkey>
-              <barcode>#{barcode}</barcode>
-              <collectionId>druid:oo000oo0001</collectionId>
-              <collectionName>collection name</collectionName>
-              <sdrWorkflow>#{Settings.goobi.dpg_workflow_name}</sdrWorkflow>
-              <goobiWorkflow>goobi_workflow</goobiWorkflow>
-              <ocr>false</ocr>
-              <tags></tags>
-            </stanfordCreationRequest>
-          XML
-        end
-      end
-
-      context 'when symphony enabled' do
-        before { allow(Settings.enabled_features).to receive(:read_folio).and_return(false) }
-
-        let(:tags) { [] }
-
-        it 'creates the correct xml request with symphony catkey' do
-          expect(xml_request).to be_equivalent_to <<-XML
-            <stanfordCreationRequest>
-              <objectId>#{druid}</objectId>
-              <objectType>item</objectType>
-              <sourceID>some:source_id</sourceID>
-              <title>Object Title &amp; A Special character</title>
-              <contentType>Book (ltr)</contentType>
-              <project>Project Name</project>
-              <catkey>11403803</catkey>
               <barcode>#{barcode}</barcode>
               <collectionId>druid:oo000oo0001</collectionId>
               <collectionName>collection name</collectionName>

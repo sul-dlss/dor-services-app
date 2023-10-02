@@ -103,11 +103,7 @@ class GoobiService
   end
 
   def catalog_id
-    cocina_obj.identification&.catalogLinks&.filter { |link| link.catalog == catalog_id_type }&.first&.catalogRecordId
-  end
-
-  def catalog_id_type
-    Settings.enabled_features.read_folio ? 'folio' : 'symphony'
+    cocina_obj.identification&.catalogLinks&.filter { |link| link.catalog == 'folio' }&.first&.catalogRecordId
   end
 
   def barcode
