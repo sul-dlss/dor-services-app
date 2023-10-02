@@ -46,21 +46,12 @@ class RefreshDescriptionFromCatalog
 
   def identifiers
     {
-      catkey:,
       folio_instance_hrid:,
       barcode:
     }.compact
   end
 
-  def catkey
-    return nil if Settings.enabled_features.read_folio
-
-    Array(cocina_object.identification&.catalogLinks).find { |link| link.catalog == 'symphony' && link.refresh }&.catalogRecordId
-  end
-
   def folio_instance_hrid
-    return nil unless Settings.enabled_features.read_folio
-
     Array(cocina_object.identification&.catalogLinks).find { |link| link.catalog == 'folio' && link.refresh }&.catalogRecordId
   end
 
