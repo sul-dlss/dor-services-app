@@ -22,58 +22,28 @@ RSpec.describe Catalog::UpdateMarc856RecordService do
   end
 
   describe '#update' do
-    context 'when Symphony' do
-      before do
-        allow(Settings.enabled_features).to receive(:write_folio).and_return(false)
-        allow(Catalog::Marc856Generator).to receive(:create).and_return(marc_856_data)
-        allow(Catalog::SymphonyWriter).to receive(:save)
-      end
+    before do
+      allow(Catalog::Marc856Generator).to receive(:create).and_return(marc_856_data)
+      allow(Catalog::FolioWriter).to receive(:save)
+    end
 
-      let(:marc_856_data) { { indicators: [], subfields: [] } }
+    let(:marc_856_data) { { indicators: [], subfields: [] } }
 
-      context 'when not an admin policy' do
-        it 'calls Marc856Generator and SymphonyWriter' do
-          service.update
-          expect(Catalog::Marc856Generator).to have_received(:create).with(cocina_object, thumbnail_service:, catalog: 'symphony')
-          expect(Catalog::SymphonyWriter).to have_received(:save).with(cocina_object:, marc_856_data:)
-        end
-      end
-
-      context 'when an admin policy' do
-        let(:cocina_object) { build(:admin_policy) }
-
-        it 'does nothing' do
-          service.update
-          expect(Catalog::Marc856Generator).not_to have_received(:create)
-          expect(Catalog::SymphonyWriter).not_to have_received(:save)
-        end
+    context 'when not an admin policy' do
+      it 'calls Marc856Generator and FolioWriter' do
+        service.update
+        expect(Catalog::Marc856Generator).to have_received(:create).with(cocina_object, thumbnail_service:)
+        expect(Catalog::FolioWriter).to have_received(:save).with(cocina_object:, marc_856_data:)
       end
     end
 
-    context 'when Folio' do
-      before do
-        allow(Catalog::Marc856Generator).to receive(:create).and_return(marc_856_data)
-        allow(Catalog::FolioWriter).to receive(:save)
-      end
+    context 'when an admin policy' do
+      let(:cocina_object) { build(:admin_policy) }
 
-      let(:marc_856_data) { { indicators: [], subfields: [] } }
-
-      context 'when not an admin policy' do
-        it 'calls Marc856Generator and FolioWriter' do
-          service.update
-          expect(Catalog::Marc856Generator).to have_received(:create).with(cocina_object, thumbnail_service:, catalog: 'folio')
-          expect(Catalog::FolioWriter).to have_received(:save).with(cocina_object:, marc_856_data:)
-        end
-      end
-
-      context 'when an admin policy' do
-        let(:cocina_object) { build(:admin_policy) }
-
-        it 'does nothing' do
-          service.update
-          expect(Catalog::Marc856Generator).not_to have_received(:create)
-          expect(Catalog::FolioWriter).not_to have_received(:save)
-        end
+      it 'does nothing' do
+        service.update
+        expect(Catalog::Marc856Generator).not_to have_received(:create)
+        expect(Catalog::FolioWriter).not_to have_received(:save)
       end
     end
   end
