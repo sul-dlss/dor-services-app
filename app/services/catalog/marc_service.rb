@@ -58,11 +58,7 @@ module Catalog
     # @raise CatalogResponseError
     # @raise CatalogRecordNotFoundError
     def marc_record
-      @marc_record ||= if Settings.enabled_features.read_folio
-                         marc_record_from_folio
-                       else
-                         marc_record_from_symphony
-                       end
+      @marc_record ||= marc_record_from_folio
     end
 
     private
@@ -71,14 +67,6 @@ module Catalog
 
     def marc_to_mods_xslt
       @marc_to_mods_xslt ||= Nokogiri::XSLT(File.open(Rails.root.join('app', 'xslt', 'MARC21slim2MODS3-7_SDR_v2-7.xsl')))
-    end
-
-    def marc_record_from_symphony
-      SymphonyReader.new(catkey:, barcode:).to_marc
-    rescue SymphonyReader::NotFound
-      raise CatalogRecordNotFoundError, "Catalog record not found. Catkey: #{catkey} | Barcode: #{barcode}"
-    rescue SymphonyReader::ResponseError => e
-      raise CatalogResponseError, "Error getting record from catalog: #{e.message}"
     end
 
     def marc_record_from_folio
