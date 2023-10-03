@@ -15,13 +15,8 @@ module Catalog
     def update
       return if cocina_object.admin_policy?
 
-      if Settings.enabled_features.write_folio
-        marc_856_data = Marc856Generator.create(cocina_object, thumbnail_service:, catalog: 'folio')
-        FolioWriter.save(cocina_object:, marc_856_data:)
-      else
-        marc_856_data = Marc856Generator.create(cocina_object, thumbnail_service:, catalog: 'symphony')
-        SymphonyWriter.save(cocina_object:, marc_856_data:)
-      end
+      marc_856_data = Marc856Generator.create(cocina_object, thumbnail_service:)
+      FolioWriter.save(cocina_object:, marc_856_data:)
     end
 
     private
