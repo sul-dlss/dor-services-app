@@ -36,7 +36,6 @@ class CreateObjectService
     updated_cocina_request_object = add_description(updated_cocina_request_object)
     cocina_object = cocina_from_request(updated_cocina_request_object, druid, assign_doi)
     cocina_object = assign_doi(cocina_object) if assign_doi
-    cocina_object = Catalog::AddFolioCatalogLinksService.add(cocina_object) if Settings.enabled_features.sync_cataloglinks
     cocina_object_with_metadata = CocinaObjectStore.store(cocina_object, skip_lock: true)
     add_project_tag(druid, cocina_request_object)
     # This creates version 1.0.0 (Initial Version)
