@@ -16,21 +16,6 @@ RSpec.describe RefreshDescriptionFromCatalog do
       sourceId: 'sul:abc',
       catalogLinks: [
         {
-          catalog: 'symphony',
-          catalogRecordId: '123',
-          refresh: true
-        },
-        {
-          catalog: 'symphony',
-          catalogRecordId: '456',
-          refresh: false
-        },
-        {
-          catalog: 'previous symphony',
-          catalogRecordId: '012',
-          refresh: false
-        },
-        {
           catalog: 'folio',
           catalogRecordId: 'a123',
           refresh: true
@@ -74,23 +59,6 @@ RSpec.describe RefreshDescriptionFromCatalog do
           </titleInfo>
         </mods>
       XML
-    end
-
-    context 'when reading from Symphony' do
-      before do
-        allow(Settings.enabled_features).to receive(:read_folio).and_return(false)
-      end
-
-      it 'gets the data from Symphony and returns success' do
-        expect(refresh.success?).to be(true)
-        expect(refresh.value!.description_props).to eq({
-                                                         title: [{ value: 'Paying for College' }],
-                                                         purl: Purl.for(druid:)
-                                                       })
-        expect(refresh.value!.mods_ng_xml).to be_equivalent_to(Nokogiri::XML(mods))
-        expect(Catalog::MarcService).to have_received(:new).with(catkey: '123')
-        # expect(Honeybadger).not_to have_received(:notify)
-      end
     end
 
     context 'when reading from Folio' do
@@ -154,16 +122,6 @@ RSpec.describe RefreshDescriptionFromCatalog do
         {
           sourceId: 'sul:abc',
           catalogLinks: [
-            {
-              catalog: 'symphony',
-              catalogRecordId: '456',
-              refresh: false
-            },
-            {
-              catalog: 'previous symphony',
-              catalogRecordId: '012',
-              refresh: false
-            },
             {
               catalog: 'folio',
               catalogRecordId: 'a456',
