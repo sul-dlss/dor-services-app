@@ -18,10 +18,6 @@ Rails.application.routes.draw do
   scope '/v1' do
     get '/about' => 'ok_computer/ok_computer#show', defaults: { check: 'version' }
 
-    scope :catalog do
-      get 'marcxml', to: 'marcxml#marcxml'
-    end
-
     resources :virtual_objects, only: [:create], defaults: { format: :json }
 
     resources :background_job_results, only: [:show], defaults: { format: :json }

@@ -41,50 +41,6 @@ paths:
       responses:
         '200':
           description: The status of the service
-  /v1/catalog/marcxml:
-    get:
-      tags:
-        - integrations
-      summary: Lookup the MARC XML from Symphony
-      description: ''
-      operationId: 'marcxml#marcxml'
-      responses:
-        '200':
-          description: OK
-        '400':
-          description: Record not found in Symphony.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      parameters:
-        - name: barcode
-          in: query
-          description: barcode of an item
-          required: false
-          schema:
-            type: string
-        - name: catkey
-          in: query
-          description: Symphony identifier of an item
-          required: false
-          schema:
-            type: string
-        - name: folio_instance_hrid
-          in: query
-          description: Folio identifier of an item
-          required: false
-          schema:
-            oneOf:
-              - $ref: '#/components/schemas/MigratedFromSymphonyIdentifier'
-              - $ref: '#/components/schemas/MigratedFromVoyagerIdentifier'
-              - $ref: '#/components/schemas/CreatedInFolioIdentifier'
   '/v1/background_job_results/{id}':
     get:
       tags:

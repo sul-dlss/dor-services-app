@@ -96,7 +96,6 @@ goobi:
 catalog:
   symphony:
     base_url: "https://sirsi.example.com/symws/catalog/"
-    marcxml_path: "bib/key/%{catkey}?includeFields=bib"
     barcode_path: "item/barcode/%{barcode}"
     headers:
       SD-ORIGINATING-APP-ID: DOR-SERVICES-APP

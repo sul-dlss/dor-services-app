@@ -4,17 +4,12 @@ module Catalog
   # MARC service for retrieving and transforming MARC records
   class MarcService
     class MarcServiceError < RuntimeError; end
-
     class CatalogResponseError < MarcServiceError; end
     class CatalogRecordNotFoundError < MarcServiceError; end
     class TransformError < MarcServiceError; end
 
     def self.mods(catkey: nil, barcode: nil, folio_instance_hrid: nil)
       new(catkey:, barcode:, folio_instance_hrid:).mods
-    end
-
-    def self.marcxml(catkey: nil, barcode: nil, folio_instance_hrid: nil)
-      new(catkey:, barcode:, folio_instance_hrid:).marcxml
     end
 
     def initialize(catkey: nil, barcode: nil, folio_instance_hrid: nil)
@@ -38,13 +33,6 @@ module Catalog
       rescue RuntimeError => e
         raise TransformError, "Error transforming MARC to MODS: #{e.message}"
       end
-    end
-
-    # @return [String] MARCXML XML
-    # @raise CatalogResponseError
-    # @raise CatalogRecordNotFoundError
-    def marcxml
-      @marcxml ||= marcxml_ng.to_xml
     end
 
     # @return [Nokogiri::XML::Document] MARCXML XML
