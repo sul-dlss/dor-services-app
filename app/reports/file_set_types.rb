@@ -14,14 +14,14 @@ class FileSetTypes
 
   SQL = <<~SQL.squish.freeze
     SELECT external_identifier as item_druid,
-           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "symphony").catalogRecordId') ->> 0 as catkey,
+           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
            jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_id
            FROM "dros" WHERE
            jsonb_path_exists(structural, '$.contains[*] ? (@.type == "#{FILE_SET_TYPE}")')
   SQL
 
   def self.report
-    puts "item_druid,catkey,collection_druid,collection_name,dros with fileset type of #{FILE_SET_TYPE}\n"
+    puts "item_druid,catalogRecordId,collection_druid,collection_name,dros with fileset type of #{FILE_SET_TYPE}\n"
     rows(SQL).compact.each { |row| puts row }
   end
 
@@ -34,7 +34,7 @@ class FileSetTypes
 
       [
         row['item_druid'],
-        row['catkey'],
+        row['catalogRecordId'],
         collection_druid,
         "\"#{collection_name}\""
       ].join(',')

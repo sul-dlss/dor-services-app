@@ -18,14 +18,14 @@ class InvalidSubjectNonSourceUris
   SQL = <<~SQL.squish.freeze
     SELECT jsonb_path_query(description, '#{JSON_PATH} ? (!(@.**.uri like_regex "#{REGEX}")).**.uri') ->> 0 as invalid_values,
            external_identifier,
-           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "symphony").catalogRecordId') ->> 0 as catkey,
+           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
            jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_id
            FROM "dros" WHERE
            jsonb_path_exists(description, '#{JSON_PATH} ? (!(@.**.uri like_regex "#{REGEX}")).**.uri')
   SQL
 
   def self.report
-    puts "item_druid,catkey,collection_druid,collection_name,invalid_values\n"
+    puts "item_druid,catalogRecordId,collection_druid,collection_name,invalid_values\n"
 
     rows(SQL).each { |row| puts row if row }
   end
@@ -42,7 +42,7 @@ class InvalidSubjectNonSourceUris
 
         [
           id,
-          rows.first['catkey'],
+          rows.first['catalogRecordId'],
           collection_druid,
           "\"#{collection_name}\"",
           rows.pluck('invalid_values').join(';')

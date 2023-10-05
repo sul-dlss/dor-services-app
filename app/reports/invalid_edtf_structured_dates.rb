@@ -44,7 +44,7 @@ class InvalidEdtfStructuredDates
   VALUE_ENCODING_JSON_PATH = JsonPath.new('$..date..structuredValue.[?(@.encoding.code == "edtf")]')
 
   def self.report
-    puts "item_druid,catkey,collection_druid,invalid_values,reason\n"
+    puts "item_druid,catalogRecordId,collection_druid,invalid_values,reason\n"
 
     Dro.where("jsonb_path_exists(description, '$.**.date.**.encoding.code ? (@ == \"edtf\")')").find_each do |dro|
       new(dro:).report
@@ -74,7 +74,7 @@ class InvalidEdtfStructuredDates
     end
     return if bad_values.blank?
 
-    first_columns = "#{dro.external_identifier},#{catkey},#{collection_id}"
+    first_columns = "#{dro.external_identifier},#{catalog_record_id},#{collection_id}"
     puts "#{first_columns},#{bad_values.join(';')},entire date edtf - invalid value\n"
   end
 
@@ -85,7 +85,7 @@ class InvalidEdtfStructuredDates
     #  it is hoped that case is rare.
     return if dates_with_value_encodings.size != 1
 
-    first_columns = "#{dro.external_identifier},#{catkey},#{collection_id}"
+    first_columns = "#{dro.external_identifier},#{catalog_record_id},#{collection_id}"
     single_value = dates_with_value_encodings.first['value']
     puts "#{first_columns},#{single_value},single date encoded edtf within structuredValue\n" if single_value.present?
   end
@@ -109,7 +109,7 @@ class InvalidEdtfStructuredDates
     dro.structural['isMemberOf'].first
   end
 
-  def catkey
-    dro.identification['catalogLinks'].find { |link| link['catalog'] == 'symphony' }&.fetch('catalogRecordId')
+  def catalog_record_id
+    dro.identification['catalogLinks'].find { |link| link['catalog'] == 'folio' }&.fetch('catalogRecordId')
   end
 end

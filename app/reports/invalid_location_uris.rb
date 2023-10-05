@@ -18,7 +18,7 @@ class InvalidLocationUris
            event_location #>> '{0,value}' as value,
            event_location #>> '{0,uri}' as uri,
            event_location #>> '{0,code}' as code,
-           jsonb_path_query(dros.identification, '$.catalogLinks[*] ? (@.catalog == "symphony").catalogRecordId') ->> 0 as catkey,
+           jsonb_path_query(dros.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
            jsonb_path_query(dros.structural, '$.isMemberOf') ->> 0 as collection_id
            FROM "dros",
            jsonb_path_query_array(dros.description, '#{JSON_PATH} ? (@.uri like_regex #{REGEX})') event_location
@@ -27,7 +27,7 @@ class InvalidLocationUris
   SQL
 
   def self.report
-    puts "item_druid,catkey,collection_druid,uri,code,value\n"
+    puts "item_druid,catalogRecordId,collection_druid,uri,code,value\n"
     rows(SQL).each do |row|
       puts row
     end
@@ -37,7 +37,7 @@ class InvalidLocationUris
     result = ActiveRecord::Base.connection.execute(sql)
 
     result.to_a.map do |row|
-      [row['external_identifier'], row['catkey'], row['collection_id'], row['uri'], row['code'], "\"#{row['value']}\""].join(',')
+      [row['external_identifier'], row['catalogRecordId'], row['collection_id'], row['uri'], row['code'], "\"#{row['value']}\""].join(',')
     end
   end
 end

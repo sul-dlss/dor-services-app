@@ -13,13 +13,13 @@ class PropertyNestingLevelCollections
   JSON_PATH = "strict $.**{#{MIN_NESTING_LEVEL} TO LAST}.#{PROPERTY}".freeze
   SQL = <<~SQL.squish.freeze
     SELECT external_identifier as collection_druid,
-           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "symphony").catalogRecordId') ->> 0 as catkey
+           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId
            FROM "collections" WHERE
            jsonb_path_exists(collections.description, '#{JSON_PATH}')
   SQL
 
   def self.report
-    puts "collection_druid,catkey,collection_name,nesting level of #{PROPERTY} #{MIN_NESTING_LEVEL} or higher\n"
+    puts "collection_druid,catalogRecordId,collection_name,nesting level of #{PROPERTY} #{MIN_NESTING_LEVEL} or higher\n"
     rows(SQL).compact.each { |row| puts row }
   end
 
@@ -32,7 +32,7 @@ class PropertyNestingLevelCollections
 
       [
         collection_druid,
-        row['catkey'],
+        row['catalogRecordId'],
         "\"#{collection_name}\""
       ].join(',')
     end

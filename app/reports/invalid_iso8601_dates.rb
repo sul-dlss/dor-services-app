@@ -22,14 +22,14 @@ class InvalidIso8601Dates
   SQL = <<~SQL.squish.freeze
     SELECT jsonb_path_query_array(description, '#{DATE_JSONB_PATH}') ->> 0 as dates,
            external_identifier,
-           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "symphony").catalogRecordId') ->> 0 as catkey,
+           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
            jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_id
            FROM "dros" WHERE
            jsonb_path_exists(description, '#{DATE_JSONB_PATH}')
   SQL
 
   def self.report
-    puts "item_druid,catkey,collection_druid,collection_name,invalid_values\n"
+    puts "item_druid,catalogRecordId,collection_druid,collection_name,invalid_values\n"
 
     rows(SQL).compact.each { |row| puts row }
   end
@@ -49,7 +49,7 @@ class InvalidIso8601Dates
 
         [
           id,
-          rows.first['catkey'],
+          rows.first['catalogRecordId'],
           collection_druid,
           "\"#{collection_name}\"",
           invalid_values.join(';')
@@ -58,7 +58,7 @@ class InvalidIso8601Dates
   end
 
   # return all the values for the encoding that fail validation for the encoding
-  # the sql_result_rows object is an array of hashes with keys: date, external_identifier, catkey, ...
+  # the sql_result_rows object is an array of hashes with keys: date, external_identifier, catalogRecordId, ...
   def self.invalid_with_encoding(sql_result_rows)
     invalid_values = []
     # get the value of the dates property, which is json, for each sql result row

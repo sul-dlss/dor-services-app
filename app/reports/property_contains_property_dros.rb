@@ -19,14 +19,14 @@ class PropertyContainsPropertyDros
 
   SQL = <<~SQL.squish.freeze
     SELECT external_identifier as item_druid,
-           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "symphony").catalogRecordId') ->> 0 as catkey,
+           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
            jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_druid
            FROM "dros" WHERE
            jsonb_path_exists(dros.description, '#{JSON_PATH}')
   SQL
 
   def self.report
-    puts "item_druid,catkey,collection_druid,collection_name,dros where #{OUTER_PROPERTY} contains #{INNER_PROPERTY}\n"
+    puts "item_druid,catalogRecordId,collection_druid,collection_name,dros where #{OUTER_PROPERTY} contains #{INNER_PROPERTY}\n"
     rows(SQL).compact.each { |row| puts row }
   end
 
@@ -38,7 +38,7 @@ class PropertyContainsPropertyDros
 
       [
         row['item_druid'],
-        row['catkey'],
+        row['catalogRecordId'],
         row['collection_druid'],
         "\"#{collection_name}\""
       ].join(',')

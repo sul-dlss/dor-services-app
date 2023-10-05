@@ -4,7 +4,7 @@
 # bin/rails r -e production "EdtfLowerXDates.report"
 class EdtfLowerXDates
   def self.report
-    puts "item_druid,collection_druid,catkey,values\n"
+    puts "item_druid,collection_druid,catalogRecordId,values\n"
 
     Dro.where("jsonb_path_exists(description, '$.**.date.encoding.code ? (@ ==  \"edtf\")')").find_each do |dro|
       new(dro:).report
@@ -22,7 +22,7 @@ class EdtfLowerXDates
 
     return if matching_values.empty?
 
-    puts "#{dro.external_identifier},#{collection_id},#{catkey},#{matching_values.join(';')}\n"
+    puts "#{dro.external_identifier},#{collection_id},#{catalog_record_id},#{matching_values.join(';')}\n"
   end
 
   private
@@ -37,7 +37,7 @@ class EdtfLowerXDates
     dro.structural['isMemberOf'].first
   end
 
-  def catkey
-    dro.identification['catalogLinks'].find { |link| link['catalog'] == 'symphony' }&.fetch('catalogRecordId')
+  def catalog_record_id
+    dro.identification['catalogLinks'].find { |link| link['catalog'] == 'folio' }&.fetch('catalogRecordId')
   end
 end

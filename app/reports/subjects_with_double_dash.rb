@@ -17,7 +17,7 @@ class SubjectsWithDoubleDash
     SELECT dros.external_identifier,
            subjects->'value' as value,
            subjects->'source'->'code' as code,
-           jsonb_path_query(dros.identification, '$.catalogLinks[*] ? (@.catalog == "symphony").catalogRecordId') ->> 0 as catkey,
+           jsonb_path_query(dros.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
            jsonb_path_query(dros.structural, '$.isMemberOf') ->> 0 as collection_id
            FROM "dros",
            jsonb_path_query(dros.description, '#{JSONB_PATH} ? (@.value like_regex "--")') subjects
@@ -28,7 +28,7 @@ class SubjectsWithDoubleDash
   SQL
 
   def self.report
-    puts "item_druid,catkey,collection_druid,collection_name,value\n"
+    puts "item_druid,catalogRecordId,collection_druid,collection_name,value\n"
     rows(SQL).compact.each { |row| puts row }
   end
 
@@ -41,7 +41,7 @@ class SubjectsWithDoubleDash
 
       [
         row['external_identifier'],
-        row['catkey'],
+        row['catalogRecordId'],
         collection_druid,
         "\"#{collection_name}\"",
         "\"#{row['value']}\""

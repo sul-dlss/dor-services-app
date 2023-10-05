@@ -6,7 +6,7 @@
 # bin/rails r -e production "BadDateRangeEncodings.report"
 class BadDateRangeEncodings
   def self.report
-    puts "item_druid,collection_druid,catkey,values\n"
+    puts "item_druid,collection_druid,catalogRecordId,values\n"
 
     # find all objects that have an edtf date encoding in structuredValue
     Dro.where("jsonb_path_exists(description, '$.**.date.structuredValue.encoding.code ? (@ ==  \"edtf\")')").find_each do |dro|
@@ -26,7 +26,7 @@ class BadDateRangeEncodings
 
     return if bad_values.empty?
 
-    puts "#{dro.external_identifier},#{collection_id},#{catkey},#{bad_values.join(';')}\n"
+    puts "#{dro.external_identifier},#{collection_id},#{catalog_record_id},#{bad_values.join(';')}\n"
   end
 
   private
@@ -42,7 +42,7 @@ class BadDateRangeEncodings
     dro.structural['isMemberOf'].first
   end
 
-  def catkey
-    dro.identification['catalogLinks'].find { |link| link['catalog'] == 'symphony' }&.fetch('catalogRecordId')
+  def catalog_record_id
+    dro.identification['catalogLinks'].find { |link| link['catalog'] == 'folio' }&.fetch('catalogRecordId')
   end
 end
