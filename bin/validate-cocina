@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 # Validates cocina model changes by loading each object into cocina to determine if an error is raised.
+# Also, transforms the cocina model to MODS.
 # This should be run on sdr-deploy since it requires using a version of cocina models that is not the latest release.
 # To select the cocina model version to test, adjust the Gemfile.
 # For example, gem 'cocina-models', github: 'sul-dlss/cocina-models', branch: 'test_me'
@@ -61,9 +62,10 @@ def validate(clazz, sample_size, processes)
                in_processes: processes,
                finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |slice_obj_ids|
     clazz.find(slice_obj_ids).map do |obj|
-      obj.to_cocina
+      cocina_obj = obj.to_cocina
+      Cocina::Models::Mapping::ToMods::Description.transform(cocina_obj.description, cocina_obj.externalIdentifier)
       [obj.external_identifier, nil]
-    rescue Dry::Struct::Error, Cocina::Models::ValidationError => e
+    rescue StandardError => e
       [obj.external_identifier, clazz.name, e.message]
     end
   end.flatten
