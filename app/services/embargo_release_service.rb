@@ -1,27 +1,23 @@
 # frozen_string_literal: true
 
 # Finds objects where the embargo release date has passed for embargoed items
-# Builds list of candidate objects by doing a Solr query
+# Builds list of candidate objects by querying the database
 #
 # Should run once a day from cron
 class EmbargoReleaseService
-  RELEASEABLE_NOW_QUERY = 'embargo_status_ssim:"embargoed" AND embargo_release_dtsim:[* TO NOW]'
-
   def self.release_all
     # Find objects to process
-    Rails.logger.info("***** Querying solr: #{RELEASEABLE_NOW_QUERY}")
-    solr = SolrService.get(RELEASEABLE_NOW_QUERY, 'rows' => '5000', 'fl' => 'id')
+    embargoed_items_to_release = Dro.embargoed_and_releaseable
 
-    num_found = solr['response']['numFound'].to_i
-    if num_found.zero?
+    if embargoed_items_to_release.none?
       Rails.logger.info('No objects to process')
       return
     end
-    Rails.logger.info("Found #{num_found} objects")
+    Rails.logger.info("Found #{embargoed_items_to_release.count} objects")
 
     count = 0
-    solr['response']['docs'].each do |doc|
-      release(doc['id'])
+    embargoed_items_to_release.each do |item|
+      release(item.external_identifier)
       count += 1
     end
 

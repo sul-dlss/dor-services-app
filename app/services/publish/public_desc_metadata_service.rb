@@ -57,7 +57,7 @@ module Publish
     # expand constituent relations into relatedItem references -- see JUMBO-18
     # @return [Void]
     def add_constituent_relations!
-      VirtualObject.for(druid: cocina_object.externalIdentifier).each do |solr_doc|
+      VirtualObject.for(druid: cocina_object.externalIdentifier).each do |virtual_object_hash|
         # create the MODS relation
         relatedItem = doc.create_element('relatedItem', xmlns: MODS_NS)
         relatedItem['type'] = 'host'
@@ -66,14 +66,14 @@ module Publish
         # load the title from the virtual object's DC.title
         titleInfo = doc.create_element('titleInfo', xmlns: MODS_NS)
         title = doc.create_element('title', xmlns: MODS_NS)
-        title.content = solr_doc.fetch(:title)
+        title.content = virtual_object_hash.fetch(:title)
         titleInfo << title
         relatedItem << titleInfo
 
         # point to the PURL for the virtual object
         location = doc.create_element('location', xmlns: MODS_NS)
         url = doc.create_element('url', xmlns: MODS_NS)
-        url.content = purl_url(solr_doc.fetch(:id))
+        url.content = purl_url(virtual_object_hash.fetch(:id))
         location << url
         relatedItem << location
 
