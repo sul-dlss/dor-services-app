@@ -10,8 +10,6 @@ namespace :cleanup do
     dryrun = args[:dryrun] || false
     druid = args[:druid]
 
-    $stdout.puts '*** DRY RUN - NO ACTIONS WILL BE PERFORMED' if dryrun
-
     $stdout.puts "This will completely stop accessioning for #{druid}. Are you sure? [y/n]:"
     raise 'Aborting' unless $stdin.gets.chomp == 'y'
 
@@ -38,10 +36,11 @@ namespace :cleanup do
     rows.each do |row|
       druid = row.first
       $stdout.puts druid
+
       begin
         cleanup_druid(druid, dryrun:)
       rescue StandardError => e
-        $stdout.puts "...skipped : #{e.message}"
+        $stdout.puts "Error stopping accessioning for #{druid}: #{e.message} #{e.backtrace.join("\n")}"
       end
     end
   end
@@ -64,18 +63,16 @@ namespace :cleanup do
     # Verify druid exists: this will raise an exception if the druid is not found
     object = CocinaObjectStore.find(druid)
 
-    # Verify this is a item type object
-    raise 'object is not an item: cannot proceed' unless object.dro?
-
+    $stdout.puts '*** DRY RUN - NO ACTIONS WILL BE PERFORMED' if dryrun
     $stdout.puts "...object found is an item: version #{object.version}"
 
     # Verify the current version has not made it to preservation by checking if it is openable:
     # if it is, then it must have been sent to preservation and therefore we must stop.
     raise "v#{object.version} of the object has already been sent to preservation: cannot proceed" if VersionService.can_open?(druid:, version: object.version)
 
-    # If `preservationIngestWF#complete-ingest` == waiting, then a step in this workflow is likely in error
+    # If `preservationIngestWF#complete-ingest` != completed, then a step in this workflow is likely in error (ie. preservation got part way and then failed)
     #  and we should stop, since extra remediation may be needed
-    raise "v#{object.version} of the object has preservationIngestWF#complete-ingest set to waiting: cannot proceed" if WorkflowClientFactory.build.workflow_status(druid:, workflow: 'preservationIngestWF', process: 'complete-ingest') == 'waiting'
+    raise "v#{object.version} of the object has preservationIngestWF#complete-ingest not completed: cannot proceed" unless WorkflowClientFactory.build.workflow_status(druid:, workflow: 'preservationIngestWF', process: 'complete-ingest') == 'completed'
 
     $stdout.puts "...v#{object.version} of the object has not been sent to preservation"
 
