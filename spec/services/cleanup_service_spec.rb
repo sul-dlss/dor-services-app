@@ -14,6 +14,8 @@ RSpec.describe CleanupService do
   let(:export_pathname) { Pathname(Settings.cleanup.local_export_home) }
   let(:bag_pathname) { export_pathname.join(druid.split(':').last) }
   let(:tarfile_pathname) { export_pathname.join("#{bag_pathname}.tar") }
+  let(:backup_path) { Pathname('tmp/stopped') }
+  let(:workspace_backup_path) { backup_path.join(File.basename(workitem_pathname), File.basename(workspace_root_pathname)) } # e.g. tmp/stopped/aa123bb4567/workspace
 
   before do
     allow(Settings.cleanup).to receive_messages(
@@ -38,6 +40,7 @@ RSpec.describe CleanupService do
     item_root_branch.rmtree if item_root_branch.exist?
     bag_pathname.rmtree     if bag_pathname.exist?
     tarfile_pathname.rmtree if tarfile_pathname.exist?
+    workspace_backup_path.rmtree if workspace_backup_path.exist?
   end
 
   it 'can find the fixtures workspace and export folders' do
@@ -56,6 +59,136 @@ RSpec.describe CleanupService do
     end
   end
 
+  describe '.stop_accessioning' do
+    let(:dro) { build(:ar_dro) }
+    let(:druid) { dro.external_identifier }
+    let(:version) { dro.version }
+    let(:client) { instance_double(Dor::Workflow::Client) }
+
+    before do
+      allow(CocinaObjectStore).to receive(:find).and_return(dro)
+      allow(described_class).to receive(:backup_content_by_druid)
+      allow(described_class).to receive(:cleanup_by_druid)
+      allow(described_class).to receive(:delete_accessioning_workflows)
+    end
+
+    context 'when object cannot be opened and preservationIngestWF exists and is completed' do
+      before do
+        allow(VersionService).to receive_messages(can_open?: false)
+        allow(WorkflowClientFactory).to receive(:build).and_return(client)
+        allow(client).to receive(:workflow_status).with(druid:, workflow: 'preservationIngestWF', process: 'complete-ingest').and_return('completed')
+      end
+
+      it 'backups, cleans up content, and delete workflows' do
+        described_class.stop_accessioning(druid, backup_path)
+        expect(described_class).to have_received(:backup_content_by_druid).once.with(druid, backup_path)
+        expect(described_class).to have_received(:cleanup_by_druid).once.with(druid)
+        expect(described_class).to have_received(:delete_accessioning_workflows).once.with(druid, version)
+      end
+
+      context 'when dryrun' do
+        it 'does nothing' do
+          described_class.stop_accessioning(druid, backup_path, dryrun: true)
+          expect(described_class).not_to have_received(:backup_content_by_druid)
+          expect(described_class).not_to have_received(:cleanup_by_druid)
+          expect(described_class).not_to have_received(:delete_accessioning_workflows)
+        end
+      end
+    end
+
+    context 'when object cannot be opened and preservationIngestWF does not exist' do
+      before do
+        allow(VersionService).to receive_messages(can_open?: false)
+        allow(WorkflowClientFactory).to receive(:build).and_return(client)
+        allow(client).to receive(:workflow_status).with(druid:, workflow: 'preservationIngestWF', process: 'complete-ingest').and_return(nil)
+      end
+
+      it 'backups, cleans up content, and delete workflows' do
+        described_class.stop_accessioning(druid, backup_path)
+        expect(described_class).to have_received(:backup_content_by_druid).once.with(druid, backup_path)
+        expect(described_class).to have_received(:cleanup_by_druid).once.with(druid)
+        expect(described_class).to have_received(:delete_accessioning_workflows).once.with(druid, version)
+      end
+    end
+
+    context 'when object can be opened (i.e. already in perservation)' do
+      before { allow(VersionService).to receive_messages(can_open?: true) }
+
+      it 'raises an exception and stops' do
+        expect { described_class.stop_accessioning(druid, backup_path) }.to raise_error StandardError
+        expect(described_class).not_to have_received(:backup_content_by_druid)
+        expect(described_class).not_to have_received(:cleanup_by_druid)
+        expect(described_class).not_to have_received(:delete_accessioning_workflows)
+      end
+    end
+
+    context 'when object cannot be opened but preservationIngestWF exists and is not complete (i.e. problem preserving)' do
+      before do
+        allow(VersionService).to receive_messages(can_open?: false)
+        allow(WorkflowClientFactory).to receive(:build).and_return(client)
+        allow(client).to receive(:workflow_status).with(druid:, workflow: 'preservationIngestWF', process: 'complete-ingest').and_return('waiting')
+      end
+
+      it 'raises an exception and stops' do
+        expect { described_class.stop_accessioning(druid, backup_path) }.to raise_error StandardError
+        expect(described_class).not_to have_received(:backup_content_by_druid)
+        expect(described_class).not_to have_received(:cleanup_by_druid)
+        expect(described_class).not_to have_received(:delete_accessioning_workflows)
+      end
+    end
+
+    context 'with bogus druid' do
+      it 'raises an exception and stops' do
+        expect { described_class.stop_accessioning('bogus', backup_path) }.to raise_error StandardError
+        expect(described_class).not_to have_received(:backup_content_by_druid)
+        expect(described_class).not_to have_received(:cleanup_by_druid)
+        expect(described_class).not_to have_received(:delete_accessioning_workflows)
+      end
+    end
+
+    context 'with object not found' do
+      before do
+        allow(CocinaObjectStore).to receive(:find).and_raise(CocinaObjectStore::CocinaObjectNotFoundError)
+      end
+
+      it 'raises an exception and stops' do
+        expect { described_class.stop_accessioning('druid:oo001oo0001', backup_path) }.to raise_error StandardError
+        expect(described_class).not_to have_received(:backup_content_by_druid)
+        expect(described_class).not_to have_received(:cleanup_by_druid)
+        expect(described_class).not_to have_received(:delete_accessioning_workflows)
+      end
+    end
+  end
+
+  describe '.backup_content_by_druid' do
+    before do
+      allow(described_class).to receive(:backup_content)
+    end
+
+    it 'calls backup_content for each workspace area' do
+      described_class.backup_content_by_druid(druid, backup_path)
+      expect(described_class).to have_received(:backup_content).once.with(druid, Settings.cleanup.local_workspace_root, backup_path)
+      expect(described_class).to have_received(:backup_content).once.with(druid, Settings.cleanup.local_assembly_root, backup_path)
+      expect(described_class).to have_received(:backup_content).once.with(druid, Settings.cleanup.local_export_home, backup_path)
+    end
+  end
+
+  describe '.delete_accessioning_workflows' do
+    let(:client) { instance_double(Dor::Workflow::Client, delete_workflow: nil) }
+    let(:version) { 1 }
+
+    before do
+      allow(WorkflowClientFactory).to receive(:build).and_return(client)
+    end
+
+    it 'calls workflow client to delete each accessioning workflow' do
+      described_class.delete_accessioning_workflows(druid, version)
+      expect(client).to have_received(:delete_workflow).once.with(druid:, workflow: 'accessionWF', version:)
+      expect(client).to have_received(:delete_workflow).once.with(druid:, workflow: 'assemblyWF', version:)
+      expect(client).to have_received(:delete_workflow).once.with(druid:, workflow: 'versioningWF', version:)
+    end
+  end
+
   describe '.cleanup_export' do
     before do
       allow(FileUtils).to receive(:rm_rf)
@@ -66,6 +199,16 @@ RSpec.describe CleanupService do
       described_class.send(:cleanup_export, druid)
       expect(FileUtils).to have_received(:rm_rf).once.with(fixtures.join('export/aa123bb4567').to_s)
       expect(FileUtils).to have_received(:rm_f).once.with(fixtures.join('export/aa123bb4567.tar').to_s)
+    end
+  end
+
+  describe '.backup_content' do
+    it 'backs up and then removes content from workspace area' do
+      expect(workspace_backup_path.join('content')).not_to exist # backup content is not there yet
+      expect(workitem_pathname.join('content')).to exist
+      described_class.send(:backup_content, druid, workspace_root_pathname, backup_path)
+      expect(workitem_pathname.join('content')).to exist # main content is still there!
+      expect(workspace_backup_path.join('content')).to exist # backup content is now there
     end
   end
 
