@@ -17,6 +17,8 @@ require 'action_view/railtie'
 # Needed to run Graphiql in development.
 require 'sprockets/railtie' if Rails.env.development?
 # require 'rails/test_unit/railtie'
+require 'active_support'
+require 'active_support/core_ext/integer/time'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.

@@ -84,7 +84,7 @@ RSpec.describe 'Administrative tags' do
              params: %( {"administrative_tags":#{tags.to_json}} ),
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:bad_request)
-        expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":"\"Content-Type\" request header must be set to \"application/json\"."}]}')
+        expect(response.body).to eq('{"errors":[{"title":"bad request","detail":"param is missing or the value is empty: administrative_tags"}]}')
       end
     end
 
@@ -184,7 +184,7 @@ RSpec.describe 'Administrative tags' do
             params: %( {"administrative_tag":"#{new_tag}"} ),
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:bad_request)
-        expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":"\"Content-Type\" request header must be set to \"application/json\"."}]}')
+        expect(response.body).to eq('{"errors":[{"title":"bad request","detail":"param is missing or the value is empty: administrative_tag"}]}')
       end
     end
 
