@@ -38,7 +38,6 @@ gem 'lograge'
 gem 'okcomputer'
 gem 'parallel' # used for validating cocina tools
 gem 'pg'
-gem 'puma', '~> 5.3' # app server
 gem 'retries' # for Goobi
 gem 'rsolr'
 gem 'rss', '~> 0.2' # Provides Time.w3cdtf used for BadW3cdtfDates report
@@ -68,6 +67,7 @@ end
 
 group :development do
   gem 'graphiql-rails' # GraphQL IDE
+  gem 'puma', '~> 6.0' # app server for dev
   gem 'sass-rails' # for GraphiQL
 end
 
