@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-# Find items that have catkeys and that are also constituents of a parent virtual object
+# Find items that have catalogRecordIds and that are also constituents of a parent virtual object
 
 # Invoke like so (dumps to a datestamped CSV):
-#  bin/rails r -e production "VirtualObjectConstituentsWithCatkeys.report(limit: 'ALL')" > constituent_druids_with_catkeys_`date --iso-8601=minutes`.csv
+#  bin/rails r -e production "VirtualObjectConstituentsWithcatalogRecordIds.report(limit: 'ALL')" > constituent_druids_with_catalog_record_ids_`date --iso-8601=minutes`.csv
 # To get a report of all parent druids for all constituent druids, you can do like so (also dumps to datestamped CSV):
-#  bin/rails r -e production "puts VirtualObjectConstituentsWithCatkeys.report(limit: 'ALL', print_catkey_report_to_stdout: false).parent_report_csv" > constituent_druids_parents_`date --iso-8601=minutes`.csv
+#  bin/rails r -e production "puts VirtualObjectConstituentsWithCatalogRecordIdss.report(limit: 'ALL', print_catalog_record_id_report_to_stdout: false).parent_report_csv" > constituent_druids_parents_`date --iso-8601=minutes`.csv
 # @note: if you use 'ALL' as the limit, this will iterate over all objects in SDR, and so may take a while (45ish minutes?) to run.
-class VirtualObjectConstituentsWithCatkeys
+class VirtualObjectConstituentsWithCatalogRecordIds
   MEMBER_ORDERS_JSON_PATH = '$.hasMemberOrders[*].members[*]'
 
   attr_accessor :limit, :member_orders_by_druid, :constituent_info
@@ -17,14 +17,14 @@ class VirtualObjectConstituentsWithCatkeys
   end
 
   # @param limit [String] value for the SQL query's LIMIT clause, defaults to a useful test run value
-  # @param print_catkey_report_to_stdout [boolean] default to dumping the CSV report of the constituents with catkeys to stdout
-  # @return [VirtualObjectConstituentsWithCatkeys] the new reporter instance; allows e.g.
-  #   `reporter = VirtualObjectConstituentsWithCatkeys.report(limit: 'ALL', false)` if you're running
+  # @param print_catalog_record_id_report_to_stdout [boolean] default to dumping the CSV report of the constituents with CatalogRecordIds to stdout
+  # @return [VirtualObjectConstituentsWithCatalogRecordIds] the new reporter instance; allows e.g.
+  #   `reporter = VirtualObjectConstituentsWithCatalogRecordIds.report(limit: 'ALL', false)` if you're running
   #   from console and want to look at the results objects more closely, instead of just dumping a CSV
-  def self.report(limit: '1', print_catkey_report_to_stdout: true)
+  def self.report(limit: '1', print_catalog_record_id_report_to_stdout: true)
     new(limit:).tap do |reporter|
-      reporter.fetch_constituent_catkeys
-      puts reporter.catkey_report_csv if print_catkey_report_to_stdout
+      reporter.fetch_constituent_catalog_record_ids
+      puts reporter.catalog_record_id_report_csv if print_catalog_record_id_report_to_stdout
     end
   end
 
@@ -43,9 +43,9 @@ class VirtualObjectConstituentsWithCatkeys
     self.class.constituent_druid_sql(limit:)
   end
 
-  def catkey_report_csv
+  def catalog_record_id_report_csv
     CSV.generate do |csv|
-      catkey_report_rows.each { |catkey_report_row| csv << catkey_report_row }
+      catalog_record_id_report_rows.each { |catalog_record_id_report_row| csv << catalog_record_id_report_row }
     end
   end
 
@@ -71,21 +71,21 @@ class VirtualObjectConstituentsWithCatkeys
   end
 
   # assumes #fetch_member_orders_by_druid_and_constituent_parents already run.
-  # for each constituent druid we've already found in that first query, look up the constituent's record, and store any catkeys it might have.
-  def fetch_constituent_catkeys
+  # for each constituent druid we've already found in that first query, look up the constituent's record, and store any CatalogRecordIds it might have.
+  def fetch_constituent_catalog_record_ids
     fetch_member_orders_by_druid_and_constituent_parents
     constituent_info.each_key do |constituent_druid|
       dro = Dro.find_by(external_identifier: constituent_druid)
-      @constituent_info[constituent_druid][:catkeys] = dro.identification['catalogLinks'].select { |catalog_link| catalog_link['catalog'] == 'symphony' }
+      @constituent_info[constituent_druid][:catalog_record_ids] = dro.identification['catalogLinks'].select { |catalog_link| catalog_link['catalog'] == 'folio' }
     end
   end
 
   # a list of two value lists for use in making a CSV: a constituent druid, and one of its
-  # catkeys (if a constituent has multiple catkeys, it will have multiple rows)
-  def catkey_report_rows
-    constituent_info_with_catkeys = constituent_info.select { |_druid, info_hash| info_hash[:catkeys].present? }
-    constituent_info_with_catkeys.map do |druid, info_hash|
-      info_hash[:catkeys].map { |catalog_link| [druid, catalog_link['catalogRecordId']] }.flatten
+  # catalog_record_ids (if a constituent has multiple catalog_record_ids, it will have multiple rows)
+  def catalog_record_id_report_rows
+    constituent_info_with_catalog_record_ids = constituent_info.select { |_druid, info_hash| info_hash[:catalog_record_ids].present? }
+    constituent_info_with_catalog_record_ids.map do |druid, info_hash|
+      info_hash[:catalog_record_ids].map { |catalog_link| [druid, catalog_link['catalogRecordId']] }.flatten
     end
   end
 

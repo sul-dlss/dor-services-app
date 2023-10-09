@@ -21,14 +21,14 @@ class EventsMultipleDateTypes
   SQL = <<~SQL.squish.freeze
     SELECT jsonb_path_query(description, '#{EVENT_JSONB_PATH}') ->> 0 as event,
            external_identifier,
-           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "symphony").catalogRecordId') ->> 0 as catkey,
+           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
            jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_id
            FROM "dros" WHERE
            jsonb_path_exists(description, '#{EVENT_WITH_TYPED_DATE_JSONB_PATH}')
   SQL
 
   def self.report
-    puts "item_druid,catkey,collection_druid,collection_name,date_types\n"
+    puts "item_druid,catalogRecordId,collection_druid,collection_name,date_types\n"
 
     result_rows(SQL).compact.each { |row| puts row }
   end
@@ -48,7 +48,7 @@ class EventsMultipleDateTypes
 
         [
           id,
-          rows.first['catkey'],
+          rows.first['catalogRecordId'],
           collection_druid,
           "\"#{collection_name}\"",
           event_date_types.join(';')
@@ -56,7 +56,7 @@ class EventsMultipleDateTypes
       end
   end
 
-  # @param sql_result_rows [Array<Hash>] hash has keys: event, external_identifier, catkey, ...
+  # @param sql_result_rows [Array<Hash>] hash has keys: event, external_identifier, catalogRecordId, ...
   # @return [Array<String>] the unique types from each date in an event
   def self.event_date_types(sql_result_rows)
     event_date_types = []

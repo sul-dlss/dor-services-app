@@ -25,14 +25,14 @@ class InvalidFormSourceCodes
   SQL = <<~SQL.squish.freeze
     SELECT jsonb_path_query(description, '#{JSON_PATH} ? (@ like_regex "#{REGEX}")') ->> 0 as value,
            external_identifier,
-           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "symphony").catalogRecordId') ->> 0 as catkey,
+           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
            jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_id
            FROM "dros" WHERE
            jsonb_path_exists(description, '#{JSON_PATH} ? (@ like_regex "#{REGEX}")')
   SQL
 
   def self.report
-    puts "item_druid,catkey,collection_druid,collection_name,value\n"
+    puts "item_druid,catalogRecordId,collection_druid,collection_name,value\n"
 
     rows(SQL).each { |row| puts row }
   end
@@ -49,7 +49,7 @@ class InvalidFormSourceCodes
 
       [
         id,
-        rows.first['catkey'],
+        rows.first['catalogRecordId'],
         collection_druid,
         "\"#{collection_name}\"",
         rows.pluck('value').join(';')

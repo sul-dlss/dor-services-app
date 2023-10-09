@@ -16,14 +16,14 @@ class InvalidNameUris
   SQL = <<~SQL.squish.freeze
     SELECT jsonb_path_query_array(description, '#{JSON_PATH} ? (@ like_regex #{REGEX})') as contrib,
            external_identifier,
-           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "symphony").catalogRecordId') ->> 0 as catkey,
+           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
            jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_id
            FROM "dros" WHERE
            jsonb_path_exists(description, '#{JSON_PATH} ? (@ like_regex #{REGEX})')
   SQL
 
   def self.report
-    puts "item_druid,catkey,collection_druid,value\n"
+    puts "item_druid,catalogRecordId,collection_druid,value\n"
     rows(SQL).each do |row|
       puts row
     end
@@ -35,7 +35,7 @@ class InvalidNameUris
     grouped = result.to_a.group_by { |row| row['external_identifier'] }
     grouped.map do |id, rows|
       contrib = rows.map { |row| JSON.parse(row['contrib']) }.join(';')
-      [id, rows.first['catkey'], rows.first['collection_id'], contrib].join(',')
+      [id, rows.first['catalogRecordId'], rows.first['collection_id'], contrib].join(',')
     end
   end
 end

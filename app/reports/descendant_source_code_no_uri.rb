@@ -22,7 +22,7 @@ class DescendantSourceCodeNoUri
            FROM "dros",
            jsonb_path_query(dros.description, '#{JSONB_PATH}') desc_value
            WHERE
-           NOT jsonb_path_exists(dros.identification, '$.catalogLinks[*] ? (@.catalog == "symphony").catalogRecordId')
+           NOT jsonb_path_exists(dros.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId')
            AND jsonb_path_exists(dros.description, '#{JSONB_PATH}')
   SQL
 
