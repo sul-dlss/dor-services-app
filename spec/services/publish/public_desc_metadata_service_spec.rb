@@ -115,7 +115,10 @@ RSpec.describe Publish::PublicDescMetadataService do
       allow(Settings.stacks).to receive(:document_cache_host).and_return('purl.stanford.edu')
     end
 
-    context 'with a descriptive metadata' do
+    context 'with descriptive metadata' do
+      let(:abstract_text) do
+        "This is a test abstract with line breaks and some links, such as https://sdr-stage.stanford.edu/\r\n\r\nThis is a second line without any links.\r\n\r\nThis is a third line with a link -- https://sdr-stage.stanford.edu/ -- in the middle of a line."
+      end
       let(:description) do
         { title: [{ value: 'Slides, IA, Geodesic Domes [1 of 2]' }],
           purl: 'https://purl.stanford.edu/bc123df4567',
@@ -125,7 +128,9 @@ RSpec.describe Publish::PublicDescMetadataService do
           identifier: [{ displayLabel: 'Image ID', type: 'local', value: 'M1090_S15_B01_F01_0055' }],
           relatedResource: [{ access: { physicalLocation: [{ value: 'Series 15 | Box 1 | Folder 1', type: 'location' }] }, type: 'part of' }],
           access: { accessContact: [{ value: 'Stanford University. Libraries. Dept. of Special Collections and Stanford University Archives.', type: 'repository' }],
-                    note: [{ value: 'Property rights reside with the repository.' }] } }
+                    note: [{ value: 'Property rights reside with the repository.' }] },
+          note: [{ value: abstract_text,
+                   type: 'abstract' }] }
       end
 
       it 'adds collections and generates accessConditions' do
@@ -146,6 +151,10 @@ RSpec.describe Publish::PublicDescMetadataService do
         expect(doc.xpath('//xmlns:accessCondition[@type="useAndReproduction"]').text).to match(/yada/)
         expect(doc.xpath('//xmlns:accessCondition[@type="copyright"]').text).to match(/Property rights reside with/)
         expect(doc.xpath('//xmlns:accessCondition[@type="license"]').text).to eq 'This work is licensed under a Creative Commons Attribution Non Commercial 3.0 Unported license (CC BY-NC).'
+      end
+
+      it 'normalizes carriage returns in the returned string' do
+        expect(xml).to include(abstract_text)
       end
     end
   end
