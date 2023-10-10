@@ -19,7 +19,13 @@ module Publish
     # @return [String] Public descriptive medatada XML
     # @params [Hash] _opts ({}) Rails sends args when rendering XML but we ignore them
     def to_xml(_opts = {})
-      ng_xml(include_access_conditions: true).to_xml
+      # NOTE: The gsub below handling carriage return characters is a workaround
+      #        for a bug in libxml2 that the Nokogiri maintainers don't want to
+      #        address in Rubyland. They recommend using `#gsub` on the string
+      #        returned from `#to_xml`: https://github.com/sparklemotion/nokogiri/issues/1356
+      ng_xml(include_access_conditions: true)
+        .to_xml
+        .gsub('&#13;', "\r")
     end
 
     # @return [Nokogiri::XML::Document]
