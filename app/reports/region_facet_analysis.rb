@@ -9,7 +9,7 @@ class RegionFacetAnalysis
   JSONB_SUBJECT_QUERY = 'strict $.subject'
   SQL = <<~SQL.squish.freeze
     SELECT dros.external_identifier as item_druid,
-          jsonb_path_query(description, '$.subject[*] ? (@.type == "place")') ->> 0 as subject
+          jsonb_path_query(description, '$.subject[*] ? (@.type == "place")') as subject
           FROM "dros"
           WHERE
           jsonb_path_exists(description, '$.subject[*] ? (@.type == "place")')
@@ -28,9 +28,10 @@ class RegionFacetAnalysis
     sql_result_rows.map do |row|
       # collection_druid = row['collection_druid']
       # collection_name = Collection.find_by(external_identifier: collection_druid)&.label
+      subject = JSON.parse(row['subject'])
       [
         row['item_druid'],
-        row['subject']
+        subject['value']
         # row['subject']['source']&.fetch('uri'),
         # row['subject']['source']&.fetch('code')
       ].join(',')
