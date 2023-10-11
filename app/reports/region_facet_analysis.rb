@@ -17,7 +17,7 @@ class RegionFacetAnalysis
   SQL
 
   def self.report
-    puts "item_druid,subject\n"
+    puts "druid,value,uri,source_uri,source_code\n"
 
     rows(SQL).compact.each { |row| puts row }
   end
@@ -30,7 +30,9 @@ class RegionFacetAnalysis
       # collection_name = Collection.find_by(external_identifier: collection_druid)&.label
       [
         row['item_druid'],
-        row['subject']
+        row['subject']['value'],
+        row['subject']['source']&.fetch('uri'),
+        row['subject']['source']&.fetch('code')
       ].join(',')
     end
   end
