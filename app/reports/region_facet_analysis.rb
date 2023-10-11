@@ -31,7 +31,7 @@ class RegionFacetAnalysis
       subject = JSON.parse(row['subject'])
       [
         row['item_druid'],
-        subject['value']
+        subject['value'],
         subject['source']&.fetch('uri'),
         subject['source']&.fetch('code')
       ].join(',')
