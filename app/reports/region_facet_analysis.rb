@@ -9,7 +9,7 @@ class RegionFacetAnalysis
   JSONB_SUBJECT_QUERY = 'strict $.subject'
   SQL = <<~SQL.squish.freeze
     SELECT dros.external_identifier as item_druid,
-          jsonb_path_query_array(description, '#{JSONB_SUBJECT_QUERY}') as subject
+          jsonb_path_query(description, '$.subject[*] ? (@.type == "place")') as subject
           FROM "dros"
           WHERE
           jsonb_path_exists(description, '$.subject[*] ? (@.type == "place")')
