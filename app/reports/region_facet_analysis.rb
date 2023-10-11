@@ -32,8 +32,8 @@ class RegionFacetAnalysis
       [
         row['item_druid'],
         subject['value'],
-        subject['source']&.fetch('uri'),
-        subject['source']&.fetch('code')
+        subject['source']&.fetch('uri', ''),
+        subject['source']&.fetch('code', '')
       ].join(',')
     end
   end
