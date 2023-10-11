@@ -30,7 +30,7 @@ class RegionFacetAnalysis
       # collection_name = Collection.find_by(external_identifier: collection_druid)&.label
       [
         row['item_druid'],
-        row['subject'].class
+        row['subject']
         # row['subject']['source']&.fetch('uri'),
         # row['subject']['source']&.fetch('code')
       ].join(',')
