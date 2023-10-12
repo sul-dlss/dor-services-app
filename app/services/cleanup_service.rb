@@ -5,9 +5,8 @@ require 'pathname'
 # Remove all traces of the object's data files from the workspace and export areas
 class CleanupService
   # @param [String] druid The identifier for the object for which we will stop accessioning
-  # @param [String] backup_path The base directory to backup to
   # @param [boolean] dryrun if true, will just display output but not perform actions
-  def self.stop_accessioning(druid, backup_path, dryrun: false)
+  def self.stop_accessioning(druid, dryrun: false)
     # This will raise an exception if an invalid format (or no) druid is passed in
     druid_obj = DruidTools::Druid.new(druid)
 
@@ -33,7 +32,7 @@ class CleanupService
 
     # backup folders
     $stdout.puts '...backing up content folders'
-    backup_content_by_druid(druid, backup_path) unless dryrun
+    backup_content_by_druid(druid) unless dryrun
 
     # delete workspace folders
     $stdout.puts '...deleting content folders'
@@ -55,11 +54,10 @@ class CleanupService
   end
 
   # @param [String] druid The identifier for the object whose data is to be backed up
-  # @param [String] backup_path The base directory to backup to
-  def self.backup_content_by_druid(druid, backup_path)
-    backup_content(druid, Settings.cleanup.local_workspace_root, backup_path)
-    backup_content(druid, Settings.cleanup.local_assembly_root, backup_path)
-    backup_content(druid, Settings.cleanup.local_export_home, backup_path)
+  def self.backup_content_by_druid(druid)
+    backup_content(druid, Settings.cleanup.local_workspace_root, Settings.cleanup.local_backup_path)
+    backup_content(druid, Settings.cleanup.local_assembly_root, Settings.cleanup.local_backup_path)
+    backup_content(druid, Settings.cleanup.local_export_home, Settings.cleanup.local_backup_path)
   end
 
   # @param [String] druid The identifier for the object whose accessioning workflows should be deleted

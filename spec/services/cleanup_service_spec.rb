@@ -14,14 +14,14 @@ RSpec.describe CleanupService do
   let(:export_pathname) { Pathname(Settings.cleanup.local_export_home) }
   let(:bag_pathname) { export_pathname.join(druid.split(':').last) }
   let(:tarfile_pathname) { export_pathname.join("#{bag_pathname}.tar") }
-  let(:backup_path) { Pathname('tmp/stopped') }
-  let(:workspace_backup_path) { backup_path.join(File.basename(workitem_pathname), File.basename(workspace_root_pathname)) } # e.g. tmp/stopped/aa123bb4567/workspace
+  let(:workspace_backup_path) { Pathname(Settings.cleanup.local_backup_path).join(File.basename(workitem_pathname), File.basename(workspace_root_pathname)) } # e.g. tmp/stopped/aa123bb4567/workspace
 
   before do
     allow(Settings.cleanup).to receive_messages(
       local_workspace_root: fixtures.join('workspace').to_s,
       local_export_home: fixtures.join('export').to_s,
-      local_assembly_root: fixtures.join('assembly').to_s
+      local_assembly_root: fixtures.join('assembly').to_s,
+      local_backup_path: Rails.root.join('tmp/stopped').to_s
     )
     workitem_pathname.rmtree if workitem_pathname.exist?
     export_pathname = Pathname(Settings.cleanup.local_export_home)
@@ -80,15 +80,15 @@ RSpec.describe CleanupService do
       end
 
       it 'backups, cleans up content, and delete workflows' do
-        described_class.stop_accessioning(druid, backup_path)
-        expect(described_class).to have_received(:backup_content_by_druid).once.with(druid, backup_path)
+        described_class.stop_accessioning(druid)
+        expect(described_class).to have_received(:backup_content_by_druid).once.with(druid)
         expect(described_class).to have_received(:cleanup_by_druid).once.with(druid)
         expect(described_class).to have_received(:delete_accessioning_workflows).once.with(druid, version)
       end
 
       context 'when dryrun' do
         it 'does nothing' do
-          described_class.stop_accessioning(druid, backup_path, dryrun: true)
+          described_class.stop_accessioning(druid, dryrun: true)
           expect(described_class).not_to have_received(:backup_content_by_druid)
           expect(described_class).not_to have_received(:cleanup_by_druid)
           expect(described_class).not_to have_received(:delete_accessioning_workflows)
@@ -104,8 +104,8 @@ RSpec.describe CleanupService do
       end
 
       it 'backups, cleans up content, and delete workflows' do
-        described_class.stop_accessioning(druid, backup_path)
-        expect(described_class).to have_received(:backup_content_by_druid).once.with(druid, backup_path)
+        described_class.stop_accessioning(druid)
+        expect(described_class).to have_received(:backup_content_by_druid).once.with(druid)
         expect(described_class).to have_received(:cleanup_by_druid).once.with(druid)
         expect(described_class).to have_received(:delete_accessioning_workflows).once.with(druid, version)
       end
@@ -115,7 +115,7 @@ RSpec.describe CleanupService do
       before { allow(VersionService).to receive_messages(can_open?: true) }
 
       it 'raises an exception and stops' do
-        expect { described_class.stop_accessioning(druid, backup_path) }.to raise_error StandardError
+        expect { described_class.stop_accessioning(druid) }.to raise_error StandardError
         expect(described_class).not_to have_received(:backup_content_by_druid)
         expect(described_class).not_to have_received(:cleanup_by_druid)
         expect(described_class).not_to have_received(:delete_accessioning_workflows)
@@ -130,7 +130,7 @@ RSpec.describe CleanupService do
       end
 
       it 'raises an exception and stops' do
-        expect { described_class.stop_accessioning(druid, backup_path) }.to raise_error StandardError
+        expect { described_class.stop_accessioning(druid) }.to raise_error StandardError
         expect(described_class).not_to have_received(:backup_content_by_druid)
         expect(described_class).not_to have_received(:cleanup_by_druid)
         expect(described_class).not_to have_received(:delete_accessioning_workflows)
@@ -139,7 +139,7 @@ RSpec.describe CleanupService do
 
     context 'with bogus druid' do
       it 'raises an exception and stops' do
-        expect { described_class.stop_accessioning('bogus', backup_path) }.to raise_error StandardError
+        expect { described_class.stop_accessioning('bogus') }.to raise_error StandardError
         expect(described_class).not_to have_received(:backup_content_by_druid)
         expect(described_class).not_to have_received(:cleanup_by_druid)
         expect(described_class).not_to have_received(:delete_accessioning_workflows)
@@ -152,7 +152,7 @@ RSpec.describe CleanupService do
       end
 
       it 'raises an exception and stops' do
-        expect { described_class.stop_accessioning('druid:oo001oo0001', backup_path) }.to raise_error StandardError
+        expect { described_class.stop_accessioning('druid:oo001oo0001') }.to raise_error StandardError
         expect(described_class).not_to have_received(:backup_content_by_druid)
         expect(described_class).not_to have_received(:cleanup_by_druid)
         expect(described_class).not_to have_received(:delete_accessioning_workflows)
@@ -166,10 +166,10 @@ RSpec.describe CleanupService do
     end
 
     it 'calls backup_content for each workspace area' do
-      described_class.backup_content_by_druid(druid, backup_path)
-      expect(described_class).to have_received(:backup_content).once.with(druid, Settings.cleanup.local_workspace_root, backup_path)
-      expect(described_class).to have_received(:backup_content).once.with(druid, Settings.cleanup.local_assembly_root, backup_path)
-      expect(described_class).to have_received(:backup_content).once.with(druid, Settings.cleanup.local_export_home, backup_path)
+      described_class.backup_content_by_druid(druid)
+      expect(described_class).to have_received(:backup_content).once.with(druid, Settings.cleanup.local_workspace_root, Settings.cleanup.local_backup_path)
+      expect(described_class).to have_received(:backup_content).once.with(druid, Settings.cleanup.local_assembly_root, Settings.cleanup.local_backup_path)
+      expect(described_class).to have_received(:backup_content).once.with(druid, Settings.cleanup.local_export_home, Settings.cleanup.local_backup_path)
     end
   end
 
@@ -206,7 +206,7 @@ RSpec.describe CleanupService do
     it 'backs up and then removes content from workspace area' do
       expect(workspace_backup_path.join('content')).not_to exist # backup content is not there yet
       expect(workitem_pathname.join('content')).to exist
-      described_class.send(:backup_content, druid, workspace_root_pathname, backup_path)
+      described_class.send(:backup_content, druid, workspace_root_pathname, Settings.cleanup.local_backup_path)
       expect(workitem_pathname.join('content')).to exist # main content is still there!
       expect(workspace_backup_path.join('content')).to exist # backup content is now there
     end
