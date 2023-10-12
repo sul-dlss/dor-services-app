@@ -13,7 +13,7 @@ namespace :cleanup do
     $stdout.puts "This will completely stop accessioning for #{druid}. Are you sure? [y/n]:"
     raise 'Aborting' unless $stdin.gets.chomp == 'y'
 
-    CleanupService.stop_accessioning(druid, '/dor/stopped', dryrun:)
+    CleanupService.stop_accessioning(druid, dryrun:)
   end
 
   # Stop accessioning in progress for multiple druids supplied in a CSV (one per line, no header)
@@ -33,10 +33,11 @@ namespace :cleanup do
 
     rows.each do |row|
       druid = row.first
+      $stdout.puts '====='
       $stdout.puts druid
 
       begin
-        CleanupService.stop_accessioning(druid, '/dor/stopped', dryrun:)
+        CleanupService.stop_accessioning(druid, dryrun:)
       rescue StandardError => e
         $stdout.puts "Error stopping accessioning for #{druid}: #{e.message} #{e.backtrace.join("\n")}"
       end
