@@ -29,6 +29,9 @@ class FolioCheck < OkComputer::Check
     else
       mark_message 'folio disabled'
     end
+  rescue StandardError => e
+    mark_failure
+    "#{e.class.name} received: #{e.message}."
   end
 end
 
