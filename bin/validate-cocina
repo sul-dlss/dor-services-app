@@ -68,7 +68,7 @@ def validate(clazz, sample_size, processes)
     rescue StandardError => e
       [obj.external_identifier, clazz.name, e.message]
     end
-  end.flatten
+  end.flatten(1)
 end
 
 results = validate(Dro, options[:sample],
