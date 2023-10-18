@@ -34,7 +34,7 @@ gem 'honeybadger', '~> 4.12'
 gem 'jbuilder'
 gem 'jsonpath', '~> 1.1' # used for metadata reports
 gem 'jwt' # json web token
-gem 'lograge'
+# gem 'lograge'
 gem 'okcomputer'
 gem 'parallel' # used for validating cocina tools
 gem 'pg'
