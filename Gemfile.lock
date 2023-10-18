@@ -613,7 +613,7 @@ DEPENDENCIES
   pry-byebug
   puma (~> 6.0)
   rack-console
-  rails (~> 7.0)
+  rails (~> 7.1.0)
   retries
   rsolr
   rspec-rails
