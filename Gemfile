@@ -30,7 +30,7 @@ gem 'edtf', '~> 3.0' # used for metadata reports
 gem 'equivalent-xml' # for diffing MODS
 gem 'faraday', '~> 2.0'
 gem 'faraday-retry'
-gem 'honeybadger', '~> 4.12'
+gem 'honeybadger'
 gem 'jbuilder'
 gem 'jsonpath', '~> 1.1' # used for metadata reports
 gem 'jwt' # json web token
