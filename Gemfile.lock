@@ -244,7 +244,7 @@ GEM
       racc (~> 1.4)
     hashdiff (1.0.1)
     hashie (5.0.0)
-    honeybadger (4.12.2)
+    honeybadger (5.2.1)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
@@ -598,7 +598,7 @@ DEPENDENCIES
   folio_client (~> 0.8)
   graphiql-rails
   graphql
-  honeybadger (~> 4.12)
+  honeybadger
   jbuilder
   jsonpath (~> 1.1)
   jwt
