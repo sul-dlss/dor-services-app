@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-gem 'rails', '~> 7.0'
+gem 'rails', '~> 7.1.0'
 
 # DLSS/domain-specific dependencies
 gem 'cocina-models', '~> 0.91.0'
