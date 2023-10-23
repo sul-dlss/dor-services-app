@@ -93,7 +93,7 @@ GEM
       amq-protocol (~> 2.3, >= 2.3.1)
       sorted_set (~> 1, >= 1.0.2)
     byebug (11.1.3)
-    capistrano (3.17.3)
+    capistrano (3.18.0)
       airbrussh (>= 1.0.0)
       i18n
       rake (>= 10.0.0)
@@ -113,7 +113,7 @@ GEM
       capistrano-bundler (>= 1.1, < 3)
     capistrano-shared_configs (0.2.2)
     chronic (0.10.2)
-    cocina-models (0.91.2)
+    cocina-models (0.91.4)
       activesupport
       deprecation
       dry-struct (~> 1.0)
@@ -135,7 +135,7 @@ GEM
       rack (>= 1.5)
     commonmarker (0.23.10)
     concurrent-ruby (1.2.2)
-    config (4.2.1)
+    config (5.0.0)
       deep_merge (~> 1.2, >= 1.2.1)
       dry-validation (~> 1.0, >= 1.0.0)
     connection_pool (2.4.1)
@@ -303,7 +303,7 @@ GEM
     multi_json (1.15.0)
     multi_xml (0.6.0)
     mutex_m (0.1.2)
-    net-imap (0.4.1)
+    net-imap (0.4.2)
       date
       net-protocol
     net-pop (0.1.2)
@@ -355,7 +355,7 @@ GEM
     pry-byebug (3.10.1)
       byebug (~> 11.0)
       pry (>= 0.13, < 0.15)
-    psych (5.1.1)
+    psych (5.1.1.1)
       stringio
     public_suffix (5.0.3)
     puma (6.4.0)
@@ -406,7 +406,7 @@ GEM
     rbtree (0.4.6)
     rdoc (6.5.0)
       psych (>= 4.0.0)
-    redis-client (0.17.0)
+    redis-client (0.17.1)
       connection_pool
     regexp_parser (2.8.2)
     reline (0.3.9)
@@ -535,7 +535,7 @@ GEM
       attr_extras (>= 6.2.4)
       diff-lcs
       patience_diff
-    thor (1.2.2)
+    thor (1.3.0)
     tilt (2.3.0)
     timeout (0.4.0)
     tty-cursor (0.7.1)
