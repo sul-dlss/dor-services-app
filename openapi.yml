@@ -2183,6 +2183,9 @@ components:
         hasMimeType:
           description: MIME Type of the File.
           type: string
+        languageTag:
+          description: "BCP 47 language tag: https://www.rfc-editor.org/rfc/rfc4646.txt -- other applications (like media players) expect language codes of this format, see e.g. https://videojs.com/guides/text-tracks/#srclang"
+          type: string
         use:
           description: Use for the File.
           type: string
@@ -2894,6 +2897,8 @@ components:
         version:
           type: integer
         hasMimeType:
+          type: string
+        languageTag:
           type: string
         externalIdentifier:
           type: string
