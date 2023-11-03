@@ -305,6 +305,7 @@ RSpec.describe 'Update object' do
           'filename' => '00001.html',
           'label' => '00001.html',
           'hasMimeType' => 'text/html',
+          'languageTag' => 'aqp-Latn-US',
           'use' => 'transcription',
           'administrative' => {
             'publish' => false,
@@ -462,6 +463,7 @@ RSpec.describe 'Update object' do
                       filename: '00001.html',
                       version: 1,
                       hasMimeType: 'text/html',
+                      languageTag: 'aqp-Latn-US',
                       use: 'transcription',
                       hasMessageDigests: [
                         {
