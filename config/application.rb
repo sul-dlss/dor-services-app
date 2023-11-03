@@ -52,6 +52,7 @@ module DorServices
       Committee::Middleware::RequestValidation,
       schema_path: 'openapi.yml',
       strict: true,
+      strict_reference_validation: true,
       error_class: JSONAPIError,
       accept_request_filter: accept_proc,
       parse_response_by_content_type: false,
@@ -63,6 +64,7 @@ module DorServices
       config.middleware.use(
         Committee::Middleware::ResponseValidation,
         schema_path: 'openapi.yml',
+        strict_reference_validation: true,
         parse_response_by_content_type: true,
         query_hash_key: 'rack.request.query_hash',
         raise: true,
