@@ -2,8 +2,7 @@
 
 require 'rails_helper'
 
-# rights objects for testing can be found at:
-# https://argo-stage.stanford.edu/catalog?f%5Bnonhydrus_collection_title_ssim%5D%5B%5D=rights+examples
+# check with SDR Manager to get the exhaustive list of possible rights
 RSpec.describe Publish::RightsMetadata do
   subject(:service) { described_class.new(cocina_object, release_date) }
 
