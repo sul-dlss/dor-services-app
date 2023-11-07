@@ -83,6 +83,7 @@ module Cocina
           file_node['shelve'] = shelve_attr(cocina_file)
           file_node['preserve'] = preserve_attr(cocina_file)
           file_node['role'] = cocina_file.use if cocina_file.use
+          file_node['language'] = cocina_file.languageTag if cocina_file.languageTag
           Array(cocina_file.hasMessageDigests).each do |message_digest|
             file_node.add_child(create_checksum_node(message_digest.type, message_digest.digest))
           end

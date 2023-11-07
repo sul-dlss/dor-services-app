@@ -22,6 +22,7 @@ RSpec.describe Cocina::ToXml::ContentMetadataGenerator do
       'hasMimeType' => 'text/html',
       'use' => 'transcription',
       'size' => 997,
+      'languageTag' => 'en',
       'administrative' => {
         'publish' => false,
         'sdrPreserve' => true,
@@ -209,7 +210,7 @@ RSpec.describe Cocina::ToXml::ContentMetadataGenerator do
           <bookData readingOrder="rtl" />
           <resource id="https://cocina.sul.stanford.edu/fileSet/bc123df5678-123-456-789" sequence="1" type="page">
             <label>Page 1</label>
-            <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
+            <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription" language="en">
               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
               <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
             </file>
@@ -239,7 +240,7 @@ RSpec.describe Cocina::ToXml::ContentMetadataGenerator do
         <contentMetadata objectId="druid:bc123df5678" type="image">
           <resource id="https://cocina.sul.stanford.edu/fileSet/bc123df5678-123-456-789" sequence="1" type="file">
             <label>Page 1</label>
-            <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
+            <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription" language="en">
               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
               <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
             </file>
@@ -264,7 +265,7 @@ RSpec.describe Cocina::ToXml::ContentMetadataGenerator do
         <contentMetadata objectId="druid:bc123df5678" type="image">
           <resource id="https://cocina.sul.stanford.edu/fileSet/bc123df5678-123-456-789" sequence="1" type="file">
             <label>Page 1</label>
-            <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
+            <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription" language="en">
               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
               <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
             </file>
@@ -424,7 +425,7 @@ RSpec.describe Cocina::ToXml::ContentMetadataGenerator do
         <contentMetadata objectId="druid:bc123df5678" type="document">
           <resource id="https://cocina.sul.stanford.edu/fileSet/bc123df5678-123-456-789" sequence="1" type="file">
             <label>Page 1</label>
-            <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
+            <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription" language="en">
               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
               <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
             </file>
@@ -709,7 +710,7 @@ RSpec.describe Cocina::ToXml::ContentMetadataGenerator do
         <contentMetadata objectId="druid:bc123df5678" type="book">
           <resource id="https://cocina.sul.stanford.edu/fileSet/bc123df5678-012-345-678" sequence="1" type="file">
             <label>Page 1</label>
-            <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription">
+            <file id="00001.html" mimetype="text/html" size="997" preserve="yes" publish="no" shelve="no" role="transcription" language="en">
               <checksum type="sha1">cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7</checksum>
               <checksum type="md5">e6d52da47a5ade91ae31227b978fb023</checksum>
             </file>
