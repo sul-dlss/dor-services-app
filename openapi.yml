@@ -2184,11 +2184,9 @@ components:
           description: MIME Type of the File.
           type: string
         languageTag:
-          description: "BCP 47 language tag: https://www.rfc-editor.org/rfc/rfc4646.txt -- other applications (like media players) expect language codes of this format, see e.g. https://videojs.com/guides/text-tracks/#srclang"
-          type: string
+          $ref: '#/components/schemas/LanguageTag'
         use:
-          description: Use for the File.
-          type: string
+          $ref: '#/components/schemas/FileUse'
         hasMessageDigests:
           type: array
           items:
@@ -2283,6 +2281,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/File'
+    FileUse:
+      description: Use for the File.
+      type: string
+      nullable: true
     FolioCatalogLink:
       description: A linkage between an object and a Folio catalog record
       type: object
@@ -2411,6 +2413,10 @@ components:
         valueLanguage:
           # description: present for mapping to additional schemas in the future and for consistency but not otherwise used
           $ref: "#/components/schemas/DescriptiveValueLanguage"
+    LanguageTag:
+      description: "BCP 47 language tag: https://www.rfc-editor.org/rfc/rfc4646.txt -- other applications (like media players) expect language codes of this format, see e.g. https://videojs.com/guides/text-tracks/#srclang"
+      type: string
+      nullable: true
     License:
       description: The license governing reuse of the DRO. Should be an IRI for known licenses (i.e. CC, RightsStatement.org URI, etc.).
       type: string
@@ -2899,11 +2905,11 @@ components:
         hasMimeType:
           type: string
         languageTag:
-          type: string
+          $ref: '#/components/schemas/LanguageTag'
         externalIdentifier:
           type: string
         use:
-          type: string
+          $ref: '#/components/schemas/FileUse'
         hasMessageDigests:
           type: array
           items:
