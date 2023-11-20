@@ -526,7 +526,7 @@ GEM
       mods (~> 2.2)
     stringio (3.0.9)
     strings-ansi (0.2.0)
-    sul_orcid_client (0.4.0)
+    sul_orcid_client (0.4.1)
       activesupport (>= 4.2, < 8)
       cocina-models (~> 0.90)
       faraday
