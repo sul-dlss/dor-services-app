@@ -218,7 +218,7 @@ GEM
     equivalent-xml (0.6.0)
       nokogiri (>= 1.4.3)
     erubi (1.12.0)
-    factory_bot (6.4.0)
+    factory_bot (6.4.1)
       activesupport (>= 5.0.0)
     factory_bot_rails (6.4.0)
       factory_bot (~> 6.4)
