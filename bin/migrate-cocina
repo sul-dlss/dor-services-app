@@ -93,7 +93,7 @@ rescue Dry::Struct::Error, Cocina::Models::ValidationError, Cocina::ValidationEr
 end
 
 def druids_for(ar_class:, migrator_class:, sample:)
-  druids = (migrator_class.druids.presence || ar_class.pluck(:external_identifier))
+  druids = migrator_class.druids.presence || ar_class.pluck(:external_identifier)
   sample ? druids.take(sample) : druids
 end
 
