@@ -231,7 +231,7 @@ GEM
     faraday-retry (2.2.0)
       faraday (~> 2.0)
     ffi (1.16.3)
-    folio_client (0.14.0)
+    folio_client (0.15.0)
       activesupport (>= 4.2, < 8)
       dry-monads
       faraday
@@ -251,14 +251,14 @@ GEM
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     io-console (0.6.0)
-    irb (1.9.1)
+    irb (1.10.0)
       rdoc
       reline (>= 0.3.8)
     iso-639 (0.3.6)
     jbuilder (2.11.5)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
-    json (2.6.3)
+    json (2.7.0)
     json_schema (0.21.0)
     jsonpath (1.1.5)
       multi_json
@@ -305,7 +305,7 @@ GEM
     multi_json (1.15.0)
     multi_xml (0.6.0)
     mutex_m (0.2.0)
-    net-imap (0.4.6)
+    net-imap (0.4.7)
       date
       net-protocol
     net-pop (0.1.2)
@@ -317,7 +317,7 @@ GEM
     net-smtp (0.4.0)
       net-protocol
     net-ssh (7.2.0)
-    nio4r (2.6.1)
+    nio4r (2.7.0)
     nokogiri (1.15.5-x86_64-darwin)
       racc (~> 1.4)
     nokogiri (1.15.5-x86_64-linux)
@@ -411,7 +411,7 @@ GEM
     redis-client (0.18.0)
       connection_pool
     regexp_parser (2.8.2)
-    reline (0.4.0)
+    reline (0.4.1)
       io-console (~> 0.5)
     request_store (1.5.1)
       rack (>= 1.4)
@@ -441,7 +441,7 @@ GEM
       rspec-core (>= 2, < 4, != 2.12.0)
     rss (0.3.0)
       rexml
-    rubocop (1.57.2)
+    rubocop (1.58.0)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
@@ -449,7 +449,7 @@ GEM
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml (>= 3.2.5, < 4.0)
-      rubocop-ast (>= 1.28.1, < 2.0)
+      rubocop-ast (>= 1.30.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 3.0)
     rubocop-ast (1.30.0)
@@ -524,7 +524,7 @@ GEM
     stanford-mods (2.6.4)
       activesupport
       mods (~> 2.2)
-    stringio (3.0.9)
+    stringio (3.1.0)
     strings-ansi (0.2.0)
     sul_orcid_client (0.4.1)
       activesupport (>= 4.2, < 8)
