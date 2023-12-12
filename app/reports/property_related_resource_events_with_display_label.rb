@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
-# Generate a report of DROs that have at least one event with a displayLabel
+# Generate a report of DROs that have at least one event with a displayLabel that is the direct child of relatedResource
 #
-# bin/rails r -e production "PropertyEventsWithDisplayLabel.report"
+# bin/rails r -e production "PropertyRelatedResourceEventsWithDisplayLabel.report"
 #
-class PropertyEventsWithDisplayLabel
+class PropertyRelatedResourceEventsWithDisplayLabel
   SQL = <<~SQL.squish.freeze
     SELECT dros.external_identifier as item_druid,
            dros.label as title,
            jsonb_path_query(dros.structural, '$.isMemberOf') ->> 0 as collection_druid,
-           jsonb_path_query_array(dros.description, '$.event.displayLabel') as displayLabels,
+           jsonb_path_query_array(dros.description, '$.relatedResource[*].event.displayLabel') as displayLabels,
            jsonb_path_query_first(dros.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') as catalogRecordId
            FROM "dros"
-           WHERE jsonb_path_exists(dros.description, '$.event.displayLabel');
+           WHERE jsonb_path_exists(dros.description, '$.relatedResource[*].event.displayLabel');
   SQL
 
   def self.report
