@@ -67,12 +67,35 @@ OkComputer::Registry.register 'external-folio', FolioCheck.new
 OkComputer::Registry.register 'background_jobs', OkComputer::SidekiqLatencyCheck.new('default', Settings.sidekiq.latency_threshold)
 OkComputer::Registry.register 'feature-tables-have-data', TablesHaveDataCheck.new
 
-if Settings.rabbitmq.enabled
-  OkComputer::Registry.register 'rabbit',
-                                OkComputer::RabbitmqCheck.new(hostname: Settings.rabbitmq.hostname,
-                                                              vhost: Settings.rabbitmq.vhost,
-                                                              username: Settings.rabbitmq.username,
-                                                              password: Settings.rabbitmq.password)
+class RabbitQueueExistsCheck < OkComputer::Check
+  attr_reader :queue_names, :conn
+
+  def initialize(queue_names)
+    @queue_names = Array(queue_names)
+    @conn = Bunny.new(hostname: Settings.rabbitmq.hostname,
+                      vhost: Settings.rabbitmq.vhost,
+                      username: Settings.rabbitmq.username,
+                      password: Settings.rabbitmq.password)
+    super()
+  end
+
+  def check
+    conn.start
+    status = conn.status
+    missing_queue_names = queue_names.reject { |queue_name| conn.queue_exists?(queue_name) }
+    if missing_queue_names.empty?
+      mark_message "'#{queue_names.join(', ')}' exists, connection status: #{status}"
+    else
+      mark_message "'#{missing_queue_names.join(', ')}' does not exist"
+      mark_failure
+    end
+    conn.close
+  rescue StandardError => e
+    mark_message "Error: '#{e}'"
+    mark_failure
+  end
 end
+
+OkComputer::Registry.register 'rabbit-queues', RabbitQueueExistsCheck.new('dsa.create-event') if Settings.rabbitmq.enabled
 
 OkComputer.make_optional %w(external-folio) if Settings.enabled_features.read_folio
