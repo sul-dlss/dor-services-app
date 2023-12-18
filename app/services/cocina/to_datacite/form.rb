@@ -57,9 +57,9 @@ module Cocina
       end
 
       def self_deposit_subtypes(cocina_self_deposit_form)
-        cocina_self_deposit_form&.structuredValue&.map do |struct_val|
+        cocina_self_deposit_form&.structuredValue&.filter_map do |struct_val|
           struct_val.value if struct_val.type == 'subtype'
-        end&.compact
+        end
       end
 
       def self_deposit_form?(cocina_form)
