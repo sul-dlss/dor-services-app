@@ -4,7 +4,6 @@
 class DeleteService
   # Tries to remove any existence of the object in our systems
   #   Does the following:
-  #   - Removes item from Fedora/Solr
   #   - Removes content from dor workspace
   #   - Removes content from assembly workspace
   #   - Removes content from sdr export area
