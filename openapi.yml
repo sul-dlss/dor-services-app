@@ -665,7 +665,7 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
+            application/json:            
               schema:
                 type: object
                 properties:
@@ -676,12 +676,8 @@ paths:
                       properties:
                         externalIdentifier:
                           $ref: '#/components/schemas/Druid'
-                        type:
-                          type: string
-                          nullable: true
-                          enum:
-                            - 'item'
-                            - 'collection'
+                        version:
+                          type: integer
       parameters:
         - name: object_id
           in: path
