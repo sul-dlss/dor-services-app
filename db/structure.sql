@@ -637,6 +637,7 @@ ALTER TABLE ONLY public.administrative_tags
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240108161425'),
 ('20240104210953'),
 ('20230716202954'),
 ('20220509120943'),
