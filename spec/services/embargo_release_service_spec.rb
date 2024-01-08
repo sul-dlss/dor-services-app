@@ -232,18 +232,17 @@ RSpec.describe EmbargoReleaseService do
   end
 
   describe '#release_all' do
-    let(:response) do
-      { 'response' => { 'numFound' => 1, 'docs' => [{ 'id' => 'druid:999' }] } }
-    end
+    let!(:item_with_releasable_embargo) { create(:ar_dro, :with_releasable_embargo) }
 
     before do
-      allow(SolrService).to receive(:get).and_return(response)
+      create(:ar_dro)
+      create(:ar_dro, :with_embargo)
       allow(described_class).to receive(:release)
     end
 
-    it 'releases based on Solr query' do
+    it 'releases based on db query' do
       described_class.release_all
-      expect(described_class).to have_received(:release).with('druid:999')
+      expect(described_class).to have_received(:release).with(item_with_releasable_embargo.external_identifier)
     end
   end
 end

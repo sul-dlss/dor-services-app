@@ -5,6 +5,9 @@ class Dro < RepositoryRecord
   validates :content_type, :access, :administrative, :description,
             :identification, :structural, presence: true
 
+  # Note that this query is slow. Creating a timestamp index on the releaseDate field is not supported by PG.
+  scope :embargoed_and_releaseable, -> { where("(access -> 'embargo' ->> 'releaseDate')::timestamp <= ?", Time.zone.now) }
+
   def self.find_by_source_id(source_id)
     find_by("identification->>'sourceId' = ?", source_id)
   end
