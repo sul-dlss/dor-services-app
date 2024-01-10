@@ -25,7 +25,12 @@ class CompositeIndexer
 
     # @return [Hash] the merged solr document for all the sub-indexers
     def to_solr
-      indexers.map(&:to_solr).inject({}, &:merge)
+      # indexers.map(&:to_solr).inject({}, &:merge)
+      indexers.map do |indexer|
+        solr = nil
+        rt = Benchmark.realtime { solr = indexer.to_solr }
+        puts "#{indexer.class}: #{rt}"
+      end.inject({}, &:merge)
     end
   end
 end
