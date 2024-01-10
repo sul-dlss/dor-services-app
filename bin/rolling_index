@@ -28,7 +28,7 @@ loop do
     solr_docs << Indexer.build(cocina_with_metadata: ar_cocina_obj.to_cocina_with_metadata)
   end
   AdminPolicy.where(external_identifier: druids).find_each do |ar_cocina_obj|
-    solr_docs << Indexer.build(cocina_with_metadata: ar_cocina_obj.)
+    solr_docs << Indexer.build(cocina_with_metadata: ar_cocina_obj.to_cocina_with_metadata)
   end
   # TODO: Handle deletes
 
