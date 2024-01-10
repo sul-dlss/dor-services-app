@@ -20,6 +20,7 @@ gem 'sul_orcid_client', '~> 0.3'
 # Pinning stanford-mods since >=3 breaks dor-services.
 gem 'stanford-mods'
 gem 'daemons' # for rolling indexer
+gem 'solrizer'
 
 # Ruby general dependencies
 gem 'bootsnap', '>= 1.4.2', require: false

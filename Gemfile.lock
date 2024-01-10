@@ -510,6 +510,10 @@ GEM
       rake (~> 12.3)
       serverengine (~> 2.1.0)
       thor
+    solrizer (4.1.0)
+      activesupport
+      nokogiri
+      xml-simple
     sorted_set (1.0.3)
       rbtree
       set (~> 1.0)
@@ -568,6 +572,8 @@ GEM
     websocket-extensions (0.1.5)
     whenever (1.0.0)
       chronic (>= 0.6.3)
+    xml-simple (1.1.9)
+      rexml
     zeitwerk (2.6.12)
 
 PLATFORMS
@@ -634,6 +640,7 @@ DEPENDENCIES
   sidekiq (~> 7.0)
   simplecov
   sneakers (~> 2.11)
+  solrizer
   stanford-mods
   sul_orcid_client (~> 0.3)
   tty-progressbar
