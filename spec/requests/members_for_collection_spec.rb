@@ -3,59 +3,25 @@
 require 'rails_helper'
 
 RSpec.describe 'Get the members' do
-  before do
-    allow(SolrService.instance.conn).to receive(:get).and_return(solr_response)
-  end
+  let(:collection_druid) { 'druid:mk420bs7601' }
 
-  let(:druid) { 'druid:mk420bs7601' }
-
-  let(:solr_params) do
-    {
-      fl: 'id,objectType_ssim',
-      q: "is_member_of_collection_ssim:\"info:fedora/#{druid}\" published_dttsim:[* TO *]",
-      rows: 100_000_000,
-      wt: :json
-    }
-  end
-
-  let(:solr_response) do
-    {
-      'response' => {
-        'docs' => [
-          { 'id' => 'druid:xx222xx3282', 'objectType_ssim' => ['collection'] },
-          { 'id' => 'druid:xx828xx3282', 'objectType_ssim' => ['item'] },
-          { 'id' => 'druid:xx939xx4389' }
-        ]
-      }
-    }
-  end
+  let!(:dro) { create(:ar_dro, isMemberOf: [collection_druid]) }
 
   let(:expected) do
     {
       members: [
         {
-          externalIdentifier: 'druid:xx222xx3282',
-          type: 'collection'
-        },
-        {
-          externalIdentifier: 'druid:xx828xx3282',
-          type: 'item'
-        },
-        {
-          externalIdentifier: 'druid:xx939xx4389',
-          type: nil
+          externalIdentifier: dro.external_identifier,
+          version: dro.version
         }
       ]
     }
   end
 
-  let(:response_model) { response.parsed_body.deep_symbolize_keys }
-
-  it 'sends the correct solr params, returns the druid & type of the members' do
-    get "/v1/objects/#{druid}/members",
+  it 'returns the druids' do
+    get "/v1/objects/#{collection_druid}/members",
         headers: { 'Authorization' => "Bearer #{jwt}" }
-    expect(SolrService.instance.conn).to have_received(:get).with('select', params: solr_params)
     expect(response).to be_successful
-    expect(response_model).to eq expected
+    expect(response.parsed_body).to match(expected)
   end
 end

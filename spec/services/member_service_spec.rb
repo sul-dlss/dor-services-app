@@ -3,35 +3,59 @@
 require 'rails_helper'
 
 RSpec.describe MemberService do
-  let(:druid) { 'druid:bc123df4567' }
+  let(:members) { described_class.for(collection_druid, exclude_opened:, only_published:) }
+
+  let(:collection_druid) { 'druid:bc123df4567' }
+  let(:exclude_opened) { false }
+  let(:only_published) { false }
+
+  let!(:dro1) { create(:ar_dro, isMemberOf: [collection_druid]) }
+  let!(:dro2) { create(:ar_dro, isMemberOf: [collection_druid]) }
+
+  let(:workflow_client) { instance_double(Dor::Workflow::Client) }
 
   before do
-    allow(SolrService).to receive(:query)
+    # Not a member
+    create(:ar_dro)
+    allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
   end
 
   describe '.for' do
-    it 'queries for members' do
-      described_class.for(druid)
-      expect(SolrService).to have_received(:query)
-        .with(/#{druid}/, anything)
-        .once
-    end
-
-    context 'with only_published param' do
-      it 'queries for published members only' do
-        described_class.for(druid, only_published: true)
-        expect(SolrService).to have_received(:query)
-          .with(/#{druid}.+published_dttsim:/, anything)
-          .once
+    context 'when collection has members' do
+      it 'returns members' do
+        expect(members).to eq [dro1.external_identifier, dro2.external_identifier]
       end
     end
 
-    context 'with exclude_opened param' do
-      it 'queries for non-opened members only' do
-        described_class.for(druid, exclude_opened: true)
-        expect(SolrService).to have_received(:query)
-          .with(/#{druid}.+processing_status_text_ssi:Opened/, anything)
-          .once
+    context 'when collection has no members' do
+      it 'returns no members' do
+        expect(described_class.for('druid:cc123df4568')).to be_empty
+      end
+    end
+
+    context 'when excluding open members' do
+      let(:exclude_opened) { true }
+
+      before do
+        allow(workflow_client).to receive(:active_lifecycle).and_return(true, false)
+      end
+
+      it 'returns members' do
+        expect(members).to eq [dro2.external_identifier]
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid: dro1.external_identifier, milestone_name: 'opened', version: dro1.version.to_s)
+      end
+    end
+
+    context 'when only published members' do
+      let(:only_published) { true }
+
+      before do
+        allow(workflow_client).to receive(:lifecycle).and_return(true, false)
+      end
+
+      it 'returns members' do
+        expect(members).to eq [dro1.external_identifier]
+        expect(workflow_client).to have_received(:lifecycle).with(druid: dro1.external_identifier, milestone_name: 'published', version: dro1.version)
       end
     end
   end

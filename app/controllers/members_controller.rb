@@ -2,8 +2,8 @@
 
 # Responds to queries about the members of a collection
 class MembersController < ApplicationController
-  # Return the published members of this collection
+  # Return the members of this collection
   def index
-    @members = MemberService.for(params[:object_id], only_published: true)
+    @members = Dro.members_of_collection(params[:object_id]).select(:external_identifier, :version)
   end
 end

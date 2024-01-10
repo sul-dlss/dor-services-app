@@ -81,7 +81,7 @@ RSpec.describe Publish::MetadataTransferService do
         allow_any_instance_of(described_class).to receive(:transfer_to_document_store)
         allow_any_instance_of(described_class).to receive(:transfer_metadata)
         allow_any_instance_of(described_class).to receive(:publish_notify_on_success)
-        allow(MemberService).to receive(:for).and_return({ 'id' => member_druid })
+        allow(MemberService).to receive(:for).and_return([member_druid])
         allow(CocinaObjectStore).to receive(:find).with(member_druid).and_return(member_item)
         allow(described_class).to receive(:new).with(cocina_object, workflow:).and_call_original
         allow(PublishJob).to receive(:set).with(queue: :publish_low).and_return(fake_publish_job)
