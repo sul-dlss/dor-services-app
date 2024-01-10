@@ -69,7 +69,7 @@ class IdentifiableIndexer
   # populate cache if necessary
   def populate_cache(rel_druid)
     @@apo_hash[rel_druid] ||= begin
-      related_obj = CocinaObjectStorefind(rel_druid)
+      related_obj = CocinaObjectStore.find(rel_druid)
       # APOs don't have projects, and since Hydrus is set to be retired, I don't want to
       # add the cocina property. Just check the tags service instead.
       is_from_hydrus = has_hydrus_tag?(rel_druid)
