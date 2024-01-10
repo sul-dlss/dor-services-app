@@ -1,0 +1,60 @@
+#!/usr/bin/env ruby
+
+require_relative '../config/environment'
+require 'daemons'
+
+QUERY = { q: '*:*', sort: 'timestamp asc', fl: 'id', rows: Settings.rolling_indexer.batch_size }
+
+Daemons.run_proc(
+  File.basename(__FILE__),
+  dir: "tmp/pids",
+  log_dir: "#{File.expand_path(__dir__)}/../log",
+  log_output: true,
+  logfilename: 'rolling_index.log',
+  output_logfilename: 'rolling_index.log'
+) do
+  loop do
+    start_time = Time.now
+
+    solr_conn = RSolr.connect(timeout: 120, open_timeout: 120, url: Settings.solrizer_url)
+    response = solr_conn.get 'select', params: QUERY
+    druids = response['response']['docs'].map { |doc| doc['id'].scrub('') }
+    solr_docs = []
+    Dro.where(external_identifier: druids).find_each do |ar_cocina_obj|
+      ar_cocina_obj.to_cocina_with_metadata
+      Indexer.
+    end
+        
+    end
+    # solr_docs = response['response']['docs'].map do |doc|
+    #   identifier = doc['id'].scrub('')
+    #   # Occasionally, we've seen invalid bytes in the identifier, so try to catch those:
+    #   Honeybadger.notify("Identifier isn't valid utf-8", { identifier: identifier, bytes: identifier.unpack('C*') }) unless doc['id'].valid_encoding?
+    #   begin
+    #     # This returns a Solr doc hash
+    #     Indexer.load_and_build(identifier: identifier)
+    #   rescue Dor::Services::Client::NotFoundResponse
+    #     Honeybadger.notify('Rolling indexer cannot reindex since not found.', { druid: identifier })
+    #     # Clean up cruft in QA and stage
+    #     Indexer.delete(solr: solr_conn, identifier: identifier) if ['stage', 'qa'].include?(ENV['HONEYBADGER_ENV'])
+    #     # Return `nil`, which is compacted, so the Solr add isn't grumpy
+    #     nil
+    #   rescue Dor::Services::Client::UnexpectedResponse
+    #     Honeybadger.notify('Unexpected response from Dor Services App.', { druid: identifier })
+    #     # Return `nil`, which is compacted, so the Solr add isn't grumpy
+    #     nil
+    #   ensure
+    #     sleep(Settings.rolling_indexer.pause_time_between_docs)
+    #   end
+    # end.compact
+
+    solr_conn.add(solr_docs, add_attributes: { commitWithin: 1000 })
+
+    end_time = Time.now
+    batch_run_seconds = (end_time - start_time).round(3)
+    # The Daemons gem will redirect this to its log
+    puts "#{end_time}\tIndexed #{Settings.rolling_indexer.batch_size} documents in #{batch_run_seconds}"
+
+    sleep(Settings.rolling_indexer.pause_time_between_batches)
+  end
+end

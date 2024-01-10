@@ -123,3 +123,9 @@ mais_orcid:
   client_id: ~
   client_secret: ~
   base_url: https://mais-sandbox.stanford.edu
+
+date_format_str: '%Y-%m-%d %H:%M:%S.%L'
+rolling_indexer:
+  batch_size: 500
+  pause_time_between_docs: .2
+  pause_time_between_batches: 0
