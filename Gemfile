@@ -18,7 +18,7 @@ gem 'moab-versioning', '~> 6.0', require: 'moab/stanford'
 gem 'preservation-client', '~> 6.0'
 gem 'sul_orcid_client', '~> 0.3'
 # Pinning stanford-mods since >=3 breaks dor-services.
-gem 'stanford-mods', '~> 2.6'
+gem 'stanford-mods'
 gem 'daemons' # for rolling indexer
 
 # Ruby general dependencies
