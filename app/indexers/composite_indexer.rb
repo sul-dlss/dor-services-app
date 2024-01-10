@@ -29,7 +29,8 @@ class CompositeIndexer
       indexers.map do |indexer|
         solr = nil
         rt = Benchmark.realtime { solr = indexer.to_solr }
-        puts "#{indexer.class}: #{rt}"
+        puts "#{indexer.class}: #{rt * 1000} ms"
+        solr
       end.inject({}, &:merge)
     end
   end
