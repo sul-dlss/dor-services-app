@@ -84,8 +84,8 @@ class DocumentBuilder
     return [] unless model.dro?
 
     Array(model.structural&.isMemberOf).filter_map do |rel_druid|
-      @@parent_collections[rel_druid] ||= Dor::Services::Client.object(rel_druid).find
-    rescue Dor::Services::Client::UnexpectedResponse, Dor::Services::Client::NotFoundResponse
+      @@parent_collections[rel_druid] ||= CocinaObjectStore.find(rel_druid)
+    rescue CocinaObjectNotFoundError
       Honeybadger.notify("Bad association found on #{model.externalIdentifier}. #{rel_druid} could not be found")
       # This may happen if the referenced Collection does not exist (bad data)
       nil
@@ -93,8 +93,9 @@ class DocumentBuilder
   end
 
   def administrative_tags
-    Dor::Services::Client.object(id).administrative_tags.list
-  rescue Dor::Services::Client::NotFoundResponse
-    []
+    AdministrativeTags.for(identifier: id)
+  #   Dor::Services::Client.object(id).administrative_tags.list
+  # rescue Dor::Services::Client::NotFoundResponse
+  #   []
   end
 end
