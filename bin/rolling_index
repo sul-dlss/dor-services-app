@@ -23,15 +23,12 @@ loop do
   druids = response['response']['docs'].map { |doc| doc['id'].scrub('') }
   solr_docs = []
   Dro.where(external_identifier: druids).find_each do |ar_cocina_obj|
-    puts "Building #{ar_cocina_obj.external_identifier}"
     solr_docs << Indexer.build(cocina_with_metadata: ar_cocina_obj.to_cocina_with_metadata)
   end
   Collection.where(external_identifier: druids).find_each do |ar_cocina_obj|
-    puts "Building #{ar_cocina_obj.external_identifier}"
     solr_docs << Indexer.build(cocina_with_metadata: ar_cocina_obj.to_cocina_with_metadata)
   end
   AdminPolicy.where(external_identifier: druids).find_each do |ar_cocina_obj|
-    puts "Building #{ar_cocina_obj.external_identifier}"
     solr_docs << Indexer.build(cocina_with_metadata: ar_cocina_obj.to_cocina_with_metadata)
   end
   # TODO: Handle deletes
