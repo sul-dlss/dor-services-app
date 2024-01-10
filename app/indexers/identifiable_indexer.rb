@@ -69,7 +69,7 @@ class IdentifiableIndexer
   # populate cache if necessary
   def populate_cache(rel_druid)
     @@apo_hash[rel_druid] ||= begin
-      related_obj = Dor::Services::Client.object(rel_druid).find
+      related_obj = CocinaObjectStorefind(rel_druid)
       # APOs don't have projects, and since Hydrus is set to be retired, I don't want to
       # add the cocina property. Just check the tags service instead.
       is_from_hydrus = has_hydrus_tag?(rel_druid)
@@ -83,6 +83,6 @@ class IdentifiableIndexer
   end
 
   def has_hydrus_tag?(id)
-    Dor::Services::Client.object(id).administrative_tags.list.include?('Project : Hydrus')
+    AdministrativeTag.for(id).include?('Project : Hydrus')
   end
 end
