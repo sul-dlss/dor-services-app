@@ -30,6 +30,11 @@ class WorkflowsIndexer
   # TODO: remove Dor::Workflow::Document
   # @return [Workflow::Response::Workflows]
   def all_workflows
-    @all_workflows ||= WorkflowClientFactory.build.workflow_routes.all_workflows pid: id
+    @all_workflows ||= begin
+      x = nil
+      rt = Benchmark.realtime { x = WorkflowClientFactory.build.workflow_routes.all_workflows pid: id }
+      puts "all_workflows: #{rt * 1000} ms"      
+      x
+    end
   end
 end
