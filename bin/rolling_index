@@ -21,11 +21,16 @@ Daemons.run_proc(
     druids = response['response']['docs'].map { |doc| doc['id'].scrub('') }
     solr_docs = []
     Dro.where(external_identifier: druids).find_each do |ar_cocina_obj|
-      ar_cocina_obj.to_cocina_with_metadata
-      Indexer.
+      solr_docs << Indexer.build(cocina_with_metadata: ar_cocina_obj)
     end
-        
+    Collection.where(external_identifier: druids).find_each do |ar_cocina_obj|
+      solr_docs << Indexer.build(cocina_with_metadata: ar_cocina_obj)
     end
+    AdminPolicy.where(external_identifier: druids).find_each do |ar_cocina_obj|
+      solr_docs << Indexer.build(cocina_with_metadata: ar_cocina_obj)
+    end
+    # TODO: Handle deletes
+
     # solr_docs = response['response']['docs'].map do |doc|
     #   identifier = doc['id'].scrub('')
     #   # Occasionally, we've seen invalid bytes in the identifier, so try to catch those:
