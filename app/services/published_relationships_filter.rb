@@ -36,8 +36,8 @@ class PublishedRelationshipsFilter
   def virtual_objects
     return unless cocina_object.dro?
 
-    VirtualObject.for(druid: cocina_object.externalIdentifier).map do |solr_doc|
-      "<fedora:isConstituentOf rdf:resource=\"info:fedora/#{solr_doc.fetch(:id)}\"/>"
+    VirtualObject.for(druid: cocina_object.externalIdentifier).map do |virtual_object_params|
+      "<fedora:isConstituentOf rdf:resource=\"info:fedora/#{virtual_object_params.fetch(:id)}\"/>"
     end.join(INDENT)
   end
 end

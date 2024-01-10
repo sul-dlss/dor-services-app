@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Publish::PublicDescMetadataService do
-  subject(:service) { described_class.new(cocina_object) }
+  subject(:service) { described_class.new(item.to_cocina) }
 
   let(:access) { {} }
   let(:identification) { { sourceId: 'sul:123' } }
@@ -11,21 +11,12 @@ RSpec.describe Publish::PublicDescMetadataService do
   let(:description) do
     { title: [{ value: 'stuff' }], purl: 'https://purl.stanford.edu/bc123df4567' }
   end
-  let(:cocina_object) do
-    build(:dro, id: 'druid:bc123df4567').new(
-      access:,
-      structural:,
-      description:,
-      identification:
-    )
-  end
-
-  let(:solr_response) { { 'response' => { 'docs' => virtual_object_solr_docs } } }
-  let(:virtual_object_solr_docs) { [] }
-  let(:solr_client) { instance_double(RSolr::Client, get: solr_response) }
-
-  before do
-    allow(SolrService.instance).to receive(:conn).and_return(solr_client)
+  let(:item) do
+    build(:ar_dro, external_identifier: 'druid:bc123df4567',
+                   access:,
+                   structural:,
+                   description:,
+                   identification:)
   end
 
   describe '#ng_xml' do
@@ -57,7 +48,23 @@ RSpec.describe Publish::PublicDescMetadataService do
     end
 
     context 'with isConstituentOf relationships' do
-      let(:virtual_object_solr_docs) { [{ 'id' => 'druid:hj097bm8879', 'sw_display_title_tesim' => ["Carey's American Atlas: Containing Twenty Maps"] }] }
+      let(:virtual_structural) do
+        {
+          contains: [],
+          hasMemberOrders: [
+            {
+              members: [
+                item.external_identifier
+              ],
+              viewingDirection: 'left-to-right'
+            }
+          ]
+        }
+      end
+
+      before do
+        create(:ar_dro, external_identifier: 'druid:hj097bm8879', structural: virtual_structural)
+      end
 
       it 'writes the relationships into MODS' do
         # test that we have 2 expansions
@@ -65,15 +72,9 @@ RSpec.describe Publish::PublicDescMetadataService do
 
         # test the validity of the constituent expansion
         xpath_expr = '//xmlns:mods/xmlns:relatedItem[@type="host" and @displayLabel="Appears in"]/xmlns:titleInfo/xmlns:title'
-        expect(doc.xpath(xpath_expr).first.text.strip).to start_with("Carey's American Atlas: Containing Twenty Maps")
+        expect(doc.xpath(xpath_expr).first.text.strip).to eq('Test DRO')
         xpath_expr = '//xmlns:mods/xmlns:relatedItem[@type="host" and @displayLabel="Appears in"]/xmlns:location/xmlns:url'
         expect(doc.xpath(xpath_expr).first.text.strip).to match(%r{^https://purl.*\.stanford\.edu/hj097bm8879$})
-        expect(solr_client).to have_received(:get)
-          .with('select', params: {
-                  q: 'has_constituents_ssim:druid\:bc123df4567',
-                  fl: 'id sw_display_title_tesim',
-                  wt: :json
-                })
       end
     end
 
