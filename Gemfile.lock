@@ -1,3 +1,25 @@
+GIT
+  remote: https://github.com/sul-dlss/cocina-models.git
+  revision: 89e55961212e33ac245a9b522209f1772c59e09e
+  branch: enable_description_types_validator
+  specs:
+    cocina-models (0.93.1)
+      activesupport
+      deprecation
+      dry-struct (~> 1.0)
+      dry-types (~> 1.1)
+      edtf
+      equivalent-xml
+      i18n
+      jsonpath
+      nokogiri
+      openapi3_parser
+      openapi_parser (~> 1.0)
+      rss
+      super_diff
+      thor
+      zeitwerk (~> 2.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -83,7 +105,7 @@ GEM
     ast (2.4.2)
     attr_extras (7.1.0)
     base64 (0.2.0)
-    bigdecimal (3.1.5)
+    bigdecimal (3.1.6)
     bootsnap (1.17.1)
       msgpack (~> 1.2)
     builder (3.2.4)
@@ -114,29 +136,13 @@ GEM
       capistrano-bundler (>= 1.1, < 3)
     capistrano-shared_configs (0.2.2)
     chronic (0.10.2)
-    cocina-models (0.93.1)
-      activesupport
-      deprecation
-      dry-struct (~> 1.0)
-      dry-types (~> 1.1)
-      edtf
-      equivalent-xml
-      i18n
-      jsonpath
-      nokogiri
-      openapi3_parser
-      openapi_parser (~> 1.0)
-      rss
-      super_diff
-      thor
-      zeitwerk (~> 2.1)
     coderay (1.1.3)
     committee (5.0.0)
       json_schema (~> 0.14, >= 0.14.3)
       openapi_parser (~> 1.0)
       rack (>= 1.5)
     commonmarker (0.23.10)
-    concurrent-ruby (1.2.2)
+    concurrent-ruby (1.2.3)
     config (5.1.0)
       deep_merge (~> 1.2, >= 1.2.1)
       dry-validation (~> 1.0, >= 1.0.0)
@@ -306,7 +312,7 @@ GEM
     marcel (1.0.2)
     method_source (1.0.0)
     mini_mime (1.1.5)
-    minitest (5.21.1)
+    minitest (5.21.2)
     moab-versioning (6.1.0)
       druid-tools (>= 1.0.0)
       json
@@ -612,7 +618,7 @@ DEPENDENCIES
   capistrano-passenger
   capistrano-rails
   capistrano-shared_configs
-  cocina-models (~> 0.93.0)
+  cocina-models!
   committee
   config
   daemons
