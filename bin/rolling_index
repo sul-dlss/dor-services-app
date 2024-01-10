@@ -14,19 +14,24 @@ QUERY = { q: '*:*', sort: 'timestamp asc', fl: 'id', rows: Settings.rolling_inde
 #   logfilename: 'rolling_index.log',
 #   output_logfilename: 'rolling_index.log'
 # ) do
+puts "Starting"
 loop do
   start_time = Time.now
 
   solr_conn = RSolr.connect(timeout: 120, open_timeout: 120, url: Settings.solrizer_url)
   response = solr_conn.get 'select', params: QUERY
   druids = response['response']['docs'].map { |doc| doc['id'].scrub('') }
+  puts "Got #{druids.length} druids }"
   solr_docs = []
+  puts "Building DROs."
   Dro.where(external_identifier: druids).find_each do |ar_cocina_obj|
     solr_docs << Indexer.build(cocina_with_metadata: ar_cocina_obj.to_cocina_with_metadata)
   end
+  puts "Building collections."
   Collection.where(external_identifier: druids).find_each do |ar_cocina_obj|
     solr_docs << Indexer.build(cocina_with_metadata: ar_cocina_obj.to_cocina_with_metadata)
   end
+  puts "Building APOs."
   AdminPolicy.where(external_identifier: druids).find_each do |ar_cocina_obj|
     solr_docs << Indexer.build(cocina_with_metadata: ar_cocina_obj.to_cocina_with_metadata)
   end
@@ -54,6 +59,7 @@ loop do
   #   end
   # end.compact
 
+  puts "Adding #{solr_docs.length} docs."
   solr_conn.add(solr_docs, add_attributes: { commitWithin: 1000 })
 
   end_time = Time.now
