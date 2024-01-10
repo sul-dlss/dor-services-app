@@ -2,6 +2,7 @@
 
 require_relative '../config/environment'
 require 'daemons'
+require 'benchmark'
 
 QUERY = { q: '*:*', sort: 'timestamp asc', fl: 'id', rows: Settings.rolling_indexer.batch_size }
 
@@ -23,7 +24,8 @@ loop do
   druids = response['response']['docs'].map { |doc| doc['id'].scrub('') }
   solr_docs = []
   Dro.where(external_identifier: druids).find_each do |ar_cocina_obj|
-    solr_docs << Indexer.build(cocina_with_metadata: ar_cocina_obj.to_cocina_with_metadata)
+    tr = Benchmark.realtime { solr_docs << Indexer.build(cocina_with_metadata: ar_cocina_obj.to_cocina_with_metadata) }
+    puts "Dro: #{tr}"
   end
   Collection.where(external_identifier: druids).find_each do |ar_cocina_obj|
     solr_docs << Indexer.build(cocina_with_metadata: ar_cocina_obj.to_cocina_with_metadata)
