@@ -35,6 +35,10 @@ class Indexer
     new(solr:, commit_within:).delete(identifier:)
   end
 
+  def self.build(cocina_with_metadata:)
+    new(solr: nil).build(cocina_with_metadata:)
+  end
+
   def initialize(solr:, commit_within: 1000)
     @solr = solr
     @commit_within = commit_within
