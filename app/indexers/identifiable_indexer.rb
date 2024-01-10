@@ -83,6 +83,6 @@ class IdentifiableIndexer
   end
 
   def has_hydrus_tag?(id)
-    AdministrativeTag.for(id).include?('Project : Hydrus')
+    AdministrativeTags.for(id).include?('Project : Hydrus')
   end
 end
