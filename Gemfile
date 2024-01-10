@@ -19,6 +19,7 @@ gem 'preservation-client', '~> 6.0'
 gem 'sul_orcid_client', '~> 0.3'
 # Pinning stanford-mods since >=3 breaks dor-services.
 gem 'stanford-mods', '~> 2.6'
+gem 'daemons' # for rolling indexer
 
 # Ruby general dependencies
 gem 'bootsnap', '>= 1.4.2', require: false
