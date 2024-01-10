@@ -21,6 +21,11 @@ gem 'sul_orcid_client', '~> 0.3'
 gem 'stanford-mods'
 gem 'daemons' # for rolling indexer
 gem 'solrizer'
+# ISO-639-1 and -2
+gem 'iso-639', '~> 0.3.5'
+# ISO-639-3
+gem 'language_list'
+gem 'marc-vocab', '~> 0.3.0'
 
 # Ruby general dependencies
 gem 'bootsnap', '>= 1.4.2', require: false
