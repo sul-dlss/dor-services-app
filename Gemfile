@@ -8,6 +8,7 @@ gem 'rails', '~> 7.1.0'
 # DLSS/domain-specific dependencies
 gem 'cocina-models', '~> 0.93.0'
 gem 'datacite', '~> 0.3.0'
+gem 'dor_indexing', '~> 1.0'
 gem 'dor-workflow-client', '~> 5.0'
 gem 'druid-tools', '~> 2.2'
 gem 'folio_client', '~> 0.8'
@@ -25,6 +26,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 gem 'bunny', '~> 2.17' # Send messages to RabbitMQ
 gem 'committee' # validates Open API spec (OAS)
 gem 'config'
+gem 'daemons' # for rolling indexer
 gem 'dry-monads'
 gem 'edtf', '~> 3.0' # used for metadata reports
 gem 'equivalent-xml' # for diffing MODS
