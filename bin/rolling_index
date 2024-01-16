@@ -1,0 +1,90 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../config/environment'
+require 'daemons'
+
+QUERY = { q: '*:*', sort: 'timestamp asc', fl: 'id,timestamp', rows: Settings.rolling_indexer.query_size }.freeze
+
+# Cocina Repository implementation backed by ActiveRecord
+class CocinaRepository
+  def find(druid)
+    CocinaObjectStore.find(druid)
+  rescue CocinaObjectStore::CocinaObjectStoreError => e
+    raise DorIndexing::CocinaRepository::RepositoryError, e.message
+  end
+
+  def administrative_tags(druid)
+    AdministrativeTags.for(identifier: druid)
+  end
+end
+
+DELETE_ENVS = ['stage', 'qa'].freeze
+
+# rubocop:disable Metrics/BlockLength
+Daemons.run_proc(
+  File.basename(__FILE__),
+  dir: 'tmp/pids',
+  log_dir: "#{File.expand_path(__dir__)}/../log",
+  log_output: true,
+  logfilename: 'rolling_index.log',
+  output_logfilename: 'rolling_index.log'
+) do
+  loop do
+    query_start_time = Time.zone.now
+
+    solr_conn = RSolr.connect(timeout: 120, open_timeout: 120, url: Settings.solr.url)
+    response = solr_conn.get 'select', params: QUERY
+    response_docs = response['response']['docs']
+
+    query_end_time = Time.zone.now
+    solr_query_seconds = (query_end_time - query_start_time).round(3)
+    first_doc_str = "#{response_docs.first['id']} (#{response_docs.first['timestamp']})"
+    last_doc_str = "#{response_docs.last['id']} (#{response_docs.last['timestamp']})"
+    # The Daemons gem will redirect this to its log
+    puts "#{Time.zone.now}\tGot #{response_docs.size} Solr doc ids in #{solr_query_seconds}\t#{first_doc_str} - #{last_doc_str}"
+
+    batches = response_docs.each_slice(Settings.rolling_indexer.batch_size)
+    batches.each.with_index do |batch, _index|
+      batch_start_time = Time.zone.now
+      solr_docs = batch.filter_map do |doc|
+        identifier = doc['id'].scrub('')
+        # Occasionally, we've seen invalid bytes in the identifier, so try to catch those:
+        Honeybadger.notify("Identifier isn't valid utf-8", { identifier:, bytes: identifier.unpack('C*') }) unless doc['id'].valid_encoding?
+        begin
+          # This returns a Solr doc hash
+          cocina_obj = CocinaObjectStore.find(identifier)
+          DorIndexing.build(cocina_with_metadata: cocina_obj, workflow_client: WorkflowClientFactory.build, cocina_repository: CocinaRepository.new)
+        rescue CocinaObjectStore::CocinaObjectNotFoundError
+          Honeybadger.notify('Rolling indexer cannot reindex since not found.', { druid: identifier })
+          # Clean up cruft in QA and stage
+          Indexer.delete(solr: solr_conn, identifier:) if DELETE_ENVS.include?(ENV['HONEYBADGER_ENV'])
+          # Return `nil`, which is compacted, so the Solr add isn't grumpy
+          nil
+        rescue DorIndexing::CocinaRepository::RepositoryError
+          Honeybadger.notify('Unexpected response from Dor Services App.', { druid: identifier })
+          # Return `nil`, which is compacted, so the Solr add isn't grumpy
+          nil
+        ensure
+          sleep(Settings.rolling_indexer.pause_time_between_docs)
+        end
+      end
+
+      solr_conn.add(solr_docs, add_attributes: { commitWithin: Settings.rolling_indexer.commit_within.to_i })
+
+      batch_end_time = Time.zone.now
+      batch_run_seconds = (batch_end_time - batch_start_time).round(3)
+      first_doc_str = "#{batch.first['id']} (#{batch.first['timestamp']})"
+      last_doc_str = "#{batch.last['id']} (#{batch.last['timestamp']})"
+      # The Daemons gem will redirect this to its log
+      puts "#{Time.zone.now}\tIndexed #{Settings.rolling_indexer.batch_size} documents in #{batch_run_seconds}\t#{first_doc_str} - #{last_doc_str}"
+    end
+    indexing_time = (Time.zone.now - query_end_time).round(3)
+    puts "#{Time.zone.now}\tIndexed #{response_docs.size} documents in #{indexing_time}\t#{first_doc_str} - #{last_doc_str}"
+
+    # Pause for the last batch so that solr can commit before querying it again.
+    puts "#{Time.zone.now}\tsleeping for #{Settings.rolling_indexer.pause_for_solr} seconds to ensure next Solr id query has latest changes"
+    sleep(Settings.rolling_indexer.pause_for_solr)
+  end
+end
+# rubocop:enable Metrics/BlockLength

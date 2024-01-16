@@ -124,3 +124,16 @@ mais_orcid:
   client_id: ~
   client_secret: ~
   base_url: https://mais-sandbox.stanford.edu
+
+rolling_indexer:
+  # number of ids to get from Solr in a query
+  query_size: 100
+  # number of docs to send to Solr in a batch
+  batch_size: 5
+  # avoid overloading the dor-services-app load balancer (seconds)
+  pause_time_between_docs: 0.1
+  # a little more than softCommit max time is desired (a Solr 'add' with commitWithin does a softCommit) (seconds)
+  # see solrconfig.xml for softCommit max time
+  pause_for_solr: 61
+  # milliseconds
+  commitWithin: 500
