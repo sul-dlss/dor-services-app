@@ -163,7 +163,7 @@ GEM
       capistrano-shared_configs
     docile (1.4.0)
     domain_name (0.6.20240107)
-    dor-workflow-client (5.1.0)
+    dor-workflow-client (7.0.0)
       activesupport (>= 3.2.1, < 8)
       deprecation (>= 0.99.0)
       faraday (~> 2.0)
@@ -619,7 +619,7 @@ DEPENDENCIES
   datacite (~> 0.3.0)
   diffy
   dlss-capistrano
-  dor-workflow-client (~> 5.0)
+  dor-workflow-client (~> 7.0)
   dor_indexing (~> 1.0)
   druid-tools (~> 2.2)
   dry-monads
