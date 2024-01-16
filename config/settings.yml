@@ -95,6 +95,7 @@ catalog:
       url: "https://okapi-dev.example.com"
       username: "app_sdr"
       password: "supersecret"
+      legacy_auth: true
     tenant_id: "example_tenant"
     max_lookup_tries: 5
     sleep_seconds: 10
