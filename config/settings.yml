@@ -130,7 +130,7 @@ rolling_indexer:
   query_size: 100
   # number of docs to send to Solr in a batch
   batch_size: 5
-  # avoid overloading the dor-services-app load balancer (seconds)
+  # avoid overloading DSA for other work (seconds)
   pause_time_between_docs: 0.1
   # a little more than softCommit max time is desired (a Solr 'add' with commitWithin does a softCommit) (seconds)
   # see solrconfig.xml for softCommit max time
