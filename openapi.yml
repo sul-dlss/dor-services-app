@@ -173,6 +173,7 @@ paths:
             enum:
               - accessionWF
               - assemblyWF
+              - gisAssemblyWF
         - name: significance
           in: query
           description: the significance of the version change (if versioning is needed)
