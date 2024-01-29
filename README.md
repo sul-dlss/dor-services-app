@@ -135,6 +135,35 @@ Cron check-ins are configured in the following locations:
 3. `config/settings/production.yml` in `shared_configs`: This contains the actual check-in keys.
 4. HB notification page: Check-ins are configured per project in HB. To configure a check-in, the cron schedule will be needed, which can be found with `bundle exec whenever`. After a check-in is created, the check-in key will be available. (If the URL is `https://api.honeybadger.io/v1/check_in/rkIdpB` then the check-in key will be `rkIdpB`).
 
+## Rolling (Re)Indexer
+
+(This runs here so it has efficient access to the cocina for each object.)
+
+This helps keep the index fresh by reindexing the oldest data. It is managed as a systemd service. To interact with it from your machine, you can use Capistrano:
+
+```shell
+$ cap ENV rolling_indexer:status
+$ cap ENV rolling_indexer:start
+$ cap ENV rolling_indexer:stop
+$ cap ENV rolling_indexer:restart
+```
+
+Or if you're on a server that has the `rolling_indexer` capistrano role, use systemd commands:
+
+```shell
+$ sudo systemctl status rolling-index
+$ sudo systemctl start rolling-index
+$ sudo systemctl stop rolling-index
+$ sudo systemctl restart rolling-index
+```
+
+**NOTE 1**: The rolling indexer is automatically restarted during deployments.
+
+**NOTE 2**: The rolling indexer runs only on one node per environment. Conventionally, this is the `-a` node, but for production, it is dor-services-worker-prod-b.
+
+**NOTE 3**: The rolling indexer logs to `{capistrano_shared_dir}/log/rolling_indexer.log`
+
+
 ## Other tools
 
 ### Running Reports
