@@ -17,9 +17,8 @@ gem 'mais_orcid_client'
 gem 'marc'
 gem 'moab-versioning', '~> 6.0', require: 'moab/stanford'
 gem 'preservation-client', '~> 6.0'
+gem 'stanford-mods'
 gem 'sul_orcid_client', '~> 0.3'
-# Pinning stanford-mods since >=3 breaks dor-services.
-gem 'stanford-mods', '~> 2.6'
 
 # Ruby general dependencies
 gem 'bootsnap', '>= 1.4.2', require: false

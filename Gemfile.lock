@@ -313,8 +313,8 @@ GEM
       json
       nokogiri
       nokogiri-happymapper
-    mods (2.4.1)
-      edtf
+    mods (3.0.4)
+      edtf (~> 3.0)
       iso-639
       nokogiri (>= 1.6.6)
       nom-xml (~> 1.0)
@@ -548,9 +548,9 @@ GEM
       net-scp (>= 1.1.2)
       net-sftp (>= 2.1.2)
       net-ssh (>= 2.8.0)
-    stanford-mods (2.6.4)
+    stanford-mods (3.3.9)
       activesupport
-      mods (~> 2.2)
+      mods (~> 3.0, >= 3.0.4)
     stringio (3.1.0)
     strings-ansi (0.2.0)
     sul_orcid_client (0.4.1)
@@ -662,7 +662,7 @@ DEPENDENCIES
   sidekiq (~> 7.0)
   simplecov
   sneakers (~> 2.11)
-  stanford-mods (~> 2.6)
+  stanford-mods
   sul_orcid_client (~> 0.3)
   tty-progressbar
   uuidtools (~> 2.1.4)
