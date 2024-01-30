@@ -131,7 +131,9 @@ rolling_indexer:
   # number of docs to send to Solr in a batch
   batch_size: 5
   # avoid overloading DSA for other work (seconds)
-  pause_time_between_docs: 0.1
+  pause_time_between_docs: 0.05
+  # number of parallel processes to build solr docs from cocina
+  num_parallel_processes: 1
   # a little more than softCommit max time is desired (a Solr 'add' with commitWithin does a softCommit) (seconds)
   # see solrconfig.xml for softCommit max time
   pause_for_solr: 61

@@ -3,6 +3,7 @@
 
 require_relative '../config/environment'
 require 'daemons'
+require 'parallel'
 
 QUERY = { q: '*:*', sort: 'timestamp asc', fl: 'id,timestamp', rows: Settings.rolling_indexer.query_size }.freeze
 
@@ -47,13 +48,13 @@ Daemons.run_proc(
     batches = response_docs.each_slice(Settings.rolling_indexer.batch_size)
     batches.each.with_index do |batch, _index|
       batch_start_time = Time.zone.now
-      solr_docs = batch.filter_map do |doc|
+      solr_docs = Parallel.filter_map(batch, in_processes: Settings.rolling_indexer.num_parallel_processes) do |doc|
         identifier = doc['id'].scrub('')
         # Occasionally, we've seen invalid bytes in the identifier, so try to catch those:
         Honeybadger.notify("Identifier isn't valid utf-8", { identifier:, bytes: identifier.unpack('C*') }) unless doc['id'].valid_encoding?
         begin
-          # This returns a Solr doc hash
           cocina_obj = CocinaObjectStore.find(identifier)
+          # This returns a Solr doc hash
           DorIndexing.build(cocina_with_metadata: cocina_obj, workflow_client: WorkflowClientFactory.build, cocina_repository: CocinaRepository.new)
         rescue CocinaObjectStore::CocinaObjectNotFoundError
           Honeybadger.notify('Rolling indexer cannot reindex since not found.', { druid: identifier })

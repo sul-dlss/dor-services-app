@@ -38,7 +38,7 @@ gem 'jsonpath', '~> 1.1' # used for metadata reports
 gem 'jwt' # json web token
 gem 'lograge'
 gem 'okcomputer'
-gem 'parallel' # used for validating cocina tools
+gem 'parallel' # used for validating cocina tools and for rolling indexer
 gem 'pg'
 gem 'retries' # for Goobi
 gem 'rsolr'
