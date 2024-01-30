@@ -48,7 +48,7 @@ Daemons.run_proc(
     batches = response_docs.each_slice(Settings.rolling_indexer.batch_size)
     batches.each.with_index do |batch, _index|
       batch_start_time = Time.zone.now
-      solr_docs = Parallel.filter_map(batch, in_processes: Settings.rolling_index.num_parallel_processes) do |doc|
+      solr_docs = Parallel.filter_map(batch, in_processes: Settings.rolling_indexer.num_parallel_processes) do |doc|
         identifier = doc['id'].scrub('')
         # Occasionally, we've seen invalid bytes in the identifier, so try to catch those:
         Honeybadger.notify("Identifier isn't valid utf-8", { identifier:, bytes: identifier.unpack('C*') }) unless doc['id'].valid_encoding?
