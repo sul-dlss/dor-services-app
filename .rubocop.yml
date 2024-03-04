@@ -59,6 +59,7 @@ Rails/EagerEvaluationLogMessage: # (new in 2.11)
 
 Rails/EnvironmentVariableAccess: # (new in 2.10)
   Enabled: true
+  AllowReads: true
 
 Rails/Output:
   Exclude:
