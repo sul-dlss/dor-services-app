@@ -66,7 +66,11 @@ def validate(clazz, sample_size, processes)
       Cocina::Models::Mapping::ToMods::Description.transform(cocina_obj.description, cocina_obj.externalIdentifier)
       [obj.external_identifier, nil]
     rescue StandardError => e
-      collection = obj.structural['isMemberOf'].join(' ')
+      collection = if obj.is_a?(Dro)
+                     obj.structural['isMemberOf'].join(' ')
+                   else
+                     ''
+                   end
       [obj.external_identifier, clazz.name, collection, e.message]
     end
   end.flatten(1)
