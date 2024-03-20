@@ -147,6 +147,32 @@ RSpec.describe Catalog::FolioWriter do
         end
       end
 
+      context 'when existing 856 PURL uses http://' do
+        let(:folio_response_json) do
+          { parsedRecordId: '1ab23862-46db-4da9-af5b-633adbf5f90f',
+            fields:
+            [{ tag: '001', content: 'in00000000067', isProtected: true },
+             { tag: '100', content: '$a Scully, Dana, $e author.', indicators: ['1', '\\'], isProtected: false },
+             { tag: '856',
+               content: '$u http://purl.stanford.edu/bc123dg9393' },
+             { tag: '999',
+               content: '$s 1281ae0b-548b-49e3-b740-050f28e6d57f $i 5108040a-65bc-40ed-bd50-265958301ce4',
+               indicators: ['f', 'f'],
+               isProtected: true }],
+            updateInfo: {
+              updateDate: '2023-02-14T10:39:19.642Z'
+            } }.deep_stringify_keys
+        end
+
+        it 'updates the MARC record with https PURL' do
+          folio_writer.save
+          expect(FolioClient).to have_received(:edit_marc_json).with(hrid:)
+          expect(FolioClient).to have_received(:fetch_marc_hash).with(instance_hrid: hrid)
+          expect(FolioClient).to have_received(:fetch_instance_info).with(hrid:)
+          expect(folio_response_json).to eq(updated_marc_json)
+        end
+      end
+
       context 'when instance record does not show updates at first' do
         let(:instance_record_first_lookup) do
           {
