@@ -320,6 +320,41 @@ ALTER SEQUENCE public.orcid_works_id_seq OWNED BY public.orcid_works.id;
 
 
 --
+-- Name: release_tags; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.release_tags (
+    id bigint NOT NULL,
+    druid character varying NOT NULL,
+    who character varying NOT NULL,
+    what character varying NOT NULL,
+    released_to character varying NOT NULL,
+    release boolean DEFAULT false NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: release_tags_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.release_tags_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: release_tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.release_tags_id_seq OWNED BY public.release_tags.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -416,6 +451,13 @@ ALTER TABLE ONLY public.orcid_works ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
+-- Name: release_tags id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.release_tags ALTER COLUMN id SET DEFAULT nextval('public.release_tags_id_seq'::regclass);
+
+
+--
 -- Name: tag_labels id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -492,6 +534,14 @@ ALTER TABLE ONLY public.object_versions
 
 ALTER TABLE ONLY public.orcid_works
     ADD CONSTRAINT orcid_works_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: release_tags release_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.release_tags
+    ADD CONSTRAINT release_tags_pkey PRIMARY KEY (id);
 
 
 --
@@ -623,6 +673,13 @@ CREATE UNIQUE INDEX index_orcid_works_on_orcidid_and_druid ON public.orcid_works
 
 
 --
+-- Name: index_release_tags_on_druid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_release_tags_on_druid ON public.release_tags USING btree (druid);
+
+
+--
 -- Name: index_tag_labels_on_tag; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -645,6 +702,7 @@ SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20240322161526'),
+('20240320203110'),
 ('20240108161425'),
 ('20240104210953'),
 ('20230716202954'),
