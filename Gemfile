@@ -50,12 +50,10 @@ gem 'uuidtools', '~> 2.1.4'
 gem 'whenever', require: false
 
 group :test, :development do
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug', platform: :mri
+  gem 'debug'
   gem 'diffy'
   # NOTE: factory_bot_rails >= 6.3.0 requires env/test.rb to have config.factory_bot.reject_primary_key_attributes = false
   gem 'factory_bot_rails'
-  gem 'pry-byebug'
   gem 'rack-console'
   gem 'rspec_junit_formatter'
   gem 'rspec-rails'
