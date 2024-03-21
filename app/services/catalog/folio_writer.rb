@@ -32,7 +32,7 @@ module Catalog
 
     def delete_previous_ids(catalog_record_id:, ignore_not_found: false)
       FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
-        marc_json['fields'].reject! { |field| (field['tag'] == '856') && (field['content'].include? purl_subfield) }
+        marc_json['fields'].reject! { |field| (field['tag'] == '856') && field['content'].include?(purl_no_protocol) }
       end
 
       retry_lookup do
@@ -48,7 +48,7 @@ module Catalog
 
     def update_current_ids(catalog_record_id:)
       FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
-        marc_json['fields'].reject! { |field| (field['tag'] == '856') && (field['content'].include? purl_subfield) }
+        marc_json['fields'].reject! { |field| (field['tag'] == '856') && field['content'].include?(purl_no_protocol) }
         marc_json['fields'] << marc_856_field if ReleaseTags.released_to_searchworks?(cocina_object:)
       end
 
@@ -86,8 +86,10 @@ module Catalog
       raise StandardError, 'FOLIO update not completed.'
     end
 
-    def purl_subfield
-      "$u #{cocina_object.description.purl}"
+    # allow match with older catalog records' 856 fields with purls starting with http://
+    def purl_no_protocol
+      uri = URI.parse(cocina_object.description.purl)
+      uri.host + uri.path
     end
 
     def catalog_record_ids
