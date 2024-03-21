@@ -75,6 +75,8 @@ Rails.application.routes.draw do
           post 'current/close', action: 'close_current'
         end
       end
+
+      resources :release_tags, only: [:create, :index]
     end
   end
 end
