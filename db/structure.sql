@@ -567,6 +567,13 @@ CREATE UNIQUE INDEX index_dros_on_external_identifier ON public.dros USING btree
 
 
 --
+-- Name: index_dros_on_structural_hasMemberOrders_0_members; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX "index_dros_on_structural_hasMemberOrders_0_members" ON public.dros USING gin ((((structural #> '{hasMemberOrders,0}'::text[]) -> 'members'::text)));
+
+
+--
 -- Name: index_dros_on_structural_isMemberOf; Type: INDEX; Schema: public; Owner: -
 --
 
