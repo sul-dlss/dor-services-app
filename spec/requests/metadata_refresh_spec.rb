@@ -3,6 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Refresh metadata' do
+  include Dry::Monads[:result]
+
   let(:druid) { 'druid:bc753qt7345' }
   let(:apo_druid) { 'druid:pp000pp0000' }
   let(:description) do
@@ -167,6 +169,27 @@ RSpec.describe 'Refresh metadata' do
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:internal_server_error)
         expect(response.body).to match('Cannot add attributes to an element if children have been already added to the element.')
+      end
+    end
+
+    context 'when Cocina validation error' do
+      let(:result) { Success(RefreshDescriptionFromCatalog::Result.new(description_props, nil)) }
+      let(:description_props) do
+        # Missing title
+        {
+          purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+        }
+      end
+
+      before do
+        allow(RefreshDescriptionFromCatalog).to receive(:run).and_return(result)
+      end
+
+      it 'returns a 422 error' do
+        post '/v1/objects/druid:mk420bs7601/refresh_metadata',
+             headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to match('missing required parameters: title')
       end
     end
   end
