@@ -19,5 +19,7 @@ class MetadataRefreshController < ApplicationController
   rescue Catalog::MarcService::MarcServiceError => e
     Honeybadger.notify(e)
     json_api_error(status: :internal_server_error, message: e.message)
+  rescue Cocina::Models::ValidationError => e
+    json_api_error(status: :unprocessable_entity, title: 'Cocina validation error', message: e.message)
   end
 end
