@@ -33,7 +33,7 @@ module Publish
     def build_administrative
       Cocina::Models::Administrative.new(cocina.administrative.to_h
         .except(:partOfProject)
-        .merge(releaseTags: ReleaseTags.for(cocina_object: cocina)))
+        .merge(releaseTags: ReleaseTags.for_public_metadata(cocina_object: cocina)))
     end
 
     def build_structural

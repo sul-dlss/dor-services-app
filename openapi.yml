@@ -26,6 +26,8 @@ tags:
     description: Integrations with other Systems
   - name: jobs
     description: Operations involving background jobs
+  - name: release_tags
+    description: Operations about release tags
   - name: versions
     description: Operations about object versions
   - name: events
@@ -638,6 +640,50 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
+  '/v1/objects/{object_id}/release_tags':
+    get:
+      tags:
+        - release_tags
+      summary: The release tag log for this object
+      operationId: 'release_tags#index'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReleaseTag'
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+    post:
+      tags:
+        - release_tags
+      summary: Create a new release_tag for this object
+      description: ''
+      operationId: 'release_tag#create'
+      responses:
+        '201':
+          description: Created
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+      requestBody:
+        description: release tag to add to the system
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReleaseTag'
   '/v1/objects/{object_id}/query/collections':
     get:
       tags:

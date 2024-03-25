@@ -47,8 +47,8 @@ RSpec.describe ReleaseTags do
     create(:administrative_tag, druid:, tag_label: create(:tag_label, tag: 'old : tag'))
   end
 
-  describe '.for' do
-    subject(:releases) { described_class.for(cocina_object:) }
+  describe '.for_public_metadata' do
+    subject(:releases) { described_class.for_public_metadata(cocina_object:) }
 
     context 'when item has a self tag' do
       let(:cocina_object) do
