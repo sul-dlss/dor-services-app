@@ -259,7 +259,7 @@ CREATE TABLE public.object_versions (
     id bigint NOT NULL,
     druid character varying NOT NULL,
     version integer NOT NULL,
-    tag character varying NOT NULL,
+    tag character varying,
     description character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
@@ -644,6 +644,7 @@ ALTER TABLE ONLY public.administrative_tags
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240322161526'),
 ('20240108161425'),
 ('20240104210953'),
 ('20230716202954'),
