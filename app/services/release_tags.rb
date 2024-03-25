@@ -8,7 +8,7 @@ class ReleaseTags
   # @param cocina_object [Cocina::Models::DRO, Cocina::Models::Collection] the object to list release tags for
   # @return [Array<Cocina::Models::ReleaseTag>]
   def self.for_public_metadata(cocina_object:)
-    new(cocina_object).for_pubic_metadata
+    new(cocina_object).for_public_metadata
   end
 
   # Retrieve the release tags for an item
@@ -17,7 +17,7 @@ class ReleaseTags
   end
 
   def self.released_to_searchworks?(cocina_object:)
-    new(cocina_object).for_pubic_metadata
+    new(cocina_object).for_public_metadata
                       .find { |tag| tag.to.casecmp?('Searchworks') }&.release || false
   end
 
@@ -40,7 +40,7 @@ class ReleaseTags
 
   # Determine projects in which an item is released
   # @return [Hash{String => Boolean}] all namespaces, keys are Project name Strings, values are Boolean
-  def for_pubic_metadata
+  def for_public_metadata
     all_tags_by_project = (item_tags + collection_tags).group_by(&:to)
     all_tags_by_project.values.map do |project_tags|
       project_tags.max_by(&:date)
