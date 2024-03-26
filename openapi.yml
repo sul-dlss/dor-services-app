@@ -179,7 +179,7 @@ paths:
         - name: significance
           in: query
           description: the significance of the version change (if versioning is needed)
-          required: true
+          required: false
           schema:
             type: string
             enum:
@@ -1052,7 +1052,7 @@ paths:
         - name: significance
           in: query
           description: set significance of version change (akin to semantic versioning)
-          required: true
+          required: false
           schema:
             type: string
             enum:

@@ -10,7 +10,7 @@ class VersionService
   # @param [String] opening_user_name add opening username to the events datastream
   # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
   # @param [Class] event_factory (EventFactory) the factory for creating events
-  def self.open(cocina_object:, description:, significance:, event_factory: EventFactory, opening_user_name: nil, assume_accessioned: false)
+  def self.open(cocina_object:, description:, significance: 'major', event_factory: EventFactory, opening_user_name: nil, assume_accessioned: false)
     new(druid: cocina_object.externalIdentifier, version: cocina_object.version).open(description:,
                                                                                       significance:,
                                                                                       opening_user_name:,
