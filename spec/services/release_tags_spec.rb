@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe ReleaseTags do
-  let(:bryar_trans_am_admin_tags) { AdministrativeTags.for(identifier: druid) }
   let(:releases) { described_class.new(cocina_object) }
   let(:cocina_object) do
     build(:dro, id: druid, collection_ids: [collection_druid]).new(
@@ -38,14 +37,6 @@ RSpec.describe ReleaseTags do
   let(:apo_id) { 'druid:qv648vd4392' }
   let(:collection_druid) { 'druid:xh235dd9059' }
   let(:druid) { 'druid:bb004bn8654' }
-
-  before do
-    # Create expected tags (see item fixture above) in the database
-    create(:administrative_tag, druid:, tag_label: create(:tag_label, tag: 'Project : Revs'))
-    create(:administrative_tag, druid:, tag_label: create(:tag_label, tag: 'Remediated By : 3.25.0'))
-    create(:administrative_tag, druid:, tag_label: create(:tag_label, tag: 'tag : test1'))
-    create(:administrative_tag, druid:, tag_label: create(:tag_label, tag: 'old : tag'))
-  end
 
   describe '.for_public_metadata' do
     subject(:releases) { described_class.for_public_metadata(cocina_object:) }
@@ -207,6 +198,38 @@ RSpec.describe ReleaseTags do
       let(:release_data) { [{ to: 'Revs', release: true }] }
 
       it { is_expected.to be false }
+    end
+  end
+
+  describe '.create' do
+    subject(:create_tag) { described_class.create(cocina_object:, tag:) }
+
+    let(:tag) { Cocina::Models::ReleaseTag.new(to: 'Earthworks', what: 'self', who: 'cathy', date: 2.days.ago.iso8601) }
+
+    before do
+      allow(CocinaObjectStore).to receive(:store)
+    end
+
+    context 'when ReleaseTag objects already exist for this item' do
+      before do
+        create(:release_tag, druid:)
+      end
+
+      it 'adds another release tag and records to the cocina' do
+        expect { create_tag }.to change { ReleaseTag.where(druid:).count }.by(1)
+        expect(CocinaObjectStore).to have_received(:store) do |dro|
+          expect(dro.administrative.releaseTags.size).to eq 4
+        end
+      end
+    end
+
+    context 'when no ReleaseTag objects exist for this item' do
+      it 'records to the cocina and adds no ReleaseTag' do
+        expect { create_tag }.not_to(change { ReleaseTag.where(druid:).count })
+        expect(CocinaObjectStore).to have_received(:store) do |dro|
+          expect(dro.administrative.releaseTags.size).to eq 4
+        end
+      end
     end
   end
 end

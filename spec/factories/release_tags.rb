@@ -2,10 +2,10 @@
 
 FactoryBot.define do
   factory :release_tag do
-    druid { 'MyString' }
-    who { 'MyString' }
-    what { 'MyString' }
-    released_to { 'MyString' }
+    druid { 'druid:bb004bn8654' }
+    who { 'Bob' }
+    what { 'self' }
+    released_to { 'Searchworks' }
     release { false }
   end
 end
