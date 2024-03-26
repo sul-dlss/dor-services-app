@@ -629,7 +629,6 @@ DEPENDENCIES
   sidekiq (~> 7.0)
   simplecov
   sneakers (~> 2.11)
-  stanford-mods
   sul_orcid_client (~> 0.3)
   tty-progressbar
   uuidtools (~> 2.1.4)
