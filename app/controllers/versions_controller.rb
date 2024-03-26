@@ -71,7 +71,6 @@ class VersionsController < ApplicationController
 
   def create_params
     params.require(:description)
-    params.require(:significance)
     new_params = params.permit(
       :assume_accessioned,
       :description,
