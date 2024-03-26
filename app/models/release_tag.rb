@@ -10,4 +10,14 @@ class ReleaseTag < ApplicationRecord
     attributes[:created_at] = attributes.delete(:date)
     new(attributes)
   end
+
+  def to_cocina
+    Cocina::Models::ReleaseTag.new(
+      to: released_to,
+      release:,
+      date: created_at.iso8601,
+      who:,
+      what:
+    )
+  end
 end
