@@ -70,6 +70,7 @@ RSpec.describe DeleteService do
       AdministrativeTags.create(identifier: druid, tags: ['test : tag'])
       Event.create!(druid:, event_type: 'version_close', data: { version: '4' })
       ObjectVersion.create(druid:, version: 4, tag: '4.0.0', description: 'Version 4.0.0')
+      ReleaseTag.create(druid:, who: 'bergeraj', what: 'self', released_to: 'Searchworks', release: true)
     end
 
     it 'deletes from datastore and Solr' do
@@ -78,6 +79,7 @@ RSpec.describe DeleteService do
       expect(AdministrativeTags.for(identifier: druid)).to be_empty
       expect(Event.exists?(druid:)).to be(false)
       expect(ObjectVersion.exists?(druid:)).to be(false)
+      expect(ReleaseTag.exists?(druid:)).to be(false)
     end
   end
 end

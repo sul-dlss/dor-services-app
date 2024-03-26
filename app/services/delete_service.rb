@@ -54,6 +54,7 @@ class DeleteService
     AdministrativeTags.destroy_all(identifier: druid)
     ObjectVersion.where(druid:).destroy_all
     Event.where(druid:).destroy_all
+    ReleaseTag.where(druid:).destroy_all
   end
 
   def druid
