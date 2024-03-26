@@ -232,4 +232,28 @@ RSpec.describe ReleaseTags do
       end
     end
   end
+
+  describe '.item_tags' do
+    subject(:releases) { described_class.item_tags(cocina_object:) }
+
+    context 'when ReleaseTag objects exist for this item' do
+      let!(:release_tag) { create(:release_tag) }
+
+      it 'returns release tags from the ReleaseTag objects' do
+        expect(releases).to eq [
+          release_tag.to_cocina
+        ]
+      end
+    end
+
+    context 'when no ReleaseTag objects exist for this item' do
+      it 'returns release tags from the cocina object' do
+        expect(releases).to eq [
+          Cocina::Models::ReleaseTag.new(to: 'Revs', release: true, date: '2015-01-06T23:33:47Z', who: 'carrickr', what: 'collection'),
+          Cocina::Models::ReleaseTag.new(to: 'Revs', release: true, date: '2015-01-06T23:33:54Z', who: 'carrickr', what: 'self'),
+          Cocina::Models::ReleaseTag.new(to: 'Revs', release: false, date: '2015-01-06T23:40:01Z', who: 'carrickr', what: 'self')
+        ]
+      end
+    end
+  end
 end

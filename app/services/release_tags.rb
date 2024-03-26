@@ -53,7 +53,11 @@ class ReleaseTags
   end
 
   def item_tags
-    cocina_object.administrative.releaseTags
+    release_tags = ReleaseTag.where(druid: cocina_object.externalIdentifier).to_a
+    # If this object's release tags haven't been migrated to ReleaseTag model objects, get from cocina.
+    return cocina_object.administrative.releaseTags if release_tags.empty?
+
+    release_tags.map(&:to_cocina)
   end
 
   private
