@@ -111,7 +111,7 @@ class VersionService
   # @raise [VersionService::VersioningError] if the object hasn't been opened for versioning, or if accessionWF has
   #   already been instantiated or the current version is missing a tag or description
   def close(description:, significance:, user_name:, event_factory:, start_accession: true)
-    ObjectVersion.update_current_version(druid:, description:, significance: significance.to_sym) if description || significance
+    ObjectVersion.update_current_version(druid:, description:, significance: significance&.to_sym) if description || significance
 
     raise VersionService::VersioningError, "Trying to close version #{version} on #{druid} which is not opened for versioning" unless open_for_versioning?
     raise VersionService::VersioningError, "Trying to close version #{version} on #{druid} which has active assemblyWF" if active_assembly_wf?
