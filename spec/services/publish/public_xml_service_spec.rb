@@ -287,7 +287,7 @@ RSpec.describe Publish::PublicXmlService do
                                                      hasAdminPolicy: 'druid:qv648vd4392',
                                                      releaseTags: [
                                                        { to: 'Searchworks', release: true, date: '2015-10-23T21:49:29.000+00:00' },
-                                                       { to: 'Some_special_place', release: true, date: '2015-10-23T21:49:29.000+00:00' }
+                                                       { to: 'PURL sitemap', release: true, date: '2015-10-23T21:49:29.000+00:00' }
                                                      ]
                                                    })
         end
@@ -299,7 +299,7 @@ RSpec.describe Publish::PublicXmlService do
         it 'includes releaseData element from release tags' do
           releases = ng_xml.xpath('/publicObject/releaseData/release')
           expect(releases.map(&:inner_text)).to eq %w[true true]
-          expect(releases.pluck('to')).to eq %w[Searchworks Some_special_place]
+          expect(releases.pluck('to')).to eq ['Searchworks', 'PURL sitemap']
         end
       end
 
