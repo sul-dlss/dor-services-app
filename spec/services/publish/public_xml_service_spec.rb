@@ -286,8 +286,8 @@ RSpec.describe Publish::PublicXmlService do
           build(:dro, id: 'druid:bc123df4567').new(description:, administrative: {
                                                      hasAdminPolicy: 'druid:qv648vd4392',
                                                      releaseTags: [
-                                                       { to: 'Searchworks', release: true, date: '2015-10-23T21:49:29.000+00:00' },
-                                                       { to: 'PURL sitemap', release: true, date: '2015-10-23T21:49:29.000+00:00' }
+                                                       { to: 'Searchworks', release: true, date: '2015-10-23T21:49:29.000+00:00', what: 'self' },
+                                                       { to: 'PURL sitemap', release: true, date: '2015-10-23T21:49:29.000+00:00', what: 'self' }
                                                      ]
                                                    })
         end
@@ -308,9 +308,9 @@ RSpec.describe Publish::PublicXmlService do
           build(:dro, id: 'druid:bc123df4567').new(description:, administrative: {
                                                      hasAdminPolicy: 'druid:qv648vd4392',
                                                      releaseTags: [
-                                                       { to: 'Searchworks', release: false, date: '2015-10-23T21:49:29.000+00:00' },
-                                                       { to: 'Searchworks', release: true, date: '2018-10-23T21:49:29.000+00:00' },
-                                                       { to: 'Some_special_place', release: true, date: '2015-10-23T21:49:29.000+00:00' }
+                                                       { to: 'Searchworks', release: false, date: '2015-10-23T21:49:29.000+00:00', what: 'self' },
+                                                       { to: 'Searchworks', release: true, date: '2018-10-23T21:49:29.000+00:00', what: 'self' },
+                                                       { to: 'Some_special_place', release: true, date: '2015-10-23T21:49:29.000+00:00', what: 'self' }
                                                      ]
                                                    })
         end
