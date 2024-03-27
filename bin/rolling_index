@@ -55,7 +55,12 @@ Daemons.run_proc(
         begin
           cocina_obj = CocinaObjectStore.find(identifier)
           # This returns a Solr doc hash
-          DorIndexing.build(cocina_with_metadata: cocina_obj, workflow_client: WorkflowClientFactory.build, cocina_repository: CocinaRepository.new)
+          DorIndexing.build(
+            cocina_with_metadata: cocina_obj,
+            workflow_client: WorkflowClientFactory.build,
+            dor_services_client: DorServicesClientFactory.build,
+            cocina_repository: CocinaRepository.new
+          )
         rescue CocinaObjectStore::CocinaObjectNotFoundError
           Honeybadger.notify('Rolling indexer cannot reindex since not found.', { druid: identifier })
           # Clean up cruft in QA and stage

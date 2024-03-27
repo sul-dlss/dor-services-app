@@ -42,6 +42,9 @@ solr:
   url: 'https://solr.example.com/solr/collection'
 dor_indexing:
   url: 'https://dor-indexing-app.example.edu/dor'
+dor_services:
+  url: 'http://localhost:3003'
+  token: 'not-a-real-token'
 redis_url: 'redis://localhost:6379/'
 
 workflow_url: 'https://workflow.example.com/workflow'
