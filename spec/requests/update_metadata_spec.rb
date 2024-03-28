@@ -91,6 +91,7 @@ RSpec.describe 'Update object' do
     allow(Cocina::ObjectValidator).to receive(:validate)
 
     allow(EventFactory).to receive(:create)
+    allow(VersionService).to receive(:open?).and_return(true)
   end
 
   it 'updates the object' do
