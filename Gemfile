@@ -8,7 +8,7 @@ gem 'rails', '~> 7.1.0'
 # DLSS/domain-specific dependencies
 gem 'cocina-models', '~> 0.95.0'
 gem 'datacite', '~> 0.3.0'
-gem 'dor_indexing', '~> 1.3'
+gem 'dor_indexing', '~> 2.0'
 gem 'dor-workflow-client', '~> 7.0'
 gem 'druid-tools', '~> 2.2'
 gem 'folio_client', '~> 0.8'
