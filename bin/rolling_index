@@ -7,16 +7,24 @@ require 'parallel'
 
 QUERY = { q: '*:*', sort: 'timestamp asc', fl: 'id,timestamp', rows: Settings.rolling_indexer.query_size }.freeze
 
-# Cocina Repository implementation backed by ActiveRecord
-class CocinaRepository
-  def find(druid)
+# Repository implementations backed by ActiveRecord
+def administrative_tags_finder
+  lambda do |druid|
+    AdministrativeTags.for(identifier: druid)
+  end
+end
+
+def cocina_finder
+  lambda do |druid|
     CocinaObjectStore.find(druid)
   rescue CocinaObjectStore::CocinaObjectStoreError => e
-    raise DorIndexing::CocinaRepository::RepositoryError, e.message
+    raise DorIndexing::RepositoryError, e.message
   end
+end
 
-  def administrative_tags(druid)
-    AdministrativeTags.for(identifier: druid)
+def release_tags_finder
+  lambda do |druid|
+    ReleaseTags.item_tags(cocina_object: CocinaObjectStore.find(druid))
   end
 end
 
@@ -55,14 +63,20 @@ Daemons.run_proc(
         begin
           cocina_obj = CocinaObjectStore.find(identifier)
           # This returns a Solr doc hash
-          DorIndexing.build(cocina_with_metadata: cocina_obj, workflow_client: WorkflowClientFactory.build, cocina_repository: CocinaRepository.new)
+          DorIndexing.build(
+            cocina_with_metadata: cocina_obj,
+            workflow_client: WorkflowClientFactory.build,
+            cocina_finder:,
+            administrative_tags_finder:,
+            release_tags_finder:
+          )
         rescue CocinaObjectStore::CocinaObjectNotFoundError
           Honeybadger.notify('Rolling indexer cannot reindex since not found.', { druid: identifier })
           # Clean up cruft in QA and stage
           Indexer.delete(solr: solr_conn, identifier:) if DELETE_ENVS.include?(ENV['HONEYBADGER_ENV'])
           # Return `nil`, which is compacted, so the Solr add isn't grumpy
           nil
-        rescue DorIndexing::CocinaRepository::RepositoryError
+        rescue DorIndexing::RepositoryError
           Honeybadger.notify('Unexpected response from Dor Services App.', { druid: identifier })
           # Return `nil`, which is compacted, so the Solr add isn't grumpy
           nil
