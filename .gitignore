@@ -17,6 +17,7 @@
 /postgres-data
 
 config/certs
+.byebug_history
 .rvmrc
 .ruby-*
 coverage/*
