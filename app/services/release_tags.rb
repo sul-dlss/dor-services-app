@@ -44,31 +44,49 @@ class ReleaseTags
   attr_reader :cocina_object
 
   # Determine projects in which an item is released
-  # @return [Hash{String => Boolean}] all namespaces, keys are Project name Strings, values are Boolean
+  # @return [Array<Cocina::Models::ReleaseTag>]
   def for_public_metadata
-    all_tags_by_project = (item_tags + collection_tags).group_by(&:to)
-    all_tags_by_project.values.map do |project_tags|
-      project_tags.max_by(&:date)
-    end
+    # For each release target, item tags trump collection tags
+    grouped_latest_tags(collection_tags).merge(grouped_latest_tags(item_tags)).values
   end
 
   def item_tags
-    release_tags = ReleaseTag.where(druid: cocina_object.externalIdentifier).to_a
-    # If this object's release tags haven't been migrated to ReleaseTag model objects, get from cocina.
-    return cocina_object.administrative.releaseTags if release_tags.empty?
-
-    release_tags.map(&:to_cocina)
+    tags_for(cocina_object.externalIdentifier)
   end
 
   private
 
-  def collection_tags
-    collections.flat_map { |collection| collection.administrative.releaseTags }.select { |tag| tag.what == 'collection' }
+  def tags_for(druid)
+    release_tags = ReleaseTag.where(druid:).to_a
+    # If this object's release tags haven't been migrated to ReleaseTag model objects, get from cocina.
+    return tags_from_cocina(druid) if release_tags.empty?
+
+    release_tags.map(&:to_cocina)
   end
 
-  def collections
+  def tags_from_cocina(druid)
+    from_cocina_object = if cocina_object.externalIdentifier == druid
+                           cocina_object
+                         else
+                           CocinaObjectStore.find(druid)
+                         end
+    from_cocina_object.administrative.releaseTags
+  end
+
+  def collection_tags
+    collection_druids.flat_map { |collection_druid| tags_for(collection_druid) }.select { |tag| tag.what == 'collection' }
+  end
+
+  def collection_druids
     return [] unless cocina_object.dro?
 
-    cocina_object.structural.isMemberOf.map { |druid| CocinaObjectStore.find(druid) }
+    cocina_object.structural.isMemberOf
+  end
+
+  def grouped_latest_tags(release_tags)
+    # Group by release target
+    grouped_tags = release_tags.group_by(&:to)
+    # For each release target, select the most recent release tag
+    grouped_tags.transform_values { |tags| tags.max_by(&:date) }
   end
 end
