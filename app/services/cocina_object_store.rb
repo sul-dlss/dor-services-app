@@ -21,6 +21,10 @@ class CocinaObjectStore
   # Cocina object in datastore has been updated since this instance was retrieved.
   class StaleLockError < CocinaObjectStoreError; end
 
+  DRO = 'Dro'
+  COLLECTION = 'Collection'
+  ADMIN_POLICY = 'AdminPolicy'
+
   # Retrieves a Cocina object from the datastore.
   # @param [String] druid
   # @return [Cocina::Models::DROWithMetadata, Cocina::Models::CollectionWithMetadata, Cocina::Models::AdminPolicyWithMetadata] cocina_object
@@ -39,9 +43,10 @@ class CocinaObjectStore
 
   # Determine if an object exists in the datastore, returning a boolean.
   # @param [String] druid
+  # @param [String,Array<String>,nil] type optional cocina type to check
   # @return [boolean] true if object exists
-  def self.exists?(druid)
-    new.exists?(druid)
+  def self.exists?(druid, type: nil)
+    new.exists?(druid, type:)
   end
 
   # Checks if an object exists in the datastore, raising if it does not exist.
@@ -107,8 +112,8 @@ class CocinaObjectStore
     cocina_to_ar_save(cocina_object, skip_lock:)
   end
 
-  def exists?(druid)
-    ar_exists?(druid)
+  def exists?(druid, type: nil)
+    ar_exists?(druid, type:)
   end
 
   def exists!(druid)
@@ -118,8 +123,11 @@ class CocinaObjectStore
   end
 
   # This is only public for migration use.
-  def ar_exists?(druid)
-    Dro.exists?(external_identifier: druid) || Collection.exists?(external_identifier: druid) || AdminPolicy.exists?(external_identifier: druid)
+  def ar_exists?(druid, type: nil)
+    types = type ? Array(type) : [DRO, COLLECTION, ADMIN_POLICY]
+    types.any? do |t|
+      t.constantize.exists?(external_identifier: druid)
+    end
   end
 
   def version(druid)
