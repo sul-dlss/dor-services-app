@@ -57,7 +57,7 @@ class CreateObjectService
   def ensure_ur_admin_policy_exists(cocina_object)
     return unless Settings.enabled_features.create_ur_admin_policy && cocina_object.administrative.hasAdminPolicy == Settings.ur_admin_policy.druid
 
-    AdminPolicy.exists?(external_identifier: Settings.ur_admin_policy.druid) || UrAdminPolicyFactory.create
+    CocinaObjectStore.exists?(Settings.ur_admin_policy.druid, type: CocinaObjectStore::ADMIN_POLICY) || UrAdminPolicyFactory.create
   end
 
   # Merge the rights, use statement, license and copyright statement from the

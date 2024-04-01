@@ -113,6 +113,22 @@ RSpec.describe CocinaObjectStore do
       end
     end
 
+    context 'when type is specified and object is found in datastore' do
+      let(:ar_cocina_object) { create(:ar_dro) }
+
+      it 'returns true' do
+        expect(store.exists?(ar_cocina_object.external_identifier, type: CocinaObjectStore::DRO)).to be(true)
+      end
+    end
+
+    context 'when type is specified and object is found in datastore but different type' do
+      let(:ar_cocina_object) { create(:ar_dro) }
+
+      it 'returns false' do
+        expect(store.exists?(ar_cocina_object.external_identifier, type: [CocinaObjectStore::COLLECTION, CocinaObjectStore::ADMIN_POLICY])).to be(false)
+      end
+    end
+
     context 'when object is a DRO' do
       let(:ar_cocina_object) { create(:ar_dro) }
 
