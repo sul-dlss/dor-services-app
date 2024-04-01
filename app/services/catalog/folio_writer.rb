@@ -49,11 +49,11 @@ module Catalog
     def update_current_ids(catalog_record_id:)
       FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
         marc_json['fields'].reject! { |field| (field['tag'] == '856') && field['content'].include?(purl_no_protocol) }
-        marc_json['fields'] << marc_856_field if ReleaseTags.released_to_searchworks?(cocina_object:)
+        marc_json['fields'] << marc_856_field if ReleaseTagService.released_to_searchworks?(cocina_object:)
       end
 
       retry_lookup do
-        if ReleaseTags.released_to_searchworks?(cocina_object:)
+        if ReleaseTagService.released_to_searchworks?(cocina_object:)
           raise StandardError, 'No matching PURL found in instance record after update.' unless instance_has_purl?(catalog_record_id:)
 
           raise StandardError, 'No completely matching 856 found in source record after update.' unless updated?(catalog_record_id:)

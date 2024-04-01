@@ -9,11 +9,11 @@ class ReleaseTagsController < ApplicationController
   end
 
   def index
-    render json: ReleaseTags.item_tags(cocina_object: @cocina_object)
+    render json: ReleaseTagService.item_tags(cocina_object: @cocina_object)
   end
 
   def create
-    ReleaseTags.create(cocina_object: @cocina_object, tag: new_tag)
+    ReleaseTagService.create(cocina_object: @cocina_object, tag: new_tag)
     head :created
   end
 

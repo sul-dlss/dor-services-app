@@ -24,7 +24,7 @@ end
 
 def release_tags_finder
   lambda do |druid|
-    ReleaseTags.item_tags(cocina_object: CocinaObjectStore.find(druid))
+    ReleaseTagService.item_tags(cocina_object: CocinaObjectStore.find(druid))
   end
 end
 

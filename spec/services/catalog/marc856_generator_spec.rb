@@ -131,7 +131,7 @@ RSpec.describe Catalog::Marc856Generator do
   end
 
   before do
-    allow(ReleaseTags).to receive(:released_to_searchworks?).and_return(release_data)
+    allow(ReleaseTagService).to receive(:released_to_searchworks?).and_return(release_data)
   end
 
   describe '.create' do

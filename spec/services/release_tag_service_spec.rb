@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe ReleaseTags do
+RSpec.describe ReleaseTagService do
   let(:releases) { described_class.new(cocina_object) }
   let(:cocina_object) do
     build(:dro, id: druid, collection_ids:).new(

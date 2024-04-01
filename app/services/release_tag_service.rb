@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Shows and creates release tags. This replaces parts of https://github.com/sul-dlss/dor-services/blob/main/lib/dor/models/concerns/releaseable.rb
-class ReleaseTags
+class ReleaseTagService
   # Retrieve the release tags for an item and all the collections that it is a part of
   #
   # Determine projects in which an item is released
