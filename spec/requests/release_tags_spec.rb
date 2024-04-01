@@ -25,19 +25,33 @@ RSpec.describe 'Operations on release tags' do
   end
 
   describe '#index' do
-    let(:cocina_object) do
-      build(:dro, id: druid).new(
-        administrative: {
-          hasAdminPolicy: 'druid:hy787xj5878',
-          releaseTags: [tag]
-        }
-      )
+    context 'when a DRO' do
+      let(:cocina_object) do
+        build(:dro, id: druid).new(
+          administrative: {
+            hasAdminPolicy: 'druid:hy787xj5878',
+            releaseTags: [tag]
+          }
+        )
+      end
+
+      it 'returns the release tags' do
+        get "/v1/objects/#{druid}/release_tags", headers: auth_headers
+
+        expect(response.parsed_body).to contain_exactly(tag.to_h.stringify_keys)
+      end
     end
 
-    it 'returns the latest version for an object' do
-      get "/v1/objects/#{druid}/release_tags", headers: auth_headers
+    context 'when an AdminPolicy' do
+      let(:cocina_object) do
+        build(:admin_policy, id: druid)
+      end
 
-      expect(response.parsed_body).to contain_exactly(tag.to_h.stringify_keys)
+      it 'returns unprocessable entity' do
+        get "/v1/objects/#{druid}/release_tags", headers: auth_headers
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
     end
   end
 

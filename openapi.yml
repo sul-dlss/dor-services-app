@@ -655,6 +655,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ReleaseTag'
+        '422':
+          description: Unprocessable entity.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       parameters:
         - name: object_id
           in: path

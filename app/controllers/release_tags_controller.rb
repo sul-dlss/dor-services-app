@@ -9,6 +9,12 @@ class ReleaseTagsController < ApplicationController
   end
 
   def index
+    if @cocina_object.admin_policy?
+      return json_api_error(status: :unprocessable_entity,
+                            title: 'Not a Collection or DRO',
+                            message: 'Only Collection or DROs can have release tags.')
+    end
+
     render json: ReleaseTagService.item_tags(cocina_object: @cocina_object)
   end
 
