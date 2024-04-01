@@ -111,7 +111,7 @@ RSpec.describe Catalog::FolioWriter do
     before do
       allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
       allow(FolioClient).to receive(:edit_marc_json).and_yield(folio_response_json)
-      allow(ReleaseTags).to receive(:released_to_searchworks?).and_return(release_data)
+      allow(ReleaseTagService).to receive(:released_to_searchworks?).and_return(release_data)
       allow(FolioClient).to receive_messages(fetch_instance_info: instance_record, fetch_marc_hash: source_record)
       allow(Honeybadger).to receive(:notify)
     end
