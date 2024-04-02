@@ -38,7 +38,7 @@ class CreateObjectService
     cocina_object = assign_doi(cocina_object) if assign_doi
     cocina_object_with_metadata = CocinaObjectStore.store(cocina_object, skip_lock: true)
     add_project_tag(druid, cocina_request_object)
-    # This creates version 1.0.0 (Initial Version)
+    # This creates version 1 (Initial Version)
     ObjectVersion.initial_version(druid:)
 
     event_factory.create(druid:, event_type: 'registration', data: cocina_object.to_h)

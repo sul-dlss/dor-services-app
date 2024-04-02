@@ -45,7 +45,6 @@ RSpec.describe ConstituentService do
         service.add(constituent_druids:)
         expect(VersionService).to have_received(:open).with(cocina_object: virtual_object,
                                                             description: ConstituentService::VERSION_DESCRIPTION,
-                                                            significance: ConstituentService::VERSION_SIGNIFICANCE,
                                                             event_factory:)
       end
     end

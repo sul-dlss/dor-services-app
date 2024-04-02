@@ -10,11 +10,10 @@ class VersionsController < ApplicationController
 
     return render json: {} if object_versions.empty?
 
-    # add an entry with version id, tag and description for each version
+    # add an entry with version id and description for each version
     versions = object_versions.map do |object_version|
       {
         versionId: object_version.version,
-        tag: object_version.tag,
         message: object_version.description
       }
     end
@@ -74,8 +73,7 @@ class VersionsController < ApplicationController
     new_params = params.permit(
       :assume_accessioned,
       :description,
-      :opening_user_name,
-      :significance
+      :opening_user_name
     ).to_h.symbolize_keys
     boolean_param(new_params, :assume_accessioned)
   end
@@ -83,7 +81,6 @@ class VersionsController < ApplicationController
   def close_params
     new_params = params.permit(
       :description,
-      :significance,
       :start_accession,
       :user_name
     ).to_h.symbolize_keys

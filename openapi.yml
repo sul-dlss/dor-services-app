@@ -176,16 +176,6 @@ paths:
               - accessionWF
               - assemblyWF
               - gisAssemblyWF
-        - name: significance
-          in: query
-          description: the significance of the version change (if versioning is needed)
-          required: false
-          schema:
-            type: string
-            enum:
-              - minor
-              - major
-              - admin
         - name: description
           in: query
           description: the description of the version change (if versioning is needed)
@@ -971,17 +961,6 @@ paths:
             default: true
           required: false
           description: Indicates if accessionWF should be started after closing the version
-        - name: significance
-          in: query
-          description: the significance of the version change
-          required: false
-          schema:
-            type: string
-            enum:
-              - minor
-              - major
-              - admin
-            example: admin
         - name: description
           in: query
           description: the description of the version change
@@ -1055,16 +1034,6 @@ paths:
           schema:
             type: string
           example: 'Adding thumbnail'
-        - name: significance
-          in: query
-          description: set significance of version change (akin to semantic versioning)
-          required: false
-          schema:
-            type: string
-            enum:
-                - major
-                - minor
-                - admin
         - name: assume_accessioned
           in: query
           description: If true, does not check whether object has been accessioned

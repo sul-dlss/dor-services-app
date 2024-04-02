@@ -5,14 +5,12 @@ class VersionService
   class VersioningError < StandardError; end
 
   # @param [Cocina::Models::DRO,Cocina::Models::Collection] cocina_object the item being acted upon
-  # @param [String] significance set significance (major/minor/patch) of version change
   # @param [String] description set description of version change
   # @param [String] opening_user_name add opening username to the events datastream
   # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
   # @param [Class] event_factory (EventFactory) the factory for creating events
-  def self.open(cocina_object:, description:, significance: 'major', event_factory: EventFactory, opening_user_name: nil, assume_accessioned: false)
+  def self.open(cocina_object:, description:, event_factory: EventFactory, opening_user_name: nil, assume_accessioned: false)
     new(druid: cocina_object.externalIdentifier, version: cocina_object.version).open(description:,
-                                                                                      significance:,
                                                                                       opening_user_name:,
                                                                                       assume_accessioned:,
                                                                                       event_factory:,
@@ -35,14 +33,11 @@ class VersionService
   # @param [String] druid of the item
   # @param [Integer] version of the item
   # @param [String] description describes the version change
-  # @param [Symbol] significance which part of the version tag to increment
-  #  :major, :minor, :admin (see Dor::VersionTag#increment)
   # @param [String] user_name add username to the events datastream
   # @param [Boolean] start_accession (true) set to true if you want accessioning to start, false otherwise
   # @param [Class] event_factory (EventFactory) the factory for creating events
-  def self.close(druid:, version:, event_factory: EventFactory, description: nil, significance: nil, user_name: nil, start_accession: true) # rubocop:disable Metrics/ParameterLists
+  def self.close(druid:, version:, event_factory: EventFactory, description: nil, user_name: nil, start_accession: true)
     new(druid:, version:).close(description:,
-                                significance:,
                                 user_name:,
                                 start_accession:,
                                 event_factory:)
@@ -61,7 +56,6 @@ class VersionService
 
   # Increments the version number and initializes versioningWF for the object
   # @param [Cocina::Models::DRO,Cocina::Models::Collection] cocina_object the item being acted upon
-  # @param [String] significance set significance (major/minor/patch) of version change
   # @param [String] description set description of version change
   # @param [String] opening_user_name add opening username to the events datastream
   # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
@@ -69,16 +63,16 @@ class VersionService
   # @return [Cocina::Models::DRO, Cocina::Models::AdminPolicy, Cocina::Models::Collection] updated cocina object
   # @raise [VersionService::VersioningError] if the object hasn't been accessioned, or if a version is already opened
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  def open(cocina_object:, significance:, description:, opening_user_name:, assume_accessioned:, event_factory:)
-    raise ArgumentError, 'description and significance are required to open a new version' if description.blank? || significance.blank?
+  def open(cocina_object:, description:, opening_user_name:, assume_accessioned:, event_factory:)
+    raise ArgumentError, 'description is required to open a new version' if description.blank?
 
     ensure_openable!(assume_accessioned:)
     if Settings.version_service.sync_with_preservation
       sdr_version = retrieve_version_from_preservation
-      new_object_version = ObjectVersion.sync_then_increment_version(druid:, known_version: sdr_version, description:, significance: significance.to_sym)
+      new_object_version = ObjectVersion.sync_then_increment_version(druid:, known_version: sdr_version, description:)
     else
       # This is for testing when we don't have the SDR container available
-      new_object_version = ObjectVersion.increment_version(druid:, description:, significance: significance.to_sym)
+      new_object_version = ObjectVersion.increment_version(druid:, description:)
     end
     update_cocina_object = cocina_object
     update_cocina_object = UpdateObjectService.update(cocina_object.new(version: new_object_version.version)) if cocina_object.version != new_object_version.version
@@ -103,15 +97,13 @@ class VersionService
 
   # Sets versioningWF:submit-version to completed and initiates accessionWF for the object
   # @param [String] :description describes the version change
-  # @param [Symbol] :significance which part of the version tag to increment
-  #  :major, :minor, :admin (see Dor::VersionTag#increment)
   # @param [String] :user_name add username to the events datastream
   # @param [Class] event_factory (EventFactory) the factory for creating events
   # @param [Boolean] :start_accession set to true if you want accessioning to start (default), false otherwise
   # @raise [VersionService::VersioningError] if the object hasn't been opened for versioning, or if accessionWF has
-  #   already been instantiated or the current version is missing a tag or description
-  def close(description:, significance:, user_name:, event_factory:, start_accession: true)
-    ObjectVersion.update_current_version(druid:, description:, significance: significance&.to_sym) if description || significance
+  #   already been instantiated or the current version is missing a description
+  def close(description:, user_name:, event_factory:, start_accession: true)
+    ObjectVersion.update_current_version(druid:, description:) if description
 
     raise VersionService::VersioningError, "Trying to close version #{version} on #{druid} which is not opened for versioning" unless open_for_versioning?
     raise VersionService::VersioningError, "Trying to close version #{version} on #{druid} which has active assemblyWF" if active_assembly_wf?
