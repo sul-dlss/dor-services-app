@@ -3,7 +3,7 @@
 class VersionsController < ApplicationController
   before_action :load_cocina_object, only: %i[create]
   before_action :check_cocina_object_exists, only: %i[index]
-  before_action :load_version, only: %i[current close_current openable]
+  before_action :load_version, only: %i[current close_current openable status]
 
   def index
     object_versions = ObjectVersion.where(druid: params[:object_id])
@@ -47,6 +47,20 @@ class VersionsController < ApplicationController
     render plain: VersionService.can_open?(druid: params[:object_id], version: @version).to_s
   rescue Preservation::Client::Error => e
     render build_error('Unable to check if openable due to preservation client error', e, status: :internal_server_error)
+  end
+
+  def status
+    version_service = VersionService.new(druid: params[:object_id], version: @version)
+    workflow_state_service = WorkflowStateService.new(druid: params[:object_id], version: @version)
+
+    render json: {
+      versionId: @version,
+      open: version_service.open_for_versioning?,
+      openable: version_service.can_open?,
+      assembling: workflow_state_service.assembling?,
+      accessioning: workflow_state_service.accessioning?,
+      closeable: version_service.can_close?
+    }
   end
 
   private

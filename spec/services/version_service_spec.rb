@@ -11,6 +11,12 @@ RSpec.describe VersionService do
 
   let(:event_factory) { class_double(EventFactory, create: true) }
 
+  let(:workflow_state_service) { instance_double(WorkflowStateService) }
+
+  before do
+    allow(WorkflowStateService).to receive(:new).and_return(workflow_state_service)
+  end
+
   describe '.open?' do
     let(:instance) { instance_double(described_class, open_for_versioning?: true) }
 
@@ -24,27 +30,11 @@ RSpec.describe VersionService do
     end
   end
 
-  describe '.in_accessioning?' do
-    let(:instance) { instance_double(described_class, accessioning?: true) }
-
-    before do
-      allow(described_class).to receive(:new).and_return(instance)
-    end
-
-    it 'creates a new service instance and sends #accessioning?' do
-      described_class.in_accessioning?(druid:, version:)
-      expect(instance).to have_received(:accessioning?).once
-    end
-  end
-
   describe '.open' do
     subject(:open) { described_class.open(cocina_object:, description: 'same as it ever was', opening_user_name: 'sunetid', event_factory:) }
 
     let(:workflow_client) do
-      instance_double(Dor::Workflow::Client,
-                      create_workflow_by_name: true,
-                      lifecycle: true,
-                      active_lifecycle: nil)
+      instance_double(Dor::Workflow::Client, create_workflow_by_name: true)
     end
 
     before do
@@ -53,6 +43,7 @@ RSpec.describe VersionService do
       allow(UpdateObjectService).to receive(:update)
       ObjectVersion.create(druid:, version: 1, description: 'new version')
       allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
+      allow(workflow_state_service).to receive_messages(accessioned?: true, active_version_wf?: false, accessioning?: false)
     end
 
     context 'when on the expected path' do
@@ -61,9 +52,9 @@ RSpec.describe VersionService do
         expect(cocina_object).to have_received(:new).with(version: 2)
         expect(ObjectVersion.current_version(druid).version).to eq(2)
         expect(UpdateObjectService).to have_received(:update)
-        expect(workflow_client).to have_received(:lifecycle).with(druid:, milestone_name: 'accessioned')
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'opened', version: '1')
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'submitted', version: '1')
+        expect(workflow_state_service).to have_received(:accessioned?)
+        expect(workflow_state_service).to have_received(:active_version_wf?)
+        expect(workflow_state_service).to have_received(:accessioning?)
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 
         current_version = ObjectVersion.current_version(druid)
@@ -80,6 +71,7 @@ RSpec.describe VersionService do
       before do
         allow(Settings.version_service).to receive(:sync_with_preservation).and_return false
         allow(ObjectVersion).to receive(:sync_then_increment_version)
+        allow(workflow_state_service).to receive_messages(accessioned?: true, active_version_wf?: false, accessioning?: false)
       end
 
       it 'creates an object version and starts a workflow' do
@@ -88,9 +80,9 @@ RSpec.describe VersionService do
         expect(ObjectVersion.current_version(druid).version).to eq(2)
         expect(ObjectVersion).not_to have_received(:sync_then_increment_version)
         expect(UpdateObjectService).to have_received(:update)
-        expect(workflow_client).to have_received(:lifecycle).with(druid:, milestone_name: 'accessioned')
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'opened', version: '1')
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'submitted', version: '1')
+        expect(workflow_state_service).to have_received(:accessioned?)
+        expect(workflow_state_service).to have_received(:active_version_wf?)
+        expect(workflow_state_service).to have_received(:accessioning?)
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 
         expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
@@ -139,59 +131,59 @@ RSpec.describe VersionService do
     end
 
     let(:workflow_client) do
-      instance_double(Dor::Workflow::Client,
-                      lifecycle: true,
-                      active_lifecycle: nil)
+      instance_double(Dor::Workflow::Client)
     end
 
     context 'when a new version can be opened' do
       before do
         allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
+        allow(workflow_state_service).to receive_messages(accessioned?: true, active_version_wf?: false, accessioning?: false)
       end
 
       it 'returns true' do
         expect(can_open?).to be true
-        expect(workflow_client).to have_received(:lifecycle).with(druid:, milestone_name: 'accessioned')
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'opened', version: '1')
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'submitted', version: '1')
+        expect(workflow_state_service).to have_received(:accessioned?)
+        expect(workflow_state_service).to have_received(:active_version_wf?)
+        expect(workflow_state_service).to have_received(:accessioning?)
       end
     end
 
     context 'when the object has not been accessioned' do
       before do
-        allow(workflow_client).to receive(:lifecycle).with(druid:, milestone_name: 'accessioned').and_return(false)
+        allow(workflow_state_service).to receive(:accessioned?).and_return(false)
       end
 
       it 'returns false' do
         expect(can_open?).to be false
-        expect(workflow_client).to have_received(:lifecycle).with(druid:, milestone_name: 'accessioned')
+        expect(workflow_state_service).to have_received(:accessioned?)
       end
     end
 
     context 'when the object has already been opened' do
       before do
-        allow(workflow_client).to receive(:active_lifecycle).with(druid:, milestone_name: 'opened', version: '1').and_return(Time.new)
+        allow(workflow_state_service).to receive_messages(accessioned?: true, active_version_wf?: true)
       end
 
       it 'returns false' do
         expect(can_open?).to be false
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'opened', version: '1')
+        expect(workflow_state_service).to have_received(:active_version_wf?)
       end
     end
 
     context 'when the object is still being accessioned' do
       before do
-        allow(workflow_client).to receive(:active_lifecycle).with(druid:, milestone_name: 'submitted', version: '1').and_return(Time.new)
+        allow(workflow_state_service).to receive_messages(accessioned?: true, active_version_wf?: false, accessioning?: true)
       end
 
       it 'returns false' do
         expect(can_open?).to be false
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'submitted', version: '1')
+        expect(workflow_state_service).to have_received(:accessioning?)
       end
     end
 
     context "when Preservation doesn't know about the object" do
       before do
+        allow(workflow_state_service).to receive_messages(accessioned?: true, active_version_wf?: false, accessioning?: true)
         allow(Preservation::Client.objects).to receive(:current_version).and_raise(Preservation::Client::NotFoundError)
       end
 
@@ -225,10 +217,7 @@ RSpec.describe VersionService do
 
     context 'when description and user_name are passed in' do
       before do
-        # stub out calls for open_for_versioning?
-        allow(workflow_client).to receive(:active_lifecycle).and_return(true, false)
-        allow(workflow_client).to receive(:workflow_status).with(druid:, workflow: 'assemblyWF', process: 'accessioning-initiate')
-                                                           .and_return('completed')
+        allow(workflow_state_service).to receive_messages(active_version_wf?: true, accessioning?: false, active_assembly_wf?: false)
         allow(workflow_client).to receive(:close_version)
       end
 
@@ -249,8 +238,7 @@ RSpec.describe VersionService do
       let(:start_accession) { false }
 
       before do
-        allow(workflow_client).to receive(:active_lifecycle).and_return(true, false)
-        allow(workflow_client).to receive(:workflow_status).with(hash_including(workflow: 'assemblyWF')).and_return('completed')
+        allow(workflow_state_service).to receive_messages(active_version_wf?: true, accessioning?: false, active_assembly_wf?: false)
         allow(workflow_client).to receive(:close_version)
       end
 
@@ -263,7 +251,7 @@ RSpec.describe VersionService do
 
     context 'when the object has not been opened for versioning' do
       before do
-        allow(workflow_client).to receive(:active_lifecycle).with(druid:, milestone_name: 'opened', version: '2').and_return(nil)
+        allow(workflow_state_service).to receive(:active_version_wf?).and_return(false)
       end
 
       it 'raises an exception' do
@@ -273,9 +261,7 @@ RSpec.describe VersionService do
 
     context 'when the object has an active accesssionWF' do
       before do
-        allow(workflow_client).to receive(:workflow_status).with(hash_including(workflow: 'assemblyWF')).and_return('completed')
-        allow(workflow_client).to receive(:active_lifecycle).with(druid:, milestone_name: 'opened', version: '2').and_return(Time.new)
-        allow(workflow_client).to receive(:active_lifecycle).with(druid:, milestone_name: 'submitted', version: '2').and_return(true)
+        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, active_version_wf?: true, accessioning?: true)
       end
 
       it 'raises an exception' do
@@ -285,27 +271,24 @@ RSpec.describe VersionService do
 
     context 'when the object has an active assemblyWF' do
       before do
-        allow(workflow_client).to receive(:workflow_status).with(hash_including(workflow: 'assemblyWF')).and_return('waiting')
-        allow(workflow_client).to receive(:active_lifecycle).with(druid:, milestone_name: 'opened', version: '2').and_return(Time.new)
+        allow(workflow_state_service).to receive_messages(active_assembly_wf?: true, active_version_wf?: true)
       end
 
       it 'raises an exception' do
         expect { close }.to raise_error(VersionService::VersioningError, "Trying to close version 2 on #{druid} which has active assemblyWF")
-        expect(workflow_client).to have_received(:workflow_status).with(hash_including(workflow: 'assemblyWF'))
+        expect(workflow_state_service).to have_received(:active_assembly_wf?)
       end
     end
 
     context 'when the object has no assemblyWF' do
       before do
-        allow(workflow_client).to receive(:workflow_status).with(hash_including(workflow: 'assemblyWF')).and_return(nil)
         allow(workflow_client).to receive(:close_version)
-        allow(workflow_client).to receive(:active_lifecycle).with(druid:, milestone_name: 'opened', version: '2').and_return(Time.new)
-        allow(workflow_client).to receive(:active_lifecycle).with(druid:, milestone_name: 'submitted', version: '2').and_return(false)
+        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, active_version_wf?: true, accessioning?: false)
       end
 
       it 'creates the accessioningWF' do
         close
-        expect(workflow_client).to have_received(:workflow_status).with(hash_including(workflow: 'assemblyWF'))
+        expect(workflow_state_service).to have_received(:active_assembly_wf?)
         expect(workflow_client).to have_received(:close_version).with(druid:, version: '2', create_accession_wf: true)
       end
     end
@@ -314,9 +297,7 @@ RSpec.describe VersionService do
       let(:description) { nil }
 
       before do
-        # stub out calls for open_for_versioning?
-        allow(workflow_client).to receive(:active_lifecycle).and_return(true, false)
-        allow(workflow_client).to receive(:workflow_status).with(hash_including(workflow: 'assemblyWF')).and_return('completed')
+        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, active_version_wf?: true, accessioning?: false)
         allow(workflow_client).to receive(:close_version)
       end
 
@@ -326,6 +307,54 @@ RSpec.describe VersionService do
         expect(object_version.description).to eq 'A Second Version'
         expect(workflow_client).to have_received(:close_version)
           .with(druid:, version: '2', create_accession_wf: true)
+      end
+    end
+  end
+
+  describe '.can_close?' do
+    subject(:can_close) do
+      described_class.can_close?(druid:, version:)
+    end
+
+    let(:version) { 2 }
+
+    context 'when cloaseable' do
+      before do
+        allow(workflow_state_service).to receive_messages(active_version_wf?: true, accessioning?: false, active_assembly_wf?: false)
+      end
+
+      it 'returns true' do
+        expect(can_close).to be true
+      end
+    end
+
+    context 'when the object has not been opened for versioning' do
+      before do
+        allow(workflow_state_service).to receive(:active_version_wf?).and_return(false)
+      end
+
+      it 'returns false' do
+        expect(can_close).to be false
+      end
+    end
+
+    context 'when the object has an active accesssionWF' do
+      before do
+        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, active_version_wf?: true, accessioning?: true)
+      end
+
+      it 'returns false' do
+        expect(can_close).to be false
+      end
+    end
+
+    context 'when the object has an active assemblyWF' do
+      before do
+        allow(workflow_state_service).to receive_messages(active_assembly_wf?: true, active_version_wf?: true)
+      end
+
+      it 'returns false' do
+        expect(can_close).to be false
       end
     end
   end

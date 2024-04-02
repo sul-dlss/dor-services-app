@@ -43,8 +43,10 @@ class VersionService
                                 event_factory:)
   end
 
-  def self.in_accessioning?(druid:, version:)
-    new(druid:, version:).accessioning?
+  # @param [String] druid of the item
+  # @param [Integer] version of the item
+  def self.can_close?(druid:, version:)
+    new(druid:, version:).can_close?
   end
 
   # @param [String] druid of the item
@@ -105,9 +107,7 @@ class VersionService
   def close(description:, user_name:, event_factory:, start_accession: true)
     ObjectVersion.update_current_version(druid:, description:) if description
 
-    raise VersionService::VersioningError, "Trying to close version #{version} on #{druid} which is not opened for versioning" unless open_for_versioning?
-    raise VersionService::VersioningError, "Trying to close version #{version} on #{druid} which has active assemblyWF" if active_assembly_wf?
-    raise VersionService::VersioningError, "accessionWF already created for versioned object #{druid}" if accessioning?
+    ensure_closeable!
 
     # Default to creating accessionWF when calling close_version
     workflow_client.close_version(druid:,
@@ -115,6 +115,15 @@ class VersionService
                                   create_accession_wf: start_accession)
 
     event_factory.create(druid:, event_type: 'version_close', data: { who: user_name, version: version.to_s })
+  end
+
+  # Determines whether a version can be closed for an object.
+  # @return [Boolean] true if the version can be closed.
+  def can_close?
+    ensure_closeable!
+    true
+  rescue VersionService::VersioningError
+    false
   end
 
   # Performs checks on whether a new version can be opened for an object
@@ -127,7 +136,7 @@ class VersionService
     # The accessioned milestone is the last step of the accessionWF.
     # During local development, we need a way to open a new version even if the object has not been accessioned.
     raise(VersionService::VersioningError, 'Object net yet accessioned') unless
-        assume_accessioned || workflow_client.lifecycle(druid:, milestone_name: 'accessioned')
+        assume_accessioned || workflow_state_service.accessioned?
     # Raised when the current version has any incomplete wf steps and there is a versionWF.
     # The open milestone is part of the versioningWF.
     raise VersionService::VersioningError, 'Object already opened for versioning' if open_for_versioning?
@@ -150,35 +159,26 @@ class VersionService
   # Checks if current version has any incomplete wf steps and there is a versionWF
   # @return [Boolean] true if object is open for versioning
   def open_for_versioning?
-    return true if workflow_client.active_lifecycle(druid:, milestone_name: 'opened', version: version.to_s)
-
-    false
-  end
-
-  # Checks if the active (latest) version has any incomplete workflow steps and there is an accessionWF (known by the presence of a submitted milestone).
-  # If so we don't want to start another acceession workflow.  This is also true if a preservationAuditWF has returned an error, so that no further
-  # accessioning can take place until that is resolved.
-  # @return [Boolean] true if object is currently being accessioned or is failing an audit
-  def accessioning?
-    return true if workflow_client.active_lifecycle(druid:, milestone_name: 'submitted', version: version.to_s)
-
-    false
+    workflow_state_service.active_version_wf?
   end
 
   attr_reader :druid, :version
 
   private
 
-  def active_assembly_wf?
-    # This is the last step of the assemblyWF
-    accessioning_initiate_status = workflow_client.workflow_status(druid:,
-                                                                   workflow: 'assemblyWF',
-                                                                   process: 'accessioning-initiate')
-    # If the last step is "waiting", this implies the assemblyWF is running
-    accessioning_initiate_status == 'waiting'
-  end
+  delegate :active_assembly_wf?, :accessioning?, to: :workflow_state_service
 
   def workflow_client
     @workflow_client ||= WorkflowClientFactory.build
+  end
+
+  def workflow_state_service
+    @workflow_state_service ||= WorkflowStateService.new(druid:, version:)
+  end
+
+  def ensure_closeable!
+    raise VersionService::VersioningError, "Trying to close version #{version} on #{druid} which is not opened for versioning" unless open_for_versioning?
+    raise VersionService::VersioningError, "Trying to close version #{version} on #{druid} which has active assemblyWF" if active_assembly_wf?
+    raise VersionService::VersioningError, "accessionWF already created for versioned object #{druid}" if accessioning?
   end
 end
