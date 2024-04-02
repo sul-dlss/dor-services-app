@@ -38,7 +38,7 @@ RSpec.describe VersionService do
   end
 
   describe '.open' do
-    subject(:open) { described_class.open(cocina_object:, significance: 'major', description: 'same as it ever was', opening_user_name: 'sunetid', event_factory:) }
+    subject(:open) { described_class.open(cocina_object:, description: 'same as it ever was', opening_user_name: 'sunetid', event_factory:) }
 
     let(:workflow_client) do
       instance_double(Dor::Workflow::Client,
@@ -51,7 +51,7 @@ RSpec.describe VersionService do
       allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
       allow(UpdateObjectService).to receive(:update)
-      ObjectVersion.create(druid:, version: 1, tag: '1.0.0', description: 'new version')
+      ObjectVersion.create(druid:, version: 1, description: 'new version')
       allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
     end
 
@@ -68,7 +68,6 @@ RSpec.describe VersionService do
 
         current_version = ObjectVersion.current_version(druid)
         expect(current_version.version).to eq(2)
-        expect(current_version.tag).to eq('2.0.0')
         expect(current_version.description).to eq('same as it ever was')
 
         expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
@@ -206,31 +205,25 @@ RSpec.describe VersionService do
     subject(:close) do
       described_class.close(druid:, version:,
                             description:,
-                            significance:,
                             user_name: 'jcoyne',
                             event_factory:,
                             start_accession:)
     end
 
     let(:version) { 2 }
-
     let(:start_accession) { true }
-
     let(:description) { 'closing text' }
-
-    let(:significance) { 'major' }
-
     let(:workflow_client) do
       instance_double(Dor::Workflow::Client)
     end
 
     before do
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
-      ObjectVersion.create(druid:, version: 1, tag: '1.0.0', description: 'Initial Version')
-      ObjectVersion.create(druid:, version: 2, tag: '1.1.0', description: 'Version 1.1.0')
+      ObjectVersion.create(druid:, version: 1, description: 'Initial Version')
+      ObjectVersion.create(druid:, version: 2, description: 'A Second Version')
     end
 
-    context 'when significance, description and user_name are passed in' do
+    context 'when description and user_name are passed in' do
       before do
         # stub out calls for open_for_versioning?
         allow(workflow_client).to receive(:active_lifecycle).and_return(true, false)
@@ -239,10 +232,9 @@ RSpec.describe VersionService do
         allow(workflow_client).to receive(:close_version)
       end
 
-      it 'sets tag, description and an event' do
+      it 'sets description and an event' do
         close
         object_version = ObjectVersion.find_by(druid:, version: 2)
-        expect(object_version.tag).to eq('2.0.0')
         expect(object_version.description).to eq('closing text')
         expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'jcoyne' },
                                                              druid:,
@@ -318,10 +310,8 @@ RSpec.describe VersionService do
       end
     end
 
-    context 'when not providing a significance or description' do
+    context 'when not providing a description' do
       let(:description) { nil }
-
-      let(:significance) { nil }
 
       before do
         # stub out calls for open_for_versioning?
@@ -333,8 +323,7 @@ RSpec.describe VersionService do
       it 'closes the object version using existing signficance and description' do
         close
         object_version = ObjectVersion.find_by(druid:, version: 2)
-        expect(object_version.tag).to eq '1.1.0'
-        expect(object_version.description).to eq 'Version 1.1.0'
+        expect(object_version.description).to eq 'A Second Version'
         expect(workflow_client).to have_received(:close_version)
           .with(druid:, version: '2', create_accession_wf: true)
       end

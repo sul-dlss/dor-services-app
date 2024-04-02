@@ -60,7 +60,7 @@ def tty_progress_bar(count, clazz_name, mode)
 end
 
 def perform_version(cocina_object:, version_description:)
-  version_open_params = { significance: 'admin', description: version_description }
+  version_open_params = { description: version_description }
   # if this is an existing versionable object, open and close it, which will start accessionWF
   if VersionService.can_open?(druid: cocina_object.externalIdentifier, version: cocina_object.version)
     opened_cocina_object = VersionService.open(cocina_object:, **version_open_params)

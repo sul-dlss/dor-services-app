@@ -38,7 +38,7 @@ RSpec.describe CreateObjectService do
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
         expect(store).to have_received(:merge_access_for).with(requested_cocina_object)
         expect(store).to have_received(:add_project_tag).with(druid, requested_cocina_object)
-        expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
+        expect(ObjectVersion.current_version(druid).description).to eq('Initial Version')
         expect(EventFactory).to have_received(:create).with(druid:, event_type: 'registration', data: Hash)
         expect(Catalog::MarcService).not_to have_received(:new)
       end
@@ -55,7 +55,7 @@ RSpec.describe CreateObjectService do
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
         expect(store).to have_received(:merge_access_for).with(requested_cocina_object)
         expect(store).to have_received(:add_project_tag).with(druid, requested_cocina_object)
-        expect(ObjectVersion.current_version(druid).tag).to eq('1.0.0')
+        expect(ObjectVersion.current_version(druid).description).to eq('Initial Version')
         expect(EventFactory).to have_received(:create).with(druid:, event_type: 'registration', data: Hash)
         expect(Catalog::MarcService).not_to have_received(:new)
       end

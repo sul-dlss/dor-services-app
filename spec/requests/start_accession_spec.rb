@@ -12,7 +12,6 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
   let(:params) do
     {
       description: 're-accessioning',
-      significance: 'major',
       opening_user_name: 'some_person'
     }
   end
@@ -20,7 +19,6 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
   let(:close_params) do
     {
       description: 're-accessioning',
-      significance: 'major',
       user_name: 'some_person',
       start_accession: false
     }

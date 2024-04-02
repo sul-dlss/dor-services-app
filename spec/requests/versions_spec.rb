@@ -34,7 +34,6 @@ RSpec.describe 'Operations regarding object versions' do
     let(:close_params) do
       {
         description: 'some text',
-        significance: 'major',
         user_name: 'eshackleton',
         start_accession: false
       }
@@ -78,7 +77,6 @@ RSpec.describe 'Operations regarding object versions' do
     let(:open_params) do
       {
         assume_accessioned: false,
-        significance: 'minor',
         description: 'bar',
         opening_user_name: 'eshackleton'
       }

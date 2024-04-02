@@ -6,7 +6,6 @@
 #  2. saving the virtual object
 class ConstituentService
   VERSION_DESCRIPTION = 'Virtual object created'
-  VERSION_SIGNIFICANCE = :major
 
   # @param [String] virtual_object_druid the identifier of the virtual object
   def initialize(virtual_object_druid:, event_factory:)
@@ -21,7 +20,7 @@ class ConstituentService
   # @raise [ItemQueryService::UncombinableItemError] if a constituent object cannot be added to a virtual object
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   # @raise [VersionService::VersioningError] if the object hasn't been opened for versioning, or if accessionWF has
-  #   already been instantiated or the current version is missing a tag or description
+  #   already been instantiated or the current version is missing a description
   # @return [NilClass, Hash] true if successful, hash of errors otherwise (if combinable validation fails)
   def add(constituent_druids:)
     errors = ItemQueryService.validate_combinable_items(virtual_object: virtual_object_druid, constituents: constituent_druids)
@@ -34,7 +33,6 @@ class ConstituentService
                              else
                                VersionService.open(cocina_object: virtual_object,
                                                    description: VERSION_DESCRIPTION,
-                                                   significance: VERSION_SIGNIFICANCE,
                                                    event_factory:)
                              end
 

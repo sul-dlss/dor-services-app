@@ -9,7 +9,7 @@ class VersionList
     output_file = 'tmp/version_list_report.csv'
 
     CSV.open(output_file, 'w') do |csv|
-      csv << %w[druid version tag description]
+      csv << %w[druid version description]
 
       num_versions = ObjectVersion.count
       puts "Found #{num_versions} object versions"
@@ -17,7 +17,7 @@ class VersionList
       ObjectVersion.find_each do |object_version|
         i += 1
         puts "#{i} of #{num_versions} : #{object_version.druid}"
-        csv << [object_version.druid, object_version.version, object_version.tag, object_version.description]
+        csv << [object_version.druid, object_version.version, object_version.description]
       end
       puts "Report written to #{output_file}"
     end

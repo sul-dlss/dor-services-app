@@ -58,7 +58,7 @@ RSpec.describe EmbargoReleaseService do
     context 'when not open' do
       it 'lifts embargo' do
         service.release
-        expect(VersionService).to have_received(:open).with(cocina_object:, description: 'embargo released', significance: 'admin')
+        expect(VersionService).to have_received(:open).with(cocina_object:, description: 'embargo released')
         expect(service).to have_received(:release_cocina_object).with(open_cocina_object)
         expect(VersionService).to have_received(:close).with(druid:, version: 3)
         expect(EventFactory).to have_received(:create).with(druid:, event_type: 'embargo_released', data: {})

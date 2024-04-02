@@ -74,7 +74,6 @@ class ObjectsController < ApplicationController
   #
   # You can specify params when POSTing to this method to include when opening a version (if that is required to accession).
   # The versioning params are included below for reference.
-  #  :significance [String] (required) significance (major/minor/patch) of version change
   #  :descriptions [String] (required) description of version change
   #  :opening_user_name [String] (optional) opening sunetid to add to the events datastream
   #  :workflow [String] (optional) the workflow to start (defaults to 'assemblyWF')
@@ -213,11 +212,11 @@ class ObjectsController < ApplicationController
   end
 
   def version_open_params
-    params.permit(:significance, :description, :opening_user_name).to_h.symbolize_keys
+    params.permit(:description, :opening_user_name).to_h.symbolize_keys
   end
 
   def version_close_params
-    new_params = params.permit(:significance, :description).to_h.symbolize_keys
+    new_params = params.permit(:description).to_h.symbolize_keys
     new_params[:user_name] = params[:opening_user_name] if params[:opening_user_name]
     new_params
   end
