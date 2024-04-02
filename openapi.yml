@@ -937,6 +937,28 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Druid'
+  '/v1/objects/{object_id}/versions/status':
+    get:
+      tags:
+        - versions
+      summary: Return the status of the current version for this object
+      description: 'The status includes whether the version is open or closed and whether certain workflows are active'
+      operationId: 'versions#status'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionStatus'
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: '#/components/schemas/Druid'
+
   '/v1/objects/{object_id}/versions/current/close':
     post:
       tags:
@@ -3226,6 +3248,34 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Version'
+    VersionStatus:
+      type: object
+      required:
+        - versionId
+        - open
+        - openable
+        - assembling
+        - accessioning
+        - closeable
+      properties:
+        versionId:
+          type: integer
+          description: the number of the version
+        open:
+          type: boolean
+          description: whether the version is open
+        openable:
+          type: boolean
+          description: whether the version can be opened
+        assembling:
+          type: boolean
+          description: whether there is an active assembly workflow (not just assemblyWF)
+        accessioning:
+          type: boolean
+          description: whether there is an active accessioningWF workflow
+        closeable:
+          type: boolean
+          description: whether the version can be closed
     BackgroundJobResultResponse:
       type: object
       properties:

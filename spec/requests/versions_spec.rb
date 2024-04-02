@@ -185,5 +185,29 @@ RSpec.describe 'Operations regarding object versions' do
         expect(response).to have_http_status :internal_server_error
       end
     end
+
+    describe '/versions/status' do
+      let(:version_service) { instance_double(VersionService, open_for_versioning?: true, can_open?: false, can_close?: true) }
+      let(:workflow_state_service) { instance_double(WorkflowStateService, assembling?: true, accessioning?: false) }
+
+      before do
+        allow(VersionService).to receive(:new).and_return(version_service)
+        allow(WorkflowStateService).to receive(:new).and_return(workflow_state_service)
+      end
+
+      it 'returns the version status for an object' do
+        get '/v1/objects/druid:mx123qw2323/versions/status',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+
+        expect(response.parsed_body.with_indifferent_access).to match({
+                                                                        versionId: 1,
+                                                                        open: true,
+                                                                        openable: false,
+                                                                        assembling: true,
+                                                                        accessioning: false,
+                                                                        closeable: true
+                                                                      })
+      end
+    end
   end
 end
