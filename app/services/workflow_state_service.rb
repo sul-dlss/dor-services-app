@@ -66,7 +66,7 @@ class WorkflowStateService
 
   # @return [Boolean] true if there is a workflow for the current version and it has incomplete steps.
   def active_workflow?(workflow:)
-    workflow_response = workflow_client.workflow(druid:, workflow:)
+    workflow_response = workflow_client.workflow(pid: druid, workflow_name: workflow)
     # Note that active_for? checks if there are any steps in this workflow.
     # This is a different meaning of active used in this class.
     # Is there a workflow for the current version?
