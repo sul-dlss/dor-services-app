@@ -40,6 +40,65 @@ RSpec.describe WorkflowStateService do
     end
   end
 
+  describe '.open?' do
+    context 'when version 1 and not accessioning or accessioned' do
+      before do
+        allow(workflow_client).to receive_messages(active_lifecycle: nil, lifecycle: nil)
+      end
+
+      it 'returns true' do
+        expect(service.open?).to be true
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'submitted', version: '1')
+        expect(workflow_client).to have_received(:lifecycle).with(druid:, milestone_name: 'accessioned')
+      end
+    end
+
+    context 'when version 1 and accessioning' do
+      before do
+        allow(workflow_client).to receive(:active_lifecycle).and_return(Time.current)
+      end
+
+      it 'returns false' do
+        expect(service.open?).to be false
+      end
+    end
+
+    context 'when version 1 and accessioned' do
+      before do
+        allow(workflow_client).to receive_messages(active_lifecycle: nil, lifecycle: Time.current)
+      end
+
+      it 'returns false' do
+        expect(service.open?).to be false
+      end
+    end
+
+    context 'when > version 1 and there is an active versionWF' do
+      let(:version) { 2 }
+
+      before do
+        allow(workflow_client).to receive(:active_lifecycle).and_return(Time.current)
+      end
+
+      it 'returns true' do
+        expect(service.open?).to be true
+        expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'opened', version: '2')
+      end
+    end
+
+    context 'when > version 1 and there is not an active versionWF' do
+      let(:version) { 2 }
+
+      before do
+        allow(workflow_client).to receive(:active_lifecycle).and_return(nil)
+      end
+
+      it 'returns false' do
+        expect(service.open?).to be false
+      end
+    end
+  end
+
   describe '.active_version_wf?' do
     context 'when there is an active versionWF' do
       before do
