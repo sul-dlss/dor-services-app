@@ -131,8 +131,8 @@ RSpec.describe WorkflowStateService do
 
       it 'returns false' do
         expect(service.assembling?).to be false
-        expect(workflow_client).to have_received(:workflow).with(druid:, workflow: 'assemblyWF')
-        expect(workflow_client).to have_received(:workflow).with(druid:, workflow: 'wasSeedPreassemblyWF')
+        expect(workflow_client).to have_received(:workflow).with(pid: druid, workflow_name: 'assemblyWF')
+        expect(workflow_client).to have_received(:workflow).with(pid: druid, workflow_name: 'wasSeedPreassemblyWF')
       end
     end
   end
