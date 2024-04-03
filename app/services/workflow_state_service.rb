@@ -7,6 +7,10 @@ class WorkflowStateService
     new(...).accessioning?
   end
 
+  def self.active_version_wf?(...)
+    new(...).active_version_wf?
+  end
+
   def initialize(druid:, version:)
     @druid = druid
     @version = version

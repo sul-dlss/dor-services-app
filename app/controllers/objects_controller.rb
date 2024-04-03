@@ -95,7 +95,7 @@ class ObjectsController < ApplicationController
       updated_cocina_object = VersionService.open(cocina_object: @cocina_object, **version_open_params)
       VersionService.close(druid: updated_cocina_object.externalIdentifier, version: updated_cocina_object.version, **version_close_params.merge(start_accession: false))
     # if this is an existing accessioned object that is currently open, just close it without starting accessionWF
-    elsif VersionService.open?(druid: @cocina_object.externalIdentifier, version: @cocina_object.version)
+    elsif WorkflowStateService.active_version_wf?(druid: @cocina_object.externalIdentifier, version: @cocina_object.version)
       VersionService.close(druid: @cocina_object.externalIdentifier, version: @cocina_object.version, **version_close_params.merge(start_accession: false))
     end
 

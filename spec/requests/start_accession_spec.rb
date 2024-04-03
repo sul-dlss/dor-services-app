@@ -34,8 +34,8 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
 
   context 'when newly registered object that has not been accessioned yet' do
     before do
-      allow(WorkflowStateService).to receive(:accessioning?).and_return(false)
-      allow(VersionService).to receive_messages(can_open?: false, open?: false)
+      allow(WorkflowStateService).to receive_messages(accessioning?: false, open?: false, active_version_wf?: false)
+      allow(VersionService).to receive(:can_open?).and_return(false)
     end
 
     it 'does not open or close a version and starts default workflow' do
@@ -87,8 +87,8 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
 
   context 'when existing accessioned object that is currently open' do
     before do
-      allow(WorkflowStateService).to receive(:accessioning?).and_return(false)
-      allow(VersionService).to receive_messages(can_open?: false, open?: true)
+      allow(WorkflowStateService).to receive_messages(accessioning?: false, open?: true, active_version_wf?: true)
+      allow(VersionService).to receive(:can_open?).and_return(false)
     end
 
     it 'closes a version and starts default workflow' do

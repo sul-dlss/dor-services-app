@@ -26,12 +26,6 @@ class VersionService
 
   # @param [String] druid of the item
   # @param [Integer] version of the item
-  def self.open?(druid:, version:)
-    new(druid:, version:).open_for_versioning?
-  end
-
-  # @param [String] druid of the item
-  # @param [Integer] version of the item
   # @param [String] description describes the version change
   # @param [String] user_name add username to the events datastream
   # @param [Boolean] start_accession (true) set to true if you want accessioning to start, false otherwise
@@ -139,7 +133,7 @@ class VersionService
         assume_accessioned || workflow_state_service.accessioned?
     # Raised when the current version has any incomplete wf steps and there is a versionWF.
     # The open milestone is part of the versioningWF.
-    raise VersionService::VersioningError, 'Object already opened for versioning' if open_for_versioning?
+    raise VersionService::VersioningError, 'Object already opened for versioning' if open?
     # Raised when the current version has any incomplete wf steps and there is an accessionWF.
     # The submitted milestone is part of the accessionWF.
     raise VersionService::VersioningError, 'Object currently being accessioned' if accessioning?
@@ -156,17 +150,11 @@ class VersionService
                                            "When an object has just been transferred, Preservation isn't immediately ready to answer queries."
   end
 
-  # Checks if current version has any incomplete wf steps and there is a versionWF
-  # @return [Boolean] true if object is open for versioning
-  def open_for_versioning?
-    workflow_state_service.active_version_wf?
-  end
-
   attr_reader :druid, :version
 
   private
 
-  delegate :active_assembly_wf?, :accessioning?, to: :workflow_state_service
+  delegate :active_assembly_wf?, :accessioning?, :open?, to: :workflow_state_service
 
   def workflow_client
     @workflow_client ||= WorkflowClientFactory.build
@@ -177,7 +165,7 @@ class VersionService
   end
 
   def ensure_closeable!
-    raise VersionService::VersioningError, "Trying to close version #{version} on #{druid} which is not opened for versioning" unless open_for_versioning?
+    raise VersionService::VersioningError, "Trying to close version #{version} on #{druid} which is not opened for versioning" unless open?
     raise VersionService::VersioningError, "Trying to close version #{version} on #{druid} which has active assemblyWF" if active_assembly_wf?
     raise VersionService::VersioningError, "accessionWF already created for versioned object #{druid}" if accessioning?
   end
