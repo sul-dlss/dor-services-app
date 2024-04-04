@@ -164,14 +164,14 @@ GEM
       capistrano-shared_configs
     docile (1.4.0)
     domain_name (0.6.20240107)
-    dor-workflow-client (7.1.0)
+    dor-workflow-client (7.2.0)
       activesupport (>= 3.2.1, < 8)
       deprecation (>= 0.99.0)
       faraday (~> 2.0)
       faraday-retry (~> 2.0)
       nokogiri (~> 1.6)
       zeitwerk (~> 2.1)
-    dor_indexing (2.1.0)
+    dor_indexing (2.1.2)
       activesupport
       cocina-models (~> 0.96.0)
       dor-workflow-client (~> 7.0)
@@ -255,7 +255,7 @@ GEM
     jbuilder (2.11.5)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
-    json (2.7.1)
+    json (2.7.2)
     json_schema (0.21.0)
     jsonpath (1.1.5)
       multi_json
@@ -318,7 +318,7 @@ GEM
       net-ssh (>= 5.0.0, < 8.0.0)
     net-smtp (0.5.0)
       net-protocol
-    net-ssh (7.2.1)
+    net-ssh (7.2.3)
     nio4r (2.7.1)
     nokogiri (1.16.3-x86_64-darwin)
       racc (~> 1.4)
@@ -355,7 +355,7 @@ GEM
       zeitwerk (~> 2.1)
     psych (5.1.2)
       stringio
-    public_suffix (5.0.4)
+    public_suffix (5.0.5)
     puma (6.4.2)
       nio4r (~> 2.0)
     racc (1.7.3)
@@ -516,7 +516,8 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
-    sshkit (1.22.0)
+    sshkit (1.22.1)
+      base64
       mutex_m
       net-scp (>= 1.1.2)
       net-sftp (>= 2.1.2)
