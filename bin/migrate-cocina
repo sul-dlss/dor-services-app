@@ -59,16 +59,20 @@ def tty_progress_bar(count, clazz_name, mode)
   )
 end
 
-def perform_version(cocina_object:, version_description:)
+def open_version(cocina_object:, version_description:, mode:)
+  return cocina_object if VersionService.open?(druid: cocina_object.externalIdentifier)
+  # Raise an error if the migration is trying to version an object that is not openable
+  raise 'Cannot version' unless VersionService.can_open?(druid: cocina_object.externalIdentifier, version: cocina_object.version)
+  # This allows us to know if the object can be opened for versioning but not actually open it during a dry run
+  return cocina_object if mode == :dryrun
+
   version_open_params = { description: version_description }
-  # if this is an existing versionable object, open and close it, which will start accessionWF
-  if VersionService.can_open?(druid: cocina_object.externalIdentifier, version: cocina_object.version)
-    opened_cocina_object = VersionService.open(cocina_object:, **version_open_params)
-    VersionService.close(druid: opened_cocina_object.externalIdentifier, version: opened_cocina_object.version)
-  # if this is an existing accessioned object that is currently open, just close it
-  else
-    VersionService.close(druid: cocina_object.externalIdentifier, version: cocina_object.version, **version_open_params)
-  end
+  VersionService.open(cocina_object:, **version_open_params)
+end
+
+def close_version(cocina_object:, version_description:)
+  version_close_params = { description: version_description }
+  VersionService.close(druid: cocina_object.externalIdentifier, version: cocina_object.version, **version_close_params)
 end
 
 def perform_migrate(migrator_class:, obj:, mode:)
@@ -77,21 +81,18 @@ def perform_migrate(migrator_class:, obj:, mode:)
   return [obj.id, obj.external_identifier, migrator.migrate? ? 'ERROR' : 'SUCCESS'] if mode == :verify
   return [obj.id, obj.external_identifier, 'SKIPPED'] unless migrator.migrate?
 
-  # Raise an error if the migration is trying to version an object that is not openable or already open
-  raise 'Cannot version' if migration.version? && !VersionService.open? && !VersionService.can_open?
+  current_object_version = obj.version
+  obj = open_version(cocina_object: obj, version_description: migrator.version_description, mode:) if migrator.version?
 
-  migrator.migrate  # This is where the actual migration happens
+  migrator.migrate # This is where the actual migration happens
   updated_cocina_object = obj.to_cocina_with_metadata # This validates the cocina object
   Cocina::ObjectValidator.validate(updated_cocina_object) # This validation is performed by UpdateObjectService.
-  ## Update this logic so that the versioning is done by the VersionService BEFORE the update
-  ## If already open - that's OK (we want to remember that it was already so we do not close it). 
-  ## If not open, open it AND close it.
-  ## dry_run mode - we want to see if it's openable, but we do not want to actually open it unles mode = :migrate
-  ## because we are now storing the cocina for every version (for a particular cocina version) add a note that we cannot remediate cocina breaking changes here.
+
+  ## Note: because we are now storing the cocina for every version we cannot remediate cocina breaking changes for a particular cocina version here.
   if mode == :migrate
     updated_cocina_object = UpdateObjectService.update(updated_cocina_object)
     Publish::MetadataTransferService.publish(updated_cocina_object) if migrator.publish?
-    perform_version(cocina_object: updated_cocina_object, version_description: migrator.version_description) if migrator.version?
+    close_version(cocina_object: updated_cocina_object, version_description: migrator.version_description) unless updated_cocina_object.version == current_object_version
   end
   [obj.id, obj.external_identifier, 'SUCCESS']
 rescue Dry::Struct::Error, Cocina::Models::ValidationError, Cocina::ValidationError => e
