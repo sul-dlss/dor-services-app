@@ -7,6 +7,10 @@ class WorkflowStateService
     new(...).accessioning?
   end
 
+  def self.active_version_wf?(...)
+    new(...).active_version_wf?
+  end
+
   def initialize(druid:, version:)
     @druid = druid
     @version = version
@@ -18,6 +22,14 @@ class WorkflowStateService
   # @return [Boolean] true if object is currently being assembled
   def assembling?
     ASSEMBLY_WORKFLOWS.any? { |workflow| active_workflow?(workflow:) }
+  end
+
+  def open?
+    # If version 1, true if not in accessioning or has not been accessioned.
+    return !accessioning? && !accessioned? if version == 1
+
+    # Otherwise, is there an active versionWF?
+    active_version_wf?
   end
 
   # The following methods were extracted from VersionService.
@@ -46,6 +58,7 @@ class WorkflowStateService
   def active_version_wf?
     return true if workflow_client.active_lifecycle(druid:, milestone_name: 'opened', version: version.to_s)
 
+    # Note that this will return false for version 1, since there is no versionWF.
     false
   end
 

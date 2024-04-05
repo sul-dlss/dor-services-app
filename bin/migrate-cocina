@@ -80,7 +80,9 @@ def perform_migrate(migrator_class:, obj:, mode:)
   migrator.migrate
   updated_cocina_object = obj.to_cocina_with_metadata # This validates the cocina object
   Cocina::ObjectValidator.validate(updated_cocina_object) # This validation is performed by UpdateObjectService.
-  raise 'Cannot version' if migrator.version? && !(VersionService.can_open?(druid: updated_cocina_object.externalIdentifier, version: updated_cocina_object.version) || VersionService.open?(druid: updated_cocina_object.externalIdentifier, version: updated_cocina_object.version))
+  raise 'Cannot version' if migrator.version? && !(VersionService.can_open?(druid: updated_cocina_object.externalIdentifier,
+                                                                            version: updated_cocina_object.version) || WorkflowStateService.active_version_wf?(druid: updated_cocina_object.externalIdentifier,
+                                                                                                                                                               version: updated_cocina_object.version))
 
   if mode == :migrate
     updated_cocina_object = UpdateObjectService.update(updated_cocina_object)

@@ -17,19 +17,6 @@ RSpec.describe VersionService do
     allow(WorkflowStateService).to receive(:new).and_return(workflow_state_service)
   end
 
-  describe '.open?' do
-    let(:instance) { instance_double(described_class, open_for_versioning?: true) }
-
-    before do
-      allow(described_class).to receive(:new).and_return(instance)
-    end
-
-    it 'creates a new service instance and sends #open_for_versioning?' do
-      described_class.open?(druid:, version:)
-      expect(instance).to have_received(:open_for_versioning?).once
-    end
-  end
-
   describe '.open' do
     subject(:open) { described_class.open(cocina_object:, description: 'same as it ever was', opening_user_name: 'sunetid', event_factory:) }
 
@@ -43,7 +30,7 @@ RSpec.describe VersionService do
       allow(UpdateObjectService).to receive(:update)
       ObjectVersion.create(druid:, version: 1, description: 'new version')
       allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
-      allow(workflow_state_service).to receive_messages(accessioned?: true, active_version_wf?: false, accessioning?: false)
+      allow(workflow_state_service).to receive_messages(accessioned?: true, open?: false, accessioning?: false)
     end
 
     context 'when on the expected path' do
@@ -53,7 +40,7 @@ RSpec.describe VersionService do
         expect(ObjectVersion.current_version(druid).version).to eq(2)
         expect(UpdateObjectService).to have_received(:update)
         expect(workflow_state_service).to have_received(:accessioned?)
-        expect(workflow_state_service).to have_received(:active_version_wf?)
+        expect(workflow_state_service).to have_received(:open?)
         expect(workflow_state_service).to have_received(:accessioning?)
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 
@@ -71,7 +58,7 @@ RSpec.describe VersionService do
       before do
         allow(Settings.version_service).to receive(:sync_with_preservation).and_return false
         allow(ObjectVersion).to receive(:sync_then_increment_version)
-        allow(workflow_state_service).to receive_messages(accessioned?: true, active_version_wf?: false, accessioning?: false)
+        allow(workflow_state_service).to receive_messages(accessioned?: true, open?: false, accessioning?: false)
       end
 
       it 'creates an object version and starts a workflow' do
@@ -81,7 +68,7 @@ RSpec.describe VersionService do
         expect(ObjectVersion).not_to have_received(:sync_then_increment_version)
         expect(UpdateObjectService).to have_received(:update)
         expect(workflow_state_service).to have_received(:accessioned?)
-        expect(workflow_state_service).to have_received(:active_version_wf?)
+        expect(workflow_state_service).to have_received(:open?)
         expect(workflow_state_service).to have_received(:accessioning?)
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 
@@ -137,13 +124,13 @@ RSpec.describe VersionService do
     context 'when a new version can be opened' do
       before do
         allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
-        allow(workflow_state_service).to receive_messages(accessioned?: true, active_version_wf?: false, accessioning?: false)
+        allow(workflow_state_service).to receive_messages(accessioned?: true, open?: false, accessioning?: false)
       end
 
       it 'returns true' do
         expect(can_open?).to be true
         expect(workflow_state_service).to have_received(:accessioned?)
-        expect(workflow_state_service).to have_received(:active_version_wf?)
+        expect(workflow_state_service).to have_received(:open?)
         expect(workflow_state_service).to have_received(:accessioning?)
       end
     end
@@ -161,18 +148,18 @@ RSpec.describe VersionService do
 
     context 'when the object has already been opened' do
       before do
-        allow(workflow_state_service).to receive_messages(accessioned?: true, active_version_wf?: true)
+        allow(workflow_state_service).to receive_messages(accessioned?: true, open?: true)
       end
 
       it 'returns false' do
         expect(can_open?).to be false
-        expect(workflow_state_service).to have_received(:active_version_wf?)
+        expect(workflow_state_service).to have_received(:open?)
       end
     end
 
     context 'when the object is still being accessioned' do
       before do
-        allow(workflow_state_service).to receive_messages(accessioned?: true, active_version_wf?: false, accessioning?: true)
+        allow(workflow_state_service).to receive_messages(accessioned?: true, open?: false, accessioning?: true)
       end
 
       it 'returns false' do
@@ -183,7 +170,7 @@ RSpec.describe VersionService do
 
     context "when Preservation doesn't know about the object" do
       before do
-        allow(workflow_state_service).to receive_messages(accessioned?: true, active_version_wf?: false, accessioning?: true)
+        allow(workflow_state_service).to receive_messages(accessioned?: true, open?: false, accessioning?: true)
         allow(Preservation::Client.objects).to receive(:current_version).and_raise(Preservation::Client::NotFoundError)
       end
 
@@ -217,7 +204,7 @@ RSpec.describe VersionService do
 
     context 'when description and user_name are passed in' do
       before do
-        allow(workflow_state_service).to receive_messages(active_version_wf?: true, accessioning?: false, active_assembly_wf?: false)
+        allow(workflow_state_service).to receive_messages(open?: true, accessioning?: false, active_assembly_wf?: false)
         allow(workflow_client).to receive(:close_version)
       end
 
@@ -238,7 +225,7 @@ RSpec.describe VersionService do
       let(:start_accession) { false }
 
       before do
-        allow(workflow_state_service).to receive_messages(active_version_wf?: true, accessioning?: false, active_assembly_wf?: false)
+        allow(workflow_state_service).to receive_messages(open?: true, accessioning?: false, active_assembly_wf?: false)
         allow(workflow_client).to receive(:close_version)
       end
 
@@ -251,7 +238,7 @@ RSpec.describe VersionService do
 
     context 'when the object has not been opened for versioning' do
       before do
-        allow(workflow_state_service).to receive(:active_version_wf?).and_return(false)
+        allow(workflow_state_service).to receive(:open?).and_return(false)
       end
 
       it 'raises an exception' do
@@ -261,7 +248,7 @@ RSpec.describe VersionService do
 
     context 'when the object has an active accesssionWF' do
       before do
-        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, active_version_wf?: true, accessioning?: true)
+        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, open?: true, accessioning?: true)
       end
 
       it 'raises an exception' do
@@ -271,7 +258,7 @@ RSpec.describe VersionService do
 
     context 'when the object has an active assemblyWF' do
       before do
-        allow(workflow_state_service).to receive_messages(active_assembly_wf?: true, active_version_wf?: true)
+        allow(workflow_state_service).to receive_messages(active_assembly_wf?: true, open?: true)
       end
 
       it 'raises an exception' do
@@ -283,7 +270,7 @@ RSpec.describe VersionService do
     context 'when the object has no assemblyWF' do
       before do
         allow(workflow_client).to receive(:close_version)
-        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, active_version_wf?: true, accessioning?: false)
+        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, open?: true, accessioning?: false)
       end
 
       it 'creates the accessioningWF' do
@@ -297,7 +284,7 @@ RSpec.describe VersionService do
       let(:description) { nil }
 
       before do
-        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, active_version_wf?: true, accessioning?: false)
+        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, open?: true, accessioning?: false)
         allow(workflow_client).to receive(:close_version)
       end
 
@@ -320,7 +307,7 @@ RSpec.describe VersionService do
 
     context 'when cloaseable' do
       before do
-        allow(workflow_state_service).to receive_messages(active_version_wf?: true, accessioning?: false, active_assembly_wf?: false)
+        allow(workflow_state_service).to receive_messages(open?: true, accessioning?: false, active_assembly_wf?: false)
       end
 
       it 'returns true' do
@@ -330,7 +317,7 @@ RSpec.describe VersionService do
 
     context 'when the object has not been opened for versioning' do
       before do
-        allow(workflow_state_service).to receive(:active_version_wf?).and_return(false)
+        allow(workflow_state_service).to receive(:open?).and_return(false)
       end
 
       it 'returns false' do
@@ -340,7 +327,7 @@ RSpec.describe VersionService do
 
     context 'when the object has an active accesssionWF' do
       before do
-        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, active_version_wf?: true, accessioning?: true)
+        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, open?: true, accessioning?: true)
       end
 
       it 'returns false' do
@@ -350,7 +337,7 @@ RSpec.describe VersionService do
 
     context 'when the object has an active assemblyWF' do
       before do
-        allow(workflow_state_service).to receive_messages(active_assembly_wf?: true, active_version_wf?: true)
+        allow(workflow_state_service).to receive_messages(active_assembly_wf?: true, open?: true)
       end
 
       it 'returns false' do

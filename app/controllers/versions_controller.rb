@@ -55,7 +55,7 @@ class VersionsController < ApplicationController
 
     render json: {
       versionId: @version,
-      open: version_service.open_for_versioning?,
+      open: workflow_state_service.open?,
       openable: version_service.can_open?,
       assembling: workflow_state_service.assembling?,
       accessioning: workflow_state_service.accessioning?,
