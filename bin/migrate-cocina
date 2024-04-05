@@ -77,13 +77,17 @@ def perform_migrate(migrator_class:, obj:, mode:)
   return [obj.id, obj.external_identifier, migrator.migrate? ? 'ERROR' : 'SUCCESS'] if mode == :verify
   return [obj.id, obj.external_identifier, 'SKIPPED'] unless migrator.migrate?
 
-  migrator.migrate
+  # Raise an error if the migration is trying to version an object that is not openable or already open
+  raise 'Cannot version' if migration.version? && !VersionService.open? && !VersionService.can_open?
+
+  migrator.migrate  # This is where the actual migration happens
   updated_cocina_object = obj.to_cocina_with_metadata # This validates the cocina object
   Cocina::ObjectValidator.validate(updated_cocina_object) # This validation is performed by UpdateObjectService.
-  raise 'Cannot version' if migrator.version? && !(VersionService.can_open?(druid: updated_cocina_object.externalIdentifier,
-                                                                            version: updated_cocina_object.version) || WorkflowStateService.active_version_wf?(druid: updated_cocina_object.externalIdentifier,
-                                                                                                                                                               version: updated_cocina_object.version))
-
+  ## Update this logic so that the versioning is done by the VersionService BEFORE the update
+  ## If already open - that's OK (we want to remember that it was already so we do not close it). 
+  ## If not open, open it AND close it.
+  ## dry_run mode - we want to see if it's openable, but we do not want to actually open it unles mode = :migrate
+  ## because we are now storing the cocina for every version (for a particular cocina version) add a note that we cannot remediate cocina breaking changes here.
   if mode == :migrate
     updated_cocina_object = UpdateObjectService.update(updated_cocina_object)
     Publish::MetadataTransferService.publish(updated_cocina_object) if migrator.publish?
