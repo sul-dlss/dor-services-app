@@ -395,7 +395,7 @@ Style/QuotedSymbols: # (new in 1.16)
   Enabled: true
 RSpec/IdenticalEqualityAssertion: # (new in 2.4)
   Enabled: true
-RSpec/Rails/AvoidSetupHook: # (new in 2.4)
+RSpecRails/AvoidSetupHook: # (new in 2.4)
   Enabled: true
 Rails/AddColumnIndex: # (new in 2.11)
   Enabled: true
@@ -526,7 +526,7 @@ Style/EmptyHeredoc: # new in 1.32
   Enabled: true
 Capybara/SpecificMatcher: # new in 2.12
   Enabled: true
-RSpec/Rails/HaveHttpStatus: # new in 2.12
+RSpecRails/HaveHttpStatus: # new in 2.12
   Enabled: true
 Rails/DotSeparatedKeys: # new in 2.15
   Enabled: true
@@ -572,7 +572,7 @@ Capybara/SpecificActions: # new in 2.14
   Enabled: true
 FactoryBot/ConsistentParenthesesStyle: # new in 2.14
   Enabled: true
-RSpec/Rails/InferredSpecType: # new in 2.14
+RSpecRails/InferredSpecType: # new in 2.14
   Enabled: true
 Rails/ActionOrder: # new in 2.17
   Enabled: true
@@ -609,7 +609,7 @@ RSpec/PendingWithoutReason: # new in 2.16
   Enabled: true
 FactoryBot/FactoryNameStyle: # new in 2.16
   Enabled: true
-RSpec/Rails/MinitestAssertions: # new in 2.17
+RSpecRails/MinitestAssertions: # new in 2.17
   Enabled: true
 
 Metrics/CollectionLiteralLength: # new in 1.47
@@ -624,7 +624,7 @@ RSpec/RedundantAround: # new in 2.19
   Enabled: true
 RSpec/SkipBlockInsideExample: # new in 2.19
   Enabled: true
-RSpec/Rails/TravelAround: # new in 2.19
+RSpecRails/TravelAround: # new in 2.19
   Enabled: true
 Rails/ResponseParsedBody: # new in 2.18
   Enabled: true
@@ -673,7 +673,7 @@ RSpec/MatchArray: # new in 2.19
   Enabled: true
 RSpec/ReceiveMessages: # new in 2.23
   Enabled: true
-RSpec/Rails/NegationBeValid: # new in 2.23
+RSpecRails/NegationBeValid: # new in 2.23
   Enabled: true
 Rails/ThreeStateBooleanColumn: # new in 2.19
   Enabled: true
