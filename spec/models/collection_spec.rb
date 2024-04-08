@@ -33,23 +33,6 @@ RSpec.describe Collection do
     end
   end
 
-  describe 'from_cocina' do
-    let(:collection) { described_class.from_cocina(cocina_collection) }
-
-    it 'returns a Collection' do
-      expect(collection).to be_a(described_class)
-      expect(collection.external_identifier).to eq(cocina_collection.externalIdentifier)
-      expect(collection.cocina_version).to eq(cocina_collection.cocinaVersion)
-      expect(collection.collection_type).to eq(cocina_collection.type)
-      expect(collection.label).to eq(cocina_collection.label)
-      expect(collection.version).to eq(cocina_collection.version)
-      expect(collection.access).to eq(cocina_collection.access.to_h.with_indifferent_access)
-      expect(collection.administrative).to eq(cocina_collection.administrative.to_h.with_indifferent_access)
-      expect(collection.description).to eq(cocina_collection.description.to_h.with_indifferent_access)
-      expect(collection.identification).to eq(cocina_collection.identification.to_h.with_indifferent_access)
-    end
-  end
-
   describe 'sourceId uniqueness' do
     let(:cocina_object1) do
       cocina_collection.new(identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0031' })

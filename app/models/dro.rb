@@ -37,12 +37,6 @@ class Dro < RepositoryRecord
   end
 
   # @param [Cocina::Models::DRO] Cocina Digital Repository Object
-  # @return [Dro] ActiveRecord Digital Repository Object
-  def self.from_cocina(cocina_dro)
-    new(to_model_hash(cocina_dro))
-  end
-
-  # @param [Cocina::Models::DRO] Cocina Digital Repository Object
   # @return [Hash] Hash representation of ActiveRecord DRO
   def self.to_model_hash(cocina_dro)
     dro_hash = cocina_dro.to_h

@@ -92,7 +92,7 @@ RSpec.describe 'Create object' do
 
     context 'when an object already exists' do
       before do
-        Dro.from_cocina(build(:dro).new(identification:)).save!
+        Dro.new(Dro.to_model_hash(build(:dro).new(identification:))).save!
       end
 
       it 'returns a 409 error' do

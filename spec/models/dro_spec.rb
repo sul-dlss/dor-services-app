@@ -122,46 +122,6 @@ RSpec.describe Dro do
     end
   end
 
-  describe 'from_cocina' do
-    context 'with a minimal DRO' do
-      let(:dro) { described_class.from_cocina(minimal_cocina_dro) }
-
-      it 'returns a Dro' do
-        expect(dro).to be_a(described_class)
-        expect(dro.external_identifier).to eq(minimal_cocina_dro.externalIdentifier)
-        expect(dro.cocina_version).to eq(minimal_cocina_dro.cocinaVersion)
-        expect(dro.content_type).to eq(minimal_cocina_dro.type)
-        expect(dro.label).to eq(minimal_cocina_dro.label)
-        expect(dro.version).to eq(minimal_cocina_dro.version)
-        expect(dro.access).to eq(minimal_cocina_dro.access.to_h.with_indifferent_access)
-        expect(dro.administrative).to eq(minimal_cocina_dro.administrative.to_h.with_indifferent_access)
-        expect(dro.description).to eq(cocina_dro.description.to_h.with_indifferent_access)
-        expect(dro.identification).to eq(cocina_dro.identification.to_h.with_indifferent_access)
-        expect(dro.structural).to eq(cocina_dro.structural.to_h.with_indifferent_access)
-        expect(dro.geographic).to be_nil
-      end
-    end
-
-    context 'with a complete DRO' do
-      let(:dro) { described_class.from_cocina(cocina_dro) }
-
-      it 'returns a Dro' do
-        expect(dro).to be_a(described_class)
-        expect(dro.external_identifier).to eq(cocina_dro.externalIdentifier)
-        expect(dro.cocina_version).to eq(cocina_dro.cocinaVersion)
-        expect(dro.content_type).to eq(cocina_dro.type)
-        expect(dro.label).to eq(cocina_dro.label)
-        expect(dro.version).to eq(cocina_dro.version)
-        expect(dro.access).to eq(cocina_dro.access.to_h.with_indifferent_access)
-        expect(dro.administrative).to eq(cocina_dro.administrative.to_h.with_indifferent_access)
-        expect(dro.description).to eq(cocina_dro.description.to_h.with_indifferent_access)
-        expect(dro.identification).to eq(cocina_dro.identification.to_h.with_indifferent_access)
-        expect(dro.structural).to eq(cocina_dro.structural.to_h.with_indifferent_access)
-        expect(dro.geographic).to eq(cocina_dro.geographic.to_h.with_indifferent_access)
-      end
-    end
-  end
-
   describe 'sourceId uniqueness' do
     let(:cocina_object1) do
       minimal_cocina_dro.new(identification: { sourceId: 'sul:PC0170_s3_USC_2010-10-09_141959_0031' })
