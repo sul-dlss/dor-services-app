@@ -21,6 +21,10 @@ class RepositoryObject < ApplicationRecord
   after_create :open_first_version
   before_destroy :unset_version_relationships, prepend: true
 
+  scope :dros, -> { where(object_type: 'dro') }
+  scope :collections, -> { where(object_type: 'collection') }
+  scope :admin_policies, -> { where(object_type: 'admin_policy') }
+
   # NOTE: This block uses metaprogramming to create the equivalent of scopes that query the RepositoryObjectVersion table using only rows that are a `current` in the RepositoryObject table
   #
   # So it's a more easily extensible version of:
