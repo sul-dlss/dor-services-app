@@ -20,6 +20,17 @@ CREATE TYPE public.background_job_result_status AS ENUM (
 );
 
 
+--
+-- Name: repository_object_type; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.repository_object_type AS ENUM (
+    'dro',
+    'admin_policy',
+    'collection'
+);
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -354,6 +365,86 @@ ALTER SEQUENCE public.release_tags_id_seq OWNED BY public.release_tags.id;
 
 
 --
+-- Name: repository_object_versions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.repository_object_versions (
+    id bigint NOT NULL,
+    repository_object_id bigint NOT NULL,
+    version integer NOT NULL,
+    version_description character varying NOT NULL,
+    cocina_version integer,
+    content_type character varying,
+    label character varying,
+    access jsonb,
+    administrative jsonb,
+    description jsonb,
+    identification jsonb,
+    structural jsonb,
+    geographic jsonb,
+    closed_at timestamp(6) without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: repository_object_versions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.repository_object_versions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: repository_object_versions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.repository_object_versions_id_seq OWNED BY public.repository_object_versions.id;
+
+
+--
+-- Name: repository_objects; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.repository_objects (
+    id bigint NOT NULL,
+    object_type public.repository_object_type NOT NULL,
+    external_identifier character varying NOT NULL,
+    source_id character varying,
+    lock integer,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    current_id bigint,
+    head_id bigint,
+    open_id bigint
+);
+
+
+--
+-- Name: repository_objects_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.repository_objects_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: repository_objects_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.repository_objects_id_seq OWNED BY public.repository_objects.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -457,6 +548,20 @@ ALTER TABLE ONLY public.release_tags ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
+-- Name: repository_object_versions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.repository_object_versions ALTER COLUMN id SET DEFAULT nextval('public.repository_object_versions_id_seq'::regclass);
+
+
+--
+-- Name: repository_objects id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.repository_objects ALTER COLUMN id SET DEFAULT nextval('public.repository_objects_id_seq'::regclass);
+
+
+--
 -- Name: tag_labels id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -544,6 +649,22 @@ ALTER TABLE ONLY public.release_tags
 
 
 --
+-- Name: repository_object_versions repository_object_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.repository_object_versions
+    ADD CONSTRAINT repository_object_versions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: repository_objects repository_objects_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.repository_objects
+    ADD CONSTRAINT repository_objects_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -571,6 +692,20 @@ CREATE UNIQUE INDEX collection_source_id_idx ON public.collections USING btree (
 --
 
 CREATE UNIQUE INDEX dro_source_id_idx ON public.dros USING btree (((identification ->> 'sourceId'::text)));
+
+
+--
+-- Name: idx_on_repository_object_id_version_fbf04ede4e; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_on_repository_object_id_version_fbf04ede4e ON public.repository_object_versions USING btree (repository_object_id, version);
+
+
+--
+-- Name: idx_on_structural_hasMemberOrders_0_members_c0444cb569; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX "idx_on_structural_hasMemberOrders_0_members_c0444cb569" ON public.repository_object_versions USING gin ((((structural #> '{hasMemberOrders,0}'::text[]) -> 'members'::text)));
 
 
 --
@@ -679,10 +814,90 @@ CREATE INDEX index_release_tags_on_druid ON public.release_tags USING btree (dru
 
 
 --
+-- Name: index_repository_object_versions_on_repository_object_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_repository_object_versions_on_repository_object_id ON public.repository_object_versions USING btree (repository_object_id);
+
+
+--
+-- Name: index_repository_object_versions_on_structural_isMemberOf; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX "index_repository_object_versions_on_structural_isMemberOf" ON public.repository_object_versions USING gin (((structural -> 'isMemberOf'::text)));
+
+
+--
+-- Name: index_repository_objects_on_current_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_repository_objects_on_current_id ON public.repository_objects USING btree (current_id);
+
+
+--
+-- Name: index_repository_objects_on_external_identifier; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_repository_objects_on_external_identifier ON public.repository_objects USING btree (external_identifier);
+
+
+--
+-- Name: index_repository_objects_on_head_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_repository_objects_on_head_id ON public.repository_objects USING btree (head_id);
+
+
+--
+-- Name: index_repository_objects_on_object_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_repository_objects_on_object_type ON public.repository_objects USING btree (object_type);
+
+
+--
+-- Name: index_repository_objects_on_open_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_repository_objects_on_open_id ON public.repository_objects USING btree (open_id);
+
+
+--
+-- Name: index_repository_objects_on_source_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_repository_objects_on_source_id ON public.repository_objects USING btree (source_id);
+
+
+--
 -- Name: index_tag_labels_on_tag; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_tag_labels_on_tag ON public.tag_labels USING btree (tag);
+
+
+--
+-- Name: repository_objects fk_rails_1dc8d215fb; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.repository_objects
+    ADD CONSTRAINT fk_rails_1dc8d215fb FOREIGN KEY (head_id) REFERENCES public.repository_object_versions(id);
+
+
+--
+-- Name: repository_objects fk_rails_3c4ec20ee5; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.repository_objects
+    ADD CONSTRAINT fk_rails_3c4ec20ee5 FOREIGN KEY (open_id) REFERENCES public.repository_object_versions(id);
+
+
+--
+-- Name: repository_object_versions fk_rails_702591eb00; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.repository_object_versions
+    ADD CONSTRAINT fk_rails_702591eb00 FOREIGN KEY (repository_object_id) REFERENCES public.repository_objects(id);
 
 
 --
@@ -694,6 +909,14 @@ ALTER TABLE ONLY public.administrative_tags
 
 
 --
+-- Name: repository_objects fk_rails_aee9cbf562; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.repository_objects
+    ADD CONSTRAINT fk_rails_aee9cbf562 FOREIGN KEY (current_id) REFERENCES public.repository_object_versions(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -701,6 +924,10 @@ SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20240402155058'),
+('20240328144814'),
+('20240328142859'),
+('20240328142339'),
+('20240328141842'),
 ('20240322161526'),
 ('20240320203110'),
 ('20240108161425'),
