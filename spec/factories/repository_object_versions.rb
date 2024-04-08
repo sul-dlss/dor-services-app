@@ -2,7 +2,6 @@
 
 FactoryBot.define do
   factory :repository_object_version do
-    repository_object { nil }
     sequence(:version)
     version_description { 'MyString' }
     cocina_version { 1 }

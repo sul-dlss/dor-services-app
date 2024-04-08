@@ -187,16 +187,32 @@ RSpec.describe CocinaObjectStore do
   end
 
   describe '#destroy' do
-    let!(:dro) { create(:ar_dro) }
+    let(:dro) { create(:ar_dro) }
 
     before do
       allow(Notifications::ObjectDeleted).to receive(:publish)
     end
 
-    it 'destroys the object' do
-      described_class.destroy(dro.external_identifier)
-      expect(Dro).not_to exist(dro.id)
-      expect(Notifications::ObjectDeleted).to have_received(:publish)
+    context 'when a repository object does not exist' do
+      it 'destroys the object' do
+        described_class.destroy(dro.external_identifier)
+        expect(Dro).not_to exist(dro.id)
+        expect(Notifications::ObjectDeleted).to have_received(:publish)
+      end
+    end
+
+    context 'when a repository object exists' do
+      before do
+        create(:repository_object, external_identifier: dro.external_identifier)
+        allow(Notifications::ObjectDeleted).to receive(:publish)
+      end
+
+      it 'destroys the object' do
+        expect { described_class.destroy(dro.external_identifier) }.to change(RepositoryObject, :count).by(-1)
+          .and change(RepositoryObjectVersion, :count).by(-1) # rubocop:disable Layout/MultilineMethodCallIndentation
+        expect(Dro).not_to exist(dro.id)
+        expect(Notifications::ObjectDeleted).to have_received(:publish)
+      end
     end
   end
 end

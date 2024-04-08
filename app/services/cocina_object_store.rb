@@ -142,7 +142,12 @@ class CocinaObjectStore
   def destroy(druid)
     cocina_object = CocinaObjectStore.find(druid)
 
-    ar_destroy(druid)
+    RepositoryObject.transaction do
+      # TODO: After migrating to RepositoryObjects, we can get rid of the nil check and use:
+      #   RepositoryObject.find_by!(external_identifier: druid).destroy
+      RepositoryObject.find_by(external_identifier: druid)&.destroy
+      ar_destroy(druid)
+    end
 
     Notifications::ObjectDeleted.publish(model: cocina_object, deleted_at: Time.zone.now)
   end
