@@ -8,6 +8,7 @@ class RepositoryObjectVersion < ApplicationRecord
   scope :members_of_collection, ->(collection_druid) { where("structural -> 'isMemberOf' ? :druid", druid: collection_druid) }
 
   validates :version, :version_description, presence: true
+  after_save :update_object_source_id
 
   # @param [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] cocina_object a Cocina
   #   model instance, either a DRO, collection, or APO.
@@ -28,5 +29,16 @@ class RepositoryObjectVersion < ApplicationRecord
         object_hash[:description] ||= nil
       end
     end
+  end
+
+  private
+
+  def update_object_source_id
+    source_id = identification&.fetch('sourceId', nil)
+    # only update object if opened. opened_version will also be the object's head_version
+    return unless repository_object.opened_version == self && source_id
+    return if repository_object.source_id == source_id
+
+    repository_object.update!(source_id:)
   end
 end

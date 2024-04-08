@@ -40,6 +40,50 @@ RSpec.describe RepositoryObjectVersion do
     end
   end
 
+  describe 'with an updated sourceId' do
+    let(:repository_object_version) { create(:repository_object_version, repository_object:, **attrs) }
+    let(:repository_object) { create(:repository_object, **repo_object_attrs) }
+    let(:repo_object_attrs) do
+      {
+        source_id: 'sul:old-source-id'
+      }
+    end
+    let(:attrs) do
+      {
+        version: 2,
+        version_description: 'My version 2',
+        identification: {
+          sourceId: 'sul:source-id'
+        }
+      }
+    end
+    let(:new_attrs) do
+      {
+        identification: {
+          sourceId: 'sul:new-source-id'
+        }
+      }
+    end
+
+    context 'when version is head version' do
+      before do
+        repository_object.update(head_version: repository_object_version)
+      end
+
+      it 'updates repository object' do
+        repository_object_version.update(new_attrs)
+        expect(repository_object.source_id).to eq('sul:new-source-id')
+      end
+    end
+
+    context 'when version is not head version' do
+      it 'does not update repository object' do
+        repository_object_version.update(new_attrs)
+        expect(repository_object.source_id).not_to eq('sul:new-source-id')
+      end
+    end
+  end
+
   describe '.in_virtual_objects' do
     before do
       opened_version.update(attrs)
