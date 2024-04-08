@@ -18,7 +18,7 @@ class RepositoryObject < ApplicationRecord
   validate :head_and_open_cannot_be_same_version
   validate :current_must_be_either_head_or_open
 
-  after_create_commit :open_first_version
+  after_create :open_first_version
   before_destroy :unset_version_relationships, prepend: true
 
   # NOTE: This block uses metaprogramming to create the equivalent of scopes that query the RepositoryObjectVersion table using only rows that are a `current` in the RepositoryObject table
