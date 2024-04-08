@@ -16,7 +16,7 @@ class WorkflowStateService
     @version = version
   end
 
-  ASSEMBLY_WORKFLOWS = %w[assemblyWF etdAssemblyWF gisAssemblyWF wasCrawlPreassemblyWF wasSeedPreassemblyWF].freeze
+  ASSEMBLY_WORKFLOWS = %w[assemblyWF gisAssemblyWF wasCrawlPreassemblyWF wasSeedPreassemblyWF].freeze
 
   # Checks if the latest version has any assembly workflows with incomplete steps.
   # @return [Boolean] true if object is currently being assembled
