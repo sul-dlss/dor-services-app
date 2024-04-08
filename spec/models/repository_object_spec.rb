@@ -58,22 +58,22 @@ RSpec.describe RepositoryObject do
       it { is_expected.not_to be_valid }
     end
 
-    context 'when head and open point at same version' do
+    context 'when last closed and opened point at same version' do
       before do
         repository_object.save # we need at least one persisted version so we can run this validation
-        repository_object.open = repository_object.head = repository_object.versions.first
+        repository_object.opened_version = repository_object.last_closed_version = repository_object.versions.first
       end
 
       it { is_expected.not_to be_valid }
     end
 
     # NOTE: I'm not sure this can currently happen?
-    context 'when current points at something other than head or open' do
+    context 'when current points at something other than last closed or opened' do
       before do
         repository_object.save # we need at least one persisted version so we can run this validation
-        repository_object.update(current: repository_object.versions.first)
-        repository_object.update(head: repository_object.versions.create!(version: 2, version_description: 'closed'))
-        repository_object.update(open: repository_object.versions.create!(version: 3, version_description: 'draft'))
+        repository_object.update(head_version: repository_object.versions.first)
+        repository_object.update(last_closed_version: repository_object.versions.create!(version: 2, version_description: 'closed'))
+        repository_object.update(opened_version: repository_object.versions.create!(version: 3, version_description: 'draft'))
       end
 
       it { is_expected.not_to be_valid }
@@ -97,7 +97,7 @@ RSpec.describe RepositoryObject do
     subject(:repository_object) { create(:repository_object, **attrs) }
 
     before do
-      repository_object.update(current: repository_object.versions.first)
+      repository_object.update(head_version: repository_object.versions.first)
     end
 
     it 'does not raise on destroy' do
@@ -109,7 +109,7 @@ RSpec.describe RepositoryObject do
     subject(:repository_object) { create(:repository_object, **attrs) }
 
     before do
-      repository_object.update(current: repository_object.versions.first)
+      repository_object.update(head_version: repository_object.versions.first)
       allow(RepositoryObjectVersion).to receive(:in_virtual_objects).and_return([])
     end
 
@@ -131,23 +131,12 @@ RSpec.describe RepositoryObject do
         repository_object.close_version!
       end
 
-      it 'creates a new version' do
+      it 'creates a new version and updates the head and opened version pointers' do
         expect { repository_object.open_version! }.to change(RepositoryObjectVersion, :count).by(1)
-      end
-
-      it 'auto-increments the version number' do
-        repository_object.open_version!
-        expect(repository_object.versions.last.version).to eq(2)
-      end
-
-      it 'updates the current pointer' do
-        repository_object.open_version!
-        expect(repository_object.current).to eq(repository_object.versions.find_by(version: 2))
-      end
-
-      it 'updates the open pointer' do
-        repository_object.open_version!
-        expect(repository_object.open).to eq(repository_object.versions.find_by(version: 2))
+        newly_created_version = repository_object.versions.last
+        expect(newly_created_version.version).to eq(2)
+        expect(repository_object.head_version).to eq(newly_created_version)
+        expect(repository_object.opened_version).to eq(newly_created_version)
       end
     end
   end
@@ -156,22 +145,15 @@ RSpec.describe RepositoryObject do
     subject(:repository_object) { create(:repository_object, **attrs) }
 
     it 'sets the closed_at field' do
-      expect { repository_object.close_version! }.to change(repository_object.current, :closed_at).to(instance_of(ActiveSupport::TimeWithZone))
+      expect { repository_object.close_version! }.to change(repository_object.head_version, :closed_at).to(instance_of(ActiveSupport::TimeWithZone))
     end
 
-    it 'updates the current pointer' do
+    it 'updates the head, last closed, and opened version pointers' do
       repository_object.close_version!
-      expect(repository_object.current).to eq(repository_object.versions.find_by(version: 1))
-    end
-
-    it 'updates the head pointer' do
-      repository_object.close_version!
-      expect(repository_object.head).to eq(repository_object.versions.find_by(version: 1))
-    end
-
-    it 'resets the open pointer' do
-      repository_object.close_version!
-      expect(repository_object.open).to be_nil
+      closed_version = repository_object.versions.find_by(version: 1)
+      expect(repository_object.head_version).to eq(closed_version)
+      expect(repository_object.last_closed_version).to eq(closed_version)
+      expect(repository_object.opened_version).to be_nil
     end
 
     context 'when closed' do

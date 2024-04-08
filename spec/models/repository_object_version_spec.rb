@@ -42,11 +42,11 @@ RSpec.describe RepositoryObjectVersion do
 
   describe '.in_virtual_objects' do
     before do
-      open_version.update(attrs)
+      opened_version.update(attrs)
     end
 
     let(:druid) { 'druid:xz456jk0987' }
-    let(:open_version) { create(:repository_object).open }
+    let(:opened_version) { create(:repository_object).opened_version }
 
     it 'returns an empty list' do
       expect(described_class.in_virtual_objects(druid)).to eq([])
@@ -68,18 +68,18 @@ RSpec.describe RepositoryObjectVersion do
       end
 
       it 'returns the expected object version' do
-        expect(described_class.in_virtual_objects(druid)).to eq([open_version])
+        expect(described_class.in_virtual_objects(druid)).to eq([opened_version])
       end
     end
   end
 
   describe '.members_of_collection' do
     before do
-      open_version.update(attrs)
+      opened_version.update(attrs)
     end
 
     let(:druid) { 'druid:xz456jk0987' }
-    let(:open_version) { create(:repository_object).open }
+    let(:opened_version) { create(:repository_object).opened_version }
 
     it 'returns an empty list' do
       expect(described_class.members_of_collection(druid)).to eq([])
@@ -95,7 +95,7 @@ RSpec.describe RepositoryObjectVersion do
       end
 
       it 'returns the expected object version' do
-        expect(described_class.members_of_collection(druid)).to eq([open_version])
+        expect(described_class.members_of_collection(druid)).to eq([opened_version])
       end
     end
   end
