@@ -85,7 +85,7 @@ class VersionService
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   def can_open?(assume_accessioned: false)
     ensure_openable!(assume_accessioned:)
-    retrieve_version_from_preservation
+    retrieve_version_from_preservation if Settings.version_service.sync_with_preservation
     true
   rescue VersionService::VersioningError
     false
