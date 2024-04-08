@@ -23,12 +23,6 @@ class AdminPolicy < RepositoryRecord
   end
 
   # @param [Cocina::Models::AdminPolicy] Cocina Administrative Policy
-  # @return [AdminPolicy] ActiveRecord Administative Policy
-  def self.from_cocina(admin_policy)
-    new(to_model_hash(admin_policy))
-  end
-
-  # @param [Cocina::Models::AdminPolicy] Cocina Administrative Policy
   # @return [Hash] Hash representation of ActiveRecord Administrative Policy
   def self.to_model_hash(cocina_admin_policy)
     admin_policy_hash = cocina_admin_policy.to_h

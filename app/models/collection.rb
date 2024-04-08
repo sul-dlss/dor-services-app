@@ -29,12 +29,6 @@ class Collection < RepositoryRecord
   end
 
   # @param [Cocina::Models::Collection] Cocina collection
-  # @return [Collection] ActiveRecord collection
-  def self.from_cocina(cocina_collection)
-    new(to_model_hash(cocina_collection))
-  end
-
-  # @param [Cocina::Models::Collection] Cocina collection
   # @return [Hash] Hash representation of ActiveRecord collection
   def self.to_model_hash(cocina_collection)
     collection_hash = cocina_collection.to_h
