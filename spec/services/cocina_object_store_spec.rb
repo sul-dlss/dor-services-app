@@ -195,7 +195,7 @@ RSpec.describe CocinaObjectStore do
 
     it 'destroys the object' do
       described_class.destroy(dro.external_identifier)
-      expect(Dro).not_to exist(dro.external_identifier)
+      expect(Dro).not_to exist(dro.id)
       expect(Notifications::ObjectDeleted).to have_received(:publish)
     end
   end
