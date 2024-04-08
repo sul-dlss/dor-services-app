@@ -373,7 +373,7 @@ CREATE TABLE public.repository_object_versions (
     repository_object_id bigint NOT NULL,
     version integer NOT NULL,
     version_description character varying NOT NULL,
-    cocina_version integer,
+    cocina_version character varying,
     content_type character varying,
     label character varying,
     access jsonb,
@@ -923,6 +923,7 @@ ALTER TABLE ONLY public.repository_objects
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240408230311'),
 ('20240408184127'),
 ('20240402155058'),
 ('20240328144814'),
@@ -952,4 +953,3 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191209192646'),
 ('20191015193638'),
 ('20190917215521');
-

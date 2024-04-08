@@ -53,6 +53,12 @@ class RepositoryObject < ApplicationRecord
     end
   end
 
+  # @param [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] cocina_object a Cocina
+  #   model instance, either a DRO, collection, or APO.
+  def update_opened_version_from(cocina_object:)
+    opened_version.update!(**RepositoryObjectVersion.to_model_hash(cocina_object))
+  end
+
   def open_version!
     raise VersionAlreadyOpened, "Cannot open new version because one is already open: #{head_version.version}" if open?
 
