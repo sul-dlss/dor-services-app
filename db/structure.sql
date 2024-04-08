@@ -419,9 +419,9 @@ CREATE TABLE public.repository_objects (
     lock integer,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    current_id bigint,
-    head_id bigint,
-    open_id bigint
+    head_version_id bigint,
+    last_closed_version_id bigint,
+    opened_version_id bigint
 );
 
 
@@ -828,13 +828,6 @@ CREATE INDEX "index_repository_object_versions_on_structural_isMemberOf" ON publ
 
 
 --
--- Name: index_repository_objects_on_current_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_repository_objects_on_current_id ON public.repository_objects USING btree (current_id);
-
-
---
 -- Name: index_repository_objects_on_external_identifier; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -842,10 +835,17 @@ CREATE UNIQUE INDEX index_repository_objects_on_external_identifier ON public.re
 
 
 --
--- Name: index_repository_objects_on_head_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_repository_objects_on_head_version_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_repository_objects_on_head_id ON public.repository_objects USING btree (head_id);
+CREATE INDEX index_repository_objects_on_head_version_id ON public.repository_objects USING btree (head_version_id);
+
+
+--
+-- Name: index_repository_objects_on_last_closed_version_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_repository_objects_on_last_closed_version_id ON public.repository_objects USING btree (last_closed_version_id);
 
 
 --
@@ -856,10 +856,10 @@ CREATE INDEX index_repository_objects_on_object_type ON public.repository_object
 
 
 --
--- Name: index_repository_objects_on_open_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_repository_objects_on_opened_version_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_repository_objects_on_open_id ON public.repository_objects USING btree (open_id);
+CREATE INDEX index_repository_objects_on_opened_version_id ON public.repository_objects USING btree (opened_version_id);
 
 
 --
@@ -881,7 +881,7 @@ CREATE UNIQUE INDEX index_tag_labels_on_tag ON public.tag_labels USING btree (ta
 --
 
 ALTER TABLE ONLY public.repository_objects
-    ADD CONSTRAINT fk_rails_1dc8d215fb FOREIGN KEY (head_id) REFERENCES public.repository_object_versions(id);
+    ADD CONSTRAINT fk_rails_1dc8d215fb FOREIGN KEY (last_closed_version_id) REFERENCES public.repository_object_versions(id);
 
 
 --
@@ -889,7 +889,7 @@ ALTER TABLE ONLY public.repository_objects
 --
 
 ALTER TABLE ONLY public.repository_objects
-    ADD CONSTRAINT fk_rails_3c4ec20ee5 FOREIGN KEY (open_id) REFERENCES public.repository_object_versions(id);
+    ADD CONSTRAINT fk_rails_3c4ec20ee5 FOREIGN KEY (opened_version_id) REFERENCES public.repository_object_versions(id);
 
 
 --
@@ -913,7 +913,7 @@ ALTER TABLE ONLY public.administrative_tags
 --
 
 ALTER TABLE ONLY public.repository_objects
-    ADD CONSTRAINT fk_rails_aee9cbf562 FOREIGN KEY (current_id) REFERENCES public.repository_object_versions(id);
+    ADD CONSTRAINT fk_rails_aee9cbf562 FOREIGN KEY (head_version_id) REFERENCES public.repository_object_versions(id);
 
 
 --
@@ -923,6 +923,7 @@ ALTER TABLE ONLY public.repository_objects
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240408184127'),
 ('20240402155058'),
 ('20240328144814'),
 ('20240328142859'),

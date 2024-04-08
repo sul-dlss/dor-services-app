@@ -5,18 +5,18 @@ class RepositoryObject < ApplicationRecord
   class VersionAlreadyOpened < StandardError; end
   class VersionNotOpened < StandardError; end
 
-  has_many :versions,  class_name: 'RepositoryObjectVersion', dependent: :destroy, inverse_of: 'repository_object'
+  has_many :versions, class_name: 'RepositoryObjectVersion', dependent: :destroy, inverse_of: 'repository_object'
 
-  belongs_to :current, class_name: 'RepositoryObjectVersion', optional: true
-  belongs_to :head, class_name: 'RepositoryObjectVersion', optional: true
-  belongs_to :open, class_name: 'RepositoryObjectVersion', optional: true
+  belongs_to :head_version, class_name: 'RepositoryObjectVersion', optional: true
+  belongs_to :last_closed_version, class_name: 'RepositoryObjectVersion', optional: true
+  belongs_to :opened_version, class_name: 'RepositoryObjectVersion', optional: true
 
   enum :object_type, %i[dro admin_policy collection].index_with(&:to_s)
 
   validates :external_identifier, :object_type, presence: true
   validates :source_id, presence: true, if: -> { dro? }
-  validate :head_and_open_cannot_be_same_version
-  validate :current_must_be_either_head_or_open
+  validate :last_closed_and_open_cannot_be_same_version
+  validate :head_must_be_either_last_closed_or_opened
 
   after_create :open_first_version
   before_destroy :unset_version_relationships, prepend: true
@@ -29,12 +29,12 @@ class RepositoryObject < ApplicationRecord
   #
   # So it's a more easily extensible version of:
   #
-  # scope :currently_in_virtual_objects, ->(member_druid) { joins(:current).merge(RepositoryObjectVersion.in_virtual_objects(member_druid)) }
-  # scope :currently_members_of_collection, ->(collection_druid) { joins(:current).merge(RepositoryObjectVersion.members_of_collection(collection_druid)) }
+  # scope :currently_in_virtual_objects, ->(member_druid) { joins(:head_version).merge(RepositoryObjectVersion.in_virtual_objects(member_druid)) }
+  # scope :currently_members_of_collection, ->(collection_druid) { joins(:head_version).merge(RepositoryObjectVersion.members_of_collection(collection_druid)) }
   class << self
     def method_missing(method_name, ...)
       if method_name.to_s =~ /#{current_scope_prefix}(.*)/
-        joins(:current).merge(
+        joins(:head_version).merge(
           RepositoryObjectVersion.public_send(Regexp.last_match(1).to_sym, ...)
         )
       else
@@ -54,29 +54,29 @@ class RepositoryObject < ApplicationRecord
   end
 
   def open_version!
-    raise VersionAlreadyOpened, "Cannot open new version because one is already open: #{current.version}" if open?
+    raise VersionAlreadyOpened, "Cannot open new version because one is already open: #{head_version.version}" if open?
 
     RepositoryObject.transaction do
-      version_to_open = head.dup.tap { |object_version| object_version.version += 1 }
-      update!(open: version_to_open, current: version_to_open)
+      version_to_open = last_closed_version.dup.tap { |object_version| object_version.version += 1 }
+      update!(opened_version: version_to_open, head_version: version_to_open)
     end
   end
 
   def close_version!
-    raise VersionNotOpened, "Cannot close version because current version is closed: #{current.version}" if closed?
+    raise VersionNotOpened, "Cannot close version because head version is closed: #{head_version.version}" if closed?
 
     RepositoryObject.transaction do
-      version_to_close = self.open.tap { |object_version| object_version.closed_at = Time.current }
-      update!(open: nil, head: version_to_close, current: version_to_close)
+      version_to_close = opened_version.tap { |object_version| object_version.closed_at = Time.current }
+      update!(opened_version: nil, last_closed_version: version_to_close, head_version: version_to_close)
     end
   end
 
   def open?
-    current == open
+    head_version == opened_version
   end
 
   def closed?
-    current == head
+    head_version == last_closed_version
   end
 
   private
@@ -84,23 +84,23 @@ class RepositoryObject < ApplicationRecord
   def open_first_version
     RepositoryObject.transaction do
       first_version = versions.create!(version: 1, version_description: 'Initial version')
-      update!(open: first_version, current: first_version)
+      update!(opened_version: first_version, head_version: first_version)
     end
   end
 
   def unset_version_relationships
-    update(head: nil, current: nil, open: nil)
+    update(last_closed_version: nil, head_version: nil, opened_version: nil)
   end
 
-  def head_and_open_cannot_be_same_version
-    return if (head.nil? && open.nil?) || head != open
+  def last_closed_and_open_cannot_be_same_version
+    return if (last_closed_version.nil? && opened_version.nil?) || last_closed_version != opened_version
 
-    errors.add(:head, 'cannot be the same version as the open version')
+    errors.add(:last_closed_version, 'cannot be the same version as the open version')
   end
 
-  def current_must_be_either_head_or_open
-    return if current.nil? || current == head || current == open
+  def head_must_be_either_last_closed_or_opened
+    return if head_version.nil? || head_version == last_closed_version || head_version == opened_version
 
-    errors.add(:current, 'must point at either the head version or the open version')
+    errors.add(:head_version, 'must point at either the last closed version or the opened version')
   end
 end
