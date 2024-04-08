@@ -6,6 +6,7 @@ enabled_features:
   file_hierarchy_validation: true
   read_folio: true
   orcid_update: true
+  repository_object: false
 
 # Ur Admin Policy
 ur_admin_policy:
