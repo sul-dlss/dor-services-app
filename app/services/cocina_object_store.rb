@@ -113,6 +113,8 @@ class CocinaObjectStore
   end
 
   def exists?(druid, type: nil)
+    return RepositoryObject.exists?(external_identifier: druid) if Settings.enabled_features.repository_object
+
     ar_exists?(druid, type:)
   end
 
@@ -120,14 +122,6 @@ class CocinaObjectStore
     return true if exists?(druid)
 
     raise CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid)
-  end
-
-  # This is only public for migration use.
-  def ar_exists?(druid, type: nil)
-    types = type ? Array(type) : [DRO, COLLECTION, ADMIN_POLICY]
-    types.any? do |t|
-      t.constantize.exists?(external_identifier: druid)
-    end
   end
 
   def version(druid)
@@ -156,6 +150,13 @@ class CocinaObjectStore
 
   # The *ar* methods are private. In later steps in the migration, the *ar* methods will be invoked by the
   # above public methods.
+
+  def ar_exists?(druid, type: nil)
+    types = type ? Array(type) : [DRO, COLLECTION, ADMIN_POLICY]
+    types.any? do |t|
+      t.constantize.exists?(external_identifier: druid)
+    end
+  end
 
   # Persist a Cocina object with ActiveRecord.
   # @param [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy] cocina_object
