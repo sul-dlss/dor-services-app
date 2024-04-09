@@ -4,9 +4,11 @@ require 'rails_helper'
 
 RSpec.describe RepositoryObjectVersion do
   subject(:repository_object_version) do
-    build(:repository_object_version, repository_object: build(:repository_object), **attrs)
+    build(:repository_object_version, repository_object: build(:repository_object, object_type:, external_identifier: druid), **attrs)
   end
 
+  let(:druid) { 'druid:xz456jk0987' }
+  let(:object_type) { 'dro' }
   let(:attrs) do
     {
       version: 1,
