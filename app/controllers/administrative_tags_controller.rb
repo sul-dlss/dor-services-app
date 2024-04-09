@@ -31,7 +31,7 @@ class AdministrativeTagsController < ApplicationController
                        })
     render status: :conflict, plain: e.message
   else
-    # Broadcast this update action to a topic
+    # Broadcast this update action to a topic so that it can be indexed
     Notifications::ObjectUpdated.publish(model: @cocina_object)
     head :created
   end
@@ -51,7 +51,7 @@ class AdministrativeTagsController < ApplicationController
                        })
     render status: :conflict, plain: e.message
   else
-    # Broadcast this update action to a topic
+    # Broadcast this update action to a topic so that it can be indexed
     Notifications::ObjectUpdated.publish(model: @cocina_object)
     head :no_content
   end
@@ -61,7 +61,7 @@ class AdministrativeTagsController < ApplicationController
   rescue ActiveRecord::RecordNotFound => e
     render status: :not_found, plain: e.message
   else
-    # Broadcast this update action to a topic
+    # Broadcast this update action to a topic so that it can be indexed
     Notifications::ObjectUpdated.publish(model: @cocina_object)
   end
 end
