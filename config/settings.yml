@@ -7,6 +7,8 @@ enabled_features:
   read_folio: true
   orcid_update: true
   repository_object: false
+  repository_object_test: false
+  repository_object_find: false
 
 # Ur Admin Policy
 ur_admin_policy:

@@ -80,6 +80,35 @@ RSpec.describe CocinaObjectStore do
         expect(store.version(ar_cocina_object.external_identifier)).to eq(4)
       end
     end
+
+    context "when repository_object_test is enabled and versions don't match" do
+      let(:ar_cocina_object) { create(:ar_dro, version: 5) }
+
+      before do
+        allow(Honeybadger).to receive(:notify)
+        create(:repository_object, external_identifier: ar_cocina_object.external_identifier)
+        allow(Settings.enabled_features).to receive(:repository_object_test).and_return true
+      end
+
+      it 'returns old version and logs to Honeybadger' do
+        expect(store.version(ar_cocina_object.external_identifier)).to eq(5)
+        expect(Honeybadger).to have_received(:notify)
+          .with("Version from RepositoryObjectVersion doesn't match version in legacy store.",
+                context: { druid: ar_cocina_object.external_identifier, new_version: 1, old_version: 5 })
+      end
+    end
+
+    context 'when repository_object_find is enabled' do
+      subject { store.version(repository_object.external_identifier) }
+
+      let(:repository_object) { create(:repository_object) }
+
+      before do
+        allow(Settings.enabled_features).to receive(:repository_object_find).and_return true
+      end
+
+      it { is_expected.to eq 1 }
+    end
   end
 
   describe '#find_by_source_id' do
@@ -155,11 +184,11 @@ RSpec.describe CocinaObjectStore do
       end
     end
 
-    context 'when repository_object is true' do
+    context 'when repository_object_find is true' do
       subject { store.exists?(druid) }
 
       before do
-        allow(Settings.enabled_features).to receive(:repository_object).and_return(true)
+        allow(Settings.enabled_features).to receive(:repository_object_find).and_return(true)
       end
 
       context 'when the item exists' do

@@ -113,7 +113,7 @@ class CocinaObjectStore
   end
 
   def exists?(druid, type: nil)
-    return RepositoryObject.exists?(external_identifier: druid) if Settings.enabled_features.repository_object
+    return RepositoryObject.exists?(external_identifier: druid) if Settings.enabled_features.repository_object_find
 
     ar_exists?(druid, type:)
   end
@@ -125,12 +125,23 @@ class CocinaObjectStore
   end
 
   def version(druid)
+    return RepositoryObject.find_by(external_identifier: druid).head_version.version if Settings.enabled_features.repository_object_find
+
     ar_cocina_object = Dro.select(:version).find_by(external_identifier: druid) ||
                        AdminPolicy.select(:version).find_by(external_identifier: druid) ||
                        Collection.select(:version).find_by(external_identifier: druid)
 
-    ar_cocina_object&.version ||
-      raise(CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid))
+    raise(CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid)) unless ar_cocina_object&.version
+
+    if Settings.enabled_features.repository_object_test
+      test_version = RepositoryObject.find_by(external_identifier: druid).head_version.version
+      if test_version != ar_cocina_object.version
+        Honeybadger.notify("Version from RepositoryObjectVersion doesn't match version in legacy store.",
+                           context: { druid:, new_version: test_version, old_version: ar_cocina_object.version })
+      end
+    end
+
+    ar_cocina_object.version
   end
 
   def destroy(druid)
