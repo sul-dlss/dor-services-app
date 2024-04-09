@@ -76,21 +76,25 @@ RSpec.describe WorkflowStateService do
     context 'when > version 1 and there is an active versionWF' do
       let(:version) { 2 }
 
+      let(:workflow_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: true, complete_for?: false) }
+
       before do
-        allow(workflow_client).to receive(:active_lifecycle).and_return(Time.current)
+        allow(workflow_client).to receive(:workflow).and_return(workflow_response)
       end
 
       it 'returns true' do
         expect(service.open?).to be true
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'opened', version: '2')
+        expect(workflow_client).to have_received(:workflow).with(pid: druid, workflow_name: 'versioningWF')
       end
     end
 
     context 'when > version 1 and there is not an active versionWF' do
       let(:version) { 2 }
 
+      let(:workflow_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: true, complete_for?: true) }
+
       before do
-        allow(workflow_client).to receive(:active_lifecycle).and_return(nil)
+        allow(workflow_client).to receive(:workflow).and_return(workflow_response)
       end
 
       it 'returns false' do

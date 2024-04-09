@@ -29,7 +29,7 @@ class WorkflowStateService
     return !accessioning? && !accessioned? if version == 1
 
     # Otherwise, is there an active versionWF?
-    active_version_wf?
+    active_workflow?(workflow: 'versioningWF')
   end
 
   # The following methods were extracted from VersionService.
