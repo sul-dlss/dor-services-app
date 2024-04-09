@@ -65,9 +65,9 @@ RSpec.describe RepositoryObjectVersion do
       }
     end
 
-    context 'when version is head version' do
+    context 'when version is opened and head version' do
       before do
-        repository_object.update(head_version: repository_object_version)
+        repository_object.update(opened_version: repository_object_version, head_version: repository_object_version)
       end
 
       it 'updates repository object' do
@@ -76,10 +76,15 @@ RSpec.describe RepositoryObjectVersion do
       end
     end
 
-    context 'when version is not head version' do
+    context 'when version is not opened version' do
+      before do
+        allow(repository_object).to receive(:update)
+      end
+
       it 'does not update repository object' do
         repository_object_version.update(new_attrs)
-        expect(repository_object.source_id).not_to eq('sul:new-source-id')
+        expect(repository_object).not_to have_received(:update)
+        expect(repository_object.source_id).to eq('sul:old-source-id')
       end
     end
   end
