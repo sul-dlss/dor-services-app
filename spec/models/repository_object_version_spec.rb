@@ -91,6 +91,30 @@ RSpec.describe RepositoryObjectVersion do
     end
   end
 
+  describe '.to_cocina_with_metadata' do
+    context 'with a DRO' do
+      let(:attrs) do
+        {
+          content_type: 'https://cocina.sul.stanford.edu/models/book',
+          access: { view: 'world', download: 'world' },
+          administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
+          identification: { sourceId: 'sul:old-source-id' },
+          description:
+            {
+              title: [{ value: 'RepositoryObjectVersion Test DRO' }],
+              purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+            },
+          structural: {},
+          geographic: nil
+        }
+      end
+
+      it 'returns a Cocina::Models::DRO from the RepositoryObjectVersion' do
+        expect(repository_object_version.to_cocina_with_metadata).to be_a(Cocina::Models::DROWithMetadata)
+      end
+    end
+  end
+
   describe '.in_virtual_objects' do
     before do
       opened_version.update(attrs)
