@@ -91,6 +91,81 @@ RSpec.describe RepositoryObjectVersion do
     end
   end
 
+  describe '.to_cocina' do
+    context 'with a DRO' do
+      let(:attrs) do
+        {
+          content_type: 'https://cocina.sul.stanford.edu/models/book',
+          access: { view: 'world', download: 'world' },
+          administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
+          identification: { sourceId: 'sul:old-source-id' },
+          description:
+            {
+              title: [{ value: 'RepositoryObjectVersion Test DRO' }],
+              purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+            },
+          structural: {},
+          geographic: nil
+        }
+      end
+
+      it 'returns a Cocina::Models::DRO from the RepositoryObjectVersion' do
+        expect(repository_object_version.to_cocina).to be_a(Cocina::Models::DRO)
+      end
+    end
+
+    context 'with a Collection' do
+      let(:object_type) { 'collection' }
+      let(:attrs) do
+        {
+          content_type: 'https://cocina.sul.stanford.edu/models/collection',
+          access: { view: 'world' },
+          administrative: { hasAdminPolicy: 'druid:hy787xj5878' },
+          identification: { sourceId: 'sul:old-source-id' },
+          description:
+            {
+              title: [{ value: 'RepositoryObjectVersion Test Collection' }],
+              purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+            },
+          structural: nil,
+          geographic: nil
+        }
+      end
+
+      it 'returns a Cocina::Models::Collection from the RepositoryObjectVersion' do
+        expect(repository_object_version.to_cocina).to be_a(Cocina::Models::Collection)
+      end
+    end
+
+    context 'with an APO' do
+      let(:object_type) { 'admin_policy' }
+      let(:attrs) do
+        {
+          content_type: 'https://cocina.sul.stanford.edu/models/admin_policy',
+          access: nil,
+          administrative:
+            {
+              hasAdminPolicy: 'druid:hy787xj5878',
+              hasAgreement: 'druid:bb033gt0615',
+              accessTemplate: { view: 'world', download: 'world' }
+            },
+          identification: nil,
+          description:
+            {
+              title: [{ value: 'RepositoryObjectVersion Test Collection' }],
+              purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+            },
+          structural: nil,
+          geographic: nil
+        }
+      end
+
+      it 'returns a Cocina::Models::AdminPolicy from the RepositoryObjectVersion' do
+        expect(repository_object_version.to_cocina).to be_a(Cocina::Models::AdminPolicy)
+      end
+    end
+  end
+
   describe '.to_cocina_with_metadata' do
     context 'with a DRO' do
       let(:attrs) do

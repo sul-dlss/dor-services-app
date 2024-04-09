@@ -54,6 +54,22 @@ class RepositoryObjectVersion < ApplicationRecord
     end
   end
 
+  # @return [Hash] RepositoryObjectVersion instance as a hash
+  def to_h
+    {
+      type: content_type,
+      externalIdentifier: repository_object.external_identifier,
+      label:,
+      version:,
+      access:,
+      administrative:,
+      description:,
+      identification:,
+      structural:,
+      geographic:
+    }.compact
+  end
+
   def update_object_source_id
     source_id = identification&.fetch('sourceId', nil)
     # only update object if opened. opened_version will also be the object's head_version
