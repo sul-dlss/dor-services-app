@@ -70,6 +70,8 @@ class RepositoryObjectVersion < ApplicationRecord
     }.compact
   end
 
+  private
+
   def update_object_source_id
     source_id = identification&.fetch('sourceId', nil)
     # only update object if opened. opened_version will also be the object's head_version
