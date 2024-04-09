@@ -108,6 +108,10 @@ class VersionService
                                   version: version.to_s,
                                   create_accession_wf: start_accession)
 
+    # TODO: After migrating to RepositoryObjects, we can get rid of the nil check and use:
+    #   RepositoryObject.find_by!(external_identifier: druid).close_version!
+    RepositoryObject.find_by(external_identifier: druid)&.close_version!
+
     event_factory.create(druid:, event_type: 'version_close', data: { who: user_name, version: version.to_s })
   end
 

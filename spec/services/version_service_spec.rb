@@ -195,21 +195,27 @@ RSpec.describe VersionService do
     let(:workflow_client) do
       instance_double(Dor::Workflow::Client)
     end
+    # Doing build(:repository_object) rather than create to support test where it doesn't exist.
+    # This case can be removed after we fully migrate to RepositoryObjects
+    let(:repository_object) { build(:repository_object, external_identifier: druid) }
 
     before do
+      repository_object&.save! # This can be removed after we fully migrate to RepositoryObjects
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
       ObjectVersion.create(druid:, version: 1, description: 'Initial Version')
       ObjectVersion.create(druid:, version: 2, description: 'A Second Version')
+      allow(workflow_client).to receive(:close_version)
     end
 
     context 'when description and user_name are passed in' do
       before do
         allow(workflow_state_service).to receive_messages(open?: true, accessioning?: false, active_assembly_wf?: false)
-        allow(workflow_client).to receive(:close_version)
       end
 
       it 'sets description and an event' do
         close
+        expect(repository_object.reload.last_closed_version).to be_present
+
         object_version = ObjectVersion.find_by(druid:, version: 2)
         expect(object_version.description).to eq('closing text')
         expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'jcoyne' },
@@ -226,11 +232,12 @@ RSpec.describe VersionService do
 
       before do
         allow(workflow_state_service).to receive_messages(open?: true, accessioning?: false, active_assembly_wf?: false)
-        allow(workflow_client).to receive(:close_version)
       end
 
       it 'passes the correct value of create_accession_wf' do
         close
+        expect(repository_object.reload.last_closed_version).to be_present
+
         expect(workflow_client).to have_received(:close_version)
           .with(druid:, version: '2', create_accession_wf: false)
       end
@@ -269,12 +276,12 @@ RSpec.describe VersionService do
 
     context 'when the object has no assemblyWF' do
       before do
-        allow(workflow_client).to receive(:close_version)
         allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, open?: true, accessioning?: false)
       end
 
       it 'creates the accessioningWF' do
         close
+        expect(repository_object.reload.last_closed_version).to be_present
         expect(workflow_state_service).to have_received(:active_assembly_wf?)
         expect(workflow_client).to have_received(:close_version).with(druid:, version: '2', create_accession_wf: true)
       end
@@ -285,15 +292,30 @@ RSpec.describe VersionService do
 
       before do
         allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, open?: true, accessioning?: false)
-        allow(workflow_client).to receive(:close_version)
       end
 
       it 'closes the object version using existing signficance and description' do
         close
+        expect(repository_object.reload.last_closed_version).to be_present
         object_version = ObjectVersion.find_by(druid:, version: 2)
         expect(object_version.description).to eq 'A Second Version'
         expect(workflow_client).to have_received(:close_version)
           .with(druid:, version: '2', create_accession_wf: true)
+      end
+    end
+
+    # This case can be removed after we fully migrate to RepositoryObjects
+    context 'when RepositoryObject does not exist' do
+      let(:repository_object) { nil }
+
+      before do
+        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, open?: true, accessioning?: false)
+      end
+
+      it 'closes the version' do
+        close
+        expect(workflow_state_service).to have_received(:active_assembly_wf?)
+        expect(workflow_client).to have_received(:close_version).with(druid:, version: '2', create_accession_wf: true)
       end
     end
   end
