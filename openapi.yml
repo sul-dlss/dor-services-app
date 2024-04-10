@@ -150,14 +150,14 @@ paths:
     post:
       tags:
         - objects
-      summary: Start accessioning or re-accession an object to DOR
+      summary: Start an assembly workflow, optionally opening a version
       description: ''
       operationId: 'objects#accession'
       responses:
         '201':
-          description: Accessioning/re-accessioning started
+          description: Workflow started
         '409':
-          description: Unable to start accessioning because accessioning has already been started.
+          description: Unable to open version.
       parameters:
         - name: id
           in: path
@@ -173,7 +173,6 @@ paths:
             type: string
             default: assemblyWF
             enum:
-              - accessionWF
               - assemblyWF
               - gisAssemblyWF
         - name: description
