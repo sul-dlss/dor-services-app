@@ -78,25 +78,20 @@ class ObjectsController < ApplicationController
   #  :opening_user_name [String] (optional) opening sunetid to add to the events datastream
   #  :workflow [String] (optional) the workflow to start (defaults to 'assemblyWF')
   def accession
-    workflow = params[:workflow] || default_start_accession_workflow
-
+    workflow = params[:workflow] || 'assemblyWF'
     EventFactory.create(druid: params[:id], event_type: 'accession_request', data: { workflow: })
 
-    # if this object is currently already in accessioning, we cannot start it again
-    if WorkflowStateService.accessioning?(druid: @cocina_object.externalIdentifier, version: @cocina_object.version)
-      EventFactory.create(druid: params[:id], event_type: 'accession_request_aborted', data: { workflow: })
-      return json_api_error(status: :conflict,
-                            message: 'This object is already in accessioning, it can not be accessioned again until the workflow is complete')
-    end
+    version_service = VersionService.new(druid: @cocina_object.externalIdentifier, version: @cocina_object.version)
 
     updated_cocina_object = @cocina_object
-    # if this is an existing versionable object, open and close it without starting accessionWF
-    if VersionService.can_open?(druid: @cocina_object.externalIdentifier, version: @cocina_object.version)
-      updated_cocina_object = VersionService.open(cocina_object: @cocina_object, **version_open_params)
-      VersionService.close(druid: updated_cocina_object.externalIdentifier, version: updated_cocina_object.version, **version_close_params.merge(start_accession: false))
-    # if this is an existing accessioned object that is currently open, just close it without starting accessionWF
-    elsif WorkflowStateService.active_version_wf?(druid: @cocina_object.externalIdentifier, version: @cocina_object.version)
-      VersionService.close(druid: @cocina_object.externalIdentifier, version: @cocina_object.version, **version_close_params.merge(start_accession: false))
+    unless version_service.open?
+      unless version_service.can_open?
+        EventFactory.create(druid: params[:id], event_type: 'accession_request_aborted', data: { workflow: })
+        return json_api_error(status: :conflict,
+                              message: 'This object cannot be opened for versioning.')
+      end
+
+      updated_cocina_object = version_service.open(cocina_object: @cocina_object, assume_accessioned: false, event_factory: EventFactory, **version_open_params)
     end
 
     # initialize workflow
@@ -195,10 +190,6 @@ class ObjectsController < ApplicationController
 
   def proxy_faraday_response(response)
     render status: response.status, content_type: response.headers['Content-Type'], body: response.body
-  end
-
-  def default_start_accession_workflow
-    'assemblyWF'
   end
 
   def from_etag(etag)
