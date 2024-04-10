@@ -23,8 +23,16 @@ RSpec.describe VersionService do
     let(:workflow_client) do
       instance_double(Dor::Workflow::Client, create_workflow_by_name: true)
     end
+    # Doing build(:repository_object) rather than create to support test where it doesn't exist.
+    # This case can be removed after we fully migrate to RepositoryObjects
+    let(:repository_object) { build(:repository_object, external_identifier: druid) }
 
     before do
+      # TODO: This check should be removed after we fully migrate to RepositoryObjects
+      if repository_object
+        repository_object.save!
+        repository_object.close_version!
+      end
       allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
       allow(UpdateObjectService).to receive(:update)
@@ -51,6 +59,7 @@ RSpec.describe VersionService do
         expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
                                                              druid:,
                                                              event_type: 'version_open')
+        expect(repository_object.reload.opened_version).to be_present
       end
     end
 
@@ -75,6 +84,7 @@ RSpec.describe VersionService do
         expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
                                                              druid:,
                                                              event_type: 'version_open')
+        expect(repository_object.reload.opened_version).to be_present
       end
     end
 
@@ -106,6 +116,27 @@ RSpec.describe VersionService do
       it 'raises an exception' do
         errmsg = "Preservation (SDR) is not yet answering queries about this object. When an object has just been transferred, Preservation isn't immediately ready to answer queries."
         expect { open }.to raise_error(VersionService::VersioningError, errmsg)
+      end
+    end
+
+    # This case can be removed after we fully migrate to RepositoryObjects
+    context 'when RepositoryObject does not exist' do
+      let(:repository_object) { nil }
+
+      before do
+        allow(Settings.version_service).to receive(:sync_with_preservation).and_return false
+        allow(ObjectVersion).to receive(:sync_then_increment_version)
+        allow(workflow_state_service).to receive_messages(accessioned?: true, open?: false, accessioning?: false)
+      end
+
+      it 'opens the version' do
+        open
+        expect(cocina_object).to have_received(:new).with(version: 2)
+        expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
+
+        expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
+                                                             druid:,
+                                                             event_type: 'version_open')
       end
     end
   end
