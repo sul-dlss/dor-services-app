@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 # Models a repository object (item/DRO, collection, or admin policy)
+
+# In general, the direct use of RepositoryObjects should be limited; most components should be using Cocina Models and using the services below:
+# For finding / querying, see CocinaObjectStore.
+# For versioning operations, see VersionService.
+# For persistence, see CreateObjectService and UpdateObjectService.
+# For destroying, see DeleteService.
 class RepositoryObject < ApplicationRecord
   class VersionAlreadyOpened < StandardError; end
   class VersionNotOpened < StandardError; end
