@@ -31,6 +31,38 @@ class RepositoryObjectVersion < ApplicationRecord
     end
   end
 
+  def external_lock
+    # This should be opaque, but this makes troubeshooting easier.
+    # The external_identifier is included so that there is enough entropy such
+    # that the lock can't be used for an object it doesn't belong to as the
+    # lock column is just an integer sequence.
+    [repository_object.external_identifier, repository_object.lock.to_s].join('=')
+  end
+
+  def to_cocina_with_metadata
+    Cocina::Models.with_metadata(to_cocina, external_lock, created: created_at.utc, modified: updated_at.utc)
+  end
+
+  def to_cocina
+    Cocina::Models.build(to_h)
+  end
+
+  # @return [Hash] RepositoryObjectVersion instance as a hash
+  def to_h
+    {
+      type: content_type,
+      externalIdentifier: repository_object.external_identifier,
+      label:,
+      version:,
+      access:,
+      administrative:,
+      description:,
+      identification:,
+      structural:,
+      geographic:
+    }.compact
+  end
+
   private
 
   def update_object_source_id
