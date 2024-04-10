@@ -94,17 +94,17 @@ RSpec.describe CocinaObjectStore do
         expect(store.version(ar_cocina_object.external_identifier)).to eq(5)
         expect(Honeybadger).to have_received(:notify)
           .with("Version from RepositoryObjectVersion doesn't match version in legacy store.",
-                context: { druid: ar_cocina_object.external_identifier, new_version: 1, old_version: 5 })
+                context: { druid: ar_cocina_object.external_identifier, version_from_repository_object: 1, version_from_ar_cocina_object: 5 })
       end
     end
 
-    context 'when repository_object_find is enabled' do
+    context 'when RepositoryObject is found' do
       subject { store.version(repository_object.external_identifier) }
 
       let(:repository_object) { create(:repository_object) }
 
       before do
-        allow(Settings.enabled_features).to receive(:repository_object_find).and_return true
+        create(:ar_dro, external_identifier: repository_object.external_identifier, version: 5)
       end
 
       it { is_expected.to eq 1 }

@@ -6,9 +6,14 @@ enabled_features:
   file_hierarchy_validation: true
   read_folio: true
   orcid_update: true
-  repository_object: false
+  # For details on repository_object feature flags see https://docs.google.com/document/d/1PzKxN_JLI-jHuSFNWLMB2HSWNyWN7EAwc3c5n_aTR28/edit?usp=sharing
+  # Compare results from RepositoryObject against DRO/Collection/AdminPolicy
   repository_object_test: false
-  repository_object_find: false
+  # RepositoryObjects will be created / saved
+  repository_object_create: false
+  # Migrate a Dro / Collection / AdminPolicy to a RepositoryObject if the RepositoryObject does not exist
+  repository_object_migrate: false
+
 
 # Ur Admin Policy
 ur_admin_policy:
