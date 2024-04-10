@@ -44,14 +44,7 @@ class RepositoryObjectVersion < ApplicationRecord
   end
 
   def to_cocina
-    case repository_object.object_type
-    when 'dro'
-      Cocina::Models::DRO.new(to_h)
-    when 'collection'
-      Cocina::Models::Collection.new(to_h)
-    when 'admin_policy'
-      Cocina::Models::AdminPolicy.new(to_h)
-    end
+    Cocina::Models.build(to_h)
   end
 
   # @return [Hash] RepositoryObjectVersion instance as a hash
