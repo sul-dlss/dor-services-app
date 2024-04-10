@@ -4,11 +4,14 @@
 class RepositoryObjectVersion < ApplicationRecord
   belongs_to :repository_object
 
+  has_one :head_version_of, class_name: 'RepositoryObject', inverse_of: :head_version, dependent: nil
   scope :in_virtual_objects, ->(member_druid) { where("structural #> '{hasMemberOrders,0}' -> 'members' ? :druid", druid: member_druid) }
   scope :members_of_collection, ->(collection_druid) { where("structural -> 'isMemberOf' ? :druid", druid: collection_druid) }
 
   validates :version, :version_description, presence: true
   after_save :update_object_source_id
+
+  delegate :external_identifier, to: :repository_object
 
   # @param [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] cocina_object a Cocina
   #   model instance, either a DRO, collection, or APO.

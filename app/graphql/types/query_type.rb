@@ -19,7 +19,8 @@ module Types
       # Lookahead allows access to the actual fields that were requested.
       selected_fields = lookahead.selections.map(&:name)
       # The type of cocina object isn't known, so attempt to retrieve all types.
-      cocina_object = find_cocina_object(clazz: Dro, selected_fields:, allowed_fields: DRO_ALLOWED_FIELDS, external_identifier:) ||
+      cocina_object = find_cocina_object(clazz: RepositoryObject, selected_fields:, allowed_fields: DRO_ALLOWED_FIELDS, external_identifier:) ||
+                      find_cocina_object(clazz: Dro, selected_fields:, allowed_fields: DRO_ALLOWED_FIELDS, external_identifier:) ||
                       find_cocina_object(clazz: Collection, selected_fields:, allowed_fields: COLLECTION_ALLOWED_FIELDS, external_identifier:) ||
                       find_cocina_object(clazz: AdminPolicy, selected_fields:, allowed_fields: BASE_ALLOWED_FIELDS, external_identifier:)
 
@@ -40,7 +41,15 @@ module Types
       # To avoid bad queries, non-allowed fields are removed.
       # The allowed fields vary based on the type of cocina object.
       allowed_selected_fields = (selected_fields + %i[content_type collection_type]) & allowed_fields
-      clazz.select(*allowed_selected_fields).find_by(external_identifier:)
+      if clazz == RepositoryObject
+        allowed_selected_fields -= [:external_identifier]
+        allowed_selected_fields += [:repository_object_id]
+
+        RepositoryObjectVersion.select(*allowed_selected_fields).joins(:head_version_of)
+                               .find_by('repository_objects.external_identifier' => external_identifier)
+      else
+        clazz.select(*allowed_selected_fields).find_by(external_identifier:)
+      end
     end
   end
 end

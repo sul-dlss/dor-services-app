@@ -56,6 +56,59 @@ RSpec.describe 'GraphQL' do
     end
   end
 
+  context 'when retrieving a RepositoryObject' do
+    let(:repo_object) { create(:repository_object) }
+    let(:druid) { repo_object.external_identifier }
+    let(:cocina_version) { version_attributes[:cocina_version] }
+    let(:version_attributes) do
+      {
+        content_type: 'https://cocina.sul.stanford.edu/models/book',
+        cocina_version: '0.96.0',
+        label: 'Test DRO',
+        description: {
+          purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}",
+          title: [
+            {
+              value: 'Test DRO'
+            }
+          ]
+        },
+        geographic: nil
+      }
+    end
+
+    before do
+      repo_object.head_version.update!(version_attributes)
+    end
+
+    it 'returns data' do
+      post '/graphql',
+           params: query,
+           headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+
+      expect(response).to have_http_status(:success)
+      expect(response.parsed_body.with_indifferent_access).to match(
+        {
+          data: {
+            cocinaObject: {
+              externalIdentifier: druid,
+              type: 'https://cocina.sul.stanford.edu/models/book',
+              cocinaVersion: cocina_version,
+              label: 'Test DRO',
+              description: {
+                purl:,
+                title: [{
+                  value: 'Test DRO'
+                }]
+              },
+              geographic: nil
+            }
+          }
+        }
+      )
+    end
+  end
+
   context 'when retrieving a Collection' do
     let(:cocina_object) { create(:ar_collection) }
 
