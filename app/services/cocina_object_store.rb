@@ -68,13 +68,6 @@ class CocinaObjectStore
     new.store(cocina_object, skip_lock:)
   end
 
-  # Removes a Cocina object from the datastore.
-  # @param [String] druid
-  # @raise [CocinaObjectNotFoundError] raised when the Cocina object is not found.
-  def self.destroy(druid)
-    new.destroy(druid)
-  end
-
   # @param [Cocina::Models::DRO] cocina_item
   # @param [Boolean] swallow_exceptions (false) should this return a list even if some members aren't found?
   def self.find_collections_for(cocina_item, swallow_exceptions: false)
@@ -144,17 +137,25 @@ class CocinaObjectStore
     ar_cocina_object.version
   end
 
-  def destroy(druid)
-    cocina_object = CocinaObjectStore.find(druid)
+  # Find an ActiveRecord Cocina object.
+  # @param [String] druid
+  # @return [Dro, AdminPolicy, Collection]
+  # @raise [CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
+  def self.ar_find(druid)
+    new.ar_find(druid)
+  end
 
-    RepositoryObject.transaction do
-      # TODO: After migrating to RepositoryObjects, we can get rid of the nil check and use:
-      #   RepositoryObject.find_by!(external_identifier: druid).destroy
-      RepositoryObject.find_by(external_identifier: druid)&.destroy
-      ar_destroy(druid)
-    end
+  # Find an ActiveRecord Cocina object.
+  # @param [String] druid to find
+  # @return [Dro, AdminPolicy, Collection]
+  def ar_find(druid)
+    ar_cocina_object = Dro.find_by(external_identifier: druid) ||
+                       AdminPolicy.find_by(external_identifier: druid) ||
+                       Collection.find_by(external_identifier: druid) ||
+                       bootstrap_ur_admin_policy(druid)
 
-    Notifications::ObjectDeleted.publish(model: cocina_object, deleted_at: Time.zone.now)
+    ar_cocina_object ||
+      raise(CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid))
   end
 
   private
@@ -213,19 +214,6 @@ class CocinaObjectStore
     ar_find(druid).to_cocina_with_metadata
   end
 
-  # Find an ActiveRecord Cocina object.
-  # @param [String] druid to find
-  # @return [Dro, AdminPolicy, Collection]
-  def ar_find(druid)
-    ar_cocina_object = Dro.find_by(external_identifier: druid) ||
-                       AdminPolicy.find_by(external_identifier: druid) ||
-                       Collection.find_by(external_identifier: druid) ||
-                       bootstrap_ur_admin_policy(druid)
-
-    ar_cocina_object ||
-      raise(CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid))
-  end
-
   def bootstrap_ur_admin_policy(druid)
     return unless Settings.enabled_features.create_ur_admin_policy
     return unless druid == Settings.ur_admin_policy.druid
@@ -233,10 +221,6 @@ class CocinaObjectStore
     UrAdminPolicyFactory.create
 
     AdminPolicy.find_by(external_identifier: druid)
-  end
-
-  def ar_destroy(druid)
-    ar_find(druid).destroy
   end
 end
 # rubocop:enable Metrics/ClassLength
