@@ -87,9 +87,13 @@ class CocinaObjectStore
     new.version(druid)
   end
 
+  # @param [String] druid to find
   # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
   def find(druid)
-    ar_to_cocina_find(druid)
+    # TODO: After migration, remove the nil-checks
+    cocina = RepositoryObject.find_by(external_identifier: druid)&.head_version&.to_cocina_with_metadata
+
+    cocina || ar_find(druid).to_cocina_with_metadata
   end
 
   def find_by_source_id(source_id)
@@ -203,13 +207,6 @@ class CocinaObjectStore
     return if cocina_object.respond_to?(:lock) && ar_object.external_lock == cocina_object.lock
 
     raise StaleLockError, "Expected lock of #{ar_object.external_lock} but received #{cocina_object.lock}."
-  end
-
-  # Find a Cocina object persisted by ActiveRecord.
-  # @param [String] druid to find
-  # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
-  def ar_to_cocina_find(druid)
-    ar_find(druid).to_cocina_with_metadata
   end
 
   def bootstrap_ur_admin_policy(druid)
