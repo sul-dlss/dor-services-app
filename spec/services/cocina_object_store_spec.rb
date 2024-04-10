@@ -146,6 +146,19 @@ RSpec.describe CocinaObjectStore do
         expect(store.find_by_source_id(ar_cocina_object.identification['sourceId'])).to be_instance_of(Cocina::Models::CollectionWithMetadata)
       end
     end
+
+    context 'when object is a RepositoryObject' do
+      let(:version_attributes) { RepositoryObjectVersion.to_model_hash(build(:dro, id: repo_object.external_identifier)) }
+      let(:repo_object) { create(:repository_object) }
+
+      before do
+        repo_object.head_version.update!(version_attributes)
+      end
+
+      it 'returns Cocina::Models::DRO' do
+        expect(store.find_by_source_id(repo_object.head_version.identification['sourceId'])).to be_instance_of(Cocina::Models::DROWithMetadata)
+      end
+    end
   end
 
   describe '#exists?' do

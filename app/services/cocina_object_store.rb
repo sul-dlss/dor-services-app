@@ -97,7 +97,9 @@ class CocinaObjectStore
   end
 
   def find_by_source_id(source_id)
-    ar_cocina_object = Dro.find_by_source_id(source_id) ||
+    # TODO: Nil check can be removed after migrating to RepositoryObject
+    ar_cocina_object = RepositoryObject.find_by(source_id:)&.head_version ||
+                       Dro.find_by_source_id(source_id) ||
                        Collection.find_by_source_id(source_id)
 
     raise CocinaObjectNotFoundError unless ar_cocina_object
