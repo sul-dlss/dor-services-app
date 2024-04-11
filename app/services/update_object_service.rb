@@ -35,6 +35,9 @@ class UpdateObjectService
 
     cocina_object_without_metadata = Cocina::Models.without_metadata(cocina_object)
 
+    # TODO: after migration to RepositoryObject we can remove these nil checks
+    RepositoryObject.find_by(external_identifier: cocina_object.externalIdentifier)&.head_version&.update!(RepositoryObjectVersion.to_model_hash(cocina_object_without_metadata))
+
     event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update', data: { success: true, request: cocina_object_without_metadata.to_h })
 
     # Broadcast this update action to a topic
