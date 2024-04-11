@@ -22,12 +22,13 @@ class RepositoryObjectVersion < ApplicationRecord
       .except(:externalIdentifier, :version)
       .tap do |object_hash|
       object_hash[:cocina_version] = object_hash.delete(:cocinaVersion)
-      if cocina_object.dro?
+      case cocina_object
+      when Cocina::Models::DRO
         object_hash[:content_type] = object_hash.delete(:type)
         object_hash[:geographic] ||= nil
-      elsif cocina_object.collection?
+      when Cocina::Models::Collection
         object_hash[:content_type] = object_hash.delete(:type)
-      elsif cocina_object.admin_policy?
+      when Cocina::Models::AdminPolicy
         object_hash.delete(:type)
         object_hash[:description] ||= nil
       end
