@@ -8,8 +8,8 @@ RSpec.describe Publish::PublicXmlService do
                         thumbnail_service:)
   end
 
-  let(:public_cocina) { Publish::PublicCocinaService.create(cocina_object) }
-  let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
+  let(:thumbnail_service) { ThumbnailService.new(public_cocina) }
+
   let(:description) do
     {
       title: [{ value: 'Constituent label &amp; A Special character' }],
@@ -70,7 +70,7 @@ RSpec.describe Publish::PublicXmlService do
     end
 
     context 'when there are no release tags' do
-      let(:cocina_object) do
+      let(:public_cocina) do
         build(:dro, id: druid).new(description:)
       end
 
@@ -81,7 +81,7 @@ RSpec.describe Publish::PublicXmlService do
     end
 
     context 'with an embargo' do
-      let(:cocina_object) do
+      let(:public_cocina) do
         build(:dro, id: druid).new(
           access: {
             view: 'world',
@@ -103,7 +103,7 @@ RSpec.describe Publish::PublicXmlService do
     end
 
     context 'with a problematic location code' do
-      let(:cocina_object) do
+      let(:public_cocina) do
         build(:dro, id: druid).new(
           access: {
             view: 'location-based',
@@ -123,7 +123,7 @@ RSpec.describe Publish::PublicXmlService do
     end
 
     context 'produces xml with' do
-      let(:cocina_object) do
+      let(:public_cocina) do
         build(:dro, id: druid).new(
           description:,
           structural:,
@@ -175,8 +175,16 @@ RSpec.describe Publish::PublicXmlService do
         expect(ng_xml.at_xpath('/publicObject/identityMetadata').to_xml).to be_equivalent_to expected
       end
 
-      it 'no contentMetadata element' do
-        expect(ng_xml.at_xpath('/publicObject/contentMetadata')).not_to be
+      context 'with no published files' do
+        let(:structural) do
+          {
+            contains: []
+          }
+        end
+
+        it 'has no contentMetadata element' do
+          expect(ng_xml.at_xpath('/publicObject/contentMetadata')).not_to be
+        end
       end
 
       describe 'with structural metadata that has a published file' do
@@ -268,7 +276,7 @@ RSpec.describe Publish::PublicXmlService do
       end
 
       context 'when no thumb is present' do
-        let(:cocina_object) do
+        let(:public_cocina) do
           build(:dro, id: druid).new(description:)
         end
 
@@ -277,18 +285,25 @@ RSpec.describe Publish::PublicXmlService do
         end
       end
 
-      it 'include a thumb node if a thumb is present' do
-        expect(ng_xml.at_xpath('/publicObject/thumb').to_xml).to be_equivalent_to('<thumb>bc123df4567/wt183gy6220_00_0001.jp2</thumb>')
+      context 'when a thumb node is present' do
+        it 'include a thumb node' do
+          expect(ng_xml.at_xpath('/publicObject/thumb').to_xml).to be_equivalent_to('<thumb>bc123df4567/wt183gy6220_00_0001.jp2</thumb>')
+        end
       end
 
       context 'when there are single release tags per target' do
-        let(:cocina_object) do
-          build(:dro, id: druid).new(description:)
+        let(:public_cocina) do
+          build(:dro, id: druid).new(description:, administrative:)
         end
 
-        before do
-          ReleaseTag.create!(druid:, who: 'petucket', what: 'self', released_to: 'Searchworks', release: true)
-          ReleaseTag.create!(druid:, who: 'petucket', what: 'self', released_to: 'PURL sitemap', release: true)
+        let(:administrative) do
+          {
+            hasAdminPolicy: 'druid:hv992ry2431',
+            releaseTags: [
+              { to: 'Searchworks', release: true, date: '2015-10-23T21:49:29.000+00:00', what: 'self' },
+              { to: 'PURL sitemap', release: true, date: '2015-10-23T21:49:29.000+00:00', what: 'self' }
+            ]
+          }
         end
 
         it 'does not include this release data in identityMetadata' do
@@ -301,33 +316,10 @@ RSpec.describe Publish::PublicXmlService do
           expect(releases.pluck('to')).to eq ['Searchworks', 'PURL sitemap']
         end
       end
-
-      context 'when there are multiple release tags per target' do
-        let(:cocina_object) do
-          build(:dro, id: druid).new(description:)
-        end
-
-        before do
-          ReleaseTag.create!(druid:, who: 'petucket', what: 'self', released_to: 'Searchworks', release: true)
-          ReleaseTag.create!(druid:, who: 'petucket', what: 'self', released_to: 'Searchworks', release: false, created_at: 1.year.ago)
-          ReleaseTag.create!(druid:, who: 'petucket', what: 'self', released_to: 'PURL sitemap', release: true)
-        end
-
-        it 'does not include this release data in identityMetadata' do
-          expect(ng_xml.at_xpath('/publicObject/identityMetadata/release')).to be_nil
-        end
-
-        it 'includes only the latest releaseData element from release tags for each target' do
-          releases = ng_xml.xpath('/publicObject/releaseData/release')
-          expect(releases.size).to eq 2
-          expect(releases.map(&:inner_text)).to eq %w[true true]
-          expect(releases.pluck('to')).to eq ['Searchworks', 'PURL sitemap']
-        end
-      end
     end
 
     context 'with a collection' do
-      let(:cocina_object) do
+      let(:public_cocina) do
         build(:collection, id: druid).new(description:)
       end
 
@@ -349,14 +341,19 @@ RSpec.describe Publish::PublicXmlService do
         expect(ng_xml.at_xpath('/publicObject/identityMetadata').to_xml).to be_equivalent_to expected
       end
 
-      context 'when there are single release tags per target' do
-        let(:cocina_object) do
-          build(:collection, id: druid).new(description:)
+      context 'when there are release tags' do
+        let(:public_cocina) do
+          build(:collection, id: druid).new(description:, administrative:)
         end
 
-        before do
-          ReleaseTag.create!(druid:, who: 'petucket', what: 'collection', released_to: 'Searchworks', release: true)
-          ReleaseTag.create!(druid:, who: 'petucket', what: 'collection', released_to: 'PURL sitemap', release: true)
+        let(:administrative) do
+          {
+            hasAdminPolicy: 'druid:hv992ry2431',
+            releaseTags: [
+              { to: 'Searchworks', release: true, date: '2015-10-23T21:49:29.000+00:00', what: 'collection' },
+              { to: 'PURL sitemap', release: true, date: '2015-10-23T21:49:29.000+00:00', what: 'collection' }
+            ]
+          }
         end
 
         it 'does not include this release data in identityMetadata' do
@@ -369,34 +366,11 @@ RSpec.describe Publish::PublicXmlService do
           expect(releases.pluck('to')).to eq ['Searchworks', 'PURL sitemap']
         end
       end
-
-      context 'when there are multiple release tags per target' do
-        let(:cocina_object) do
-          build(:collection, id: druid).new(description:)
-        end
-
-        before do
-          ReleaseTag.create!(druid:, who: 'petucket', what: 'collection', released_to: 'Searchworks', release: true)
-          ReleaseTag.create!(druid:, who: 'petucket', what: 'collection', released_to: 'Searchworks', release: false, created_at: 1.year.ago)
-          ReleaseTag.create!(druid:, who: 'petucket', what: 'collection', released_to: 'PURL sitemap', release: true)
-        end
-
-        it 'does not include this release data in identityMetadata' do
-          expect(ng_xml.at_xpath('/publicObject/identityMetadata/release')).to be_nil
-        end
-
-        it 'includes only the latest releaseData element from release tags for each target' do
-          releases = ng_xml.xpath('/publicObject/releaseData/release')
-          expect(releases.size).to eq 2
-          expect(releases.map(&:inner_text)).to eq %w[true true]
-          expect(releases.pluck('to')).to eq ['Searchworks', 'PURL sitemap']
-        end
-      end
     end
 
     context 'with external references' do
       let(:druid) { 'druid:hj097bm8879' }
-      let(:cocina_object) do
+      let(:public_cocina) do
         build(:dro, id: druid, type: Cocina::Models::ObjectType.map).new(description:, structural:)
       end
       let(:structural) do
