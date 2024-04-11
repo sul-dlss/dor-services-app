@@ -78,6 +78,7 @@ class VersionService
     #       e.g.: Notifications::ObjectUpdated.publish(model: cocina_object_with_metadata)
 
     update_cocina_object = cocina_object
+
     update_cocina_object = UpdateObjectService.update(cocina_object.new(version: new_object_version.version)) if cocina_object.version != new_object_version.version
 
     workflow_client.create_workflow_by_name(druid, 'versioningWF', version: new_object_version.version.to_s)

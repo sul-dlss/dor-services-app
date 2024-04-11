@@ -73,7 +73,7 @@ RSpec.describe 'Operations regarding object versions' do
     end
   end
 
-  describe '/versions' do
+  describe 'POST /v1/objects/:druid/versions' do
     let(:open_params) do
       {
         assume_accessioned: false,
