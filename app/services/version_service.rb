@@ -4,6 +4,12 @@
 class VersionService
   class VersioningError < StandardError; end
 
+  # @param [String] druid of the item
+  # @param [Integer] version of the item
+  def self.open?(...)
+    WorkflowStateService.new(...).open?
+  end
+
   # @param [Cocina::Models::DRO,Cocina::Models::Collection] cocina_object the item being acted upon
   # @param [String] description set description of version change
   # @param [String] opening_user_name add opening username to the events datastream
