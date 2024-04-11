@@ -13,8 +13,8 @@ FactoryBot.define do
     identification { '' }
     structural { '' }
     geographic { '' }
-    created_at { Time.zone.now }
-    updated_at { Time.zone.now }
-    closed_at { '2024-03-28 09:23:39' }
+    created_at { Time.current }
+    updated_at { Time.current }
+    closed_at { nil }
   end
 end
