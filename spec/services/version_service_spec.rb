@@ -4,13 +4,9 @@ require 'rails_helper'
 
 RSpec.describe VersionService do
   let(:druid) { 'druid:xz456jk0987' }
-
   let(:cocina_object) { create(:ar_dro, external_identifier: druid).to_cocina_with_metadata }
-
   let(:version) { 1 }
-
   let(:event_factory) { class_double(EventFactory, create: true) }
-
   let(:workflow_state_service) { instance_double(WorkflowStateService) }
 
   before do
@@ -47,7 +43,7 @@ RSpec.describe VersionService do
         expect(Dro.find_by(external_identifier: druid).version).to eq 2
         expect(ObjectVersion.current_version(druid).version).to eq(2)
         expect(workflow_state_service).to have_received(:accessioned?)
-        expect(workflow_state_service).to have_received(:open?)
+        expect(workflow_state_service).to have_received(:open?).twice
         expect(workflow_state_service).to have_received(:accessioning?)
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 
@@ -75,7 +71,7 @@ RSpec.describe VersionService do
         expect(ObjectVersion.current_version(druid).version).to eq(2)
         expect(ObjectVersion).not_to have_received(:sync_then_increment_version)
         expect(workflow_state_service).to have_received(:accessioned?)
-        expect(workflow_state_service).to have_received(:open?)
+        expect(workflow_state_service).to have_received(:open?).twice
         expect(workflow_state_service).to have_received(:accessioning?)
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 
