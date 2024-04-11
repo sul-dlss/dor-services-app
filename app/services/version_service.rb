@@ -165,7 +165,7 @@ class VersionService
 
   private
 
-  delegate :active_assembly_wf?, :accessioning?, :open?, to: :workflow_state_service
+  delegate :assembling?, :accessioning?, :open?, to: :workflow_state_service
 
   def workflow_client
     @workflow_client ||= WorkflowClientFactory.build
@@ -177,7 +177,7 @@ class VersionService
 
   def ensure_closeable!
     raise VersionService::VersioningError, "Trying to close version #{version} on #{druid} which is not opened for versioning" unless open?
-    raise VersionService::VersioningError, "Trying to close version #{version} on #{druid} which has active assemblyWF" if active_assembly_wf?
+    raise VersionService::VersioningError, "Trying to close version #{version} on #{druid} which has active assemblyWF" if assembling?
     raise VersionService::VersioningError, "accessionWF already created for versioned object #{druid}" if accessioning?
   end
 end

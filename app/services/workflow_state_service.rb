@@ -46,15 +46,6 @@ class WorkflowStateService
     false
   end
 
-  def active_assembly_wf?
-    # This is the last step of the assemblyWF
-    accessioning_initiate_status = workflow_client.workflow_status(druid:,
-                                                                   workflow: 'assemblyWF',
-                                                                   process: 'accessioning-initiate')
-    # If the last step is "waiting", this implies the assemblyWF is running
-    accessioning_initiate_status == 'waiting'
-  end
-
   def active_version_wf?
     return true if workflow_client.active_lifecycle(druid:, milestone_name: 'opened', version: version.to_s)
 

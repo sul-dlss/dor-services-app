@@ -149,29 +149,6 @@ RSpec.describe WorkflowStateService do
     end
   end
 
-  describe '.active_assembly_wf?' do
-    context 'when there is an active assemblyWF' do
-      before do
-        allow(workflow_client).to receive(:workflow_status).and_return('waiting')
-      end
-
-      it 'returns true' do
-        expect(service.active_assembly_wf?).to be true
-        expect(workflow_client).to have_received(:workflow_status).with(druid:, workflow: 'assemblyWF', process: 'accessioning-initiate')
-      end
-    end
-
-    context 'when there is not an active assemblyWF' do
-      before do
-        allow(workflow_client).to receive(:workflow_status).and_return('completed')
-      end
-
-      it 'returns false' do
-        expect(service.active_assembly_wf?).to be false
-      end
-    end
-  end
-
   describe '.assembling?' do
     let(:response_without_workflow) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
     let(:response_with_complete_workflow) { instance_double(Dor::Workflow::Response::Workflow, active_for?: true, complete_for?: true) }

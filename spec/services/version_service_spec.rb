@@ -240,7 +240,7 @@ RSpec.describe VersionService do
 
     context 'when description and user_name are passed in' do
       before do
-        allow(workflow_state_service).to receive_messages(open?: true, accessioning?: false, active_assembly_wf?: false)
+        allow(workflow_state_service).to receive_messages(open?: true, accessioning?: false, assembling?: false)
       end
 
       it 'sets description and an event' do
@@ -262,7 +262,7 @@ RSpec.describe VersionService do
       let(:start_accession) { false }
 
       before do
-        allow(workflow_state_service).to receive_messages(open?: true, accessioning?: false, active_assembly_wf?: false)
+        allow(workflow_state_service).to receive_messages(open?: true, accessioning?: false, assembling?: false)
       end
 
       it 'passes the correct value of create_accession_wf' do
@@ -286,7 +286,7 @@ RSpec.describe VersionService do
 
     context 'when the object has an active accesssionWF' do
       before do
-        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, open?: true, accessioning?: true)
+        allow(workflow_state_service).to receive_messages(assembling?: false, open?: true, accessioning?: true)
       end
 
       it 'raises an exception' do
@@ -296,24 +296,24 @@ RSpec.describe VersionService do
 
     context 'when the object has an active assemblyWF' do
       before do
-        allow(workflow_state_service).to receive_messages(active_assembly_wf?: true, open?: true)
+        allow(workflow_state_service).to receive_messages(assembling?: true, open?: true)
       end
 
       it 'raises an exception' do
         expect { close }.to raise_error(VersionService::VersioningError, "Trying to close version 2 on #{druid} which has active assemblyWF")
-        expect(workflow_state_service).to have_received(:active_assembly_wf?)
+        expect(workflow_state_service).to have_received(:assembling?)
       end
     end
 
     context 'when the object has no assemblyWF' do
       before do
-        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, open?: true, accessioning?: false)
+        allow(workflow_state_service).to receive_messages(assembling?: false, open?: true, accessioning?: false)
       end
 
       it 'creates the accessioningWF' do
         close
         expect(repository_object.reload.last_closed_version).to be_present
-        expect(workflow_state_service).to have_received(:active_assembly_wf?)
+        expect(workflow_state_service).to have_received(:assembling?)
         expect(workflow_client).to have_received(:close_version).with(druid:, version: '2', create_accession_wf: true)
       end
     end
@@ -322,7 +322,7 @@ RSpec.describe VersionService do
       let(:description) { nil }
 
       before do
-        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, open?: true, accessioning?: false)
+        allow(workflow_state_service).to receive_messages(assembling?: false, open?: true, accessioning?: false)
       end
 
       it 'closes the object version using existing signficance and description' do
@@ -340,12 +340,12 @@ RSpec.describe VersionService do
       let(:repository_object) { nil }
 
       before do
-        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, open?: true, accessioning?: false)
+        allow(workflow_state_service).to receive_messages(assembling?: false, open?: true, accessioning?: false)
       end
 
       it 'closes the version' do
         close
-        expect(workflow_state_service).to have_received(:active_assembly_wf?)
+        expect(workflow_state_service).to have_received(:assembling?)
         expect(workflow_client).to have_received(:close_version).with(druid:, version: '2', create_accession_wf: true)
       end
     end
@@ -360,7 +360,7 @@ RSpec.describe VersionService do
 
     context 'when cloaseable' do
       before do
-        allow(workflow_state_service).to receive_messages(open?: true, accessioning?: false, active_assembly_wf?: false)
+        allow(workflow_state_service).to receive_messages(open?: true, accessioning?: false, assembling?: false)
       end
 
       it 'returns true' do
@@ -380,7 +380,7 @@ RSpec.describe VersionService do
 
     context 'when the object has an active accesssionWF' do
       before do
-        allow(workflow_state_service).to receive_messages(active_assembly_wf?: false, open?: true, accessioning?: true)
+        allow(workflow_state_service).to receive_messages(assembling?: false, open?: true, accessioning?: true)
       end
 
       it 'returns false' do
@@ -390,7 +390,7 @@ RSpec.describe VersionService do
 
     context 'when the object has an active assemblyWF' do
       before do
-        allow(workflow_state_service).to receive_messages(active_assembly_wf?: true, open?: true)
+        allow(workflow_state_service).to receive_messages(assembling?: true, open?: true)
       end
 
       it 'returns false' do
