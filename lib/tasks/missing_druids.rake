@@ -4,14 +4,11 @@ namespace :missing_druids do
   desc 'Find unindexed druids'
   task unindexed_objects: :environment do
     models = [AdminPolicy, Collection, Dro]
-    druids_from_db = []
-    druids_from_solr = []
-
     results = SolrService.query('id:*', fl: 'id', rows: 10_000_000, wt: 'csv')
-    results.each { |r| druids_from_solr << r['id'] }
+    druids_from_solr = results.pluck('id')
 
-    models.each do |model|
-      druids_from_db << model.pluck(:external_identifier)
+    druids_from_db = models.map do |model|
+      model.pluck(:external_identifier)
     end
 
     missing_druids = druids_from_db.flatten.sort - druids_from_solr.sort
