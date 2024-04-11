@@ -8,16 +8,16 @@ require:
 AllCops:
   TargetRubyVersion: 3.2
   Exclude:
-    - 'bin/console'
-    - 'bin/rails'
-    - 'bin/rake'
-    - 'docs/**/*'
-    - 'db/migrate/**'
-    - 'db/schema.rb'
-    - 'log/**/*'
-    - 'results/**/*'
-    - 'tmp/**/*'
-    - 'vendor/**/*'
+    - "bin/console"
+    - "bin/rails"
+    - "bin/rake"
+    - "docs/**/*"
+    - "db/migrate/**"
+    - "db/schema.rb"
+    - "log/**/*"
+    - "results/**/*"
+    - "tmp/**/*"
+    - "vendor/**/*"
   SuggestExtensions: false
 
 Rails:
@@ -25,34 +25,34 @@ Rails:
 
 Layout/LineLength:
   Exclude:
-    - 'spec/services/cocina/mapping/descriptive/h2_datacite/subject_h2_datacite_spec.rb'
+    - "spec/services/cocina/mapping/descriptive/h2_datacite/subject_h2_datacite_spec.rb"
 
 Lint/UnusedMethodArgument:
   AllowUnusedKeywordArguments: true
 
 Metrics/BlockLength:
   Exclude:
-    - 'spec/**/*'
-    - 'config/routes.rb'
-    - 'config/initializers/dor_config.rb'
-    - 'lib/tasks/missing_druids.rake'
+    - "spec/**/*"
+    - "config/routes.rb"
+    - "config/initializers/dor_config.rb"
+    - "lib/tasks/missing_druids.rake"
 
 Metrics/ClassLength:
   Exclude:
-    - 'app/services/cocina/to_datacite/event.rb'
-    - 'app/services/cocina/to_xml/content_metadata_generator.rb'
+    - "app/services/cocina/to_datacite/event.rb"
+    - "app/services/cocina/to_xml/content_metadata_generator.rb"
 
 Performance/CollectionLiteralInLoop:
   Enabled: true
   Exclude:
-    - 'app/services/symphony_reader.rb'
+    - "app/services/symphony_reader.rb"
 
 Rails/DynamicFindBy:
   Enabled: true
   Exclude:
-    - 'app/services/cocina_object_store.rb'
-    - 'app/controllers/objects_controller.rb'
-    - 'spec/services/cocina_object_store_spec.rb'
+    - "app/services/cocina_object_store.rb"
+    - "app/controllers/objects_controller.rb"
+    - "spec/services/cocina_object_store_spec.rb"
 
 Rails/EagerEvaluationLogMessage: # (new in 2.11)
   Enabled: false
@@ -63,12 +63,12 @@ Rails/EnvironmentVariableAccess: # (new in 2.10)
 
 Rails/Output:
   Exclude:
-    - 'app/reports/**/*'
+    - "app/reports/**/*"
 
 RSpec/DescribeClass:
   Exclude:
-    - 'spec/requests/**/*'
-    - 'spec/services/cocina/mapping/**/*'
+    - "spec/requests/**/*"
+    - "spec/services/cocina/mapping/**/*"
 
 RSpec/ExampleLength:
   Max: 8
@@ -82,20 +82,20 @@ RSpec/MultipleMemoizedHelpers:
 
 RSpec/ExpectActual:
   Exclude:
-    - 'spec/routing/**'
+    - "spec/routing/**"
 
 RSpec/NestedGroups:
   Max: 5
 
 RSpec/SubjectStub:
   Exclude:
-    - 'spec/services/catalog/update_marc856_record_service_spec.rb'
+    - "spec/services/catalog/update_marc856_record_service_spec.rb"
 
 Style/RedundantStringEscape:
   Enabled: true
   Exclude:
     # Does not play well with raw SQL.
-    - 'app/reports/**'
+    - "app/reports/**"
 
 Style/WordArray:
   MinSize: 3
@@ -725,4 +725,10 @@ RSpec/RemoveConst: # new in 2.26
 RSpec/RepeatedSubjectCall: # new in 2.27
   Enabled: true
 Rails/EnvLocal: # new in 2.22
+  Enabled: true
+Style/MapIntoArray: # new in 1.63
+  Enabled: true
+RSpec/EmptyOutput: # new in 2.29
+  Enabled: true
+RSpec/UndescriptiveLiteralsDescription: # new in 2.29
   Enabled: true
