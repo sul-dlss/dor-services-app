@@ -5,10 +5,12 @@ require 'rails_helper'
 RSpec.describe UpdateObjectService do
   include Dry::Monads[:result]
   let(:store) { described_class.new(cocina_object:, skip_lock: true) }
+  let(:open) { true }
 
   describe '#update' do
     before do
       allow(Cocina::ObjectValidator).to receive(:validate)
+      allow(VersionService).to receive(:open?).and_return(open)
     end
 
     context 'when object is a DRO' do
@@ -83,6 +85,29 @@ RSpec.describe UpdateObjectService do
           ar_cocina_object.label = 'someone else changed this label'
           ar_cocina_object.save!
           expect { store.update }.to raise_error(CocinaObjectStore::StaleLockError)
+        end
+      end
+
+      context 'when version is not open' do
+        let(:open) { false }
+        let(:store) { described_class.new(cocina_object:, skip_lock: false) }
+
+        let(:ar_cocina_object) { create(:ar_dro) }
+        let(:lock) { "#{ar_cocina_object.external_identifier}=0" }
+
+        let(:cocina_object) do
+          Cocina::Models.with_metadata(ar_cocina_object.to_cocina, lock, created: ar_cocina_object.created_at.utc, modified: ar_cocina_object.updated_at.utc)
+                        .new(label: 'new label')
+        end
+
+        before do
+          allow(Honeybadger).to receive(:notify)
+        end
+
+        it 'notifies honeybadger' do
+          expect(store.update).to be_a Cocina::Models::DROWithMetadata
+          expect(Honeybadger).to have_received(:notify).with('Updating repository item without an open version',
+                                                             context: { druid: ar_cocina_object.external_identifier, version: 1 })
         end
       end
     end

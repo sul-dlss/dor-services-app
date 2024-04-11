@@ -26,6 +26,7 @@ class UpdateObjectService
 
   def update
     Cocina::ObjectValidator.validate(cocina_object)
+    notify_unless_open_version
 
     # If this is a collection and the title has changed, then reindex the children.
     update_items = need_to_update_members?
@@ -36,18 +37,18 @@ class UpdateObjectService
     cocina_object_without_metadata = Cocina::Models.without_metadata(cocina_object)
 
     # TODO: after migration to RepositoryObject we can remove these nil checks
-    RepositoryObject.find_by(external_identifier: cocina_object.externalIdentifier)&.head_version&.update!(RepositoryObjectVersion.to_model_hash(cocina_object_without_metadata))
+    RepositoryObject.find_by(external_identifier: druid)&.head_version&.update!(RepositoryObjectVersion.to_model_hash(cocina_object_without_metadata))
 
-    event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update', data: { success: true, request: cocina_object_without_metadata.to_h })
+    event_factory.create(druid:, event_type: 'update', data: { success: true, request: cocina_object_without_metadata.to_h })
 
     # Broadcast this update action to a topic
     Notifications::ObjectUpdated.publish(model: cocina_object_with_metadata)
 
     # Update all items in the collection if necessary
-    PublishItemsModifiedJob.perform_later(cocina_object.externalIdentifier) if update_items
+    PublishItemsModifiedJob.perform_later(druid) if update_items
     cocina_object_with_metadata
   rescue Cocina::ValidationError => e
-    event_factory.create(druid: cocina_object.externalIdentifier, event_type: 'update',
+    event_factory.create(druid:, event_type: 'update',
                          data: { success: false, error: e.message, request: Cocina::Models.without_metadata(cocina_object).to_h })
     raise
   end
@@ -56,9 +57,21 @@ class UpdateObjectService
 
   attr_reader :cocina_object, :skip_lock, :event_factory
 
+  delegate :version, to: :cocina_object
+
+  def druid
+    cocina_object.externalIdentifier
+  end
+
+  def notify_unless_open_version
+    return if VersionService.open?(druid:, version:)
+
+    Honeybadger.notify('Updating repository item without an open version', context: { druid:, version: })
+  end
+
   def need_to_update_members?
     cocina_object.collection? &&
-      Cocina::Models::Builders::TitleBuilder.build(CocinaObjectStore.find(cocina_object.externalIdentifier).description.title) !=
+      Cocina::Models::Builders::TitleBuilder.build(CocinaObjectStore.find(druid).description.title) !=
         Cocina::Models::Builders::TitleBuilder.build(cocina_object.description.title)
   end
 end
