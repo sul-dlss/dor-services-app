@@ -150,13 +150,25 @@ RSpec.describe WorkflowStateService do
   end
 
   describe '.assembling?' do
-    let(:response_without_workflow) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
-    let(:response_with_complete_workflow) { instance_double(Dor::Workflow::Response::Workflow, active_for?: true, complete_for?: true) }
-    let(:response_with_active_workflow) { instance_double(Dor::Workflow::Response::Workflow, active_for?: true, complete_for?: false) }
+    let(:assembly_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
+    let(:was_crawl_preassembly_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
+    let(:was_seed_preassembly_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
+    let(:gis_delivery_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
+    let(:gis_assembly_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
 
-    context 'when there is an active assembly workflow' do
+    let(:process) { instance_double(Dor::Workflow::Response::Process) }
+
+    before do
+      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'assemblyWF').and_return(assembly_wf_response)
+      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'wasCrawlPreassemblyWF').and_return(was_crawl_preassembly_wf_response)
+      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'wasSeedPreassemblyWF').and_return(was_seed_preassembly_wf_response)
+      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'gisDeliveryWF').and_return(gis_delivery_wf_response)
+      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'gisAssemblyWF').and_return(gis_assembly_wf_response)
+    end
+
+    context 'when there is an active assemblyWF' do
       before do
-        allow(workflow_client).to receive(:workflow).and_return(response_with_complete_workflow, response_without_workflow, response_with_active_workflow)
+        allow(assembly_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [process, process])
       end
 
       it 'returns true' do
@@ -164,15 +176,92 @@ RSpec.describe WorkflowStateService do
       end
     end
 
-    context 'when there is not an active assembly workflow' do
+    context 'when there is an active wasCrawlPreassemblyWF' do
       before do
-        allow(workflow_client).to receive(:workflow).and_return(response_with_complete_workflow, response_without_workflow)
+        allow(was_crawl_preassembly_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [process, process])
+      end
+
+      it 'returns true' do
+        expect(service.assembling?).to be true
+      end
+    end
+
+    context 'when there is an active wasSeedPreassemblyWF' do
+      before do
+        allow(was_seed_preassembly_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [process, process])
+      end
+
+      it 'returns true' do
+        expect(service.assembling?).to be true
+      end
+    end
+
+    context 'when there is an active gisDeliveryWF (multiple processes)' do
+      before do
+        allow(gis_delivery_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [process, process])
+      end
+
+      it 'returns true' do
+        expect(service.assembling?).to be true
+      end
+    end
+
+    context 'when there is an active gisDeliveryWF (single wrong process)' do
+      let(:process) { instance_double(Dor::Workflow::Response::Process, name: 'not-the-step') }
+
+      before do
+        allow(gis_delivery_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [process])
+      end
+
+      it 'returns true' do
+        expect(service.assembling?).to be true
+      end
+    end
+
+    context 'when there is an active gisAssemblyWF' do
+      before do
+        allow(gis_assembly_wf_response).to receive_messages(active_for?: true, complete_for?: false)
+      end
+
+      it 'returns true' do
+        expect(service.assembling?).to be true
+      end
+    end
+
+    context 'when only ignored steps are incomplete' do
+      let(:accessioning_initiate_process) { instance_double(Dor::Workflow::Response::Process, name: 'accessioning-initiate') }
+      let(:end_was_crawl_process) { instance_double(Dor::Workflow::Response::Process, name: 'end-was-crawl-preassembly') }
+      let(:end_was_seed_process) { instance_double(Dor::Workflow::Response::Process, name: 'end-was-seed-preassembly') }
+      let(:start_accession_process) { instance_double(Dor::Workflow::Response::Process, name: 'start-accession-workflow') }
+
+      before do
+        allow(assembly_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [accessioning_initiate_process])
+        allow(was_crawl_preassembly_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [end_was_crawl_process])
+        allow(was_seed_preassembly_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [end_was_seed_process])
+        allow(gis_delivery_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [start_accession_process])
       end
 
       it 'returns false' do
         expect(service.assembling?).to be false
-        expect(workflow_client).to have_received(:workflow).with(pid: druid, workflow_name: 'assemblyWF')
-        expect(workflow_client).to have_received(:workflow).with(pid: druid, workflow_name: 'wasSeedPreassemblyWF')
+      end
+    end
+
+    context 'when there are no incomplete steps' do
+      before do
+        allow(assembly_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [])
+        allow(was_crawl_preassembly_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [])
+        allow(was_seed_preassembly_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [])
+        allow(gis_delivery_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [])
+      end
+
+      it 'returns false' do
+        expect(service.assembling?).to be false
+      end
+    end
+
+    context 'when there are no assembly workflows' do
+      it 'returns false' do
+        expect(service.assembling?).to be false
       end
     end
   end
