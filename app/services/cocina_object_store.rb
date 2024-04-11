@@ -93,13 +93,34 @@ class CocinaObjectStore
     # TODO: After migration, remove the nil-checks
     cocina = RepositoryObject.find_by(external_identifier: druid)&.head_version&.to_cocina_with_metadata
 
-    cocina || ar_find(druid).to_cocina_with_metadata
+    if cocina
+      return cocina unless Settings.enabled_features.repository_object_test
+
+      legacy = ar_find(druid).to_cocina_with_metadata
+      return cocina if legacy == cocina
+
+      Honeybadger.notify('Comparison of RepositoryObject with legacy object failed.', context: { druid: })
+      return legacy
+    end
+
+    ar_find(druid).to_cocina_with_metadata
   end
 
   def find_by_source_id(source_id)
     # TODO: Nil check can be removed after migrating to RepositoryObject
-    ar_cocina_object = RepositoryObject.find_by(source_id:)&.head_version ||
-                       Dro.find_by_source_id(source_id) ||
+    cocina = RepositoryObject.find_by(source_id:)&.head_version&.to_cocina_with_metadata
+
+    if cocina
+      return cocina unless Settings.enabled_features.repository_object_test
+
+      legacy = (Dro.find_by_source_id(source_id) || Collection.find_by_source_id(source_id)).to_cocina_with_metadata
+      return cocina if legacy == cocina
+
+      Honeybadger.notify('Comparison of RepositoryObject with legacy object failed.', context: { source_id: })
+      return legacy
+    end
+
+    ar_cocina_object = Dro.find_by_source_id(source_id) ||
                        Collection.find_by_source_id(source_id)
 
     raise CocinaObjectNotFoundError unless ar_cocina_object
