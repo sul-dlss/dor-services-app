@@ -49,9 +49,23 @@ RSpec.describe UpdateObjectService do
                         .new(label: 'new label')
         end
 
-        it 'saves to datastore' do
-          expect(store.update).to be_a Cocina::Models::DROWithMetadata
-          expect(Dro.find_by(external_identifier: ar_cocina_object.external_identifier).label).to eq('new label')
+        context "when RepositoryObject doesn't exist" do
+          it 'saves to datastore' do
+            expect(store.update).to be_a Cocina::Models::DROWithMetadata
+            expect(Dro.find_by(external_identifier: ar_cocina_object.external_identifier).label).to eq('new label')
+          end
+        end
+
+        context 'when RepositoryObject exists' do
+          let!(:repo_object) do
+            create(:repository_object, external_identifier: ar_cocina_object.external_identifier)
+          end
+
+          it 'saves to datastore' do
+            expect(store.update).to be_a Cocina::Models::DROWithMetadata
+            expect(Dro.find_by(external_identifier: ar_cocina_object.external_identifier).label).to eq('new label')
+            expect(repo_object.reload.head_version.label).to eq 'new label'
+          end
         end
       end
 
