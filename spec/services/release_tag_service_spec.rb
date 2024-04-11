@@ -105,7 +105,6 @@ RSpec.describe ReleaseTagService do
       before do
         create(:release_tag, druid:, released_to: 'Searchworks', release: true)
       end
-      # let(:release_data) { [{ to: 'Searchworks', release: true }] }
 
       it { is_expected.to be true }
     end
@@ -182,26 +181,8 @@ RSpec.describe ReleaseTagService do
       allow(CocinaObjectStore).to receive(:store)
     end
 
-    context 'when ReleaseTag objects already exist for this item' do
-      before do
-        create(:release_tag, druid:)
-      end
-
-      it 'adds another release tag and records to the cocina' do
-        expect { create_tag }.to change { ReleaseTag.where(druid:).count }.by(1)
-        expect(CocinaObjectStore).to have_received(:store) do |dro|
-          expect(dro.administrative.releaseTags.size).to eq 4
-        end
-      end
-    end
-
-    context 'when no ReleaseTag objects exist for this item' do
-      it 'records to the cocina and adds no ReleaseTag' do
-        expect { create_tag }.not_to(change { ReleaseTag.where(druid:).count })
-        expect(CocinaObjectStore).to have_received(:store) do |dro|
-          expect(dro.administrative.releaseTags.size).to eq 4
-        end
-      end
+    it 'adds another release tag and' do
+      expect { create_tag }.to change { ReleaseTag.where(druid:).count }.by(1)
     end
   end
 
@@ -214,26 +195,6 @@ RSpec.describe ReleaseTagService do
       it 'returns release tags from the ReleaseTag objects' do
         expect(releases).to eq [
           release_tag.to_cocina
-        ]
-      end
-    end
-
-    context 'when no ReleaseTag objects exist for this item' do
-      let(:cocina_release_tags) do
-        [
-          {
-            who: 'carrickr',
-            what: 'collection',
-            date: '2015-01-06T23:33:47.000+00:00',
-            to: 'Revs',
-            release: true
-          }
-        ]
-      end
-
-      it 'returns release tags from the cocina object' do
-        expect(releases).to eq [
-          Cocina::Models::ReleaseTag.new(to: 'Revs', release: true, date: '2015-01-06T23:33:47Z', who: 'carrickr', what: 'collection')
         ]
       end
     end

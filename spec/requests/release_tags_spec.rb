@@ -27,12 +27,11 @@ RSpec.describe 'Operations on release tags' do
   describe '#index' do
     context 'when a DRO' do
       let(:cocina_object) do
-        build(:dro, id: druid).new(
-          administrative: {
-            hasAdminPolicy: 'druid:hy787xj5878',
-            releaseTags: [tag]
-          }
-        )
+        build(:dro, id: druid)
+      end
+
+      before do
+        ReleaseTag.from_cocina(druid:, tag:).save!
       end
 
       it 'returns the release tags' do

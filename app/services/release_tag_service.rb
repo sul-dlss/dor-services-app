@@ -21,20 +21,11 @@ class ReleaseTagService
                       .find { |tag| tag.to.casecmp?('Searchworks') }&.release || false
   end
 
-  # Creates ReleaseTag model objects if and only if there are existing ReleaseTag model objects for the item.
-  # For now it continues to add release tags to the Cocina
-  # The effect of this will be that ReleaseTag model objects will only be created for items that have been migrated.
+  # Creates ReleaseTag model objects.
   # @param cocina_object [Cocina::Models::DRO, Cocina::Models::Collection] the object to add to
   # @param [Cocina::Models::ReleaseTag] tag
   def self.create(cocina_object:, tag:)
-    druid = cocina_object.externalIdentifier
-    ReleaseTag.from_cocina(druid:, tag:).save! if ReleaseTag.exists?(druid:)
-    updated_object = cocina_object.new(
-      administrative: cocina_object.administrative.new(
-        releaseTags: Array(cocina_object.administrative.releaseTags) + [tag]
-      )
-    )
-    CocinaObjectStore.store(updated_object, skip_lock: true)
+    ReleaseTag.from_cocina(druid: cocina_object.externalIdentifier, tag:).save!
   end
 
   def initialize(cocina_object)
@@ -57,20 +48,7 @@ class ReleaseTagService
   private
 
   def tags_for(druid)
-    release_tags = ReleaseTag.where(druid:).to_a
-    # If this object's release tags haven't been migrated to ReleaseTag model objects, get from cocina.
-    return tags_from_cocina(druid) if release_tags.empty?
-
-    release_tags.map(&:to_cocina)
-  end
-
-  def tags_from_cocina(druid)
-    from_cocina_object = if cocina_object.externalIdentifier == druid
-                           cocina_object
-                         else
-                           CocinaObjectStore.find(druid)
-                         end
-    from_cocina_object.administrative.releaseTags
+    ReleaseTag.where(druid:).map(&:to_cocina)
   end
 
   def collection_tags
