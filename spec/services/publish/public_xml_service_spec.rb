@@ -71,7 +71,7 @@ RSpec.describe Publish::PublicXmlService do
 
     context 'when there are no release tags' do
       let(:cocina_object) do
-        build(:dro, id: 'druid:bc123df4567').new(description:)
+        build(:dro, id: druid).new(description:)
       end
 
       it 'does not include a releaseData element and any info in identityMetadata' do
@@ -82,7 +82,7 @@ RSpec.describe Publish::PublicXmlService do
 
     context 'with an embargo' do
       let(:cocina_object) do
-        build(:dro, id: 'druid:bc123df4567').new(
+        build(:dro, id: druid).new(
           access: {
             view: 'world',
             download: 'world',
@@ -104,7 +104,7 @@ RSpec.describe Publish::PublicXmlService do
 
     context 'with a problematic location code' do
       let(:cocina_object) do
-        build(:dro, id: 'druid:bc123df4567').new(
+        build(:dro, id: druid).new(
           access: {
             view: 'location-based',
             download: 'location-based',
@@ -124,7 +124,7 @@ RSpec.describe Publish::PublicXmlService do
 
     context 'produces xml with' do
       let(:cocina_object) do
-        build(:dro, id: 'druid:bc123df4567').new(
+        build(:dro, id: druid).new(
           description:,
           structural:,
           identification: {
@@ -269,7 +269,7 @@ RSpec.describe Publish::PublicXmlService do
 
       context 'when no thumb is present' do
         let(:cocina_object) do
-          build(:dro, id: 'druid:bc123df4567').new(description:)
+          build(:dro, id: druid).new(description:)
         end
 
         it 'does not add a thumb node' do
@@ -283,13 +283,12 @@ RSpec.describe Publish::PublicXmlService do
 
       context 'when there are single release tags per target' do
         let(:cocina_object) do
-          build(:dro, id: 'druid:bc123df4567').new(description:, administrative: {
-                                                     hasAdminPolicy: 'druid:qv648vd4392',
-                                                     releaseTags: [
-                                                       { to: 'Searchworks', release: true, date: '2015-10-23T21:49:29.000+00:00', what: 'self' },
-                                                       { to: 'PURL sitemap', release: true, date: '2015-10-23T21:49:29.000+00:00', what: 'self' }
-                                                     ]
-                                                   })
+          build(:dro, id: druid).new(description:)
+        end
+
+        before do
+          ReleaseTag.create!(druid:, who: 'petucket', what: 'self', released_to: 'Searchworks', release: true)
+          ReleaseTag.create!(druid:, who: 'petucket', what: 'self', released_to: 'PURL sitemap', release: true)
         end
 
         it 'does not include this release data in identityMetadata' do
@@ -305,14 +304,13 @@ RSpec.describe Publish::PublicXmlService do
 
       context 'when there are multiple release tags per target' do
         let(:cocina_object) do
-          build(:dro, id: 'druid:bc123df4567').new(description:, administrative: {
-                                                     hasAdminPolicy: 'druid:qv648vd4392',
-                                                     releaseTags: [
-                                                       { to: 'Searchworks', release: false, date: '2015-10-23T21:49:29.000+00:00', what: 'self' },
-                                                       { to: 'Searchworks', release: true, date: '2018-10-23T21:49:29.000+00:00', what: 'self' },
-                                                       { to: 'Some_special_place', release: true, date: '2015-10-23T21:49:29.000+00:00', what: 'self' }
-                                                     ]
-                                                   })
+          build(:dro, id: druid).new(description:)
+        end
+
+        before do
+          ReleaseTag.create!(druid:, who: 'petucket', what: 'self', released_to: 'Searchworks', release: true)
+          ReleaseTag.create!(druid:, who: 'petucket', what: 'self', released_to: 'Searchworks', release: false, created_at: 1.year.ago)
+          ReleaseTag.create!(druid:, who: 'petucket', what: 'self', released_to: 'PURL sitemap', release: true)
         end
 
         it 'does not include this release data in identityMetadata' do
@@ -323,14 +321,14 @@ RSpec.describe Publish::PublicXmlService do
           releases = ng_xml.xpath('/publicObject/releaseData/release')
           expect(releases.size).to eq 2
           expect(releases.map(&:inner_text)).to eq %w[true true]
-          expect(releases.pluck('to')).to eq %w[Searchworks Some_special_place]
+          expect(releases.pluck('to')).to eq ['Searchworks', 'PURL sitemap']
         end
       end
     end
 
     context 'with a collection' do
       let(:cocina_object) do
-        build(:collection, id: 'druid:bc123df4567').new(description:)
+        build(:collection, id: druid).new(description:)
       end
 
       it 'publishes the expected datastreams' do
@@ -353,13 +351,12 @@ RSpec.describe Publish::PublicXmlService do
 
       context 'when there are single release tags per target' do
         let(:cocina_object) do
-          build(:collection, id: 'druid:bc123df4567').new(description:, administrative: {
-                                                            hasAdminPolicy: 'druid:qv648vd4392',
-                                                            releaseTags: [
-                                                              { to: 'Searchworks', what: 'collection', release: true, date: '2015-10-23T21:49:29.000+00:00' },
-                                                              { to: 'Some_special_place', what: 'collection', release: true, date: '2015-10-23T21:49:29.000+00:00' }
-                                                            ]
-                                                          })
+          build(:collection, id: druid).new(description:)
+        end
+
+        before do
+          ReleaseTag.create!(druid:, who: 'petucket', what: 'collection', released_to: 'Searchworks', release: true)
+          ReleaseTag.create!(druid:, who: 'petucket', what: 'collection', released_to: 'PURL sitemap', release: true)
         end
 
         it 'does not include this release data in identityMetadata' do
@@ -369,20 +366,19 @@ RSpec.describe Publish::PublicXmlService do
         it 'includes releaseData element from release tags' do
           releases = ng_xml.xpath('/publicObject/releaseData/release')
           expect(releases.map(&:inner_text)).to eq %w[true true]
-          expect(releases.pluck('to')).to eq %w[Searchworks Some_special_place]
+          expect(releases.pluck('to')).to eq ['Searchworks', 'PURL sitemap']
         end
       end
 
       context 'when there are multiple release tags per target' do
         let(:cocina_object) do
-          build(:collection, id: 'druid:bc123df4567').new(description:, administrative: {
-                                                            hasAdminPolicy: 'druid:qv648vd4392',
-                                                            releaseTags: [
-                                                              { to: 'Searchworks', what: 'collection', release: false, date: '2015-10-23T21:49:29.000+00:00' },
-                                                              { to: 'Searchworks', what: 'collection', release: true, date: '2018-10-23T21:49:29.000+00:00' },
-                                                              { to: 'Some_special_place', what: 'collection', release: true, date: '2015-10-23T21:49:29.000+00:00' }
-                                                            ]
-                                                          })
+          build(:collection, id: druid).new(description:)
+        end
+
+        before do
+          ReleaseTag.create!(druid:, who: 'petucket', what: 'collection', released_to: 'Searchworks', release: true)
+          ReleaseTag.create!(druid:, who: 'petucket', what: 'collection', released_to: 'Searchworks', release: false, created_at: 1.year.ago)
+          ReleaseTag.create!(druid:, who: 'petucket', what: 'collection', released_to: 'PURL sitemap', release: true)
         end
 
         it 'does not include this release data in identityMetadata' do
@@ -393,7 +389,7 @@ RSpec.describe Publish::PublicXmlService do
           releases = ng_xml.xpath('/publicObject/releaseData/release')
           expect(releases.size).to eq 2
           expect(releases.map(&:inner_text)).to eq %w[true true]
-          expect(releases.pluck('to')).to eq %w[Searchworks Some_special_place]
+          expect(releases.pluck('to')).to eq ['Searchworks', 'PURL sitemap']
         end
       end
     end

@@ -11,23 +11,7 @@ RSpec.describe Publish::MetadataTransferService do
       access:,
       structural: { contains: [], isMemberOf: ['druid:xh235dd9059'] },
       administrative: {
-        hasAdminPolicy: 'druid:fg890hx1234',
-        releaseTags: [
-          {
-            who: 'dhartwig',
-            what: 'collection',
-            date: '2019-01-18T17:03:35.000+00:00',
-            to: 'Searchworks',
-            release: true
-          },
-          {
-            who: 'dhartwig',
-            what: 'collection',
-            date: '2020-01-18T17:03:35.000+00:00',
-            to: 'Some_special_place',
-            release: true
-          }
-        ]
+        hasAdminPolicy: 'druid:fg890hx1234'
       }
     )
   end
@@ -56,23 +40,7 @@ RSpec.describe Publish::MetadataTransferService do
           access: { view: 'world' },
           structural: { contains: [], isMemberOf: ['druid:xh235dd9059'] },
           administrative: {
-            hasAdminPolicy: 'druid:fg890hx1234',
-            releaseTags: [
-              {
-                who: 'dhartwig',
-                what: 'collection',
-                date: '2019-01-18T17:03:35.000+00:00',
-                to: 'Searchworks',
-                release: true
-              },
-              {
-                who: 'dhartwig',
-                what: 'collection',
-                date: '2020-01-18T17:03:35.000+00:00',
-                to: 'Some_special_place',
-                release: true
-              }
-            ]
+            hasAdminPolicy: 'druid:fg890hx1234'
           }
         )
       end
@@ -150,7 +118,7 @@ RSpec.describe Publish::MetadataTransferService do
 
         let(:access) { { view: 'citation-only', download: 'none' } }
 
-        it 'identityMetadta, contentMetadata, rightsMetadata, generated dublin core, and public xml' do
+        it 'identityMetadata, contentMetadata, rightsMetadata, generated dublin core, and public xml' do
           service.publish
           expect(Publish::PublicXmlService).to have_received(:new).with(public_cocina: Cocina::Models::DRO, thumbnail_service:)
           expect(Publish::PublicDescMetadataService).to have_received(:new).with(Cocina::Models::DRO)
