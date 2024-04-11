@@ -129,4 +129,23 @@ RSpec.describe Publish::PublicCocinaService do
       expect { create }.to raise_error(RuntimeError, 'unexpected call to PublicCocinaService.build for druid:bc123df4567')
     end
   end
+
+  context 'when there are multiple release tags per target' do
+    subject(:release_tags) { create.administrative.releaseTags }
+
+    let(:cocina_object) { build(:dro) }
+    let(:druid) { cocina_object.externalIdentifier }
+
+    before do
+      ReleaseTag.create!(druid:, who: 'petucket', what: 'self', released_to: 'Searchworks', release: true)
+      ReleaseTag.create!(druid:, who: 'petucket', what: 'self', released_to: 'Searchworks', release: false, created_at: 1.year.ago)
+      ReleaseTag.create!(druid:, who: 'petucket', what: 'self', released_to: 'PURL sitemap', release: true)
+    end
+
+    it 'includes only the latest releaseData element from release tags for each target' do
+      expect(release_tags.size).to eq 2
+      expect(release_tags.map(&:release)).to eq [true, true]
+      expect(release_tags.map(&:to)).to eq ['Searchworks', 'PURL sitemap']
+    end
+  end
 end
