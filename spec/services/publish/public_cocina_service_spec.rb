@@ -6,7 +6,7 @@ RSpec.describe Publish::PublicCocinaService do
   subject(:json) { JSON.parse(create.to_json) }
 
   let(:create) { described_class.create(cocina_object) }
-
+  let(:publish_files) { false }
   let(:cocina_object) do
     build(:dro).new(
       structural: {
@@ -40,7 +40,7 @@ RSpec.describe Publish::PublicCocinaService do
                     { type: 'md5', digest: 'c99fae3c4c53e40824e710440f08acb9' }
                   ],
                   access: { view: 'dark', download: 'none' },
-                  administrative: { publish: false, sdrPreserve: false, shelve: false },
+                  administrative: { publish: publish_files, sdrPreserve: false, shelve: false },
                   presentation: { height: 5360, width: 3544 }
                 }
               ]
@@ -116,8 +116,18 @@ RSpec.describe Publish::PublicCocinaService do
     )
   end
 
-  it 'discards the non-published filesets and files' do
-    expect(json.dig('structural', 'contains').size).to eq 0
+  context 'when there are no published files' do
+    it 'discards the non-published filesets and files' do
+      expect(json.dig('structural', 'contains').size).to eq 0
+    end
+  end
+
+  context 'when there are published files' do
+    let(:publish_files) { true }
+
+    it 'keeps them' do
+      expect(json.dig('structural', 'contains').size).to eq 1
+    end
   end
 
   context 'with an admin_policy' do
