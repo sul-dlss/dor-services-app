@@ -86,6 +86,10 @@ RSpec.describe CocinaObjectStore do
       context 'when objects match' do
         let(:version_attributes) { RepositoryObjectVersion.to_model_hash(ar_cocina_object.to_cocina) }
 
+        before do
+          repo_object.head_version.update!(updated_at: 1.day.ago)
+        end
+
         it "doesn't report a diff" do
           expect(store.find(repo_object.external_identifier)).to be_instance_of(Cocina::Models::DROWithMetadata)
           expect(Honeybadger).not_to have_received(:notify)
