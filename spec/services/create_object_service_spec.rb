@@ -32,7 +32,7 @@ RSpec.describe CreateObjectService do
       it 'persists it' do
         expect do
           expect(store.create(requested_cocina_object)).to be_a Cocina::Models::DROWithMetadata
-        end.to change(Dro, :count).by(1)
+        end.to change(Dro, :count).by(1).and change(RepositoryObject, :count).by(1)
 
         expect(Notifications::ObjectCreated).to have_received(:publish)
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)

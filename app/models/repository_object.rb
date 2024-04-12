@@ -52,6 +52,17 @@ class RepositoryObject < ApplicationRecord
       method_name.to_s.start_with?(current_scope_prefix) || super
     end
 
+    # @param [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] cocina_object a Cocina
+    #   model instance, either a DRO, collection, or APO.
+    def create_from(cocina_object:)
+      args = {
+        external_identifier: cocina_object.externalIdentifier,
+        object_type: cocina_object.class.name.demodulize.underscore
+      }
+      args[:source_id] = cocina_object.identification.sourceId if cocina_object.respond_to?(:identification)
+      create!(**args).update_opened_version_from(cocina_object:)
+    end
+
     private
 
     def current_scope_prefix
