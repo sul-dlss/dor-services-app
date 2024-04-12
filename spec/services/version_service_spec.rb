@@ -43,7 +43,7 @@ RSpec.describe VersionService do
         expect(Dro.find_by(external_identifier: druid).version).to eq 2
         expect(ObjectVersion.current_version(druid).version).to eq(2)
         expect(workflow_state_service).to have_received(:accessioned?)
-        expect(workflow_state_service).to have_received(:open?).twice
+        expect(workflow_state_service).to have_received(:open?).once
         expect(workflow_state_service).to have_received(:accessioning?)
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 
@@ -71,7 +71,7 @@ RSpec.describe VersionService do
         expect(ObjectVersion.current_version(druid).version).to eq(2)
         expect(ObjectVersion).not_to have_received(:sync_then_increment_version)
         expect(workflow_state_service).to have_received(:accessioned?)
-        expect(workflow_state_service).to have_received(:open?).twice
+        expect(workflow_state_service).to have_received(:open?).once
         expect(workflow_state_service).to have_received(:accessioning?)
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 

@@ -85,7 +85,8 @@ class VersionService
 
     update_cocina_object = cocina_object
 
-    update_cocina_object = UpdateObjectService.update(cocina_object.new(version: new_object_version.version)) if cocina_object.version != new_object_version.version
+    # Skipping open check since not yet opened.
+    update_cocina_object = UpdateObjectService.update(cocina_object.new(version: new_object_version.version), skip_open_check: true) if cocina_object.version != new_object_version.version
 
     workflow_client.create_workflow_by_name(druid, 'versioningWF', version: new_object_version.version.to_s)
 
