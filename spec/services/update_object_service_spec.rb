@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe UpdateObjectService do
   include Dry::Monads[:result]
-  let(:store) { described_class.new(cocina_object:, skip_lock: true) }
+  let(:store) { described_class.new(cocina_object:, skip_lock: true, skip_open_check: false) }
   let(:open) { true }
 
   describe '#update' do
@@ -41,7 +41,7 @@ RSpec.describe UpdateObjectService do
       end
 
       context 'when checking lock succeeds' do
-        let(:store) { described_class.new(cocina_object:, skip_lock: false) }
+        let(:store) { described_class.new(cocina_object:, skip_lock: false, skip_open_check: false) }
 
         let(:ar_cocina_object) { create(:ar_dro) }
         let(:lock) { "#{ar_cocina_object.external_identifier}=0" }
@@ -72,7 +72,7 @@ RSpec.describe UpdateObjectService do
       end
 
       context 'when checking lock fails' do
-        let(:store) { described_class.new(cocina_object:, skip_lock: false) }
+        let(:store) { described_class.new(cocina_object:, skip_lock: false, skip_open_check: false) }
         let!(:ar_cocina_object) { create(:ar_dro) }
         let(:lock) { '64e8320d19d62ddb73c501276c5655cf' }
 
@@ -90,7 +90,7 @@ RSpec.describe UpdateObjectService do
 
       context 'when version is not open' do
         let(:open) { false }
-        let(:store) { described_class.new(cocina_object:, skip_lock: false) }
+        let(:store) { described_class.new(cocina_object:, skip_lock: false, skip_open_check: false) }
 
         let(:ar_cocina_object) { create(:ar_dro) }
         let(:lock) { "#{ar_cocina_object.external_identifier}=0" }
@@ -108,6 +108,28 @@ RSpec.describe UpdateObjectService do
           expect(store.update).to be_a Cocina::Models::DROWithMetadata
           expect(Honeybadger).to have_received(:notify).with('Updating repository item without an open version',
                                                              context: { druid: ar_cocina_object.external_identifier, version: 1 })
+        end
+      end
+
+      context 'when version is not open but skipping open check' do
+        let(:open) { false }
+        let(:store) { described_class.new(cocina_object:, skip_lock: false, skip_open_check: true) }
+
+        let(:ar_cocina_object) { create(:ar_dro) }
+        let(:lock) { "#{ar_cocina_object.external_identifier}=0" }
+
+        let(:cocina_object) do
+          Cocina::Models.with_metadata(ar_cocina_object.to_cocina, lock, created: ar_cocina_object.created_at.utc, modified: ar_cocina_object.updated_at.utc)
+                        .new(label: 'new label')
+        end
+
+        before do
+          allow(Honeybadger).to receive(:notify)
+        end
+
+        it 'does not notify honeybadger' do
+          expect(store.update).to be_a Cocina::Models::DROWithMetadata
+          expect(Honeybadger).not_to have_received(:notify)
         end
       end
     end

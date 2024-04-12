@@ -10,17 +10,19 @@ class UpdateObjectService
   # @param [Cocina::Models::DRO|Collection|AdminPolicy|DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata] cocina_object
   # @param [#create] event_factory creates events
   # @param [boolean] skip_lock do not perform an optimistic lock check
+  # @param [boolean] skip_open_check do not check that the object has an open version
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
   # @raise [CocinaObjectNotFoundError] raised if the cocina object does not already exist in the datastore.
   # @raise [StateLockError] raised if optimistic lock failed.
   # @return [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] normalized cocina object
-  def self.update(cocina_object, event_factory: EventFactory, skip_lock: false)
-    new(cocina_object:, skip_lock:, event_factory:).update
+  def self.update(cocina_object, event_factory: EventFactory, skip_lock: false, skip_open_check: false)
+    new(cocina_object:, skip_lock:, event_factory:, skip_open_check:).update
   end
 
-  def initialize(cocina_object:, skip_lock:, event_factory: EventFactory)
+  def initialize(cocina_object:, skip_lock:, skip_open_check:, event_factory: EventFactory)
     @cocina_object = cocina_object
     @skip_lock = skip_lock
+    @skip_open_check = skip_open_check
     @event_factory = event_factory
   end
 
@@ -55,7 +57,7 @@ class UpdateObjectService
 
   private
 
-  attr_reader :cocina_object, :skip_lock, :event_factory
+  attr_reader :cocina_object, :skip_lock, :event_factory, :skip_open_check
 
   delegate :version, to: :cocina_object
 
@@ -64,7 +66,7 @@ class UpdateObjectService
   end
 
   def notify_unless_open_version
-    return if VersionService.open?(druid:, version:)
+    return if skip_open_check || VersionService.open?(druid:, version:)
 
     Honeybadger.notify('Updating repository item without an open version', context: { druid:, version: })
   end
