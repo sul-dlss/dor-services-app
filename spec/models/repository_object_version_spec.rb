@@ -291,7 +291,7 @@ RSpec.describe RepositoryObjectVersion do
       it { is_expected.not_to include(:externalIdentifier) }
       it { is_expected.not_to include(:version) }
       it { is_expected.to include(cocina_version: Cocina::Models::VERSION) }
-      it { is_expected.not_to include(:content_type) }
+      it { is_expected.to include(content_type: Cocina::Models::ObjectType.admin_policy) }
       it { is_expected.to include(description: hash_including(:title)) }
 
       context 'with no description' do
