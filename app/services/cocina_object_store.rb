@@ -97,7 +97,7 @@ class CocinaObjectStore
       return cocina unless Settings.enabled_features.repository_object_test
 
       legacy = ar_find(druid).to_cocina_with_metadata
-      return cocina if legacy == cocina
+      return cocina if Cocina::Models.without_metadata(legacy) == Cocina::Models.without_metadata(cocina)
 
       Honeybadger.notify('Comparison of RepositoryObject with legacy object failed.', context: { druid: })
       return legacy
