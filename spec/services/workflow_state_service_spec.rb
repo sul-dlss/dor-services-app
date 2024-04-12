@@ -3,15 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe WorkflowStateService do
-  subject(:service) { described_class.new(druid:, version:) }
+  subject(:workflow_state) { described_class.new(druid:, version:) }
 
   let(:druid) { 'druid:xz456jk0987' }
-
   let(:version) { 1 }
-
-  let(:workflow_client) do
-    instance_double(Dor::Workflow::Client)
-  end
+  let(:workflow_client) { instance_double(Dor::Workflow::Client) }
 
   before do
     allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
@@ -24,7 +20,7 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns true' do
-        expect(service.accessioned?).to be true
+        expect(workflow_state).to be_accessioned
         expect(workflow_client).to have_received(:lifecycle).with(druid:, milestone_name: 'accessioned')
       end
     end
@@ -35,7 +31,7 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns false' do
-        expect(service.accessioned?).to be false
+        expect(workflow_state).not_to be_accessioned
       end
     end
   end
@@ -47,7 +43,7 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns true' do
-        expect(service.open?).to be true
+        expect(workflow_state).to be_open
         expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'submitted', version: '1')
         expect(workflow_client).to have_received(:lifecycle).with(druid:, milestone_name: 'accessioned')
       end
@@ -59,7 +55,7 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns false' do
-        expect(service.open?).to be false
+        expect(workflow_state).not_to be_open
       end
     end
 
@@ -69,13 +65,12 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns false' do
-        expect(service.open?).to be false
+        expect(workflow_state).not_to be_open
       end
     end
 
     context 'when > version 1 and there is an active versionWF' do
       let(:version) { 2 }
-
       let(:workflow_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: true, complete_for?: false) }
 
       before do
@@ -83,14 +78,13 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns true' do
-        expect(service.open?).to be true
+        expect(workflow_state).to be_open
         expect(workflow_client).to have_received(:workflow).with(pid: druid, workflow_name: 'versioningWF')
       end
     end
 
     context 'when > version 1 and there is not an active versionWF' do
       let(:version) { 2 }
-
       let(:workflow_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: true, complete_for?: true) }
 
       before do
@@ -98,7 +92,7 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns false' do
-        expect(service.open?).to be false
+        expect(workflow_state).not_to be_open
       end
     end
   end
@@ -110,7 +104,7 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns true' do
-        expect(service.active_version_wf?).to be true
+        expect(workflow_state).to be_active_version_wf
         expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'opened', version: '1')
       end
     end
@@ -121,7 +115,7 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns false' do
-        expect(service.active_version_wf?).to be false
+        expect(workflow_state).not_to be_active_version_wf
       end
     end
   end
@@ -133,7 +127,7 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns true' do
-        expect(service.accessioning?).to be true
+        expect(workflow_state).to be_accessioning
         expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'submitted', version: '1')
       end
     end
@@ -144,7 +138,7 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns false' do
-        expect(service.accessioning?).to be false
+        expect(workflow_state).not_to be_accessioning
       end
     end
   end
@@ -155,8 +149,7 @@ RSpec.describe WorkflowStateService do
     let(:was_seed_preassembly_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
     let(:gis_delivery_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
     let(:gis_assembly_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
-
-    let(:process) { instance_double(Dor::Workflow::Response::Process) }
+    let(:process) { instance_double(Dor::Workflow::Response::Process, name: 'arbitrary') }
 
     before do
       allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'assemblyWF').and_return(assembly_wf_response)
@@ -172,7 +165,7 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns true' do
-        expect(service.assembling?).to be true
+        expect(workflow_state).to be_assembling
       end
     end
 
@@ -182,7 +175,7 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns true' do
-        expect(service.assembling?).to be true
+        expect(workflow_state).to be_assembling
       end
     end
 
@@ -192,7 +185,7 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns true' do
-        expect(service.assembling?).to be true
+        expect(workflow_state).to be_assembling
       end
     end
 
@@ -202,7 +195,7 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns true' do
-        expect(service.assembling?).to be true
+        expect(workflow_state).to be_assembling
       end
     end
 
@@ -214,7 +207,7 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns true' do
-        expect(service.assembling?).to be true
+        expect(workflow_state).to be_assembling
       end
     end
 
@@ -224,7 +217,7 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns true' do
-        expect(service.assembling?).to be true
+        expect(workflow_state).to be_assembling
       end
     end
 
@@ -242,7 +235,7 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns false' do
-        expect(service.assembling?).to be false
+        expect(workflow_state).not_to be_assembling
       end
     end
 
@@ -255,13 +248,13 @@ RSpec.describe WorkflowStateService do
       end
 
       it 'returns false' do
-        expect(service.assembling?).to be false
+        expect(workflow_state).not_to be_assembling
       end
     end
 
     context 'when there are no assembly workflows' do
       it 'returns false' do
-        expect(service.assembling?).to be false
+        expect(workflow_state).not_to be_assembling
       end
     end
   end

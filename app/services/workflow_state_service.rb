@@ -24,11 +24,11 @@ class WorkflowStateService
     # The exception is GIS workflows.
     # gisAssemblyWF kicks off the gisDeliveryWF, the last step of which is closing the version.
     # For these purposes, we'll be considering gisDeliveryWF as an assemblyWF.
-    active_workflow_except_step?(workflow: 'assemblyWF', process: 'accessioning-initiate') \
-      || active_workflow_except_step?(workflow: 'wasCrawlPreassemblyWF', process: 'end-was-crawl-preassembly') \
-      || active_workflow_except_step?(workflow: 'wasSeedPreassemblyWF', process: 'end-was-seed-preassembly') \
-      || active_workflow_except_step?(workflow: 'gisDeliveryWF', process: 'start-accession-workflow') \
-      || active_workflow?(workflow: 'gisAssemblyWF')
+    active_workflow_except_step?(workflow: 'assemblyWF', process: 'accessioning-initiate') ||
+      active_workflow_except_step?(workflow: 'wasCrawlPreassemblyWF', process: 'end-was-crawl-preassembly') ||
+      active_workflow_except_step?(workflow: 'wasSeedPreassemblyWF', process: 'end-was-seed-preassembly') ||
+      active_workflow_except_step?(workflow: 'gisDeliveryWF', process: 'start-accession-workflow') ||
+      active_workflow?(workflow: 'gisAssemblyWF')
   end
 
   def open?
@@ -93,13 +93,7 @@ class WorkflowStateService
     # Is there a workflow for the current version? If not, then it can't be active.
     return false unless workflow_response.active_for?(version:)
 
-    incomplete_processes = workflow_response.incomplete_processes_for(version:)
-    # There is a workflow with no incomplete processes, so not active.
-    return false if incomplete_processes.empty?
-    # There is a workflow whose only incomplete process is the one that is excluded, so considering not active.
-    return false if incomplete_processes.size == 1 && incomplete_processes.first.name == process
-
-    # There is a workflow that has > 1 incomplete processes or the 1 incomplete process is not the excluded process.
-    true
+    # Does the active workflow contain any processes *other* than the one we're ignoring? If so, consider it active.
+    workflow_response.incomplete_processes_for(version:).any? { |step| step.name != process }
   end
 end
