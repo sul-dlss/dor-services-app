@@ -11,33 +11,15 @@ class RepositoryObjectMigrator
     @external_identifier = external_identifier
   end
 
-  def migrate # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-    RepositoryObject.transaction do # rubocop:disable Metrics/BlockLength
+  def migrate
+    RepositoryObject.transaction do
       # There is already logic below that will build up all the versions and relationships.
       new_object.update!(opened_version: nil, head_version: nil)
       1.upto(current_version_number).each do |version_number|
-        new_object_version = new_object.versions.find_or_initialize_by(version: version_number)
         old_object_version = object_version_by(version_number:)
-        object_version_attributes = {
-          created_at: old_object_version.created_at,
-          updated_at: old_object_version.updated_at,
-          version_description: old_object_version.description,
-          closed_at: closed_at(version_number:)
-        }.tap do |attrs|
-          # NOTE: Only migrate cocina attrs to latest version
-          next unless version_number == current_version_number
+        raise "No legacy ObjectVersion model found for #{external_identifier} / #{version_number}" unless old_object_version
 
-          attrs[:cocina_version] = old_object.cocina_version
-          attrs[:content_type] = content_type
-          attrs[:label] = old_object.label
-          attrs[:access] = access
-          attrs[:administrative] = old_object.administrative
-          attrs[:description] = description
-          attrs[:identification] = identification
-          attrs[:structural] = structural
-          attrs[:geographic] = geographic
-        end
-        new_object_version.update!(**object_version_attributes)
+        new_object_version = migrate_old_object_version(old_object_version, version_number:, current: version_number == current_version_number)
         if open_version?(version_number:)
           new_object.update!(opened_version: new_object_version, head_version: new_object_version)
         else
@@ -53,6 +35,31 @@ class RepositoryObjectMigrator
   private
 
   attr_reader :external_identifier
+
+  def migrate_old_object_version(old_object_version, version_number:, current:)
+    new_object.versions.find_or_initialize_by(version: version_number).tap do |new_object_version|
+      object_version_attributes = {
+        created_at: old_object_version.created_at,
+        updated_at: old_object_version.updated_at,
+        version_description: old_object_version.description,
+        closed_at: closed_at(version_number:)
+      }.tap do |attrs|
+        # NOTE: Only migrate cocina attrs for the current version
+        next unless current
+
+        attrs[:cocina_version] = old_object.cocina_version
+        attrs[:content_type] = content_type
+        attrs[:label] = old_object.label
+        attrs[:access] = access
+        attrs[:administrative] = old_object.administrative
+        attrs[:description] = description
+        attrs[:identification] = identification
+        attrs[:structural] = structural
+        attrs[:geographic] = geographic
+      end
+      new_object_version.update!(**object_version_attributes)
+    end
+  end
 
   def old_object
     @old_object ||= CocinaObjectStore.ar_find(external_identifier)

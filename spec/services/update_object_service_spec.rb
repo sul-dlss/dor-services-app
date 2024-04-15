@@ -132,6 +132,32 @@ RSpec.describe UpdateObjectService do
           expect(Honeybadger).not_to have_received(:notify)
         end
       end
+
+      context 'when repository_object_create is enabled' do
+        before do
+          allow(Settings.enabled_features).to receive(:repository_object_create).and_return(true)
+          ObjectVersion.create(druid: ar_cocina_object.external_identifier, version: 1, description: 'test description')
+          allow(WorkflowStateService).to receive(:new).and_return(workflow_state_service)
+          allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
+        end
+
+        let(:workflow_client) do
+          instance_double(Dor::Workflow::Client,
+                          status: instance_double(Dor::Workflow::Client::Status, status_time: nil, display_simplified: 'Registered'))
+        end
+        let(:workflow_state_service) do
+          instance_double(WorkflowStateService, open?: true)
+        end
+
+        let(:ar_cocina_object) { create(:ar_dro) }
+        let(:cocina_object) { ar_cocina_object.to_cocina_with_metadata }
+
+        it 'migrates the repository object' do
+          expect(store.update).to be_a Cocina::Models::DROWithMetadata
+          migrated_version = RepositoryObject.find_by(external_identifier: ar_cocina_object.external_identifier).head_version
+          expect(migrated_version.to_cocina).to eq Cocina::Models.without_metadata(cocina_object)
+        end
+      end
     end
 
     context 'when object is an AdminPolicy' do

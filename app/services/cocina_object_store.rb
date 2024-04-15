@@ -178,7 +178,6 @@ class CocinaObjectStore
                        AdminPolicy.find_by(external_identifier: druid) ||
                        Collection.find_by(external_identifier: druid) ||
                        bootstrap_ur_admin_policy(druid)
-
     ar_cocina_object ||
       raise(CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid))
   end

@@ -25,8 +25,6 @@ RSpec.describe RepositoryObjectMigrator do
       allow(CocinaObjectStore).to receive(:ar_find).and_return(old_object)
       allow(migrator).to receive(:workflow_status).with(version_number: 1).and_return(fake_workflow_status)
       allow(migrator).to receive(:open_version?).with(version_number: 1).and_return(open_version)
-
-      # new_object
     end
 
     let(:fake_workflow_status) do

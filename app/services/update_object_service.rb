@@ -38,8 +38,12 @@ class UpdateObjectService
 
     cocina_object_without_metadata = Cocina::Models.without_metadata(cocina_object)
 
-    # TODO: after migration to RepositoryObject we can remove this nil check
-    RepositoryObject.find_by(external_identifier: druid)&.update_opened_version_from(cocina_object: cocina_object_without_metadata)
+    repo_object = RepositoryObject.find_by(external_identifier: druid)
+    if repo_object
+      repo_object.update_opened_version_from(cocina_object: cocina_object_without_metadata)
+    elsif Settings.enabled_features.repository_object_create
+      RepositoryObjectMigrator.migrate(external_identifier: druid)
+    end
 
     event_factory.create(druid:, event_type: 'update', data: { success: true, request: cocina_object_without_metadata.to_h })
 
