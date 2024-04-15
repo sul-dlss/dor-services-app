@@ -26,8 +26,22 @@ RSpec.describe CreateObjectService do
       allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
     end
 
+    context 'when a DRO and repository_object_feature_flag is not set' do
+      let(:requested_cocina_object) { build(:request_dro) }
+
+      it 'does not create a RepositoryObject' do
+        expect do
+          expect(store.create(requested_cocina_object)).to be_a Cocina::Models::DROWithMetadata
+        end.to change(Dro, :count).by(1).and not_change(RepositoryObject, :count)
+      end
+    end
+
     context 'when a DRO' do
       let(:requested_cocina_object) { build(:request_dro) }
+
+      before do
+        allow(Settings.enabled_features).to receive(:repository_object_create).and_return(true)
+      end
 
       it 'persists it' do
         expect do
