@@ -38,10 +38,10 @@ class ConstituentService
 
     updated_virtual_object = ResetContentMetadataService.reset(cocina_item: updated_virtual_object, constituent_druids:)
 
+    UpdateObjectService.update(updated_virtual_object)
+
     VersionService.close(druid: updated_virtual_object.externalIdentifier, version: updated_virtual_object.version,
                          event_factory:)
-
-    UpdateObjectService.update(updated_virtual_object)
 
     SynchronousIndexer.reindex_remotely_from_cocina(cocina_object: updated_virtual_object, created_at:, updated_at:)
 
