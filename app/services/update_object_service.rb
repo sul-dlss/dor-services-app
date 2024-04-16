@@ -30,19 +30,22 @@ class UpdateObjectService
     Cocina::ObjectValidator.validate(cocina_object)
     notify_unless_open_version
 
+    cocina_object_without_metadata = Cocina::Models.without_metadata(cocina_object)
+
     # If this is a collection and the title has changed, then reindex the children.
     update_items = need_to_update_members?
 
     # Only update if already exists in PG (i.e., added by create or migration).
-    cocina_object_with_metadata = CocinaObjectStore.store(cocina_object, skip_lock:)
+    cocina_object_with_metadata = nil
+    RepositoryObject.transaction do
+      cocina_object_with_metadata = CocinaObjectStore.store(cocina_object, skip_lock:)
 
-    cocina_object_without_metadata = Cocina::Models.without_metadata(cocina_object)
-
-    repo_object = RepositoryObject.find_by(external_identifier: druid)
-    if repo_object
-      repo_object.update_opened_version_from(cocina_object: cocina_object_without_metadata)
-    elsif Settings.enabled_features.repository_object_create
-      RepositoryObjectMigrator.migrate(external_identifier: druid)
+      repo_object = RepositoryObject.find_by(external_identifier: druid)
+      if repo_object
+        repo_object.update_opened_version_from(cocina_object: cocina_object_without_metadata)
+      elsif Settings.enabled_features.repository_object_create
+        RepositoryObjectMigrator.migrate(external_identifier: druid)
+      end
     end
 
     event_factory.create(druid:, event_type: 'update', data: { success: true, request: cocina_object_without_metadata.to_h })
