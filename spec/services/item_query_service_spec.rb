@@ -10,68 +10,17 @@ RSpec.describe ItemQueryService do
   let(:cocina_object) do
     build(:dro, id: druid).new(access: { download: 'none' }.merge(access))
   end
-  let(:workflow_state) { 'Accessioned' }
-  let(:workflow_client) { instance_double(Dor::Workflow::Client, status: status_client) }
-  let(:status_client) { instance_double(Dor::Workflow::Client::Status, display_simplified: workflow_state) }
   let(:created_at) { Time.zone.now }
   let(:updated_at) { Time.zone.now }
   let(:cocina_object_with_metadata) { Cocina::Models.with_metadata(cocina_object, '1', created: created_at, modified: updated_at) }
 
   before do
     allow(CocinaObjectStore).to receive(:find).with(druid).and_return(cocina_object_with_metadata)
-    allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
+    allow(VersionService).to receive(:open?).and_return(true)
+    allow(WorkflowStateService).to receive(:accessioned?).and_return(true)
   end
 
   describe '.find_combinable_item' do
-    context 'with item in accessioned state' do
-      let(:workflow_state) { 'Accessioned' }
-
-      it 'returns the item' do
-        expect(service.find_combinable_item(druid)).to match_cocina_object_with(cocina_object.to_h)
-      end
-    end
-
-    context 'with item in opened state' do
-      let(:workflow_state) { 'Opened' }
-
-      it 'returns the item' do
-        expect(service.find_combinable_item(druid)).to match_cocina_object_with(cocina_object.to_h)
-      end
-    end
-
-    context 'with item in registered state' do
-      let(:workflow_state) { 'Registered' }
-
-      it 'raises an error' do
-        expect { service.find_combinable_item(druid) }.to raise_error(
-          described_class::UncombinableItemError,
-          "Item #{druid} is not in the accessioned or opened workflow state"
-        )
-      end
-    end
-
-    context 'with item in accessioning state' do
-      let(:workflow_state) { 'In Accessioning' }
-
-      it 'raises an error' do
-        expect { service.find_combinable_item(druid) }.to raise_error(
-          described_class::UncombinableItemError,
-          "Item #{druid} is not in the accessioned or opened workflow state"
-        )
-      end
-    end
-
-    context 'with item in unknown state' do
-      let(:workflow_state) { 'Unknown Status' }
-
-      it 'raises an error' do
-        expect { service.find_combinable_item(druid) }.to raise_error(
-          described_class::UncombinableItemError,
-          "Item #{druid} is not in the accessioned or opened workflow state"
-        )
-      end
-    end
-
     context 'with dark item' do
       let(:access) { { view: 'dark' } }
 
@@ -178,12 +127,14 @@ RSpec.describe ItemQueryService do
         allow(described_class).to receive(:find_combinable_item)
         allow(described_class).to receive(:find_combinable_item).with(druid).and_raise(described_class::UncombinableItemError, "Item #{druid} is dark")
         allow(described_class).to receive(:check_virtual)
+        allow(described_class).to receive(:check_accessioned)
       end
 
       it 'returns an error' do
         expect(service.validate_combinable_items(virtual_object: druid, constituents: constituent_druids)).to eq(
           'druid:bc123df4567' => ['Item druid:bc123df4567 is dark']
         )
+        expect(described_class).to have_received(:check_virtual).with('druid:xh235dd9059')
       end
     end
 
@@ -191,6 +142,7 @@ RSpec.describe ItemQueryService do
       before do
         allow(described_class).to receive(:find_combinable_item)
         allow(described_class).to receive(:check_virtual)
+        allow(described_class).to receive(:check_accessioned)
       end
 
       it 'returns an empty hash otherwise' do
@@ -204,6 +156,7 @@ RSpec.describe ItemQueryService do
       before do
         allow(described_class).to receive(:find_combinable_item)
         allow(described_class).to receive(:check_virtual)
+        allow(described_class).to receive(:check_accessioned)
       end
 
       it 'returns an error' do
@@ -271,6 +224,66 @@ RSpec.describe ItemQueryService do
       it 'returns an error' do
         expect(service.validate_combinable_items(virtual_object: druid, constituents: constituent_druids)).to eq(
           druid => ["Item #{constituent_druid} is itself a virtual object"]
+        )
+      end
+    end
+  end
+
+  describe '.check_open' do
+    context 'with item in opened state' do
+      before do
+        allow(VersionService).to receive_messages(open?: true, can_open?: false)
+      end
+
+      it 'returns the item' do
+        expect(service.check_open(druid)).to match_cocina_object_with(cocina_object.to_h)
+      end
+    end
+
+    context 'with item in openable state' do
+      before do
+        allow(VersionService).to receive_messages(open?: false, can_open?: true)
+      end
+
+      it 'returns the item' do
+        expect(service.check_open(druid)).to match_cocina_object_with(cocina_object.to_h)
+      end
+    end
+
+    context 'with item not in open state or openable' do
+      before do
+        allow(VersionService).to receive_messages(open?: false, can_open?: false)
+      end
+
+      it 'raises an error' do
+        expect { service.check_open(druid) }.to raise_error(
+          described_class::UncombinableItemError,
+          "Item #{druid} is not open or openable"
+        )
+      end
+    end
+  end
+
+  describe '.check_accessioned' do
+    context 'when item has been accessioned' do
+      before do
+        allow(WorkflowStateService).to receive(:accessioned?).and_return(true)
+      end
+
+      it 'raises an error' do
+        expect { service.check_accessioned(druid) }.not_to raise_error
+      end
+    end
+
+    context 'when item has not been accessioned' do
+      before do
+        allow(WorkflowStateService).to receive(:accessioned?).and_return(false)
+      end
+
+      it 'raises an error' do
+        expect { service.check_accessioned(druid) }.to raise_error(
+          described_class::UncombinableItemError,
+          "Item #{druid} has not been accessioned"
         )
       end
     end
