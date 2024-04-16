@@ -114,7 +114,7 @@ class CocinaObjectStore
       return cocina unless Settings.enabled_features.repository_object_test
 
       legacy = (Dro.find_by_source_id(source_id) || Collection.find_by_source_id(source_id)).to_cocina_with_metadata
-      return cocina if legacy == cocina
+      return cocina if Cocina::Models.without_metadata(legacy) == Cocina::Models.without_metadata(cocina)
 
       Honeybadger.notify('Comparison of RepositoryObject with legacy object failed.', context: { source_id: })
       return legacy
