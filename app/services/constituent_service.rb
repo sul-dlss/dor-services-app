@@ -28,7 +28,7 @@ class ConstituentService
     return errors if errors.any?
 
     # Make sure the virtual object is open before making modifications
-    updated_virtual_object = if WorkflowStateService.active_version_wf?(druid: virtual_object.externalIdentifier, version: virtual_object.version)
+    updated_virtual_object = if WorkflowStateService.open?(druid: virtual_object.externalIdentifier, version: virtual_object.version)
                                virtual_object
                              else
                                VersionService.open(cocina_object: virtual_object,

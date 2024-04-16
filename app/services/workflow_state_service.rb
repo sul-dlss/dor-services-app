@@ -7,8 +7,8 @@ class WorkflowStateService
     new(...).accessioning?
   end
 
-  def self.active_version_wf?(...)
-    new(...).active_version_wf?
+  def self.open?(...)
+    new(...).open?
   end
 
   def initialize(druid:, version:)
@@ -50,13 +50,6 @@ class WorkflowStateService
   def accessioning?
     return true if workflow_client.active_lifecycle(druid:, milestone_name: 'submitted', version: version.to_s)
 
-    false
-  end
-
-  def active_version_wf?
-    return true if workflow_client.active_lifecycle(druid:, milestone_name: 'opened', version: version.to_s)
-
-    # Note that this will return false for version 1, since there is no versionWF.
     false
   end
 
