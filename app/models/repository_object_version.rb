@@ -51,6 +51,7 @@ class RepositoryObjectVersion < ApplicationRecord
   # @return [Hash] RepositoryObjectVersion instance as a hash
   def to_h
     {
+      cocinaVersion: cocina_version,
       type: content_type,
       externalIdentifier: repository_object.external_identifier,
       label:,

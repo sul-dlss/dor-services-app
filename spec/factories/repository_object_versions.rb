@@ -4,7 +4,7 @@ FactoryBot.define do
   factory :repository_object_version do
     sequence(:version)
     version_description { 'MyString' }
-    cocina_version { 1 }
+    cocina_version { '0.5.0' }
     content_type { 'MyString' }
     label { 'MyString' }
     access { '' }
