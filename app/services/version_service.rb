@@ -79,7 +79,9 @@ class VersionService
 
     # TODO: After migrating to RepositoryObjects, we can get rid of the nil check and use:
     #   RepositoryObject.find_by!(external_identifier: druid).open_version!
-    RepositoryObject.find_by(external_identifier: druid)&.open_version!
+    repo_obj = RepositoryObject.find_by(external_identifier: druid)
+    repo_obj = RepositoryObjectMigrator.migrate(external_identifier: druid) if repo_obj.nil? && Settings.enabled_features.repository_object_create
+    repo_obj&.open_version!
     # TODO: when we stop calling the UpdateObjectService, after we've migrated to RepostoryObjects, we may need to trigger indexing:
     #       e.g.: Notifications::ObjectUpdated.publish(model: cocina_object_with_metadata)
 

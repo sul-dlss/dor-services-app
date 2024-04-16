@@ -133,6 +133,31 @@ RSpec.describe VersionService do
                                                              event_type: 'version_open')
       end
     end
+
+    context 'when RepositoryObject does not exist but repository_object_create is enabled' do
+      let(:repository_object) { nil }
+
+      let(:status) { instance_double(Dor::Workflow::Client::Status, status_time: nil, display_simplified: 'Registered') }
+
+      before do
+        allow(Settings.version_service).to receive(:sync_with_preservation).and_return false
+        allow(Settings.enabled_features).to receive(:repository_object_create).and_return true
+        allow(ObjectVersion).to receive(:sync_then_increment_version)
+        allow(workflow_state_service).to receive_messages(accessioned?: true, open?: false, accessioning?: false)
+        allow(workflow_client).to receive(:status).and_return(status)
+      end
+
+      it 'opens the version' do
+        expect { open }.to change(RepositoryObject, :count).by(1)
+        expect(Dro.find_by(external_identifier: druid).version).to eq 2
+        expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
+
+        expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
+                                                             druid:,
+                                                             event_type: 'version_open')
+        expect(RepositoryObject.last).to be_open
+      end
+    end
   end
 
   describe '.can_open?' do
