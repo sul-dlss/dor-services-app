@@ -29,26 +29,26 @@ RSpec.describe DeleteService do
     before do
       Dro.upsert_cocina(cocina_object)
       allow(CocinaObjectStore).to receive(:destroy)
-      allow(Notifications::ObjectDeleted).to receive(:publish)
+      allow(Indexer).to receive(:delete)
     end
 
     it 'destroys the object' do
       expect { destroy }.to change(Dro, :count).by(-1)
       expect(event_factory).to have_received(:create).with(druid:, event_type: 'delete', data: { request: cocina_object.to_h, source_id:, user_name: })
-      expect(Notifications::ObjectDeleted).to have_received(:publish)
+      expect(Indexer).to have_received(:delete)
     end
 
     context 'when a repository object exists' do
       before do
         create(:repository_object, external_identifier: druid)
-        allow(Notifications::ObjectDeleted).to receive(:publish)
+        allow(Indexer).to receive(:delete)
       end
 
       it 'destroys the object' do
         expect { destroy }.to change(RepositoryObject, :count).by(-1)
           .and change(RepositoryObjectVersion, :count).by(-1) # rubocop:disable Layout/MultilineMethodCallIndentation
         expect(Dro).not_to exist(druid)
-        expect(Notifications::ObjectDeleted).to have_received(:publish)
+        expect(Indexer).to have_received(:delete)
       end
     end
   end
@@ -92,6 +92,7 @@ RSpec.describe DeleteService do
       Event.create!(druid:, event_type: 'version_close', data: { version: '4' })
       ObjectVersion.create(druid:, version: 4, description: 'Version 4.0.0')
       ReleaseTag.create(druid:, who: 'bergeraj', what: 'self', released_to: 'Searchworks', release: true)
+      allow(Indexer).to receive(:delete)
     end
 
     it 'deletes from datastore and Solr' do
@@ -100,6 +101,7 @@ RSpec.describe DeleteService do
       expect(Event.exists?(druid:)).to be(false)
       expect(ObjectVersion.exists?(druid:)).to be(false)
       expect(ReleaseTag.exists?(druid:)).to be(false)
+      expect(Indexer).to have_received(:delete).with(druid:)
     end
   end
 end

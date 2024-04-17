@@ -7,12 +7,15 @@ RSpec.describe Indexer do
   let(:druid) { 'druid:bc123df4567' }
 
   let(:solr_doc) { instance_double(Hash) }
-  let(:solr) { instance_double(RSolr::Client, add: nil, commit: nil) }
+  let(:solr) { instance_double(RSolr::Client, add: nil, commit: nil, delete_by_id: nil) }
+
+  before do
+    allow(RSolr).to receive(:connect).and_return(solr)
+  end
 
   describe '#reindex' do
     before do
       allow(DorIndexing).to receive(:build).and_return(solr_doc)
-      allow(RSolr).to receive(:connect).and_return(solr)
     end
 
     it 'reindexes the object' do
@@ -25,6 +28,14 @@ RSpec.describe Indexer do
         release_tags_finder: Proc
       )
       expect(solr).to have_received(:add).with(solr_doc)
+      expect(solr).to have_received(:commit)
+    end
+  end
+
+  describe '#delete' do
+    it 'reindexes the object' do
+      described_class.delete(druid:)
+      expect(solr).to have_received(:delete_by_id).with(druid)
       expect(solr).to have_received(:commit)
     end
   end

@@ -16,6 +16,11 @@ class Indexer
     solr.commit
   end
 
+  def self.delete(druid:)
+    solr.delete_by_id(druid)
+    solr.commit
+  end
+
   # Repository implementations backed by ActiveRecord
   def self.administrative_tags_finder
     lambda do |druid|
