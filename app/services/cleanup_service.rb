@@ -19,15 +19,6 @@ class CleanupService
     $stdout.puts '*** DRY RUN - NO ACTIONS WILL BE PERFORMED' if dryrun
     $stdout.puts "...object found is an item: version #{object.version}"
 
-    # Verify the current version has not made it to preservation by checking if it is openable:
-    # if it is, then it must have been sent to preservation and therefore we must stop.
-    raise "v#{object.version} of the object has already been sent to preservation: cannot proceed" if VersionService.can_open?(druid:, version: object.version)
-
-    # If `preservationIngestWF#complete-ingest` exists and is not completed, then a step in this workflow is likely in error
-    # (ie. preservation got part way and then failed) and we should stop, since extra remediation may be needed
-    ingest_complete = WorkflowClientFactory.build.workflow_status(druid:, workflow: 'preservationIngestWF', process: 'complete-ingest')
-    raise "v#{object.version} of the object has preservationIngestWF#complete-ingest not completed: cannot proceed" if ingest_complete.present? && ingest_complete != 'completed'
-
     $stdout.puts "...v#{object.version} of the object has not been sent to preservation"
 
     # backup folders
