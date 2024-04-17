@@ -6,9 +6,13 @@ RSpec.describe Indexer do
   let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid) }
   let(:druid) { 'druid:bc123df4567' }
 
+  let(:solr_doc) { instance_double(Hash) }
+  let(:solr) { instance_double(RSolr::Client, add: nil, commit: nil) }
+
   describe '#reindex' do
     before do
-      allow(DorIndexing).to receive(:build)
+      allow(DorIndexing).to receive(:build).and_return(solr_doc)
+      allow(RSolr).to receive(:connect).and_return(solr)
     end
 
     it 'reindexes the object' do
@@ -20,6 +24,8 @@ RSpec.describe Indexer do
         administrative_tags_finder: Proc,
         release_tags_finder: Proc
       )
+      expect(solr).to have_received(:add).with(solr_doc)
+      expect(solr).to have_received(:commit)
     end
   end
 

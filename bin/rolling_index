@@ -41,7 +41,14 @@ Daemons.run_proc(
         Honeybadger.notify("Identifier isn't valid utf-8", { identifier:, bytes: identifier.unpack('C*') }) unless doc['id'].valid_encoding?
         begin
           cocina_object = CocinaObjectStore.find(identifier)
-          Indexer.reindex(cocina_object:)
+          # This returns a Solr doc hash
+          DorIndexing.build(
+            cocina_with_metadata: cocina_object,
+            workflow_client: WorkflowClientFactory.build,
+            cocina_finder: Indexer.cocina_finder,
+            administrative_tags_finder: Indexer.administrative_tags_finder,
+            release_tags_finder: Indexer.release_tags_finder
+          )
         rescue CocinaObjectStore::CocinaObjectNotFoundError
           Honeybadger.notify('Rolling indexer cannot reindex since not found.', { druid: identifier })
           # Clean up cruft in QA and stage
