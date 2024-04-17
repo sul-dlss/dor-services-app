@@ -43,7 +43,7 @@ class ConstituentService
     VersionService.close(druid: updated_virtual_object.externalIdentifier, version: updated_virtual_object.version,
                          event_factory:)
 
-    SynchronousIndexer.reindex_remotely_from_cocina(cocina_object: updated_virtual_object, created_at:, updated_at:)
+    Indexer.reindex(cocina_object: updated_virtual_object)
 
     publish_constituents!(constituent_druids)
 
@@ -53,14 +53,6 @@ class ConstituentService
   private
 
   attr_reader :virtual_object_druid, :event_factory
-
-  def created_at
-    virtual_object.created
-  end
-
-  def updated_at
-    virtual_object.modified
-  end
 
   def virtual_object
     @virtual_object ||= ItemQueryService.find_combinable_item(virtual_object_druid)

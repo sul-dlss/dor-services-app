@@ -21,7 +21,7 @@ RSpec.describe ConstituentService do
       allow(ResetContentMetadataService).to receive(:reset).and_return(virtual_object)
       allow(UpdateObjectService).to receive(:update)
       allow(CocinaObjectStore).to receive(:find).and_return(mock_item)
-      allow(SynchronousIndexer).to receive(:reindex_remotely_from_cocina)
+      allow(Indexer).to receive(:reindex)
       allow(Publish::MetadataTransferService).to receive(:publish)
     end
 
@@ -35,7 +35,7 @@ RSpec.describe ConstituentService do
         expect(VersionService).not_to have_received(:close)
         expect(ResetContentMetadataService).not_to have_received(:reset)
         expect(UpdateObjectService).not_to have_received(:update)
-        expect(SynchronousIndexer).not_to have_received(:reindex_remotely_from_cocina)
+        expect(Indexer).not_to have_received(:reindex)
       end
     end
 
@@ -60,9 +60,9 @@ RSpec.describe ConstituentService do
       expect(VersionService).to have_received(:close).with(druid: virtual_object.externalIdentifier, version: virtual_object.version, event_factory:)
     end
 
-    it 'indexes virtual object synchronously' do
+    it 'indexes virtual object' do
       service.add(constituent_druids:)
-      expect(SynchronousIndexer).to have_received(:reindex_remotely_from_cocina).once
+      expect(Indexer).to have_received(:reindex).once
     end
 
     it 'publishes constituents' do
