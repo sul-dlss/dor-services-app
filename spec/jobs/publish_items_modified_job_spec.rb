@@ -12,11 +12,11 @@ RSpec.describe PublishItemsModifiedJob do
   before do
     allow(MemberService).to receive(:for).and_return([{ 'id' => '123' }, { 'id' => '456' }])
     allow(CocinaObjectStore).to receive(:find).and_return(instance_double(Cocina::Models::DRO), instance_double(Cocina::Models::DRO))
-    allow(Notifications::ObjectUpdated).to receive(:publish)
+    allow(Indexer).to receive(:reindex_later)
     perform
   end
 
   it 'sends object updated notifications for each member' do
-    expect(Notifications::ObjectUpdated).to have_received(:publish).twice
+    expect(Indexer).to have_received(:reindex_later).twice
   end
 end

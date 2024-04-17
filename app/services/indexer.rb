@@ -21,6 +21,15 @@ class Indexer
     solr.commit
   end
 
+  # @param [Cocina::Models::DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata]
+  def self.reindex_later(cocina_object:)
+    ReindexJob.perform_later(
+      model: cocina_object.to_h,
+      created: cocina_object.created,
+      modified: cocina_object.modified
+    )
+  end
+
   # Repository implementations backed by ActiveRecord
   def self.administrative_tags_finder
     lambda do |druid|

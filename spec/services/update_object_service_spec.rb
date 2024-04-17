@@ -11,6 +11,7 @@ RSpec.describe UpdateObjectService do
     before do
       allow(Cocina::ObjectValidator).to receive(:validate)
       allow(VersionService).to receive(:open?).and_return(open)
+      allow(Indexer).to receive(:reindex_later)
     end
 
     context 'when object is a DRO' do
