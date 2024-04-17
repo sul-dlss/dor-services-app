@@ -30,7 +30,7 @@ namespace :missing_druids do
       druid = line.chomp
       puts "Indexing #{druid}"
       cocina_object = CocinaObjectStore.find(druid.chomp)
-      SynchronousIndexer.reindex_remotely_from_cocina(cocina_object: Cocina::Models.without_metadata(cocina_object), created_at: cocina_object.created, updated_at: cocina_object.modified)
+      Indexer.reindex(cocina_object:)
     end
   end
 end

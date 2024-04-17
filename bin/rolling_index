@@ -7,27 +7,6 @@ require 'parallel'
 
 QUERY = { q: '*:*', sort: 'timestamp asc', fl: 'id,timestamp', rows: Settings.rolling_indexer.query_size }.freeze
 
-# Repository implementations backed by ActiveRecord
-def administrative_tags_finder
-  lambda do |druid|
-    AdministrativeTags.for(identifier: druid)
-  end
-end
-
-def cocina_finder
-  lambda do |druid|
-    CocinaObjectStore.find(druid)
-  rescue CocinaObjectStore::CocinaObjectStoreError => e
-    raise DorIndexing::RepositoryError, e.message
-  end
-end
-
-def release_tags_finder
-  lambda do |druid|
-    ReleaseTagService.item_tags(cocina_object: CocinaObjectStore.find(druid))
-  end
-end
-
 DELETE_ENVS = ['stage', 'qa'].freeze
 
 # rubocop:disable Metrics/BlockLength
@@ -61,15 +40,8 @@ Daemons.run_proc(
         # Occasionally, we've seen invalid bytes in the identifier, so try to catch those:
         Honeybadger.notify("Identifier isn't valid utf-8", { identifier:, bytes: identifier.unpack('C*') }) unless doc['id'].valid_encoding?
         begin
-          cocina_obj = CocinaObjectStore.find(identifier)
-          # This returns a Solr doc hash
-          DorIndexing.build(
-            cocina_with_metadata: cocina_obj,
-            workflow_client: WorkflowClientFactory.build,
-            cocina_finder:,
-            administrative_tags_finder:,
-            release_tags_finder:
-          )
+          cocina_object = CocinaObjectStore.find(identifier)
+          Indexer.reindex(cocina_object:)
         rescue CocinaObjectStore::CocinaObjectNotFoundError
           Honeybadger.notify('Rolling indexer cannot reindex since not found.', { druid: identifier })
           # Clean up cruft in QA and stage
