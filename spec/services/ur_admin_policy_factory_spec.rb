@@ -8,13 +8,13 @@ RSpec.describe UrAdminPolicyFactory do
   let(:druid) { Settings.ur_admin_policy.druid }
 
   before do
-    allow(Notifications::ObjectCreated).to receive(:publish)
+    allow(Indexer).to receive(:reindex)
   end
 
   it 'creates the Ur-AdminPolicy' do
     expect(AdminPolicy.exists?(external_identifier: druid)).to be false
     policy
     expect(AdminPolicy.exists?(external_identifier: druid)).to be true
-    expect(Notifications::ObjectCreated).to have_received(:publish)
+    expect(Indexer).to have_received(:reindex)
   end
 end

@@ -34,6 +34,7 @@ RSpec.describe CocinaObjectStore do
       before do
         allow(Settings.ur_admin_policy).to receive(:druid).and_return('druid:bc123df4567')
         allow(Settings.enabled_features).to receive(:create_ur_admin_policy).and_return(true)
+        allow(Indexer).to receive(:reindex)
       end
 
       it 'bootstraps' do
