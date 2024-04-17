@@ -66,8 +66,8 @@ end
 
 group :development do
   gem 'graphiql-rails' # GraphQL IDE
+  gem 'propshaft' # for GraphiQL
   gem 'puma', '~> 6.0' # app server for dev
-  gem 'sass-rails' # for GraphiQL
 end
 
 group :deployment do

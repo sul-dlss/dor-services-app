@@ -14,8 +14,6 @@ require 'action_controller/railtie'
 # require "action_text/engine"
 require 'action_view/railtie'
 # require "action_cable/engine"
-# Needed to run Graphiql in development.
-require 'sprockets/railtie' if Rails.env.development?
 # require 'rails/test_unit/railtie'
 require 'active_support'
 require 'active_support/core_ext/integer/time'
