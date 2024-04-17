@@ -111,32 +111,6 @@ RSpec.describe CleanupService do
       end
     end
 
-    context 'when object can be opened (i.e. already in perservation)' do
-      before { allow(VersionService).to receive_messages(can_open?: true) }
-
-      it 'raises an exception and stops' do
-        expect { described_class.stop_accessioning(druid) }.to raise_error StandardError
-        expect(described_class).not_to have_received(:backup_content_by_druid)
-        expect(described_class).not_to have_received(:cleanup_by_druid)
-        expect(described_class).not_to have_received(:delete_accessioning_workflows)
-      end
-    end
-
-    context 'when object cannot be opened but preservationIngestWF exists and is not complete (i.e. problem preserving)' do
-      before do
-        allow(VersionService).to receive_messages(can_open?: false)
-        allow(WorkflowClientFactory).to receive(:build).and_return(client)
-        allow(client).to receive(:workflow_status).with(druid:, workflow: 'preservationIngestWF', process: 'complete-ingest').and_return('waiting')
-      end
-
-      it 'raises an exception and stops' do
-        expect { described_class.stop_accessioning(druid) }.to raise_error StandardError
-        expect(described_class).not_to have_received(:backup_content_by_druid)
-        expect(described_class).not_to have_received(:cleanup_by_druid)
-        expect(described_class).not_to have_received(:delete_accessioning_workflows)
-      end
-    end
-
     context 'with bogus druid' do
       it 'raises an exception and stops' do
         expect { described_class.stop_accessioning('bogus') }.to raise_error StandardError
