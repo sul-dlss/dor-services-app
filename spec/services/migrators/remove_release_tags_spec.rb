@@ -6,20 +6,43 @@ RSpec.describe Migrators::RemoveReleaseTags do
   subject(:migrator) { described_class.new(ar_cocina_object) }
 
   let(:ar_cocina_object) { create(:ar_dro) }
+  let(:tags) do
+    [
+      {
+        who: 'mjg',
+        what: 'self',
+        date: '2021-12-28T00:09:00.000+00:00',
+        to: 'Earthworks',
+        release: true
+      }
+    ]
+  end
 
   describe '#migrate?' do
     subject { migrator.migrate? }
 
-    context 'when a dro' do
-      let(:ar_cocina_object) { create(:ar_dro, administrative: { hasAdminPolicy: 'druid:hy787xj5878', releaseTags: [] }) }
+    context 'when a dro with tags' do
+      let(:ar_cocina_object) { create(:ar_dro, administrative: { hasAdminPolicy: 'druid:hy787xj5878', releaseTags: tags }) }
 
       it { is_expected.to be true }
     end
 
-    context 'when a collection' do
-      let(:ar_cocina_object) { create(:ar_collection, administrative: { hasAdminPolicy: 'druid:hy787xj5878', releaseTags: [] }) }
+    context 'when a collection with tags' do
+      let(:ar_cocina_object) { create(:ar_collection, administrative: { hasAdminPolicy: 'druid:hy787xj5878', releaseTags: tags }) }
 
       it { is_expected.to be true }
+    end
+
+    context 'when a dro without tags' do
+      let(:ar_cocina_object) { create(:ar_dro, administrative: { hasAdminPolicy: 'druid:hy787xj5878', releaseTags: [] }) }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when a collection without tags' do
+      let(:ar_cocina_object) { create(:ar_collection, administrative: { hasAdminPolicy: 'druid:hy787xj5878', releaseTags: [] }) }
+
+      it { is_expected.to be false }
     end
 
     context 'when an APO' do
