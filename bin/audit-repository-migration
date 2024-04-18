@@ -32,19 +32,18 @@ def audit_one(legacy_model)
 end
 
 def audit_all(ar_class:)
-  query = ar_class.all
+  druids = ar_class.pluck(:external_identifier)
 
-  progress_bar = tty_progress_bar(query.length, ar_class.name)
+  progress_bar = tty_progress_bar(druids.length, ar_class.name)
   progress_bar.start
 
-  [].tap do |results|
-    query.find_in_batches do |group|
-      group.map do |record|
-        progress_bar.advance
-        results << audit_one(record)
-      end
+  Parallel.map(druids.each_slice(100),
+               in_processes: 4,
+               finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |druids_slice|
+    druids_slice.map do |druid|
+      audit_one(ar_class.find_by(external_identifier: druid))
     end
-  end
+  end.flatten(1).compact
 end
 
 output = [Dro, Collection, AdminPolicy].each_with_object([]) do |klass, log|
