@@ -69,6 +69,19 @@ RSpec.describe UpdateObjectService do
             expect(repo_object.reload.opened_version.label).to eq 'new label'
           end
         end
+
+        context 'when repository_object_test is enabled' do
+          before do
+            create(:repository_object, external_identifier: ar_cocina_object.external_identifier)
+            allow(Settings.enabled_features).to receive(:repository_object_test).and_return(true)
+            allow(Honeybadger).to receive(:notify)
+          end
+
+          it 'does not notify' do
+            expect(store.update).to be_a Cocina::Models::DROWithMetadata
+            expect(Honeybadger).not_to have_received(:notify)
+          end
+        end
       end
 
       context 'when checking lock fails' do

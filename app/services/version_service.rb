@@ -80,16 +80,14 @@ class VersionService
     update_cocina_object = cocina_object
     # TODO: After migrating to RepositoryObjects, we can get rid of the nil check and use:
     #   RepositoryObject.find_by!(external_identifier: druid).open_version!
-    RepositoryObject.transaction do
-      repo_obj = RepositoryObject.find_by(external_identifier: druid)
-      repo_obj = RepositoryObjectMigrator.migrate(external_identifier: druid) if repo_obj.nil? && Settings.enabled_features.repository_object_create
-      repo_obj&.open_version!
-      # TODO: when we stop calling the UpdateObjectService, after we've migrated to RepostoryObjects, we may need to trigger indexing:
-      #       e.g.: Notifications::ObjectUpdated.publish(model: cocina_object_with_metadata)
+    repo_obj = RepositoryObject.find_by(external_identifier: druid)
+    repo_obj = RepositoryObjectMigrator.migrate(external_identifier: druid) if repo_obj.nil? && Settings.enabled_features.repository_object_create
+    repo_obj&.open_version!
+    # TODO: when we stop calling the UpdateObjectService, after we've migrated to RepostoryObjects, we may need to trigger indexing:
+    #       e.g.: Notifications::ObjectUpdated.publish(model: cocina_object_with_metadata)
 
-      # Skipping open check since not yet opened.
-      update_cocina_object = UpdateObjectService.update(cocina_object.new(version: new_object_version.version), skip_open_check: true) if cocina_object.version != new_object_version.version
-    end
+    # Skipping open check since not yet opened.
+    update_cocina_object = UpdateObjectService.update(cocina_object.new(version: new_object_version.version), skip_open_check: true) if cocina_object.version != new_object_version.version
 
     workflow_client.create_workflow_by_name(druid, 'versioningWF', version: new_object_version.version.to_s)
 

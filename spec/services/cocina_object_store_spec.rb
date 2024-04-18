@@ -62,41 +62,6 @@ RSpec.describe CocinaObjectStore do
         expect(store.find(repo_object.external_identifier)).to be_instance_of(Cocina::Models::DROWithMetadata)
       end
     end
-
-    context 'when enabled_features.repository_object_test is enabled' do
-      let(:ar_cocina_object) { create(:ar_dro) }
-      let(:repo_object) { create(:repository_object, external_identifier: ar_cocina_object.external_identifier) }
-
-      before do
-        allow(Settings.enabled_features).to receive(:repository_object_test).and_return true
-        allow(Honeybadger).to receive(:notify)
-        repo_object.head_version.update!(version_attributes)
-      end
-
-      context "when objects don't match" do
-        let(:version_attributes) { RepositoryObjectVersion.to_model_hash(build(:dro, id: repo_object.external_identifier)) }
-
-        it 'returns Cocina::Models::DRO and reports a diff' do
-          expect(store.find(repo_object.external_identifier)).to be_instance_of(Cocina::Models::DROWithMetadata)
-          expect(Honeybadger).to have_received(:notify)
-            .with('Comparison of RepositoryObject with legacy object failed.',
-                  context: { druid: ar_cocina_object.external_identifier })
-        end
-      end
-
-      context 'when objects match' do
-        let(:version_attributes) { RepositoryObjectVersion.to_model_hash(ar_cocina_object.to_cocina) }
-
-        before do
-          repo_object.head_version.update!(updated_at: 1.day.ago)
-        end
-
-        it "doesn't report a diff" do
-          expect(store.find(repo_object.external_identifier)).to be_instance_of(Cocina::Models::DROWithMetadata)
-          expect(Honeybadger).not_to have_received(:notify)
-        end
-      end
-    end
   end
 
   describe '#version' do
@@ -200,37 +165,6 @@ RSpec.describe CocinaObjectStore do
 
       it 'returns Cocina::Models::DRO' do
         expect(find_by_source).to be_instance_of(Cocina::Models::DROWithMetadata)
-      end
-    end
-
-    context 'when enabled_features.repository_object_test is enabled' do
-      let(:ar_cocina_object) { create(:ar_dro) }
-      let(:repo_object) { create(:repository_object, external_identifier: ar_cocina_object.external_identifier) }
-
-      before do
-        allow(Settings.enabled_features).to receive(:repository_object_test).and_return true
-        allow(Honeybadger).to receive(:notify)
-        repo_object.head_version.update!(version_attributes)
-      end
-
-      context "when objects don't match" do
-        let(:version_attributes) { RepositoryObjectVersion.to_model_hash(build(:dro, id: repo_object.external_identifier, source_id:)) }
-
-        it 'returns Cocina::Models::DRO and reports a diff' do
-          expect(find_by_source).to be_instance_of(Cocina::Models::DROWithMetadata)
-          expect(Honeybadger).to have_received(:notify)
-            .with('Comparison of RepositoryObject with legacy object failed.',
-                  context: { source_id: })
-        end
-      end
-
-      context 'when objects match' do
-        let(:version_attributes) { RepositoryObjectVersion.to_model_hash(ar_cocina_object.to_cocina) }
-
-        it "doesn't report a diff" do
-          expect(find_by_source).to be_instance_of(Cocina::Models::DROWithMetadata)
-          expect(Honeybadger).not_to have_received(:notify)
-        end
       end
     end
   end
