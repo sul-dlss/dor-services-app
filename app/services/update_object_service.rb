@@ -48,6 +48,8 @@ class UpdateObjectService
       end
     end
 
+    compare_legacy
+
     event_factory.create(druid:, event_type: 'update', data: { success: true, request: cocina_object_without_metadata.to_h })
 
     # Broadcast this update action to a topic
@@ -82,5 +84,21 @@ class UpdateObjectService
     cocina_object.collection? &&
       Cocina::Models::Builders::TitleBuilder.build(CocinaObjectStore.find(druid).description.title) !=
         Cocina::Models::Builders::TitleBuilder.build(cocina_object.description.title)
+  end
+
+  def compare_legacy
+    RepositoryObject.transaction(isolation: ActiveRecord::Base.connection.transaction_open? ? nil : :read_committed) do
+      next unless Settings.enabled_features.repository_object_test
+
+      repo_object = RepositoryObject.find_by(external_identifier: druid)
+      next unless repo_object
+
+      cocina = repo_object.head_version.to_cocina
+      legacy_cocina_with_metadata = CocinaObjectStore.find(druid)
+      legacy_cocina = Cocina::Models.without_metadata(legacy_cocina_with_metadata)
+      next if legacy_cocina == cocina
+
+      Honeybadger.notify('Comparison of RepositoryObject with legacy object failed.', context: { legacy: legacy_cocina.to_h, cocina: cocina.to_h })
+    end
   end
 end
