@@ -25,6 +25,7 @@ RSpec.describe 'Create object' do
   before do
     allow(SuriService).to receive(:mint_id).and_return(druid)
     allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
+    allow(Indexer).to receive(:reindex)
   end
 
   context 'when a DRO is provided' do

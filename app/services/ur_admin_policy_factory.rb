@@ -25,6 +25,6 @@ class UrAdminPolicyFactory
     )
 
     cocina_object_with_metadata = CocinaObjectStore.store(admin_policy_cocina, skip_lock: true)
-    Notifications::ObjectCreated.publish(model: cocina_object_with_metadata)
+    Indexer.reindex(cocina_object: cocina_object_with_metadata)
   end
 end

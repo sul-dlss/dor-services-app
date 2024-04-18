@@ -47,6 +47,7 @@ class CreateObjectService
 
     # Broadcast this to a topic
     Notifications::ObjectCreated.publish(model: cocina_object_with_metadata)
+    Indexer.reindex(cocina_object: cocina_object_with_metadata)
     cocina_object_with_metadata
   end
 

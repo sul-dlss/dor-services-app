@@ -19,6 +19,7 @@ RSpec.describe CreateObjectService do
     before do
       allow(Cocina::ObjectValidator).to receive(:validate)
       allow(Notifications::ObjectCreated).to receive(:publish)
+      allow(Indexer).to receive(:reindex)
       allow(store).to receive(:merge_access_for).and_return(requested_cocina_object)
       allow(store).to receive(:add_project_tag)
       allow(SuriService).to receive(:mint_id).and_return(druid)
@@ -49,6 +50,7 @@ RSpec.describe CreateObjectService do
         end.to change(Dro, :count).by(1).and change(RepositoryObject, :count).by(1)
 
         expect(Notifications::ObjectCreated).to have_received(:publish)
+        expect(Indexer).to have_received(:reindex)
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
         expect(store).to have_received(:merge_access_for).with(requested_cocina_object)
         expect(store).to have_received(:add_project_tag).with(druid, requested_cocina_object)
@@ -66,6 +68,7 @@ RSpec.describe CreateObjectService do
           expect(store.create(requested_cocina_object)).to be_a Cocina::Models::CollectionWithMetadata
         end.to change(Collection, :count).by(1)
         expect(Notifications::ObjectCreated).to have_received(:publish)
+        expect(Indexer).to have_received(:reindex)
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
         expect(store).to have_received(:merge_access_for).with(requested_cocina_object)
         expect(store).to have_received(:add_project_tag).with(druid, requested_cocina_object)
