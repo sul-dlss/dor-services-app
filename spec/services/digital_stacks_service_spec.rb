@@ -188,6 +188,8 @@ RSpec.describe DigitalStacksService do
         expect(file_pathname).to exist
         # if file exists, and has expected signature
         moab_signature = Moab::FileSignature.new.signature_from_file(file_pathname)
+        # when run in a non-spec context, the moab_signature size is actually a string.
+        moab_signature.size = moab_signature.size.to_s
         expect(described_class.delete_file(file_pathname, moab_signature)).to be_truthy
         expect(file_pathname).not_to exist
       end
