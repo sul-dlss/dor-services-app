@@ -76,20 +76,27 @@ class RepositoryObject < ApplicationRecord
     opened_version.update!(**RepositoryObjectVersion.to_model_hash(cocina_object))
   end
 
-  def open_version!
+  def open_version!(description:)
     raise VersionAlreadyOpened, "Cannot open new version because one is already open: #{head_version.version}" if open?
 
     RepositoryObject.transaction do
-      version_to_open = last_closed_version.dup.tap { |object_version| object_version.version += 1 }
+      version_to_open = last_closed_version.dup.tap do |object_version|
+        object_version.version += 1
+        object_version.version_description = description
+      end
       update!(opened_version: version_to_open, head_version: version_to_open)
     end
   end
 
-  def close_version!
+  def close_version!(description: nil)
     raise VersionNotOpened, "Cannot close version because head version is closed: #{head_version.version}" if closed?
 
     RepositoryObject.transaction do
-      version_to_close = opened_version.tap { |object_version| object_version.closed_at = Time.current }
+      version_to_close = opened_version.tap do |object_version|
+        object_version.closed_at = Time.current
+        object_version.version_description = description if description
+      end
+      version_to_close.save!
       update!(opened_version: nil, last_closed_version: version_to_close, head_version: version_to_close)
     end
   end

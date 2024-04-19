@@ -55,6 +55,7 @@ RSpec.describe VersionService do
                                                              druid:,
                                                              event_type: 'version_open')
         expect(repository_object.reload.opened_version.version).to eq 2
+        expect(repository_object.opened_version.version_description).to eq 'same as it ever was'
       end
     end
 
@@ -251,6 +252,7 @@ RSpec.describe VersionService do
 
     before do
       repository_object&.save! # This can be removed after we fully migrate to RepositoryObjects
+      repository_object&.head_version&.update!(version: 2, version_description: 'A Second Version')
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
       ObjectVersion.create(druid:, version: 1, description: 'Initial Version')
       ObjectVersion.create(druid:, version: 2, description: 'A Second Version')
@@ -265,6 +267,7 @@ RSpec.describe VersionService do
       it 'sets description and an event' do
         close
         expect(repository_object.reload.last_closed_version).to be_present
+        expect(repository_object.last_closed_version.version_description).to eq('closing text')
 
         object_version = ObjectVersion.find_by(druid:, version: 2)
         expect(object_version.description).to eq('closing text')
@@ -347,6 +350,7 @@ RSpec.describe VersionService do
       it 'closes the object version using existing signficance and description' do
         close
         expect(repository_object.reload.last_closed_version).to be_present
+        expect(repository_object.last_closed_version.version_description).to eq 'A Second Version'
         object_version = ObjectVersion.find_by(druid:, version: 2)
         expect(object_version.description).to eq 'A Second Version'
         expect(workflow_client).to have_received(:close_version)
