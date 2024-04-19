@@ -60,7 +60,7 @@ class DeleteService
       Event.where(druid:).destroy_all
       ReleaseTag.where(druid:).destroy_all
     end
-    Notifications::ObjectDeleted.publish(model: cocina_object, deleted_at: Time.zone.now)
+    Indexer.delete(druid:)
   end
 
   def druid
