@@ -6,9 +6,15 @@ class VersionsController < ApplicationController
   before_action :load_version, only: %i[current close_current openable status]
 
   def index
+    repository_object = RepositoryObject.find_by(external_identifier: params[:object_id])
     object_versions = ObjectVersion.where(druid: params[:object_id])
 
-    return render json: {} if object_versions.empty?
+    # return an empty JSON object if there are no versions and no repository object
+    return render json: {} if object_versions.empty? && repository_object.nil?
+
+    # add an entry with version id and description for each RepositoryObjectVersion
+
+    return render json: { versions: repository_object_version_content(repository_object.versions) } if repository_object
 
     # add an entry with version id and description for each version
     versions = object_versions.map do |object_version|
@@ -108,5 +114,14 @@ class VersionsController < ApplicationController
 
   def load_version
     @version = CocinaObjectStore.version(params[:object_id])
+  end
+
+  def repository_object_version_content(repository_object_versions)
+    repository_object_versions.map do |repository_object_version|
+      {
+        versionId: repository_object_version.version,
+        message: repository_object_version.version_description
+      }
+    end
   end
 end
