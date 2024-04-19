@@ -11,6 +11,7 @@ RSpec.describe VersionService do
 
   before do
     allow(WorkflowStateService).to receive(:new).and_return(workflow_state_service)
+    allow(Indexer).to receive(:reindex_later)
   end
 
   describe '.open' do
@@ -19,16 +20,9 @@ RSpec.describe VersionService do
     let(:workflow_client) do
       instance_double(Dor::Workflow::Client, create_workflow_by_name: true)
     end
-    # Doing build(:repository_object) rather than create to support test where it doesn't exist.
-    # This case can be removed after we fully migrate to RepositoryObjects
-    let(:repository_object) { build(:repository_object, external_identifier: druid) }
+    let(:repository_object) { create(:repository_object, external_identifier: druid) }
 
     before do
-      # TODO: This check should be removed after we fully migrate to RepositoryObjects
-      if repository_object
-        repository_object.save!
-        repository_object.close_version!
-      end
       allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
       allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
@@ -38,6 +32,15 @@ RSpec.describe VersionService do
     end
 
     context 'when on the expected path' do
+      # Doing build(:repository_object) rather than create to support test where it doesn't exist.
+      # This case can be removed after we fully migrate to RepositoryObjects
+      let(:repository_object) { build(:repository_object, external_identifier: druid) }
+
+      before do
+        repository_object.save!
+        repository_object.close_version!
+      end
+
       it 'creates an object version and starts a workflow' do
         open
         expect(Dro.find_by(external_identifier: druid).version).to eq 2
