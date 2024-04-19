@@ -9,7 +9,7 @@ RSpec.describe PublishJob do
 
   let(:druid) { 'druid:mk420bs7601' }
   let(:result) { create(:background_job_result) }
-  let(:item) { instance_double(Cocina::Models::DRO) }
+  let(:item) { instance_double(Cocina::Models::DRO, admin_policy?: false) }
   let(:workflow) { 'accessionWF' }
   let(:valid) { true }
   let(:invalid_filenames) { [] }
@@ -66,6 +66,20 @@ RSpec.describe PublishJob do
         expect(LogSuccessJob).to have_received(:perform_later)
           .with(druid:, background_job_result: result, workflow: 'accessionWF', workflow_process: 'publish')
       end
+    end
+  end
+
+  context 'when an AdminPolicy' do
+    let(:item) { instance_double(Cocina::Models::AdminPolicy, admin_policy?: true) }
+
+    before do
+      allow(LogFailureJob).to receive(:perform_later)
+      perform
+    end
+
+    it 'marks the job as a failure' do
+      expect(LogFailureJob).to have_received(:perform_later)
+        .with(druid:, background_job_result: result, workflow: 'accessionWF', workflow_process: 'publish', output: Hash)
     end
   end
 end
