@@ -122,8 +122,10 @@ RSpec.describe RepositoryObject do
   describe '#open_version!' do
     subject(:repository_object) { create(:repository_object, **attrs) }
 
+    let(:description) { 'my new version' }
+
     it 'raises when version is already open' do
-      expect { repository_object.open_version! }.to raise_error(described_class::VersionAlreadyOpened)
+      expect { repository_object.open_version!(description:) }.to raise_error(described_class::VersionAlreadyOpened)
     end
 
     context 'when closed' do
@@ -132,17 +134,20 @@ RSpec.describe RepositoryObject do
       end
 
       it 'creates a new version and updates the head and opened version pointers' do
-        expect { repository_object.open_version! }.to change(RepositoryObjectVersion, :count).by(1)
+        expect { repository_object.open_version!(description:) }.to change(RepositoryObjectVersion, :count).by(1)
         newly_created_version = repository_object.versions.last
         expect(newly_created_version.version).to eq(2)
         expect(repository_object.head_version).to eq(newly_created_version)
         expect(repository_object.opened_version).to eq(newly_created_version)
+        expect(newly_created_version.version_description).to eq(description)
       end
     end
   end
 
   describe '#close_version!' do
     subject(:repository_object) { create(:repository_object, **attrs) }
+
+    let(:description) { 'my closed version' }
 
     it 'sets the closed_at field' do
       expect { repository_object.close_version! }.to change(repository_object.head_version, :closed_at).to(instance_of(ActiveSupport::TimeWithZone))
@@ -154,6 +159,11 @@ RSpec.describe RepositoryObject do
       expect(repository_object.head_version).to eq(closed_version)
       expect(repository_object.last_closed_version).to eq(closed_version)
       expect(repository_object.opened_version).to be_nil
+    end
+
+    it 'updates the version description' do
+      repository_object.close_version!(description:)
+      expect(repository_object.head_version.version_description).to eq(description)
     end
 
     context 'when closed' do
