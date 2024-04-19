@@ -35,7 +35,7 @@ RSpec.describe 'Administrative tags' do
   describe '#create' do
     before do
       allow(AdministrativeTags).to receive(:create)
-      allow(Notifications::ObjectUpdated).to receive(:publish)
+      allow(Indexer).to receive(:reindex_later)
     end
 
     context 'when happy path (without replacement)' do
@@ -45,7 +45,7 @@ RSpec.describe 'Administrative tags' do
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(AdministrativeTags).to have_received(:create)
           .with(identifier: druid, tags:, replace: nil)
-        expect(Notifications::ObjectUpdated).to have_received(:publish)
+        expect(Indexer).to have_received(:reindex_later)
         expect(response).to have_http_status(:created)
       end
     end
@@ -57,7 +57,7 @@ RSpec.describe 'Administrative tags' do
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(AdministrativeTags).to have_received(:create)
           .with(identifier: druid, tags:, replace: true)
-        expect(Notifications::ObjectUpdated).to have_received(:publish)
+        expect(Indexer).to have_received(:reindex_later)
         expect(response).to have_http_status(:created)
       end
     end
@@ -74,7 +74,7 @@ RSpec.describe 'Administrative tags' do
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status(:not_found)
         expect(response.body).to eq('Unable to find \'druid:mx123qw2323\' in repository. See logger for details.')
-        expect(Notifications::ObjectUpdated).not_to have_received(:publish)
+        expect(Indexer).not_to have_received(:reindex_later)
       end
     end
 
@@ -119,7 +119,7 @@ RSpec.describe 'Administrative tags' do
 
     before do
       allow(AdministrativeTags).to receive(:update)
-      allow(Notifications::ObjectUpdated).to receive(:publish)
+      allow(Indexer).to receive(:reindex_later)
     end
 
     context 'when happy path' do
@@ -129,7 +129,7 @@ RSpec.describe 'Administrative tags' do
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(AdministrativeTags).to have_received(:update)
           .with(identifier: druid, current: current_tag, new: new_tag)
-        expect(Notifications::ObjectUpdated).to have_received(:publish)
+        expect(Indexer).to have_received(:reindex_later)
         expect(response).to have_http_status(:no_content)
       end
     end
@@ -253,7 +253,7 @@ RSpec.describe 'Administrative tags' do
 
     before do
       allow(AdministrativeTags).to receive(:destroy)
-      allow(Notifications::ObjectUpdated).to receive(:publish)
+      allow(Indexer).to receive(:reindex_later)
     end
 
     context 'when happy path' do
@@ -262,7 +262,7 @@ RSpec.describe 'Administrative tags' do
                headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(AdministrativeTags).to have_received(:destroy)
           .with(identifier: druid, tag:)
-        expect(Notifications::ObjectUpdated).to have_received(:publish)
+        expect(Indexer).to have_received(:reindex_later)
         expect(response).to have_http_status(:no_content)
       end
     end

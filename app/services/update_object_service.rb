@@ -52,8 +52,7 @@ class UpdateObjectService
 
     event_factory.create(druid:, event_type: 'update', data: { success: true, request: cocina_object_without_metadata.to_h })
 
-    # Broadcast this update action to a topic
-    Notifications::ObjectUpdated.publish(model: cocina_object_with_metadata)
+    Indexer.reindex_later(cocina_object: cocina_object_with_metadata)
 
     # Update all items in the collection if necessary
     PublishItemsModifiedJob.perform_later(druid) if update_items

@@ -8,7 +8,7 @@ class PublishItemsModifiedJob < ApplicationJob
   def perform(collection_identifier)
     MemberService.for(collection_identifier).each do |druid|
       cocina_object_with_metadata = CocinaObjectStore.find(druid)
-      Notifications::ObjectUpdated.publish(model: cocina_object_with_metadata)
+      Indexer.reindex_later(cocina_object: cocina_object_with_metadata)
     end
   end
 end

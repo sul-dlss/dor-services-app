@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Indexer do
-  let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid) }
+  let(:cocina_object) { build(:dro_with_metadata, id: druid) }
   let(:druid) { 'druid:bc123df4567' }
 
   let(:solr_doc) { instance_double(Hash) }
@@ -37,6 +37,21 @@ RSpec.describe Indexer do
       described_class.delete(druid:)
       expect(solr).to have_received(:delete_by_id).with(druid)
       expect(solr).to have_received(:commit)
+    end
+  end
+
+  describe '#reindex_later' do
+    before do
+      allow(ReindexJob).to receive(:perform_later)
+    end
+
+    it 'reindexes the object later' do
+      described_class.reindex_later(cocina_object:)
+      expect(ReindexJob).to have_received(:perform_later).with(
+        model: cocina_object.to_h,
+        created: cocina_object.created,
+        modified: cocina_object.modified
+      )
     end
   end
 
