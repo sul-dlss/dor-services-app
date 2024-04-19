@@ -112,7 +112,6 @@ RSpec.describe Publish::MetadataTransferService do
         before do
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/{"cocinaVersion"/, 'cocina.json')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
-          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<mods:mods/, 'mods')
           expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(cocina_object)
         end
 
@@ -121,7 +120,6 @@ RSpec.describe Publish::MetadataTransferService do
         it 'identityMetadata, contentMetadata, rightsMetadata, generated dublin core, and public xml' do
           service.publish
           expect(Publish::PublicXmlService).to have_received(:new).with(public_cocina: Cocina::Models::DRO, thumbnail_service:)
-          expect(Publish::PublicDescMetadataService).to have_received(:new).with(Cocina::Models::DRO)
         end
       end
 
@@ -135,7 +133,6 @@ RSpec.describe Publish::MetadataTransferService do
         before do
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/{"cocinaVersion"/, 'cocina.json')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
-          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<mods:mods/, 'mods')
           expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(cocina_object)
           expect_any_instance_of(described_class).to receive(:republish_members!).with(no_args)
         end
