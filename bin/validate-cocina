@@ -42,7 +42,7 @@ end
 def tty_progress_bar(count, clazz_name)
   TTY::ProgressBar.new(
     "Validating #{clazz_name} [:bar] (:percent (:current/:total), rate: :rate/s, mean rate: :mean_rate/s, :elapsed total, ETA: :eta_time)",
-    bar_format: :crate,
+    bar_format: :box,
     advance: num_for_progress_advance(count),
     total: count
   )
