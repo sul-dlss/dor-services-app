@@ -11,13 +11,18 @@ class PublishJob < ApplicationJob
   def perform(druid:, background_job_result:, workflow:, log_success: true)
     background_job_result.processing!
     workflow_process = workflow == 'releaseWF' ? 'release-publish' : 'publish'
-    begin
-      cocina_object = CocinaObjectStore.find(druid)
+    cocina_object = CocinaObjectStore.find(druid)
 
-      Publish::MetadataTransferService.publish(cocina_object, workflow:)
-      EventFactory.create(druid:, event_type: 'publishing_complete', data: { background_job_result_id: background_job_result.id })
+    if cocina_object.admin_policy?
+      return LogFailureJob.perform_later(druid:,
+                                         background_job_result:,
+                                         workflow:,
+                                         workflow_process:,
+                                         output: { errors: [{ title: 'Publishing error', detail: 'Cannot publish an admin policy' }] })
     end
 
+    Publish::MetadataTransferService.publish(cocina_object, workflow:)
+    EventFactory.create(druid:, event_type: 'publishing_complete', data: { background_job_result_id: background_job_result.id })
     return unless log_success
 
     LogSuccessJob.perform_later(druid:,
