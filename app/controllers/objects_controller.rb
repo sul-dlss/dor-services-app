@@ -2,7 +2,7 @@
 
 # rubocop:disable Metrics/ClassLength
 class ObjectsController < ApplicationController
-  before_action :load_cocina_object, only: %i[update_doi_metadata update_marc_record notify_goobi accession destroy show update_orcid_work]
+  before_action :load_cocina_object, only: %i[update_doi_metadata update_marc_record notify_goobi accession destroy show update_orcid_work reindex]
   before_action :check_cocina_object_exists, only: %i[preserve publish unpublish]
 
   rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
@@ -172,6 +172,11 @@ class ObjectsController < ApplicationController
     return json_api_error(status: :conflict, message: response.body) if response.status == 409
 
     proxy_faraday_response(response)
+  end
+
+  def reindex
+    Indexer.reindex(cocina_object: @cocina_object)
+    head :no_content
   end
 
   private

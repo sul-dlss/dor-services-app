@@ -44,6 +44,7 @@ Rails.application.routes.draw do
         post 'accession'
         post 'refresh_metadata', to: 'metadata_refresh#refresh'
         post 'apply_admin_policy_defaults', to: 'admin_policy_defaults#apply'
+        post 'reindex'
       end
 
       collection do
