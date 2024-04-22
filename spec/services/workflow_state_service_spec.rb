@@ -97,29 +97,6 @@ RSpec.describe WorkflowStateService do
     end
   end
 
-  describe '.active_version_wf?' do
-    context 'when there is an active versionWF' do
-      before do
-        allow(workflow_client).to receive(:active_lifecycle).and_return(Time.current)
-      end
-
-      it 'returns true' do
-        expect(workflow_state).to be_active_version_wf
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'opened', version: '1')
-      end
-    end
-
-    context 'when there is not an active versionWF' do
-      before do
-        allow(workflow_client).to receive(:active_lifecycle).and_return(nil)
-      end
-
-      it 'returns false' do
-        expect(workflow_state).not_to be_active_version_wf
-      end
-    end
-  end
-
   describe '.accessioning?' do
     context 'when there is an active accessioningWF' do
       before do

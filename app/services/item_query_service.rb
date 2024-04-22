@@ -4,8 +4,6 @@
 class ItemQueryService
   class UncombinableItemError < RuntimeError; end
 
-  ALLOWED_WORKFLOW_STATES = %w[Accessioned Opened].freeze
-
   # @param [String] virtual_object a virtual_object druid
   # @param [Array] constituents a list of constituent druids
   # @return [Hash]
@@ -17,6 +15,7 @@ class ItemQueryService
     # check virtual_object for combinability
     begin
       find_combinable_item(virtual_object)
+      check_open(virtual_object)
     rescue UncombinableItemError => e
       errors[virtual_object] << e.message
     end
@@ -24,6 +23,7 @@ class ItemQueryService
     # check constituents for combinability and whether they are already virtual objects
     constituents.each do |druid|
       check_virtual(druid)
+      check_accessioned(druid)
       find_combinable_item(druid)
     rescue UncombinableItemError => e
       errors[virtual_object] << e.message
@@ -32,13 +32,12 @@ class ItemQueryService
     errors
   end
 
-  # @raise [UncombinableItemError] if the item is dark, citation_only, or not modifiable
+  # @raise [UncombinableItemError] if the item is not an item, dark, or citation_only
   def self.find_combinable_item(druid)
     new(id: druid).item do |item|
       raise UncombinableItemError, "Item #{item.externalIdentifier} is not an item" unless item.dro?
       raise UncombinableItemError, "Item #{item.externalIdentifier} is dark" if item.access.view == 'dark'
       raise UncombinableItemError, "Item #{item.externalIdentifier} is citation-only" if item.access.view == 'citation-only'
-      raise UncombinableItemError, "Item #{item.externalIdentifier} is not in the accessioned or opened workflow state" unless current_workflow_state(item).in?(ALLOWED_WORKFLOW_STATES)
     end
   end
 
@@ -50,13 +49,19 @@ class ItemQueryService
   end
   private_class_method :check_virtual
 
-  def self.current_workflow_state(item)
-    WorkflowClientFactory
-      .build
-      .status(druid: item.externalIdentifier, version: item.version)
-      .display_simplified
+  # @raise [UncombinableItemError] if the items is not open or openable
+  def self.check_open(druid)
+    new(id: druid).item do |item|
+      raise UncombinableItemError, "Item #{item.externalIdentifier} is not open or openable" unless VersionService.open?(druid: item.externalIdentifier, version: item.version) || VersionService.can_open?(druid: item.externalIdentifier, version: item.version)
+    end
   end
-  private_class_method :current_workflow_state
+
+  # @raise [UncombinableItemError] if the item is dark, citation_only, or not modifiable
+  def self.check_accessioned(druid)
+    new(id: druid).item do |item|
+      raise UncombinableItemError, "Item #{item.externalIdentifier} has not been accessioned" unless WorkflowStateService.accessioned?(druid: item.externalIdentifier, version: item.version)
+    end
+  end
 
   # @param [String] id - The id of the item
   def initialize(id:)
