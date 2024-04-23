@@ -19,12 +19,13 @@ class EventsMultipleDateTypes
   EVENT_WITH_TYPED_DATE_JSONB_PATH = 'strict $.event.**.date.**.type'
 
   SQL = <<~SQL.squish.freeze
-    SELECT jsonb_path_query(description, '#{EVENT_JSONB_PATH}') ->> 0 as event,
-           external_identifier,
-           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
-           jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_id
-           FROM "dros" WHERE
-           jsonb_path_exists(description, '#{EVENT_WITH_TYPED_DATE_JSONB_PATH}')
+    SELECT jsonb_path_query(rov.description, '#{EVENT_JSONB_PATH}') ->> 0 as event,
+           ro.external_identifier,
+           jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
+           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id
+           FROM repository_objects ro, repository_oobject_versions rov WHERE
+           rov.id = rov.head_version_id
+           jsonb_path_exists(rov.description, '#{EVENT_WITH_TYPED_DATE_JSONB_PATH}')
   SQL
 
   def self.report
