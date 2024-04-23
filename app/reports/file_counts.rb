@@ -11,15 +11,16 @@
 #
 class FileCounts
   SQL = <<~SQL.squish.freeze
-    SELECT DISTINCT(external_identifier),
-      content_type,
+    SELECT DISTINCT(ro.external_identifier),
+      rov.content_type,
       JSONB_ARRAY_LENGTH(
         JSONB_PATH_QUERY_ARRAY(
-          structural,
+          rov.structural,
           '$.contains[*].structural.contains[*].filename'
         )
       ) AS count
-    FROM dros
+    FROM repository_objects ro, repository_object_versions rov
+    WHERE ro.object_type = "dro" and rov.id = ro.head_version_id
     ORDER BY count DESC
   SQL
 
