@@ -44,14 +44,14 @@ class DescriptiveShape
   end
 
   def report
-    Dro.find_each do |obj|
-      has_catalog_link = obj.identification['catalogLinks'].present?
+    RepositoryObject.dros.find_each do |obj|
+      has_catalog_link = obj.head_version.identification['catalogLinks'].present?
 
       next if @catalog == 'none' && has_catalog_link
 
       next if @catalog == 'only' && !has_catalog_link
 
-      trace(obj.description)
+      trace(obj.head_version.description)
     end
     output
   end
