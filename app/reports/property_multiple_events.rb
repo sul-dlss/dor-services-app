@@ -10,14 +10,16 @@ class PropertyMultipleEvents
   PURL_JSONB_PATH = 'strict $.purl'
 
   SQL = <<~SQL.squish.freeze
-    SELECT jsonb_path_query(description, '#{PURL_JSONB_PATH}') ->> 0 as purl,
-           external_identifier,
-           label,
-           jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_id,
-           jsonb_path_query(administrative, '$.hasAdminPolicy') ->> 0 as apo
-           FROM "dros" WHERE
-           jsonb_array_length(jsonb_path_query_array(description, '#{EVENT_JSONB_PATH}')) > 1
-           AND NOT jsonb_path_exists(dros.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId')
+    SELECT jsonb_path_query(rov.description, '#{PURL_JSONB_PATH}') ->> 0 as purl,
+           ro.external_identifier,
+           rov.label,
+           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id,
+           jsonb_path_query(rov.administrative, '$.hasAdminPolicy') ->> 0 as apo
+           FROM repository_objects AS ro, repository_object_versions AS rov WHERE
+           ro.head_version_id = rov.id
+           AND ro.object_type = 'dro'
+           AND jsonb_array_length(jsonb_path_query_array(rov.description, '#{EVENT_JSONB_PATH}')) > 1
+           AND NOT jsonb_path_exists(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId')
   SQL
 
   def self.report
@@ -34,7 +36,7 @@ class PropertyMultipleEvents
       .group_by { |row| row['external_identifier'] }
       .map do |_id, rows|
         collection_druid = rows.first['collection_id']
-        collection_name = Collection.find_by(external_identifier: collection_druid)&.label
+        collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.label
 
         [
           rows.first['purl'],

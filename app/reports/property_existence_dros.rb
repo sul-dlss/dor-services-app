@@ -18,11 +18,13 @@ class PropertyExistenceDros
   JSON_PATH = "strict $.**.#{PROPERTY} ? (@.size() > 0)".freeze # when property is array
 
   SQL = <<~SQL.squish.freeze
-    SELECT external_identifier as item_druid,
-           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
-           jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_id
-           FROM "dros" WHERE
-           jsonb_path_exists(dros.description, '#{JSON_PATH}')
+    SELECT ro.external_identifier as item_druid,
+           jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
+           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id
+           FROM repository_objects AS ro, repository_object_versions AS rov WHERE
+           ro.head_version_id = rov.id
+           AND ro.object_type = 'dro'
+           AND jsonb_path_exists(rov.description, '#{JSON_PATH}')
   SQL
 
   def self.report
@@ -35,7 +37,7 @@ class PropertyExistenceDros
 
     sql_result_rows.map do |row|
       collection_druid = row['collection_id']
-      collection_name = Collection.find_by(external_identifier: collection_druid)&.label
+      collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.label
 
       [
         row['item_druid'],
