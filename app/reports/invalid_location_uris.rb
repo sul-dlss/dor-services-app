@@ -21,7 +21,7 @@ class InvalidLocationUris
            jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
            jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id
            FROM repository_objects AS ro,
-           repository_object_versions AS rov
+           repository_object_versions AS rov,
            jsonb_path_query_array(rov.description, '#{JSON_PATH} ? (@.uri like_regex #{REGEX})') AS event_location
            WHERE
            ro.head_version_id = rov.id

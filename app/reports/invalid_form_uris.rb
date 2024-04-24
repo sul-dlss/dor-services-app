@@ -14,7 +14,7 @@ class InvalidFormUris
            ro.head_version_id = rov.id
            AND ro.object_type = 'dro'
            AND (jsonb_path_exists(rov.description, '#{JSON_PATH} ? (@ like_regex "^(?!https?://).*$")') OR
-           AND jsonb_path_exists(rov.description, '#{JSON_PATH} ? (@ like_regex "^.*\.html$")'))
+           jsonb_path_exists(rov.description, '#{JSON_PATH} ? (@ like_regex "^.*\.html$")'))
   SQL
 
   def self.report
