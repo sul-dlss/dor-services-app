@@ -323,6 +323,8 @@ GEM
       net-protocol
     net-ssh (7.2.3)
     nio4r (2.7.1)
+    nokogiri (1.16.4-arm64-darwin)
+      racc (~> 1.4)
     nokogiri (1.16.4-x86_64-darwin)
       racc (~> 1.4)
     nokogiri (1.16.4-x86_64-linux)
@@ -560,6 +562,7 @@ GEM
     zeitwerk (2.6.13)
 
 PLATFORMS
+  arm64-darwin-23
   x86_64-darwin-19
   x86_64-darwin-20
   x86_64-darwin-21
