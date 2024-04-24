@@ -14,16 +14,19 @@ class InvalidLocationUris
   ].freeze
   REGEX = "\"^https?://(?!#{URL_PATTERNS_IGNORED.join('|')}).*$\"".freeze
   SQL = <<~SQL.squish.freeze
-    SELECT dros.external_identifier,
+    SELECT ro.external_identifier,
            event_location #>> '{0,value}' as value,
            event_location #>> '{0,uri}' as uri,
            event_location #>> '{0,code}' as code,
-           jsonb_path_query(dros.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
-           jsonb_path_query(dros.structural, '$.isMemberOf') ->> 0 as collection_id
-           FROM "dros",
-           jsonb_path_query_array(dros.description, '#{JSON_PATH} ? (@.uri like_regex #{REGEX})') event_location
+           jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
+           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id
+           FROM repository_objects AS ro,
+           repository_object_versions AS rov,
+           jsonb_path_query_array(rov.description, '#{JSON_PATH} ? (@.uri like_regex #{REGEX})') AS event_location
            WHERE
-           jsonb_path_exists(description, '#{JSON_PATH}.uri ? (@ like_regex #{REGEX})')
+           ro.head_version_id = rov.id
+           AND ro.object_type = 'dro'
+           ANd jsonb_path_exists(rov.description, '#{JSON_PATH}.uri ? (@ like_regex #{REGEX})')
   SQL
 
   def self.report

@@ -7,19 +7,21 @@ class InvalidLanguageUris
   JSON_PATH2 = '$.**.valueLanguage.**.uri' # both valueLanguage.uri and valueLanguage.valueScript.uri
 
   SQL = <<~SQL.squish.freeze
-    SELECT (jsonb_path_query_array(description, '#{JSON_PATH1} ? (@ like_regex "^.*\.html$")') ||
-            jsonb_path_query_array(description, '#{JSON_PATH1} ? (@ like_regex "^(?!https?://).*$")') ||
-            jsonb_path_query_array(description, '#{JSON_PATH2} ? (@ like_regex "^.*\.html$")') ||
-            jsonb_path_query_array(description, '#{JSON_PATH2} ? (@ like_regex "^(?!https?://).*$")')) ->> 0 as contrib,
-           external_identifier,
-           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
-           jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_id
-           FROM "dros" WHERE
-           (jsonb_path_exists(description, '#{JSON_PATH1} ? (@ like_regex "^(?!https?://).*$")') OR
-           jsonb_path_exists(description, '#{JSON_PATH1} ? (@ like_regex "^.*\.html$")') OR
-           jsonb_path_exists(description, '#{JSON_PATH2} ? (@ like_regex "^(?!https?://).*$")') OR
-           jsonb_path_exists(description, '#{JSON_PATH2} ? (@ like_regex "^.*\.html$")')
-           )
+    SELECT (jsonb_path_query_array(rov.description, '#{JSON_PATH1} ? (@ like_regex "^.*\.html$")') ||
+            jsonb_path_query_array(rov.description, '#{JSON_PATH1} ? (@ like_regex "^(?!https?://).*$")') ||
+            jsonb_path_query_array(rov.description, '#{JSON_PATH2} ? (@ like_regex "^.*\.html$")') ||
+            jsonb_path_query_array(rov.description, '#{JSON_PATH2} ? (@ like_regex "^(?!https?://).*$")')) ->> 0 as contrib,
+           ro.external_identifier,
+           jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
+           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id
+           FROM repository_objects AS ro, repository_object_versions AS rov WHERE
+           ro.head_version_id = rov.id
+           AND ro.object_type = 'dro'
+           AND ((jsonb_path_exists(rov.description, '#{JSON_PATH1} ? (@ like_regex "^(?!https?://).*$")') OR
+           jsonb_path_exists(rov.description, '#{JSON_PATH1} ? (@ like_regex "^.*\.html$")') OR
+           jsonb_path_exists(rov.description, '#{JSON_PATH2} ? (@ like_regex "^(?!https?://).*$")') OR
+           jsonb_path_exists(rov.description, '#{JSON_PATH2} ? (@ like_regex "^.*\.html$")')
+           ))
   SQL
 
   def self.report

@@ -16,12 +16,14 @@ class InvalidSubjectNonSourceUris
   # HT: https://stackoverflow.com/a/3809435
   REGEX = 'https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,255}\.[a-zA-Z0-9()]{1,6}([-a-zA-Z0-9()@:%_\+.~#?&//=]*)'
   SQL = <<~SQL.squish.freeze
-    SELECT jsonb_path_query(description, '#{JSON_PATH} ? (!(@.**.uri like_regex "#{REGEX}")).**.uri') ->> 0 as invalid_values,
-           external_identifier,
-           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
-           jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_id
-           FROM "dros" WHERE
-           jsonb_path_exists(description, '#{JSON_PATH} ? (!(@.**.uri like_regex "#{REGEX}")).**.uri')
+    SELECT jsonb_path_query(rov.description, '#{JSON_PATH} ? (!(@.**.uri like_regex "#{REGEX}")).**.uri') ->> 0 as invalid_values,
+           ro.external_identifier,
+           jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
+           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id
+           FROM repository_objects AS ro, repository_object_versions AS rov WHERE
+           ro.head_version_id = rov.id
+           AND ro.object_type = 'dro'
+           AND jsonb_path_exists(rov.description, '#{JSON_PATH} ? (!(@.**.uri like_regex "#{REGEX}")).**.uri')
   SQL
 
   def self.report
@@ -38,7 +40,7 @@ class InvalidSubjectNonSourceUris
       .group_by { |row| row['external_identifier'] }
       .map do |id, rows|
         collection_druid = rows.first['collection_id']
-        collection_name = Collection.find_by(external_identifier: collection_druid)&.label
+        collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.label
 
         [
           id,
