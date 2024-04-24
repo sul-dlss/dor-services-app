@@ -19,8 +19,8 @@ class FileCounts
           '$.contains[*].structural.contains[*].filename'
         )
       ) AS count
-    FROM repository_objects ro, repository_object_versions rov
-    WHERE ro.object_type = "dro" and rov.id = ro.head_version_id
+    FROM repository_objects AS ro, repository_object_versions AS rov
+    WHERE ro.object_type = 'dro' AND rov.id = ro.head_version_id
     ORDER BY count DESC
   SQL
 

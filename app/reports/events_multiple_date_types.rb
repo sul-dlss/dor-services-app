@@ -23,9 +23,9 @@ class EventsMultipleDateTypes
            ro.external_identifier,
            jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
            jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id
-           FROM repository_objects ro, repository_oobject_versions rov WHERE
-           rov.id = rov.head_version_id
-           jsonb_path_exists(rov.description, '#{EVENT_WITH_TYPED_DATE_JSONB_PATH}')
+           FROM repository_objects AS ro, repository_object_versions AS rov
+           WHERE rov.id = ro.head_version_id
+           AND jsonb_path_exists(rov.description, '#{EVENT_WITH_TYPED_DATE_JSONB_PATH}')
   SQL
 
   def self.report
