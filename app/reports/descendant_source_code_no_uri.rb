@@ -15,15 +15,18 @@ class DescendantSourceCodeNoUri
   # > using the .** accessor only in the strict mode.
   JSONB_PATH = 'strict $.**.contributor.**.name[*] ? (exists(@.source.code)) ? (!(exists(@.uri)))'
   SQL = <<~SQL.squish.freeze
-    SELECT dros.external_identifier as item_druid,
+    SELECT ro.external_identifier as item_druid,
            desc_value->'source'->'code' as source_code,
            desc_value->'value' as name_value,
-           jsonb_path_query(dros.structural, '$.isMemberOf') ->> 0 as collection_druid
-           FROM "dros",
-           jsonb_path_query(dros.description, '#{JSONB_PATH}') desc_value
+           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_druid
+           FROM repository_objects AS ro,
+           repository_object_versions AS rov,
+           jsonb_path_query(rov.description, '#{JSONB_PATH}') desc_value
            WHERE
-           NOT jsonb_path_exists(dros.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId')
-           AND jsonb_path_exists(dros.description, '#{JSONB_PATH}')
+           ro.head_version_id = rov.id
+           AND ro.object_type = 'dro'
+           AND NOT jsonb_path_exists(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId')
+           AND jsonb_path_exists(rov.description, '#{JSONB_PATH}')
   SQL
 
   def self.report
