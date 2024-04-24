@@ -46,7 +46,7 @@ class InvalidEdtfStructuredDates
   def self.report
     puts "item_druid,catalogRecordId,collection_druid,invalid_values,reason\n"
 
-    Dro.where("jsonb_path_exists(description, '$.**.date.**.encoding.code ? (@ == \"edtf\")')").find_each do |dro|
+    RepositoryObject.dros.where("jsonb_path_exists(head_version.description, '$.**.date.**.encoding.code ? (@ == \"edtf\")')").find_each do |dro|
       new(dro:).report
     end
   end

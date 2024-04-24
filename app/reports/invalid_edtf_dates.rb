@@ -23,12 +23,14 @@ class InvalidEdtfDates
   DATE_VALUE_JSON_PATH = JsonPath.new('$..value').freeze
 
   SQL = <<~SQL.squish.freeze
-    SELECT jsonb_path_query_array(description, '#{DATE_JSONB_PATH}') ->> 0 as dates,
-           external_identifier,
-           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
-           jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_id
-           FROM "dros" WHERE
-           jsonb_path_exists(description, '#{DATE_JSONB_PATH}')
+    SELECT jsonb_path_query_array(rov.description, '#{DATE_JSONB_PATH}') ->> 0 as dates,
+           ro.external_identifier,
+           jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
+           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id
+           FROM repository_objects AS ro, repository_object_verisons AS rov WHERE
+           ro.head_version_id = rov.id
+           AND ro.object_type = 'dro'
+           AND jsonb_path_exists(rov.description, '#{DATE_JSONB_PATH}')
   SQL
 
   def self.report
@@ -48,7 +50,7 @@ class InvalidEdtfDates
         next if invalid_values.blank?
 
         collection_druid = rows.first['collection_id']
-        collection_name = Collection.find_by(external_identifier: collection_druid)&.label
+        collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.label
 
         [
           id,

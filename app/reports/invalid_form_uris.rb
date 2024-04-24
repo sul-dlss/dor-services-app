@@ -5,14 +5,16 @@
 class InvalidFormUris
   JSON_PATH = '$.**.form.uri'
   SQL = <<~SQL.squish.freeze
-    SELECT (jsonb_path_query_array(description, '#{JSON_PATH} ? (@ like_regex "^.*\.html$")') ||
-            jsonb_path_query_array(description, '#{JSON_PATH} ? (@ like_regex "^(?!https?://).*$")')) ->> 0 as value,
-           external_identifier,
-           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
-           jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_id
-           FROM "dros" WHERE
-           (jsonb_path_exists(description, '#{JSON_PATH} ? (@ like_regex "^(?!https?://).*$")') OR
-           jsonb_path_exists(description, '#{JSON_PATH} ? (@ like_regex "^.*\.html$")'))
+    SELECT (jsonb_path_query_array(rov.description, '#{JSON_PATH} ? (@ like_regex "^.*\.html$")') ||
+            jsonb_path_query_array(rov.description, '#{JSON_PATH} ? (@ like_regex "^(?!https?://).*$")')) ->> 0 as value,
+           ro.external_identifier,
+           jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
+           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id
+           FROM repository_objects AS ro, repository_object_verisons AS rov WHERE
+           ro.head_version_id = rov.id
+           AND ro.object_type = 'dro'
+           AND (jsonb_path_exists(rov.description, '#{JSON_PATH} ? (@ like_regex "^(?!https?://).*$")') OR
+           AND jsonb_path_exists(rov.description, '#{JSON_PATH} ? (@ like_regex "^.*\.html$")'))
   SQL
 
   def self.report
