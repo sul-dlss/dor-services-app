@@ -96,6 +96,8 @@ class RabbitQueueExistsCheck < OkComputer::Check
   end
 end
 
-OkComputer::Registry.register 'rabbit-queues', RabbitQueueExistsCheck.new('dsa.create-event') if Settings.rabbitmq.enabled
+OkComputer::Registry.register 'rabbit-queues', RabbitQueueExistsCheck.new(['dsa.create-event', 'dor.indexing-by-druid']) if Settings.rabbitmq.enabled
 
 OkComputer.make_optional %w(external-folio) if Settings.enabled_features.read_folio
+
+OkComputer::Registry.register 'external-solr', OkComputer::HttpCheck.new("#{Settings.solr.url.gsub(%r{/$}, '')}/admin/ping")
