@@ -2,11 +2,13 @@
 
 require 'rails_helper'
 
+# rubocop:disable RSpec/LetSetup
 RSpec.describe VersionService do
   let(:druid) { 'druid:xz456jk0987' }
   let(:cocina_object) { create(:ar_dro, external_identifier: druid).to_cocina_with_metadata }
   let(:version) { 1 }
   let(:workflow_state_service) { instance_double(WorkflowStateService) }
+  let!(:repository_object) { create(:repository_object, :closed, external_identifier: druid) }
 
   before do
     allow(WorkflowStateService).to receive(:new).and_return(workflow_state_service)
@@ -20,7 +22,6 @@ RSpec.describe VersionService do
     let(:workflow_client) do
       instance_double(Dor::Workflow::Client, create_workflow_by_name: true)
     end
-    let(:repository_object) { create(:repository_object, external_identifier: druid) }
 
     before do
       allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
@@ -28,25 +29,15 @@ RSpec.describe VersionService do
       allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
       ObjectVersion.create(druid:, version: 1, description: 'new version')
       allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
-      allow(workflow_state_service).to receive_messages(accessioned?: true, open?: false, accessioning?: false)
+      allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
     end
 
     context 'when on the expected path' do
-      # Doing build(:repository_object) rather than create to support test where it doesn't exist.
-      # This case can be removed after we fully migrate to RepositoryObjects
-      let(:repository_object) { build(:repository_object, external_identifier: druid) }
-
-      before do
-        repository_object.save!
-        repository_object.close_version!
-      end
-
       it 'creates an object version and starts a workflow' do
         open
         expect(Dro.find_by(external_identifier: druid).version).to eq 2
         expect(ObjectVersion.current_version(druid).version).to eq(2)
         expect(workflow_state_service).to have_received(:accessioned?)
-        expect(workflow_state_service).to have_received(:open?).once
         expect(workflow_state_service).to have_received(:accessioning?)
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 
@@ -66,7 +57,7 @@ RSpec.describe VersionService do
       before do
         allow(Settings.version_service).to receive(:sync_with_preservation).and_return false
         allow(ObjectVersion).to receive(:sync_then_increment_version)
-        allow(workflow_state_service).to receive_messages(accessioned?: true, open?: false, accessioning?: false)
+        allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
       end
 
       it 'creates an object version and starts a workflow' do
@@ -75,7 +66,6 @@ RSpec.describe VersionService do
         expect(ObjectVersion.current_version(druid).version).to eq(2)
         expect(ObjectVersion).not_to have_received(:sync_then_increment_version)
         expect(workflow_state_service).to have_received(:accessioned?)
-        expect(workflow_state_service).to have_received(:open?).once
         expect(workflow_state_service).to have_received(:accessioning?)
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 
@@ -116,50 +106,42 @@ RSpec.describe VersionService do
         expect { open }.to raise_error(VersionService::VersioningError, errmsg)
       end
     end
+  end
 
-    # This case can be removed after we fully migrate to RepositoryObjects
-    context 'when RepositoryObject does not exist' do
-      let(:repository_object) { nil }
+  describe '.open?' do
+    subject(:open?) { described_class.open?(druid:, version:) }
 
-      before do
-        allow(Settings.version_service).to receive(:sync_with_preservation).and_return false
-        allow(ObjectVersion).to receive(:sync_then_increment_version)
-        allow(workflow_state_service).to receive_messages(accessioned?: true, open?: false, accessioning?: false)
-      end
+    context 'when open' do
+      let!(:repository_object) { create(:repository_object, external_identifier: druid) }
 
-      it 'opens the version' do
-        open
-        expect(Dro.find_by(external_identifier: druid).version).to eq 2
-        expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
-
-        expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
-                                                            druid:,
-                                                            event_type: 'version_open')
+      it 'returns true' do
+        expect(open?).to be true
       end
     end
 
-    context 'when RepositoryObject does not exist but repository_object_create is enabled' do
-      let(:repository_object) { nil }
+    context 'when not open' do
+      it 'returns false' do
+        expect(open?).to be false
+      end
+    end
 
-      let(:status) { instance_double(Dor::Workflow::Client::Status, status_time: nil, display_simplified: 'Registered') }
+    context 'when the object is not found' do
+      let!(:repository_object) { nil }
 
-      before do
-        allow(Settings.version_service).to receive(:sync_with_preservation).and_return false
-        allow(Settings.enabled_features).to receive(:repository_object_create).and_return true
-        allow(ObjectVersion).to receive(:sync_then_increment_version)
-        allow(workflow_state_service).to receive_messages(accessioned?: true, open?: false, accessioning?: false)
-        allow(workflow_client).to receive(:status).and_return(status)
+      it 'raises an CocinaObjectNotFoundError' do
+        expect { open? }.to raise_error(VersionService::CocinaObjectNotFoundError)
+      end
+    end
+
+    context 'when version mismatch' do
+      let!(:repository_object) do
+        create(:repository_object, :closed, external_identifier: druid).tap do |repo_obj|
+          repo_obj.head_version.update!(version: 3)
+        end
       end
 
-      it 'opens the version' do
-        expect { open }.to change(RepositoryObject, :count).by(1)
-        expect(Dro.find_by(external_identifier: druid).version).to eq 2
-        expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
-
-        expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
-                                                            druid:,
-                                                            event_type: 'version_open')
-        expect(RepositoryObject.last).to be_open
+      it 'raises an VersioningError' do
+        expect { open? }.to raise_error(VersionService::VersioningError)
       end
     end
   end
@@ -178,13 +160,12 @@ RSpec.describe VersionService do
     context 'when a new version can be opened' do
       before do
         allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
-        allow(workflow_state_service).to receive_messages(accessioned?: true, open?: false, accessioning?: false)
+        allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
       end
 
       it 'returns true' do
         expect(can_open?).to be true
         expect(workflow_state_service).to have_received(:accessioned?)
-        expect(workflow_state_service).to have_received(:open?)
         expect(workflow_state_service).to have_received(:accessioning?)
       end
     end
@@ -201,19 +182,20 @@ RSpec.describe VersionService do
     end
 
     context 'when the object has already been opened' do
+      let!(:repository_object) { create(:repository_object, external_identifier: druid) }
+
       before do
-        allow(workflow_state_service).to receive_messages(accessioned?: true, open?: true)
+        allow(workflow_state_service).to receive_messages(accessioned?: true)
       end
 
       it 'returns false' do
         expect(can_open?).to be false
-        expect(workflow_state_service).to have_received(:open?)
       end
     end
 
     context 'when the object is still being accessioned' do
       before do
-        allow(workflow_state_service).to receive_messages(accessioned?: true, open?: false, accessioning?: true)
+        allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: true)
       end
 
       it 'returns false' do
@@ -224,7 +206,7 @@ RSpec.describe VersionService do
 
     context "when Preservation doesn't know about the object" do
       before do
-        allow(workflow_state_service).to receive_messages(accessioned?: true, open?: false, accessioning?: true)
+        allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: true)
         allow(Preservation::Client.objects).to receive(:current_version).and_raise(Preservation::Client::NotFoundError)
       end
 
@@ -250,7 +232,7 @@ RSpec.describe VersionService do
     end
     # Doing build(:repository_object) rather than create to support test where it doesn't exist.
     # This case can be removed after we fully migrate to RepositoryObjects
-    let(:repository_object) { build(:repository_object, external_identifier: druid) }
+    let(:repository_object) { create(:repository_object, external_identifier: druid) }
 
     before do
       repository_object&.save! # This can be removed after we fully migrate to RepositoryObjects
@@ -263,7 +245,7 @@ RSpec.describe VersionService do
 
     context 'when description and user_name are passed in' do
       before do
-        allow(workflow_state_service).to receive_messages(open?: true, accessioning?: false, assembling?: false)
+        allow(workflow_state_service).to receive_messages(accessioning?: false, assembling?: false)
       end
 
       it 'sets description and an event' do
@@ -286,7 +268,7 @@ RSpec.describe VersionService do
       let(:start_accession) { false }
 
       before do
-        allow(workflow_state_service).to receive_messages(open?: true, accessioning?: false, assembling?: false)
+        allow(workflow_state_service).to receive_messages(accessioning?: false, assembling?: false)
       end
 
       it 'passes the correct value of create_accession_wf' do
@@ -299,9 +281,7 @@ RSpec.describe VersionService do
     end
 
     context 'when the object has not been opened for versioning' do
-      before do
-        allow(workflow_state_service).to receive(:open?).and_return(false)
-      end
+      let!(:repository_object) { create(:repository_object, :closed, external_identifier: druid) }
 
       it 'raises an exception' do
         expect { close }.to raise_error(VersionService::VersioningError, "Trying to close version 2 on #{druid} which is not opened for versioning")
@@ -310,7 +290,7 @@ RSpec.describe VersionService do
 
     context 'when the object has an active accesssionWF' do
       before do
-        allow(workflow_state_service).to receive_messages(assembling?: false, open?: true, accessioning?: true)
+        allow(workflow_state_service).to receive_messages(assembling?: false, accessioning?: true)
       end
 
       it 'raises an exception' do
@@ -320,7 +300,7 @@ RSpec.describe VersionService do
 
     context 'when the object has an active assemblyWF' do
       before do
-        allow(workflow_state_service).to receive_messages(assembling?: true, open?: true)
+        allow(workflow_state_service).to receive_messages(assembling?: true)
       end
 
       it 'raises an exception' do
@@ -331,7 +311,7 @@ RSpec.describe VersionService do
 
     context 'when the object has no assemblyWF' do
       before do
-        allow(workflow_state_service).to receive_messages(assembling?: false, open?: true, accessioning?: false)
+        allow(workflow_state_service).to receive_messages(assembling?: false, accessioning?: false)
       end
 
       it 'creates the accessioningWF' do
@@ -346,7 +326,7 @@ RSpec.describe VersionService do
       let(:description) { nil }
 
       before do
-        allow(workflow_state_service).to receive_messages(assembling?: false, open?: true, accessioning?: false)
+        allow(workflow_state_service).to receive_messages(assembling?: false, accessioning?: false)
       end
 
       it 'closes the object version using existing signficance and description' do
@@ -359,21 +339,6 @@ RSpec.describe VersionService do
           .with(druid:, version: '2', create_accession_wf: true)
       end
     end
-
-    # This case can be removed after we fully migrate to RepositoryObjects
-    context 'when RepositoryObject does not exist' do
-      let(:repository_object) { nil }
-
-      before do
-        allow(workflow_state_service).to receive_messages(assembling?: false, open?: true, accessioning?: false)
-      end
-
-      it 'closes the version' do
-        close
-        expect(workflow_state_service).to have_received(:assembling?)
-        expect(workflow_client).to have_received(:close_version).with(druid:, version: '2', create_accession_wf: true)
-      end
-    end
   end
 
   describe '.can_close?' do
@@ -381,11 +346,13 @@ RSpec.describe VersionService do
       described_class.can_close?(druid:, version:)
     end
 
-    let(:version) { 2 }
+    let(:version) { 1 }
 
     context 'when cloaseable' do
+      let!(:repository_object) { create(:repository_object, external_identifier: druid) }
+
       before do
-        allow(workflow_state_service).to receive_messages(open?: true, accessioning?: false, assembling?: false)
+        allow(workflow_state_service).to receive_messages(accessioning?: false, assembling?: false)
       end
 
       it 'returns true' do
@@ -394,10 +361,6 @@ RSpec.describe VersionService do
     end
 
     context 'when the object has not been opened for versioning' do
-      before do
-        allow(workflow_state_service).to receive(:open?).and_return(false)
-      end
-
       it 'returns false' do
         expect(can_close).to be false
       end
@@ -405,7 +368,7 @@ RSpec.describe VersionService do
 
     context 'when the object has an active accesssionWF' do
       before do
-        allow(workflow_state_service).to receive_messages(assembling?: false, open?: true, accessioning?: true)
+        allow(workflow_state_service).to receive_messages(assembling?: false, accessioning?: true)
       end
 
       it 'returns false' do
@@ -415,7 +378,7 @@ RSpec.describe VersionService do
 
     context 'when the object has an active assemblyWF' do
       before do
-        allow(workflow_state_service).to receive_messages(assembling?: true, open?: true)
+        allow(workflow_state_service).to receive_messages(assembling?: true)
       end
 
       it 'returns false' do
@@ -424,3 +387,4 @@ RSpec.describe VersionService do
     end
   end
 end
+# rubocop:enable RSpec/LetSetup
