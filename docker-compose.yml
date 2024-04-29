@@ -1,11 +1,10 @@
-version: '3.6'
-
 services:
   web:
     build: .
     volumes:
       - ./:/app
     working_dir: /app
+    platform: linux/amd64
     depends_on:
       - solr
       - suri
@@ -35,6 +34,7 @@ services:
     volumes:
       - ./:/app
     working_dir: /app
+    platform: linux/amd64
     command: bundle exec sidekiq
     depends_on:
       - redis
@@ -46,18 +46,19 @@ services:
       SETTINGS__SURI__URL: http://suri:3000
       SETTINGS__WORKFLOW_URL: http://workflow:3000
   redis:
-    image: redis:4
+    image: redis
     ports:
       - 6379:6379
   solr:
-    image: solr:slim
+    image: solr:8.11.2
     volumes:
       - ./solr_conf/conf/:/myconfig
     command: solr-create -c dorservices -d /myconfig
     ports:
-      - 8984:8983
+      - 8983:8983
   suri:
     image: suldlss/suri-rails:latest
+    platform: linux/amd64
     ports:
       - 3002:3000
     depends_on:
@@ -70,6 +71,7 @@ services:
       DATABASE_PORT: 5432
   workflow:
     image: suldlss/workflow-server:latest
+    platform: linux/amd64
     depends_on:
       - db
     ports:
