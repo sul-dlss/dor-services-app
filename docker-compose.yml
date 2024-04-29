@@ -55,7 +55,7 @@ services:
       - ./solr_conf/conf/:/myconfig
     command: solr-create -c dorservices -d /myconfig
     ports:
-      - 8983:8983
+      - 8984:8983
   suri:
     image: suldlss/suri-rails:latest
     platform: linux/amd64
