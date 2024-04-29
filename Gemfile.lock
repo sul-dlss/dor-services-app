@@ -240,7 +240,7 @@ GEM
       activesupport (>= 6.1)
     graphiql-rails (1.10.0)
       railties
-    graphql (2.3.0)
+    graphql (2.3.2)
       base64
     hashdiff (1.1.0)
     hashie (5.0.0)
@@ -255,7 +255,7 @@ GEM
       rdoc
       reline (>= 0.4.2)
     iso-639 (0.3.6)
-    jbuilder (2.11.5)
+    jbuilder (2.12.0)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
     json (2.7.2)
@@ -347,7 +347,7 @@ GEM
     openapi_parser (1.0.0)
     optimist (3.1.0)
     parallel (1.24.0)
-    parser (3.3.0.5)
+    parser (3.3.1.0)
       ast (~> 2.4.1)
       racc
     patience_diff (1.2.0)
@@ -417,7 +417,7 @@ GEM
     redis-client (0.22.1)
       connection_pool
     regexp_parser (2.9.0)
-    reline (0.5.2)
+    reline (0.5.3)
       io-console (~> 0.5)
     request_store (1.6.0)
       rack (>= 1.4)
@@ -447,7 +447,7 @@ GEM
       rspec-core (>= 2, < 4, != 2.12.0)
     rss (0.3.0)
       rexml
-    rubocop (1.63.2)
+    rubocop (1.63.4)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
@@ -485,7 +485,7 @@ GEM
     serverengine (2.1.1)
       sigdump (~> 0.2.2)
     set (1.1.0)
-    sidekiq (7.2.2)
+    sidekiq (7.2.4)
       concurrent-ruby (< 2)
       connection_pool (>= 2.3.0)
       rack (>= 2.2.4)
@@ -527,7 +527,7 @@ GEM
       faraday-retry
       oauth2
       zeitwerk
-    super_diff (0.11.0)
+    super_diff (0.12.1)
       attr_extras (>= 6.2.4)
       diff-lcs
       patience_diff
