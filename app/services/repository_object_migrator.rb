@@ -88,7 +88,7 @@ class RepositoryObjectMigrator
   end
 
   def open_version?(version_number:)
-    WorkflowStateService.new(druid: external_identifier, version: version_number).open?
+    VersionService.new(druid: external_identifier, version: version_number).open?
   end
 
   def closed_at(version_number:)
