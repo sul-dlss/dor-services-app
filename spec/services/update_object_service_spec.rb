@@ -151,7 +151,7 @@ RSpec.describe UpdateObjectService do
         before do
           allow(Settings.enabled_features).to receive(:repository_object_create).and_return(true)
           ObjectVersion.create(druid: ar_cocina_object.external_identifier, version: 1, description: 'test description')
-          allow(WorkflowStateService).to receive(:new).and_return(workflow_state_service)
+          allow(VersionService).to receive(:new).and_return(version_service)
           allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
         end
 
@@ -159,8 +159,8 @@ RSpec.describe UpdateObjectService do
           instance_double(Dor::Workflow::Client,
                           status: instance_double(Dor::Workflow::Client::Status, status_time: nil, display_simplified: 'Registered'))
         end
-        let(:workflow_state_service) do
-          instance_double(WorkflowStateService, open?: true)
+        let(:version_service) do
+          instance_double(VersionService, open?: true)
         end
 
         let(:ar_cocina_object) { create(:ar_dro) }

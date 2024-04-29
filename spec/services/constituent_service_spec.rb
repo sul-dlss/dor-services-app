@@ -17,7 +17,7 @@ RSpec.describe ConstituentService do
       allow(ItemQueryService).to receive_messages(find_combinable_item: virtual_object, validate_combinable_items: item_errors)
       allow(VersionService).to receive_messages(open: virtual_object)
       allow(VersionService).to receive(:close)
-      allow(WorkflowStateService).to receive(:open?).and_return(open_for_versioning)
+      allow(VersionService).to receive(:open?).and_return(open_for_versioning)
       allow(ResetContentMetadataService).to receive(:reset).and_return(virtual_object)
       allow(UpdateObjectService).to receive(:update)
       allow(CocinaObjectStore).to receive(:find).and_return(mock_item)
@@ -30,7 +30,7 @@ RSpec.describe ConstituentService do
 
       it 'returns hash with errors' do
         expect(service.add(constituent_druids:)).to eq(item_errors)
-        expect(WorkflowStateService).not_to have_received(:open?)
+        expect(VersionService).not_to have_received(:open?)
         expect(VersionService).not_to have_received(:open)
         expect(VersionService).not_to have_received(:close)
         expect(ResetContentMetadataService).not_to have_received(:reset)
