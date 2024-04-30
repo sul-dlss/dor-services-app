@@ -3,11 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe 'Update object' do
-  let!(:item) { create(:ar_dro) }
+  let!(:item) { create(:repository_object, :with_repository_object_version, version: 1) }
   let(:druid) { item.external_identifier }
   let(:purl) { "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}" }
   let(:apo) do
-    create(:ar_admin_policy)
+    create(:repository_object, :admin_policy, :with_repository_object_version)
   end
   let(:apo_druid) { apo.external_identifier }
   let(:modified) { DateTime.now }
@@ -86,6 +86,7 @@ RSpec.describe 'Update object' do
   end
 
   before do
+    create(:ar_dro, external_identifier: druid)
     allow(AdministrativeTags).to receive(:create)
     allow(AdministrativeTags).to receive_messages(project: ['Google Books'], for: [])
     allow(Cocina::ObjectValidator).to receive(:validate)
@@ -104,7 +105,7 @@ RSpec.describe 'Update object' do
     expect(response.headers['X-Created-At']).to end_with 'GMT'
     expect(response.headers['ETag']).to match(%r{W/".+"})
 
-    expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
+    expect(item.reload.head_version.to_cocina.to_json).to equal_cocina_model(expected)
     expect(Cocina::ObjectValidator).to have_received(:validate)
 
     expect(EventFactory).to have_received(:create).with(druid:, data: hash_including(:request, success: true), event_type: 'update')
@@ -269,10 +270,10 @@ RSpec.describe 'Update object' do
               headers:)
         expect(response).to have_http_status :ok
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-        expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
+        expect(item.reload.head_version.to_cocina.to_json).to equal_cocina_model(expected)
 
         # Metadata set correctly.
-        expect(item.label).to eq(expected_label)
+        expect(item.head_version.label).to eq(expected_label)
       end
     end
 
@@ -287,7 +288,7 @@ RSpec.describe 'Update object' do
               headers:)
         expect(response).to have_http_status(:ok)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-        expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
+        expect(item.reload.head_version.to_cocina.to_json).to equal_cocina_model(expected)
       end
     end
     # rubocop:enable Layout/LineLength
@@ -576,7 +577,7 @@ RSpec.describe 'Update object' do
               headers:)
         expect(response).to have_http_status(:ok)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-        expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
+        expect(item.reload.head_version.to_cocina.to_json).to equal_cocina_model(expected)
       end
     end
   end
@@ -631,12 +632,12 @@ RSpec.describe 'Update object' do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-      expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
+      expect(item.reload.head_version.to_cocina.to_json).to equal_cocina_model(expected)
     end
   end
 
   context 'when a collection is provided' do
-    let(:item) { create(:ar_collection) }
+    let!(:item) { create(:repository_object, :collection, :with_repository_object_version, version: 1) }
     let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
     let(:expected) do
@@ -681,12 +682,16 @@ RSpec.describe 'Update object' do
       expect(response).to have_http_status(:ok)
       expect(PublishItemsModifiedJob).to have_been_enqueued
       expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-      expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
+      expect(item.reload.head_version.to_cocina.to_json).to equal_cocina_model(expected)
     end
   end
 
   context 'when an APO is provided' do
-    let(:item) { create(:ar_admin_policy, access_template: default_access) }
+    let(:druid) { 'druid:yq561fh2083' }
+    let!(:item) do
+      repository_object_version = build(:repository_object_version, :admin_policy_repository_object_version, external_identifier: druid, access_template: default_access, version: 1)
+      create(:repository_object, :collection, :with_repository_object_version, repository_object_version:, external_identifier: druid)
+    end
 
     let(:expected) do
       build(:admin_policy, id: druid, label: 'This is my label', title: 'This is my title').new(
@@ -730,7 +735,8 @@ RSpec.describe 'Update object' do
           "cocinaVersion": "#{Cocina::Models::VERSION}",
           "externalIdentifier": "#{druid}",
           "type":"#{Cocina::Models::ObjectType.admin_policy}",
-          "label":"This is my label","version":1,
+          "label":"This is my label",
+          "version":1,
           "administrative":{
             "disseminationWorkflow":"assemblyWF",
             "registrationWorkflow":["goobiWF","registrationWF"],
@@ -755,7 +761,7 @@ RSpec.describe 'Update object' do
               headers:)
         expect(response).to have_http_status(:ok)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-        expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
+        expect(item.reload.head_version.to_cocina.to_json).to equal_cocina_model(expected)
       end
     end
 
@@ -777,7 +783,7 @@ RSpec.describe 'Update object' do
               headers:)
         expect(response).to have_http_status(:ok)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-        expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
+        expect(item.reload.head_version.to_cocina.to_json).to equal_cocina_model(expected)
       end
     end
   end
@@ -834,7 +840,7 @@ RSpec.describe 'Update object' do
             headers:)
       expect(response).to have_http_status(:ok)
       expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-      expect(item.reload.to_h.to_json).to equal_cocina_model(expected)
+      expect(item.reload.head_version.to_cocina.to_json).to equal_cocina_model(expected)
     end
   end
 end

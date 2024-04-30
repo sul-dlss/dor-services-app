@@ -3,7 +3,6 @@
 # Abstracts persistence operations for Cocina objects.
 # For the actions that are supported, this class includes step that happen regardless of the datastore.
 # For example, publishing a notification upon create.
-# rubocop:disable Metrics/ClassLength
 class CocinaObjectStore
   # Generic base error class.
   class CocinaObjectStoreError < StandardError; end
@@ -90,26 +89,17 @@ class CocinaObjectStore
   # @param [String] druid to find
   # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
   def find(druid)
-    # TODO: After migration, remove the nil-checks
-    cocina = RepositoryObject.find_by(external_identifier: druid)&.head_version&.to_cocina_with_metadata
+    RepositoryObject.find_by!(external_identifier: druid).head_version.to_cocina_with_metadata
+  rescue ActiveRecord::RecordNotFound
+    return bootstrap_ur_admin_policy if bootstrap_ur_admin_policy?(druid)
 
-    return cocina if cocina
-
-    ar_find(druid).to_cocina_with_metadata
+    raise CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid)
   end
 
   def find_by_source_id(source_id)
-    # TODO: Nil check can be removed after migrating to RepositoryObject
-    cocina = RepositoryObject.find_by(source_id:)&.head_version&.to_cocina_with_metadata
-
-    return cocina if cocina
-
-    ar_cocina_object = Dro.find_by_source_id(source_id) ||
-                       Collection.find_by_source_id(source_id)
-
-    raise CocinaObjectNotFoundError unless ar_cocina_object
-
-    ar_cocina_object.to_cocina_with_metadata
+    RepositoryObject.find_by!(source_id:).head_version.to_cocina_with_metadata
+  rescue ActiveRecord::RecordNotFound
+    raise CocinaObjectNotFoundError.new("Couldn't find object with 'source_id'=#{source_id}", source_id)
   end
 
   def store(cocina_object, skip_lock:)
@@ -117,9 +107,7 @@ class CocinaObjectStore
   end
 
   def exists?(druid, type: nil)
-    return true if RepositoryObject.exists?(external_identifier: druid)
-
-    ar_exists?(druid, type:)
+    RepositoryObject.exists?(external_identifier: druid)
   end
 
   def exists!(druid)
@@ -129,21 +117,9 @@ class CocinaObjectStore
   end
 
   def version(druid)
-    version_from_repository_object = RepositoryObject.find_by(external_identifier: druid)&.head_version&.version
-
-    ar_cocina_object = Dro.select(:version).find_by(external_identifier: druid) ||
-                       AdminPolicy.select(:version).find_by(external_identifier: druid) ||
-                       Collection.select(:version).find_by(external_identifier: druid)
-
-    raise(CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid)) unless ar_cocina_object&.version
-
-    if Settings.enabled_features.repository_object_test && version_from_repository_object && version_from_repository_object != ar_cocina_object.version
-      Honeybadger.notify("Version from RepositoryObjectVersion doesn't match version in legacy store.",
-                         context: { druid:, version_from_repository_object:, version_from_ar_cocina_object: ar_cocina_object.version })
-      return ar_cocina_object.version
-    end
-
-    version_from_repository_object || ar_cocina_object.version
+    RepositoryObject.find_by!(external_identifier: druid).head_version.version
+  rescue ActiveRecord::RecordNotFound
+    raise CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid)
   end
 
   # Find an ActiveRecord Cocina object.
@@ -160,8 +136,7 @@ class CocinaObjectStore
   def ar_find(druid)
     ar_cocina_object = Dro.find_by(external_identifier: druid) ||
                        AdminPolicy.find_by(external_identifier: druid) ||
-                       Collection.find_by(external_identifier: druid) ||
-                       bootstrap_ur_admin_policy(druid)
+                       Collection.find_by(external_identifier: druid)
     ar_cocina_object ||
       raise(CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid))
   end
@@ -215,13 +190,13 @@ class CocinaObjectStore
     raise StaleLockError, "Expected lock of #{ar_object.external_lock} but received #{cocina_object.lock}."
   end
 
-  def bootstrap_ur_admin_policy(druid)
-    return unless Settings.enabled_features.create_ur_admin_policy
-    return unless druid == Settings.ur_admin_policy.druid
+  def bootstrap_ur_admin_policy?(druid)
+    Settings.enabled_features.create_ur_admin_policy && druid == Settings.ur_admin_policy.druid
+  end
 
+  def bootstrap_ur_admin_policy
     UrAdminPolicyFactory.create
 
-    AdminPolicy.find_by(external_identifier: druid)
+    RepositoryObject.find_by(external_identifier: Settings.ur_admin_policy.druid).head_version.to_cocina_with_metadata
   end
 end
-# rubocop:enable Metrics/ClassLength

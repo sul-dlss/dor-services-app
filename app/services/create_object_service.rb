@@ -25,6 +25,7 @@ class CreateObjectService
   end
 
   # @raise Catalog::MarcService::MarcServiceError
+  # @raise [Cocina::ValidationError] if externalIdentifier or sourceId not unique
   def create(cocina_request_object, assign_doi: false)
     ensure_ur_admin_policy_exists(cocina_request_object)
     Cocina::ObjectValidator.validate(cocina_request_object)
@@ -35,7 +36,7 @@ class CreateObjectService
     cocina_object = cocina_from_request(updated_cocina_request_object, druid, assign_doi)
     cocina_object = assign_doi(cocina_object) if assign_doi
     cocina_object_with_metadata = CocinaObjectStore.store(cocina_object, skip_lock: true)
-    RepositoryObject.create_from(cocina_object:) if Settings.enabled_features.repository_object_create
+    RepositoryObject.create_from(cocina_object:)
 
     add_project_tag(druid, cocina_request_object)
     # This creates version 1 (Initial Version)
@@ -47,6 +48,15 @@ class CreateObjectService
     Notifications::ObjectCreated.publish(model: cocina_object_with_metadata)
     Indexer.reindex(cocina_object: cocina_object_with_metadata)
     cocina_object_with_metadata
+  rescue ActiveRecord::RecordNotUnique => e
+    message = if e.message.include?('index_repository_objects_on_source_id')
+                source_id = cocina_object.identification.sourceId
+                druid = CocinaObjectStore.find_by_source_id(source_id).externalIdentifier # rubocop:disable Rails/DynamicFindBy
+                "An object (#{druid}) with the source ID '#{source_id}' has already been registered."
+              else
+                'ExternalIdentifier or sourceId is not unique.'
+              end
+    raise Cocina::ValidationError.new(message, status: :conflict)
   end
 
   private

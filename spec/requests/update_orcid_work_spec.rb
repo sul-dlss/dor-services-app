@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'Update Orcid work' do
   let(:druid) { object.external_identifier }
   let(:object) do
-    create(:ar_dro)
+    create(:repository_object, :with_repository_object_version)
   end
 
   before do
