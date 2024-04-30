@@ -89,10 +89,6 @@ docker push suldlss/dor-services-app:latest
 
 ### Without Docker
 
-First you'll need to setup configuration files to connect to a valid Fedora and SOLR instance.  See the "config/settings.yml" file for a template.  Create a folder called "config/settings" and then copy that settings.yml file and rename it for the environment you wish to setup (e.g. "config/settings/development.local.yml").
-
-Edit this file to add the appropriate URLs.  You may also need certs to talk to actual Fedora servers.  Once you have this file in place, you can start your Rails server or console in development mode:
-
 To spin up a local rails console:
 
   `bundle exec rails c`
