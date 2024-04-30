@@ -23,7 +23,7 @@ RSpec.describe MemberService do
   describe '.for' do
     context 'when collection has members' do
       it 'returns members' do
-        expect(members).to eq [dro1.external_identifier, dro2.external_identifier]
+        expect(members).to contain_exactly(dro1.external_identifier, dro2.external_identifier)
       end
     end
 
@@ -50,12 +50,14 @@ RSpec.describe MemberService do
       let(:only_published) { true }
 
       before do
-        allow(workflow_client).to receive(:lifecycle).and_return(true, false)
+        allow(workflow_client).to receive(:lifecycle).with(druid: dro1.external_identifier, milestone_name: 'published', version: 1).and_return(true)
+        allow(workflow_client).to receive(:lifecycle).with(druid: dro2.external_identifier, milestone_name: 'published', version: 1).and_return(false)
       end
 
       it 'returns members' do
         expect(members).to eq [dro1.external_identifier]
-        expect(workflow_client).to have_received(:lifecycle).with(druid: dro1.external_identifier, milestone_name: 'published', version: dro1.version)
+        expect(workflow_client).to have_received(:lifecycle).with(druid: dro1.external_identifier, milestone_name: 'published', version: dro1.version).once
+        expect(workflow_client).to have_received(:lifecycle).with(druid: dro2.external_identifier, milestone_name: 'published', version: dro2.version).once
       end
     end
   end
