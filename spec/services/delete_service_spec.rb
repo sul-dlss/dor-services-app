@@ -19,29 +19,19 @@ RSpec.describe DeleteService do
     subject(:destroy) { described_class.destroy(cocina_object, user_name:) }
 
     before do
-      Dro.upsert_cocina(cocina_object)
+      create(:ar_dro, external_identifier: druid)
+      create(:repository_object, external_identifier: druid)
       allow(CocinaObjectStore).to receive(:destroy)
       allow(Indexer).to receive(:delete)
     end
 
     it 'destroys the object' do
-      expect { destroy }.to change(Dro, :count).by(-1)
-      expect(EventFactory).to have_received(:create).with(druid:, event_type: 'delete', data: { request: cocina_object.to_h, source_id:, user_name: })
+      expect { destroy }
+        .to change(Dro, :count).by(-1)
+        .and change(RepositoryObject, :count).by(-1)
+        .and change(RepositoryObjectVersion, :count).by(-1)
+      expect(event_factory).to have_received(:create).with(druid:, event_type: 'delete', data: { request: cocina_object.to_h, source_id:, user_name: })
       expect(Indexer).to have_received(:delete)
-    end
-
-    context 'when a repository object exists' do
-      before do
-        create(:repository_object, external_identifier: druid)
-        allow(Indexer).to receive(:delete)
-      end
-
-      it 'destroys the object' do
-        expect { destroy }.to change(RepositoryObject, :count).by(-1)
-          .and change(RepositoryObjectVersion, :count).by(-1) # rubocop:disable Layout/MultilineMethodCallIndentation
-        expect(Dro).not_to exist(druid)
-        expect(Indexer).to have_received(:delete)
-      end
     end
   end
 
@@ -79,7 +69,8 @@ RSpec.describe DeleteService do
 
   describe '#delete_from_dor' do
     before do
-      Dro.upsert_cocina(cocina_object)
+      create(:ar_dro, external_identifier: druid)
+      create(:repository_object, external_identifier: druid)
       AdministrativeTags.create(identifier: druid, tags: ['test : tag'])
       Event.create!(druid:, event_type: 'version_close', data: { version: '4' })
       ObjectVersion.create(druid:, version: 4, description: 'Version 4.0.0')
@@ -88,7 +79,10 @@ RSpec.describe DeleteService do
     end
 
     it 'deletes from datastore and Solr' do
-      expect { service.send(:delete_from_dor) }.to change(Dro, :count).by(-1)
+      expect { service.send(:delete_from_dor) }
+        .to change(Dro, :count).by(-1)
+        .and change(RepositoryObject, :count).by(-1)
+        .and change(RepositoryObjectVersion, :count).by(-1)
       expect(AdministrativeTags.for(identifier: druid)).to be_empty
       expect(Event.exists?(druid:)).to be(false)
       expect(ObjectVersion.exists?(druid:)).to be(false)
