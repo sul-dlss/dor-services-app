@@ -485,6 +485,39 @@ ALTER SEQUENCE public.tag_labels_id_seq OWNED BY public.tag_labels.id;
 
 
 --
+-- Name: user_versions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_versions (
+    id bigint NOT NULL,
+    version integer NOT NULL,
+    withdrawn boolean DEFAULT false NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    repository_object_version_id bigint NOT NULL
+);
+
+
+--
+-- Name: user_versions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.user_versions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: user_versions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.user_versions_id_seq OWNED BY public.user_versions.id;
+
+
+--
 -- Name: admin_policies id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -566,6 +599,13 @@ ALTER TABLE ONLY public.repository_objects ALTER COLUMN id SET DEFAULT nextval('
 --
 
 ALTER TABLE ONLY public.tag_labels ALTER COLUMN id SET DEFAULT nextval('public.tag_labels_id_seq'::regclass);
+
+
+--
+-- Name: user_versions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_versions ALTER COLUMN id SET DEFAULT nextval('public.user_versions_id_seq'::regclass);
 
 
 --
@@ -678,6 +718,14 @@ ALTER TABLE ONLY public.schema_migrations
 
 ALTER TABLE ONLY public.tag_labels
     ADD CONSTRAINT tag_labels_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_versions user_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_versions
+    ADD CONSTRAINT user_versions_pkey PRIMARY KEY (id);
 
 
 --
@@ -877,6 +925,20 @@ CREATE UNIQUE INDEX index_tag_labels_on_tag ON public.tag_labels USING btree (ta
 
 
 --
+-- Name: index_user_versions_on_repository_object_version_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_user_versions_on_repository_object_version_id ON public.user_versions USING btree (repository_object_version_id);
+
+
+--
+-- Name: index_user_versions_on_version; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_user_versions_on_version ON public.user_versions USING btree (version);
+
+
+--
 -- Name: repository_objects fk_rails_1dc8d215fb; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -890,6 +952,14 @@ ALTER TABLE ONLY public.repository_objects
 
 ALTER TABLE ONLY public.repository_objects
     ADD CONSTRAINT fk_rails_3c4ec20ee5 FOREIGN KEY (opened_version_id) REFERENCES public.repository_object_versions(id);
+
+
+--
+-- Name: user_versions fk_rails_5e794ed7b9; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_versions
+    ADD CONSTRAINT fk_rails_5e794ed7b9 FOREIGN KEY (repository_object_version_id) REFERENCES public.repository_object_versions(id);
 
 
 --
@@ -923,6 +993,8 @@ ALTER TABLE ONLY public.repository_objects
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240430144139'),
+('20240429201956'),
 ('20240408230311'),
 ('20240408184127'),
 ('20240402155058'),
