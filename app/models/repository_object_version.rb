@@ -3,7 +3,7 @@
 # Models a repository object as it looked at a particular version.
 class RepositoryObjectVersion < ApplicationRecord
   belongs_to :repository_object
-  has_many :user_versions, dependent: :restrict_with_error
+  has_many :user_versions, dependent: :destroy
 
   has_one :head_version_of, class_name: 'RepositoryObject', inverse_of: :head_version, dependent: nil
   scope :in_virtual_objects, ->(member_druid) { where("structural #> '{hasMemberOrders,0}' -> 'members' ? :druid", druid: member_druid) }
