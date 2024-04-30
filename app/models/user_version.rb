@@ -8,6 +8,6 @@ class UserVersion < ApplicationRecord
 
   def repository_object_version_is_closed
     # Validate that the repository object version is closed
-    errors.add(:repository_object_version, 'cannot open a user version on an open RepositoryObjectVersion') if repository_object_version.repository_object.open?
+    errors.add(:repository_object_version, 'cannot set a user version to an open RepositoryObjectVersion') if repository_object_version.repository_object.open?
   end
 end

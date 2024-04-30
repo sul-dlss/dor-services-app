@@ -490,11 +490,11 @@ ALTER SEQUENCE public.tag_labels_id_seq OWNED BY public.tag_labels.id;
 
 CREATE TABLE public.user_versions (
     id bigint NOT NULL,
-    repository_object_version_id bigint,
     version integer NOT NULL,
     withdrawn boolean DEFAULT false NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    repository_object_version_id bigint NOT NULL
 );
 
 
@@ -955,6 +955,14 @@ ALTER TABLE ONLY public.repository_objects
 
 
 --
+-- Name: user_versions fk_rails_5e794ed7b9; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_versions
+    ADD CONSTRAINT fk_rails_5e794ed7b9 FOREIGN KEY (repository_object_version_id) REFERENCES public.repository_object_versions(id);
+
+
+--
 -- Name: repository_object_versions fk_rails_702591eb00; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -985,6 +993,7 @@ ALTER TABLE ONLY public.repository_objects
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240430144139'),
 ('20240429201956'),
 ('20240408230311'),
 ('20240408184127'),
