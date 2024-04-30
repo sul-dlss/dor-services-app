@@ -3,7 +3,6 @@
 # Indexes a Cocina object.
 class Indexer
   # @param [Cocina::Models::DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata]
-  # raises [DorIndexing::RepositoryError]
   def self.reindex(cocina_object:)
     solr_doc = Indexing::Builders::DocumentBuilder.for(
       model: cocina_object
