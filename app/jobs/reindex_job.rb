@@ -11,7 +11,7 @@ class ReindexJob < ApplicationJob
     cocina_object = Cocina::Models.build(model)
     cocina_object_with_metadata = Cocina::Models.with_metadata(cocina_object, 'void', created:, modified:)
     Indexer.reindex(cocina_object: cocina_object_with_metadata)
-  rescue DorIndexing::RepositoryError => e
+  rescue CocinaObjectStore::CocinaObjectStoreError => e
     Rails.logger.error("Error reindexing #{model[:externalIdentifier]}: #{e.message}")
     Honeybadger.notify(e, context: { druid: model[:externalIdentifier] })
   end

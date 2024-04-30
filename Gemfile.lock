@@ -174,14 +174,6 @@ GEM
       faraday-retry (~> 2.0)
       nokogiri (~> 1.6)
       zeitwerk (~> 2.1)
-    dor_indexing (2.1.2)
-      activesupport
-      cocina-models (~> 0.96.0)
-      dor-workflow-client (~> 7.0)
-      honeybadger
-      marc-vocab (~> 0.3.0)
-      stanford-mods
-      zeitwerk
     drb (2.2.1)
     druid-tools (2.2.1)
       deprecation
@@ -587,7 +579,6 @@ DEPENDENCIES
   diffy
   dlss-capistrano
   dor-workflow-client (~> 7.3)
-  dor_indexing (~> 2.1)
   druid-tools (~> 2.2)
   dry-monads
   edtf (~> 3.0)
@@ -605,6 +596,7 @@ DEPENDENCIES
   lograge
   mais_orcid_client
   marc
+  marc-vocab (~> 0.3.0)
   moab-versioning (~> 6.0)
   okcomputer
   parallel
@@ -627,6 +619,7 @@ DEPENDENCIES
   sidekiq (~> 7.0)
   simplecov
   sneakers (~> 2.11)
+  stanford-mods
   sul_orcid_client (~> 0.3)
   tty-progressbar
   uuidtools (~> 2.1.4)

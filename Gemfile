@@ -8,15 +8,16 @@ gem 'rails', '~> 7.1.0'
 # DLSS/domain-specific dependencies
 gem 'cocina-models', '~> 0.96.0'
 gem 'datacite', '~> 0.3.0'
-gem 'dor_indexing', '~> 2.1'
 gem 'dor-workflow-client', '~> 7.3'
 gem 'druid-tools', '~> 2.2'
 gem 'folio_client', '~> 0.8'
 gem 'graphql'
 gem 'mais_orcid_client'
 gem 'marc'
+gem 'marc-vocab', '~> 0.3.0' # for indexing
 gem 'moab-versioning', '~> 6.0', require: 'moab/stanford'
 gem 'preservation-client', '~> 6.0'
+gem 'stanford-mods' # for indexing
 gem 'sul_orcid_client', '~> 0.3'
 
 # Ruby general dependencies

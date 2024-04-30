@@ -22,7 +22,7 @@ RSpec.describe ReindexJob do
 
   context 'when an error' do
     before do
-      allow(Indexer).to receive(:reindex).and_raise(DorIndexing::RepositoryError)
+      allow(Indexer).to receive(:reindex).and_raise(CocinaObjectStore::CocinaObjectStoreError)
       allow(Honeybadger).to receive(:notify)
     end
 
