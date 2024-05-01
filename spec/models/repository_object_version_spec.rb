@@ -305,4 +305,48 @@ RSpec.describe RepositoryObjectVersion do
       end
     end
   end
+
+  describe '.closed?' do
+    context 'when closed_at is nil' do
+      it 'returns false' do
+        expect(repository_object_version.closed?).to be false
+      end
+    end
+
+    context 'when closed_at is present' do
+      let(:attrs) do
+        {
+          version: 1,
+          version_description: 'My new version',
+          closed_at: Time.current
+        }
+      end
+
+      it 'returns true when closed_at is present' do
+        expect(repository_object_version.closed?).to be true
+      end
+    end
+  end
+
+  describe '.open?' do
+    context 'when closed_at is nil' do
+      it 'returns true when closed_at is nil' do
+        expect(repository_object_version.open?).to be true
+      end
+    end
+
+    context 'when closed_at is present' do
+      let(:attrs) do
+        {
+          version: 1,
+          version_description: 'My new version',
+          closed_at: Time.current
+        }
+      end
+
+      it 'returns false when closed_at is present' do
+        expect(repository_object_version.open?).to be false
+      end
+    end
+  end
 end

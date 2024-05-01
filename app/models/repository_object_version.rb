@@ -66,6 +66,14 @@ class RepositoryObjectVersion < ApplicationRecord
     }.compact
   end
 
+  def closed?
+    closed_at.present?
+  end
+
+  def open?
+    !closed?
+  end
+
   private
 
   def update_object_source_id
