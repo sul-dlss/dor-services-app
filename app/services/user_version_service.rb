@@ -20,12 +20,16 @@ class UserVersionService
     new(druid:, version:).move(user_version, event_factory)
   end
 
+  def self.exist?(druid:, user_version:)
+    new(druid:, version: nil).exist?(user_version:)
+  end
+
   # @param [String] druid of the item
   # @param [Integer] version of the item
   def initialize(druid:, version:)
     @druid = druid
     @repository_object = RepositoryObject.find_by!(external_identifier: druid)
-    @repository_object_version = @repository_object.versions.find_by!(version:)
+    @repository_object_version = version.nil? ? @repository_object.head_version : @repository_object.versions.find_by!(version:)
   end
 
   # @param [Class] event_factory (EventFactory) the factory for creating events
@@ -47,6 +51,10 @@ class UserVersionService
     user_version.repository_object_version = repository_object_version
     user_version.save!
     event_factory.create(druid:, event_type: 'user_version_moved', data: { version: user_version.version.to_s })
+  end
+
+  def exist?(user_version:)
+    RepositoryObjectVersion.where(repository_object:, user_version:).exists?
   end
 
   attr_reader :druid, :repository_object, :repository_object_version

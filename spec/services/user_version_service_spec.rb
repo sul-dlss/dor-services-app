@@ -13,7 +13,8 @@ RSpec.describe UserVersionService do
   let(:attrs) do
     {
       version: 1,
-      version_description: 'My new version'
+      version_description: 'My new version',
+      closed_at: Time.current
     }
   end
 
