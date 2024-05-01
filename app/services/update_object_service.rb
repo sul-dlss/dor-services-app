@@ -92,14 +92,11 @@ class UpdateObjectService
     cocina_object_with_metadata = nil
     begin
       RepositoryObject.transaction do
-        cocina_object_with_metadata = CocinaObjectStore.store(cocina_object, skip_lock:)
+        repo_object = RepositoryObject.find_by!(external_identifier: druid)
+        repo_object.update_opened_version_from(cocina_object: cocina_object_without_metadata)
+        cocina_object_with_metadata = repo_object.head_version.to_cocina_with_metadata
 
-        repo_object = RepositoryObject.find_by(external_identifier: druid)
-        if repo_object
-          repo_object.update_opened_version_from(cocina_object: cocina_object_without_metadata)
-        elsif Settings.enabled_features.repository_object_create
-          RepositoryObjectMigrator.migrate(external_identifier: druid)
-        end
+        CocinaObjectStore.store(cocina_object, skip_lock:)
       end
     rescue ActiveRecord::RecordNotUnique => e
       message = if e.message.include?('index_repository_objects_on_source_id')

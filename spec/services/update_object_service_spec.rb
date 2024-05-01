@@ -107,15 +107,17 @@ RSpec.describe UpdateObjectService do
         let(:open) { false }
         let(:store) { described_class.new(cocina_object:, skip_lock: false, skip_open_check: true) }
 
-        let(:ar_cocina_object) { create(:ar_dro) }
-        let(:lock) { "#{ar_cocina_object.external_identifier}=0" }
+        let(:lock) { "#{druid}=0" }
 
         let(:cocina_object) do
-          Cocina::Models.with_metadata(ar_cocina_object.to_cocina, lock, created: ar_cocina_object.created_at.utc, modified: ar_cocina_object.updated_at.utc)
+          Cocina::Models.with_metadata(repository_object.head_version.to_cocina, lock,
+                                       created: repository_object.head_version.created_at.utc,
+                                       modified: repository_object.head_version.updated_at.utc)
                         .new(label: 'new label')
         end
 
         before do
+          create(:ar_dro, external_identifier: druid)
           allow(Honeybadger).to receive(:notify)
         end
 
@@ -124,41 +126,17 @@ RSpec.describe UpdateObjectService do
           expect(Honeybadger).not_to have_received(:notify)
         end
       end
-
-      context 'when repository_object_create is enabled' do
-        before do
-          allow(Settings.enabled_features).to receive(:repository_object_create).and_return(true)
-          ObjectVersion.create(druid: ar_cocina_object.external_identifier, version: 1, description: 'test description')
-          allow(VersionService).to receive(:new).and_return(version_service)
-          allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
-        end
-
-        let(:workflow_client) do
-          instance_double(Dor::Workflow::Client,
-                          status: instance_double(Dor::Workflow::Client::Status, status_time: nil, display_simplified: 'Registered'))
-        end
-        let(:version_service) do
-          instance_double(VersionService, open?: true)
-        end
-
-        let(:ar_cocina_object) { create(:ar_dro) }
-        let(:cocina_object) { ar_cocina_object.to_cocina_with_metadata }
-
-        it 'migrates the repository object' do
-          expect(store.update).to be_a Cocina::Models::DROWithMetadata
-          migrated_version = RepositoryObject.find_by(external_identifier: ar_cocina_object.external_identifier).head_version
-          expect(migrated_version.to_cocina).to eq Cocina::Models.without_metadata(cocina_object)
-        end
-      end
     end
 
     context 'when object is an AdminPolicy' do
+      let!(:repository_object) { create(:repository_object, :admin_policy, :with_repository_object_version, external_identifier: druid, version: 1) }
+
       let(:cocina_object) do
         Cocina::Models::AdminPolicy.new({
                                           cocinaVersion: '0.0.1',
-                                          externalIdentifier: 'druid:jt959wc5586',
+                                          externalIdentifier: druid,
                                           type: Cocina::Models::ObjectType.admin_policy,
-                                          label: 'Test Admin Policy',
+                                          label: 'Updated Test Admin Policy',
                                           version: 1,
                                           administrative: {
                                             hasAdminPolicy: 'druid:hy787xj5878',
@@ -169,9 +147,8 @@ RSpec.describe UpdateObjectService do
       end
 
       it 'saves to datastore' do
-        expect(AdminPolicy.find_by(external_identifier: cocina_object.externalIdentifier)).to be_nil
         expect(store.update).to be_a Cocina::Models::AdminPolicyWithMetadata
-        expect(AdminPolicy.find_by(external_identifier: cocina_object.externalIdentifier)).not_to be_nil
+        expect(repository_object.reload.head_version.label).to eq 'Updated Test Admin Policy'
       end
     end
 
