@@ -112,7 +112,7 @@ RSpec.describe Publish::MetadataTransferService do
         before do
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/{"cocinaVersion"/, 'cocina.json')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
-          expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(cocina_object)
+          expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(Cocina::Models::DRO)
         end
 
         let(:access) { { view: 'citation-only', download: 'none' } }
@@ -133,7 +133,7 @@ RSpec.describe Publish::MetadataTransferService do
         before do
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/{"cocinaVersion"/, 'cocina.json')
           expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
-          expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(cocina_object)
+          expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(Cocina::Models::Collection)
           expect_any_instance_of(described_class).to receive(:republish_members!).with(no_args)
         end
 

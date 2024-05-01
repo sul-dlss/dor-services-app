@@ -15,8 +15,14 @@ RSpec.describe Publish::PublicCocinaService do
 
   context 'with a DRO' do
     let(:publish_files) { false }
+    let(:druid) { 'druid:bc123df4567' }
+
     let(:cocina_object) do
-      build(:dro).new(
+      build(:dro, id: druid).new(
+        description: {
+          title: [{ value: 'Constituent label &amp; A Special character' }],
+          purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+        },
         structural: {
           contains: [
             {
@@ -122,6 +128,10 @@ RSpec.describe Publish::PublicCocinaService do
           hasMemberOrders: [{ viewingDirection: 'left-to-right' }]
         }
       )
+    end
+
+    it 'updates the label' do
+      expect(create.label).to eq 'Constituent label &amp; A Special character'
     end
 
     context 'when there are no published files' do
