@@ -10,12 +10,6 @@ RSpec.describe Publish::PublicXmlService do
 
   let(:thumbnail_service) { ThumbnailService.new(public_cocina) }
 
-  let(:description) do
-    {
-      title: [{ value: 'Constituent label &amp; A Special character' }],
-      purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
-    }
-  end
   let(:structural) do
     {
       contains: [{
@@ -71,7 +65,7 @@ RSpec.describe Publish::PublicXmlService do
 
     context 'when there are no release tags' do
       let(:public_cocina) do
-        build(:dro, id: druid).new(description:)
+        build(:dro, id: druid)
       end
 
       it 'does not include a releaseData element and any info in identityMetadata' do
@@ -124,8 +118,7 @@ RSpec.describe Publish::PublicXmlService do
 
     context 'produces xml with' do
       let(:public_cocina) do
-        build(:dro, id: druid).new(
-          description:,
+        build(:dro, id: druid, label: 'Constituent label &amp; A Special character').new(
           structural:,
           identification: {
             barcode: '36105132211504',
@@ -277,7 +270,7 @@ RSpec.describe Publish::PublicXmlService do
 
       context 'when no thumb is present' do
         let(:public_cocina) do
-          build(:dro, id: druid).new(description:)
+          build(:dro, id: druid)
         end
 
         it 'does not add a thumb node' do
@@ -293,7 +286,7 @@ RSpec.describe Publish::PublicXmlService do
 
       context 'when there are single release tags per target' do
         let(:public_cocina) do
-          build(:dro, id: druid).new(description:, administrative:)
+          build(:dro, id: druid).new(administrative:)
         end
 
         let(:administrative) do
@@ -320,7 +313,7 @@ RSpec.describe Publish::PublicXmlService do
 
     context 'with a collection' do
       let(:public_cocina) do
-        build(:collection, id: druid).new(description:)
+        build(:collection, id: druid, label: 'Constituent label &amp; A Special character')
       end
 
       it 'publishes the expected datastreams' do
@@ -343,7 +336,7 @@ RSpec.describe Publish::PublicXmlService do
 
       context 'when there are release tags' do
         let(:public_cocina) do
-          build(:collection, id: druid).new(description:, administrative:)
+          build(:collection, id: druid).new(administrative:)
         end
 
         let(:administrative) do
@@ -371,7 +364,7 @@ RSpec.describe Publish::PublicXmlService do
     context 'with external references' do
       let(:druid) { 'druid:hj097bm8879' }
       let(:public_cocina) do
-        build(:dro, id: druid, type: Cocina::Models::ObjectType.map).new(description:, structural:)
+        build(:dro, id: druid, type: Cocina::Models::ObjectType.map).new(structural:)
       end
       let(:structural) do
         {
