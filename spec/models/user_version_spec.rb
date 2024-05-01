@@ -18,8 +18,12 @@ RSpec.describe UserVersion do
     subject(:user_verison) { build(:user_version, repository_object_version:) }
 
     context 'when the repository object version is closed' do
-      before do
-        allow(repository_object).to receive(:open?).and_return(false)
+      let(:attrs) do
+        {
+          version: 1,
+          version_description: 'My new version',
+          closed_at: Time.current
+        }
       end
 
       it { is_expected.to be_valid }
