@@ -2,7 +2,7 @@
 
 # Open and close versions
 class UserVersionService
-  class VersioningError < StandardError; end
+  class UserVersioningError < StandardError; end
 
   # @param [RepositoryObjectVersion] repository_object_version of the item being acted upon
   # @param [Class] event_factory (EventFactory) the factory for creating events
@@ -12,6 +12,7 @@ class UserVersionService
 
   def self.withdraw(user_version:, event_factory: EventFactory)
     user_version.withdrawn = true
+    user_version.save!
     event_factory.create(druid:, event_type: 'user_version_withdrawn', data: { version: user_version.version.to_s })
   end
 
@@ -31,7 +32,7 @@ class UserVersionService
   # @return [UserVersion version] The version number of the new user version object
   # @raise [VersionService::VersioningError] if the object hasn't been accessioned, or if a version is already opened
   def create(event_factory:)
-    raise(VersionService::VersioningError, 'RepositoryObjectVersion not closed') if repository_object_version.closed_at.nil?
+    raise(UserVersioningError, 'RepositoryObjectVersion not closed') if repository_object_version.closed_at.nil?
 
     # Get the next increment of the user version (or 1 if this is the first user version)
     version = repository_object_version.user_versions.maximum(:version)&.next || 1
@@ -41,7 +42,7 @@ class UserVersionService
   end
 
   def move(user_version, event_factory)
-    raise(VersionService::VersioningError, 'RepositoryObject not closed') unless repository_object.closed?
+    raise(UserVersioningError, 'RepositoryObject not closed') unless repository_object.closed?
 
     user_version.repository_object_version = repository_object_version
     user_version.save!
