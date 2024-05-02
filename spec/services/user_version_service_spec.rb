@@ -4,13 +4,12 @@ require 'rails_helper'
 
 RSpec.describe UserVersionService do
   let(:druid) { 'druid:xz456jk0987' }
-  let(:event_factory) { class_double(EventFactory, create: true) }
   let(:repository_object_version) { repository_object.versions.first }
   let(:repository_object) { create(:repository_object, object_type:, external_identifier: druid) }
   let(:object_type) { 'dro' }
 
   describe '.create' do
-    subject(:user_version_service_create) { described_class.create(druid:, version: 1, event_factory:) }
+    subject(:user_version_service_create) { described_class.create(druid:, version: 1) }
 
     context 'when the repository object version is closed' do
       before do
@@ -43,7 +42,7 @@ RSpec.describe UserVersionService do
   end
 
   describe '.withdraw' do
-    subject(:user_version_service_withdraw) { described_class.withdraw(user_version:, event_factory:) }
+    subject(:user_version_service_withdraw) { described_class.withdraw(user_version:) }
 
     let(:user_version) { UserVersion.create!(version: 1, repository_object_version:) }
 
@@ -59,7 +58,7 @@ RSpec.describe UserVersionService do
   end
 
   describe '.move' do
-    subject(:user_version_service_move) { described_class.move(druid:, version: 2, user_version:, event_factory:) }
+    subject(:user_version_service_move) { described_class.move(druid:, version: 2, user_version:) }
 
     let(:repository_object_version2) { RepositoryObjectVersion.create!(version: 2, version_description: 'My second version', repository_object:) }
     let(:user_version) { UserVersion.create!(version: 1, repository_object_version:) }
