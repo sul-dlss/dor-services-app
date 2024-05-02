@@ -31,7 +31,7 @@ class MemberService
     return members unless exclude_opened
 
     members.reject do |member|
-      workflow_client.active_lifecycle(druid: member.external_identifier, milestone_name: 'opened', version: member.version.to_s).present?
+      workflow_client.active_lifecycle(druid: member.external_identifier, milestone_name: 'opened', version: member.version).present?
     end
   end
 

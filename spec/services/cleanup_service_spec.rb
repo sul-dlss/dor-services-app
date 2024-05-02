@@ -80,7 +80,7 @@ RSpec.describe CleanupService do
       end
 
       it 'backups, cleans up content, and delete workflows' do
-        described_class.stop_accessioning(druid)
+        expect { described_class.stop_accessioning(druid) }.to output.to_stdout
         expect(described_class).to have_received(:backup_content_by_druid).once.with(druid)
         expect(described_class).to have_received(:cleanup_by_druid).once.with(druid)
         expect(described_class).to have_received(:delete_accessioning_workflows).once.with(druid, version)
@@ -88,7 +88,7 @@ RSpec.describe CleanupService do
 
       context 'when dryrun' do
         it 'does nothing' do
-          described_class.stop_accessioning(druid, dryrun: true)
+          expect { described_class.stop_accessioning(druid, dryrun: true) }.to output.to_stdout
           expect(described_class).not_to have_received(:backup_content_by_druid)
           expect(described_class).not_to have_received(:cleanup_by_druid)
           expect(described_class).not_to have_received(:delete_accessioning_workflows)
@@ -104,7 +104,7 @@ RSpec.describe CleanupService do
       end
 
       it 'backups, cleans up content, and delete workflows' do
-        described_class.stop_accessioning(druid)
+        expect { described_class.stop_accessioning(druid) }.to output.to_stdout
         expect(described_class).to have_received(:backup_content_by_druid).once.with(druid)
         expect(described_class).to have_received(:cleanup_by_druid).once.with(druid)
         expect(described_class).to have_received(:delete_accessioning_workflows).once.with(druid, version)

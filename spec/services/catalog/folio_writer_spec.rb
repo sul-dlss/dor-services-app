@@ -7,7 +7,6 @@ RSpec.describe Catalog::FolioWriter do
 
   let(:druid) { 'druid:bc123dg9393' }
   let(:bare_druid) { druid.delete_prefix('druid:') }
-
   let(:marc_856_data) do
     {
       indicators: '41',
@@ -20,7 +19,6 @@ RSpec.describe Catalog::FolioWriter do
       ]
     }
   end
-
   let(:folio_response_json) do
     { parsedRecordId: '1ab23862-46db-4da9-af5b-633adbf5f90f',
       fields:
@@ -36,7 +34,6 @@ RSpec.describe Catalog::FolioWriter do
         updateDate: '2023-02-14T10:39:19.642Z'
       } }.deep_stringify_keys
   end
-
   let(:updated_marc_json) do
     { parsedRecordId: '1ab23862-46db-4da9-af5b-633adbf5f90f',
       fields:
@@ -54,7 +51,6 @@ RSpec.describe Catalog::FolioWriter do
         updateDate: '2023-02-14T10:39:19.642Z'
       } }.deep_stringify_keys
   end
-
   let(:source_record) do
     { fields: [
       { '001': 'a666' },
@@ -67,7 +63,6 @@ RSpec.describe Catalog::FolioWriter do
                              { x: 'rights:world' }] } }
     ] }.deep_stringify_keys
   end
-
   let(:instance_record) do
     {
       id: 'db80714e-398c-56f5-b228-7ad0874107cf',
@@ -79,7 +74,6 @@ RSpec.describe Catalog::FolioWriter do
       }]
     }.deep_stringify_keys
   end
-
   let(:instance_record_unreleased) do
     {
       id: 'db80714e-398c-56f5-b228-7ad0874107cf',
@@ -88,7 +82,6 @@ RSpec.describe Catalog::FolioWriter do
       electronicAccess: []
     }.deep_stringify_keys
   end
-
   let(:unreleased_marc_json) do
     { parsedRecordId: '1ab23862-46db-4da9-af5b-633adbf5f90f',
       fields:
