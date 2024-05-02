@@ -69,7 +69,9 @@ preservation_catalog:
   token: 'mint-token-with-target-preservation-catalog-rake-generate-token'
   read_timeout: 600
 
-purl_services_url: ~
+purl_fetcher:
+  url: 'https://purl-fetcher.example.edu'
+  token: ~
 
 cleanup:
   local_workspace_root: '/dor/workspace'

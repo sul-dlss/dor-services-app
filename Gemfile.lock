@@ -362,6 +362,9 @@ GEM
     public_suffix (5.0.5)
     puma (6.4.2)
       nio4r (~> 2.0)
+    purl_fetcher-client (1.1.0)
+      activesupport
+      faraday (~> 2.1)
     racc (1.7.3)
     rack (3.0.10)
     rack-console (1.4.0)
@@ -607,6 +610,7 @@ DEPENDENCIES
   preservation-client (~> 6.0)
   propshaft
   puma (~> 6.0)
+  purl_fetcher-client (~> 1.1.0)
   rack-console
   rails (~> 7.1.0)
   retries
