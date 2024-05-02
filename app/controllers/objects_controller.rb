@@ -91,7 +91,7 @@ class ObjectsController < ApplicationController
                               message: 'This object cannot be opened for versioning.')
       end
 
-      updated_cocina_object = version_service.open(cocina_object: @cocina_object, assume_accessioned: false, event_factory: EventFactory, **version_open_params)
+      updated_cocina_object = version_service.open(cocina_object: @cocina_object, assume_accessioned: false, **version_open_params)
     end
 
     # initialize workflow

@@ -5,11 +5,10 @@ require 'rails_helper'
 RSpec.describe ConstituentService do
   describe '#add' do
     let(:constituent_druids) { ['druid:xh235dd9059'] }
-    let(:event_factory) { class_double(EventFactory) }
     let(:item_errors) { {} }
     let(:mock_item) { build(:dro) }
     let(:open_for_versioning) { true }
-    let(:service) { described_class.new(virtual_object_druid:, event_factory:) }
+    let(:service) { described_class.new(virtual_object_druid:) }
     let(:virtual_object) { build(:dro_with_metadata, id: virtual_object_druid) }
     let(:virtual_object_druid) { 'druid:bc123df4567' }
 
@@ -45,8 +44,7 @@ RSpec.describe ConstituentService do
       it 'opens virtual object for versioning' do
         service.add(constituent_druids:)
         expect(VersionService).to have_received(:open).with(cocina_object: virtual_object,
-                                                            description: ConstituentService::VERSION_DESCRIPTION,
-                                                            event_factory:)
+                                                            description: ConstituentService::VERSION_DESCRIPTION)
       end
     end
 
@@ -57,7 +55,7 @@ RSpec.describe ConstituentService do
 
     it 'closes open version' do
       service.add(constituent_druids:)
-      expect(VersionService).to have_received(:close).with(druid: virtual_object.externalIdentifier, version: virtual_object.version, event_factory:)
+      expect(VersionService).to have_received(:close).with(druid: virtual_object.externalIdentifier, version: virtual_object.version)
     end
 
     it 'indexes virtual object' do

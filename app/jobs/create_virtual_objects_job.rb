@@ -13,8 +13,8 @@ class CreateVirtualObjectsJob < ApplicationJob
     virtual_objects.each do |virtual_object|
       virtual_object_id, constituent_ids = virtual_object.values_at(:virtual_object_id, :constituent_ids)
       # Update the constituent relationship between the virtual_object and constituent druids
-      result = ConstituentService.new(virtual_object_druid: virtual_object_id,
-                                      event_factory: EventFactory).add(constituent_druids: constituent_ids)
+      result = ConstituentService.new(virtual_object_druid: virtual_object_id)
+                                 .add(constituent_druids: constituent_ids)
       # Do not add `nil`s to the errors array as they signify successful
       # creation of the virtual object
       errors << result if result.present?

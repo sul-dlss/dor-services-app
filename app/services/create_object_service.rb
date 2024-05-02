@@ -11,18 +11,16 @@
 class CreateObjectService
   # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object
   # @param [boolean] assign_doi
-  # @param [#create] event_factory creates events
   # @param [#call] id_minter assigns identifiers. You can provide your own minter if you want to use a specific druid for an item.
   # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
   # @raise [Catalog::MarcService::MarcServiceError::CatalogRecordNotFoundError] if catalog identifer not found when refreshing descMetadata
   # @raise [Catalog::MarcService::MarcServiceError::CatalogResponseError] if other error occurred refreshing descMetadata from catalog source
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
-  def self.create(cocina_request_object, assign_doi: false, event_factory: EventFactory, id_minter: -> { SuriService.mint_id })
-    new(event_factory:, id_minter:).create(cocina_request_object, assign_doi:)
+  def self.create(cocina_request_object, assign_doi: false, id_minter: -> { SuriService.mint_id })
+    new(id_minter:).create(cocina_request_object, assign_doi:)
   end
 
-  def initialize(event_factory: EventFactory, id_minter: -> { SuriService.mint_id })
-    @event_factory = event_factory
+  def initialize(id_minter: -> { SuriService.mint_id })
     @id_minter = id_minter
   end
 
@@ -43,7 +41,7 @@ class CreateObjectService
     # This creates version 1 (Initial Version)
     ObjectVersion.initial_version(druid:)
 
-    event_factory.create(druid:, event_type: 'registration', data: cocina_object.to_h)
+    EventFactory.create(druid:, event_type: 'registration', data: cocina_object.to_h)
 
     # Broadcast this to a topic
     Notifications::ObjectCreated.publish(model: cocina_object_with_metadata)
@@ -53,7 +51,7 @@ class CreateObjectService
 
   private
 
-  attr_reader :event_factory, :id_minter
+  attr_reader :id_minter
 
   # If an object references the Ur-AdminPolicy, it has to exist first.
   # This is particularly important in testing, where the repository may be empty.

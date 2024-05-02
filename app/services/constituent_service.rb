@@ -8,9 +8,8 @@ class ConstituentService
   VERSION_DESCRIPTION = 'Virtual object created'
 
   # @param [String] virtual_object_druid the identifier of the virtual object
-  def initialize(virtual_object_druid:, event_factory:)
+  def initialize(virtual_object_druid:)
     @virtual_object_druid = virtual_object_druid
-    @event_factory = event_factory
   end
 
   # This resets the structural metadata of the virtual object and then adds the constituent resources.
@@ -32,16 +31,14 @@ class ConstituentService
                                virtual_object
                              else
                                VersionService.open(cocina_object: virtual_object,
-                                                   description: VERSION_DESCRIPTION,
-                                                   event_factory:)
+                                                   description: VERSION_DESCRIPTION)
                              end
 
     updated_virtual_object = ResetContentMetadataService.reset(cocina_item: updated_virtual_object, constituent_druids:)
 
     UpdateObjectService.update(updated_virtual_object)
 
-    VersionService.close(druid: updated_virtual_object.externalIdentifier, version: updated_virtual_object.version,
-                         event_factory:)
+    VersionService.close(druid: updated_virtual_object.externalIdentifier, version: updated_virtual_object.version)
 
     Indexer.reindex(cocina_object: updated_virtual_object)
 
@@ -52,7 +49,7 @@ class ConstituentService
 
   private
 
-  attr_reader :virtual_object_druid, :event_factory
+  attr_reader :virtual_object_druid
 
   def virtual_object
     @virtual_object ||= ItemQueryService.find_combinable_item(virtual_object_druid)
