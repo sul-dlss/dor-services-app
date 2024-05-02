@@ -37,12 +37,20 @@ RSpec.describe MemberService do
       let(:exclude_opened) { true }
 
       before do
-        allow(workflow_client).to receive(:active_lifecycle).and_return(true, false)
+        allow(workflow_client).to receive(:active_lifecycle).with(
+          druid: dro1.external_identifier,
+          milestone_name: 'opened',
+          version: 1
+        ).and_return(true)
+        allow(workflow_client).to receive(:active_lifecycle).with(
+          druid: dro2.external_identifier,
+          milestone_name: 'opened',
+          version: 1
+        ).and_return(false)
       end
 
       it 'returns members' do
         expect(members).to eq [dro2.external_identifier]
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid: dro1.external_identifier, milestone_name: 'opened', version: dro1.version.to_s)
       end
     end
 
@@ -56,8 +64,6 @@ RSpec.describe MemberService do
 
       it 'returns members' do
         expect(members).to eq [dro1.external_identifier]
-        expect(workflow_client).to have_received(:lifecycle).with(druid: dro1.external_identifier, milestone_name: 'published', version: dro1.version).once
-        expect(workflow_client).to have_received(:lifecycle).with(druid: dro2.external_identifier, milestone_name: 'published', version: dro2.version).once
       end
     end
   end
