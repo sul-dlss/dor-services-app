@@ -7,6 +7,7 @@ RSpec.describe UserVersionService do
   let(:repository_object_version) { repository_object.versions.first }
   let(:repository_object) { create(:repository_object, object_type:, external_identifier: druid) }
   let(:object_type) { 'dro' }
+  let(:user_version) { UserVersion.create!(version: 1, repository_object_version:) }
 
   describe '.create' do
     subject(:user_version_service_create) { described_class.create(druid:, version: 1) }
@@ -42,26 +43,23 @@ RSpec.describe UserVersionService do
   end
 
   describe '.withdraw' do
-    subject(:user_version_service_withdraw) { described_class.withdraw(user_version:) }
-
-    let(:user_version) { UserVersion.create!(version: 1, repository_object_version:) }
+    subject(:user_version_service_withdraw) { described_class.withdraw(druid:, user_version: 1) }
 
     before do
       repository_object_version.update(closed_at: Time.current)
     end
 
     it 'withdraws the user version' do
-      expect(user_version.reload.withdrawn).to be false
+      expect(user_version.withdrawn).to be false
       user_version_service_withdraw
       expect(user_version.reload.withdrawn).to be true
     end
   end
 
   describe '.move' do
-    subject(:user_version_service_move) { described_class.move(druid:, version: 2, user_version:) }
+    subject(:user_version_service_move) { described_class.move(druid:, version: 2, user_version: 1) }
 
     let(:repository_object_version2) { RepositoryObjectVersion.create!(version: 2, version_description: 'My second version', repository_object:) }
-    let(:user_version) { UserVersion.create!(version: 1, repository_object_version:) }
 
     before do
       repository_object_version.update(closed_at: Time.current)
@@ -71,17 +69,16 @@ RSpec.describe UserVersionService do
     it 'moves the user version' do
       expect(user_version.repository_object_version).to eq repository_object_version
       user_version_service_move
-      expect(user_version.repository_object_version).to eq repository_object_version2
+      expect(user_version.reload.repository_object_version).to eq repository_object_version2
     end
   end
 
   describe '.exist?' do
-    subject(:user_version_service_exist?) { described_class.exist?(druid:, user_version:) }
-
-    let(:user_version) { UserVersion.create!(version: 1, repository_object_version:) }
+    subject(:user_version_service_exist?) { described_class.exist?(druid:, user_version: 1) }
 
     before do
       repository_object_version.update(closed_at: Time.current)
+      user_version.reload # ensures the user_version object exists before the test
     end
 
     it 'returns true if the user version exists' do
