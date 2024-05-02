@@ -27,7 +27,17 @@ class ShelvingService
     preserve_diff = content_diff('preserve')
     shelve_diff = content_diff('shelve')
 
-    workspace_content_pathname = Pathname(workspace_druid.content_dir(true))
+    # In stage, we consistently get Errno::EEXIST.
+    # The theory is that this is a sync issue with the underlying filesystem.
+    # This addresses the issue by retrying the operation; upon retry, the directory should be found
+    # to exist and the operation should succeed properly.
+    workspace_content_pathname = nil
+    begin
+      workspace_content_pathname = Pathname(workspace_druid.content_dir(true))
+    rescue Errno::EEXIST
+      retry
+    end
+
     ShelvableFilesStager.stage(druid, preserve_diff, shelve_diff, workspace_content_pathname)
 
     # workspace_content_pathname = workspace_content_dir(shelve_diff, workspace_druid)
