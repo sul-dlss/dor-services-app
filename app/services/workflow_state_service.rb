@@ -47,14 +47,15 @@ class WorkflowStateService
   # As such, they may not represent the current best practice for determining workflow state
   # and will probably be subject to further refactoring or removal.
 
-  # Checks if the active (latest) version has any incomplete workflow steps and there is an accessionWF (known by the presence of a submitted milestone).
-  # If so we don't want to start another acceession workflow.  This is also true if a preservationAuditWF has returned an error, so that no further
-  # accessioning can take place until that is resolved.
+  # Checks if the active (latest) version has any incomplete workflow steps in accessionWF (other than end-accession).
+  # We allow end-accession to be incomplete, because we want to be able to open a new version from other workflows,
+  # such as ocrWF, without being blocked by a race condition (i.e. end-accession is still not marked as complete)
+  # If there are other active steps in accessionWF, we don't want to start another accession workflow.
+  # Note that this is also true if a preservationAuditWF or preservationIngestWF has returned an error,
+  # because it will not complete the `sdr-ingest-received` step, which will cause this to return true as well.
   # @return [Boolean] true if object is currently being accessioned or is failing an audit
   def accessioning?
-    return true if workflow_client.active_lifecycle(druid:, milestone_name: 'submitted', version: version.to_s)
-
-    false
+    active_workflow_except_step?(workflow: 'accessionWF', process: 'end-accession')
   end
 
   # @return [Boolean] true if the object has previously been accessioned.
