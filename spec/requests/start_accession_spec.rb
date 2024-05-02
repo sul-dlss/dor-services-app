@@ -63,7 +63,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
       expect(version_service).to have_received(:open).with(
         assume_accessioned: false,
         cocina_object:,
-        event_factory: EventFactory, **params
+        **params
       )
     end
 

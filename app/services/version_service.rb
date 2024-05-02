@@ -14,13 +14,12 @@ class VersionService
   # @param [String] description set description of version change
   # @param [String] opening_user_name add opening username to the events datastream
   # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
-  # @param [Class] event_factory (EventFactory) the factory for creating events
-  def self.open(cocina_object:, description:, event_factory: EventFactory, opening_user_name: nil, assume_accessioned: false)
-    new(druid: cocina_object.externalIdentifier, version: cocina_object.version).open(description:,
-                                                                                      opening_user_name:,
-                                                                                      assume_accessioned:,
-                                                                                      event_factory:,
-                                                                                      cocina_object:)
+  def self.open(cocina_object:, description:, opening_user_name: nil, assume_accessioned: false)
+    new(druid: cocina_object.externalIdentifier, version: cocina_object.version)
+      .open(description:,
+            opening_user_name:,
+            assume_accessioned:,
+            cocina_object:)
   end
 
   # @param [String] druid of the item
@@ -35,12 +34,10 @@ class VersionService
   # @param [String] description describes the version change
   # @param [String] user_name add username to the events datastream
   # @param [Boolean] start_accession (true) set to true if you want accessioning to start, false otherwise
-  # @param [Class] event_factory (EventFactory) the factory for creating events
-  def self.close(druid:, version:, event_factory: EventFactory, description: nil, user_name: nil, start_accession: true)
+  def self.close(druid:, version:, description: nil, user_name: nil, start_accession: true)
     new(druid:, version:).close(description:,
                                 user_name:,
-                                start_accession:,
-                                event_factory:)
+                                start_accession:)
   end
 
   # @param [String] druid of the item
@@ -61,11 +58,10 @@ class VersionService
   # @param [String] description set description of version change
   # @param [String] opening_user_name add opening username to the events datastream
   # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
-  # @param [Class] event_factory (EventFactory) the factory for creating events
   # @return [Cocina::Models::DRO, Cocina::Models::AdminPolicy, Cocina::Models::Collection] updated cocina object
   # @raise [VersionService::VersioningError] if the object hasn't been accessioned, or if a version is already opened
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  def open(cocina_object:, description:, opening_user_name:, assume_accessioned:, event_factory:)
+  def open(cocina_object:, description:, opening_user_name:, assume_accessioned:)
     raise ArgumentError, 'description is required to open a new version' if description.blank?
 
     ensure_openable!(assume_accessioned:)
@@ -91,7 +87,7 @@ class VersionService
 
     workflow_client.create_workflow_by_name(druid, 'versioningWF', version: new_object_version.version.to_s)
 
-    event_factory.create(druid:, event_type: 'version_open', data: { who: opening_user_name, version: new_object_version.version.to_s })
+    EventFactory.create(druid:, event_type: 'version_open', data: { who: opening_user_name, version: new_object_version.version.to_s })
     update_cocina_object
   end
 
@@ -110,11 +106,10 @@ class VersionService
   # Sets versioningWF:submit-version to completed and initiates accessionWF for the object
   # @param [String] :description describes the version change
   # @param [String] :user_name add username to the events datastream
-  # @param [Class] event_factory (EventFactory) the factory for creating events
   # @param [Boolean] :start_accession set to true if you want accessioning to start (default), false otherwise
   # @raise [VersionService::VersioningError] if the object hasn't been opened for versioning, or if accessionWF has
   #   already been instantiated or the current version is missing a description
-  def close(description:, user_name:, event_factory:, start_accession: true)
+  def close(description:, user_name:, start_accession: true)
     ObjectVersion.update_current_version(druid:, description:) if description
 
     ensure_closeable!
@@ -128,7 +123,7 @@ class VersionService
     #   RepositoryObject.find_by!(external_identifier: druid).close_version!
     RepositoryObject.find_by(external_identifier: druid)&.close_version!(description:)
 
-    event_factory.create(druid:, event_type: 'version_close', data: { who: user_name, version: version.to_s })
+    EventFactory.create(druid:, event_type: 'version_close', data: { who: user_name, version: version.to_s })
   end
 
   # Determines whether a version can be closed for an object.

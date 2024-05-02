@@ -12,7 +12,7 @@ RSpec.describe CreateVirtualObjectsJob do
 
   before do
     allow(ConstituentService).to receive(:new)
-      .with(virtual_object_druid: virtual_object_id, event_factory: EventFactory).and_return(service)
+      .with(virtual_object_druid: virtual_object_id).and_return(service)
     allow(BackgroundJobResult).to receive(:find).and_return(result)
     allow(result).to receive(:processing!)
   end
@@ -77,7 +77,7 @@ RSpec.describe CreateVirtualObjectsJob do
 
     before do
       allow(ConstituentService).to receive(:new)
-        .with(virtual_object_druid: other_virtual_object_id, event_factory: EventFactory).and_return(service)
+        .with(virtual_object_druid: other_virtual_object_id).and_return(service)
       allow(service).to receive(:add).and_return(nil, virtual_object_id => ['One thing was not combinable', 'And another'])
       described_class.perform_now(virtual_objects:,
                                   background_job_result: result)

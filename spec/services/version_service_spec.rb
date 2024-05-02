@@ -6,16 +6,16 @@ RSpec.describe VersionService do
   let(:druid) { 'druid:xz456jk0987' }
   let(:cocina_object) { create(:ar_dro, external_identifier: druid).to_cocina_with_metadata }
   let(:version) { 1 }
-  let(:event_factory) { class_double(EventFactory, create: true) }
   let(:workflow_state_service) { instance_double(WorkflowStateService) }
 
   before do
     allow(WorkflowStateService).to receive(:new).and_return(workflow_state_service)
     allow(Indexer).to receive(:reindex_later)
+    allow(EventFactory).to receive(:create).and_return(true)
   end
 
   describe '.open' do
-    subject(:open) { described_class.open(cocina_object:, description: 'same as it ever was', opening_user_name: 'sunetid', event_factory:) }
+    subject(:open) { described_class.open(cocina_object:, description: 'same as it ever was', opening_user_name: 'sunetid') }
 
     let(:workflow_client) do
       instance_double(Dor::Workflow::Client, create_workflow_by_name: true)
@@ -54,9 +54,9 @@ RSpec.describe VersionService do
         expect(current_version.version).to eq(2)
         expect(current_version.description).to eq('same as it ever was')
 
-        expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
-                                                             druid:,
-                                                             event_type: 'version_open')
+        expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
+                                                            druid:,
+                                                            event_type: 'version_open')
         expect(repository_object.reload.opened_version.version).to eq 2
         expect(repository_object.opened_version.version_description).to eq 'same as it ever was'
       end
@@ -79,9 +79,9 @@ RSpec.describe VersionService do
         expect(workflow_state_service).to have_received(:accessioning?)
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 
-        expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
-                                                             druid:,
-                                                             event_type: 'version_open')
+        expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
+                                                            druid:,
+                                                            event_type: 'version_open')
         expect(repository_object.reload.opened_version).to be_present
       end
     end
@@ -132,9 +132,9 @@ RSpec.describe VersionService do
         expect(Dro.find_by(external_identifier: druid).version).to eq 2
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 
-        expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
-                                                             druid:,
-                                                             event_type: 'version_open')
+        expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
+                                                            druid:,
+                                                            event_type: 'version_open')
       end
     end
 
@@ -156,9 +156,9 @@ RSpec.describe VersionService do
         expect(Dro.find_by(external_identifier: druid).version).to eq 2
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 
-        expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
-                                                             druid:,
-                                                             event_type: 'version_open')
+        expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
+                                                            druid:,
+                                                            event_type: 'version_open')
         expect(RepositoryObject.last).to be_open
       end
     end
@@ -239,7 +239,6 @@ RSpec.describe VersionService do
       described_class.close(druid:, version:,
                             description:,
                             user_name: 'jcoyne',
-                            event_factory:,
                             start_accession:)
     end
 
@@ -274,9 +273,9 @@ RSpec.describe VersionService do
 
         object_version = ObjectVersion.find_by(druid:, version: 2)
         expect(object_version.description).to eq('closing text')
-        expect(event_factory).to have_received(:create).with(data: { version: '2', who: 'jcoyne' },
-                                                             druid:,
-                                                             event_type: 'version_close')
+        expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'jcoyne' },
+                                                            druid:,
+                                                            event_type: 'version_close')
 
         expect(workflow_client).to have_received(:close_version)
           .with(druid:, version: '2', create_accession_wf: true)

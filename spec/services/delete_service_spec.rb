@@ -3,28 +3,20 @@
 require 'rails_helper'
 
 RSpec.describe DeleteService do
-  let(:service) { described_class.new(cocina_object, user_name, event_factory) }
-
+  let(:service) { described_class.new(cocina_object, user_name) }
   let(:cocina_object) { build(:dro, id: druid, source_id:) }
-
   let(:druid) { 'druid:bb408qn5061' }
-
   let(:source_id) { 'hydrus:object-63-sdr-client' }
-
-  let(:event_factory) { class_double(EventFactory, create: nil) }
-
   let(:user_name) { 'some_person' }
-
   let(:client) { instance_double(Dor::Workflow::Client, delete_all_workflows: nil) }
 
   before do
     allow(WorkflowClientFactory).to receive(:build).and_return(client)
+    allow(EventFactory).to receive(:create).and_return(nil)
   end
 
   describe '#destroy' do
-    # let(:dro) { create(:ar_dro, external_identifier: druid) }
-
-    subject(:destroy) { described_class.destroy(cocina_object, user_name:, event_factory:) }
+    subject(:destroy) { described_class.destroy(cocina_object, user_name:) }
 
     before do
       Dro.upsert_cocina(cocina_object)
@@ -34,7 +26,7 @@ RSpec.describe DeleteService do
 
     it 'destroys the object' do
       expect { destroy }.to change(Dro, :count).by(-1)
-      expect(event_factory).to have_received(:create).with(druid:, event_type: 'delete', data: { request: cocina_object.to_h, source_id:, user_name: })
+      expect(EventFactory).to have_received(:create).with(druid:, event_type: 'delete', data: { request: cocina_object.to_h, source_id:, user_name: })
       expect(Indexer).to have_received(:delete)
     end
 
