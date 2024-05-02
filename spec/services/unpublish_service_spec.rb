@@ -8,7 +8,7 @@ RSpec.describe UnpublishService do
       let(:druid) { 'druid:ab123cd4567' }
 
       before do
-        allow(Settings).to receive(:purl_services_url).and_return('http://example.com/purl')
+        allow(Settings.purl_fetcher).to receive(:url).and_return('http://example.com/purl')
 
         stub_request(:delete, 'example.com/purl/purls/ab123cd4567')
       end
