@@ -66,7 +66,7 @@ RSpec.describe Publish::MetadataTransferService do
       let(:purl_root) { Dir.mktmpdir }
 
       before do
-        allow(Settings).to receive(:purl_services_url).and_return('http://example.com/purl')
+        allow(Settings.purl_fetcher).to receive(:url).and_return('http://example.com/purl')
         allow(Settings.stacks).to receive(:local_document_cache_root).and_return(purl_root)
 
         stub_request(:delete, "example.com/purl/purls/#{druid}")
@@ -149,7 +149,7 @@ RSpec.describe Publish::MetadataTransferService do
 
     context 'when purl-fetcher is configured' do
       before do
-        allow(Settings).to receive(:purl_services_url).and_return('http://example.com/purl')
+        allow(Settings.purl_fetcher).to receive(:url).and_return('http://example.com/purl')
         allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
         allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
 
@@ -168,12 +168,12 @@ RSpec.describe Publish::MetadataTransferService do
       let(:changes_file) { File.join(changes_dir, druid) }
 
       before do
-        allow(Settings).to receive(:purl_services_url).and_return(nil)
+        allow(Settings.purl_fetcher).to receive(:url).and_return(nil)
         allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
       end
 
       it 'writes empty notification file' do
-        expect { notify }.to raise_error 'You have not configured purl-fetcher (Settings.purl_services_url).'
+        expect { notify }.to raise_error 'You have not configured purl-fetcher (Settings.purl_fetcher.url).'
       end
     end
   end

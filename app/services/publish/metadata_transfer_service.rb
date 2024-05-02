@@ -85,9 +85,9 @@ module Publish
     end
 
     def purl_services_url
-      raise 'You have not configured purl-fetcher (Settings.purl_services_url).' unless Settings.purl_services_url
+      raise 'You have not configured purl-fetcher (Settings.purl_fetcher.url).' unless Settings.purl_fetcher.url
 
-      "#{Settings.purl_services_url}/purls/#{cocina_object.externalIdentifier.delete_prefix('druid:')}"
+      "#{Settings.purl_fetcher.url}/purls/#{cocina_object.externalIdentifier.delete_prefix('druid:')}"
     end
   end
 end
