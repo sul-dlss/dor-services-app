@@ -74,20 +74,14 @@ module Publish
     # When publishing a PURL, we notify purl-fetcher of changes.
     #
     def publish_notify_on_success(public_cocina)
-      Faraday.post(purl_services_url, public_cocina.to_json, { 'Content-Type' => 'application/json' })
+      PurlFetcher::Client::LegacyPublish.publish(cocina: public_cocina)
     end
 
     ##
     # When deleting a PURL, we notify purl-fetcher of changes.
     #
     def publish_delete_on_success
-      Faraday.delete(purl_services_url)
-    end
-
-    def purl_services_url
-      raise 'You have not configured purl-fetcher (Settings.purl_fetcher.url).' unless Settings.purl_fetcher.url
-
-      "#{Settings.purl_fetcher.url}/purls/#{cocina_object.externalIdentifier.delete_prefix('druid:')}"
+      PurlFetcher::Client::Unpublish.unpublish(druid: cocina_object.externalIdentifier)
     end
   end
 end
