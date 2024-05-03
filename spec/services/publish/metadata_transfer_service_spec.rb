@@ -66,8 +66,8 @@ RSpec.describe Publish::MetadataTransferService do
       let(:purl_root) { Dir.mktmpdir }
 
       before do
-        allow(Settings.purl_fetcher).to receive(:url).and_return('http://example.com/purl')
         allow(Settings.stacks).to receive(:local_document_cache_root).and_return(purl_root)
+        allow(PurlFetcher::Client::Unpublish).to receive(:unpublish)
 
         stub_request(:delete, "example.com/purl/purls/#{druid}")
       end
@@ -83,7 +83,7 @@ RSpec.describe Publish::MetadataTransferService do
         File.write(File.join(druid1.path, 'tmpfile'), 'junk')
         service.publish
         expect(File).not_to exist(druid1.path) # it should now be gone
-        expect(WebMock).to have_requested(:delete, "example.com/purl/purls/#{druid}")
+        expect(PurlFetcher::Client::Unpublish).to have_received(:unpublish).with(druid: cocina_object.externalIdentifier)
       end
     end
 
@@ -149,31 +149,14 @@ RSpec.describe Publish::MetadataTransferService do
 
     context 'when purl-fetcher is configured' do
       before do
-        allow(Settings.purl_fetcher).to receive(:url).and_return('http://example.com/purl')
         allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
         allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
-
-        stub_request(:post, "example.com/purl/purls/#{druid}")
+        allow(PurlFetcher::Client::LegacyPublish).to receive(:publish)
       end
 
       it 'notifies the purl service of the update' do
         notify
-        expect(WebMock).to have_requested(:post, "example.com/purl/purls/#{druid}")
-      end
-    end
-
-    context 'when purl-fetcher is not configured' do
-      let(:purl_root) { Dir.mktmpdir }
-      let(:changes_dir) { Dir.mktmpdir }
-      let(:changes_file) { File.join(changes_dir, druid) }
-
-      before do
-        allow(Settings.purl_fetcher).to receive(:url).and_return(nil)
-        allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
-      end
-
-      it 'writes empty notification file' do
-        expect { notify }.to raise_error 'You have not configured purl-fetcher (Settings.purl_fetcher.url).'
+        expect(PurlFetcher::Client::LegacyPublish).to have_received(:publish).with(cocina: cocina_object)
       end
     end
   end
