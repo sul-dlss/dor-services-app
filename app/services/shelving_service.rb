@@ -45,6 +45,9 @@ class ShelvingService
     DigitalStacksService.remove_from_stacks(stacks_object_pathname, shelve_diff)
     DigitalStacksService.rename_in_stacks(stacks_object_pathname, shelve_diff)
     DigitalStacksService.shelve_to_stacks(workspace_content_pathname, stacks_object_pathname, shelve_diff)
+
+    # This is for testing purposes initially.
+    shelve_to_purl_fetcher(workspace_content_pathname, shelve_diff) if Settings.enabled_features.shelve_to_purl_fetcher
   end
 
   private
@@ -113,5 +116,37 @@ class ShelvingService
 
   def workflow_client
     @workflow_client ||= WorkflowClientFactory.build
+  end
+
+  def shelve_to_purl_fetcher(workspace_content_pathname, shelve_diff)
+    file_metadata, filepath_map = build_upload(workspace_content_pathname, shelve_diff)
+    PurlFetcher::Client::UploadFiles.upload(file_metadata:, filepath_map:)
+  rescue StandardError => e
+    Honeybadger.notify(e)
+  end
+
+  def build_upload(workspace_content_pathname, shelve_diff)
+    file_metadata = {}
+    filepath_map = {}
+    %i[added copyadded modified].each do |change_type|
+      subset = shelve_diff.subset(change_type) # {Moab::FileGroupDifferenceSubset
+      subset.files.each do |moab_file| # {Moab::FileInstanceDifference}
+        moab_signature = moab_file.signatures.last # {Moab::FileSignature}
+        filename = change_type == :modified ? moab_file.basis_path : moab_file.other_path
+        workspace_pathname = workspace_content_pathname.join(filename)
+        file_metadata[filename] = direct_upload_request_for(filename, moab_signature)
+        filepath_map[filename] = workspace_pathname.to_s
+      end
+    end
+    [file_metadata, filepath_map]
+  end
+
+  def direct_upload_request_for(filename, moab_signature)
+    PurlFetcher::Client::DirectUploadRequest.from_file(
+      hexdigest: moab_signature.md5,
+      byte_size: moab_signature.size.to_i,
+      content_type: 'application/octet-stream',
+      file_name: filename
+    )
   end
 end

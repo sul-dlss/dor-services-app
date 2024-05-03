@@ -13,6 +13,7 @@ enabled_features:
   repository_object_create: false
   # Migrate a Dro / Collection / AdminPolicy to a RepositoryObject if the RepositoryObject does not exist
   repository_object_migrate: false
+  shelve_to_purl_fetcher: false
 
 
 # Ur Admin Policy

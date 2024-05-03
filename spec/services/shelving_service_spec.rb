@@ -139,6 +139,56 @@ RSpec.describe ShelvingService do
     end
   end
 
+  context 'when shelve_to_purl_fetcher is enabled' do
+    let(:previous_content_metadata) do
+      <<~XML
+        <contentMetadata type="book" objectId="#{druid}">
+        </contentMetadata>
+      XML
+    end
+
+    let(:expected_file_metadata) do
+      {
+        'folder1PuSu/story1u.txt' =>
+      PurlFetcher::Client::DirectUploadRequest.new(
+        checksum: '4oN7nwLgsLdvUm7rgceqew==',
+        byte_size: 7888,
+        content_type: 'application/octet-stream',
+        filename: 'folder1PuSu/story1u.txt'
+      )
+      }
+    end
+
+    let(:expected_filepath_map) do
+      {
+        'folder1PuSu/story1u.txt' => "#{workspace_root}/ng/782/rw/8378/ng782rw8378/content/folder1PuSu/story1u.txt"
+      }
+    end
+
+    before do
+      allow(Settings.enabled_features).to receive(:shelve_to_purl_fetcher).and_return(true)
+      allow(PurlFetcher::Client::UploadFiles).to receive(:upload)
+      allow(Honeybadger).to receive(:notify)
+    end
+
+    it 'uploads the files to purl-fetcher' do
+      described_class.shelve(cocina_object)
+      expect(PurlFetcher::Client::UploadFiles).to have_received(:upload).with(file_metadata: expected_file_metadata, filepath_map: expected_filepath_map)
+      expect(Honeybadger).not_to have_received(:notify)
+    end
+
+    context 'when an error occurs' do
+      before do
+        allow(PurlFetcher::Client::UploadFiles).to receive(:upload).and_raise(StandardError)
+      end
+
+      it 'notifies Honeybadger' do
+        described_class.shelve(cocina_object)
+        expect(Honeybadger).to have_received(:notify)
+      end
+    end
+  end
+
   describe '#content_diff' do
     let(:shelving_service) { described_class.new(cocina_object) }
 
