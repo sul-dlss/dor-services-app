@@ -1012,6 +1012,15 @@ paths:
           schema:
             type: string
             example: 'some_sunetid'
+        - name: user_versions
+          in: query
+          description: Create, update, or do nothing with user versions on close
+          schema:
+            type: string
+            enum:
+              - 'none'
+              - 'new'
+              - 'udpate'
   '/v1/objects/{object_id}/versions':
     get:
       tags:
