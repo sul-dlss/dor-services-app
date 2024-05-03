@@ -37,6 +37,13 @@ RSpec.describe WorkflowStateService do
   end
 
   describe '.open?' do
+    let(:accession_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
+    let(:process) { instance_double(Dor::Workflow::Response::Process, name: process_name) }
+
+    before do
+      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'accessionWF').and_return(accession_wf_response)
+    end
+
     context 'when version 1 and not accessioning or accessioned' do
       before do
         allow(workflow_client).to receive_messages(active_lifecycle: nil, lifecycle: nil)
@@ -44,18 +51,32 @@ RSpec.describe WorkflowStateService do
 
       it 'returns true' do
         expect(workflow_state).to be_open
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'submitted', version: '1')
         expect(workflow_client).to have_received(:lifecycle).with(druid:, milestone_name: 'accessioned')
       end
     end
 
     context 'when version 1 and accessioning' do
+      let(:process_name) { 'publish' } # or any other step in accessionWF except for end-accession
+
       before do
-        allow(workflow_client).to receive(:active_lifecycle).and_return(Time.current)
+        allow(accession_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [process, process])
       end
 
       it 'returns false' do
         expect(workflow_state).not_to be_open
+      end
+    end
+
+    context 'when version 1 and accessioning but with an ignored step' do
+      let(:process_name) { 'end-accession' } # this step is ignored in the check for active accessioning steps
+
+      before do
+        allow(workflow_client).to receive_messages(active_lifecycle: nil, lifecycle: nil)
+        allow(accession_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [process, process])
+      end
+
+      it 'returns true' do
+        expect(workflow_state).to be_open
       end
     end
 
@@ -98,24 +119,43 @@ RSpec.describe WorkflowStateService do
   end
 
   describe '.accessioning?' do
-    context 'when there is an active accessioningWF' do
+    let(:accession_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
+    let(:process) { instance_double(Dor::Workflow::Response::Process, name: process_name) }
+
+    before do
+      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'accessionWF').and_return(accession_wf_response)
+    end
+
+    context 'when there is an active accessioningWF with a non-ignored step' do
+      let(:process_name) { 'publish' } # or any other step in accessionWF except for end-accession
+
       before do
-        allow(workflow_client).to receive(:active_lifecycle).and_return(Time.current)
+        allow(accession_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [process, process])
       end
 
       it 'returns true' do
         expect(workflow_state).to be_accessioning
-        expect(workflow_client).to have_received(:active_lifecycle).with(druid:, milestone_name: 'submitted', version: '1')
+        expect(workflow_client).to have_received(:workflow).with(pid: druid, workflow_name: 'accessionWF')
       end
     end
 
-    context 'when there is not an active accessioningWF' do
+    context 'when there is an active accessioningWF with an ignored step' do
+      let(:process_name) { 'end-accession' } # this step is ignored in the check for active accessioning steps
+
       before do
-        allow(workflow_client).to receive(:active_lifecycle).and_return(nil)
+        allow(accession_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [process, process])
       end
 
       it 'returns false' do
         expect(workflow_state).not_to be_accessioning
+        expect(workflow_client).to have_received(:workflow).with(pid: druid, workflow_name: 'accessionWF')
+      end
+    end
+
+    context 'when there is not an active accessioningWF' do
+      it 'returns false' do
+        expect(workflow_state).not_to be_accessioning
+        expect(workflow_client).to have_received(:workflow).with(pid: druid, workflow_name: 'accessionWF')
       end
     end
   end
