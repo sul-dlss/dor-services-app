@@ -39,6 +39,29 @@ RSpec.describe 'Operations on release tags' do
 
         expect(response.parsed_body).to contain_exactly(tag.to_h.stringify_keys)
       end
+
+      context 'with public' do
+        let(:cocina_object) do
+          build(:dro, id: druid).new(structural: {
+                                       isMemberOf: [collection.externalIdentifier]
+                                     })
+        end
+
+        let(:collection) do
+          build(:collection)
+        end
+
+        let!(:collection_tag) do
+          ReleaseTag.create!(druid: collection.externalIdentifier, who: 'petucket', what: 'collection', released_to: 'PURL Sitemap', release: true)
+                    .to_cocina
+        end
+
+        it 'returns the release tags' do
+          get "/v1/objects/#{druid}/release_tags?public=true", headers: auth_headers
+
+          expect(response.parsed_body).to contain_exactly(collection_tag.to_h.stringify_keys, tag.to_h.stringify_keys)
+        end
+      end
     end
 
     context 'when an AdminPolicy' do

@@ -15,7 +15,7 @@ class ReleaseTagsController < ApplicationController
                             message: 'Only Collection or DROs can have release tags.')
     end
 
-    render json: ReleaseTagService.item_tags(cocina_object: @cocina_object)
+    render json: params[:public] ? ReleaseTagService.for_public_metadata(cocina_object: @cocina_object) : ReleaseTagService.item_tags(cocina_object: @cocina_object)
   end
 
   def create
