@@ -3,12 +3,13 @@
 require 'rails_helper'
 
 RSpec.describe 'Update DOI metadata' do
-  let(:druid) { object.external_identifier }
-  let(:object) do
-    create(:ar_dro, identification: {
-             doi: '10.80343/bc123df4567',
-             sourceId: "sul:#{rand(100000..9_999_999)}"
-           })
+  let(:druid) { 'druid:jh683dj3492' }
+  let!(:object) do
+    repository_object_version = build(:repository_object_version, external_identifier: druid, identification: {
+                                        doi: '10.80343/bc123df4567',
+                                        sourceId: "sul:#{rand(100000..9_999_999)}"
+                                      })
+    create(:repository_object, :with_repository_object_version, repository_object_version:, external_identifier: druid)
   end
 
   before do
@@ -22,7 +23,7 @@ RSpec.describe 'Update DOI metadata' do
 
     context 'when the item meets the required preconditions' do
       before do
-        object.update(
+        object.head_version.update(
           description: {
             title: [{ value: 'Test obj' }],
             purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}",

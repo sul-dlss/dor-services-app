@@ -12,9 +12,8 @@ RSpec.describe 'Create object' do
     }
   end
 
-  let(:admin_policy_id) do
-    create(:ar_admin_policy, access_template:).external_identifier
-  end
+  let(:admin_policy_id) { 'druid:vs450xr7956' }
+
   let(:data) { item.to_json }
   let(:druid) { 'druid:gg777gg7777' }
   let(:marc_service) do
@@ -26,6 +25,8 @@ RSpec.describe 'Create object' do
     allow(SuriService).to receive(:mint_id).and_return(druid)
     allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
     allow(Indexer).to receive(:reindex)
+    repository_object_version = build(:repository_object_version, :admin_policy_repository_object_version, access_template:, external_identifier: admin_policy_id)
+    create(:repository_object, :admin_policy, :with_repository_object_version, repository_object_version:, external_identifier: admin_policy_id).external_identifier
   end
 
   context 'when a DRO is provided' do
@@ -93,7 +94,8 @@ RSpec.describe 'Create object' do
 
     context 'when an object already exists' do
       before do
-        Dro.new(Dro.to_model_hash(build(:dro).new(identification:))).save!
+        create(:repository_object, :with_repository_object_version, source_id: 'googlebooks:999999', external_identifier: 'druid:bc234fg5678')
+        # Dro.new(Dro.to_model_hash(build(:dro).new(identification:))).save!
       end
 
       it 'returns a 409 error' do
@@ -467,7 +469,7 @@ RSpec.describe 'Create object' do
     context 'when it is a member of a collection' do
       let(:structural) { { isMemberOf: [collection_id] } }
       let(:expected_structural) { structural }
-      let(:collection_id) { create(:ar_collection).external_identifier }
+      let(:collection_id) { create(:repository_object, :collection, :with_repository_object_version).external_identifier }
 
       it 'creates collection relationship' do
         post '/v1/objects',
@@ -637,12 +639,10 @@ RSpec.describe 'Create object' do
     end
 
     context 'when it belongs to the Ur-AdminPolicy and create_ur_admin_policy is enabled' do
-      let(:ur_apo) { instance_double(Dor::AdminPolicyObject, save!: true, add_relationship: true) }
-
       before do
         allow(Settings.enabled_features).to receive(:create_ur_admin_policy).and_return(true)
         allow(Settings.ur_admin_policy).to receive(:druid).and_return(admin_policy_id)
-        allow(AdminPolicy).to receive(:exists?).and_return(false)
+        allow(CocinaObjectStore).to receive(:exists?).and_return(false)
         allow(UrAdminPolicyFactory).to receive(:create)
       end
 

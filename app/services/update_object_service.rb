@@ -33,18 +33,7 @@ class UpdateObjectService
     # If this is a collection and the title has changed, then reindex the children.
     update_items = need_to_update_members?
 
-    # Only update if already exists in PG (i.e., added by create or migration).
-    cocina_object_with_metadata = nil
-    RepositoryObject.transaction do
-      cocina_object_with_metadata = CocinaObjectStore.store(cocina_object, skip_lock:)
-
-      repo_object = RepositoryObject.find_by(external_identifier: druid)
-      if repo_object
-        repo_object.update_opened_version_from(cocina_object: cocina_object_without_metadata)
-      elsif Settings.enabled_features.repository_object_create
-        RepositoryObjectMigrator.migrate(external_identifier: druid)
-      end
-    end
+    cocina_object_with_metadata = persist(cocina_object_without_metadata)
 
     compare_legacy
 
@@ -97,5 +86,31 @@ class UpdateObjectService
 
       Honeybadger.notify('Comparison of RepositoryObject with legacy object failed.', context: { legacy: legacy_cocina.to_h, cocina: cocina.to_h })
     end
+  end
+
+  def persist(cocina_object_without_metadata)
+    cocina_object_with_metadata = nil
+    begin
+      RepositoryObject.transaction do
+        cocina_object_with_metadata = CocinaObjectStore.store(cocina_object, skip_lock:)
+
+        repo_object = RepositoryObject.find_by(external_identifier: druid)
+        if repo_object
+          repo_object.update_opened_version_from(cocina_object: cocina_object_without_metadata)
+        elsif Settings.enabled_features.repository_object_create
+          RepositoryObjectMigrator.migrate(external_identifier: druid)
+        end
+      end
+    rescue ActiveRecord::RecordNotUnique => e
+      message = if e.message.include?('index_repository_objects_on_source_id')
+                  source_id = cocina_object.identification.sourceId
+                  existing_druid = CocinaObjectStore.find_by_source_id(source_id).externalIdentifier # rubocop:disable Rails/DynamicFindBy
+                  "An object (#{existing_druid}) with the source ID '#{source_id}' has already been registered."
+                else
+                  'ExternalIdentifier or sourceId is not unique.'
+                end
+      raise Cocina::ValidationError.new(message, status: :conflict)
+    end
+    cocina_object_with_metadata
   end
 end
