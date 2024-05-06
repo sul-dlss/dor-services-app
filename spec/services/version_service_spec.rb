@@ -230,13 +230,12 @@ RSpec.describe VersionService do
     let(:workflow_client) do
       instance_double(Dor::Workflow::Client)
     end
-    # Doing build(:repository_object) rather than create to support test where it doesn't exist.
-    # This case can be removed after we fully migrate to RepositoryObjects
+
     let(:repository_object) { create(:repository_object, external_identifier: druid) }
 
     before do
-      repository_object&.save! # This can be removed after we fully migrate to RepositoryObjects
-      repository_object&.head_version&.update!(version: 2, version_description: 'A Second Version')
+      repository_object.save!
+      repository_object.head_version.update!(version: 2, version_description: 'A Second Version')
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
       ObjectVersion.create(druid:, version: 1, description: 'Initial Version')
       ObjectVersion.create(druid:, version: 2, description: 'A Second Version')
