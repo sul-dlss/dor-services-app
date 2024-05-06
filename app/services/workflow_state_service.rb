@@ -7,10 +7,6 @@ class WorkflowStateService
     new(...).accessioning?
   end
 
-  def self.open?(...)
-    new(...).open?
-  end
-
   def self.accessioned?(...)
     new(...).accessioned?
   end
@@ -33,14 +29,6 @@ class WorkflowStateService
       active_workflow_except_step?(workflow: 'wasSeedPreassemblyWF', process: 'end-was-seed-preassembly') ||
       active_workflow_except_step?(workflow: 'gisDeliveryWF', process: 'start-accession-workflow') ||
       active_workflow?(workflow: 'gisAssemblyWF')
-  end
-
-  def open?
-    # If version 1, true if not in accessioning or has not been accessioned.
-    return !accessioning? && !accessioned? if version == 1
-
-    # Otherwise, is there an active versionWF?
-    active_workflow?(workflow: 'versioningWF')
   end
 
   # The following methods were extracted from VersionService.

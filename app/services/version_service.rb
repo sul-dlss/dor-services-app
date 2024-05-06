@@ -4,10 +4,14 @@
 class VersionService
   class VersioningError < StandardError; end
 
+  class CocinaObjectNotFoundError < VersioningError; end
+
   # @param [String] druid of the item
   # @param [Integer] version of the item
+  # @raise [CocinaObjectNotFoundError] if the object is not found
+  # @raise [VersioningError] if the version does not match the head version
   def self.open?(...)
-    WorkflowStateService.new(...).open?
+    new(...).open?
   end
 
   # @param [Cocina::Models::DRO,Cocina::Models::Collection] cocina_object the item being acted upon
@@ -91,6 +95,20 @@ class VersionService
     update_cocina_object
   end
 
+  # @param [String] druid of the item
+  # @param [Integer] version of the item
+  # @raise [CocinaObjectNotFoundError] if the object is not found
+  # @raise [VersioningError] if the version does not match the head version
+  def open?
+    repo_obj = RepositoryObject.find_by(external_identifier: druid)
+
+    raise CocinaObjectNotFoundError, "Couldn't find object with 'external_identifier'=#{druid}" unless repo_obj
+
+    raise VersioningError, "Version #{version} does not match head version #{repo_obj.head_version.version}" if version != repo_obj.head_version.version
+
+    repo_obj.open?
+  end
+
   # Determines whether a new version can be opened for an object.
   # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
   # @return [Boolean] true if a new version can be opened.
@@ -169,7 +187,7 @@ class VersionService
 
   private
 
-  delegate :assembling?, :accessioning?, :open?, to: :workflow_state_service
+  delegate :assembling?, :accessioning?, to: :workflow_state_service
 
   def workflow_client
     @workflow_client ||= WorkflowClientFactory.build
