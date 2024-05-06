@@ -50,9 +50,7 @@ class DeleteService
   # Delete an object from DOR.
   def delete_from_dor
     RepositoryObject.transaction do
-      # TODO: After migrating to RepositoryObjects, we can get rid of the nil check and use:
-      #   RepositoryObject.find_by!(external_identifier: druid).destroy
-      RepositoryObject.find_by(external_identifier: druid)&.destroy
+      RepositoryObject.find_by(external_identifier: druid).destroy
       CocinaObjectStore.ar_find(druid).destroy
       AdministrativeTags.destroy_all(identifier: druid)
       ObjectVersion.where(druid:).destroy_all

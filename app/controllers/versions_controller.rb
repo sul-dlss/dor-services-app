@@ -6,25 +6,11 @@ class VersionsController < ApplicationController
   before_action :load_version, only: %i[current close_current openable status]
 
   def index
-    repository_object = RepositoryObject.find_by(external_identifier: params[:object_id])
-    object_versions = ObjectVersion.where(druid: params[:object_id])
-
-    # return an empty JSON object if there are no versions and no repository object
-    return render json: {} if object_versions.empty? && repository_object.nil?
+    repository_object = RepositoryObject.find_by!(external_identifier: params[:object_id])
 
     # add an entry with version id and description for each RepositoryObjectVersion
 
-    return render json: { versions: repository_object_version_content(repository_object.versions) } if repository_object
-
-    # add an entry with version id and description for each version
-    versions = object_versions.map do |object_version|
-      {
-        versionId: object_version.version,
-        message: object_version.description
-      }
-    end
-
-    render json: { versions: }
+    render json: { versions: repository_object_version_content(repository_object.versions) }
   end
 
   def create
