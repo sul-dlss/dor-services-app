@@ -221,14 +221,16 @@ RSpec.describe VersionService do
       described_class.close(druid:, version:,
                             description:,
                             user_name: 'jcoyne',
-                            start_accession:)
+                            start_accession:,
+                            user_version: user_version_param)
     end
 
     let(:version) { 2 }
     let(:start_accession) { true }
+    let(:user_version_param) { 'none' }
     let(:description) { 'closing text' }
     let(:workflow_client) do
-      instance_double(Dor::Workflow::Client)
+      instance_double(Dor::Workflow::Client, create_workflow_by_name: true)
     end
 
     let(:repository_object) { create(:repository_object, external_identifier: druid) }
@@ -247,19 +249,84 @@ RSpec.describe VersionService do
         allow(workflow_state_service).to receive_messages(accessioning?: false, assembling?: false)
       end
 
-      it 'sets description and an event' do
-        close
-        expect(repository_object.reload.last_closed_version).to be_present
-        expect(repository_object.last_closed_version.version_description).to eq('closing text')
+      context 'when user_version is :none' do
+        it 'sets description and an event and does not create a user version' do
+          close
+          expect(repository_object.reload.last_closed_version).to be_present
+          expect(repository_object.last_closed_version.version_description).to eq('closing text')
 
-        object_version = ObjectVersion.find_by(druid:, version: 2)
-        expect(object_version.description).to eq('closing text')
-        expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'jcoyne' },
-                                                            druid:,
-                                                            event_type: 'version_close')
+          object_version = ObjectVersion.find_by(druid:, version: 2)
+          expect(object_version.description).to eq('closing text')
+          expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'jcoyne' },
+                                                              druid:,
+                                                              event_type: 'version_close')
 
-        expect(workflow_client).to have_received(:close_version)
-          .with(druid:, version: '2', create_accession_wf: true)
+          expect(workflow_client).to have_received(:close_version)
+            .with(druid:, version: '2', create_accession_wf: true)
+
+          expect(repository_object.last_closed_version.user_versions.count).to eq 0
+        end
+      end
+
+      context 'when user_version is :new' do
+        let(:user_version_param) { 'new' }
+
+        it 'sets description and an event and creates a new user version' do
+          close
+          expect(repository_object.reload.last_closed_version).to be_present
+          expect(repository_object.last_closed_version.version_description).to eq('closing text')
+
+          object_version = ObjectVersion.find_by(druid:, version: 2)
+          expect(object_version.description).to eq('closing text')
+          expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'jcoyne' },
+                                                              druid:,
+                                                              event_type: 'version_close')
+
+          expect(workflow_client).to have_received(:close_version)
+            .with(druid:, version: '2', create_accession_wf: true)
+
+          expect(repository_object.last_closed_version.user_versions.count).to eq 1
+        end
+      end
+
+      context 'when user_version is :update' do
+        let(:user_version_param) { 'update' }
+        let(:version) { 3 }
+
+        before do
+          described_class.close(druid:,
+                                version: 2,
+                                description:,
+                                user_name: 'jcoyne',
+                                start_accession:,
+                                user_version: 'new')
+          ObjectVersion.create(druid:, version:, description: 'new version')
+          allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
+          allow(Preservation::Client.objects).to receive(:current_version).and_return(2)
+          allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
+          allow(cocina_object).to receive(:version).and_return(2)
+          described_class.open(cocina_object:, description: 'same as it ever was', opening_user_name: 'sunetid')
+          repository_object.versions.last.update!(closed_at: nil)
+          repository_object.head_version = repository_object.versions.last
+          repository_object.last_closed_version = repository_object.versions.first
+        end
+
+        it 'sets description and an event and creates a new user version' do
+          close
+          expect(repository_object.reload.last_closed_version).to be_present
+          expect(repository_object.last_closed_version.version_description).to eq('closing text')
+
+          object_version = ObjectVersion.find_by(druid:, version: 2)
+          expect(object_version.description).to eq('closing text')
+          expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'jcoyne' },
+                                                              druid:,
+                                                              event_type: 'version_close')
+
+          expect(workflow_client).to have_received(:close_version)
+            .with(druid:, version: '2', create_accession_wf: true)
+
+          expect(repository_object.last_closed_version.user_versions.count).to eq 1
+        end
       end
     end
 

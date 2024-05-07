@@ -38,10 +38,12 @@ class VersionService
   # @param [String] description describes the version change
   # @param [String] user_name add username to the events datastream
   # @param [Boolean] start_accession (true) set to true if you want accessioning to start, false otherwise
-  def self.close(druid:, version:, description: nil, user_name: nil, start_accession: true)
+  # @param [Symbol] user_version (:none) one of :none, :new, :update
+  def self.close(druid:, version:, description: nil, user_name: nil, start_accession: true, user_version: :none)
     new(druid:, version:).close(description:,
                                 user_name:,
-                                start_accession:)
+                                start_accession:,
+                                user_version:)
   end
 
   # @param [String] druid of the item
@@ -121,21 +123,39 @@ class VersionService
   # @param [String] :description describes the version change
   # @param [String] :user_name add username to the events datastream
   # @param [Boolean] :start_accession set to true if you want accessioning to start (default), false otherwise
+  # @param [String] :user_version create, update, or do nothing with user_versions on close
   # @raise [VersionService::VersioningError] if the object hasn't been opened for versioning, or if accessionWF has
   #   already been instantiated or the current version is missing a description
-  def close(description:, user_name:, start_accession: true)
+  # @raise [ArgumentError] if user_version is not one of none, new, update
+  def close(description:, user_name:, start_accession: true, user_version: 'none')
+    user_version_options = %w[none new update]
+
+    raise ArgumentError, "user_version must be one of #{user_version_options.join(', ')}" unless user_version_options.include?(user_version)
+
     ObjectVersion.update_current_version(druid:, description:) if description
 
     ensure_closeable!
+
+    # Get the currently closed version before we close the head version
+    repository_object = RepositoryObject.find_by!(external_identifier: druid)
+    current_closed_version = repository_object.last_closed_version
 
     # Default to creating accessionWF when calling close_version
     workflow_client.close_version(druid:,
                                   version: version.to_s,
                                   create_accession_wf: start_accession)
 
-    RepositoryObject.find_by!(external_identifier: druid).close_version!(description:)
+    repository_object.close_version!(description:)
 
     EventFactory.create(druid:, event_type: 'version_close', data: { who: user_name, version: version.to_s })
+
+    UserVersionService.create(druid:, version: repository_object.last_closed_version.version) if user_version == 'new'
+
+    return unless user_version == 'update' && current_closed_version
+
+    current_closed_version.user_versions.each do |closed_user_version|
+      UserVersionService.move(druid:, version: repository_object.last_closed_version.version, user_version: closed_user_version.version)
+    end
   end
 
   # Determines whether a version can be closed for an object.
