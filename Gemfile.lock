@@ -239,7 +239,7 @@ GEM
     honeybadger (5.8.0)
     http-cookie (1.0.5)
       domain_name (~> 0.5)
-    i18n (1.14.4)
+    i18n (1.14.5)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     io-console (0.7.2)
@@ -363,7 +363,7 @@ GEM
     public_suffix (5.0.5)
     puma (6.4.2)
       nio4r (~> 2.0)
-    purl_fetcher-client (1.2.0)
+    purl_fetcher-client (1.2.1)
       activesupport
       faraday (~> 2.1)
     racc (1.7.3)

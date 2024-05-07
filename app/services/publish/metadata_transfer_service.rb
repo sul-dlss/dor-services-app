@@ -75,6 +75,14 @@ module Publish
     #
     def publish_notify_on_success(public_cocina)
       PurlFetcher::Client::LegacyPublish.publish(cocina: public_cocina)
+
+      tags = ReleaseTagService.for_public_metadata(cocina_object: public_cocina)
+      actions = { index: [], delete: [] }.tap do |releases|
+        tags.each do |tag|
+          releases[tag.release ? :index : :delete] << tag.to
+        end
+      end
+      PurlFetcher::Client::ReleaseTags.release(druid: cocina_object.externalIdentifier, **actions)
     end
 
     ##

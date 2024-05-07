@@ -149,14 +149,17 @@ RSpec.describe Publish::MetadataTransferService do
 
     context 'when purl-fetcher is configured' do
       before do
+        create(:release_tag, druid: cocina_object.externalIdentifier, release: true)
         allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
         allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
         allow(PurlFetcher::Client::LegacyPublish).to receive(:publish)
+        allow(PurlFetcher::Client::ReleaseTags).to receive(:release)
       end
 
       it 'notifies the purl service of the update' do
         notify
         expect(PurlFetcher::Client::LegacyPublish).to have_received(:publish).with(cocina: cocina_object)
+        expect(PurlFetcher::Client::ReleaseTags).to have_received(:release).with(druid: cocina_object.externalIdentifier, index: ['Searchworks'], delete: [])
       end
     end
   end
