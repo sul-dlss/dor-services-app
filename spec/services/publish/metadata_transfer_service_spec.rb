@@ -21,7 +21,6 @@ RSpec.describe Publish::MetadataTransferService do
 
   describe '#publish' do
     before do
-      allow(OpenURI).to receive(:open_uri).with("https://purl-test.stanford.edu/#{druid}.xml").and_return('<xml/>')
       allow(CocinaObjectStore).to receive(:find).with("druid:#{druid}").and_return(cocina_object)
       allow(CocinaObjectStore).to receive(:find).with('druid:xh235dd9059').and_return(cocina_collection) # collection object
       allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
