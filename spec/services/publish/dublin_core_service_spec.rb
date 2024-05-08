@@ -9,13 +9,6 @@ RSpec.describe Publish::DublinCoreService do
     build(:dro, id: 'druid:bc123df4567').new(description:)
   end
   let(:desc_md_xml) { Publish::PublicDescMetadataService.new(cocina_object).ng_xml(include_access_conditions: false) }
-  let(:solr_client) { instance_double(RSolr::Client, get: solr_response) }
-  let(:solr_response) { { 'response' => { 'docs' => virtual_object_solr_docs } } }
-  let(:virtual_object_solr_docs) { [] }
-
-  before do
-    allow(SolrService.instance).to receive(:conn).and_return(solr_client)
-  end
 
   describe '#ng_xml' do
     subject(:xml) { service.ng_xml }
