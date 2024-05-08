@@ -911,12 +911,10 @@ RSpec.describe Cocina::ToXml::ContentMetadataGenerator do
             <externalFile fileId="00001.jp2" mimetype="image/jp2" objectId="#{constituent_druid}" resourceId="#{constituent_druid}_1">
               <imageData height="200" width="300"/>
             </externalFile>
-            <relationship objectId="#{constituent_druid}" type="alsoAvailableAs"/>
           </resource>
           <resource id="https://cocina.sul.stanford.edu/fileSet/bc123df5678-#{constituent_druid}_2" sequence="2" type="image">
             <label>Dummy Title</label>
             <externalFile fileId="00002.jp2" mimetype="image/jp2" objectId="#{constituent_druid}" resourceId="#{constituent_druid}_2"/>
-            <relationship objectId="#{constituent_druid}" type="alsoAvailableAs"/>
           </resource>
         </contentMetadata>
       XML
