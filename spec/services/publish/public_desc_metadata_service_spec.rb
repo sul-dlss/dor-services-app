@@ -3,7 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Publish::PublicDescMetadataService do
-  subject(:service) { described_class.new(item.to_cocina) }
+  subject(:service) { described_class.new(item.to_cocina, constituents) }
+
+  let(:constituents) { [] }
 
   let(:access) { {} }
   let(:identification) { { sourceId: 'sul:123' } }
@@ -48,23 +50,7 @@ RSpec.describe Publish::PublicDescMetadataService do
     end
 
     context 'with isConstituentOf relationships' do
-      let(:virtual_structural) do
-        {
-          contains: [],
-          hasMemberOrders: [
-            {
-              members: [
-                item.external_identifier
-              ],
-              viewingDirection: 'left-to-right'
-            }
-          ]
-        }
-      end
-
-      before do
-        create(:ar_dro, external_identifier: 'druid:hj097bm8879', structural: virtual_structural)
-      end
+      let(:constituents) { [{ id: 'druid:hj097bm8879', title: 'Test DRO' }] }
 
       it 'writes the relationships into MODS' do
         # test that we have 2 expansions

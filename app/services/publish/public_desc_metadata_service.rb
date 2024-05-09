@@ -3,12 +3,15 @@
 module Publish
   # Creates the descriptive XML that we display on purl.stanford.edu
   class PublicDescMetadataService
-    attr_reader :cocina_object
+    attr_reader :cocina_object, :constituents
 
     MODS_NS = 'http://www.loc.gov/mods/v3'
 
-    def initialize(cocina_object)
+    # @param [Cocina::Models::Collection,Cocina::Models::DRO] cocina_object
+    # @param [Array<Hash>] constituents a list of constituents (virtual object members) that are part of this object
+    def initialize(cocina_object, constituents)
       @cocina_object = cocina_object
+      @constituents = constituents
     end
 
     # @return [Nokogiri::XML::Document] A copy of the descriptiveMetadata of the object, to be modified
@@ -63,7 +66,7 @@ module Publish
     # expand constituent relations into relatedItem references -- see JUMBO-18
     # @return [Void]
     def add_constituent_relations!
-      VirtualObject.for(druid: cocina_object.externalIdentifier).each do |virtual_object_params|
+      constituents.each do |virtual_object_params|
         # create the MODS relation
         relatedItem = doc.create_element('relatedItem', xmlns: MODS_NS)
         relatedItem['type'] = 'host'
