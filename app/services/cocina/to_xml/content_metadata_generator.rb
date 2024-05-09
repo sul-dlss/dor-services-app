@@ -151,14 +151,6 @@ module Cocina
         cocina_fileset.structural.contains.filter { |cocina_file| cocina_file.administrative.publish }.each do |cocina_file|
           resource.add_child(Nokogiri::XML::Node.new('label', @xml_doc).tap { |tag| tag.content = label })
           resource.add_child(create_external_file_node(cocina_file, cocina_fileset.externalIdentifier, external_druid))
-          resource.add_child(create_relationship_node(external_druid))
-        end
-      end
-
-      def create_relationship_node(external_druid)
-        Nokogiri::XML::Node.new('relationship', @xml_doc).tap do |relationship|
-          relationship['objectId'] = external_druid
-          relationship['type'] = 'alsoAvailableAs'
         end
       end
 
