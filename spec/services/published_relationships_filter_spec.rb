@@ -3,14 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe PublishedRelationshipsFilter do
-  subject(:service) { described_class.new(cocina_object) }
+  subject(:service) { described_class.new(cocina_object, constituents) }
+
+  let(:constituents) { [{ id: 'druid:hj097bm8879' }] }
 
   describe '#xml' do
     subject(:doc) { service.xml }
-
-    before do
-      allow(VirtualObject).to receive(:for).and_return([{ id: 'druid:hj097bm8879' }])
-    end
 
     context 'with a DRO' do
       let(:cocina_object) do
