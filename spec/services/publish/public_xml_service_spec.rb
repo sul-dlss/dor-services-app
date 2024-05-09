@@ -543,12 +543,29 @@ RSpec.describe Publish::PublicXmlService do
         )
       end
 
-      it 'handles externalFile references' do
-        correct_content_md = Nokogiri::XML(read_fixture('hj097bm8879_publicObject.xml')).at_xpath('/publicObject/contentMetadata').to_xml
+      let(:expected_xml) do
+        <<~XML
+          <contentMetadata objectId="druid:hj097bm8879" type="map">
+            <resource id="cocina-fileSet-hj097bm8879-9475bc2c-7552-43d8-b8ab-8cd2212d5873" sequence="1" type="image">
+              <label>(Covers to) Carey's American Atlas: Containing Twenty Maps And One Chart ... Philadelphia: Engraved For, And Published By, Mathew Carey, No. 118, Market Street. M.DCC.XCV. [Price, Plain, Five Dollars-Coloured, Six Dollars.]</label>
+              <externalFile fileId="2542A.jp2" objectId="druid:cg767mn6478" resourceId="cocina-fileSet-9475bc2c-7552-43d8-b8ab-8cd2212d5873" mimetype="image/jp2">
+                <imageData width="6475" height="4747"/>
+              </externalFile>
+            </resource>
+            <resource id="cocina-fileSet-hj097bm8879-929604b0-00bc-40b1-af71-5c17f066e2fd" sequence="2" type="image">
+              <label>(Title Page to) Carey's American Atlas: Containing Twenty Maps And One Chart ... Philadelphia: Engraved For, And Published By, Mathew Carey, No. 118, Market Street. M.DCC.XCV. [Price, Plain, Five Dollars-Coloured, Six Dollars.]</label>
+              <externalFile fileId="2542B.jp2" objectId="druid:jw923xn5254" resourceId="cocina-fileSet-929604b0-00bc-40b1-af71-5c17f066e2fd" mimetype="image/jp2">
+                <imageData width="3139" height="4675"/>
+              </externalFile>
+            </resource>
+          </contentMetadata>
+        XML
+      end
 
+      it 'handles externalFile references' do
         allow(CocinaObjectStore).to receive(:find).with(cover_item.externalIdentifier).and_return(cover_item)
         allow(CocinaObjectStore).to receive(:find).with(title_item.externalIdentifier).and_return(title_item)
-        expect(ng_xml.at_xpath('/publicObject/contentMetadata').to_xml).to be_equivalent_to(correct_content_md)
+        expect(ng_xml.at_xpath('/publicObject/contentMetadata').to_xml).to be_equivalent_to(expected_xml)
       end
     end
   end
