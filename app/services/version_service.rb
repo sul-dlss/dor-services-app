@@ -38,8 +38,8 @@ class VersionService
   # @param [String] description describes the version change
   # @param [String] user_name add username to the events datastream
   # @param [Boolean] start_accession (true) set to true if you want accessioning to start, false otherwise
-  # @param [Symbol] user_version (:none) one of :none, :new, :update
-  def self.close(druid:, version:, description: nil, user_name: nil, start_accession: true, user_version: :none)
+  # @param [String] user_version (none) one of none, new, update
+  def self.close(druid:, version:, description: nil, user_name: nil, start_accession: true, user_version: 'none')
     new(druid:, version:).close(description:,
                                 user_name:,
                                 start_accession:,
