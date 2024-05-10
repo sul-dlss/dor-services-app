@@ -13,6 +13,7 @@ class UpdateObjectService
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
   # @raise [CocinaObjectNotFoundError] raised if the cocina object does not already exist in the datastore.
   # @raise [StateLockError] raised if optimistic lock failed.
+  # @raise [StandardError] raised if the object does not have an open version
   # @return [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] normalized cocina object
   def self.update(cocina_object, skip_lock: false, skip_open_check: false)
     new(cocina_object:, skip_lock:, skip_open_check:).update
@@ -26,7 +27,7 @@ class UpdateObjectService
 
   def update
     Cocina::ObjectValidator.validate(cocina_object)
-    notify_unless_open_version
+    raise_unless_open_version
 
     cocina_object_without_metadata = Cocina::Models.without_metadata(cocina_object)
 
@@ -60,10 +61,10 @@ class UpdateObjectService
     cocina_object.externalIdentifier
   end
 
-  def notify_unless_open_version
+  def raise_unless_open_version
     return if skip_open_check || VersionService.open?(druid:, version:)
 
-    Honeybadger.notify('Updating repository item without an open version', context: { druid:, version: })
+    raise "Updating repository item #{druid} without an open version"
   end
 
   def need_to_update_members?

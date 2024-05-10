@@ -92,14 +92,11 @@ RSpec.describe UpdateObjectService do
         end
 
         before do
-          allow(Honeybadger).to receive(:notify)
           create(:ar_dro, external_identifier: druid)
         end
 
-        it 'notifies honeybadger' do
-          expect(store.update).to be_a Cocina::Models::DROWithMetadata
-          expect(Honeybadger).to have_received(:notify).with('Updating repository item without an open version',
-                                                             context: { druid:, version: 1 })
+        it 'raises' do
+          expect { store.update }.to raise_error(StandardError, "Updating repository item #{druid} without an open version")
         end
       end
 
