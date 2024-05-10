@@ -12,6 +12,7 @@ module Publish
     def initialize(cocina_object, constituents)
       @cocina_object = cocina_object
       @constituents = constituents
+      @ng_xml = {}
     end
 
     # @return [Nokogiri::XML::Document] A copy of the descriptiveMetadata of the object, to be modified
@@ -33,7 +34,7 @@ module Publish
 
     # @return [Nokogiri::XML::Document]
     def ng_xml(include_access_conditions: true)
-      @ng_xml ||= begin
+      @ng_xml[include_access_conditions] ||= begin
         add_collection_reference!
         AccessConditions.add(public_mods: doc, access: cocina_object.access) if include_access_conditions
         add_constituent_relations!
