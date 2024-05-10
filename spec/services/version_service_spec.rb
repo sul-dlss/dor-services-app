@@ -249,7 +249,7 @@ RSpec.describe VersionService do
         allow(workflow_state_service).to receive_messages(accessioning?: false, assembling?: false)
       end
 
-      context 'when user_version is :none' do
+      context 'when user_version is none' do
         it 'sets description and an event and does not create a user version' do
           close
           expect(repository_object.reload.last_closed_version).to be_present
@@ -268,7 +268,7 @@ RSpec.describe VersionService do
         end
       end
 
-      context 'when user_version is :new' do
+      context 'when user_version is new' do
         let(:user_version_param) { 'new' }
 
         it 'sets description and an event and creates a new user version' do
@@ -289,7 +289,7 @@ RSpec.describe VersionService do
         end
       end
 
-      context 'when user_version is :update' do
+      context 'when user_version is update' do
         let(:user_version_param) { 'update' }
         let(:version) { 3 }
 
