@@ -76,7 +76,9 @@ class ObjectsController < ApplicationController
   # The versioning params are included below for reference.
   #  :descriptions [String] (required) description of version change
   #  :opening_user_name [String] (optional) opening sunetid to add to the events datastream
+  # You can also pass information that will be used to start the workflow:
   #  :workflow [String] (optional) the workflow to start (defaults to 'assemblyWF')
+  #  :context [Hash] (optional) workflow context to pass to the workflow service (defaults to nil)
   def accession
     workflow = params[:workflow] || 'assemblyWF'
     EventFactory.create(druid: params[:id], event_type: 'accession_request', data: { workflow: })
@@ -95,7 +97,7 @@ class ObjectsController < ApplicationController
     end
 
     # initialize workflow
-    workflow_client.create_workflow_by_name(@cocina_object.externalIdentifier, workflow, version: updated_cocina_object.version.to_s)
+    workflow_client.create_workflow_by_name(@cocina_object.externalIdentifier, workflow, version: updated_cocina_object.version.to_s, context: workflow_context)
     head :created
   end
 
@@ -209,6 +211,11 @@ class ObjectsController < ApplicationController
 
   def version_open_params
     params.permit(:description, :opening_user_name).to_h.symbolize_keys
+  end
+
+  # workflow context is optionally set in the body of the request as json, with the key 'context'
+  def workflow_context
+    params.permit(context: {}).to_h[:context]
   end
 
   def version_close_params

@@ -39,7 +39,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
           druid: 'druid:mx123qw2323',
           event_type: 'accession_request' }
       )
-      expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, default_start_accession_workflow, version: '1')
+      expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, default_start_accession_workflow, version: '1', context: nil)
       expect(version_service).not_to have_received(:open)
     end
 
@@ -47,7 +47,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
       post "/v1/objects/#{druid}/accession?#{params.merge(workflow: 'gisAssemblyWF').to_query}",
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
-      expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'gisAssemblyWF', version: '1')
+      expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'gisAssemblyWF', version: '1', context: nil)
     end
   end
 
@@ -59,7 +59,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     it 'opens a version and starts default workflow' do
       post("/v1/objects/#{druid}/accession?#{params.to_query}",
            headers: { 'Authorization' => "Bearer #{jwt}" })
-      expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, default_start_accession_workflow, version: '2')
+      expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, default_start_accession_workflow, version: '2', context: nil)
       expect(version_service).to have_received(:open).with(
         assume_accessioned: false,
         cocina_object:,
@@ -70,7 +70,18 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     it 'can override the default workflow' do
       post "/v1/objects/#{druid}/accession?#{params.merge(workflow: 'gisAssemblyWF').to_query}",
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'gisAssemblyWF', version: '2')
+      expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'gisAssemblyWF', version: '2', context: nil)
+    end
+
+    context 'with context' do
+      let(:workflow_context) { { 'requireOCR' => true } }
+
+      it 'sends workflow context' do
+        post "/v1/objects/#{druid}/accession?#{params.to_query}",
+             params: { context: workflow_context }.to_json,
+             headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
+        expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, default_start_accession_workflow, version: '2', context: workflow_context)
+      end
     end
   end
 
