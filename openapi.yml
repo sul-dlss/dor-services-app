@@ -1027,7 +1027,7 @@ paths:
             enum:
               - "none"
               - "new"
-              - "udpate"
+              - "update"
   "/v1/objects/{object_id}/versions":
     get:
       tags:
