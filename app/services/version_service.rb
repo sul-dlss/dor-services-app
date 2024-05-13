@@ -61,13 +61,13 @@ class VersionService
 
   # Increments the version number and initializes versioningWF for the object
   # @param [Cocina::Models::DRO,Cocina::Models::Collection] cocina_object the item being acted upon
-  # @param [String] description set description of version change
-  # @param [String] opening_user_name add opening username to the events datastream
+  # @param [String] description set description of version change (required)
+  # @param [String] opening_user_name add opening username to the events datastream (optional)
   # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
   # @return [Cocina::Models::DRO, Cocina::Models::AdminPolicy, Cocina::Models::Collection] updated cocina object
   # @raise [VersionService::VersioningError] if the object hasn't been accessioned, or if a version is already opened
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  def open(cocina_object:, description:, opening_user_name:, assume_accessioned:)
+  def open(cocina_object:, description:, assume_accessioned:, opening_user_name: nil)
     raise ArgumentError, 'description is required to open a new version' if description.blank?
 
     ensure_openable!(assume_accessioned:)
