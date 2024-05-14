@@ -104,7 +104,7 @@ class AuditTechnicalMetadataFileList
       response = techmd_connection.post("/v1/technical-metadata/audit/#{druid}", req_params, 'Content-Type' => 'application/json')
       logger.debug "#{druid}: audited technical-metadata-service; response status: #{response.status}; response body: #{response.body}"
 
-      process_response(druid, version, response)
+      process_response(druid, version, response, logger)
     end
 
     private
@@ -127,7 +127,7 @@ class AuditTechnicalMetadataFileList
       end
     end
 
-    def process_response(druid, version, response)
+    def process_response(druid, version, response, logger)
       unless EXPECTED_RESPONSE_CODES.include?(response.status)
         logger.warn("#{druid}: unexpected response auditing technical-metadata-service. HTTP status: #{response.status}. response body: #{response.body}")
         return
