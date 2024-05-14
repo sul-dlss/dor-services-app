@@ -74,6 +74,13 @@ purl_fetcher:
   url: 'https://purl-fetcher.example.edu'
   token: 'fake-token'
 
+# As of may 2024, this is just here to support auditing contents of
+# technical-metadata-service. If the report that uses it (AuditTechnicalMetadataFileList)
+# is removed, see whether this section can be removed.
+technical_metadata:
+  url: 'https://techmd-svc.example.edu'
+  token: 'secret-token'
+
 cleanup:
   local_workspace_root: '/dor/workspace'
   local_assembly_root: '/dor/assembly'
