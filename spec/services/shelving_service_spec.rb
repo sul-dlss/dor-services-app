@@ -140,12 +140,12 @@ RSpec.describe ShelvingService do
   end
 
   context 'when shelve_to_purl_fetcher is enabled' do
-    let(:previous_content_metadata) do
-      <<~XML
-        <contentMetadata type="book" objectId="#{druid}">
-        </contentMetadata>
-      XML
-    end
+    # let(:previous_content_metadata) do
+    #   <<~XML
+    #     <contentMetadata type="book" objectId="#{druid}">
+    #     </contentMetadata>
+    #   XML
+    # end
 
     let(:expected_file_metadata) do
       {
@@ -169,6 +169,7 @@ RSpec.describe ShelvingService do
       allow(Settings.enabled_features).to receive(:shelve_to_purl_fetcher).and_return(true)
       allow(PurlFetcher::Client::UploadFiles).to receive(:upload)
       allow(Honeybadger).to receive(:notify)
+      allow(DigitalStacksDiffer).to receive(:call).with(cocina_object:).and_return(['folder1PuSu/story1u.txt'])
     end
 
     it 'uploads the files to purl-fetcher' do
