@@ -15,7 +15,7 @@ class UserVersionService
     raise(UserVersioningError, 'RepositoryObjectVersion not closed') unless repository_object_version.closed?
 
     # Get the next increment of the user version (or 1 if this is the first user version)
-    next_user_version = repository_object_version.user_versions.maximum(:version)&.next || 1
+    next_user_version = repository_object_version.repository_object.user_versions.maximum(:version)&.next || 1
     UserVersion.create!(version: next_user_version, repository_object_version:)
     EventFactory.create(druid:, event_type: 'user_version_created', data: { version: version.to_s })
     next_user_version
@@ -71,7 +71,7 @@ class UserVersionService
 
   def self.user_version_for(druid:, user_version:)
     repository_object = repository_object(druid:)
-    repository_object.versions.map { |repo_obj_version| repo_obj_version.user_versions.find_by(version: user_version) }.first
+    repository_object.user_versions.find_by(version: user_version)
   end
 
   private_class_method :repository_object, :repository_object_version, :user_version_for
