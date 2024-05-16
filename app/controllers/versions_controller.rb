@@ -88,7 +88,8 @@ class VersionsController < ApplicationController
     new_params = params.permit(
       :description,
       :start_accession,
-      :user_name
+      :user_name,
+      :user_versions
     ).to_h.symbolize_keys
     boolean_param(new_params, :start_accession)
   end

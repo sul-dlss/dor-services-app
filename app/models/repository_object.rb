@@ -12,6 +12,7 @@ class RepositoryObject < ApplicationRecord
   class VersionNotOpened < StandardError; end
 
   has_many :versions, -> { order(version: :asc) }, class_name: 'RepositoryObjectVersion', dependent: :destroy, inverse_of: 'repository_object'
+  has_many :user_versions, through: :versions
 
   belongs_to :head_version, class_name: 'RepositoryObjectVersion', optional: true
   belongs_to :last_closed_version, class_name: 'RepositoryObjectVersion', optional: true
