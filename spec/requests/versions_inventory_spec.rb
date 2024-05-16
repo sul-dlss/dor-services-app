@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Release tags' do
+RSpec.describe 'Versions' do
   let(:druid) { 'druid:mx123qw2323' }
 
   let(:repository_object) { build(:repository_object, **attrs) }
