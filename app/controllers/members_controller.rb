@@ -4,6 +4,6 @@
 class MembersController < ApplicationController
   # Return the members of this collection
   def index
-    @members = Dro.members_of_collection(params[:object_id]).select(:external_identifier, :version)
+    @members = RepositoryObject.currently_members_of_collection(params[:object_id]).select(:external_identifier, :version)
   end
 end
