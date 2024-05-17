@@ -7,7 +7,7 @@
 class EmbargoReleaseService
   def self.release_all
     # Find objects to process
-    embargoed_items_to_release = Dro.embargoed_and_releaseable
+    embargoed_items_to_release = RepositoryObject.currently_embargoed_and_releaseable
 
     return Rails.logger.info('No objects to process') if embargoed_items_to_release.none?
 

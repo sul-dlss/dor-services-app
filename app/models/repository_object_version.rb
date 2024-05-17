@@ -6,8 +6,11 @@ class RepositoryObjectVersion < ApplicationRecord
   has_many :user_versions, dependent: :destroy
 
   has_one :head_version_of, class_name: 'RepositoryObject', inverse_of: :head_version, dependent: nil
+
   scope :in_virtual_objects, ->(member_druid) { where("structural #> '{hasMemberOrders,0}' -> 'members' ? :druid", druid: member_druid) }
   scope :members_of_collection, ->(collection_druid) { where("structural -> 'isMemberOf' ? :druid", druid: collection_druid) }
+  # Note that this query is slow. Creating a timestamp index on the releaseDate field is not supported by PG.
+  scope :embargoed_and_releaseable, -> { where("(access -> 'embargo' ->> 'releaseDate')::timestamp <= ?", Time.zone.now) }
 
   validates :version, :version_description, presence: true
   after_save :update_object_source_id

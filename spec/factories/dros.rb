@@ -69,32 +69,4 @@ FactoryBot.define do
       }
     end
   end
-
-  trait :with_embargo do
-    access do
-      {
-        view: 'dark',
-        download: 'dark',
-        embargo: {
-          releaseDate: 1.year.from_now.iso8601,
-          view: 'world',
-          download: 'world'
-        }
-      }
-    end
-  end
-
-  trait :with_releasable_embargo do
-    access do
-      {
-        view: 'dark',
-        download: 'dark',
-        embargo: {
-          releaseDate: 1.month.ago.iso8601,
-          view: 'world',
-          download: 'world'
-        }
-      }
-    end
-  end
 end

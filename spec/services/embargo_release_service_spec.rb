@@ -232,11 +232,11 @@ RSpec.describe EmbargoReleaseService do
   end
 
   describe '#release_all' do
-    let!(:item_with_releasable_embargo) { create(:ar_dro, :with_releasable_embargo) }
+    let!(:item_with_releasable_embargo) { create(:repository_object_version, :with_repository_object, :with_releasable_embargo).repository_object }
 
     before do
-      create(:ar_dro)
-      create(:ar_dro, :with_embargo)
+      create(:repository_object_version, :with_repository_object)
+      create(:repository_object_version, :with_repository_object, :with_embargo)
       allow(described_class).to receive(:release)
     end
 

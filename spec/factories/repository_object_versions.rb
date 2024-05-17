@@ -66,6 +66,27 @@ FactoryBot.define do
     closed_at { nil }
   end
 
+  trait :with_repository_object do
+    repository_object
+
+    after(:build) do |repository_object_version, _evaluator|
+      repository_object = repository_object_version.repository_object
+      # Repository object will already have a version 1, so delete it.
+      if repository_object_version.version == 1 && repository_object.versions.present?
+        repository_object.update(head_version: nil, opened_version: nil, last_closed_version: nil)
+        repository_object.versions.first.destroy!
+      end
+      repository_object.versions << repository_object_version
+      repository_object.head_version = repository_object_version
+      if repository_object_version.closed_at.present?
+        repository_object.last_closed_version = repository_object_version
+      else
+        repository_object.opened_version = repository_object_version
+      end
+      repository_object.save!
+    end
+  end
+
   trait :dro_repository_object_version do # rubocop:disable Lint/EmptyBlock
   end
 
@@ -97,5 +118,33 @@ FactoryBot.define do
       { view: 'world' }
     end
     structural { nil }
+  end
+
+  trait :with_embargo do
+    access do
+      {
+        view: 'dark',
+        download: 'dark',
+        embargo: {
+          releaseDate: 1.year.from_now.iso8601,
+          view: 'world',
+          download: 'world'
+        }
+      }
+    end
+  end
+
+  trait :with_releasable_embargo do
+    access do
+      {
+        view: 'dark',
+        download: 'dark',
+        embargo: {
+          releaseDate: 1.month.ago.iso8601,
+          view: 'world',
+          download: 'world'
+        }
+      }
+    end
   end
 end
