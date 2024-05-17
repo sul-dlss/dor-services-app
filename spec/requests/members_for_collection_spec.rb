@@ -4,18 +4,22 @@ require 'rails_helper'
 
 RSpec.describe 'Get the members' do
   let(:collection_druid) { 'druid:mk420bs7601' }
-
-  let!(:dro) { create(:ar_dro, isMemberOf: [collection_druid]) }
-
   let(:expected) do
     {
       members: [
         {
-          externalIdentifier: dro.external_identifier,
-          version: dro.version
+          externalIdentifier: repository_object.external_identifier,
+          version: repository_object.head_version.version
         }
       ]
     }
+  end
+
+  let(:repository_object) { create(:repository_object) }
+
+  before do
+    repository_object_version = create(:repository_object_version, version: 2, is_member_of: [collection_druid], repository_object:)
+    repository_object.update!(head_version: repository_object_version, opened_version: repository_object_version)
   end
 
   it 'returns the druids' do
