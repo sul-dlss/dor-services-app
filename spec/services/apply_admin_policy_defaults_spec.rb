@@ -244,6 +244,8 @@ RSpec.describe ApplyAdminPolicyDefaults do
                 filename: '00001.jp2',
                 label: '00001.jp2',
                 hasMimeType: 'image/jp2',
+                sdrGeneratedText: false,
+                correctedForAccessibility: false,
                 administrative: {
                   publish: false,
                   sdrPreserve: true,
@@ -276,6 +278,8 @@ RSpec.describe ApplyAdminPolicyDefaults do
                   filename: '00001.jp2',
                   label: '00001.jp2',
                   hasMimeType: 'image/jp2',
+                  sdrGeneratedText: false,
+                  correctedForAccessibility: false,
                   administrative: {
                     publish: false,
                     sdrPreserve: true,
@@ -320,6 +324,8 @@ RSpec.describe ApplyAdminPolicyDefaults do
                   filename: '00001.jp2',
                   label: '00001.jp2',
                   hasMimeType: 'image/jp2',
+                  sdrGeneratedText: false,
+                  correctedForAccessibility: false,
                   administrative: {
                     publish: false,
                     sdrPreserve: true,
