@@ -1102,6 +1102,26 @@ paths:
           schema:
             type: string
           example: "some_sunetid"
+  "/v1/objects/{object_id}/user_versions":
+    get:
+      tags:
+        - versions
+      summary: The user version log for this object
+      operationId: "user_versions#index"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserVersionLog"
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"        
   /v1/objects:
     post:
       tags:
@@ -3274,6 +3294,24 @@ components:
       # environments and deployed environments that use Apache & Passenger
       pattern: '^.+(\+(?:%3A|:)\+.+)+$'
       example: "Foo+%3A+Bar+%3A+Baz"
+    UserVersion:
+      type: object
+      description: "Information about a user version."
+      properties:
+        version:
+          type: integer
+          description: the number of the object version
+        userVersion:
+          type: integer
+          description: the number of the user version
+    UserVersionLog:
+      type: object
+      description: "User versions for an object."
+      properties:
+        versions:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserVersion"
     Version:
       type: object
       description: "Similar to the version inventory specified by OCFL: https://ocfl.io/draft/spec/#version-inventory"
@@ -3286,7 +3324,7 @@ components:
           description: the number of the version
         message:
           type: string
-          description: a message that explans what changed
+          description: a message that explains what changed
     VersionLog:
       type: object
       description: "Similar to the version inventory specified by OCFL: https://ocfl.io/draft/spec/#version-inventory"

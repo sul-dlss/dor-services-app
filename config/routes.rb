@@ -78,6 +78,8 @@ Rails.application.routes.draw do
         end
       end
 
+      resources :user_versions, only: [:index]
+
       resources :release_tags, only: [:create, :index]
     end
   end
