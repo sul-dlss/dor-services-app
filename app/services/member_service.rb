@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Finds the members of a collection by using Solr
+# Finds the members of a collection
 class MemberService
   # @param [String] druid the identifier of the collection
   # @param [Boolean] only_published when true, restrict to only published items
@@ -17,10 +17,10 @@ class MemberService
   end
 
   def for
-    Dro.members_of_collection(druid).select(:external_identifier, :version)
-       .then { |members| exclude_opened_members(members) }
-       .then { |members| only_published_members(members) }
-       .map(&:external_identifier)
+    RepositoryObject.currently_members_of_collection(druid).select(:external_identifier, :version, :head_version_id, :opened_version_id)
+                    .then { |members| exclude_opened_members(members) }
+                    .then { |members| only_published_members(members) }
+                    .map(&:external_identifier)
   end
 
   private
@@ -30,9 +30,7 @@ class MemberService
   def exclude_opened_members(members)
     return members unless exclude_opened
 
-    members.reject do |member|
-      workflow_client.active_lifecycle(druid: member.external_identifier, milestone_name: 'opened', version: member.version).present?
-    end
+    members.reject(&:open?)
   end
 
   def only_published_members(members)
