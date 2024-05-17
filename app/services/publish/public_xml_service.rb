@@ -59,7 +59,7 @@ module Publish
     end
 
     def constituents
-      @constituents ||= VirtualObject.for(druid: public_cocina.externalIdentifier)
+      @constituents ||= Publish::PublicXmlService::VirtualObject.for(druid: public_cocina.externalIdentifier)
     end
 
     def public_relationships
@@ -115,6 +115,21 @@ module Publish
           type: public_cocina.type
         )
       )
+    end
+
+    # Service for finding virtual object membership
+    class VirtualObject
+      # Find virtual objects that this item is a constituent of
+      # @param [String] druid
+      # @return [Array<Hash>] a list of results with ids and titles
+      def self.for(druid:)
+        RepositoryObject.currently_in_virtual_objects(druid).map do |repository_object|
+          {
+            id: repository_object.external_identifier,
+            title: Cocina::Models::Builders::TitleBuilder.build(repository_object.to_cocina.description.title)
+          }
+        end
+      end
     end
   end
 end

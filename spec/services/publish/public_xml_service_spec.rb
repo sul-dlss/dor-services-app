@@ -57,7 +57,7 @@ RSpec.describe Publish::PublicXmlService do
         </mods:mods>
       EOXML
 
-      allow(VirtualObject).to receive(:for).and_return([{ id: 'druid:hj097bm8879' }])
+      allow(Publish::PublicXmlService::VirtualObject).to receive(:for).and_return([{ id: 'druid:hj097bm8879' }])
       allow_any_instance_of(Publish::PublicDescMetadataService).to receive(:ng_xml).and_return(Nokogiri::XML(mods)) # calls Item.find and not needed in general tests
     end
 
@@ -567,6 +567,36 @@ RSpec.describe Publish::PublicXmlService do
         allow(CocinaObjectStore).to receive(:find).with(title_item.externalIdentifier).and_return(title_item)
         expect(ng_xml.at_xpath('/publicObject/contentMetadata').to_xml).to be_equivalent_to(expected_xml)
       end
+    end
+  end
+
+  describe 'VirtualObject' do
+    let(:virtual_objects) { described_class::VirtualObject.for(druid: member.external_identifier) }
+
+    let(:member) { create(:repository_object, :with_repository_object_version) }
+
+    let(:virtual_object_druid) { 'druid:jf284br9301' }
+
+    let!(:virtual_object) do
+      repository_object = create(:repository_object, :with_repository_object_version)
+      structural = repository_object.head_version.structural
+      structural['hasMemberOrders'] = [{ 'members' => [member.external_identifier] }]
+      repository_object.head_version.update!(structural:)
+      repository_object
+    end
+
+    before do
+      # Not a virtual object or member
+      create(:repository_object)
+    end
+
+    it 'return virtual objects' do
+      expect(virtual_objects).to eq([
+                                      {
+                                        id: virtual_object.external_identifier,
+                                        title: 'Test DRO'
+                                      }
+                                    ])
     end
   end
 end
