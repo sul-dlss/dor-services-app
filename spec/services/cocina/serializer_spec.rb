@@ -46,6 +46,8 @@ RSpec.describe Cocina::Serializer do
                     'size' => 19823,
                     'version' => 1,
                     'hasMimeType' => 'image/png',
+                    'sdrGeneratedText' => false,
+                    'correctedForAccessibility' => false,
                     'hasMessageDigests' => [{ 'type' => 'sha1', 'digest' => 'b5f3221455c8994afb85214576bc2905d6b15418' }, { 'type' => 'md5', 'digest' => '7142ce948827c16120cc9e19b05acd49' }],
                     'access' => { 'view' => 'world', 'download' => 'world' },
                     'administrative' => {
@@ -132,6 +134,8 @@ RSpec.describe Cocina::Serializer do
               size: 19823,
               version: 1,
               hasMimeType: 'image/png',
+              sdrGeneratedText: false,
+              correctedForAccessibility: false,
               hasMessageDigests: [{
                 type: 'sha1',
                 digest: 'b5f3221455c8994afb85214576bc2905d6b15418'
