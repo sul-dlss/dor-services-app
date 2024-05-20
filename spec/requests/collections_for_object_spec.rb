@@ -12,8 +12,8 @@ RSpec.describe 'Get the object' do
     end
   end
 
-  let(:collection_records) { create_list(:ar_collection, 1) }
-  let(:collections) { collection_records.map(&:to_cocina).map { |cocina_object| Cocina::Models.without_metadata(cocina_object) } }
+  let(:collection_repository_object_versions) { create_list(:repository_object_version, 1, :collection_repository_object_version, :with_repository_object) }
+  let(:collections) { collection_repository_object_versions.map(&:to_cocina) }
 
   let(:expected) do
     {
@@ -21,8 +21,13 @@ RSpec.describe 'Get the object' do
     }
   end
 
-  let(:dro_record) { create(:ar_dro, isMemberOf: collections.map(&:externalIdentifier)) }
-  let(:dro) { dro_record.to_cocina }
+  let(:dro_record) do
+    create(:repository_object, :dro, :with_repository_object_version).tap do |repo_obj|
+      repo_obj.head_version.structural['isMemberOf'] = collections.map(&:externalIdentifier)
+      repo_obj.head_version.save!
+    end
+  end
+  let(:dro) { dro_record.head_version.to_cocina }
 
   let(:response_model) { response.parsed_body.deep_symbolize_keys }
 
@@ -47,7 +52,7 @@ RSpec.describe 'Get the object' do
   end
 
   describe 'more than one collection' do
-    let(:collection_records) { create_list(:ar_collection, 2) }
+    let(:collection_repository_object_versions) { create_list(:repository_object_version, 2, :collection_repository_object_version, :with_repository_object) }
 
     it 'returns an empty array for collections' do
       get "/v1/objects/#{dro.externalIdentifier}/query/collections",

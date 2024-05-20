@@ -67,7 +67,7 @@ FactoryBot.define do
   end
 
   trait :with_repository_object do
-    repository_object
+    repository_object { association :repository_object, external_identifier: }
 
     after(:build) do |repository_object_version, _evaluator|
       repository_object = repository_object_version.repository_object
