@@ -14,11 +14,12 @@ RSpec.describe Publish::PublicDescMetadataService do
     { title: [{ value: 'stuff' }], purl: 'https://purl.stanford.edu/bc123df4567' }
   end
   let(:item) do
-    build(:ar_dro, external_identifier: 'druid:bc123df4567',
-                   access:,
-                   structural:,
-                   description:,
-                   identification:)
+    create(:repository_object_version, :with_repository_object,
+           external_identifier: 'druid:bc123df4567',
+           access:,
+           structural:,
+           description:,
+           identification:)
   end
 
   describe '#ng_xml' do
