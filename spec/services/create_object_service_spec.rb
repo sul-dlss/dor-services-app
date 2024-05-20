@@ -30,21 +30,16 @@ RSpec.describe CreateObjectService do
     context 'when a DRO' do
       let(:requested_cocina_object) { build(:request_dro) }
 
-      before do
-        allow(Settings.enabled_features).to receive(:repository_object_create).and_return(true)
-      end
-
       it 'persists it' do
         expect do
           expect(store.create(requested_cocina_object)).to be_a Cocina::Models::DROWithMetadata
-        end.to change(Dro, :count).by(1).and change(RepositoryObject, :count).by(1)
+        end.to change(RepositoryObject, :count).by(1)
 
         expect(Notifications::ObjectCreated).to have_received(:publish)
         expect(Indexer).to have_received(:reindex)
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
         expect(store).to have_received(:merge_access_for).with(requested_cocina_object)
         expect(store).to have_received(:add_project_tag).with(druid, requested_cocina_object)
-        expect(ObjectVersion.current_version(druid).description).to eq('Initial Version')
         expect(EventFactory).to have_received(:create).with(druid:, event_type: 'registration', data: Hash)
         expect(Catalog::MarcService).not_to have_received(:new)
       end
@@ -56,13 +51,12 @@ RSpec.describe CreateObjectService do
       it 'persists it' do
         expect do
           expect(store.create(requested_cocina_object)).to be_a Cocina::Models::CollectionWithMetadata
-        end.to change(Collection, :count).by(1)
+        end.to change(RepositoryObject, :count).by(1)
         expect(Notifications::ObjectCreated).to have_received(:publish)
         expect(Indexer).to have_received(:reindex)
         expect(Cocina::ObjectValidator).to have_received(:validate).with(requested_cocina_object)
         expect(store).to have_received(:merge_access_for).with(requested_cocina_object)
         expect(store).to have_received(:add_project_tag).with(druid, requested_cocina_object)
-        expect(ObjectVersion.current_version(druid).description).to eq('Initial Version')
         expect(EventFactory).to have_received(:create).with(druid:, event_type: 'registration', data: Hash)
         expect(Catalog::MarcService).not_to have_received(:new)
       end

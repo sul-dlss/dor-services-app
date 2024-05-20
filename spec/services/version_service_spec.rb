@@ -5,10 +5,10 @@ require 'rails_helper'
 # rubocop:disable RSpec/LetSetup
 RSpec.describe VersionService do
   let(:druid) { 'druid:xz456jk0987' }
-  let(:cocina_object) { create(:ar_dro, external_identifier: druid).to_cocina_with_metadata }
+  let!(:repository_object) { create(:repository_object, :with_repository_object_version, :closed, external_identifier: druid) }
+  let(:cocina_object) { repository_object.to_cocina_with_metadata }
   let(:version) { 1 }
   let(:workflow_state_service) { instance_double(WorkflowStateService) }
-  let!(:repository_object) { create(:repository_object, :closed, external_identifier: druid) }
 
   before do
     allow(WorkflowStateService).to receive(:new).and_return(workflow_state_service)
@@ -26,29 +26,22 @@ RSpec.describe VersionService do
     before do
       allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
-      allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
-      ObjectVersion.create(druid:, version: 1, description: 'new version')
-      allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
       allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
     end
 
     context 'when on the expected path' do
       it 'creates an object version and starts a workflow' do
-        open
-        expect(Dro.find_by(external_identifier: druid).version).to eq 2
-        expect(ObjectVersion.current_version(druid).version).to eq(2)
+        expect(open).to be_a(Cocina::Models::DROWithMetadata)
         expect(workflow_state_service).to have_received(:accessioned?)
         expect(workflow_state_service).to have_received(:accessioning?)
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 
-        current_version = ObjectVersion.current_version(druid)
-        expect(current_version.version).to eq(2)
-        expect(current_version.description).to eq('same as it ever was')
-
         expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
                                                             druid:,
                                                             event_type: 'version_open')
-        expect(repository_object.reload.opened_version.version).to eq 2
+
+        expect(Indexer).to have_received(:reindex_later).with(cocina_object: repository_object.reload.to_cocina_with_metadata)
+        expect(repository_object.opened_version.version).to eq 2
         expect(repository_object.opened_version.version_description).to eq 'same as it ever was'
       end
     end
@@ -56,22 +49,13 @@ RSpec.describe VersionService do
     context 'when skipping the preservation catalog sync' do
       before do
         allow(Settings.version_service).to receive(:sync_with_preservation).and_return false
-        allow(ObjectVersion).to receive(:sync_then_increment_version)
         allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
       end
 
       it 'creates an object version and starts a workflow' do
         open
-        expect(Dro.find_by(external_identifier: druid).version).to eq 2
-        expect(ObjectVersion.current_version(druid).version).to eq(2)
-        expect(ObjectVersion).not_to have_received(:sync_then_increment_version)
-        expect(workflow_state_service).to have_received(:accessioned?)
-        expect(workflow_state_service).to have_received(:accessioning?)
-        expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
 
-        expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
-                                                            druid:,
-                                                            event_type: 'version_open')
+        expect(Preservation::Client.objects).not_to have_received(:current_version)
         expect(repository_object.reload.opened_version).to be_present
       end
     end
@@ -120,6 +104,8 @@ RSpec.describe VersionService do
     end
 
     context 'when not open' do
+      let!(:repository_object) { create(:repository_object, :closed, external_identifier: druid) }
+
       it 'returns false' do
         expect(open?).to be false
       end
@@ -233,14 +219,12 @@ RSpec.describe VersionService do
       instance_double(Dor::Workflow::Client, create_workflow_by_name: true)
     end
 
-    let(:repository_object) { create(:repository_object, external_identifier: druid) }
+    let(:repository_object) { create(:repository_object, :with_repository_object_version, external_identifier: druid) }
 
     before do
       repository_object.save!
       repository_object.head_version.update!(version: 2, version_description: 'A Second Version')
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
-      ObjectVersion.create(druid:, version: 1, description: 'Initial Version')
-      ObjectVersion.create(druid:, version: 2, description: 'A Second Version')
       allow(workflow_client).to receive(:close_version)
     end
 
@@ -255,8 +239,6 @@ RSpec.describe VersionService do
           expect(repository_object.reload.last_closed_version).to be_present
           expect(repository_object.last_closed_version.version_description).to eq('closing text')
 
-          object_version = ObjectVersion.find_by(druid:, version: 2)
-          expect(object_version.description).to eq('closing text')
           expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'jcoyne' },
                                                               druid:,
                                                               event_type: 'version_close')
@@ -290,7 +272,6 @@ RSpec.describe VersionService do
                                 user_name: 'jcoyne',
                                 start_accession:,
                                 user_versions: 'new')
-          ObjectVersion.create(druid:, version:, description: 'new version')
           allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
           allow(Preservation::Client.objects).to receive(:current_version).and_return(2)
           allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
@@ -320,7 +301,6 @@ RSpec.describe VersionService do
                                 user_name: 'jcoyne',
                                 start_accession:,
                                 user_versions: 'new')
-          ObjectVersion.create(druid:, version:, description: 'new version')
           allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
           allow(Preservation::Client.objects).to receive(:current_version).and_return(2)
           allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
@@ -351,7 +331,6 @@ RSpec.describe VersionService do
                                 user_name: 'jcoyne',
                                 start_accession:,
                                 user_versions: 'none')
-          ObjectVersion.create(druid:, version:, description: 'new version')
           allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
           allow(Preservation::Client.objects).to receive(:current_version).and_return(2)
           allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
@@ -440,8 +419,6 @@ RSpec.describe VersionService do
         close
         expect(repository_object.reload.last_closed_version).to be_present
         expect(repository_object.last_closed_version.version_description).to eq 'A Second Version'
-        object_version = ObjectVersion.find_by(druid:, version: 2)
-        expect(object_version.description).to eq 'A Second Version'
         expect(workflow_client).to have_received(:close_version)
           .with(druid:, version: '2', create_accession_wf: true)
       end

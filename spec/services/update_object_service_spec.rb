@@ -52,10 +52,6 @@ RSpec.describe UpdateObjectService do
                         .new(label: 'new label')
         end
 
-        before do
-          create(:ar_dro, external_identifier: druid)
-        end
-
         it 'saves to datastore' do
           expect(store.update).to be_a Cocina::Models::DROWithMetadata
           expect(repository_object.reload.opened_version.label).to eq 'new label'
@@ -69,10 +65,6 @@ RSpec.describe UpdateObjectService do
         let(:cocina_object) do
           Cocina::Models.with_metadata(repository_object.head_version.to_cocina, lock, created: repository_object.created_at.utc, modified: repository_object.updated_at.utc)
                         .new(label: 'new label')
-        end
-
-        before do
-          create(:ar_dro, external_identifier: druid)
         end
 
         it 'saves to datastore' do
@@ -89,10 +81,6 @@ RSpec.describe UpdateObjectService do
         let(:cocina_object) do
           Cocina::Models.with_metadata(repository_object.head_version.to_cocina, lock, created: repository_object.created_at.utc, modified: repository_object.updated_at.utc)
                         .new(label: 'new label')
-        end
-
-        before do
-          create(:ar_dro, external_identifier: druid)
         end
 
         it 'raises' do
@@ -114,7 +102,6 @@ RSpec.describe UpdateObjectService do
         end
 
         before do
-          create(:ar_dro, external_identifier: druid)
           allow(Honeybadger).to receive(:notify)
         end
 
