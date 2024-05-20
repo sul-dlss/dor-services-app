@@ -31,6 +31,7 @@ class RepositoryObject < ApplicationRecord
   scope :dros, -> { where(object_type: 'dro') }
   scope :collections, -> { where(object_type: 'collection') }
   scope :admin_policies, -> { where(object_type: 'admin_policy') }
+  scope :closed, -> { where('last_closed_version_id = head_version_id') }
 
   # NOTE: This block uses metaprogramming to create the equivalent of scopes that query the RepositoryObjectVersion table using only rows that are a `current` in the RepositoryObject table
   #

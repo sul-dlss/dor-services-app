@@ -67,8 +67,8 @@ class AuditTechnicalMetadataFileList
     # Using in_batches means we can pluck only the info we need to use, without having to instantiate an ActiveRecord obj for
     # each Dro in each batch.
     num_processed = 0
-    Dro.limit(limit).in_batches.each do |batch_relation|
-      batch_dro_rows = batch_relation.pluck(:external_identifier, :version, FILES_FROM_RESOURCES_SQL)
+    RepositoryObject.dros.limit(limit).in_batches.each do |batch_relation|
+      batch_dro_rows = batch_relation.closed.joins(:head_version).pluck(:external_identifier, FILES_FROM_RESOURCES_SQL)
       batch_dro_rows.each do |dro_row|
         num_processed += 1
         self.class.process_dro_row(dro_row, techmd_connection, logger)
@@ -80,7 +80,7 @@ class AuditTechnicalMetadataFileList
   end
 
   def audit_one_druid(druid:)
-    Dro.where(external_identifier: druid).pick(:external_identifier, :version, FILES_FROM_RESOURCES_SQL).tap do |dro_row|
+    RepositoryObject.dros.where(external_identifier: druid).closed.joins(:head_version).pick(:external_identifier, FILES_FROM_RESOURCES_SQL).tap do |dro_row|
       self.class.process_dro_row(dro_row, techmd_connection, logger)
     end
   end
@@ -90,10 +90,6 @@ class AuditTechnicalMetadataFileList
     #   druid, version, and cocina-models file hashes grouped by resource (plucked from Dro)
     def process_dro_row(dro_row, techmd_connection, logger)
       druid, version, file_list = druid_version_files(dro_row)
-      if VersionService.open?(druid:, version:) # we're only auditing closed Dros
-        logger.debug("skipping #{druid}: open for versioning")
-        return
-      end
       if file_list.blank?
         logger.debug("skipping #{druid}: has no files")
         return
