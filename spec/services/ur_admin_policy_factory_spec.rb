@@ -12,9 +12,9 @@ RSpec.describe UrAdminPolicyFactory do
   end
 
   it 'creates the Ur-AdminPolicy' do
-    expect(AdminPolicy.exists?(external_identifier: druid)).to be false
+    expect(RepositoryObject.exists?(external_identifier: druid)).to be false
     policy
-    expect(AdminPolicy.exists?(external_identifier: druid)).to be true
-    expect(Indexer).to have_received(:reindex)
+    expect(RepositoryObject.exists?(external_identifier: druid)).to be true
+    expect(Indexer).to have_received(:reindex).with(cocina_object: an_instance_of(Cocina::Models::AdminPolicyWithMetadata))
   end
 end

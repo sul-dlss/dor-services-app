@@ -24,8 +24,7 @@ class UrAdminPolicyFactory
       }
     )
 
-    RepositoryObject.create_from(cocina_object: admin_policy_cocina)
-    cocina_object_with_metadata = CocinaObjectStore.store(admin_policy_cocina, skip_lock: true)
-    Indexer.reindex(cocina_object: cocina_object_with_metadata)
+    repository_object = RepositoryObject.create_from(cocina_object: admin_policy_cocina)
+    Indexer.reindex(cocina_object: repository_object.head_version.to_cocina_with_metadata)
   end
 end
