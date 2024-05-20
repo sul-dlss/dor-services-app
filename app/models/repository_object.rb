@@ -61,7 +61,9 @@ class RepositoryObject < ApplicationRecord
         object_type: cocina_object.class.name.demodulize.underscore
       }
       args[:source_id] = cocina_object.identification.sourceId if cocina_object.respond_to?(:identification)
-      create!(**args).update_opened_version_from(cocina_object:)
+      create!(**args).tap do |repo_obj|
+        repo_obj.update_opened_version_from(cocina_object:)
+      end
     end
 
     private
