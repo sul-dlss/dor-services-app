@@ -13,6 +13,14 @@ RSpec.describe Notifications::ObjectCreated do
   let(:channel) { instance_double(Notifications::RabbitChannel, topic:) }
   let(:topic) { instance_double(Bunny::Exchange, publish: true) }
 
+  let(:model) do
+    create(:repository_object, :with_repository_object_version, object_type) do |repo_obj|
+      repo_obj.head_version.update(created_at:, updated_at:)
+    end
+  end
+
+  let(:object_type) { :dro }
+
   context 'when RabbitMQ is enabled' do
     before do
       allow(Notifications::RabbitChannel).to receive(:instance).and_return(channel)
@@ -20,8 +28,6 @@ RSpec.describe Notifications::ObjectCreated do
     end
 
     context 'when called with a DRO' do
-      let(:model) { build(:ar_dro, created_at:, updated_at:) }
-
       before do
         allow(AdministrativeTags).to receive(:project).and_return(['h2'])
       end
@@ -34,7 +40,7 @@ RSpec.describe Notifications::ObjectCreated do
     end
 
     context 'when called with an AdminPolicy' do
-      let(:model) { build(:ar_admin_policy, created_at:, updated_at:) }
+      let(:object_type) { :admin_policy }
 
       it 'is successful' do
         publish
@@ -49,8 +55,6 @@ RSpec.describe Notifications::ObjectCreated do
     end
 
     context 'when called with a DRO' do
-      let(:model) { build(:ar_dro, created_at:, updated_at:) }
-
       it 'does not receive a message' do
         publish
         expect(topic).not_to have_received(:publish)
