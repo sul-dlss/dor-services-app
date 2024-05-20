@@ -32,7 +32,7 @@ class RepositoryObject < ApplicationRecord
   scope :collections, -> { where(object_type: 'collection') }
   scope :admin_policies, -> { where(object_type: 'admin_policy') }
 
-  delegate :to_cocina, to: :head_version
+  delegate :to_cocina, :to_cocina_with_metadata, to: :head_version
 
   # NOTE: This block uses metaprogramming to create the equivalent of scopes that query the RepositoryObjectVersion table using only rows that are a `current` in the RepositoryObject table
   #
