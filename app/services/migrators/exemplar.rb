@@ -11,13 +11,13 @@ module Migrators
 
     # A migrator must implement a migrate? method that returns true if the SDR object should be migrated.
     def migrate?
-      TEST_DRUIDS.include?(ar_cocina_object.external_identifier)
+      TEST_DRUIDS.include?(repository_object.external_identifier)
     end
 
-    # A migrator must implement a migrate method that migrates (mutates) the ActiveRecord cocina object.
+    # A migrator must implement a migrate method that migrates (mutates) the RepositoryObject instance.
     def migrate
-      ar_cocina_object.label = mark_migrated(ar_cocina_object.label)
-      ar_cocina_object.description['title'].first['value'] = mark_migrated(ar_cocina_object.description['title'].first['value'])
+      repository_object.head_version.label = mark_migrated(repository_object.head_version.label)
+      repository_object.head_version.description['title'].first['value'] = mark_migrated(repository_object.head_version.description['title'].first['value'])
     end
 
     private

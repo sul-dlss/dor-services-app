@@ -9,7 +9,7 @@ module Migrators
     end
 
     def migrate?
-      HRID_MAP.key?(ar_cocina_object.external_identifier) && !has_hrid?
+      HRID_MAP.key?(repository_object.external_identifier) && !has_hrid?
     end
 
     def migrate
@@ -27,7 +27,7 @@ module Migrators
     private
 
     def hrid
-      @hrid ||= HRID_MAP.fetch(ar_cocina_object.external_identifier)
+      @hrid ||= HRID_MAP.fetch(repository_object.external_identifier)
     end
 
     def has_hrid?
@@ -35,7 +35,7 @@ module Migrators
     end
 
     def catalog_links
-      @catalog_links ||= ar_cocina_object.identification['catalogLinks'] ||= []
+      @catalog_links ||= repository_object.head_version.identification['catalogLinks'] ||= []
     end
 
     HRID_MAP = {

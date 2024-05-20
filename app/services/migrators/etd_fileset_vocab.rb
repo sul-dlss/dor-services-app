@@ -11,13 +11,13 @@ module Migrators
 
     # A migrator must implement a migrate? method that returns true if the SDR object should be migrated.
     def migrate?
-      DRUIDS.include?(ar_cocina_object.external_identifier) &&
-        FILESET_TYPES_TO_MIGRATE.intersect?(ar_cocina_object.structural['contains'].pluck('type'))
+      DRUIDS.include?(repository_object.external_identifier) &&
+        FILESET_TYPES_TO_MIGRATE.intersect?(repository_object.head_version.structural['contains'].pluck('type'))
     end
 
     # A migrator must implement a migrate method that migrates (mutates) the ActiveRecord cocina object.
     def migrate
-      Array(ar_cocina_object.structural['contains']).each do |fileset|
+      Array(repository_object.head_version.structural['contains']).each do |fileset|
         next unless FILESET_TYPES_TO_MIGRATE.include?(fileset['type'])
 
         oldtype = fileset['type']

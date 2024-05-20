@@ -8,9 +8,9 @@ module Migrators
       nil
     end
 
-    # @param ar_cocina_object - an ActiveRecord object pertaining to a cocina object (Dro, AdminPolicy, or Collection)
-    def initialize(ar_cocina_object)
-      @ar_cocina_object = ar_cocina_object
+    # @param repository_object - a RepositoryObject instance
+    def initialize(repository_object)
+      @repository_object = repository_object
     end
 
     # A migrator must implement a migrate? method that returns true if the SDR object should be migrated.
@@ -18,7 +18,7 @@ module Migrators
       raise NotImplementedError
     end
 
-    # A migrator must implement a migrate method that migrates (mutates) the ActiveRecord cocina object.
+    # A migrator must implement a migrate method that migrates (mutates) the RepositoryObject instance
     def migrate
       raise NotImplementedError
     end
@@ -43,6 +43,6 @@ module Migrators
 
     protected
 
-    attr_reader :ar_cocina_object
+    attr_reader :repository_object
   end
 end

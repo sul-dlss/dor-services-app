@@ -3,9 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Migrators::Exemplar do
-  subject(:migrator) { described_class.new(ar_cocina_object) }
+  subject(:migrator) { described_class.new(repository_object) }
 
-  let(:ar_cocina_object) { create(:ar_dro) }
+  let(:repository_object) { create(:repository_object, :with_repository_object_version) }
 
   describe '.druids' do
     it 'returns an array' do
@@ -15,7 +15,7 @@ RSpec.describe Migrators::Exemplar do
 
   describe '#migrate?' do
     context 'when a matching druid' do
-      let(:ar_cocina_object) { create(:ar_dro, external_identifier: 'druid:bc177tq6734') }
+      let(:repository_object) { create(:repository_object, :with_repository_object_version, external_identifier: 'druid:bc177tq6734') }
 
       it 'returns true' do
         expect(migrator.migrate?).to be true
@@ -30,12 +30,13 @@ RSpec.describe Migrators::Exemplar do
   end
 
   describe 'migrate' do
-    let(:ar_cocina_object) { create(:ar_dro, label: 'Test DRO - migrated XYZ') }
+    let(:repository_object_version) { build(:repository_object_version, label: 'Test DRO - migrated XYZ') }
+    let(:repository_object) { create(:repository_object, :with_repository_object_version, repository_object_version:) }
 
     it 'updates label and title' do
       migrator.migrate
-      expect(ar_cocina_object.label).to match(/Test DRO - migrated \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/)
-      expect(ar_cocina_object.description['title'].first['value']).to match(/Test DRO - migrated \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/)
+      expect(repository_object.head_version.label).to match(/Test DRO - migrated \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/)
+      expect(repository_object.head_version.description['title'].first['value']).to match(/Test DRO - migrated \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/)
     end
   end
 

@@ -3,9 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Migrators::AddLaneHrid do
-  subject(:migrator) { described_class.new(ar_cocina_object) }
+  subject(:migrator) { described_class.new(repository_object) }
 
-  let(:ar_cocina_object) { create(:ar_dro) }
+  let(:repository_object) { create(:repository_object, :with_repository_object_version) }
 
   describe '.druids' do
     it 'returns an array' do
@@ -15,7 +15,7 @@ RSpec.describe Migrators::AddLaneHrid do
 
   describe '#migrate?' do
     context 'when a matching druid and no hrid' do
-      let(:ar_cocina_object) { create(:ar_dro, external_identifier: 'druid:bc836hv7886') }
+      let(:repository_object) { create(:repository_object, :with_repository_object_version, external_identifier: 'druid:bc836hv7886') }
 
       it 'returns true' do
         expect(migrator.migrate?).to be true
@@ -23,10 +23,8 @@ RSpec.describe Migrators::AddLaneHrid do
     end
 
     context 'when a matching druid and has hrid' do
-      let(:ar_cocina_object) do
-        create(:ar_dro, external_identifier: 'druid:bc836hv7886', identification:)
-      end
-
+      let(:repository_object_version) { build(:repository_object_version, identification:) }
+      let(:repository_object) { create(:repository_object, :with_repository_object_version, repository_object_version:, external_identifier: 'druid:bc836hv7886') }
       let(:identification) do
         {
           sourceId: 'sul:1234',
@@ -42,9 +40,7 @@ RSpec.describe Migrators::AddLaneHrid do
     end
 
     context 'when a non-matching druid' do
-      let(:ar_cocina_object) do
-        create(:ar_dro, external_identifier: 'druid:bc836hv7887')
-      end
+      let(:repository_object) { create(:repository_object, :with_repository_object_version, external_identifier: 'druid:bc836hv7887') }
 
       it 'returns false' do
         expect(migrator.migrate?).to be false
@@ -54,8 +50,8 @@ RSpec.describe Migrators::AddLaneHrid do
 
   describe 'migrate' do
     context 'when no existing catalog links' do
-      let(:ar_cocina_object) { create(:ar_dro, external_identifier: 'druid:bc836hv7886', identification:) }
-
+      let(:repository_object_version) { build(:repository_object_version, identification:) }
+      let(:repository_object) { create(:repository_object, :with_repository_object_version, repository_object_version:, external_identifier: 'druid:bc836hv7886') }
       let(:identification) do
         {
           sourceId: 'sul:1234',
@@ -67,7 +63,7 @@ RSpec.describe Migrators::AddLaneHrid do
 
       it 'adds catalog link' do
         migrator.migrate
-        expect(ar_cocina_object.identification['catalogLinks']).to eq [
+        expect(repository_object.head_version.identification['catalogLinks']).to eq [
           { 'catalog' => 'symphony', 'catalogRecordId' => '123456' },
           { 'catalog' => 'folio', 'catalogRecordId' => 'L123456', 'refresh' => true }
         ]
@@ -75,11 +71,11 @@ RSpec.describe Migrators::AddLaneHrid do
     end
 
     context 'when existing catalog links' do
-      let(:ar_cocina_object) { create(:ar_dro, external_identifier: 'druid:bc836hv7886') }
+      let(:repository_object) { create(:repository_object, :with_repository_object_version, external_identifier: 'druid:bc836hv7886') }
 
       it 'appends catalog link' do
         migrator.migrate
-        expect(ar_cocina_object.identification['catalogLinks']).to eq [{ 'catalog' => 'folio', 'catalogRecordId' => 'L123456', 'refresh' => true }]
+        expect(repository_object.head_version.identification['catalogLinks']).to eq [{ 'catalog' => 'folio', 'catalogRecordId' => 'L123456', 'refresh' => true }]
       end
     end
   end
