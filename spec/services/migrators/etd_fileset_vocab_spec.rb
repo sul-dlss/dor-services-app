@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Migrators::EtdFilesetVocab do
-  subject(:migrator) { described_class.new(ar_cocina_object) }
+  subject(:migrator) { described_class.new(repository_object) }
 
   let(:non_matching_druid) { 'druid:bc123df4567' }
   let(:matching_druid) { 'druid:bb007hx5508' }
@@ -201,7 +201,7 @@ RSpec.describe Migrators::EtdFilesetVocab do
     }
   end
 
-  let(:ar_cocina_object) { create(:ar_dro, external_identifier: non_matching_druid) }
+  let(:repository_object) { create(:repository_object, :with_repository_object_version, external_identifier: non_matching_druid) }
 
   describe '.druids' do
     it 'returns an array of size 8225' do
@@ -213,7 +213,8 @@ RSpec.describe Migrators::EtdFilesetVocab do
   describe '#migrate?' do
     context 'when a matching druid' do
       context 'when cocina has a matching fileset type' do
-        let(:ar_cocina_object) { create(:ar_dro, external_identifier: matching_druid, structural: structural_etd_and_non) }
+        let(:repository_object_version) { build(:repository_object_version, structural: structural_etd_and_non) }
+        let(:repository_object) { create(:repository_object, :with_repository_object_version, repository_object_version:, external_identifier: matching_druid) }
 
         it 'returns true' do
           expect(migrator.migrate?).to be true
@@ -221,7 +222,8 @@ RSpec.describe Migrators::EtdFilesetVocab do
       end
 
       context 'when cocina has no matching fileset type' do
-        let(:ar_cocina_object) { create(:ar_dro, external_identifier: matching_druid, structural: structural_no_match) }
+        let(:repository_object_version) { build(:repository_object_version, structural: structural_no_match) }
+        let(:repository_object) { create(:repository_object, :with_repository_object_version, repository_object_version:, external_identifier: matching_druid) }
 
         it 'returns false' do
           expect(migrator.migrate?).to be false
@@ -230,7 +232,7 @@ RSpec.describe Migrators::EtdFilesetVocab do
     end
 
     context 'when not a matching druid' do
-      let(:ar_cocina_object) { create(:ar_dro, external_identifier: non_matching_druid) }
+      let(:repository_object) { create(:repository_object, :with_repository_object_version, external_identifier: non_matching_druid) }
 
       it 'returns false' do
         expect(migrator.migrate?).to be false
@@ -239,7 +241,8 @@ RSpec.describe Migrators::EtdFilesetVocab do
   end
 
   describe 'migrate' do
-    let(:ar_cocina_object) { create(:ar_dro, external_identifier: matching_druid, structural: structural_etd) }
+    let(:repository_object_version) { build(:repository_object_version, structural: structural_etd) }
+    let(:repository_object) { create(:repository_object, :with_repository_object_version, repository_object_version:, external_identifier: matching_druid) }
 
     context 'when at least one fileset type matches' do
       let(:structural_etd) do
@@ -256,19 +259,19 @@ RSpec.describe Migrators::EtdFilesetVocab do
 
       it 'migrates the matching fileset types to Cocina::Models::FileSetType.file' do
         migrator.migrate
-        expect(ar_cocina_object.structural['contains'].first['type']).to eq 'https://cocina.sul.stanford.edu/models/resources/file'
-        expect(ar_cocina_object.structural['contains'].last['type']).to eq Cocina::Models::FileSetType.file
+        expect(repository_object.head_version.structural['contains'].first['type']).to eq 'https://cocina.sul.stanford.edu/models/resources/file'
+        expect(repository_object.head_version.structural['contains'].last['type']).to eq Cocina::Models::FileSetType.file
       end
 
       context 'when fileset label is already present' do
         it 'does not change the label' do
-          first_label_before = ar_cocina_object.structural['contains'].first['label']
-          last_label_before = ar_cocina_object.structural['contains'].last['label']
+          first_label_before = repository_object.head_version.structural['contains'].first['label']
+          last_label_before = repository_object.head_version.structural['contains'].last['label']
           expect(first_label_before).to be_present
           expect(last_label_before).to be_present
           migrator.migrate
-          expect(ar_cocina_object.structural['contains'].first['label']).to eq first_label_before
-          expect(ar_cocina_object.structural['contains'].last['label']).to eq last_label_before
+          expect(repository_object.head_version.structural['contains'].first['label']).to eq first_label_before
+          expect(repository_object.head_version.structural['contains'].last['label']).to eq last_label_before
         end
       end
 
@@ -292,7 +295,7 @@ RSpec.describe Migrators::EtdFilesetVocab do
           let(:fileset_blank_label) { main_original_fileset.dup.tap { |fileset| fileset[:label] = '' } }
 
           it 'main-original fileset gets "Body of dissertation (as submitted)"' do
-            expect(ar_cocina_object.structural['contains'].first['label']).to eq 'Body of dissertation (as submitted)'
+            expect(repository_object.head_version.structural['contains'].first['label']).to eq 'Body of dissertation (as submitted)'
           end
         end
 
@@ -300,7 +303,7 @@ RSpec.describe Migrators::EtdFilesetVocab do
           let(:fileset_blank_label) { main_augmented_fileset.dup.tap { |fileset| fileset[:label] = '' } }
 
           it 'main-augmented fileset gets "Body of dissertation"' do
-            expect(ar_cocina_object.structural['contains'].first['label']).to eq 'Body of dissertation'
+            expect(repository_object.head_version.structural['contains'].first['label']).to eq 'Body of dissertation'
           end
         end
 
@@ -308,7 +311,7 @@ RSpec.describe Migrators::EtdFilesetVocab do
           let(:fileset_blank_label) { permissions_fileset.dup.tap { |fileset| fileset[:label] = '' } }
 
           it 'permissions fileset gets "permission file"' do
-            expect(ar_cocina_object.structural['contains'].first['label']).to eq 'permission file'
+            expect(repository_object.head_version.structural['contains'].first['label']).to eq 'permission file'
           end
         end
 
@@ -316,25 +319,26 @@ RSpec.describe Migrators::EtdFilesetVocab do
           let(:fileset_blank_label) { supplement_fileset.dup.tap { |fileset| fileset[:label] = '' } }
 
           it 'supplement fileset gets "supplemental file"' do
-            expect(ar_cocina_object.structural['contains'].first['label']).to eq 'supplemental file'
+            expect(repository_object.head_version.structural['contains'].first['label']).to eq 'supplemental file'
           end
         end
       end
 
       context 'when some fileset types match' do
-        let(:ar_cocina_object) { create(:ar_dro, external_identifier: matching_druid, structural: structural_etd_and_non) }
+        let(:repository_object_version) { build(:repository_object_version, structural: structural_etd_and_non) }
+        let(:repository_object) { create(:repository_object, :with_repository_object_version, repository_object_version:, external_identifier: matching_druid) }
 
         before do
           migrator.migrate
         end
 
         it 'migrates all matching fileset types' do
-          expect(ar_cocina_object.structural['contains'].first).not_to eq main_original_fileset
-          expect(ar_cocina_object.structural['contains'].second).not_to eq main_augmented_fileset
+          expect(repository_object.head_version.structural['contains'].first).not_to eq main_original_fileset
+          expect(repository_object.head_version.structural['contains'].second).not_to eq main_augmented_fileset
         end
 
         it 'does not migrate non-matching fileset types' do
-          expect(ar_cocina_object.structural['contains'].last.as_json).to eq image_fileset.as_json
+          expect(repository_object.head_version.structural['contains'].last.as_json).to eq image_fileset.as_json
         end
       end
     end

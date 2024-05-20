@@ -81,11 +81,11 @@ def perform_migrate(migrator_class:, obj:, mode:)
   return [obj.id, obj.external_identifier, migrator.migrate? ? 'ERROR' : 'SUCCESS'] if mode == :verify
   return [obj.id, obj.external_identifier, 'SKIPPED'] unless migrator.migrate?
 
-  current_object_version = obj.version
+  current_object_version = obj.head_version.version
   obj = open_version(cocina_object: obj, version_description: migrator.version_description, mode:) if migrator.version?
 
   migrator.migrate # This is where the actual migration happens
-  updated_cocina_object = obj.to_cocina_with_metadata # This validates the cocina object
+  updated_cocina_object = obj.head_version.to_cocina_with_metadata # This validates the cocina object
   Cocina::ObjectValidator.validate(updated_cocina_object) # This validation is performed by UpdateObjectService.
 
   ## Note: because we are now storing the cocina for every version we cannot remediate cocina breaking changes for a particular cocina version here.
@@ -99,13 +99,13 @@ rescue Dry::Struct::Error, Cocina::Models::ValidationError, Cocina::ValidationEr
   [obj.id, obj.external_identifier, 'ERROR', e.message]
 end
 
-def druids_for(ar_class:, migrator_class:, sample:)
-  druids = migrator_class.druids.presence || ar_class.pluck(:external_identifier)
+def druids_for(migrator_class:, sample:)
+  druids = migrator_class.druids.presence || RepositoryObject.pluck(:external_identifier)
   sample ? druids.take(sample) : druids
 end
 
-def migrate(ar_class:, migrator_class:, sample:, processes:, mode:)
-  druids = druids_for(ar_class:, migrator_class:, sample:)
+def migrate(migrator_class:, sample:, processes:, mode:)
+  druids = druids_for(migrator_class:, sample:)
 
   progress_bar = tty_progress_bar(druids.length, ar_class.name, mode)
   progress_bar.start
@@ -113,19 +113,16 @@ def migrate(ar_class:, migrator_class:, sample:, processes:, mode:)
   Parallel.map(druids.each_slice(100),
                in_processes: processes,
                finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |druids_slice|
-    ar_class.where(external_identifier: druids_slice).map do |obj|
+    RepositoryObject.where(external_identifier: druids_slice).map do |obj|
       perform_migrate(migrator_class:, obj:, mode:)
     end
   end.flatten(1)
 end
-results = [[], Dro, Collection, AdminPolicy].inject do |memo_results, clazz|
-  memo_results + migrate(ar_class: clazz,
-                         migrator_class: migrator_class.constantize, **options)
-end
 
 CSV.open('migrate-cocina.csv', 'w') do |writer|
   writer << %w[id druid result message]
-  results.each do |result|
+  migrate(migrator_class: migrator_class.constantize, **options)
+    .each do |result|
     writer << result
   end
 end
