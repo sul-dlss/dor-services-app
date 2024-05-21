@@ -92,7 +92,7 @@ RSpec.describe VersionService do
     context "when Preservation's current version is greater than the current version" do
       it 'raises an exception' do
         expect(Preservation::Client.objects).to receive(:current_version).and_return(3)
-        expect { open }.to raise_error(VersionService::VersioningError, 'Cannot sync to a version greater than current: 1, requested 3')
+        expect { open }.to raise_error(VersionService::VersioningError, 'Version from Preservation is out of sync. Preservation expects 3 but current version is 1')
       end
     end
 
