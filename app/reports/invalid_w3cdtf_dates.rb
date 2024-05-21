@@ -83,16 +83,6 @@ class InvalidW3cdtfDates
   end
 
   def self.valid_w3cdtf?(date_value)
-    Time.w3cdtf(date_value)
-  rescue ArgumentError
-    # NOTE: the upstream W3CDTF implementation in the `rss` gem does not
-    #       allow two patterns that should be valid per the specification:
-    #
-    # * YYYY
-    # * YYYY-MM
-    #
-    # So we catch the false positives from the upstream gem and allow
-    # these two patterns to validate
-    /\A\d{4}(-0[1-9]|-1[0-2])?\Z/.match?(date_value)
+    Cocina::Models::Validators::W3cdtfValidator.validate(date_value)
   end
 end
