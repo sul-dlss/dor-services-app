@@ -45,7 +45,7 @@ RSpec.describe UpdateObjectService do
       context 'when checking lock succeeds' do
         let(:store) { described_class.new(cocina_object:, skip_lock: false, skip_open_check: false) }
 
-        let(:lock) { "#{druid}=0" }
+        let(:lock) { "#{druid}=#{repository_object.lock}" }
 
         let(:cocina_object) do
           Cocina::Models.with_metadata(repository_object.head_version.to_cocina, lock, created: repository_object.created_at.utc, modified: repository_object.updated_at.utc)
@@ -104,7 +104,7 @@ RSpec.describe UpdateObjectService do
         let(:open) { false }
         let(:store) { described_class.new(cocina_object:, skip_lock: false, skip_open_check: true) }
 
-        let(:lock) { "#{druid}=0" }
+        let(:lock) { "#{druid}=#{repository_object.lock}" }
 
         let(:cocina_object) do
           Cocina::Models.with_metadata(repository_object.head_version.to_cocina, lock,

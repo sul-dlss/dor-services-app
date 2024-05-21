@@ -94,6 +94,8 @@ class UpdateObjectService
     begin
       RepositoryObject.transaction do
         repo_object = RepositoryObject.find_by!(external_identifier: druid)
+        # This checks that the repository object was not modified between when the repository object was retrieved and now.
+        repo_object.check_lock!(cocina_object) unless skip_lock
         repo_object.update_opened_version_from(cocina_object: cocina_object_without_metadata)
         cocina_object_with_metadata = repo_object.head_version.to_cocina_with_metadata
 
