@@ -18,11 +18,13 @@ class PropertyContainsPropertyDros
   JSON_PATH = "strict $.**.#{OUTER_PROPERTY} ? (exists(@.**{1 TO LAST}.#{INNER_PROPERTY} ? (@.size() > 0)))".freeze
 
   SQL = <<~SQL.squish.freeze
-    SELECT external_identifier as item_druid,
-           jsonb_path_query(identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
-           jsonb_path_query(structural, '$.isMemberOf') ->> 0 as collection_druid
-           FROM "dros" WHERE
-           jsonb_path_exists(dros.description, '#{JSON_PATH}')
+    SELECT ro.external_identifier as item_druid,
+           jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
+           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_druid
+           FROM repository_objects AS ro, repository_object_versions AS rov
+           WHERE ro.head_version_id = rov.id
+           AND ro.object_type = 'dro'
+           AND jsonb_path_exists(rov.description, '#{JSON_PATH}')
   SQL
 
   def self.report
@@ -34,7 +36,7 @@ class PropertyContainsPropertyDros
     sql_result_rows = ActiveRecord::Base.connection.execute(sql_query).to_a
 
     sql_result_rows.map do |row|
-      collection_name = Collection.find_by(external_identifier: row['collection_druid'])&.label
+      collection_name = RepositoryObject.collections.find_by(external_identifier: row['collection_druid'])&.head_version&.label
 
       [
         row['item_druid'],
