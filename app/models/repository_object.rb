@@ -108,6 +108,19 @@ class RepositoryObject < ApplicationRecord
     head_version == last_closed_version
   end
 
+  # @return [String] xml representation of version metadata
+  def version_xml
+    Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
+      xml.versionMetadata({ objectId: external_identifier }) do
+        versions.each do |object_version|
+          xml.version({ versionId: object_version.version }.compact) do
+            xml.description(object_version.version_description)
+          end
+        end
+      end
+    end.to_xml
+  end
+
   private
 
   def open_first_version
