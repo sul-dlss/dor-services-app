@@ -87,7 +87,7 @@ class RepositoryObject < ApplicationRecord
 
     RepositoryObject.transaction do
       new_version = last_closed_version.dup
-      new_version.update!(version: new_version.version + 1, version_description: description)
+      new_version.update!(version: new_version.version + 1, version_description: description, closed_at: nil)
       update!(opened_version: new_version, head_version: new_version)
     end
   end
