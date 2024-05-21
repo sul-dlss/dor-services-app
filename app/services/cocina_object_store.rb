@@ -158,8 +158,6 @@ class CocinaObjectStore
   # @return [Cocina::Models::AdminPolicyWithMetadata,Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata] the saved object with its metadata
   # @raise [Cocina::ValidationError] if externalIdentifier or sourceId not unique
   def cocina_to_ar_save(cocina_object, skip_lock: false)
-    ar_check_lock(cocina_object) unless skip_lock
-
     model_clazz = case cocina_object
                   when Cocina::Models::AdminPolicy, Cocina::Models::AdminPolicyWithMetadata
                     AdminPolicy
@@ -181,13 +179,6 @@ class CocinaObjectStore
                 'ExternalIdentifier or sourceId is not unique.'
               end
     raise Cocina::ValidationError.new(message, status: :conflict)
-  end
-
-  def ar_check_lock(cocina_object)
-    ar_object = ar_find(cocina_object.externalIdentifier)
-    return if cocina_object.respond_to?(:lock) && ar_object.external_lock == cocina_object.lock
-
-    raise StaleLockError, "Expected lock of #{ar_object.external_lock} but received #{cocina_object.lock}."
   end
 
   def bootstrap_ur_admin_policy?(druid)

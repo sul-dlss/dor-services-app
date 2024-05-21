@@ -5,7 +5,8 @@ class RepositoryObjectVersion < ApplicationRecord
   belongs_to :repository_object
   has_many :user_versions, dependent: :destroy
 
-  has_one :head_version_of, class_name: 'RepositoryObject', inverse_of: :head_version, dependent: nil
+  # Touching so that RepositoryObject's lock is updated.
+  has_one :head_version_of, class_name: 'RepositoryObject', inverse_of: :head_version, dependent: nil, touch: true
 
   scope :in_virtual_objects, ->(member_druid) { where("structural #> '{hasMemberOrders,0}' -> 'members' ? :druid", druid: member_druid) }
   scope :members_of_collection, ->(collection_druid) { where("structural -> 'isMemberOf' ? :druid", druid: collection_druid) }
@@ -36,16 +37,8 @@ class RepositoryObjectVersion < ApplicationRecord
     end
   end
 
-  def external_lock
-    # This should be opaque, but this makes troubeshooting easier.
-    # The external_identifier is included so that there is enough entropy such
-    # that the lock can't be used for an object it doesn't belong to as the
-    # lock column is just an integer sequence.
-    [repository_object.external_identifier, repository_object.lock.to_s].join('=')
-  end
-
   def to_cocina_with_metadata
-    Cocina::Models.with_metadata(to_cocina, external_lock, created: created_at.utc, modified: updated_at.utc)
+    Cocina::Models.with_metadata(to_cocina, repository_object.external_lock, created: created_at.utc, modified: updated_at.utc)
   end
 
   def to_cocina
@@ -85,6 +78,7 @@ class RepositoryObjectVersion < ApplicationRecord
     return unless repository_object.opened_version == self && source_id
     return if repository_object.source_id == source_id
 
-    repository_object.update!(source_id:)
+    # Reloading to avoid ActiveRecord::StaleObjectError
+    repository_object.reload.update!(source_id:)
   end
 end
