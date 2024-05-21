@@ -140,6 +140,7 @@ RSpec.describe RepositoryObject do
         expect(repository_object.head_version).to eq(newly_created_version)
         expect(repository_object.opened_version).to eq(newly_created_version)
         expect(newly_created_version.version_description).to eq(description)
+        expect(newly_created_version.closed_at).to be_nil
       end
     end
   end
