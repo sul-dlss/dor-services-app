@@ -31,6 +31,7 @@ class RepositoryObject < ApplicationRecord
   scope :dros, -> { where(object_type: 'dro') }
   scope :collections, -> { where(object_type: 'collection') }
   scope :admin_policies, -> { where(object_type: 'admin_policy') }
+  scope :closed, -> { where('last_closed_version_id = head_version_id') }
 
   delegate :to_cocina, :to_cocina_with_metadata, to: :head_version
 
