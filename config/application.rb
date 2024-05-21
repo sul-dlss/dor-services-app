@@ -55,7 +55,7 @@ module DorServices
       accept_request_filter: accept_proc,
       parse_response_by_content_type: false,
       query_hash_key: 'action_dispatch.request.query_parameters',
-      parameter_overwite_by_rails_rule: false
+      parameter_overwrite_by_rails_rule: false
     )
     # Ensure we are passing back valid responses when running tests
     if Rails.env.test?
@@ -66,7 +66,7 @@ module DorServices
         parse_response_by_content_type: true,
         query_hash_key: 'rack.request.query_hash',
         raise: true,
-        parameter_overwite_by_rails_rule: false
+        parameter_overwrite_by_rails_rule: false
       )
     end
 
