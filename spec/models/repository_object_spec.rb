@@ -194,4 +194,35 @@ RSpec.describe RepositoryObject do
         .and change(repository_object.opened_version, :structural).from(nil).to(instance_of(Hash))
     end
   end
+
+  describe '#version_xml' do
+    subject(:repository_object) { create(:repository_object, **attrs) }
+
+    let(:druid) { attrs[:external_identifier] }
+    let(:expected_xml) do
+      <<~XML
+        <?xml version="1.0" encoding="UTF-8"?>
+          <versionMetadata objectId="#{druid}">
+            <version versionId="1">
+              <description>
+                Initial version
+              </description>
+            </version>
+            <version versionId="2">
+              <description>
+                Version 2.0.0
+              </description>
+            </version>
+          </versionMetadata>
+      XML
+    end
+
+    before do
+      create(:repository_object_version, version: 2, repository_object:, version_description: 'Version 2.0.0')
+    end
+
+    it 'returns xml' do
+      expect(repository_object.version_xml).to be_equivalent_to(expected_xml)
+    end
+  end
 end

@@ -7,7 +7,7 @@ FactoryBot.define do
       is_member_of { [] }
       source_id { "sul:#{SecureRandom.uuid}" }
     end
-    sequence(:version)
+    version { 1 }
     version_description { 'Best version ever' }
     cocina_version { Cocina::Models::VERSION }
     content_type { Cocina::Models::ObjectType.book }
@@ -87,8 +87,7 @@ FactoryBot.define do
     end
   end
 
-  trait :dro_repository_object_version do # rubocop:disable Lint/EmptyBlock
-  end
+  trait :dro_repository_object_version
 
   trait :admin_policy_repository_object_version do
     transient do

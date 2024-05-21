@@ -25,7 +25,7 @@ FactoryBot.define do
   trait :with_repository_object_version do
     transient do
       repository_object_version { nil }
-      sequence(:version)
+      version { 1 }
     end
     after(:create) do |repo_object, context|
       repo_object_version = context.repository_object_version ||

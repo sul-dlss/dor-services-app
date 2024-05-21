@@ -38,7 +38,7 @@ class PreservationMetadataExtractor
   end
 
   def version_xml
-    ObjectVersion.version_xml(cocina_object.externalIdentifier)
+    RepositoryObject.find_by!(external_identifier: cocina_object.externalIdentifier).version_xml
   end
 
   def content_xml
