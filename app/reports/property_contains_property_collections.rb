@@ -33,7 +33,7 @@ class PropertyContainsPropertyCollections
     sql_result_rows = ActiveRecord::Base.connection.execute(sql_query).to_a
 
     sql_result_rows.map do |row|
-      collection_name = Collection.find_by(external_identifier: row['collection_druid'])&.label
+      collection_name = RepositoryObject.collections.find_by(external_identifier: row['collection_druid'])&.head_version&.label
 
       [
         row['collection_druid'],

@@ -47,7 +47,7 @@ class InvalidFormSourceCodes
       .group_by { |row| row['external_identifier'] }
       .map do |id, rows|
       collection_druid = rows.first['collection_id']
-      collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.label
+      collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
 
       [
         id,
