@@ -75,7 +75,7 @@ RSpec.describe 'Update object' do
       doi: '10.25740/gg777gg7777'
     }
   end
-  let(:etag) { "#{druid}=#{item.lock}" }
+  let(:etag) { item.external_lock }
 
   let(:headers) do
     {

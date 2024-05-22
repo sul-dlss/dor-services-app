@@ -8,10 +8,6 @@
 # For persistence, see CreateObjectService and UpdateObjectService.
 # For destroying, see DeleteService.
 class RepositoryObject < ApplicationRecord
-  # Locking is performed on the RepositoryObject, not the RepositoryObjectVersion.
-  # However, changes to the head RepositoryObjectVersion will change this lock.
-  # You may encounter ActiveRecord::StaleObjectError if you are updating both the Repository and its head version.
-  # To fix this, reload (repository_object.reload) the RepositoryObject to refresh the lock.
   self.locking_column = 'lock'
 
   class VersionAlreadyOpened < StandardError; end
@@ -86,6 +82,7 @@ class RepositoryObject < ApplicationRecord
   #   model instance, either a DRO, collection, or APO.
   def update_opened_version_from(cocina_object:)
     opened_version.update!(**RepositoryObjectVersion.to_model_hash(cocina_object))
+    reload # Syncs up head_version and opened_version
   end
 
   def open_version!(description:)
@@ -102,9 +99,8 @@ class RepositoryObject < ApplicationRecord
     raise VersionNotOpened, "Cannot close version because head version is closed: #{head_version.version}" if closed?
 
     RepositoryObject.transaction do
-      closing_version = opened_version
-      update!(opened_version: nil, last_closed_version: closing_version, head_version: closing_version)
-      closing_version.update!(closed_at: Time.current, version_description: description || closing_version.version_description)
+      opened_version.update!(closed_at: Time.current, version_description: description || opened_version.version_description)
+      update!(opened_version: nil, last_closed_version: opened_version, head_version: opened_version)
     end
   end
 
@@ -136,7 +132,7 @@ class RepositoryObject < ApplicationRecord
     # The external_identifier is included so that there is enough entropy such
     # that the lock can't be used for an object it doesn't belong to as the
     # lock column is just an integer sequence.
-    [external_identifier, lock.to_s].join('=')
+    [external_identifier, lock.to_s, head_version.lock.to_s].join('=')
   end
 
   def check_lock!(cocina_object)

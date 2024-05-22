@@ -5,7 +5,7 @@ FactoryBot.define do
     object_type { :dro }
     external_identifier { generate(:unique_druid) }
     source_id { "sul:#{SecureRandom.uuid}" }
-    lock { 'MyString' }
+    lock { 1 }
   end
 
   trait :admin_policy do
