@@ -47,7 +47,7 @@ class ShelvingService
     DigitalStacksService.shelve_to_stacks(workspace_content_pathname, stacks_object_pathname, shelve_diff)
 
     # This is for testing purposes initially.
-    shelve_to_purl_fetcher(workspace_content_pathname, shelve_diff) if Settings.enabled_features.shelve_to_purl_fetcher
+    shelve_to_purl_fetcher(workspace_content_pathname) if Settings.enabled_features.shelve_to_purl_fetcher
   end
 
   private
@@ -118,35 +118,52 @@ class ShelvingService
     @workflow_client ||= WorkflowClientFactory.build
   end
 
-  def shelve_to_purl_fetcher(workspace_content_pathname, shelve_diff)
-    file_metadata, filepath_map = build_upload(workspace_content_pathname, shelve_diff)
+  def shelve_to_purl_fetcher(workspace_content_pathname)
+    file_metadata, filepath_map = build_upload(workspace_content_pathname)
     PurlFetcher::Client::UploadFiles.upload(file_metadata:, filepath_map:)
   rescue StandardError => e
     Honeybadger.notify(e)
   end
 
-  def build_upload(workspace_content_pathname, shelve_diff)
+  def build_upload(workspace_content_pathname)
     file_metadata = {}
     filepath_map = {}
-    %i[added copyadded modified].each do |change_type|
-      subset = shelve_diff.subset(change_type) # {Moab::FileGroupDifferenceSubset
-      subset.files.each do |moab_file| # {Moab::FileInstanceDifference}
-        moab_signature = moab_file.signatures.last # {Moab::FileSignature}
-        filename = change_type == :modified ? moab_file.basis_path : moab_file.other_path
-        workspace_pathname = workspace_content_pathname.join(filename)
-        file_metadata[filename] = direct_upload_request_for(filename, moab_signature)
-        filepath_map[filename] = workspace_pathname.to_s
-      end
+    files_to_shelve = DigitalStacksDiffer.call(cocina_object:)
+    files_to_shelve.each do |filename|
+      filepath = workspace_content_pathname.join(filename).to_s
+      file_metadata[filename] = direct_upload_request_for(filename, filepath)
+      filepath_map[filename] = filepath
     end
     [file_metadata, filepath_map]
   end
 
-  def direct_upload_request_for(filename, moab_signature)
+  def direct_upload_request_for(filename, filepath)
+    cocina_file = cocina_file_map.fetch(filename)
     PurlFetcher::Client::DirectUploadRequest.from_file(
-      hexdigest: moab_signature.md5,
-      byte_size: moab_signature.size.to_i,
+      hexdigest: md5_for(cocina_file),
+      byte_size: size_for(cocina_file, filepath),
       content_type: 'application/octet-stream',
       file_name: filename
     )
+  end
+
+  def md5_for(file)
+    file.hasMessageDigests.find { |digest| digest.type == 'md5' }.digest
+  end
+
+  def size_for(file, filepath)
+    return file.size if file.size.present? && file.size.positive?
+
+    File.size(filepath)
+  end
+
+  def cocina_file_map
+    @cocina_file_map ||= {}.tap do |file_map|
+      cocina_object.structural.contains.each do |file_set|
+        file_set.structural.contains.each do |file|
+          file_map[file.filename] = file
+        end
+      end
+    end
   end
 end
