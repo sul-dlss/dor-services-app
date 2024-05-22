@@ -45,7 +45,7 @@ class EventsMultipleDateTypes
         next if event_date_types.blank? || event_date_types.size == 1
 
         collection_druid = rows.first['collection_id']
-        collection_name = Collection.find_by(external_identifier: collection_druid)&.label
+        collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
 
         [
           id,
