@@ -90,7 +90,7 @@ class VersionService
     #       e.g.: Notifications::ObjectUpdated.publish(model: cocina_object_with_metadata)
 
     # Skipping open check since not yet opened.
-    update_cocina_object = UpdateObjectService.update(cocina_object.new(version: new_object_version.version, lock: repository_object.reload.external_lock), skip_open_check: true) if cocina_object.version != new_object_version.version
+    update_cocina_object = UpdateObjectService.update(cocina_object.new(version: new_object_version.version, lock: repository_object.external_lock), skip_open_check: true) if cocina_object.version != new_object_version.version
 
     workflow_client.create_workflow_by_name(druid, 'versioningWF', version: new_object_version.version.to_s)
 

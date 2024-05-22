@@ -2,11 +2,12 @@
 
 # Models a repository object as it looked at a particular version.
 class RepositoryObjectVersion < ApplicationRecord
+  self.locking_column = 'lock'
+
   belongs_to :repository_object
   has_many :user_versions, dependent: :destroy
 
-  # Touching so that RepositoryObject's lock is updated.
-  has_one :head_version_of, class_name: 'RepositoryObject', inverse_of: :head_version, dependent: nil, touch: true
+  has_one :head_version_of, class_name: 'RepositoryObject', inverse_of: :head_version, dependent: nil
 
   scope :in_virtual_objects, ->(member_druid) { where("structural #> '{hasMemberOrders,0}' -> 'members' ? :druid", druid: member_druid) }
   scope :members_of_collection, ->(collection_druid) { where("structural -> 'isMemberOf' ? :druid", druid: collection_druid) }
@@ -78,7 +79,6 @@ class RepositoryObjectVersion < ApplicationRecord
     return unless repository_object.opened_version == self && source_id
     return if repository_object.source_id == source_id
 
-    # Reloading to avoid ActiveRecord::StaleObjectError
-    repository_object.reload.update!(source_id:)
+    repository_object.update!(source_id:)
   end
 end

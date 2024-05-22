@@ -9,6 +9,7 @@ FactoryBot.define do
     end
     version { 1 }
     version_description { 'Best version ever' }
+    lock { 2 }
     cocina_version { Cocina::Models::VERSION }
     content_type { Cocina::Models::ObjectType.book }
     label { 'Test DRO' }
@@ -69,8 +70,9 @@ FactoryBot.define do
   trait :with_repository_object do
     repository_object { association :repository_object, external_identifier: }
 
-    after(:build) do |repository_object_version, _evaluator|
+    after(:build) do |repository_object_version, evaluator|
       repository_object = repository_object_version.repository_object
+      repository_object.external_identifier = evaluator.external_identifier
       # Repository object will already have a version 1, so delete it.
       if repository_object_version.version == 1 && repository_object.versions.present?
         repository_object.update(head_version: nil, opened_version: nil, last_closed_version: nil)
@@ -83,7 +85,15 @@ FactoryBot.define do
       else
         repository_object.opened_version = repository_object_version
       end
-      repository_object.save!
+      repository_object.object_type = case repository_object_version.content_type
+                                      when Cocina::Models::ObjectType.collection
+                                        :collection
+                                      when Cocina::Models::ObjectType.admin_policy
+                                        :admin_policy
+                                      else
+                                        :dro
+                                      end
+      repository_object.save! if repository_object.persisted?
     end
   end
 

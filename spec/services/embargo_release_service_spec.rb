@@ -232,7 +232,12 @@ RSpec.describe EmbargoReleaseService do
   end
 
   describe '#release_all' do
-    let!(:item_with_releasable_embargo) { create(:repository_object_version, :with_repository_object, :with_releasable_embargo).repository_object }
+    let!(:item_with_releasable_embargo) do
+      create(:repository_object).tap do |repo_obj|
+        create(:repository_object_version, :with_releasable_embargo, :with_repository_object, repository_object: repo_obj)
+        repo_obj.save!
+      end
+    end
 
     before do
       create(:repository_object_version, :with_repository_object)
