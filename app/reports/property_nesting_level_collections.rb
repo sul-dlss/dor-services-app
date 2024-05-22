@@ -30,7 +30,7 @@ class PropertyNestingLevelCollections
 
     sql_result_rows.map do |row|
       collection_druid = row['collection_druid']
-      collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.label
+      collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
 
       [
         collection_druid,

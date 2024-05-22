@@ -134,7 +134,7 @@ RSpec.describe RepositoryObject do
       end
 
       it 'creates a new version and updates the head and opened version pointers' do
-        expect { repository_object.open_version!(description:) }.to change(RepositoryObjectVersion, :count).by(1)
+        expect { repository_object.reload.open_version!(description:) }.to change(RepositoryObjectVersion, :count).by(1)
         newly_created_version = repository_object.versions.last
         expect(newly_created_version.version).to eq(2)
         expect(repository_object.head_version).to eq(newly_created_version)

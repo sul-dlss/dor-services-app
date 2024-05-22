@@ -8,6 +8,12 @@
 # For persistence, see CreateObjectService and UpdateObjectService.
 # For destroying, see DeleteService.
 class RepositoryObject < ApplicationRecord
+  # Locking is performed on the RepositoryObject, not the RepositoryObjectVersion.
+  # However, changes to the head RepositoryObjectVersion will change this lock.
+  # You may encounter ActiveRecord::StaleObjectError if you are updating both the Repository and its head version.
+  # To fix this, reload (repository_object.reload) the RepositoryObject to refresh the lock.
+  self.locking_column = 'lock'
+
   class VersionAlreadyOpened < StandardError; end
   class VersionNotOpened < StandardError; end
 
@@ -96,8 +102,9 @@ class RepositoryObject < ApplicationRecord
     raise VersionNotOpened, "Cannot close version because head version is closed: #{head_version.version}" if closed?
 
     RepositoryObject.transaction do
-      opened_version.update!(closed_at: Time.current, version_description: description || opened_version.version_description)
-      update!(opened_version: nil, last_closed_version: opened_version, head_version: opened_version)
+      closing_version = opened_version
+      update!(opened_version: nil, last_closed_version: closing_version, head_version: closing_version)
+      closing_version.update!(closed_at: Time.current, version_description: description || closing_version.version_description)
     end
   end
 
@@ -120,6 +127,22 @@ class RepositoryObject < ApplicationRecord
         end
       end
     end.to_xml
+  end
+
+  # Lock used for API. It is part of a cocina object with metadata.
+  # The external lock is checked in the UpdateObjectService.
+  def external_lock
+    # This should be opaque, but this makes troubeshooting easier.
+    # The external_identifier is included so that there is enough entropy such
+    # that the lock can't be used for an object it doesn't belong to as the
+    # lock column is just an integer sequence.
+    [external_identifier, lock.to_s].join('=')
+  end
+
+  def check_lock!(cocina_object)
+    return if cocina_object.respond_to?(:lock) && external_lock == cocina_object.lock
+
+    raise CocinaObjectStore::StaleLockError, "Expected lock of #{external_lock} but received #{cocina_object.lock}."
   end
 
   private

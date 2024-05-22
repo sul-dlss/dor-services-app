@@ -47,7 +47,7 @@ class InvalidIso8601Dates
         next if invalid_values.blank?
 
         collection_druid = rows.first['collection_id']
-        collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.label
+        collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
 
         [
           id,
