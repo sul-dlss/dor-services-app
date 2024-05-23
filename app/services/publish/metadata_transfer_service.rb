@@ -82,6 +82,8 @@ module Publish
           releases[tag.release ? :index : :delete] << tag.to
         end
       end
+      # It is important to make this call even if there are no release tags for this object, because purl-fetcher will automatically add:
+      # SearchWorksPreview and ContentSearch
       PurlFetcher::Client::ReleaseTags.release(druid: cocina_object.externalIdentifier, **actions)
     end
 
