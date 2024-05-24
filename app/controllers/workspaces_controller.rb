@@ -10,8 +10,8 @@ class WorkspacesController < ApplicationController
 
   # POST /v1/objects/:druid/workspace
   def create
-    WorkspaceService.create(params[:object_id], params[:source])
-    head :created
+    result = WorkspaceService.create(params[:object_id], params[:source])
+    head :created, location: result
   end
 
   def destroy

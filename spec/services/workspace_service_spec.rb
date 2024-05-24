@@ -21,18 +21,20 @@ RSpec.describe WorkspaceService do
     let(:druid) { 'druid:mx123qw2323' }
 
     it 'creates a plain directory in the workspace when passed no source directory' do
-      described_class.create(druid, nil)
+      result = described_class.create(druid, nil)
       expect(File).to be_directory(druid_path)
       expect(File).not_to be_symlink(druid_path)
+      expect(result).to eq(druid_path)
     end
 
     it 'creates a link in the workspace to a passed in source directory' do
       source_dir = '/tmp/content_dir'
       FileUtils.mkdir_p(source_dir)
-      described_class.create(druid, source_dir)
+      result = described_class.create(druid, source_dir)
 
       expect(File).to be_symlink(druid_path)
       expect(File.readlink(druid_path)).to eq(source_dir)
+      expect(result).to eq(druid_path)
     end
   end
 
