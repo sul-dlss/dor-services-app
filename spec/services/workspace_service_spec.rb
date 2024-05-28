@@ -20,14 +20,34 @@ RSpec.describe WorkspaceService do
     let(:druid_path) { File.join(temp_workspace, 'mx', '123', 'qw', '2323', 'mx123qw2323') }
     let(:druid) { 'druid:mx123qw2323' }
 
-    it 'creates a plain directory in the workspace when passed no source directory' do
+    it 'creates a plain directory in the workspace when not passed a source directory' do
       result = described_class.create(druid, nil)
       expect(File).to be_directory(druid_path)
       expect(File).not_to be_symlink(druid_path)
       expect(result).to eq(druid_path)
+      expect(File).not_to be_directory(File.join(druid_path, 'content'))
+      expect(File).not_to be_directory(File.join(druid_path, 'metadata'))
     end
 
-    it 'creates a link in the workspace to a passed in source directory' do
+    it 'creates a plain directory with content subfolder in the workspace when not passed a source directory' do
+      result = described_class.create(druid, nil, content: true)
+      expect(File).to be_directory(druid_path)
+      expect(File).not_to be_symlink(druid_path)
+      expect(result).to eq(druid_path)
+      expect(File).to be_directory(File.join(druid_path, 'content'))
+      expect(File).not_to be_directory(File.join(druid_path, 'metadata'))
+    end
+
+    it 'creates a plain directory with metadata subfolder in the workspace when not passed a source directory' do
+      result = described_class.create(druid, nil, metadata: true)
+      expect(File).to be_directory(druid_path)
+      expect(File).not_to be_symlink(druid_path)
+      expect(result).to eq(druid_path)
+      expect(File).not_to be_directory(File.join(druid_path, 'content'))
+      expect(File).to be_directory(File.join(druid_path, 'metadata'))
+    end
+
+    it 'creates a link in the workspace when passed in source directory' do
       source_dir = '/tmp/content_dir'
       FileUtils.mkdir_p(source_dir)
       result = described_class.create(druid, source_dir)

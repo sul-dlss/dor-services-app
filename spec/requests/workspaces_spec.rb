@@ -22,7 +22,7 @@ RSpec.describe 'Workspaces' do
 
         expect(WorkspaceService).to have_received(:create).with(druid, nil)
         expect(response).to have_http_status(:created)
-        expect(response.headers['Location']).to eq(path_to_workspace)
+        expect(response.body).to eq({ path: path_to_workspace }.to_json)
       end
     end
 
@@ -35,7 +35,7 @@ RSpec.describe 'Workspaces' do
 
         expect(WorkspaceService).to have_received(:create).with(druid, source)
         expect(response).to have_http_status(:created)
-        expect(response.headers['Location']).to eq(path_to_workspace)
+        expect(response.body).to eq({ path: path_to_workspace }.to_json)
       end
     end
   end
