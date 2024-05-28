@@ -10,7 +10,7 @@ class WorkspacesController < ApplicationController
 
   # POST /v1/objects/:druid/workspace
   def create
-    result = WorkspaceService.create(params[:object_id], params[:source])
+    result = WorkspaceService.create(params[:object_id], params[:source], content: ActiveModel::Type::Boolean.new.cast(params[:content]), metadata: ActiveModel::Type::Boolean.new.cast(params[:metadata]))
     render status: :created, json: { path: result }
   end
 
