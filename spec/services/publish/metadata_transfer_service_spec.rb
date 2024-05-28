@@ -9,12 +9,13 @@ RSpec.describe Publish::MetadataTransferService do
   let(:cocina_object) do
     build(:dro, id: "druid:#{druid}").new(
       access:,
-      structural: { contains: [], isMemberOf: ['druid:xh235dd9059'] },
+      structural: { contains: structural_contains, isMemberOf: ['druid:xh235dd9059'] },
       administrative: {
         hasAdminPolicy: 'druid:fg890hx1234'
       }
     )
   end
+  let(:structural_contains) { [] }
   let(:cocina_collection) { build(:collection, id: 'druid:xh235dd9059') }
   let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
   let(:service) { described_class.new(cocina_object, workflow:) }
@@ -48,6 +49,7 @@ RSpec.describe Publish::MetadataTransferService do
         allow_any_instance_of(described_class).to receive(:transfer_to_document_store)
         allow_any_instance_of(described_class).to receive(:transfer_metadata)
         allow_any_instance_of(described_class).to receive(:publish_notify_on_success)
+        allow_any_instance_of(described_class).to receive(:release_tags_on_success)
         allow(MemberService).to receive(:for).and_return([member_druid])
         allow(CocinaObjectStore).to receive(:find).with(member_druid).and_return(member_item)
         allow(described_class).to receive(:new).with(cocina_object, workflow:).and_call_original
@@ -109,9 +111,10 @@ RSpec.describe Publish::MetadataTransferService do
 
       context 'with an item' do
         before do
-          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/{"cocinaVersion"/, 'cocina.json')
-          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
-          expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(Cocina::Models::DRO)
+          allow(service).to receive(:transfer_to_document_store)
+          allow(service).to receive(:transfer_to_document_store)
+          allow(service).to receive(:publish_notify_on_success)
+          allow(service).to receive(:release_tags_on_success)
         end
 
         let(:access) { { view: 'citation-only', download: 'none' } }
@@ -119,6 +122,10 @@ RSpec.describe Publish::MetadataTransferService do
         it 'identityMetadata, contentMetadata, rightsMetadata, generated dublin core, and public xml' do
           service.publish
           expect(Publish::PublicXmlService).to have_received(:new).with(public_cocina: Cocina::Models::DRO, thumbnail_service:)
+          expect(service).to have_received(:transfer_to_document_store).with(/{"cocinaVersion"/, 'cocina.json')
+          expect(service).to have_received(:transfer_to_document_store).with(/<publicObject/, 'public')
+          expect(service).to have_received(:publish_notify_on_success)
+          expect(service).to have_received(:release_tags_on_success)
         end
       end
 
@@ -130,36 +137,67 @@ RSpec.describe Publish::MetadataTransferService do
         end
 
         before do
-          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/{"cocinaVersion"/, 'cocina.json')
-          expect_any_instance_of(described_class).to receive(:transfer_to_document_store).with(/<publicObject/, 'public')
-          expect_any_instance_of(described_class).to receive(:publish_notify_on_success).with(Cocina::Models::Collection)
-          expect_any_instance_of(described_class).to receive(:republish_members!).with(no_args)
+          allow(service).to receive(:transfer_to_document_store)
+          allow(service).to receive(:transfer_to_document_store)
+          allow(service).to receive(:publish_notify_on_success)
+          allow(service).to receive(:release_tags_on_success)
+          allow(service).to receive(:republish_members!)
         end
 
         it 'ignores missing data' do
           expect { service.publish }.not_to raise_error
+          expect(service).to have_received(:transfer_to_document_store).with(/{"cocinaVersion"/, 'cocina.json')
+          expect(service).to have_received(:transfer_to_document_store).with(/<publicObject/, 'public')
+          expect(service).to have_received(:publish_notify_on_success)
+          expect(service).to have_received(:release_tags_on_success)
+          expect(service).to have_received(:republish_members!).with(no_args)
+        end
+      end
+
+      context 'when publish_shelve is enabled' do
+        before do
+          allow(Settings.enabled_features).to receive(:publish_shelve).and_return(true)
+          allow(service).to receive(:publish_shelve)
+          allow(service).to receive(:release_tags_on_success)
+        end
+
+        let(:access) { { view: 'citation-only', download: 'none' } }
+
+        it 'publishes, shelves, and releases tags' do
+          service.publish
+          expect(service).to have_received(:publish_shelve)
+          expect(service).to have_received(:release_tags_on_success)
         end
       end
     end
   end
 
   describe '#publish_notify_on_success' do
-    subject(:notify) { service.send(:publish_notify_on_success, cocina_object) }
+    subject(:notify) { service.send(:publish_notify_on_success) }
 
-    context 'when purl-fetcher is configured' do
-      before do
-        create(:release_tag, druid: cocina_object.externalIdentifier, release: true)
-        allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
-        allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
-        allow(PurlFetcher::Client::LegacyPublish).to receive(:publish)
-        allow(PurlFetcher::Client::ReleaseTags).to receive(:release)
-      end
+    before do
+      allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+      allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
+      allow(PurlFetcher::Client::LegacyPublish).to receive(:publish)
+    end
 
-      it 'notifies the purl service of the update' do
-        notify
-        expect(PurlFetcher::Client::LegacyPublish).to have_received(:publish).with(cocina: cocina_object)
-        expect(PurlFetcher::Client::ReleaseTags).to have_received(:release).with(druid: cocina_object.externalIdentifier, index: ['Searchworks'], delete: [])
-      end
+    it 'notifies the purl service of the update' do
+      notify
+      expect(PurlFetcher::Client::LegacyPublish).to have_received(:publish).with(cocina: Cocina::Models::DRO)
+    end
+  end
+
+  describe '#release_tags_on_success' do
+    subject(:notify) { service.send(:release_tags_on_success) }
+
+    before do
+      create(:release_tag, druid: cocina_object.externalIdentifier, release: true)
+      allow(PurlFetcher::Client::ReleaseTags).to receive(:release)
+    end
+
+    it 'notifies the purl service of the release tags' do
+      notify
+      expect(PurlFetcher::Client::ReleaseTags).to have_received(:release).with(druid: cocina_object.externalIdentifier, index: ['Searchworks'], delete: [])
     end
   end
 
@@ -183,6 +221,71 @@ RSpec.describe Publish::MetadataTransferService do
       file_path = dr.find(:content, 'someMd')
       expect(file_path).to match(%r{4567/someMd$})
       expect(File.read(file_path)).to eq('<xml/>')
+    end
+  end
+
+  describe '#publish_shelve' do
+    subject(:publish_shelve) { service.send(:publish_shelve) }
+
+    let(:access) { { view: 'world', download: 'none' } }
+
+    let(:structural_contains) do
+      [
+        {
+          type: Cocina::Models::FileSetType.image,
+          externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/jt667tw2770-0001',
+          label: '',
+          version: 6,
+          structural: {
+            contains: [
+              {
+                type: Cocina::Models::ObjectType.file,
+                externalIdentifier: 'https://cocina.sul.stanford.edu/file/jt667tw2770-0001/jt667tw2770_00_0001.tif',
+                label: 'jt667tw2770_00_0001.tif',
+                filename: 'jt667tw2770_00_0001.tif',
+                size: 193_090_740,
+                version: 6,
+                hasMimeType: 'image/tiff',
+                hasMessageDigests: [
+                  { type: 'sha1', digest: 'd71f1b739d4b3ff2bf199c8e3452a16c7a6609f0' },
+                  { type: 'md5', digest: 'a695ccc6ed7a9c905ba917d7c284854e' }
+                ],
+                access: { view: 'world', download: 'none' },
+                administrative: { publish: true, sdrPreserve: true, shelve: true },
+                presentation: { height: 6610, width: 9736 }
+              }, {
+                type: Cocina::Models::ObjectType.file,
+                externalIdentifier: 'https://cocina.sul.stanford.edu/file/jt667tw2770-0001/jt667tw2770_05_0001.jp2',
+                label: 'jt667tw2770_05_0001.jp2',
+                filename: 'images/jt667tw2770_05_0001.jp2',
+                size: 12_141_770,
+                version: 6,
+                hasMimeType: 'image/jp2',
+                hasMessageDigests: [
+                  { type: 'sha1', digest: 'b6632c33619e3dd6268eb1504580285670f4c3b8' },
+                  { type: 'md5', digest: '9f74085aa752de7404d31cb6bcc38a56' }
+                ],
+                access: { view: 'world', download: 'none' },
+                administrative: { publish: true, sdrPreserve: true, shelve: true },
+                presentation: { height: 6610, width: 9736 }
+              }
+            ]
+          }
+        }
+      ]
+    end
+
+    before do
+      allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+      allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
+      allow(PurlFetcher::Client::PublishShelve).to receive(:publish_and_shelve)
+      allow(DigitalStacksDiffer).to receive(:call).and_return(['images/jt667tw2770_05_0001.jp2'])
+    end
+
+    it 'shelves and publishes to purl fetcher service' do
+      publish_shelve
+      expect(PurlFetcher::Client::PublishShelve).to have_received(:publish_and_shelve).with(cocina: Cocina::Models::DRO, filepath_map: { 'images/jt667tw2770_05_0001.jp2' =>
+           'tmp/dor/workspace/bc/123/df/4567/bc123df4567/content/images/jt667tw2770_05_0001.jp2' })
     end
   end
 

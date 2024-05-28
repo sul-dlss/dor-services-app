@@ -9,6 +9,15 @@ class ShelveJob < ApplicationJob
   def perform(druid:, background_job_result:)
     background_job_result.processing!
 
+    # Skip if publish_shelve is enabled
+    # However, web archive crawls still need to be shelved.
+    if Settings.enabled_features.publish_shelve && !WasService.crawl?(druid:)
+      return LogSuccessJob.perform_later(druid:,
+                                         workflow: 'accessionWF',
+                                         background_job_result:,
+                                         workflow_process: 'shelve')
+    end
+
     begin
       cocina_object = CocinaObjectStore.find(druid)
 

@@ -62,4 +62,44 @@ RSpec.describe ShelveJob do
               output: { errors: [{ detail: error_message, title: 'Unable to shelve files' }] })
     end
   end
+
+  context 'when publish_shelve feature flag is enabled' do
+    before do
+      allow(Settings.enabled_features).to receive(:publish_shelve).and_return(true)
+      allow(ShelvingService).to receive(:shelve)
+      allow(LogSuccessJob).to receive(:perform_later)
+    end
+
+    context 'when not a WAS crawl' do
+      before do
+        allow(WasService).to receive(:crawl?).with(druid:).and_return(false)
+      end
+
+      it 'skips shelving' do
+        perform
+        expect(ShelvingService).not_to have_received(:shelve)
+        expect(LogSuccessJob).to have_received(:perform_later)
+          .with(druid:,
+                background_job_result: result,
+                workflow: 'accessionWF',
+                workflow_process: 'shelve')
+      end
+    end
+
+    context 'when a WAS crawl' do
+      before do
+        allow(WasService).to receive(:crawl?).with(druid:).and_return(true)
+      end
+
+      it 'performs shelving' do
+        perform
+        expect(ShelvingService).to have_received(:shelve).with(cocina_object).once
+        expect(LogSuccessJob).to have_received(:perform_later)
+          .with(druid:,
+                background_job_result: result,
+                workflow: 'accessionWF',
+                workflow_process: 'shelve')
+      end
+    end
+  end
 end
