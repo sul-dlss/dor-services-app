@@ -225,7 +225,7 @@ RSpec.describe VersionService do
       repository_object.save!
       repository_object.head_version.update!(version: 2, version_description: 'A Second Version')
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
-      allow(workflow_client).to receive(:close_version)
+      allow(workflow_client).to receive(:create_workflow_by_name)
     end
 
     context 'when description and user_name are passed in' do
@@ -243,8 +243,8 @@ RSpec.describe VersionService do
                                                               druid:,
                                                               event_type: 'version_close')
 
-          expect(workflow_client).to have_received(:close_version)
-            .with(druid:, version: '2', create_accession_wf: true)
+          expect(workflow_client).to have_received(:create_workflow_by_name)
+            .with(druid, 'accessionWF', version: '2')
 
           expect(repository_object.last_closed_version.user_versions.count).to eq 0
         end
@@ -357,12 +357,11 @@ RSpec.describe VersionService do
         allow(workflow_state_service).to receive_messages(accessioning?: false, assembling?: false)
       end
 
-      it 'passes the correct value of create_accession_wf' do
+      it 'does not create accessionWF' do
         close
         expect(repository_object.reload.last_closed_version).to be_present
 
-        expect(workflow_client).to have_received(:close_version)
-          .with(druid:, version: '2', create_accession_wf: false)
+        expect(workflow_client).not_to have_received(:create_workflow_by_name)
       end
     end
 
@@ -404,7 +403,7 @@ RSpec.describe VersionService do
         close
         expect(repository_object.reload.last_closed_version).to be_present
         expect(workflow_state_service).to have_received(:assembling?)
-        expect(workflow_client).to have_received(:close_version).with(druid:, version: '2', create_accession_wf: true)
+        expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'accessionWF', version: '2')
       end
     end
 
@@ -419,8 +418,7 @@ RSpec.describe VersionService do
         close
         expect(repository_object.reload.last_closed_version).to be_present
         expect(repository_object.last_closed_version.version_description).to eq 'A Second Version'
-        expect(workflow_client).to have_received(:close_version)
-          .with(druid:, version: '2', create_accession_wf: true)
+        expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'accessionWF', version: '2')
       end
     end
   end

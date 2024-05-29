@@ -128,12 +128,8 @@ class VersionService
 
     repository_object = RepositoryObject.find_by!(external_identifier: druid)
 
-    # Default to creating accessionWF when calling close_version
-    workflow_client.close_version(druid:,
-                                  version: version.to_s,
-                                  create_accession_wf: start_accession)
-
     repository_object.close_version!(description:)
+    workflow_client.create_workflow_by_name(druid, 'accessionWF', version: version.to_s) if start_accession
 
     EventFactory.create(druid:, event_type: 'version_close', data: { who: user_name, version: version.to_s })
 
