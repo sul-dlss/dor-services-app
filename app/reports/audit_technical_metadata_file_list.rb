@@ -59,11 +59,8 @@ class AuditTechnicalMetadataFileList
   def report
     logger.info("=== auditing technical-metadata-service for inconsistencies with current cocina file information (limit: #{limit})")
 
-    # We iterate over the druid/version pairs from the Dro list and feed them to VersionService as soon as we get them,
-    # to minimize the chance we try a stale latest version, since latest is what VersionService.open? needs to operate on.
-    # We could get more clever/efficient/transactional, but that'd require copypasta'ing VersionService and/or RepositoryObject
-    # internal code, or refactoring VersionService and/or RepositoryObject a bit.  Which didn't seem worth the effort for a
-    # report that should become obsolete in not too long.
+    # We iterate over all DROs to start, filtering open objects and versions other than the latest out of the batches for which
+    # we actually run the queries.  We'll further filter the files we care about when processing each DRO.
     # Using in_batches means we can pluck only the info we need to use, without having to instantiate an ActiveRecord obj for
     # each Dro in each batch.
     num_processed = 0
@@ -86,36 +83,40 @@ class AuditTechnicalMetadataFileList
   end
 
   class << self
-    # @param [Array] an array of arrays.  each element in the top level list is an array containing
-    #   druid, version, and cocina-models file hashes grouped by resource (plucked from Dro)
+    # @param [Array] an array of arrays.  each element in the top level list is an array containing (as the first element)
+    #   a druid and (second element) a list of cocina-models file hashes grouped by resource (plucked from RepositoryObject.dros)
     def process_dro_row(dro_row, techmd_connection, logger)
-      druid, version, file_list = druid_version_files(dro_row)
-      if file_list.blank?
-        logger.debug("skipping #{druid}: has no files")
+      druid, preserved_file_list = preserved_dro_files(dro_row)
+      if preserved_file_list.blank?
+        logger.debug("skipping #{druid}: has no preserved files")
         return
       end
 
-      logger.debug("auditing #{{ druid:, version:, file_list: }}")
-      req_params = { expected_files: file_list }.to_json
+      logger.debug("auditing #{{ druid:, preserved_file_list: }}")
+      req_params = { expected_files: preserved_file_list }.to_json
       response = techmd_connection.post("/v1/technical-metadata/audit/#{druid}", req_params, 'Content-Type' => 'application/json')
       logger.debug "#{druid}: audited technical-metadata-service; response status: #{response.status}; response body: #{response.body}"
 
-      process_response(druid, version, response, logger)
+      process_response(druid, response, logger)
     end
 
     private
 
-    # @param [Array] an array containing druid, version, and cocina-models file hashes grouped by resource
-    def druid_version_files(dro_row)
-      dro_row.then do |druid, version, files_by_resource|
-        [druid, version, filename_and_md5_list(files_by_resource)]
+    # @param [Array] an array containing a druid and a list of cocina-models file hashes grouped by resource
+    # @return [Array] an array containing a druid and a list of cocina-models file hashes for just the
+    #   preserved files, flattened (no longer grouped by resource)
+    def preserved_dro_files(dro_row)
+      dro_row.then do |druid, files_by_resource|
+        [druid, preserved_filename_and_md5_list(files_by_resource)]
       end
     end
 
     # @param [Hash] a list of cocina-models file model nodes, as hashes, from cocina-models structural, grouped into subarrays by the
     #  containing resource (though with no resource info).  See FILE_INFOS_JSONPATH used in query that feeds this helper.
-    def filename_and_md5_list(cocina_file_list_by_resource)
-      Array(cocina_file_list_by_resource).flatten.map do |file|
+    # @return [Array<Hash>] a flat (no longer grouped by resource) list of filename/md5 pairs, one for each preserved file
+    def preserved_filename_and_md5_list(cocina_file_list_by_resource)
+      # we filter out unpreserved files, because techMD only has info on preserved files
+      Array(cocina_file_list_by_resource).flatten.filter { |file| file['administrative']['sdrPreserve'] }.map do |file|
         {
           filename: file['filename'],
           md5: file['hasMessageDigests'].find { |digest| digest['type'] == 'md5' }['digest']
@@ -123,7 +124,7 @@ class AuditTechnicalMetadataFileList
       end
     end
 
-    def process_response(druid, version, response, logger)
+    def process_response(druid, response, logger)
       unless EXPECTED_RESPONSE_CODES.include?(response.status)
         logger.warn("#{druid}: unexpected response auditing technical-metadata-service. HTTP status: #{response.status}. response body: #{response.body}")
         return
@@ -136,7 +137,7 @@ class AuditTechnicalMetadataFileList
         techmd_problem_info = JSON.parse(response.body).transform_values!(&:presence).compact
         return if techmd_problem_info.keys.blank?
 
-        puts "#{druid}: found technical-metadata-service database; inconsistencies with v#{version} cocina: #{techmd_problem_info}"
+        puts "#{druid}: found in technical-metadata-service database; inconsistencies with latest cocina: #{techmd_problem_info}"
       end
     end
   end
@@ -168,7 +169,7 @@ class AuditTechnicalMetadataFileList
   end
 
   def num_dros
-    @num_dros ||= Dro.count
+    @num_dros ||= RepositoryObject.dros.count
   end
 
   def progress_notification_chunk_size
