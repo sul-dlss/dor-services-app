@@ -56,17 +56,6 @@ class CocinaObjectStore
     new.exists!(druid)
   end
 
-  # Updates a Cocina object in the datastore.
-  # @param [Cocina::Models::DRO|Collection|AdminPolicy|DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata] cocina_object
-  # @param [boolean] skip_lock do not perform an optimistic lock check
-  # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
-  # @raise [CocinaObjectNotFoundError] raised if the cocina object does not already exist in the datastore.
-  # @raise [StateLockError] raised if optimistic lock failed.
-  # @return [Cocina::Models::AdminPolicyWithMetadata,Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata] the saved object with its metadata
-  def self.store(cocina_object, skip_lock:)
-    new.store(cocina_object, skip_lock:)
-  end
-
   # @param [Cocina::Models::DRO] cocina_item
   # @param [Boolean] swallow_exceptions (false) should this return a list even if some members aren't found?
   def self.find_collections_for(cocina_item, swallow_exceptions: false)
@@ -102,10 +91,6 @@ class CocinaObjectStore
     raise CocinaObjectNotFoundError.new("Couldn't find object with 'source_id'=#{source_id}", source_id)
   end
 
-  def store(cocina_object, skip_lock:)
-    cocina_to_ar_save(cocina_object, skip_lock:)
-  end
-
   def exists?(druid, type: nil)
     RepositoryObject.exists?(external_identifier: druid)
   end
@@ -122,64 +107,7 @@ class CocinaObjectStore
     raise CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid)
   end
 
-  # Find an ActiveRecord Cocina object.
-  # @param [String] druid
-  # @return [Dro, AdminPolicy, Collection]
-  # @raise [CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
-  def self.ar_find(druid)
-    new.ar_find(druid)
-  end
-
-  # Find an ActiveRecord Cocina object.
-  # @param [String] druid to find
-  # @return [Dro, AdminPolicy, Collection]
-  def ar_find(druid)
-    ar_cocina_object = Dro.find_by(external_identifier: druid) ||
-                       AdminPolicy.find_by(external_identifier: druid) ||
-                       Collection.find_by(external_identifier: druid)
-    ar_cocina_object ||
-      raise(CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid))
-  end
-
   private
-
-  # The *ar* methods are private. In later steps in the migration, the *ar* methods will be invoked by the
-  # above public methods.
-
-  def ar_exists?(druid, type: nil)
-    types = type ? Array(type) : [DRO, COLLECTION, ADMIN_POLICY]
-    types.any? do |t|
-      t.constantize.exists?(external_identifier: druid)
-    end
-  end
-
-  # Persist a Cocina object with ActiveRecord.
-  # @param [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy] cocina_object
-  # @return [Cocina::Models::AdminPolicyWithMetadata,Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata] the saved object with its metadata
-  # @raise [Cocina::ValidationError] if externalIdentifier or sourceId not unique
-  def cocina_to_ar_save(cocina_object, skip_lock: false)
-    model_clazz = case cocina_object
-                  when Cocina::Models::AdminPolicy, Cocina::Models::AdminPolicyWithMetadata
-                    AdminPolicy
-                  when Cocina::Models::DRO, Cocina::Models::DROWithMetadata
-                    Dro
-                  when Cocina::Models::Collection, Cocina::Models::CollectionWithMetadata
-                    Collection
-                  else
-                    raise CocinaObjectStoreError, "unsupported type #{cocina_object&.type}"
-                  end
-    ar_cocina_object = model_clazz.upsert_cocina(Cocina::Models.without_metadata(cocina_object))
-    ar_cocina_object.to_cocina_with_metadata
-  rescue ActiveRecord::RecordNotUnique => e
-    message = if e.message.include?('dro_source_id_idx')
-                source_id = cocina_object.identification.sourceId
-                druid = Dro.find_by_source_id(source_id).external_identifier
-                "An object (#{druid}) with the source ID '#{cocina_object.identification.sourceId}' has already been registered."
-              else
-                'ExternalIdentifier or sourceId is not unique.'
-              end
-    raise Cocina::ValidationError.new(message, status: :conflict)
-  end
 
   def bootstrap_ur_admin_policy?(druid)
     Settings.enabled_features.create_ur_admin_policy && druid == Settings.ur_admin_policy.druid

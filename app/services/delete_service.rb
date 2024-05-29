@@ -51,9 +51,7 @@ class DeleteService
   def delete_from_dor
     RepositoryObject.transaction do
       RepositoryObject.find_by!(external_identifier: druid).destroy
-      CocinaObjectStore.ar_find(druid).destroy
       AdministrativeTags.destroy_all(identifier: druid)
-      ObjectVersion.where(druid:).destroy_all
       Event.where(druid:).destroy_all
       ReleaseTag.where(druid:).destroy_all
     end

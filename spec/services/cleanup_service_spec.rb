@@ -60,8 +60,8 @@ RSpec.describe CleanupService do
   end
 
   describe '.stop_accessioning' do
-    let(:dro) { build(:ar_dro) }
-    let(:druid) { dro.external_identifier }
+    let(:dro) { build(:dro) }
+    let(:druid) { dro.externalIdentifier }
     let(:version) { dro.version }
     let(:client) { instance_double(Dor::Workflow::Client) }
 

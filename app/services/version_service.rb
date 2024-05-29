@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 # Open and close versions
-# rubocop:disable Metrics/ClassLength
 class VersionService
   class VersioningError < StandardError; end
 
@@ -65,37 +64,25 @@ class VersionService
   # @param [String] description set description of version change (required)
   # @param [String] opening_user_name add opening username to the events datastream (optional)
   # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
-  # @return [Cocina::Models::DRO, Cocina::Models::AdminPolicy, Cocina::Models::Collection] updated cocina object
+  # @return [Cocina::Models::DROWithMetadata, Cocina::Models::AdminPolicyWithMetadata, Cocina::Models::CollectionWithMetadata] updated cocina object
   # @raise [VersionService::VersioningError] if the object hasn't been accessioned, or if a version is already opened
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   def open(cocina_object:, description:, assume_accessioned:, opening_user_name: nil)
     raise ArgumentError, 'description is required to open a new version' if description.blank?
 
     ensure_openable!(assume_accessioned:)
-    repository_object = RepositoryObject.find_by!(external_identifier: druid)
+    repository_object = RepositoryObject.find_by!(external_identifier: cocina_object.externalIdentifier)
     check_version!(current_version: repository_object.head_version.version)
 
-    # This whole block can be removed when getting rid of ObjectVersions.
-    if Settings.version_service.sync_with_preservation
-      sdr_version = retrieve_version_from_preservation
-      new_object_version = ObjectVersion.sync_then_increment_version(druid:, known_version: sdr_version, description:)
-    else
-      # This is for testing when we don't have the SDR container available
-      new_object_version = ObjectVersion.increment_version(druid:, description:)
-    end
-
-    update_cocina_object = cocina_object
     repository_object.open_version!(description:)
-    # TODO: when we stop calling the UpdateObjectService, after we've migrated to RepostoryObjects, we may need to trigger indexing:
-    #       e.g.: Notifications::ObjectUpdated.publish(model: cocina_object_with_metadata)
 
-    # Skipping open check since not yet opened.
-    update_cocina_object = UpdateObjectService.update(cocina_object.new(version: new_object_version.version, lock: repository_object.external_lock), skip_open_check: true) if cocina_object.version != new_object_version.version
+    # Reloading to get correct lock value.
+    Indexer.reindex_later(cocina_object: repository_object.reload.to_cocina_with_metadata)
 
-    workflow_client.create_workflow_by_name(druid, 'versioningWF', version: new_object_version.version.to_s)
-
-    EventFactory.create(druid:, event_type: 'version_open', data: { who: opening_user_name, version: new_object_version.version.to_s })
-    update_cocina_object
+    new_version = repository_object.opened_version.version
+    workflow_client.create_workflow_by_name(druid, 'versioningWF', version: new_version.to_s)
+    EventFactory.create(druid:, event_type: 'version_open', data: { who: opening_user_name, version: new_version.to_s })
+    repository_object.to_cocina_with_metadata
   end
 
   # @param [String] druid of the item
@@ -136,8 +123,6 @@ class VersionService
     user_version_options = %w[none new update]
 
     raise ArgumentError, "user_version must be one of #{user_version_options.join(', ')}" unless user_version_options.include?(user_versions)
-
-    ObjectVersion.update_current_version(druid:, description:) if description
 
     ensure_closeable!
 
@@ -235,4 +220,3 @@ class VersionService
     raise VersionService::VersioningError, "Version from Preservation is out of sync. Preservation expects #{preservation_version} but current version is #{current_version}"
   end
 end
-# rubocop:enable Metrics/ClassLength

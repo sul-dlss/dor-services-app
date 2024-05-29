@@ -86,7 +86,6 @@ RSpec.describe 'Update object' do
   end
 
   before do
-    create(:ar_dro, external_identifier: druid)
     allow(AdministrativeTags).to receive(:create)
     allow(AdministrativeTags).to receive_messages(project: ['Google Books'], for: [])
     allow(Cocina::ObjectValidator).to receive(:validate)

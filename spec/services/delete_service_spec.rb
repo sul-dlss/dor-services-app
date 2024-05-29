@@ -19,7 +19,6 @@ RSpec.describe DeleteService do
     subject(:destroy) { described_class.destroy(cocina_object, user_name:) }
 
     before do
-      create(:ar_dro, external_identifier: druid)
       create(:repository_object, external_identifier: druid)
       allow(CocinaObjectStore).to receive(:destroy)
       allow(Indexer).to receive(:delete)
@@ -27,8 +26,7 @@ RSpec.describe DeleteService do
 
     it 'destroys the object' do
       expect { destroy }
-        .to change(Dro, :count).by(-1)
-        .and change(RepositoryObject, :count).by(-1)
+        .to change(RepositoryObject, :count).by(-1)
         .and change(RepositoryObjectVersion, :count).by(-1)
       expect(EventFactory).to have_received(:create).with(druid:, event_type: 'delete', data: { request: cocina_object.to_h, source_id:, user_name: })
       expect(Indexer).to have_received(:delete)
@@ -69,23 +67,19 @@ RSpec.describe DeleteService do
 
   describe '#delete_from_dor' do
     before do
-      create(:ar_dro, external_identifier: druid)
       create(:repository_object, external_identifier: druid)
       AdministrativeTags.create(identifier: druid, tags: ['test : tag'])
       Event.create!(druid:, event_type: 'version_close', data: { version: '4' })
-      ObjectVersion.create(druid:, version: 4, description: 'Version 4.0.0')
       ReleaseTag.create(druid:, who: 'bergeraj', what: 'self', released_to: 'Searchworks', release: true)
       allow(Indexer).to receive(:delete)
     end
 
     it 'deletes from datastore and Solr' do
       expect { service.send(:delete_from_dor) }
-        .to change(Dro, :count).by(-1)
-        .and change(RepositoryObject, :count).by(-1)
+        .to change(RepositoryObject, :count).by(-1)
         .and change(RepositoryObjectVersion, :count).by(-1)
       expect(AdministrativeTags.for(identifier: druid)).to be_empty
       expect(Event.exists?(druid:)).to be(false)
-      expect(ObjectVersion.exists?(druid:)).to be(false)
       expect(ReleaseTag.exists?(druid:)).to be(false)
       expect(Indexer).to have_received(:delete).with(druid:)
     end

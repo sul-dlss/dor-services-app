@@ -29,25 +29,21 @@ class UpdateObjectService
     Cocina::ObjectValidator.validate(cocina_object)
     raise_unless_open_version
 
-    cocina_object_without_metadata = Cocina::Models.without_metadata(cocina_object)
-
     # If this is a collection and the title has changed, then reindex the children.
     update_items = need_to_update_members?
 
-    cocina_object_with_metadata = persist(cocina_object_without_metadata)
-
-    compare_legacy
+    updated_cocina_object_with_metadata = persist!
 
     EventFactory.create(druid:, event_type: 'update', data: { success: true, request: cocina_object_without_metadata.to_h })
 
-    Indexer.reindex_later(cocina_object: cocina_object_with_metadata)
+    Indexer.reindex_later(cocina_object: updated_cocina_object_with_metadata)
 
     # Update all items in the collection if necessary
     PublishItemsModifiedJob.perform_later(druid) if update_items
-    cocina_object_with_metadata
+    updated_cocina_object_with_metadata
   rescue Cocina::ValidationError => e
     EventFactory.create(druid:, event_type: 'update',
-                        data: { success: false, error: e.message, request: Cocina::Models.without_metadata(cocina_object).to_h })
+                        data: { success: false, error: e.message, request: cocina_object_without_metadata.to_h })
     raise
   end
 
@@ -59,6 +55,10 @@ class UpdateObjectService
 
   def druid
     cocina_object.externalIdentifier
+  end
+
+  def cocina_object_without_metadata
+    @cocina_object_without_metadata ||= Cocina::Models.without_metadata(cocina_object)
   end
 
   def raise_unless_open_version
@@ -73,23 +73,7 @@ class UpdateObjectService
         Cocina::Models::Builders::TitleBuilder.build(cocina_object.description.title)
   end
 
-  def compare_legacy
-    RepositoryObject.transaction(isolation: ActiveRecord::Base.connection.transaction_open? ? nil : :read_committed) do
-      next unless Settings.enabled_features.repository_object_test
-
-      repo_object = RepositoryObject.find_by(external_identifier: druid)
-      next unless repo_object
-
-      cocina = repo_object.head_version.to_cocina
-      legacy_cocina_with_metadata = CocinaObjectStore.find(druid)
-      legacy_cocina = Cocina::Models.without_metadata(legacy_cocina_with_metadata)
-      next if legacy_cocina == cocina
-
-      Honeybadger.notify('Comparison of RepositoryObject with legacy object failed.', context: { legacy: legacy_cocina.to_h, cocina: cocina.to_h })
-    end
-  end
-
-  def persist(cocina_object_without_metadata)
+  def persist!
     cocina_object_with_metadata = nil
     begin
       RepositoryObject.transaction do
@@ -98,8 +82,6 @@ class UpdateObjectService
         repo_object.check_lock!(cocina_object) unless skip_lock
         repo_object.update_opened_version_from(cocina_object: cocina_object_without_metadata)
         cocina_object_with_metadata = repo_object.head_version.to_cocina_with_metadata
-
-        CocinaObjectStore.store(cocina_object, skip_lock:)
       end
     rescue ActiveRecord::RecordNotUnique => e
       message = if e.message.include?('index_repository_objects_on_source_id')
