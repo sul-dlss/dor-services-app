@@ -6,7 +6,7 @@ enabled_features:
   file_hierarchy_validation: true
   read_folio: true
   orcid_update: true
-  shelve_to_purl_fetcher: false
+  publish_shelve: false
 
 
 # Ur Admin Policy
