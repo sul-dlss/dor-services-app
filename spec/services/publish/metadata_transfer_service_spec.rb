@@ -289,6 +289,20 @@ RSpec.describe Publish::MetadataTransferService do
       expect(PurlFetcher::Client::PublishShelve).to have_received(:publish_and_shelve).with(cocina: Cocina::Models::DRO, filepath_map: { 'images/jt667tw2770_05_0001.jp2' =>
            'tmp/dor/workspace/bc/123/df/4567/bc123df4567/content/images/jt667tw2770_05_0001.jp2' })
     end
+
+    context 'when a collection' do
+      let(:cocina_object) do
+        build(:collection, id: "druid:#{druid}").new(
+          access: { view: 'world' }
+        )
+      end
+
+      it 'shelves and publishes to purl fetcher service' do
+        publish_shelve
+        expect(PurlFetcher::Client::PublishShelve).to have_received(:publish_and_shelve).with(cocina: Cocina::Models::Collection, filepath_map: {})
+        expect(DigitalStacksDiffer).not_to have_received(:call)
+      end
+    end
   end
 
   describe '#republish_virtual_object_constituents' do
