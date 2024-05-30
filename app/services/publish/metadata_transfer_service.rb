@@ -17,11 +17,12 @@ module Publish
 
     # Appends contentMetadata file resources from the source objects to this object
     def publish
-      republish_members!
+      republish_collection_members!
       return unpublish unless discoverable?
 
       if Settings.enabled_features.publish_shelve
         publish_shelve
+        republish_virtual_object_constituents!
       else
         transfer_metadata
         publish_notify_on_success
@@ -58,12 +59,18 @@ module Publish
       cocina_object.access.view != 'dark'
     end
 
-    def republish_members!
+    def republish_collection_members!
       return unless cocina_object&.collection?
 
       Array.wrap(
         MemberService.for(cocina_object.externalIdentifier, exclude_opened: true, only_published: true)
       ).each do |druid|
+        PublishJob.set(queue: :publish_low).perform_later(druid:, background_job_result: BackgroundJobResult.create, workflow:, log_success: false)
+      end
+    end
+
+    def republish_virtual_object_constituents!
+      VirtualObjectService.constituents(cocina_object, exclude_opened: true, only_published: true).each do |druid|
         PublishJob.set(queue: :publish_low).perform_later(druid:, background_job_result: BackgroundJobResult.create, workflow:, log_success: false)
       end
     end

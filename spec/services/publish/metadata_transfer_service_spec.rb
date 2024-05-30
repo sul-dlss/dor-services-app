@@ -19,6 +19,7 @@ RSpec.describe Publish::MetadataTransferService do
   let(:cocina_collection) { build(:collection, id: 'druid:xh235dd9059') }
   let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
   let(:service) { described_class.new(cocina_object, workflow:) }
+  let(:fake_publish_job) { class_double(PublishJob, perform_later: nil) }
 
   describe '#publish' do
     before do
@@ -33,7 +34,6 @@ RSpec.describe Publish::MetadataTransferService do
           access: { view: 'world' }
         )
       end
-      let(:fake_publish_job) { class_double(PublishJob, perform_later: nil) }
       let(:member_druid) { 'druid:hx532dd9509' }
       let(:member_item) do
         build(:dro, id: member_druid).new(
@@ -141,7 +141,7 @@ RSpec.describe Publish::MetadataTransferService do
           allow(service).to receive(:transfer_to_document_store)
           allow(service).to receive(:publish_notify_on_success)
           allow(service).to receive(:release_tags_on_success)
-          allow(service).to receive(:republish_members!)
+          allow(service).to receive(:republish_collection_members!)
         end
 
         it 'ignores missing data' do
@@ -150,7 +150,7 @@ RSpec.describe Publish::MetadataTransferService do
           expect(service).to have_received(:transfer_to_document_store).with(/<publicObject/, 'public')
           expect(service).to have_received(:publish_notify_on_success)
           expect(service).to have_received(:release_tags_on_success)
-          expect(service).to have_received(:republish_members!).with(no_args)
+          expect(service).to have_received(:republish_collection_members!).with(no_args)
         end
       end
 
@@ -159,6 +159,7 @@ RSpec.describe Publish::MetadataTransferService do
           allow(Settings.enabled_features).to receive(:publish_shelve).and_return(true)
           allow(service).to receive(:publish_shelve)
           allow(service).to receive(:release_tags_on_success)
+          allow(service).to receive(:republish_virtual_object_constituents!)
         end
 
         let(:access) { { view: 'citation-only', download: 'none' } }
@@ -167,6 +168,7 @@ RSpec.describe Publish::MetadataTransferService do
           service.publish
           expect(service).to have_received(:publish_shelve)
           expect(service).to have_received(:release_tags_on_success)
+          expect(service).to have_received(:republish_virtual_object_constituents!)
         end
       end
     end
@@ -286,6 +288,23 @@ RSpec.describe Publish::MetadataTransferService do
       publish_shelve
       expect(PurlFetcher::Client::PublishShelve).to have_received(:publish_and_shelve).with(cocina: Cocina::Models::DRO, filepath_map: { 'images/jt667tw2770_05_0001.jp2' =>
            'tmp/dor/workspace/bc/123/df/4567/bc123df4567/content/images/jt667tw2770_05_0001.jp2' })
+    end
+  end
+
+  describe '#republish_virtual_object_constituents' do
+    subject(:republish) { service.send(:republish_virtual_object_constituents!) }
+
+    let(:constituent_druid) { 'druid:bc123df4567' }
+
+    before do
+      allow(VirtualObjectService).to receive(:constituents).and_return([constituent_druid])
+      allow(PublishJob).to receive(:set).with(queue: :publish_low).and_return(fake_publish_job)
+    end
+
+    it 'republishes the virtual object constituents' do
+      republish
+      expect(VirtualObjectService).to have_received(:constituents).with(cocina_object, exclude_opened: true, only_published: true)
+      expect(fake_publish_job).to have_received(:perform_later).once.with(druid: constituent_druid, background_job_result: BackgroundJobResult.last, workflow:, log_success: false)
     end
   end
 

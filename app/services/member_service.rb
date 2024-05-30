@@ -37,11 +37,7 @@ class MemberService
     return members unless only_published
 
     members.select do |member|
-      workflow_client.lifecycle(druid: member.external_identifier, milestone_name: 'published', version: member.version).present?
+      WorkflowStateService.published?(druid: member.external_identifier, version: member.version)
     end
-  end
-
-  def workflow_client
-    @workflow_client ||= WorkflowClientFactory.build
   end
 end
