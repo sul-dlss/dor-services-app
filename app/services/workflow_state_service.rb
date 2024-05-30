@@ -11,6 +11,10 @@ class WorkflowStateService
     new(...).accessioned?
   end
 
+  def self.published?(...)
+    new(...).published?
+  end
+
   def initialize(druid:, version:)
     @druid = druid
     @version = version
@@ -51,6 +55,11 @@ class WorkflowStateService
     return true if workflow_client.lifecycle(druid:, milestone_name: 'accessioned')
 
     false
+  end
+
+  # @return [Boolean] true if the object has previously been published for the version.
+  def published?
+    workflow_client.lifecycle(druid:, milestone_name: 'published', version:).present?
   end
 
   private
