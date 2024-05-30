@@ -136,6 +136,8 @@ module Publish
     end
 
     def filepath_map
+      return {} unless public_cocina.dro?
+
       files_to_shelve = DigitalStacksDiffer.call(cocina_object: public_cocina)
       files_to_shelve.index_with do |filename|
         workspace_content_pathname.join(filename).to_s
