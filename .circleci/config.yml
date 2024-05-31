@@ -1,6 +1,416 @@
 version: 2.1
 orbs:
-  ruby-rails: sul-dlss/ruby-rails@4.2.0
+  ruby-rails:
+    description: |
+        An orb for building Ruby / Rails projects. It is optimized for the tooling / practices of the DLSS Infrastructure team.
+    display:
+        home_url: https://github.com/sul-dlss/ruby-rails-orb
+        source_url: https://github.com/sul-dlss/ruby-rails-orb
+    orbs:
+        browser-tools: circleci/browser-tools@1.4.3
+        docker: circleci/docker@2.6.0
+        node: circleci/node@5.1.0
+        ruby: circleci/ruby@2.1.0
+    commands:
+        gem-install-deps:
+            description: |
+                Install dependencies without using deployment mode (suitable for gems).
+            steps:
+                - run:
+                    command: bundle check || bundle install
+                    name: Bundle Install
+        rubocop-with-caching:
+            description: Runs rubocop with cache restore and save
+            parameters:
+                cache-version:
+                    default: v1
+                    description: A prefix to the cache key for versioning
+                    type: string
+                path:
+                    default: ../.cache/rubocop_cache
+                    description: The path of the rubocop cache
+                    type: string
+            steps:
+                - restore_cache:
+                    keys:
+                        - << parameters.cache-version >>-rubocop-cache-{{ checksum ".rubocop.yml" }}-{{ .Branch }}
+                        - << parameters.cache-version >>-rubocop-cache-{{ checksum ".rubocop.yml" }}-main
+                        - << parameters.cache-version >>-rubocop-cache-{{ checksum ".rubocop.yml" }}
+                - ruby/rubocop-check
+                - save_cache:
+                    key: << parameters.cache-version >>-rubocop-cache-{{ checksum ".rubocop.yml" }}-{{ .Branch }}-{{ epoch }}
+                    paths:
+                        - << parameters.path >>
+        test:
+            description: |
+                Runs rspec wrapped with code climate.
+            parameters:
+                cc-test-reporter-id:
+                    default: CC_TEST_REPORTER_ID
+                    description: |
+                        Name of environment variable storing your Code Climate reporter test id
+                    type: env_var_name
+            steps:
+                - run:
+                    command: |
+                        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+                        chmod +x ./cc-test-reporter
+                        ./cc-test-reporter before-build
+                    name: Setup Code Climate test-reporter
+                - run:
+                    command: gem install rspec_junit_formatter
+                    name: Install Rspec Junit Formatter gem
+                - ruby/rspec-test:
+                    rerun-fail: true
+                - run:
+                    command: ./cc-test-reporter after-build --coverage-input-type simplecov --exit-code $? -r $<< parameters.cc-test-reporter-id >>
+                    name: upload test coverage report to Code Climate
+        validate-api:
+            description: |
+                Validate openapi specification.
+            steps:
+                - run:
+                    command: |
+                        npm install openapi-enforcer-cli
+                        result=$(npx openapi-enforcer validate openapi.yml)
+                        [[ $result =~ "Document is valid" ]] && {
+                        echo "Validation good"
+                        exit 0
+                        } || {
+                        echo $result
+                        exit 1
+                        }
+                    name: Validate API specification
+    executors:
+        ruby:
+            description: |
+                Ruby-only executor.
+            docker:
+                - environment:
+                    BUNDLE_JOBS: "3"
+                    BUNDLE_RETRY: "3"
+                    PAGER: cat
+                    RAILS_ENV: test
+                    TZ: America/Los_Angeles
+                  image: cimg/ruby:<< parameters.ruby-tag >>-node
+            parameters:
+                ruby-tag:
+                    default: 3.3.1
+                    description: The `cimg/ruby` Docker image version tag.
+                    type: string
+        ruby-postgres:
+            description: |
+                Ruby and postgres-only executor.
+            docker:
+                - environment:
+                    BUNDLE_JOBS: "3"
+                    BUNDLE_RETRY: "3"
+                    PAGER: cat
+                    RAILS_ENV: test
+                    TZ: America/Los_Angeles
+                  image: cimg/ruby:<< parameters.ruby-tag >>-node
+                - environment:
+                    POSTGRES_PASSWORD: sekret
+                    POSTGRES_USER: postgres
+                  image: cimg/postgres:<< parameters.postgres-tag >>
+            parameters:
+                postgres-tag:
+                    default: "12.9"
+                    description: The `cimg/postgres` Docker image version tag.
+                    type: string
+                ruby-tag:
+                    default: 3.3.1
+                    description: The `cimg/ruby` Docker image version tag.
+                    type: string
+        ruby-postgres-redis:
+            description: |
+                Ruby, postgres, and redis-only executor.
+            docker:
+                - environment:
+                    BUNDLE_JOBS: "3"
+                    BUNDLE_RETRY: "3"
+                    PAGER: cat
+                    RAILS_ENV: test
+                    TZ: America/Los_Angeles
+                  image: cimg/ruby:<< parameters.ruby-tag >>-node
+                - environment:
+                    POSTGRES_PASSWORD: sekret
+                    POSTGRES_USER: postgres
+                  image: cimg/postgres:<< parameters.postgres-tag >>
+                - image: cimg/redis:6.2
+            parameters:
+                postgres-tag:
+                    default: "12.9"
+                    description: The `cimg/postgres` Docker image version tag.
+                    type: string
+                ruby-tag:
+                    default: 3.3.1
+                    description: The `cimg/ruby` Docker image version tag.
+                    type: string
+    jobs:
+        docker-publish:
+            description: |
+                Build and deploy a Docker image.
+            executor: docker/machine
+            parameters:
+                docker-password:
+                    default: DOCKER_PASS
+                    description: |
+                        Name of environment variable storing your Docker password
+                    type: env_var_name
+                docker-username:
+                    default: DOCKER_USER
+                    description: |
+                        Name of environment variable storing your Docker username
+                    type: env_var_name
+                dockerfile:
+                    default: Dockerfile
+                    description: Name of dockerfile to use, defaults to Dockerfile
+                    type: string
+                extra_build_args:
+                    default: ""
+                    description: |
+                        Extra flags to pass to docker build. For examples, see https://docs.docker.com/engine/reference/commandline/build
+                    type: string
+                image:
+                    description: Name of image to build
+                    type: string
+                tag:
+                    default: latest
+                    description: Comma-separated list of image tags, defaults to latest
+                    type: string
+            steps:
+                - checkout
+                - docker/check:
+                    docker-password: << parameters.docker-password >>
+                    docker-username: << parameters.docker-username >>
+                - docker/build:
+                    dockerfile: << parameters.dockerfile >>
+                    extra_build_args: << parameters.extra_build_args >>
+                    image: << parameters.image >>
+                    tag: << parameters.tag >>
+                - docker/push:
+                    image: << parameters.image >>
+                    tag: << parameters.tag >>
+        lint:
+            description: |
+                Perform rubocop linting.
+            executor: << parameters.executor >>
+            parameters:
+                executor:
+                    default: ruby
+                    description: Executor to use for this job, defaults to ruby executor
+                    type: executor
+            steps:
+                - checkout
+                - ruby/install-deps
+                - rubocop-with-caching
+        lint-erb:
+            description: |
+                Perform erb linting.
+            executor: << parameters.executor >>
+            parameters:
+                executor:
+                    default: ruby
+                    description: Executor to use for this job, defaults to ruby executor
+                    type: executor
+            steps:
+                - checkout
+                - ruby/install-deps
+                - run:
+                    command: bundle exec erblint --lint-all --format compact
+                    name: Lint ERBs
+        lint-gem:
+            description: |
+                Perform rubocop linting for gems
+            executor: << parameters.executor >>
+            parameters:
+                executor:
+                    default: ruby
+                    description: Executor to use for this job, defaults to ruby executor
+                    type: executor
+            steps:
+                - checkout
+                - gem-install-deps
+                - rubocop-with-caching
+        lint-js:
+            description: |
+                Perform javascript linting.
+            executor: << parameters.executor >>
+            parameters:
+                executor:
+                    default: node/default
+                    description: Executor to use for this job, defaults to node executor
+                    type: executor
+            steps:
+                - checkout
+                - node/install-packages:
+                    pkg-manager: yarn
+                - run:
+                    command: yarn run lint
+                    name: Lint JavaScript
+        test-gem:
+            description: |
+                Perform rspec testing without a database.
+            executor: << parameters.executor >>
+            parameters:
+                before-test:
+                    default: []
+                    description: Optional steps to run before running rspec
+                    type: steps
+                executor:
+                    default: ruby
+                    description: Executor to use for this job, defaults to ruby executor
+                    type: executor
+            steps:
+                - checkout
+                - gem-install-deps
+                - run:
+                    command: bundle add rspec_junit_formatter
+                    name: Install rspec_junit_formatter
+                - when:
+                    condition: << parameters.before-test >>
+                    steps: << parameters.before-test >>
+                - test
+        test-rails:
+            description: |
+                Perform rspec testing of a Rails application.
+            executor: << parameters.executor >>
+            parameters:
+                api-only:
+                    default: false
+                    description: True if this is an API only Rails app.
+                    type: boolean
+                before-test:
+                    default: []
+                    description: Optional steps to run before running rspec
+                    type: steps
+                db-prepare-command:
+                    default: db:test:prepare
+                    description: Database prepare command
+                    type: string
+                executor:
+                    default: ruby-postgres
+                    description: Executor to use for this job, defaults to ruby-postgres executor
+                    type: executor
+                install-chrome:
+                    default: false
+                    description: True to install Chrome
+                    type: boolean
+                install-firefox:
+                    default: false
+                    description: True to install Firefox
+                    type: boolean
+                install-java:
+                    default: false
+                    description: True to install Java
+                    type: boolean
+            steps:
+                - checkout
+                - ruby/install-deps
+                - when:
+                    condition: << parameters.install-chrome >>
+                    steps:
+                        - browser-tools/install-chrome
+                - when:
+                    condition: << parameters.install-firefox >>
+                    steps:
+                        - browser-tools/install-firefox
+                - when:
+                    condition: << parameters.install-java >>
+                    steps:
+                        - run:
+                            command: sudo apt install openjdk-11-jdk
+                            name: Install Java
+                - unless:
+                    condition: << parameters.api-only >>
+                    steps:
+                        - node/install-packages:
+                            pkg-manager: yarn
+                - run:
+                    command: dockerize -wait tcp://localhost:5432 -timeout 1m
+                    name: Wait for DB
+                - run:
+                    command: bin/rails << parameters.db-prepare-command >>
+                    name: Test prepare
+                - when:
+                    condition: << parameters.before-test >>
+                    steps: << parameters.before-test >>
+                - test
+        validate-api:
+            description: |
+                Validate openapi specification.
+            executor: node/default
+            steps:
+                - checkout
+                - validate-api
+    examples:
+        gem:
+            description: |
+                Gem.
+            usage:
+                version: "2.1"
+                orbs:
+                    ruby-rails: sul-dlss/ruby-rails@x.y.z
+                workflows:
+                    build:
+                        jobs:
+                            - ruby-rails/lint-gem:
+                                context: dlss
+                                name: lint
+                            - ruby-rails/test-gem:
+                                context: dlss
+                                name: test
+        rails_api:
+            description: |
+                Rails application (API).
+            usage:
+                version: "2.1"
+                orbs:
+                    ruby-rails: sul-dlss/ruby-rails@x.y.z
+                workflows:
+                    build:
+                        jobs:
+                            - ruby-rails/validate-api:
+                                name: validate
+                            - ruby-rails/lint:
+                                context: dlss
+                                name: lint
+                            - ruby-rails/test-rails:
+                                api-only: true
+                                context: dlss
+                                name: test
+                            - ruby-rails/docker-publish:
+                                context: dlss
+                                filters:
+                                    branches:
+                                        only:
+                                            - main
+                                image: suldlss/your-app
+                                name: publish-latest
+                                requires:
+                                    - validate
+                                    - lint
+                                    - test
+        rails_web:
+            description: |
+                Rails application (web).
+            usage:
+                version: "2.1"
+                orbs:
+                    ruby-rails: sul-dlss/ruby-rails@x.y.z
+                workflows:
+                    build:
+                        jobs:
+                            - ruby-rails/lint:
+                                context: dlss
+                                name: lint
+                            - ruby-rails/lint-erb
+                            - ruby-rails/lint-js
+                            - ruby-rails/test-rails:
+                                context: dlss
+                                install-chrome: true
+                                name: testg
 workflows:
   build:
     jobs:
@@ -19,7 +429,3 @@ workflows:
             - validate
             - lint
             - test
-          filters:
-            branches:
-              only:
-                - main
