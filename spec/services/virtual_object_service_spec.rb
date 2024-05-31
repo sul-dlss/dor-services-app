@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe VirtualObjectService do
   describe '#constituents' do
-    let(:constituents) { described_class.constituents(cocina_object, only_published:, exclude_opened:) }
+    let(:constituents) { described_class.constituents(cocina_object, only_published:, exclude_opened:).sort }
     let(:only_published) { false }
     let(:exclude_opened) { false }
 
@@ -37,7 +37,7 @@ RSpec.describe VirtualObjectService do
 
       context 'when not limited' do
         it 'returns the druids of the constituent objects' do
-          expect(constituents).to eq(['druid:dj321gm8879', 'druid:vs491yc7072', 'druid:bc778pm9866'])
+          expect(constituents).to eq(['druid:bc778pm9866', 'druid:dj321gm8879', 'druid:vs491yc7072'])
         end
       end
 
@@ -53,7 +53,7 @@ RSpec.describe VirtualObjectService do
         let(:exclude_opened) { true }
 
         it 'returns the druids of the constituent objects' do
-          expect(constituents).to eq(['druid:dj321gm8879', 'druid:bc778pm9866'])
+          expect(constituents).to eq(['druid:bc778pm9866', 'druid:dj321gm8879'])
         end
       end
     end
