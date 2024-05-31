@@ -15,11 +15,14 @@ workflows:
           context: dlss
           name: publish-latest
           image: suldlss/dor-services-app
+          executor:
+            name: docker/machine
+            image: ubuntu-2204:2023.02.1
           requires:
             - validate
             - lint
             - test
-          filters:
-            branches:
-              only:
-                - main
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
