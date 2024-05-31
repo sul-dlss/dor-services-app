@@ -11,7 +11,7 @@ module Publish
       @cocina = cocina
     end
 
-    # update the label to match what is in the description.title (used by sul-embed and searchworks_traject_indexer (via PublicXmlService))
+    # update the label to match what is in the description.title (used by sul-embed and searchworks_traject_indexer)
     # remove any file that is not published
     # remove any file_set that doesn't have at least one published file
     # remove partOfProject (similar to how we remove tags from identityMetadata)

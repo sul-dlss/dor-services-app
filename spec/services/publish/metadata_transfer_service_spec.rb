@@ -17,7 +17,6 @@ RSpec.describe Publish::MetadataTransferService do
   end
   let(:structural_contains) { [] }
   let(:cocina_collection) { build(:collection, id: 'druid:xh235dd9059') }
-  let(:thumbnail_service) { ThumbnailService.new(cocina_object) }
   let(:service) { described_class.new(cocina_object, workflow:) }
   let(:fake_publish_job) { class_double(PublishJob, perform_later: nil) }
 
@@ -25,7 +24,6 @@ RSpec.describe Publish::MetadataTransferService do
     before do
       allow(CocinaObjectStore).to receive(:find).with("druid:#{druid}").and_return(cocina_object)
       allow(CocinaObjectStore).to receive(:find).with('druid:xh235dd9059').and_return(cocina_collection) # collection object
-      allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
     end
 
     describe 'publishing a collection with members' do
@@ -89,29 +87,8 @@ RSpec.describe Publish::MetadataTransferService do
     end
 
     describe 'copies to the document cache' do
-      let(:mods) do
-        <<-EOXML
-          <mods:mods xmlns:mods="http://www.loc.gov/mods/v3"
-                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                     version="3.3"
-                     xsi:schemaLocation="http://www.loc.gov/mods/v3 http://cosimo.stanford.edu/standards/mods/v3/mods-3-3.xsd">
-            <mods:identifier type="local" displayLabel="SUL Resource ID">druid:bc123df4567</mods:identifier>
-          </mods:mods>
-        EOXML
-      end
-      let(:md_service) { instance_double(Publish::PublicDescMetadataService, to_xml: mods, ng_xml: Nokogiri::XML(mods)) }
-      let(:dc_service) { instance_double(Publish::DublinCoreService, ng_xml: Nokogiri::XML('<oai_dc:dc></oai_dc:dc>')) }
-      let(:public_service) { instance_double(Publish::PublicXmlService, to_xml: '<publicObject></publicObject>') }
-
-      before do
-        allow(Publish::DublinCoreService).to receive(:new).and_return(dc_service)
-        allow(Publish::PublicXmlService).to receive(:new).and_return(public_service)
-        allow(Publish::PublicDescMetadataService).to receive(:new).and_return(md_service)
-      end
-
       context 'with an item' do
         before do
-          allow(service).to receive(:transfer_to_document_store)
           allow(service).to receive(:transfer_to_document_store)
           allow(service).to receive(:publish_notify_on_success)
           allow(service).to receive(:release_tags_on_success)
@@ -119,11 +96,9 @@ RSpec.describe Publish::MetadataTransferService do
 
         let(:access) { { view: 'citation-only', download: 'none' } }
 
-        it 'identityMetadata, contentMetadata, rightsMetadata, generated dublin core, and public xml' do
+        it 'transfers public cocina' do
           service.publish
-          expect(Publish::PublicXmlService).to have_received(:new).with(public_cocina: Cocina::Models::DRO, thumbnail_service:)
           expect(service).to have_received(:transfer_to_document_store).with(/{"cocinaVersion"/, 'cocina.json')
-          expect(service).to have_received(:transfer_to_document_store).with(/<publicObject/, 'public')
           expect(service).to have_received(:publish_notify_on_success)
           expect(service).to have_received(:release_tags_on_success)
         end
@@ -138,7 +113,6 @@ RSpec.describe Publish::MetadataTransferService do
 
         before do
           allow(service).to receive(:transfer_to_document_store)
-          allow(service).to receive(:transfer_to_document_store)
           allow(service).to receive(:publish_notify_on_success)
           allow(service).to receive(:release_tags_on_success)
           allow(service).to receive(:republish_collection_members!)
@@ -147,7 +121,6 @@ RSpec.describe Publish::MetadataTransferService do
         it 'ignores missing data' do
           expect { service.publish }.not_to raise_error
           expect(service).to have_received(:transfer_to_document_store).with(/{"cocinaVersion"/, 'cocina.json')
-          expect(service).to have_received(:transfer_to_document_store).with(/<publicObject/, 'public')
           expect(service).to have_received(:publish_notify_on_success)
           expect(service).to have_received(:release_tags_on_success)
           expect(service).to have_received(:republish_collection_members!).with(no_args)
@@ -179,7 +152,6 @@ RSpec.describe Publish::MetadataTransferService do
 
     before do
       allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
-      allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
       allow(PurlFetcher::Client::LegacyPublish).to receive(:publish)
     end
 
@@ -209,7 +181,6 @@ RSpec.describe Publish::MetadataTransferService do
 
     before do
       allow(Settings.stacks).to receive_messages(local_document_cache_root: purl_root, local_workspace_root: workspace_root)
-      allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
     end
 
     after do
@@ -279,7 +250,6 @@ RSpec.describe Publish::MetadataTransferService do
 
     before do
       allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
-      allow(ThumbnailService).to receive(:new).and_return(thumbnail_service)
       allow(PurlFetcher::Client::PublishShelve).to receive(:publish_and_shelve)
       allow(DigitalStacksDiffer).to receive(:call).and_return(['images/jt667tw2770_05_0001.jp2'])
     end
