@@ -12,7 +12,6 @@ module Publish
     def initialize(cocina_object, workflow:)
       @cocina_object = cocina_object
       @workflow = workflow
-      @thumbnail_service = ThumbnailService.new(cocina_object)
     end
 
     # Appends contentMetadata file resources from the source objects to this object
@@ -43,10 +42,7 @@ module Publish
     end
 
     def transfer_metadata
-      public_nokogiri = PublicXmlService.new(public_cocina:,
-                                             thumbnail_service: @thumbnail_service)
       transfer_to_document_store(public_cocina.to_json, 'cocina.json')
-      transfer_to_document_store(public_nokogiri.to_xml, 'public')
     end
 
     # Clear out the document cache for this item
