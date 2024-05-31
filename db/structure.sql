@@ -36,43 +36,6 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: admin_policies; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.admin_policies (
-    id bigint NOT NULL,
-    external_identifier character varying NOT NULL,
-    cocina_version character varying NOT NULL,
-    label character varying NOT NULL,
-    version integer NOT NULL,
-    administrative jsonb NOT NULL,
-    description jsonb,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    lock integer
-);
-
-
---
--- Name: admin_policies_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.admin_policies_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: admin_policies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.admin_policies_id_seq OWNED BY public.admin_policies.id;
-
-
---
 -- Name: administrative_tags; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -149,88 +112,6 @@ ALTER SEQUENCE public.background_job_results_id_seq OWNED BY public.background_j
 
 
 --
--- Name: collections; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.collections (
-    id bigint NOT NULL,
-    external_identifier character varying NOT NULL,
-    cocina_version character varying NOT NULL,
-    collection_type character varying NOT NULL,
-    label character varying NOT NULL,
-    version integer NOT NULL,
-    access jsonb NOT NULL,
-    administrative jsonb NOT NULL,
-    description jsonb NOT NULL,
-    identification jsonb NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    lock integer
-);
-
-
---
--- Name: collections_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.collections_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: collections_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.collections_id_seq OWNED BY public.collections.id;
-
-
---
--- Name: dros; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.dros (
-    id bigint NOT NULL,
-    external_identifier character varying NOT NULL,
-    cocina_version character varying NOT NULL,
-    content_type character varying NOT NULL,
-    label character varying NOT NULL,
-    version integer NOT NULL,
-    access jsonb NOT NULL,
-    administrative jsonb NOT NULL,
-    description jsonb NOT NULL,
-    identification jsonb NOT NULL,
-    structural jsonb NOT NULL,
-    geographic jsonb,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    lock integer
-);
-
-
---
--- Name: dros_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.dros_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: dros_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.dros_id_seq OWNED BY public.dros.id;
-
-
---
 -- Name: events; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -260,39 +141,6 @@ CREATE SEQUENCE public.events_id_seq
 --
 
 ALTER SEQUENCE public.events_id_seq OWNED BY public.events.id;
-
-
---
--- Name: object_versions; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.object_versions (
-    id bigint NOT NULL,
-    druid character varying NOT NULL,
-    version integer NOT NULL,
-    description character varying NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: object_versions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.object_versions_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: object_versions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.object_versions_id_seq OWNED BY public.object_versions.id;
 
 
 --
@@ -519,13 +367,6 @@ ALTER SEQUENCE public.user_versions_id_seq OWNED BY public.user_versions.id;
 
 
 --
--- Name: admin_policies id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.admin_policies ALTER COLUMN id SET DEFAULT nextval('public.admin_policies_id_seq'::regclass);
-
-
---
 -- Name: administrative_tags id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -540,31 +381,10 @@ ALTER TABLE ONLY public.background_job_results ALTER COLUMN id SET DEFAULT nextv
 
 
 --
--- Name: collections id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.collections ALTER COLUMN id SET DEFAULT nextval('public.collections_id_seq'::regclass);
-
-
---
--- Name: dros id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.dros ALTER COLUMN id SET DEFAULT nextval('public.dros_id_seq'::regclass);
-
-
---
 -- Name: events id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.events_id_seq'::regclass);
-
-
---
--- Name: object_versions id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.object_versions ALTER COLUMN id SET DEFAULT nextval('public.object_versions_id_seq'::regclass);
 
 
 --
@@ -610,14 +430,6 @@ ALTER TABLE ONLY public.user_versions ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- Name: admin_policies admin_policies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.admin_policies
-    ADD CONSTRAINT admin_policies_pkey PRIMARY KEY (id);
-
-
---
 -- Name: administrative_tags administrative_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -642,35 +454,11 @@ ALTER TABLE ONLY public.background_job_results
 
 
 --
--- Name: collections collections_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.collections
-    ADD CONSTRAINT collections_pkey PRIMARY KEY (id);
-
-
---
--- Name: dros dros_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.dros
-    ADD CONSTRAINT dros_pkey PRIMARY KEY (id);
-
-
---
 -- Name: events events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.events
     ADD CONSTRAINT events_pkey PRIMARY KEY (id);
-
-
---
--- Name: object_versions object_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.object_versions
-    ADD CONSTRAINT object_versions_pkey PRIMARY KEY (id);
 
 
 --
@@ -730,20 +518,6 @@ ALTER TABLE ONLY public.user_versions
 
 
 --
--- Name: collection_source_id_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX collection_source_id_idx ON public.collections USING btree (((identification ->> 'sourceId'::text)));
-
-
---
--- Name: dro_source_id_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX dro_source_id_idx ON public.dros USING btree (((identification ->> 'sourceId'::text)));
-
-
---
 -- Name: idx_on_repository_object_id_version_fbf04ede4e; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -755,13 +529,6 @@ CREATE UNIQUE INDEX idx_on_repository_object_id_version_fbf04ede4e ON public.rep
 --
 
 CREATE INDEX "idx_on_structural_hasMemberOrders_0_members_c0444cb569" ON public.repository_object_versions USING gin ((((structural #> '{hasMemberOrders,0}'::text[]) -> 'members'::text)));
-
-
---
--- Name: index_admin_policies_on_external_identifier; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_admin_policies_on_external_identifier ON public.admin_policies USING btree (external_identifier);
 
 
 --
@@ -786,34 +553,6 @@ CREATE INDEX index_administrative_tags_on_tag_label_id ON public.administrative_
 
 
 --
--- Name: index_collections_on_external_identifier; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_collections_on_external_identifier ON public.collections USING btree (external_identifier);
-
-
---
--- Name: index_dros_on_external_identifier; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_dros_on_external_identifier ON public.dros USING btree (external_identifier);
-
-
---
--- Name: index_dros_on_structural_hasMemberOrders_0_members; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX "index_dros_on_structural_hasMemberOrders_0_members" ON public.dros USING gin ((((structural #> '{hasMemberOrders,0}'::text[]) -> 'members'::text)));
-
-
---
--- Name: index_dros_on_structural_isMemberOf; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX "index_dros_on_structural_isMemberOf" ON public.dros USING gin (((structural -> 'isMemberOf'::text)));
-
-
---
 -- Name: index_events_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -832,20 +571,6 @@ CREATE INDEX index_events_on_druid ON public.events USING btree (druid);
 --
 
 CREATE INDEX index_events_on_event_type ON public.events USING btree (event_type);
-
-
---
--- Name: index_object_versions_on_druid; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_object_versions_on_druid ON public.object_versions USING btree (druid);
-
-
---
--- Name: index_object_versions_on_druid_and_version; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_object_versions_on_druid_and_version ON public.object_versions USING btree (druid, version);
 
 
 --
@@ -994,6 +719,7 @@ ALTER TABLE ONLY public.repository_objects
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240531122304'),
 ('20240522142556'),
 ('20240430144139'),
 ('20240429201956'),
