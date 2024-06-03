@@ -66,8 +66,8 @@ def validate(clazz, sample_size, processes)
       Cocina::Models::Mapping::ToMods::Description.transform(cocina_obj.description, cocina_obj.externalIdentifier)
       [obj.external_identifier, nil]
     rescue StandardError => e
-      collection = if obj.is_a?(Dro)
-                     obj.structural['isMemberOf'].join(' ')
+      collection = if obj.object_type == 'dro'
+                     obj.head_version.structural['isMemberOf'].join(' ')
                    else
                      ''
                    end
@@ -76,8 +76,8 @@ def validate(clazz, sample_size, processes)
   end.flatten(1)
 end
 
-results = validate(Dro, options[:sample],
-                   options[:processes]) + validate(Collection, options[:sample], options[:processes]) + validate(AdminPolicy, options[:sample], options[:processes])
+results = validate(RepositoryObject.dros, options[:sample],
+                   options[:processes]) + validate(RepositoryObject.collections, options[:sample], options[:processes]) + validate(RepositoryObject.admin_policies, options[:sample], options[:processes])
 
 CSV.open('validate-cocina.csv', 'w') do |writer|
   writer << %w[druid type collection message]
