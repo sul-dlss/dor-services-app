@@ -39,30 +39,30 @@ def on_finish(results, progress_bar)
   progress_bar.advance(results.size)
 end
 
-def tty_progress_bar(count, clazz_name)
+def tty_progress_bar(count)
   TTY::ProgressBar.new(
-    "Validating #{clazz_name} [:bar] (:percent (:current/:total), rate: :rate/s, mean rate: :mean_rate/s, :elapsed total, ETA: :eta_time)",
+    'Validating [:bar] (:percent (:current/:total), rate: :rate/s, mean rate: :mean_rate/s, :elapsed total, ETA: :eta_time)',
     bar_format: :box,
     advance: num_for_progress_advance(count),
     total: count
   )
 end
 
-def validate(clazz, sample_size, processes)
+def validate(sample_size, processes)
   obj_ids = if sample_size
-              clazz.limit(sample_size).ids
+              RepositoryObject.limit(sample_size).ids
             else
-              clazz.ids
+              RepositoryObject.ids
             end
 
-  progress_bar = tty_progress_bar(obj_ids.size, clazz.name)
+  progress_bar = tty_progress_bar(obj_ids.size)
   progress_bar.start
 
   Parallel.map(obj_ids.each_slice(100),
                in_processes: processes,
                finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |slice_obj_ids|
-    clazz.find(slice_obj_ids).map do |obj|
-      cocina_obj = obj.to_cocina
+    RepositoryObject.find(slice_obj_ids).map do |obj|
+      cocina_obj = obj.head_version.to_cocina
       Cocina::Models::Mapping::ToMods::Description.transform(cocina_obj.description, cocina_obj.externalIdentifier)
       [obj.external_identifier, nil]
     rescue StandardError => e
@@ -71,17 +71,16 @@ def validate(clazz, sample_size, processes)
                    else
                      ''
                    end
-      [obj.external_identifier, clazz.name, collection, e.message]
+      [obj.external_identifier, obj.object_type, collection, e.message]
     end
   end.flatten(1)
 end
 
-results = validate(RepositoryObject.dros, options[:sample],
-                   options[:processes]) + validate(RepositoryObject.collections, options[:sample], options[:processes]) + validate(RepositoryObject.admin_policies, options[:sample], options[:processes])
+results = validate(options[:sample], options[:processes])
 
 CSV.open('validate-cocina.csv', 'w') do |writer|
   writer << %w[druid type collection message]
-  results.each do |(druid, class_name, collection, error)|
-    writer << [druid, class_name, collection, error] if error
+  results.each do |(druid, type, collection, error)|
+    writer << [druid, type, collection, error] if error
   end
 end
