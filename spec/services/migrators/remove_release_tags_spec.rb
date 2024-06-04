@@ -18,6 +18,7 @@ RSpec.describe Migrators::RemoveReleaseTags do
   describe 'migrate' do
     it 'removes releaseTags' do
       migrator.migrate
+      repository_object.reload
       expect(repository_object.head_version.administrative).to eq({ 'hasAdminPolicy' => 'druid:hy787xj5878' })
     end
   end
