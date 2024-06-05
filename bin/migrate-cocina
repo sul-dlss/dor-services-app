@@ -50,9 +50,9 @@ def on_finish(results, progress_bar)
   progress_bar.advance(results.size)
 end
 
-def tty_progress_bar(count, clazz_name, mode)
+def tty_progress_bar(count, mode)
   TTY::ProgressBar.new(
-    "#{mode} #{clazz_name} [:bar] (:percent (:current/:total), rate: :rate/s, mean rate: :mean_rate/s, :elapsed total, ETA: :eta_time)",
+    "#{mode} [:bar] (:percent (:current/:total), rate: :rate/s, mean rate: :mean_rate/s, :elapsed total, ETA: :eta_time)",
     bar_format: :box,
     advance: num_for_progress_advance(count),
     total: count
@@ -107,7 +107,7 @@ end
 def migrate(migrator_class:, sample:, processes:, mode:)
   druids = druids_for(migrator_class:, sample:)
 
-  progress_bar = tty_progress_bar(druids.length, ar_class.name, mode)
+  progress_bar = tty_progress_bar(druids.length, mode)
   progress_bar.start
 
   Parallel.map(druids.each_slice(100),
