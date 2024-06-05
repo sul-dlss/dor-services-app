@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Operations on release tags' do
   let(:tag) do
-    Cocina::Models::ReleaseTag.new(
+    Dor::ReleaseTag.new(
       to: 'Searchworks',
       what: 'self',
       date: '2014-08-30T01:06:28.000+00:00',

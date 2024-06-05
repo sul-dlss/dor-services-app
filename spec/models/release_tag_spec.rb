@@ -8,7 +8,7 @@ RSpec.describe ReleaseTag do
 
     let(:druid) { 'druid:bb004bn8654' }
     let(:date) { 2.days.ago.round }
-    let(:tag) { Cocina::Models::ReleaseTag.new(to: 'Earthworks', what: 'self', who: 'cathy', date: date.iso8601) }
+    let(:tag) { Dor::ReleaseTag.new(to: 'Earthworks', what: 'self', who: 'cathy', date: date.iso8601) }
 
     it 'builds a release tag' do
       expect(release_tag.created_at).to eq date

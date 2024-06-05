@@ -6,7 +6,7 @@ class ReleaseTagService
   #
   # Determine projects in which an item is released
   # @param cocina_object [Cocina::Models::DRO, Cocina::Models::Collection] the object to list release tags for
-  # @return [Array<Cocina::Models::ReleaseTag>]
+  # @return [Array<Dor::ReleaseTag>]
   def self.for_public_metadata(cocina_object:)
     new(cocina_object).for_public_metadata
   end
@@ -23,7 +23,7 @@ class ReleaseTagService
 
   # Creates ReleaseTag model objects.
   # @param cocina_object [Cocina::Models::DRO, Cocina::Models::Collection] the object to add to
-  # @param [Cocina::Models::ReleaseTag] tag
+  # @param [Dor::ReleaseTag] tag
   def self.create(cocina_object:, tag:)
     ReleaseTag.from_cocina(druid: cocina_object.externalIdentifier, tag:).save!
   end
@@ -35,7 +35,7 @@ class ReleaseTagService
   attr_reader :cocina_object
 
   # Determine projects in which an item is released
-  # @return [Array<Cocina::Models::ReleaseTag>]
+  # @return [Array<Dor::ReleaseTag>]
   def for_public_metadata
     # For each release target, item tags trump collection tags
     grouped_latest_tags(collection_tags).merge(grouped_latest_tags(item_tags)).values
