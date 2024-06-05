@@ -26,7 +26,7 @@ class ReleaseTagsController < ApplicationController
   private
 
   def new_tag
-    Cocina::Models::ReleaseTag.new(
+    Dor::ReleaseTag.new(
       to: params['to'],
       who: params['who'],
       what: params['what'],

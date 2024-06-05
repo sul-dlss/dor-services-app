@@ -12,7 +12,7 @@ class ReleaseTag < ApplicationRecord
   end
 
   def to_cocina
-    Cocina::Models::ReleaseTag.new(
+    Dor::ReleaseTag.new(
       to: released_to,
       release:,
       date: created_at.iso8601,

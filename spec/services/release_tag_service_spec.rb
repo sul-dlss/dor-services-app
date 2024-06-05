@@ -149,7 +149,7 @@ RSpec.describe ReleaseTagService do
   describe '.create' do
     subject(:create_tag) { described_class.create(cocina_object:, tag:) }
 
-    let(:tag) { Cocina::Models::ReleaseTag.new(to: 'Earthworks', what: 'self', who: 'cathy', date: 2.days.ago.iso8601) }
+    let(:tag) { Dor::ReleaseTag.new(to: 'Earthworks', what: 'self', who: 'cathy', date: 2.days.ago.iso8601) }
 
     let(:cocina_release_tags) do
       [
