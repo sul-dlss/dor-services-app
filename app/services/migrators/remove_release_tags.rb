@@ -10,7 +10,6 @@ module Migrators
     def migrate
       repository_object.versions.select { |version| version.administrative&.key?('releaseTags') }.each do |version|
         version.administrative.delete('releaseTags')
-        version.save!
       end
     end
   end
