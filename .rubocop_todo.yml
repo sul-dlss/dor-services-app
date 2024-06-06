@@ -57,6 +57,7 @@ RSpec/AnyInstance:
     - 'spec/services/preservation_ingest_service_spec.rb'
     - 'spec/services/publish/metadata_transfer_service_spec.rb'
     - 'spec/services/publish/public_xml_service_spec.rb'
+    - 'spec/services/was_shelving_service_spec.rb'
 
 # Offense count: 11
 RSpec/Be:
@@ -67,6 +68,7 @@ RSpec/Be:
 RSpec/BeforeAfterAll:
   Exclude:
     - 'spec/services/digital_stacks_service_spec.rb'
+    - 'spec/services/was_shelving_service_spec.rb'
 
 # Offense count: 6
 # Configuration parameters: Prefixes, AllowedPatterns.
@@ -90,6 +92,7 @@ RSpec/ExpectInHook:
 RSpec/InstanceVariable:
   Exclude:
     - 'spec/services/digital_stacks_service_spec.rb'
+    - 'spec/services/was_shelving_service_spec.rb'
 
 # Offense count: 14
 # Configuration parameters: EnforcedStyle.
