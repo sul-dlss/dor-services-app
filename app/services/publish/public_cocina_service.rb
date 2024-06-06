@@ -34,8 +34,8 @@ module Publish
     # and rewrite release tags with the tags from the collection.
     def build_administrative
       Cocina::Models::Administrative.new(cocina.administrative.to_h
-        .except(:partOfProject)
-        .merge(releaseTags: ReleaseTagService.for_public_metadata(cocina_object: cocina)))
+        .except(:partOfProject))
+        # ß.merge(releaseTags: ReleaseTagService.for_public_metadata(cocina_object: cocina)))
     end
 
     def build_structural
