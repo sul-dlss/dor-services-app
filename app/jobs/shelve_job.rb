@@ -21,7 +21,7 @@ class ShelveJob < ApplicationJob
     begin
       cocina_object = CocinaObjectStore.find(druid)
 
-      ShelvingService.shelve(cocina_object)
+      WasShelvingService.shelve(cocina_object)
 
       # Shelving can take a long time and can cause the database connections to get stale.
       # So reset to avoid: ActiveRecord::StatementInvalid: PG::ConnectionBad: PQconsumeInput() could not receive data from server: Connection timed out : BEGIN
