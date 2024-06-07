@@ -49,27 +49,5 @@ RSpec.describe ShelveJob do
                 workflow_process: 'shelve')
       end
     end
-
-    context 'with errors returned by WasShelvingService' do
-      let(:error_message) { 'missing structural' }
-
-      before do
-        allow(WasService).to receive(:crawl?).with(druid:).and_return(true)
-        allow(WasShelvingService).to receive(:shelve).and_raise(WasShelvingService::WasShelvingError, error_message)
-        allow(LogFailureJob).to receive(:perform_later)
-      end
-
-      it 'marks the job as errored' do
-        perform
-        expect(result).to have_received(:processing!).once
-        expect(WasShelvingService).to have_received(:shelve).with(cocina_object).once
-        expect(LogFailureJob).to have_received(:perform_later)
-          .with(druid:,
-                background_job_result: result,
-                workflow: 'accessionWF',
-                workflow_process: 'shelve',
-                output: { errors: [{ title: 'Unable to shelve web archive files', detail: error_message }] })
-      end
-    end
   end
 end

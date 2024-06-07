@@ -21,6 +21,7 @@ stacks:
   local_workspace_root: '/dor/workspace'
   local_stacks_root: '/stacks'
   local_document_cache_root: '/purl/document_cache'
+  web_archiving_stacks: '/web-archiving-stacks/data/collections'
 
 # Suri
 suri:

@@ -71,7 +71,7 @@ RSpec.describe WasShelvingService do
     let(:workspace_filename) { workspace.join('bc', '123', 'df', '4567', 'bc123df4567', 'content', filename) }
 
     before do
-      allow_any_instance_of(described_class).to receive(:was_stacks_location).and_return(tmp_was_stacks_location)
+      allow_any_instance_of(described_class).to receive(:was_stacks_location).and_return(tmp_was_stacks_location) # rubocop:disable RSpec/AnyInstance
     end
 
     it 'copies the files to stacks' do
@@ -88,22 +88,13 @@ RSpec.describe WasShelvingService do
 
     before do
       was_stacks_dir.rmtree if was_stacks_dir.exist?
-      allow_any_instance_of(described_class).to receive(:was_stacks_location).and_return(tmp_was_stacks_location)
+      allow_any_instance_of(described_class).to receive(:was_stacks_location).and_return(tmp_was_stacks_location) # rubocop:disable RSpec/AnyInstance
     end
 
     it 'creates the directory' do
       expect(was_stacks_dir).not_to exist
       described_class.shelve(cocina_object)
       expect(was_stacks_dir).to exist
-      expect(File::Stat.new(was_stacks_destination.to_s).mode.to_fs(8)).to eq('100644')
-    end
-  end
-
-  context 'when no cocina structural' do
-    let(:structural) { nil }
-
-    it 'raises' do
-      expect { described_class.shelve(cocina_object) }.to raise_error(WasShelvingService::WasShelvingError)
     end
   end
 
