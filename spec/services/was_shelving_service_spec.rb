@@ -4,7 +4,6 @@ require 'rails_helper'
 
 RSpec.describe WasShelvingService do
   let(:druid) { 'druid:bc123df4567' }
-  let(:workflows) { %w[accessionWF registrationWF wasCrawlPreassemblyWF] }
   let(:cocina_object) do
     instance_double(Cocina::Models::DRO, externalIdentifier: druid, structural:, type: Cocina::Models::ObjectType.webarchive_binary)
   end
