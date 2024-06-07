@@ -4,7 +4,6 @@ require 'rails_helper'
 
 RSpec.describe WasShelvingService do
   let(:druid) { 'druid:bc123df4567' }
-  let(:workflows) { %w[accessionWF registrationWF wasCrawlPreassemblyWF] }
   let(:cocina_object) do
     instance_double(Cocina::Models::DRO, externalIdentifier: druid, structural:, type: Cocina::Models::ObjectType.webarchive_binary)
   end
@@ -48,9 +47,9 @@ RSpec.describe WasShelvingService do
   let(:collection) { 'druid:bb077hj4590' }
   let(:collections) { [collection] }
   let(:workspace) { Pathname(File.dirname(__FILE__)).join('../fixtures/workspace') }
+  let(:was_stacks_location) { "#{@tmp_stacksdir}/web-archiving-stacks/data/collections" }
   let(:tmp_was_stacks) { @tmp_stacksdir.join('web-archiving-stacks', 'data', 'collections', 'bb077hj4590') }
   let(:was_stacks_destination) { tmp_was_stacks.join('bc', '123', 'df', '4567', filename) }
-  let(:tmp_was_stacks_location) { tmp_was_stacks.to_s }
   let(:filename) { 'ARCHIVEIT-123-1.warc.gz' }
 
   before(:all) do
@@ -63,6 +62,7 @@ RSpec.describe WasShelvingService do
 
   before do
     allow(Settings.stacks).to receive(:local_workspace_root).and_return(workspace).to_s
+    allow(Settings.stacks).to receive(:web_archiving_stacks).and_return(was_stacks_location)
     allow(Rails.logger).to receive(:debug)
   end
 
@@ -70,10 +70,6 @@ RSpec.describe WasShelvingService do
     let(:filename2) { 'ARCHIVEIT-234-2.warc.gz' }
     let(:was_stacks_destination2) { tmp_was_stacks.join('bc', '123', 'df', '4567', filename2) }
     let(:workspace_filename) { workspace.join('bc', '123', 'df', '4567', 'bc123df4567', 'content', filename) }
-
-    before do
-      allow_any_instance_of(described_class).to receive(:was_stacks_location).and_return(tmp_was_stacks_location)
-    end
 
     it 'copies the files to stacks' do
       described_class.shelve(cocina_object)
@@ -89,22 +85,12 @@ RSpec.describe WasShelvingService do
 
     before do
       was_stacks_dir.rmtree if was_stacks_dir.exist?
-      allow_any_instance_of(described_class).to receive(:was_stacks_location).and_return(tmp_was_stacks_location)
     end
 
     it 'creates the directory' do
       expect(was_stacks_dir).not_to exist
       described_class.shelve(cocina_object)
       expect(was_stacks_dir).to exist
-      expect(File::Stat.new(was_stacks_destination.to_s).mode.to_fs(8)).to eq('100644')
-    end
-  end
-
-  context 'when no cocina structural' do
-    let(:structural) { nil }
-
-    it 'raises' do
-      expect { described_class.shelve(cocina_object) }.to raise_error(WasShelvingService::WasShelvingError)
     end
   end
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Move files to Stacks in the background
+# Move web archive files to web archiving stacks in the background
 class ShelveJob < ApplicationJob
   queue_as :default
 
@@ -9,8 +9,7 @@ class ShelveJob < ApplicationJob
   def perform(druid:, background_job_result:)
     background_job_result.processing!
 
-    # Skip if publish_shelve is enabled
-    # However, web archive crawls still need to be shelved.
+    # Shelve web archive files to web archiving stacks
     unless WasService.crawl?(druid:)
       return LogSuccessJob.perform_later(druid:,
                                          workflow: 'accessionWF',
@@ -27,12 +26,13 @@ class ShelveJob < ApplicationJob
       # So reset to avoid: ActiveRecord::StatementInvalid: PG::ConnectionBad: PQconsumeInput() could not receive data from server: Connection timed out : BEGIN
       ActiveRecord::Base.connection_handler.clear_active_connections!
       EventFactory.create(druid:, event_type: 'shelving_complete', data: { background_job_result_id: background_job_result.id })
-    rescue LegacyShelvableFilesStager::FileNotFound => e
+    rescue StandardError => e
+      Honeybadger.notify('Error shelving', error_message: e.message, context: { druid: })
       return LogFailureJob.perform_later(druid:,
                                          background_job_result:,
                                          workflow: 'accessionWF',
                                          workflow_process: 'shelve',
-                                         output: { errors: [{ title: 'Unable to shelve files', detail: e.message }] })
+                                         output: { errors: [{ title: 'Unable to shelve web archive files', detail: e.message }] })
     end
 
     LogSuccessJob.perform_later(druid:,
