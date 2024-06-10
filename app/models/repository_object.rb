@@ -81,6 +81,7 @@ class RepositoryObject < ApplicationRecord
   # @param [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] cocina_object a Cocina
   #   model instance, either a DRO, collection, or APO.
   def update_opened_version_from(cocina_object:)
+    Honeybadger.context(druid: cocina_object.externalIdentifier)
     opened_version.update!(**RepositoryObjectVersion.to_model_hash(cocina_object))
     reload # Syncs up head_version and opened_version
   end

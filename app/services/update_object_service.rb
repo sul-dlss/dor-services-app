@@ -32,6 +32,7 @@ class UpdateObjectService
     # If this is a collection and the title has changed, then reindex the children.
     update_items = need_to_update_members?
 
+    Honeybadger.context(druid: cocina_object.externalIdentifier)
     updated_cocina_object_with_metadata = persist!
 
     EventFactory.create(druid:, event_type: 'update', data: { success: true, request: cocina_object_without_metadata.to_h })
