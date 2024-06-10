@@ -9,7 +9,7 @@ module Migrators
 
     def migrate
       repository_object.versions.select { |version| version.administrative&.key?('releaseTags') }.each do |version|
-        next unless WorkflowStateService.new(druid: repository_object.external_identifier, version: version.version).accessioned?
+        next unless VersionService.can_open?(druid: repository_object.external_identifier, version: version.version)
 
         puts "#{repository_object.external_identifier} - Removing release tags from version #{version.version}" # rubocop:disable Rails/Output
         version.administrative.delete('releaseTags')
