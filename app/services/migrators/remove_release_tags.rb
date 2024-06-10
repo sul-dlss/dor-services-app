@@ -9,6 +9,7 @@ module Migrators
 
     def migrate
       repository_object.versions.select { |version| version.administrative&.key?('releaseTags') }.each do |version|
+        puts "#{repository_object.external_identifier} - Removing release tags from version #{version.version}" # rubocop:disable Rails/Output
         version.administrative.delete('releaseTags')
       end
     end
