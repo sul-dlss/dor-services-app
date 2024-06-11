@@ -84,6 +84,8 @@ def perform_migrate(migrator_class:, obj:, mode:)
   current_object_version = obj.head_version.version
   obj = open_version(cocina_object: obj, version_description: migrator.version_description, mode:) if migrator.version?
 
+  # For active record migrations, we need to wrap the migration in a transaction and save the object instead of
+  # opening/closing versions
   if mode == :commit
     obj.transaction do
       migrator.migrate
