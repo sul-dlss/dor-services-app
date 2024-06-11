@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copy shelve-able web archives files into web archiving stacks
+# Copy shelvable web archives files into web archiving stacks
 class WasShelvingService
   class WasShelvingError < StandardError; end
 
@@ -9,8 +9,6 @@ class WasShelvingService
   end
 
   def initialize(cocina_object)
-    raise StandardError, 'Missing configuration Settings.stacks.local_workspace_root' if Settings.stacks.local_workspace_root.nil?
-
     @cocina_object = cocina_object
     @druid = cocina_object.externalIdentifier
   end
@@ -19,7 +17,7 @@ class WasShelvingService
 
   def shelve
     # get the list of shelvable files from cocina and shelve those that are available in the workspace
-    files_for.each do |file|
+    filenames.each do |file|
       workspace_pathname = workspace_content_dir.join(file)
       was_stacks_pathname = was_stacks_dir.join(file)
       copy_file(workspace_pathname, was_stacks_pathname) if File.exist?(workspace_pathname)
@@ -28,8 +26,10 @@ class WasShelvingService
 
   def was_stacks_dir
     # determine destination web archiving stacks directory
-    stacks_druid = DruidTools::StacksDruid.new(druid, was_stacks_location)
-    Pathname(stacks_druid.path)
+    @was_stacks_dir ||= begin
+      stacks_druid = DruidTools::StacksDruid.new(druid, was_stacks_location)
+      Pathname(stacks_druid.path)
+    end
   end
 
   def was_stacks_location
@@ -42,11 +42,13 @@ class WasShelvingService
 
   def workspace_content_dir
     # determine current workspace location of object's content file
-    workspace_druid = DruidTools::Druid.new(druid, Settings.stacks.local_workspace_root)
-    Pathname(workspace_druid.content_dir(true))
+    @workspace_content_dir ||= begin
+      workspace_druid = DruidTools::Druid.new(druid, Settings.stacks.local_workspace_root)
+      Pathname(workspace_druid.content_dir(true))
+    end
   end
 
-  def files_for
+  def filenames
     [].tap do |files_list|
       cocina_object.structural.contains.each do |file_set|
         file_set.structural.contains.each do |file|
