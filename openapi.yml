@@ -3356,6 +3356,7 @@ components:
         - open
         - openable
         - assembling
+        - text_extracting
         - accessioning
         - closeable
       properties:
@@ -3371,6 +3372,9 @@ components:
         assembling:
           type: boolean
           description: whether there is an active assembly workflow (not just assemblyWF)
+        text_extracting:
+          type: boolean
+          description: whether there is an active text extraction workflow
         accessioning:
           type: boolean
           description: whether there is an active accessioningWF workflow

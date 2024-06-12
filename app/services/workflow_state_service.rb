@@ -31,6 +31,14 @@ class WorkflowStateService
       active_workflow?(workflow: 'gisAssemblyWF')
   end
 
+  # Checks if the latest version has any text extraction workflows with incomplete steps.
+  # @return [Boolean] true if object is currently having text extracted
+  def text_extracting?
+    # Omitting the last step for these workflows since the last step is closing the version.
+    # NOTE: we can add captioning workflows here if/when they are created
+    active_workflow_except_step?(workflow: 'ocrWF', process: 'end-ocr')
+  end
+
   # The following methods were extracted from VersionService.
   # As such, they may not represent the current best practice for determining workflow state
   # and will probably be subject to further refactoring or removal.

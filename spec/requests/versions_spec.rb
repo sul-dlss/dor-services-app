@@ -188,7 +188,7 @@ RSpec.describe 'Operations regarding object versions' do
 
     describe '/versions/status' do
       let(:version_service) { instance_double(VersionService, can_open?: false, can_close?: true, open?: true) }
-      let(:workflow_state_service) { instance_double(WorkflowStateService, assembling?: true, accessioning?: false) }
+      let(:workflow_state_service) { instance_double(WorkflowStateService, text_extracting?: false, assembling?: true, accessioning?: false) }
 
       before do
         allow(VersionService).to receive(:new).and_return(version_service)
@@ -203,6 +203,7 @@ RSpec.describe 'Operations regarding object versions' do
                                                                         versionId: 1,
                                                                         open: true,
                                                                         openable: false,
+                                                                        text_extracting: false,
                                                                         assembling: true,
                                                                         accessioning: false,
                                                                         closeable: true

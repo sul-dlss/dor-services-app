@@ -50,6 +50,7 @@ class VersionsController < ApplicationController
       open: version_service.open?,
       openable: version_service.can_open?,
       assembling: workflow_state_service.assembling?,
+      text_extracting: workflow_state_service.text_extracting?,
       accessioning: workflow_state_service.accessioning?,
       closeable: version_service.can_close?
     }

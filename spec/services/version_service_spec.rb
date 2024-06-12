@@ -230,7 +230,7 @@ RSpec.describe VersionService do
 
     context 'when description and user_name are passed in' do
       before do
-        allow(workflow_state_service).to receive_messages(accessioning?: false, assembling?: false)
+        allow(workflow_state_service).to receive_messages(accessioning?: false, text_extracting?: false, assembling?: false)
       end
 
       context 'when user_version is none' do
@@ -354,7 +354,7 @@ RSpec.describe VersionService do
       let(:start_accession) { false }
 
       before do
-        allow(workflow_state_service).to receive_messages(accessioning?: false, assembling?: false)
+        allow(workflow_state_service).to receive_messages(accessioning?: false, text_extracting?: false, assembling?: false)
       end
 
       it 'passes the correct value of create_accession_wf' do
@@ -376,7 +376,7 @@ RSpec.describe VersionService do
 
     context 'when the object has an active accesssionWF' do
       before do
-        allow(workflow_state_service).to receive_messages(assembling?: false, accessioning?: true)
+        allow(workflow_state_service).to receive_messages(assembling?: false, text_extracting?: false, accessioning?: true)
       end
 
       it 'raises an exception' do
@@ -397,7 +397,7 @@ RSpec.describe VersionService do
 
     context 'when the object has no assemblyWF' do
       before do
-        allow(workflow_state_service).to receive_messages(assembling?: false, accessioning?: false)
+        allow(workflow_state_service).to receive_messages(assembling?: false, text_extracting?: false, accessioning?: false)
       end
 
       it 'creates the accessioningWF' do
@@ -412,7 +412,7 @@ RSpec.describe VersionService do
       let(:description) { nil }
 
       before do
-        allow(workflow_state_service).to receive_messages(assembling?: false, accessioning?: false)
+        allow(workflow_state_service).to receive_messages(assembling?: false, text_extracting?: false, accessioning?: false)
       end
 
       it 'closes the object version using existing signficance and description' do
@@ -436,7 +436,7 @@ RSpec.describe VersionService do
       let!(:repository_object) { create(:repository_object, external_identifier: druid) }
 
       before do
-        allow(workflow_state_service).to receive_messages(accessioning?: false, assembling?: false)
+        allow(workflow_state_service).to receive_messages(accessioning?: false, text_extracting?: false, assembling?: false)
       end
 
       it 'returns true' do
@@ -452,7 +452,7 @@ RSpec.describe VersionService do
 
     context 'when the object has an active accesssionWF' do
       before do
-        allow(workflow_state_service).to receive_messages(assembling?: false, accessioning?: true)
+        allow(workflow_state_service).to receive_messages(assembling?: false, text_extracting?: false, accessioning?: true)
       end
 
       it 'returns false' do
@@ -462,7 +462,17 @@ RSpec.describe VersionService do
 
     context 'when the object has an active assemblyWF' do
       before do
-        allow(workflow_state_service).to receive_messages(assembling?: true)
+        allow(workflow_state_service).to receive_messages(assembling?: true, text_extracting?: false)
+      end
+
+      it 'returns false' do
+        expect(can_close).to be false
+      end
+    end
+
+    context 'when the object has an active text extraction workflow' do
+      before do
+        allow(workflow_state_service).to receive_messages(assembling?: false, text_extracting?: true)
       end
 
       it 'returns false' do

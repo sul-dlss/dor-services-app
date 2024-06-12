@@ -193,4 +193,51 @@ RSpec.describe WorkflowStateService do
       end
     end
   end
+
+  describe '.text_extracting?' do
+    let(:ocr_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
+    let(:process) { instance_double(Dor::Workflow::Response::Process, name: 'arbitrary') }
+
+    before do
+      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'ocrWF').and_return(ocr_wf_response)
+    end
+
+    context 'when there is an active ocrWF' do
+      before do
+        allow(ocr_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [process, process])
+      end
+
+      it 'returns true' do
+        expect(workflow_state).to be_text_extracting
+      end
+    end
+
+    context 'when only ignored steps are incomplete' do
+      let(:end_ocr_process) { instance_double(Dor::Workflow::Response::Process, name: 'end-ocr') }
+
+      before do
+        allow(ocr_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [end_ocr_process])
+      end
+
+      it 'returns false' do
+        expect(workflow_state).not_to be_text_extracting
+      end
+    end
+
+    context 'when there are no incomplete steps' do
+      before do
+        allow(ocr_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [])
+      end
+
+      it 'returns false' do
+        expect(workflow_state).not_to be_text_extracting
+      end
+    end
+
+    context 'when there are no text extraction workflows' do
+      it 'returns false' do
+        expect(workflow_state).not_to be_text_extracting
+      end
+    end
+  end
 end
