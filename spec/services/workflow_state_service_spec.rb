@@ -84,6 +84,7 @@ RSpec.describe WorkflowStateService do
     let(:was_seed_preassembly_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
     let(:gis_delivery_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
     let(:gis_assembly_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
+    let(:ocr_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
     let(:process) { instance_double(Dor::Workflow::Response::Process, name: 'arbitrary') }
 
     before do
@@ -92,6 +93,7 @@ RSpec.describe WorkflowStateService do
       allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'wasSeedPreassemblyWF').and_return(was_seed_preassembly_wf_response)
       allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'gisDeliveryWF').and_return(gis_delivery_wf_response)
       allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'gisAssemblyWF').and_return(gis_assembly_wf_response)
+      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'ocrWF').and_return(ocr_wf_response)
     end
 
     context 'when there is an active assemblyWF' do
@@ -156,17 +158,29 @@ RSpec.describe WorkflowStateService do
       end
     end
 
+    context 'when there is an active ocrWF' do
+      before do
+        allow(ocr_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [process, process])
+      end
+
+      it 'returns true' do
+        expect(workflow_state).to be_assembling
+      end
+    end
+
     context 'when only ignored steps are incomplete' do
       let(:accessioning_initiate_process) { instance_double(Dor::Workflow::Response::Process, name: 'accessioning-initiate') }
       let(:end_was_crawl_process) { instance_double(Dor::Workflow::Response::Process, name: 'end-was-crawl-preassembly') }
       let(:end_was_seed_process) { instance_double(Dor::Workflow::Response::Process, name: 'end-was-seed-preassembly') }
       let(:start_accession_process) { instance_double(Dor::Workflow::Response::Process, name: 'start-accession-workflow') }
+      let(:end_ocr_process) { instance_double(Dor::Workflow::Response::Process, name: 'end-ocr') }
 
       before do
         allow(assembly_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [accessioning_initiate_process])
         allow(was_crawl_preassembly_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [end_was_crawl_process])
         allow(was_seed_preassembly_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [end_was_seed_process])
         allow(gis_delivery_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [start_accession_process])
+        allow(ocr_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [end_ocr_process])
       end
 
       it 'returns false' do
@@ -180,6 +194,7 @@ RSpec.describe WorkflowStateService do
         allow(was_crawl_preassembly_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [])
         allow(was_seed_preassembly_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [])
         allow(gis_delivery_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [])
+        allow(ocr_wf_response).to receive_messages(active_for?: true, incomplete_processes_for: [])
       end
 
       it 'returns false' do
