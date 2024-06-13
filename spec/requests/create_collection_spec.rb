@@ -25,7 +25,7 @@ RSpec.describe 'Create object' do
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.collection}",
           "label":"#{label}","version":1,"access":{"view":"world"},
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"value":"#{title}"}]},
           "identification":#{identification.to_json}}
       JSON
@@ -97,7 +97,7 @@ RSpec.describe 'Create object' do
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.collection}",
           "label":"#{label}","version":1,"access":{"view":"world"},
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Hydrus"},
+          "administrative":{"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Hydrus"},
           "identification":{"sourceId":"hydrus:collection-456"},
           "description":{"title":[{"value":"#{title}"}]}
         }

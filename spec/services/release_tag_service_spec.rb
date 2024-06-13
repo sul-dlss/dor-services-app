@@ -7,15 +7,13 @@ RSpec.describe ReleaseTagService do
   let(:cocina_object) do
     build(:dro, id: druid, collection_ids:).new(
       administrative: {
-        hasAdminPolicy: apo_id,
-        releaseTags: cocina_release_tags
+        hasAdminPolicy: apo_id
       }
     )
   end
   let(:apo_id) { 'druid:qv648vd4392' }
   let(:collection_druid) { 'druid:xh235dd9059' }
   let(:druid) { 'druid:bb004bn8654' }
-  let(:cocina_release_tags) { [] }
   let(:collection_ids) { [] }
 
   describe '.for_public_metadata' do

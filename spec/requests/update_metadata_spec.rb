@@ -58,7 +58,7 @@ RSpec.describe 'Update object' do
           "copyright":"All rights reserved unless otherwise indicated.",
           "useAndReproductionStatement":"Property rights reside with the repository..."
         },
-        "administrative":{"releaseTags":[],"hasAdminPolicy":"#{apo_druid}"},
+        "administrative":{"hasAdminPolicy":"#{apo_druid}"},
         "description":#{description.to_json},
         "identification":#{identification.to_json},
         "structural":{
@@ -124,7 +124,7 @@ RSpec.describe 'Update object' do
             "copyright":"All rights reserved unless otherwise indicated.",
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "description":#{description.to_json},
           "identification":#{identification.to_json},
           "structural":{
@@ -239,7 +239,7 @@ RSpec.describe 'Update object' do
             "copyright":"All rights reserved unless otherwise indicated.",
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "description":{
             "title":[{"value":"#{title}"}],
             "purl":"#{purl}"
@@ -433,7 +433,7 @@ RSpec.describe 'Update object' do
               "copyright":"All rights reserved unless otherwise indicated.",
               "useAndReproductionStatement":"Property rights reside with the repository..."
             },
-            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+            "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
             "description":{
               "title":[{"value":"#{title}"}],
               "purl":"#{purl}"
@@ -560,7 +560,7 @@ RSpec.describe 'Update object' do
               "copyright":"All rights reserved unless otherwise indicated.",
               "useAndReproductionStatement":"Property rights reside with the repository..."
             },
-            "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+            "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
             "description":{
               "title":[{"value":"#{title}"}],
               "purl":"#{purl}"
@@ -607,7 +607,7 @@ RSpec.describe 'Update object' do
             "view":"world",
             "download":"world"
           },
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "description":{
             "title":[{"value":"#{title}"}],
             "purl":"#{purl}"
@@ -661,7 +661,7 @@ RSpec.describe 'Update object' do
           "label":"#{label}","version":1,
           "access":{},
           "identification":#{identification.to_json},
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "description":{
             "title":[{"value":"#{title}"}],
             "purl":"#{purl}"
@@ -817,7 +817,7 @@ RSpec.describe 'Update object' do
           "access":{"view":"stanford","download":"stanford",
             "embargo":{"view":"world","download":"world","releaseDate":"2020-02-29T07:00:00.000+00:00"}
           },
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"#{apo_druid}"},
+          "administrative":{"hasAdminPolicy":"#{apo_druid}"},
           "description":{
             "title":[{"value":"This is my title"}],
             "purl":"#{purl}"

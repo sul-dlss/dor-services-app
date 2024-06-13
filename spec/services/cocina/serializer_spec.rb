@@ -90,8 +90,7 @@ RSpec.describe Cocina::Serializer do
         license: 'https://creativecommons.org/publicdomain/zero/1.0/legalcode'
       },
       administrative: {
-        hasAdminPolicy: 'druid:zw306xn5593',
-        releaseTags: []
+        hasAdminPolicy: 'druid:zw306xn5593'
       },
       description: {
         title: [{

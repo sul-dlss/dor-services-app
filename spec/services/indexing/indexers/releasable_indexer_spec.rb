@@ -5,8 +5,7 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
   let(:cocina) { build(:dro).new(administrative:) }
   let(:administrative) do
     {
-      hasAdminPolicy: apo_id,
-      releaseTags: release_tags
+      hasAdminPolicy: apo_id
     }
   end
   let(:apo_id) { 'druid:gf999hb9999' }
@@ -86,10 +85,7 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
     context 'with a parent collection' do
       let(:parent_collections) { [collection] }
       let(:collection) do
-        instance_double(Cocina::Models::Collection, externalIdentifier: collection_druid, administrative: collection_administrative)
-      end
-      let(:collection_administrative) do
-        instance_double(Cocina::Models::Administrative, releaseTags: collection_release_tags)
+        instance_double(Cocina::Models::Collection, externalIdentifier: collection_druid)
       end
       let(:collection_druid) { 'druid:bc123fg4567' }
       let(:collection_release_tags) { [] }

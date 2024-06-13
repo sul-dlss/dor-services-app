@@ -1484,11 +1484,6 @@ components:
       properties:
         hasAdminPolicy:
           $ref: "#/components/schemas/Druid"
-        releaseTags:
-          description: Tags for release
-          type: array
-          items:
-            $ref: "#/components/schemas/ReleaseTag"
       required:
         - hasAdminPolicy
     AdminPolicyAccessTemplate:

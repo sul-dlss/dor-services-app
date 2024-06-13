@@ -30,16 +30,7 @@ RSpec.describe 'Get the object' do
               useAndReproductionStatement: 'Property rights reside with the repository...'
             },
             administrative: {
-              hasAdminPolicy: 'druid:df123cd4567',
-              releaseTags: [
-                {
-                  to: 'Searchworks',
-                  what: 'self',
-                  date: '2014-08-30T01:06:28.000+00:00',
-                  who: 'petucket',
-                  release: true
-                }
-              ]
+              hasAdminPolicy: 'druid:df123cd4567'
             },
             description: {
               title: [
@@ -74,16 +65,7 @@ RSpec.describe 'Get the object' do
             useAndReproductionStatement: 'Property rights reside with the repository...'
           },
           administrative: {
-            hasAdminPolicy: 'druid:df123cd4567',
-            releaseTags: [
-              {
-                to: 'Searchworks',
-                what: 'self',
-                date: '2014-08-30T01:06:28.000+00:00',
-                who: 'petucket',
-                release: true
-              }
-            ]
+            hasAdminPolicy: 'druid:df123cd4567'
           },
           description: {
             title: [

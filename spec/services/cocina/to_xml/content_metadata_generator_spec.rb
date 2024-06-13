@@ -159,7 +159,7 @@ RSpec.describe Cocina::ToXml::ContentMetadataGenerator do
     <<~JSON
       { "type":"#{object_type}",
         "label":"The object label","version":1,"access":{"view":"world","download":"world"},
-        "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+        "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
         "description":{"title":[{"status":"primary","value":"the object title"}]},
         "identification":{"sourceId":"sul:9999999"},
         "structural":#{structural.to_json}}
@@ -688,7 +688,7 @@ RSpec.describe Cocina::ToXml::ContentMetadataGenerator do
         { "externalIdentifier":"druid:bc123df5678",
           "type":"#{object_type}",
           "label":"The object label","version":1,"access":{"view":"world","download":"world"},
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "description":{
             "title":[{"status":"primary","value":"the object title"}],
             "purl":"https://purl.stanford.edu/bc123df5678"
@@ -767,7 +767,7 @@ RSpec.describe Cocina::ToXml::ContentMetadataGenerator do
         { "externalIdentifier":"druid:bc123df5678",
           "type":"#{object_type}",
           "label":"The object label","version":1,"access":{"view":"world","download":"world"},
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"druid:dd999df4567"},
+          "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "description":{
             "title":[{"status":"primary","value":"the object title"}],
             "purl":"https://purl.stanford.edu/bc123df5678"
