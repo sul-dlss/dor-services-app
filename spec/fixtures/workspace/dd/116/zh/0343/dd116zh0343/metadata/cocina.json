@@ -9,9 +9,6 @@
     "download": "world"
   },
   "administrative": {
-    "hasAdminPolicy": "druid:hy787xj5878",
-    "releaseTags": [
-
-    ]
+    "hasAdminPolicy": "druid:hy787xj5878"
   }
 }

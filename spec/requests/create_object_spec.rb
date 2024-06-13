@@ -60,7 +60,7 @@ RSpec.describe 'Create object' do
             "copyright":"All rights reserved unless otherwise indicated.",
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"#{admin_policy_id}","partOfProject":"Google Books"},
+          "administrative":{"hasAdminPolicy":"#{admin_policy_id}","partOfProject":"Google Books"},
           "description":{"title":[{"value":"#{title}"}]},
           "identification":#{identification.to_json},
           "structural":#{structural.to_json}}
@@ -492,7 +492,7 @@ RSpec.describe 'Create object' do
             "cocinaVersion":"#{Cocina::Models::VERSION}",
             "type":"#{Cocina::Models::ObjectType.image}",
             "label":"#{label}","version":1,
-            "administrative":{"releaseTags":[],"hasAdminPolicy":"#{admin_policy_id}","partOfProject":"Google Books"},
+            "administrative":{"hasAdminPolicy":"#{admin_policy_id}","partOfProject":"Google Books"},
             "description":{"title":[{"value":"#{title}"}]},
             "identification":#{identification.to_json},
             "structural":#{structural.to_json}}
@@ -540,7 +540,7 @@ RSpec.describe 'Create object' do
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.book}",
           "label":"#{label}","version":1,"access":{"view":"world","download":"world"},
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"#{admin_policy_id}"},
+          "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
           "description":{"title":[{"value":"#{title}"}]},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
@@ -692,7 +692,7 @@ RSpec.describe 'Create object' do
           "type":"#{Cocina::Models::ObjectType.book}",
           "label":"This is my label","version":1,"access":{"view":"stanford","download":"none","controlledDigitalLending":false,
           "embargo":{"view":"world","download":"world","releaseDate":"2020-02-29T07:00:00.000+00:00"}},
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"#{admin_policy_id}"},
+          "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
           "description":{"title":[{"value":"This is my title"}]},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
@@ -749,7 +749,7 @@ RSpec.describe 'Create object' do
           "type":"#{Cocina::Models::ObjectType.book}",
           "label":"This is my label","version":1,
           "access":{"view":"location-based","download":"location-based","location":"m&m"},
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"#{admin_policy_id}"},
+          "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
           "description":{"title":[{"value":"This is my title"}]},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
@@ -795,7 +795,7 @@ RSpec.describe 'Create object' do
           "type":"#{Cocina::Models::ObjectType.book}",
           "label":"This is my label","version":1,
           "access":{"view":"world","download":"none"},
-          "administrative":{"releaseTags":[],"hasAdminPolicy":"#{admin_policy_id}"},
+          "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
           "description":{"title":[{"value":"This is my title"}]},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
