@@ -12,6 +12,8 @@ module Migrators
     def migrate
       transfer_to_document_store(public_cocina.to_json, 'cocina.json')
       PurlFetcher::Client::LegacyPublish.publish(cocina: public_cocina)
+    rescue RuntimeError
+      sleep(20) # Sleep for 20 seconds to allow PURL to catch up, otherwise we randomly get 502 errors
     end
 
     private
@@ -33,10 +35,8 @@ module Migrators
       return false unless response.success?
 
       Cocina::Models.build(JSON.parse(response.body))
-      puts "#{repository_object.external_identifier} SKIPPED: Valid cocina object."
       false
     rescue Cocina::Models::ValidationError
-      puts "#{repository_object.external_identifier} MIGRATING: Invalid cocina object."
       true
     end
 

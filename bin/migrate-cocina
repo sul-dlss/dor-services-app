@@ -117,13 +117,12 @@ def migrate(migrator_class:, sample:, processes:, mode:)
   progress_bar = tty_progress_bar(druids.length, mode)
   progress_bar.start
 
-  Parallel.map(druids.each_slice(25),
+  Parallel.map(druids.each_slice(100),
                in_processes: processes,
                finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |druids_slice|
     RepositoryObject.where(external_identifier: druids_slice).map do |obj|
       perform_migrate(migrator_class:, obj:, mode:)
     end
-    sleep(5) # Sleep to avoid overloading purl_fetcher
   end.flatten(1)
 end
 
