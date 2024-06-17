@@ -27,19 +27,19 @@ class DigitalStacksDiffer
   attr_reader :cocina_object
 
   def cocina_object_file_map
-    @cocina_object_file_map ||= file_map_for(cocina_object)
+    @cocina_object_file_map ||= file_map_for(cocina_object.structural)
   end
 
   def purl_cocina_object_file_map
-    @purl_cocina_object_file_map ||= file_map_for(purl_cocina_object)
+    @purl_cocina_object_file_map ||= file_map_for(purl_cocina_object_structural)
   end
 
-  def purl_cocina_object
-    @purl_cocina_object ||= begin
+  def purl_cocina_object_structural
+    @purl_cocina_object_structural ||= begin
       response = connection.get("/#{bare_druid}.json")
 
       if response.success?
-        Cocina::Models.build(JSON.parse(response.body))
+        Cocina::Models::DROStructural.new(JSON.parse(response.body)['structural'])
       elsif response.status == 404
         nil
       else
@@ -57,11 +57,11 @@ class DigitalStacksDiffer
   end
 
   # @return [Hash] map of filename to sha1 for files that should be shelved
-  def file_map_for(cocina_object)
-    return {} unless cocina_object
+  def file_map_for(cocina_object_structural)
+    return {} unless cocina_object_structural
 
     {}.tap do |file_map|
-      cocina_object.structural.contains.each do |file_set|
+      cocina_object_structural.contains.each do |file_set|
         file_set.structural.contains.each do |file|
           file_map[file.filename] = sha1_for(file) if file.administrative.shelve
         end
