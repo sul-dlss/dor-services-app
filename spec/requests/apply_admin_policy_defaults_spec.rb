@@ -53,7 +53,7 @@ RSpec.describe 'Apply APO access defaults to a member item' do
       post '/v1/objects/druid:bc123df4567/apply_admin_policy_defaults',
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).not_to be_successful
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       # rubocop:disable Rails/ResponseParsedBody
       expect(JSON.parse(response.body)['errors'].first['detail']).to include(
         'the error message does not really matter in this context'

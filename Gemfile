@@ -58,9 +58,12 @@ group :test, :development do
   gem 'rspec_junit_formatter'
   gem 'rspec-rails'
   gem 'rubocop'
+  gem 'rubocop-capybara'
+  gem 'rubocop-factory_bot'
   gem 'rubocop-performance'
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
+  gem 'rubocop-rspec_rails'
   gem 'simplecov'
   gem 'webmock'
 end

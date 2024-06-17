@@ -1,9 +1,12 @@
 inherit_from: .rubocop_todo.yml
 
 require:
+  - rubocop-capybara
+  - rubocop-factory_bot
   - rubocop-performance
-  - rubocop-rspec
   - rubocop-rails
+  - rubocop-rspec
+  - rubocop-rspec_rails
 
 AllCops:
   TargetRubyVersion: 3.2

@@ -17,7 +17,7 @@ class ShelvesController < ApplicationController
         errors: [
           { title: 'Invalid item type', detail: "A DRO is required but you provided '#{@cocina_object.type}'" }
         ]
-      }, status: :unprocessable_entity
+      }, status: :unprocessable_content
     end
   end
 end

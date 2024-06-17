@@ -45,7 +45,7 @@ class WorkspacesController < ApplicationController
         ]
       },
       content_type: 'application/vnd.api+json',
-      status: :unprocessable_entity
+      status: :unprocessable_content
     }
   end
 end

@@ -72,7 +72,7 @@ RSpec.describe 'Operations on release tags' do
       it 'returns unprocessable entity' do
         get "/v1/objects/#{druid}/release_tags", headers: auth_headers
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end

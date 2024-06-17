@@ -18,7 +18,7 @@ RSpec.describe 'Shelve object' do
 
     it 'returns a 422 error' do
       post "/v1/objects/#{druid}/shelve", headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       json = response.parsed_body
       expect(json['errors'].first['detail']).to eq "A DRO is required but you provided '#{Cocina::Models::ObjectType.collection}'"
       expect(job).not_to have_received(:perform_later)

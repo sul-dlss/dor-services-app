@@ -58,7 +58,7 @@ class VersionsController < ApplicationController
   private
 
   # JSON-API error response
-  def build_error(msg, err, status: :unprocessable_entity)
+  def build_error(msg, err, status: :unprocessable_content)
     {
       json: {
         errors: [
