@@ -96,7 +96,7 @@ RSpec.describe 'Refresh metadata' do
     it 'returns a 422 error' do
       post '/v1/objects/druid:mk420bs7601/refresh_metadata',
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to match("#{druid} has no catalog links marked as refreshable")
     end
   end
@@ -188,7 +188,7 @@ RSpec.describe 'Refresh metadata' do
       it 'returns a 422 error' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
              headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to match('missing required parameters: title')
       end
     end

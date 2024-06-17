@@ -9,7 +9,7 @@ class MetadataRefreshController < ApplicationController
       cocina_object: @cocina_object, druid: @cocina_object.externalIdentifier, use_barcode: true
     )
     if result.failure?
-      return json_api_error(status: :unprocessable_entity, title: 'No available catalog link or barcodes',
+      return json_api_error(status: :unprocessable_content, title: 'No available catalog link or barcodes',
                             message: "#{@cocina_object.externalIdentifier} has no catalog links marked as refreshable")
     end
 
@@ -20,6 +20,6 @@ class MetadataRefreshController < ApplicationController
     Honeybadger.notify(e)
     json_api_error(status: :internal_server_error, message: e.message)
   rescue Cocina::Models::ValidationError => e
-    json_api_error(status: :unprocessable_entity, title: 'Cocina validation error', message: e.message)
+    json_api_error(status: :unprocessable_content, title: 'Cocina validation error', message: e.message)
   end
 end

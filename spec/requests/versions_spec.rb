@@ -64,7 +64,7 @@ RSpec.describe 'Operations regarding object versions' do
       it 'returns an error' do
         post "/v1/objects/druid:mx123qw2323/versions/current/close?#{close_params.to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response).to have_http_status :unprocessable_entity
+        expect(response).to have_http_status :unprocessable_content
         expect(response.body).to eq(
           '{"errors":[{"status":"422","title":"Unable to close version",' \
           '"detail":"Trying to close version on an object not opened for versioning"}]}'
@@ -128,7 +128,7 @@ RSpec.describe 'Operations regarding object versions' do
         post "/v1/objects/druid:mx123qw2323/versions?#{open_params.to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response.body).to eq('{"errors":[{"status":"422","title":"Unable to open version","detail":"Object net yet accessioned"}]}')
-        expect(response).to have_http_status :unprocessable_entity
+        expect(response).to have_http_status :unprocessable_content
       end
     end
 
