@@ -162,7 +162,7 @@ GEM
       activesupport
     diff-lcs (1.5.1)
     diffy (3.4.2)
-    dlss-capistrano (5.1.0)
+    dlss-capistrano (5.1.1)
       bcrypt_pbkdf
       capistrano (~> 3.0)
       capistrano-bundle_audit (>= 0.3.0)
