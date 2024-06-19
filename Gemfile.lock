@@ -171,7 +171,7 @@ GEM
       ed25519
     docile (1.4.0)
     domain_name (0.6.20240107)
-    dor-workflow-client (7.4.1)
+    dor-workflow-client (7.5.0)
       activesupport (>= 3.2.1, < 8)
       deprecation (>= 0.99.0)
       faraday (~> 2.0)
@@ -216,7 +216,7 @@ GEM
     factory_bot_rails (6.4.3)
       factory_bot (~> 6.4)
       railties (>= 5.0.0)
-    faraday (2.9.1)
+    faraday (2.9.2)
       faraday-net_http (>= 2.0, < 3.2)
     faraday-cookie_jar (0.0.7)
       faraday (>= 0.8.0)
@@ -240,7 +240,7 @@ GEM
       base64
     hashdiff (1.1.0)
     hashie (5.0.0)
-    honeybadger (5.11.2)
+    honeybadger (5.13.0)
     http-cookie (1.0.6)
       domain_name (~> 0.5)
     i18n (1.14.5)
@@ -258,7 +258,7 @@ GEM
     json_schema (0.21.0)
     jsonpath (1.1.5)
       multi_json
-    jwt (2.8.1)
+    jwt (2.8.2)
       base64
     language_server-protocol (3.17.0.3)
     lograge (0.14.0)
@@ -287,7 +287,7 @@ GEM
     marc-vocab (0.3.0)
     marcel (1.0.4)
     mini_mime (1.1.5)
-    minitest (5.23.1)
+    minitest (5.24.0)
     moab-versioning (6.1.0)
       druid-tools (>= 1.0.0)
       json
