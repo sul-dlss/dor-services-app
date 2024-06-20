@@ -147,6 +147,7 @@ GEM
       bigdecimal
       rexml
     crass (1.0.6)
+    csv (3.3.0)
     daemons (1.4.1)
     datacite (0.3.0)
       dry-monads (~> 1.3)
@@ -582,6 +583,7 @@ DEPENDENCIES
   cocina-models (~> 0.98.0)
   committee
   config
+  csv
   daemons
   datacite (~> 0.3.0)
   debug

@@ -26,6 +26,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 gem 'bunny', '~> 2.17' # Send messages to RabbitMQ
 gem 'committee' # validates Open API spec (OAS)
 gem 'config'
+gem 'csv'
 gem 'daemons' # for rolling indexer
 gem 'dry-monads'
 gem 'edtf', '~> 3.0' # used for metadata reports
