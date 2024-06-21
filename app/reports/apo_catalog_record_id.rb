@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'csv'
-
 # Find items that are goverened by the provided APO and then return all CatalogRecordIds and refresh status.
 #  https://github.com/sul-dlss/dor-services-app/issues/4373
 # Invoke via:
