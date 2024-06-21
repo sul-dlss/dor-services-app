@@ -7,13 +7,19 @@ class UpdateDoiMetadataJob < ApplicationJob
   def perform(cocina_item_json)
     cocina_item = Cocina::Models.build(JSON.parse(cocina_item_json))
     attributes = Cocina::ToDatacite::Attributes.mapped_from_cocina(cocina_item)
+
+    Honeybadger.context(
+      attributes:,
+      doi: cocina_item.identification.doi,
+      druid: cocina_item.externalIdentifier
+    )
+
     result = client.update(id: cocina_item.identification.doi, attributes: attributes.deep_stringify_keys)
     return if result.success?
 
-    message = "Error connecting to datacite (#{cocina_item.externalIdentifier}) " \
-              "response: #{result.failure.status}: #{result.failure.body}\n" \
-              "request: #{result.failure.env.request_body}"
-    raise message
+    raise "Error connecting to datacite (#{cocina_item.externalIdentifier}) " \
+          "response: #{result.failure.status}: #{result.failure.body}\n" \
+          "request: #{result.failure.env.request_body}"
   end
 
   def client
