@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'csv'
-
 # Convert CSV to JSON for registration
 class RegistrationCsvConverter
   include Dry::Monads[:result]
