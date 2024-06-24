@@ -185,18 +185,6 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                 ],
                                 form: [
                                   {
-                                    structuredValue: [
-                                      {
-                                        value: 'Data',
-                                        type: 'type'
-                                      }
-                                    ],
-                                    source: {
-                                      value: 'Stanford self-deposit resource types'
-                                    },
-                                    type: 'resource type'
-                                  },
-                                  {
                                     value: 'Dataset',
                                     type: 'resource type',
                                     uri: 'http://id.loc.gov/vocabulary/resourceTypes/dat',
@@ -349,7 +337,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           titles: [{ title: }],
           types: {
             resourceTypeGeneral: 'Dataset',
-            resourceType: 'Data'
+            resourceType: ''
           }
         }
       )
