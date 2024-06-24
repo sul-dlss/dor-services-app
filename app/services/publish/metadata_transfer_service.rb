@@ -112,6 +112,7 @@ module Publish
     end
 
     def publish_shelve
+      ShelvableFilesStager.stage(druid:, version: cocina_object.version, filepaths: filepaths_to_shelve, workspace_content_pathname:) if filepaths_to_shelve.present?
       PurlFetcher::Client::PublishShelve.publish_and_shelve(cocina: public_cocina, filepath_map:)
     end
 
@@ -131,11 +132,12 @@ module Publish
       end
     end
 
-    def filepath_map
-      return {} unless public_cocina.dro?
+    def filepaths_to_shelve
+      @filepaths_to_shelve ||= public_cocina.dro? ? DigitalStacksDiffer.call(cocina_object: public_cocina) : []
+    end
 
-      files_to_shelve = DigitalStacksDiffer.call(cocina_object: public_cocina)
-      files_to_shelve.index_with do |filename|
+    def filepath_map
+      filepaths_to_shelve.index_with do |filename|
         workspace_content_pathname.join(filename).to_s
       end
     end

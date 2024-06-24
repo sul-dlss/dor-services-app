@@ -27,7 +27,7 @@ class ShelveJob < ApplicationJob
       # So reset to avoid: ActiveRecord::StatementInvalid: PG::ConnectionBad: PQconsumeInput() could not receive data from server: Connection timed out : BEGIN
       ActiveRecord::Base.connection_handler.clear_active_connections!
       EventFactory.create(druid:, event_type: 'shelving_complete', data: { background_job_result_id: background_job_result.id })
-    rescue ShelvableFilesStager::FileNotFound => e
+    rescue LegacyShelvableFilesStager::FileNotFound => e
       return LogFailureJob.perform_later(druid:,
                                          background_job_result:,
                                          workflow: 'accessionWF',

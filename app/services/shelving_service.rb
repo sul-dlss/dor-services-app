@@ -38,7 +38,7 @@ class ShelvingService
       retry
     end
 
-    ShelvableFilesStager.stage(druid, preserve_diff, shelve_diff, workspace_content_pathname)
+    LegacyShelvableFilesStager.stage(druid, preserve_diff, shelve_diff, workspace_content_pathname)
 
     # workspace_content_pathname = workspace_content_dir(shelve_diff, workspace_druid)
     # delete, rename, or copy files to the stacks area
