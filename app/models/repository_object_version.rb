@@ -2,6 +2,7 @@
 
 # Models a repository object as it looked at a particular version.
 class RepositoryObjectVersion < ApplicationRecord
+  class NoCocina < RuntimeError; end
   self.locking_column = 'lock'
 
   belongs_to :repository_object
@@ -43,6 +44,10 @@ class RepositoryObjectVersion < ApplicationRecord
   end
 
   def to_cocina
+    # Legacy RepositoryObjectVersions don't have cocina. We added them in order to store the
+    # version number, but the Cocina is lost to time.
+    raise NoCocina unless cocina_version
+
     Cocina::Models.build(to_h)
   end
 
