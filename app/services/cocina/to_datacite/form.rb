@@ -19,10 +19,10 @@ module Cocina
       def type_attributes
         return unless resource_type_general || resource_type
 
-        {
-          resourceTypeGeneral: resource_type_general,
-          resourceType: resource_type
-        }
+        {}.tap do |types_attributes|
+          types_attributes[:resourceTypeGeneral] = resource_type_general
+          types_attributes[:resourceType] = resource_type || ''
+        end
       end
 
       private
