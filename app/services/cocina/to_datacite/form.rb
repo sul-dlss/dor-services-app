@@ -21,7 +21,7 @@ module Cocina
 
         {
           resourceTypeGeneral: resource_type_general,
-          resourceType: resource_type
+          resourceType: resource_type || ''
         }
       end
 
