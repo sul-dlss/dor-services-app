@@ -3,6 +3,7 @@
 # Models a user version of a specific repository object version.
 class UserVersion < ApplicationRecord
   belongs_to :repository_object_version
+  before_save :set_version
 
   validate :repository_object_version_is_closed
 
@@ -17,5 +18,11 @@ class UserVersion < ApplicationRecord
       version: repository_object_version.version,
       withdrawn:
     }
+  end
+
+  private
+
+  def set_version
+    self.version = repository_object_version.user_versions.maximum(:version).to_i + 1 unless version
   end
 end
