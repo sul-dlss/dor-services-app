@@ -7,30 +7,43 @@ RSpec.describe UserVersion do
   let(:repository_object) { build(:repository_object, object_type:, external_identifier: druid) }
   let(:druid) { 'druid:xz456jk0987' }
   let(:object_type) { 'dro' }
+
   let(:attrs) do
     {
       version: 1,
-      version_description: 'My new version'
+      version_description: 'My new version',
+      closed_at: Time.current
     }
   end
 
   describe 'validation' do
-    subject(:user_verison) { build(:user_version, repository_object_version:) }
+    subject(:errors) { user_version.errors.full_messages_for('repository_object_version') }
 
-    context 'when the repository object version is closed' do
-      let(:attrs) do
-        {
-          version: 1,
-          version_description: 'My new version',
-          closed_at: Time.current
-        }
-      end
+    let(:user_version) { build(:user_version, repository_object_version:) }
 
-      it { is_expected.to be_valid }
+    before do
+      user_version.validate
+    end
+
+    context 'when the user version is valid' do
+      it { is_expected.to be_empty }
     end
 
     context 'when the repository object version is open' do
-      it { is_expected.not_to be_valid }
+      let(:attrs) do
+        {
+          version: 1,
+          version_description: 'My new version'
+        }
+      end
+
+      it { is_expected.to include 'Repository object version cannot set a user version to an open RepositoryObjectVersion' }
+    end
+
+    context 'when the repository object version is has no cocina' do
+      let(:repository_object_version) { RepositoryObjectVersion.new(**attrs) }
+
+      it { is_expected.to include 'Repository object version cannot set a user version to an RepositoryObjectVersion without cocina' }
     end
   end
 end
