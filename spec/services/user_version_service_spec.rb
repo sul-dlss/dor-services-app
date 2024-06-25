@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe UserVersionService do
   let(:druid) { 'druid:xz456jk0987' }
   let(:repository_object_version) { repository_object.versions.first }
-  let(:repository_object) { create(:repository_object, object_type:, external_identifier: druid) }
+  let(:repository_object) { create(:repository_object, :with_repository_object_version, object_type:, external_identifier: druid) }
   let(:object_type) { 'dro' }
   let(:user_version) { UserVersion.create!(version: 1, repository_object_version:) }
 
@@ -59,7 +59,9 @@ RSpec.describe UserVersionService do
   describe '.move' do
     subject(:user_version_service_move) { described_class.move(druid:, version: 2, user_version: 1) }
 
-    let(:repository_object_version2) { RepositoryObjectVersion.create!(version: 2, version_description: 'My second version', repository_object:) }
+    let(:repository_object_version2) do
+      create(:repository_object_version, repository_object:, version: 2, closed_at: Time.zone.now)
+    end
 
     before do
       repository_object_version.update(closed_at: Time.current)

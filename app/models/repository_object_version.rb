@@ -43,10 +43,15 @@ class RepositoryObjectVersion < ApplicationRecord
     Cocina::Models.with_metadata(to_cocina, repository_object.external_lock, created: created_at.utc, modified: updated_at.utc)
   end
 
+  # Legacy RepositoryObjectVersions don't have cocina.
+  def has_cocina?
+    cocina_version.present?
+  end
+
   def to_cocina
     # Legacy RepositoryObjectVersions don't have cocina. We added them in order to store the
     # version number, but the Cocina is lost to time.
-    raise NoCocina unless cocina_version
+    raise NoCocina unless has_cocina?
 
     Cocina::Models.build(to_h)
   end
