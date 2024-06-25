@@ -9,8 +9,9 @@ RSpec.describe 'User versions' do
     before do
       repository_object = create(:repository_object, :closed, external_identifier: druid)
       create(:repository_object_version, repository_object:, version: 2, closed_at: Time.zone.now)
-      create(:user_version, version: 1, repository_object_version: repository_object.versions.first)
-      create(:user_version, version: 2, repository_object_version: repository_object.versions.last)
+      create(:repository_object_version, repository_object:, version: 3, closed_at: Time.zone.now)
+      create(:user_version, version: 1, repository_object_version: repository_object.versions[1])
+      create(:user_version, version: 2, repository_object_version: repository_object.versions[2])
     end
 
     it 'returns a 200' do
@@ -19,8 +20,8 @@ RSpec.describe 'User versions' do
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq('user_versions' => [
-                                           { 'userVersion' => 1, 'version' => 1, 'withdrawn' => false },
-                                           { 'userVersion' => 2, 'version' => 2, 'withdrawn' => false }
+                                           { 'userVersion' => 1, 'version' => 2, 'withdrawn' => false },
+                                           { 'userVersion' => 2, 'version' => 3, 'withdrawn' => false }
                                          ])
     end
   end

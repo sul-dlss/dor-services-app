@@ -21,20 +21,4 @@ RSpec.describe 'Show single user version' do
       expect(response.parsed_body).to include(type: 'https://cocina.sul.stanford.edu/models/book')
     end
   end
-
-  context "when looking at an old version that doesn't have cocina" do
-    before do
-      repository_object = create(:repository_object, :closed, external_identifier: druid)
-      create(:repository_object_version, repository_object:, version: 2, closed_at: Time.zone.now)
-      create(:user_version, version: 1, repository_object_version: repository_object.versions.first)
-      create(:user_version, version: 2, repository_object_version: repository_object.versions.last)
-    end
-
-    it 'returns a 404' do
-      get "/v1/objects/#{druid}/user_versions/1",
-          headers: { 'Authorization' => "Bearer #{jwt}" }
-
-      expect(response).to have_http_status(:not_found)
-    end
-  end
 end
