@@ -18,8 +18,10 @@ RSpec.describe 'User versions' do
           headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to eq '{"user_versions":[{"userVersion":1,"version":1},' \
-                                  '{"userVersion":2,"version":2}]}'
+      expect(response.parsed_body).to eq('user_versions' => [
+                                           { 'userVersion' => 1, 'version' => 1, 'withdrawn' => false },
+                                           { 'userVersion' => 2, 'version' => 2, 'withdrawn' => false }
+                                         ])
     end
   end
 end
