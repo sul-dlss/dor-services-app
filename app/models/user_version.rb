@@ -10,4 +10,12 @@ class UserVersion < ApplicationRecord
     # Validate that the repository object version is closed
     errors.add(:repository_object_version, 'cannot set a user version to an open RepositoryObjectVersion') if repository_object_version.open?
   end
+
+  def as_json
+    {
+      userVersion: version,
+      version: repository_object_version.version,
+      withdrawn:
+    }
+  end
 end
