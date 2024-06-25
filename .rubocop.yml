@@ -744,3 +744,7 @@ RSpec/ExpectInLet: # new in 2.30
   Enabled: true
 Rails/WhereRange: # new in 2.25
   Enabled: true
+RSpec/InstanceVariable:
+  Enabled: false
+RSpec/BeforeAfterAll:
+  Enabled: false

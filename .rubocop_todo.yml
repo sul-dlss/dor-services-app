@@ -63,17 +63,11 @@ RSpec/Be:
   Exclude:
     - 'spec/services/publish/public_xml_service_spec.rb'
 
-# Offense count: 2
-RSpec/BeforeAfterAll:
-  Exclude:
-    - 'spec/services/digital_stacks_service_spec.rb'
-
 # Offense count: 6
 # Configuration parameters: Prefixes, AllowedPatterns.
 # Prefixes: when, with, without
 RSpec/ContextWording:
   Exclude:
-    - 'spec/services/digital_stacks_service_spec.rb'
     - 'spec/services/publish/public_desc_metadata_service_spec.rb'
     - 'spec/services/publish/public_xml_service_spec.rb'
     - 'spec/services/thumbnail_service_spec.rb'
@@ -85,18 +79,11 @@ RSpec/ExpectInHook:
     - 'spec/services/preservation_metadata_extractor_spec.rb'
     - 'spec/services/publish/metadata_transfer_service_spec.rb'
 
-# Offense count: 19
-# Configuration parameters: AssignmentOnly.
-RSpec/InstanceVariable:
-  Exclude:
-    - 'spec/services/digital_stacks_service_spec.rb'
-
 # Offense count: 14
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: have_received, receive
 RSpec/MessageSpies:
   Exclude:
-    - 'spec/services/digital_stacks_service_spec.rb'
     - 'spec/services/preservation_ingest_service_spec.rb'
     - 'spec/services/preservation_metadata_extractor_spec.rb'
     - 'spec/services/version_service_spec.rb'
@@ -135,12 +122,6 @@ Rails/FilePath:
 Rails/TimeZone:
   Exclude:
     - 'spec/services/version_service_spec.rb'
-
-# Offense count: 1
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Style/CombinableLoops:
-  Exclude:
-    - 'app/services/digital_stacks_service.rb'
 
 # Offense count: 15
 # Configuration parameters: AllowedConstants.

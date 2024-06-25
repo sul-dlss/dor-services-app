@@ -26,7 +26,7 @@ RSpec.describe 'Shelve object' do
   end
 
   context 'when the request is successful' do
-    it 'calls ShelvingService and returns201' do
+    it 'calls ShelveJob and returns201' do
       post "/v1/objects/#{druid}/shelve?lane-id=low", headers: { 'Authorization' => "Bearer #{jwt}" }
 
       expect(response).to have_http_status(:created)
