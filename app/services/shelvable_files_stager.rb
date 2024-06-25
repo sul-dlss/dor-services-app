@@ -6,64 +6,48 @@
 class ShelvableFilesStager
   class FileNotFound < RuntimeError; end
 
-  def self.stage(identifier, preserve_diff, shelve_diff, content_dir)
-    new(identifier, preserve_diff, shelve_diff, content_dir).stage
+  def self.stage(...)
+    new(...).stage
   end
 
-  def initialize(identifier, preserve_diff, shelve_diff, content_dir)
-    @identifier = identifier
-    @preserve_diff = preserve_diff
-    @shelve_diff = shelve_diff
-    @content_dir = content_dir
+  # @param druid [String] the druid of the object
+  # @param version [Integer] the version of the object
+  # @param filepaths [Array<String>] the list of filepaths to stage
+  # @param workspace_content_pathname [Pathname] the workspace directory of the object
+  # @raise [FileNotFound] if a file is not found in the content directory or preservation
+  # @raise [Preservation::Client::Error] other preservation client errors
+  def initialize(druid:, version:, filepaths:, workspace_content_pathname:)
+    @druid = druid
+    @version = version
+    @filepaths = filepaths
+    @workspace_content_pathname = workspace_content_pathname
   end
 
   # Ensure all the files are found in the object's content files in the workspace area
   def stage
-    return true if filelist.empty?
+    filepaths.each do |filepath|
+      file_pathname = workspace_content_pathname.join(filepath)
+      next if file_pathname.exist?
 
-    filelist.each do |file|
-      next if file_in_staging?(file)
-
-      # If they preserved the file in a previous version, but didn't shelve it, we can copy it to staging.
-      # We infer that the file is unchanged if was not also added to preservation in this version.
-      next if file_deltas[:added].include?(file) && file_previously_in_preservation?(file) && copy_file_from_preservation(file)
-
-      raise FileNotFound, "Unable to find #{file} in the content directory"
+      copy_file_from_preservation(file_pathname:, filepath:)
     end
-
-    true
   end
 
   private
 
-  attr_reader :identifier, :preserve_diff, :shelve_diff, :content_dir, :content_metadata
+  attr_reader :druid, :version, :filepaths, :workspace_content_pathname
 
-  delegate :file_deltas, to: :shelve_diff
-
-  def filelist
-    @filelist ||= file_deltas[:modified] + file_deltas[:added] + file_deltas[:copyadded].collect { |_old, new| new }
-  end
-
-  def file_in_staging?(file)
-    filepath(file).exist?
-  end
-
-  def filepath(file)
-    content_dir.join(file)
-  end
-
-  def file_previously_in_preservation?(file)
-    preserve_diff.file_deltas[:added].exclude?(file)
-  end
-
-  # Copy from preservation into the workspace
-  def copy_file_from_preservation(file)
-    FileUtils.mkdir_p(filepath(file).dirname)
-    File.open(filepath(file), 'wb') do |streamed|
+  # Try to copy from preservation into the workspace
+  def copy_file_from_preservation(file_pathname:, filepath:)
+    FileUtils.mkdir_p(file_pathname.dirname)
+    File.open(file_pathname, 'wb') do |streamed|
       writer = proc do |chunk, _overall_received_bytes|
         streamed.write chunk
       end
-      Preservation::Client.objects.content(druid: identifier, filepath: file, on_data: writer)
+      Preservation::Client.objects.content(druid:, filepath:, version: version - 1, on_data: writer)
     end
+  rescue Preservation::Client::NotFoundError, Faraday::ResourceNotFound
+    file_pathname.delete if file_pathname.exist? # 404 body is written to file
+    raise FileNotFound, "Unable to find #{filepath} in the content directory"
   end
 end

@@ -3,65 +3,56 @@
 require 'rails_helper'
 
 RSpec.describe ShelvableFilesStager do
-  subject(:stage) { described_class.stage(druid, preserve_diff, shelve_diff, content_dir) }
+  subject(:stage) { described_class.stage(druid:, workspace_content_pathname: content_dir, version: 2, filepaths:) }
 
   let(:workspace_root) { Dir.mktmpdir }
   let(:druid) { 'druid:jq937jp0017' }
-  let(:preserve_diff) { instance_double(Moab::FileGroupDifference, file_deltas: { added: [] }) }
   let(:workspace_druid) { DruidTools::Druid.new(druid, workspace_root) }
 
   # create an empty workspace location for object content files
   let(:content_dir) { Pathname(workspace_druid.path('content', true)) }
 
-  # read in a FileInventoryDifference manifest from the fixtures area
-  let(:content_diff_reports) { Pathname('spec').join('fixtures', 'content_diff_reports') }
-  let(:inventory_diff_xml) { content_diff_reports.join('ng782rw8378-v3-v4.xml') }
-  let(:inventory_diff) { Moab::FileInventoryDifference.parse(inventory_diff_xml.read) }
-  let(:shelve_diff) { inventory_diff.group_difference('content') }
+  let(:filepaths) { ['file1.txt', 'dir/file2.txt'] }
 
-  context 'when the manifest files are not in the workspace' do
-    let(:preserve_diff) { instance_double(Moab::FileGroupDifference, file_deltas:) }
-
-    before do
-      # create the one modified file:
-      FileUtils.touch(content_dir.join('SUB2_b2000_1.bvals'))
-    end
-
-    context 'when the file is not already in preservation' do
-      let(:file_deltas) { { added: ['dir/SUB2_b2000_2.bvecs', 'SUB2_b2000_2.nii.gz'] } }
-
-      it 'raises an error' do
-        expect { stage }.to raise_error('Unable to find dir/SUB2_b2000_2.bvecs in the content directory')
-      end
-    end
-
-    context 'when the file is in preservation' do
-      let(:file_deltas) { { added: [] } }
-
-      before do
-        allow(Preservation::Client.objects).to receive(:content) do |*args|
-          args.first.fetch(:on_data).call('my stuff')
-        end
-      end
-
-      it 'copies the file into the staging area' do
-        expect { stage }.to change { content_dir.join('dir/SUB2_b2000_2.bvecs').exist? }.from(false).to(true)
-      end
-    end
+  before do
+    allow(Preservation::Client.objects).to receive(:content)
   end
 
   context 'when the content files are in the workspace area' do
     before do
       # put the content files in the content_pathname location .../ng/782/rw/8378/ng782rw8378/content
-      deltas = shelve_diff.file_deltas
-      filelist = deltas[:modified] + deltas[:added] + deltas[:copyadded].collect { |_old, new| new }
-      filelist.each do |file|
-        filepath = content_dir.join(file)
-        FileUtils.mkdir_p(File.dirname(filepath))
-        FileUtils.touch(filepath)
+      # deltas = shelve_diff.file_deltas
+      # filelist = deltas[:modified] + deltas[:added] + deltas[:copyadded].collect { |_old, new| new }
+      filepaths.each do |filepath|
+        path = content_dir.join(filepath)
+        FileUtils.mkdir_p(File.dirname(path))
+        FileUtils.touch(path)
       end
     end
 
-    it { is_expected.to be true }
+    it 'does not retrieve any files from preservation' do
+      stage
+      expect(Preservation::Client.objects).not_to have_received(:content)
+    end
+  end
+
+  context 'when the content files are not in the workspace area' do
+    it 'retrieve files from preservation' do
+      stage
+      expect(Preservation::Client.objects).to have_received(:content).with(druid:, filepath: 'file1.txt', version: 1,
+                                                                           on_data: an_instance_of(Proc))
+      expect(Preservation::Client.objects).to have_received(:content).with(druid:, filepath: 'dir/file2.txt', version: 1,
+                                                                           on_data: an_instance_of(Proc))
+    end
+  end
+
+  context 'when the content files are not found in preservation' do
+    before do
+      allow(Preservation::Client.objects).to receive(:content).and_raise(Preservation::Client::NotFoundError)
+    end
+
+    it 'raises' do
+      expect { stage }.to raise_error(ShelvableFilesStager::FileNotFound)
+    end
   end
 end

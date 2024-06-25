@@ -62,7 +62,7 @@ RSpec.describe ShelvingService do
     allow(Cocina::ToXml::ContentMetadataGenerator).to receive(:generate).and_return(content_metadata)
     allow(Preservation::Client.objects).to receive(:metadata).with(druid:, filepath: 'contentMetadata.xml').and_return(previous_content_metadata)
     allow(Preservation::Client.objects).to receive(:current_version).with(druid).and_return(1)
-    allow(ShelvableFilesStager).to receive(:stage)
+    allow(LegacyShelvableFilesStager).to receive(:stage)
     allow(DigitalStacksService).to receive(:remove_from_stacks)
     allow(DigitalStacksService).to receive(:rename_in_stacks)
     allow(DigitalStacksService).to receive(:shelve_to_stacks)
@@ -79,7 +79,7 @@ RSpec.describe ShelvingService do
       # make sure the DigitalStacksService is getting the correct delete, rename, and shelve requests
       # (These methods are unit tested in digital_stacks_service_spec.rb)
       described_class.shelve(cocina_object)
-      expect(ShelvableFilesStager).to have_received(:stage).with(druid, Moab::FileGroupDifference, Moab::FileGroupDifference, Pathname)
+      expect(LegacyShelvableFilesStager).to have_received(:stage).with(druid, Moab::FileGroupDifference, Moab::FileGroupDifference, Pathname)
       expect(DigitalStacksService).to have_received(:remove_from_stacks).with(stacks_object_pathname, Moab::FileGroupDifference)
       expect(DigitalStacksService).to have_received(:rename_in_stacks).with(stacks_object_pathname, Moab::FileGroupDifference)
       expect(DigitalStacksService).to have_received(:shelve_to_stacks).with(Pathname, stacks_object_pathname, Moab::FileGroupDifference)
@@ -98,7 +98,7 @@ RSpec.describe ShelvingService do
       # make sure the DigitalStacksService is getting the correct delete, rename, and shelve requests
       # (These methods are unit tested in digital_stacks_service_spec.rb)
       described_class.shelve(cocina_object)
-      expect(ShelvableFilesStager).to have_received(:stage).with(druid, Moab::FileGroupDifference, Moab::FileGroupDifference, Pathname)
+      expect(LegacyShelvableFilesStager).to have_received(:stage).with(druid, Moab::FileGroupDifference, Moab::FileGroupDifference, Pathname)
       expect(DigitalStacksService).to have_received(:remove_from_stacks).with(stacks_object_pathname, Moab::FileGroupDifference)
       expect(DigitalStacksService).to have_received(:rename_in_stacks).with(stacks_object_pathname, Moab::FileGroupDifference)
       expect(DigitalStacksService).to have_received(:shelve_to_stacks).with(Pathname, stacks_object_pathname, Moab::FileGroupDifference)
@@ -122,7 +122,7 @@ RSpec.describe ShelvingService do
       # make sure the DigitalStacksService is getting the correct delete, rename, and shelve requests
       # (These methods are unit tested in digital_stacks_service_spec.rb)
       described_class.shelve(cocina_object)
-      expect(ShelvableFilesStager).to have_received(:stage).with(druid, Moab::FileGroupDifference, Moab::FileGroupDifference, Pathname)
+      expect(LegacyShelvableFilesStager).to have_received(:stage).with(druid, Moab::FileGroupDifference, Moab::FileGroupDifference, Pathname)
       expect(DigitalStacksService).to have_received(:remove_from_stacks).with(stacks_object_pathname, Moab::FileGroupDifference)
       expect(DigitalStacksService).to have_received(:rename_in_stacks).with(stacks_object_pathname, Moab::FileGroupDifference)
       expect(DigitalStacksService).to have_received(:shelve_to_stacks).with(Pathname, stacks_object_pathname, Moab::FileGroupDifference)
