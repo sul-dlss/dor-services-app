@@ -1122,6 +1122,88 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/Druid"
+    post:
+      tags:
+        - versions
+      summary: Create a user version for this object
+      operationId: "user_versions#create"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserVersion"
+        "422":
+          description: Unprocessable content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"
+      requestBody:
+        description: user version to add to the system
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                version:
+                  type: integer
+                  description: the number of the object version
+              required:
+                - version
+  "/v1/objects/{object_id}/user_versions/{id}":
+    patch:
+      tags:
+        - versions
+      summary: Update a user version for this object
+      operationId: "user_versions#update"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserVersion"
+        "422":
+          description: Unprocessable content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"
+        - name: id
+          in: path
+          description: Version of user version
+          required: true
+          schema:
+            type: integer           
+      requestBody:
+        description: user version to update
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                version:
+                  description: the number of the object version
+                  type: integer
+                withdrawn:
+                  description: whether the version is withdrawn
+                  type: boolean
   "/v1/objects/{object_id}/user_versions/{version_id}":
     get:
       tags:
