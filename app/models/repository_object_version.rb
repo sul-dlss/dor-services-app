@@ -26,9 +26,9 @@ class RepositoryObjectVersion < ApplicationRecord
   def self.to_model_hash(cocina_object)
     cocina_object
       .to_h
-      .except(:externalIdentifier, :version)
+      .except(:externalIdentifier, :version, :cocinaVersion)
       .tap do |object_hash|
-      object_hash[:cocina_version] = object_hash.delete(:cocinaVersion)
+      object_hash[:cocina_version] = Cocina::Models::VERSION # When saving, set to latest cocina version.
       object_hash[:content_type] = object_hash.delete(:type)
       case cocina_object
       when Cocina::Models::DRO
