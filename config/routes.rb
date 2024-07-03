@@ -78,7 +78,11 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :user_versions, only: %i[index show create update]
+      resources :user_versions, only: %i[index show create update] do
+        member do
+          get 'solr'
+        end
+      end
 
       resources :release_tags, only: [:create, :index]
     end
