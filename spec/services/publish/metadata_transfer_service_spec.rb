@@ -64,11 +64,14 @@ RSpec.describe Publish::MetadataTransferService do
     context 'with no world discover access in rightsMetadata' do
       let(:purl_root) { Dir.mktmpdir }
 
+      let(:druid1) { DruidTools::Druid.new cocina_object.externalIdentifier, purl_root }
+
       before do
         allow(Settings.stacks).to receive(:local_document_cache_root).and_return(purl_root)
         allow(PurlFetcher::Client::Unpublish).to receive(:unpublish)
-
-        stub_request(:delete, "example.com/purl/purls/#{druid}")
+        # create druid tree and dummy content in purl root
+        druid1.mkdir
+        File.write(File.join(druid1.path, 'tmpfile'), 'junk')
       end
 
       after do
@@ -76,13 +79,20 @@ RSpec.describe Publish::MetadataTransferService do
       end
 
       it "removes the item's content from the Purl document cache and notifies the purl service of the deletion" do
-        # create druid tree and dummy content in purl root
-        druid1 = DruidTools::Druid.new cocina_object.externalIdentifier, purl_root
-        druid1.mkdir
-        File.write(File.join(druid1.path, 'tmpfile'), 'junk')
         service.publish
         expect(File).not_to exist(druid1.path) # it should now be gone
         expect(PurlFetcher::Client::Unpublish).to have_received(:unpublish).with(druid: cocina_object.externalIdentifier)
+      end
+
+      context 'when already deleted' do
+        before do
+          allow(PurlFetcher::Client::Unpublish).to receive(:unpublish).and_raise(PurlFetcher::Client::AlreadyDeletedResponseError)
+        end
+
+        it 'ignores the error' do
+          service.publish
+          expect(File).not_to exist(druid1.path) # it should now be gone
+        end
       end
     end
 

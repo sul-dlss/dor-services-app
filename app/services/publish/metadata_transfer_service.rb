@@ -109,6 +109,8 @@ module Publish
     #
     def publish_delete_on_success
       PurlFetcher::Client::Unpublish.unpublish(druid:)
+    rescue PurlFetcher::Client::AlreadyDeletedResponseError
+      # It's fine. The object is already deleted.
     end
 
     def publish_shelve
