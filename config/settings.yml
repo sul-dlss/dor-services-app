@@ -4,10 +4,8 @@ enabled_features:
   create_ur_admin_policy: false
   datacite_update: false
   file_hierarchy_validation: true
-  read_folio: true
   orcid_update: true
   publish_shelve: false
-
 
 # Ur Admin Policy
 ur_admin_policy:
