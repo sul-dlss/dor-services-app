@@ -231,8 +231,6 @@ RSpec.describe GoobiService do
     end
 
     context 'when folio enabled' do
-      before { allow(Settings.enabled_features).to receive(:read_folio).and_return(true) }
-
       context 'without ocr tag present' do
         let(:tags) { ['DPG : Workflow : book_workflow & stuff', 'Process : Content Type : Book', 'LAB : MAPS'] }
 

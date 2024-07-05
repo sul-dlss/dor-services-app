@@ -13,7 +13,6 @@ RSpec.describe 'Status (okcomputer)' do
   describe 'for Folio connection' do
     before do
       allow(Catalog::FolioReader).to receive(:to_marc).and_return('some marc stuff')
-      allow(Settings.enabled_features).to receive(:read_folio).and_return(true)
     end
 
     it 'is successful' do

@@ -22,12 +22,8 @@ end
 
 class FolioCheck < OkComputer::Check
   def check
-    if Settings.enabled_features.read_folio
-      Timeout.timeout(5) do
-        Catalog::FolioReader.to_marc(barcode: '12345')
-      end
-    else
-      mark_message 'folio disabled'
+    Timeout.timeout(5) do
+      Catalog::FolioReader.to_marc(barcode: '12345')
     end
   rescue StandardError => e
     mark_failure
@@ -98,6 +94,6 @@ end
 
 OkComputer::Registry.register 'rabbit-queues', RabbitQueueExistsCheck.new(['dsa.create-event', 'dor.indexing-by-druid']) if Settings.rabbitmq.enabled
 
-OkComputer.make_optional %w(external-folio) if Settings.enabled_features.read_folio
+OkComputer.make_optional %w(external-folio)
 
 OkComputer::Registry.register 'external-solr', OkComputer::HttpCheck.new("#{Settings.solr.url.gsub(%r{/$}, '')}/admin/ping")
