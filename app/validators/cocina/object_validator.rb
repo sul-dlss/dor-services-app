@@ -26,8 +26,6 @@ module Cocina
       validator = Cocina::CollectionExistenceValidator.new(cocina_object)
       raise ValidationError, validator.error unless validator.valid?
 
-      return unless Settings.enabled_features.file_hierarchy_validation
-
       # Only DROs have files
       validator = Cocina::FileHierarchyValidator.new(cocina_object)
       raise ValidationError, validator.error unless validator.valid?

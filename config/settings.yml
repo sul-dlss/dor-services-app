@@ -3,7 +3,6 @@ enabled_features:
   registration: true
   create_ur_admin_policy: false
   datacite_update: false
-  file_hierarchy_validation: true
   orcid_update: true
   publish_shelve: false
 
