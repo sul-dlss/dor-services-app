@@ -35,7 +35,7 @@ class DigitalStacksDiffer
   rescue PurlFetcher::Client::NotFoundResponseError
     []
   rescue PurlFetcher::Client::ResponseError => e
-    raise Error, "Unable to fetch cocina object from PURL for #{bare_druid}: #{e.message}"
+    raise Error, "Unable to fetch file md5s from PURL Fetcher for #{bare_druid}: #{e.message}"
   end
 
   def purl_fetcher_reader
