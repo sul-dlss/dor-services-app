@@ -258,18 +258,30 @@ RSpec.describe Publish::MetadataTransferService do
       ]
     end
 
-    before do
-      allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
-      allow(PurlFetcher::Client::PublishShelve).to receive(:publish_and_shelve)
-      allow(DigitalStacksDiffer).to receive(:call).and_return(['images/jt667tw2770_05_0001.jp2'])
-      allow(ShelvableFilesStager).to receive(:stage)
+    let(:transfer_stage_root) { Dir.mktmpdir }
+    let(:workspace_root) { Dir.mktmpdir }
+
+    after do
+      FileUtils.remove_entry transfer_stage_root
+      FileUtils.remove_entry workspace_root
     end
 
-    it 'shelves and publishes to purl fetcher service' do
+    before do
+      allow(Settings.stacks).to receive_messages(transfer_stage_root:, local_workspace_root: workspace_root)
+      allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+      allow(PurlFetcher::Client::Publish).to receive(:publish)
+      allow(DigitalStacksDiffer).to receive(:call).and_return(['images/jt667tw2770_05_0001.jp2'])
+      allow(ShelvableFilesStager).to receive(:stage)
+      allow(SecureRandom).to receive(:uuid).and_return('fe54b4a9-220f-4522-9ce6-0453c716dca6')
+      src_filepath = File.join(workspace_root, 'bc/123/df/4567/bc123df4567/content/images/jt667tw2770_05_0001.jp2')
+      FileUtils.mkdir_p(File.dirname(src_filepath))
+      File.write(src_filepath, 'jp2 content')
+    end
+
+    it 'shelves and publishes' do
       publish_shelve
-      expect(PurlFetcher::Client::PublishShelve).to have_received(:publish_and_shelve).with(cocina: Cocina::Models::DRO, filepath_map: { 'images/jt667tw2770_05_0001.jp2' =>
-           'tmp/dor/workspace/bc/123/df/4567/bc123df4567/content/images/jt667tw2770_05_0001.jp2' })
-      expect(ShelvableFilesStager).to have_received(:stage).with(druid: "druid:#{druid}", version: 1, filepaths: ['images/jt667tw2770_05_0001.jp2'], workspace_content_pathname: Pathname('tmp/dor/workspace/bc/123/df/4567/bc123df4567/content'))
+      expect(ShelvableFilesStager).to have_received(:stage).with(druid: "druid:#{druid}", version: 1, filepaths: ['images/jt667tw2770_05_0001.jp2'], workspace_content_pathname: Pathname(File.join(workspace_root, 'bc/123/df/4567/bc123df4567/content')))
+      expect(PurlFetcher::Client::Publish).to have_received(:publish).with(cocina: Cocina::Models::DRO, file_uploads: { 'images/jt667tw2770_05_0001.jp2' => 'fe54b4a9-220f-4522-9ce6-0453c716dca6' })
     end
 
     context 'when a collection' do
@@ -281,7 +293,6 @@ RSpec.describe Publish::MetadataTransferService do
 
       it 'shelves and publishes to purl fetcher service' do
         publish_shelve
-        expect(PurlFetcher::Client::PublishShelve).to have_received(:publish_and_shelve).with(cocina: Cocina::Models::Collection, filepath_map: {})
         expect(DigitalStacksDiffer).not_to have_received(:call)
         expect(ShelvableFilesStager).not_to have_received(:stage)
       end
