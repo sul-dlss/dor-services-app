@@ -55,4 +55,14 @@ RSpec.describe ShelvableFilesStager do
       expect { stage }.to raise_error(ShelvableFilesStager::FileNotFound)
     end
   end
+
+  context 'when the content length does not match' do
+    before do
+      allow(Preservation::Client.objects).to receive(:content).and_return(instance_double(Faraday::Response, headers: { 'content-length' => '42' }))
+    end
+
+    it 'raises' do
+      expect { stage }.to raise_error('File copied from preservation was not the expected size. Expected 42 bytes for file1.txt; received 0 bytes.')
+    end
+  end
 end
