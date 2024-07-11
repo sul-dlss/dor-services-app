@@ -39,15 +39,26 @@ class ShelvableFilesStager
 
   # Try to copy from preservation into the workspace
   def copy_file_from_preservation(file_pathname:, filepath:)
+    Rails.logger.info("Copying #{filepath} from preservation to #{file_pathname} for #{druid}")
     FileUtils.mkdir_p(file_pathname.dirname)
+    received_bytes = 0
     File.open(file_pathname, 'wb') do |streamed|
-      writer = proc do |chunk, _overall_received_bytes|
+      writer = proc do |chunk, overall_received_bytes|
         streamed.write chunk
+        received_bytes = overall_received_bytes
       end
-      Preservation::Client.objects.content(druid:, filepath:, version: version - 1, on_data: writer)
+      response = Preservation::Client.objects.content(druid:, filepath:, version: version - 1, on_data: writer)
+      check_filesize(file_pathname:, filepath:, expected: response&.headers&.[]('content-length')&.to_i, received: received_bytes)
     end
   rescue Preservation::Client::NotFoundError, Faraday::ResourceNotFound
     file_pathname.delete if file_pathname.exist? # 404 body is written to file
     raise FileNotFound, "Unable to find #{filepath} in the content directory"
+  end
+
+  def check_filesize(file_pathname:, filepath:, expected:, received:)
+    return if expected.nil? || expected == received
+
+    file_pathname.delete if file_pathname.exist?
+    raise "File copied from preservation was not the expected size. Expected #{expected} bytes for #{filepath}; received #{received} bytes."
   end
 end
