@@ -140,7 +140,10 @@ module Publish
     def copy(src_pathname, dest_pathname)
       return if dest_pathname.exist?
 
+      Rails.logger.info("Copying #{src_pathname} (#{src_pathname.size} bytes) to #{dest_pathname} for #{druid}")
       FileUtils.copy(src_pathname, dest_pathname)
+
+      raise "Copy #{src_pathname} to #{dest_pathname} failed" unless dest_pathname.exist? && dest_pathname.size == src_pathname.size
     end
 
     def transfer_stage_pathname

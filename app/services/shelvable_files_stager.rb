@@ -39,6 +39,7 @@ class ShelvableFilesStager
 
   # Try to copy from preservation into the workspace
   def copy_file_from_preservation(file_pathname:, filepath:)
+    Rails.logger.info("Copying #{filepath} from preservation to #{file_pathname} for #{druid}")
     FileUtils.mkdir_p(file_pathname.dirname)
     File.open(file_pathname, 'wb') do |streamed|
       writer = proc do |chunk, _overall_received_bytes|
