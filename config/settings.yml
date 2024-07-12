@@ -4,7 +4,6 @@ enabled_features:
   create_ur_admin_policy: false
   datacite_update: false
   orcid_update: true
-  publish_shelve: false
 
 # Ur Admin Policy
 ur_admin_policy:
@@ -16,8 +15,6 @@ ur_admin_policy:
 stacks:
   document_cache_host: 'purl-test.stanford.edu'
   local_workspace_root: '/dor/workspace'
-  local_stacks_root: '/stacks'
-  local_document_cache_root: '/purl/document_cache'
   transfer_stage_root: '/transfer-stage'
 
 # Suri

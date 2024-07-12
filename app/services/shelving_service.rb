@@ -87,9 +87,7 @@ class ShelvingService
   def stacks_location
     # Currently the best know way to identify objects like this is to see if the wasCrawlPreassemblyWF workflow is present.
     # If this condition is met, then shelf to /web-archiving-stacks/data/collections/<collection_id>, where collection_id is the unnamespaced druid of the (first) collection.
-    return was_stack_location if was?
-
-    Settings.stacks.local_stacks_root
+    was_stack_location
   end
 
   def was?

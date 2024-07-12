@@ -18,7 +18,7 @@ RSpec.describe Publish::MetadataTransferService do
   let(:structural_contains) { [] }
   let(:cocina_collection) { build(:collection, id: 'druid:xh235dd9059') }
   let(:service) { described_class.new(cocina_object, workflow:) }
-  let(:fake_publish_job) { class_double(PublishJob, perform_later: nil) }
+  let(:publish_job) { class_double(PublishJob, perform_later: nil) }
 
   describe '#publish' do
     before do
@@ -44,43 +44,29 @@ RSpec.describe Publish::MetadataTransferService do
       end
 
       before do
-        allow_any_instance_of(described_class).to receive(:transfer_to_document_store)
-        allow_any_instance_of(described_class).to receive(:transfer_metadata)
-        allow_any_instance_of(described_class).to receive(:publish_notify_on_success)
-        allow_any_instance_of(described_class).to receive(:release_tags_on_success)
         allow(MemberService).to receive(:for).and_return([member_druid])
         allow(CocinaObjectStore).to receive(:find).with(member_druid).and_return(member_item)
         allow(described_class).to receive(:new).with(cocina_object, workflow:).and_call_original
-        allow(PublishJob).to receive(:set).with(queue: :publish_low).and_return(fake_publish_job)
+        allow(PublishJob).to receive(:set).with(queue: :publish_low).and_return(publish_job)
+        allow(service).to receive(:publish_shelve)
+        allow(service).to receive(:republish_virtual_object_constituents!)
+        allow(service).to receive(:release_tags_on_success)
       end
 
       it 'republishes member items' do
         service.publish
         expect(MemberService).to have_received(:for).once
-        expect(fake_publish_job).to have_received(:perform_later).once.with(druid: member_druid, background_job_result: BackgroundJobResult.last, workflow:, log_success: false)
+        expect(publish_job).to have_received(:perform_later).once.with(druid: member_druid, background_job_result: BackgroundJobResult.last, workflow:, log_success: false)
       end
     end
 
-    context 'with no world discover access in rightsMetadata' do
-      let(:purl_root) { Dir.mktmpdir }
-
-      let(:druid1) { DruidTools::Druid.new cocina_object.externalIdentifier, purl_root }
-
+    context 'when not discoverable' do
       before do
-        allow(Settings.stacks).to receive(:local_document_cache_root).and_return(purl_root)
         allow(PurlFetcher::Client::Unpublish).to receive(:unpublish)
-        # create druid tree and dummy content in purl root
-        druid1.mkdir
-        File.write(File.join(druid1.path, 'tmpfile'), 'junk')
       end
 
-      after do
-        FileUtils.remove_entry purl_root
-      end
-
-      it "removes the item's content from the Purl document cache and notifies the purl service of the deletion" do
+      it 'unpublishes' do
         service.publish
-        expect(File).not_to exist(druid1.path) # it should now be gone
         expect(PurlFetcher::Client::Unpublish).to have_received(:unpublish).with(druid: cocina_object.externalIdentifier)
       end
 
@@ -90,8 +76,7 @@ RSpec.describe Publish::MetadataTransferService do
         end
 
         it 'ignores the error' do
-          service.publish
-          expect(File).not_to exist(druid1.path) # it should now be gone
+          expect { service.publish }.not_to raise_error
         end
       end
     end
@@ -99,47 +84,6 @@ RSpec.describe Publish::MetadataTransferService do
     describe 'copies to the document cache' do
       context 'with an item' do
         before do
-          allow(service).to receive(:transfer_to_document_store)
-          allow(service).to receive(:publish_notify_on_success)
-          allow(service).to receive(:release_tags_on_success)
-        end
-
-        let(:access) { { view: 'citation-only', download: 'none' } }
-
-        it 'transfers public cocina' do
-          service.publish
-          expect(service).to have_received(:transfer_to_document_store).with(/{"cocinaVersion"/, 'cocina.json')
-          expect(service).to have_received(:publish_notify_on_success)
-          expect(service).to have_received(:release_tags_on_success)
-        end
-      end
-
-      context 'with a collection object' do
-        let(:cocina_object) do
-          build(:collection, id: 'druid:xh235dd9059').new(
-            access: { view: 'world' }
-          )
-        end
-
-        before do
-          allow(service).to receive(:transfer_to_document_store)
-          allow(service).to receive(:publish_notify_on_success)
-          allow(service).to receive(:release_tags_on_success)
-          allow(service).to receive(:republish_collection_members!)
-        end
-
-        it 'ignores missing data' do
-          expect { service.publish }.not_to raise_error
-          expect(service).to have_received(:transfer_to_document_store).with(/{"cocinaVersion"/, 'cocina.json')
-          expect(service).to have_received(:publish_notify_on_success)
-          expect(service).to have_received(:release_tags_on_success)
-          expect(service).to have_received(:republish_collection_members!).with(no_args)
-        end
-      end
-
-      context 'when publish_shelve is enabled' do
-        before do
-          allow(Settings.enabled_features).to receive(:publish_shelve).and_return(true)
           allow(service).to receive(:publish_shelve)
           allow(service).to receive(:release_tags_on_success)
           allow(service).to receive(:republish_virtual_object_constituents!)
@@ -154,20 +98,29 @@ RSpec.describe Publish::MetadataTransferService do
           expect(service).to have_received(:republish_virtual_object_constituents!)
         end
       end
-    end
-  end
 
-  describe '#publish_notify_on_success' do
-    subject(:notify) { service.send(:publish_notify_on_success) }
+      context 'with a collection object' do
+        let(:cocina_object) do
+          build(:collection, id: 'druid:xh235dd9059').new(
+            access: { view: 'world' }
+          )
+        end
 
-    before do
-      allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
-      allow(PurlFetcher::Client::LegacyPublish).to receive(:publish)
-    end
+        before do
+          allow(service).to receive(:publish_shelve)
+          allow(service).to receive(:release_tags_on_success)
+          allow(service).to receive(:republish_virtual_object_constituents!)
+          allow(service).to receive(:republish_collection_members!)
+        end
 
-    it 'notifies the purl service of the update' do
-      notify
-      expect(PurlFetcher::Client::LegacyPublish).to have_received(:publish).with(cocina: Cocina::Models::DRO)
+        it 'publishes, shelves, and releases tags' do
+          service.publish
+          expect(service).to have_received(:publish_shelve)
+          expect(service).to have_received(:release_tags_on_success)
+          expect(service).to have_received(:republish_virtual_object_constituents!)
+          expect(service).to have_received(:republish_collection_members!).with(no_args)
+        end
+      end
     end
   end
 
@@ -182,28 +135,6 @@ RSpec.describe Publish::MetadataTransferService do
     it 'notifies the purl service of the release tags' do
       notify
       expect(PurlFetcher::Client::ReleaseTags).to have_received(:release).with(druid: cocina_object.externalIdentifier, index: ['Searchworks'], delete: [])
-    end
-  end
-
-  describe '#transfer_to_document_store' do
-    let(:purl_root) { Dir.mktmpdir }
-    let(:workspace_root) { Dir.mktmpdir }
-
-    before do
-      allow(Settings.stacks).to receive_messages(local_document_cache_root: purl_root, local_workspace_root: workspace_root)
-    end
-
-    after do
-      FileUtils.remove_entry purl_root
-      FileUtils.remove_entry workspace_root
-    end
-
-    it 'copies the given metadata to the document cache in the Digital Stacks' do
-      dr = DruidTools::PurlDruid.new cocina_object.externalIdentifier, purl_root
-      service.send(:transfer_to_document_store, '<xml/>', 'someMd')
-      file_path = dr.find(:content, 'someMd')
-      expect(file_path).to match(%r{4567/someMd$})
-      expect(File.read(file_path)).to eq('<xml/>')
     end
   end
 
@@ -306,13 +237,13 @@ RSpec.describe Publish::MetadataTransferService do
 
     before do
       allow(VirtualObjectService).to receive(:constituents).and_return([constituent_druid])
-      allow(PublishJob).to receive(:set).with(queue: :publish_low).and_return(fake_publish_job)
+      allow(PublishJob).to receive(:set).with(queue: :publish_low).and_return(publish_job)
     end
 
     it 'republishes the virtual object constituents' do
       republish
       expect(VirtualObjectService).to have_received(:constituents).with(cocina_object, exclude_opened: true, only_published: true)
-      expect(fake_publish_job).to have_received(:perform_later).once.with(druid: constituent_druid, background_job_result: BackgroundJobResult.last, workflow:, log_success: false)
+      expect(publish_job).to have_received(:perform_later).once.with(druid: constituent_druid, background_job_result: BackgroundJobResult.last, workflow:, log_success: false)
     end
   end
 

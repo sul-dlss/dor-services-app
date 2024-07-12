@@ -17,15 +17,10 @@ module Publish
     # Appends contentMetadata file resources from the source objects to this object
     def publish
       republish_collection_members!
-      return unpublish unless discoverable?
+      return publish_delete_on_success unless discoverable?
 
-      if Settings.enabled_features.publish_shelve
-        publish_shelve
-        republish_virtual_object_constituents!
-      else
-        transfer_metadata
-        publish_notify_on_success
-      end
+      publish_shelve
+      republish_virtual_object_constituents!
       release_tags_on_success
     end
 
@@ -39,16 +34,6 @@ module Publish
 
     def druid
       cocina_object.externalIdentifier
-    end
-
-    def transfer_metadata
-      transfer_to_document_store(public_cocina.to_json, 'cocina.json')
-    end
-
-    # Clear out the document cache for this item
-    def unpublish
-      PruneService.new(druid: purl_druid).prune!
-      publish_delete_on_success
     end
 
     def discoverable?
@@ -69,27 +54,6 @@ module Publish
       VirtualObjectService.constituents(cocina_object, exclude_opened: true, only_published: true).each do |druid|
         PublishJob.set(queue: :publish_low).perform_later(druid:, background_job_result: BackgroundJobResult.create, workflow:, log_success: false)
       end
-    end
-
-    # Create a file inside the content directory under the stacks.local_document_cache_root
-    # @param [String] content The contents of the file to be created
-    # @param [String] filename The name of the file to be created
-    # @return [void]
-    def transfer_to_document_store(content, filename)
-      new_file = File.join(purl_druid.content_dir, filename)
-      Rails.logger.debug("[Publish][#{cocina_object.externalIdentifier}] Writing #{new_file}")
-      File.write(new_file, content)
-    end
-
-    def purl_druid
-      @purl_druid ||= DruidTools::PurlDruid.new cocina_object.externalIdentifier, Settings.stacks.local_document_cache_root
-    end
-
-    ##
-    # When publishing a PURL, we notify purl-fetcher of changes.
-    #
-    def publish_notify_on_success
-      PurlFetcher::Client::LegacyPublish.publish(cocina: public_cocina)
     end
 
     def release_tags_on_success

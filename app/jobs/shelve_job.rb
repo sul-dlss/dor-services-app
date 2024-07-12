@@ -11,7 +11,7 @@ class ShelveJob < ApplicationJob
 
     # Skip if publish_shelve is enabled
     # However, web archive crawls still need to be shelved.
-    if Settings.enabled_features.publish_shelve && !WasService.crawl?(druid:)
+    unless WasService.crawl?(druid:)
       return LogSuccessJob.perform_later(druid:,
                                          workflow: 'accessionWF',
                                          background_job_result:,
