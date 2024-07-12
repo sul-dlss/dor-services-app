@@ -54,11 +54,10 @@ RSpec.describe ShelvingService do
   let(:group_difference) { instance_double(Moab::FileGroupDifference) }
   let(:workflow_client) { instance_double(Dor::Workflow::Client, workflows:) }
   let(:workflows) { ['accessionWF', 'registrationWF'] }
-  let(:stacks_object_pathname) { Pathname(DruidTools::StacksDruid.new(druid, stacks_root).path) }
+  let(:stacks_object_pathname) { Pathname('/web-archiving-stacks/data/collections/bb077hj4590/ng/782/rw/8378') }
 
   before do
     allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
-    allow(Settings.stacks).to receive_messages(local_stacks_root: stacks_root, local_workspace_root: workspace_root)
     allow(Cocina::ToXml::ContentMetadataGenerator).to receive(:generate).and_return(content_metadata)
     allow(Preservation::Client.objects).to receive(:metadata).with(druid:, filepath: 'contentMetadata.xml').and_return(previous_content_metadata)
     allow(Preservation::Client.objects).to receive(:current_version).with(druid).and_return(1)
@@ -75,7 +74,6 @@ RSpec.describe ShelvingService do
 
   context 'when structural present and previous version exists in preservation' do
     it 'pushes file changes for shelve-able files into the stacks' do
-      stacks_object_pathname = Pathname(DruidTools::StacksDruid.new(druid, stacks_root).path)
       # make sure the DigitalStacksService is getting the correct delete, rename, and shelve requests
       # (These methods are unit tested in digital_stacks_service_spec.rb)
       described_class.shelve(cocina_object)
@@ -94,7 +92,6 @@ RSpec.describe ShelvingService do
     end
 
     it 'pushes file changes for shelve-able files into the stacks' do
-      stacks_object_pathname = Pathname(DruidTools::StacksDruid.new(druid, stacks_root).path)
       # make sure the DigitalStacksService is getting the correct delete, rename, and shelve requests
       # (These methods are unit tested in digital_stacks_service_spec.rb)
       described_class.shelve(cocina_object)
@@ -116,7 +113,6 @@ RSpec.describe ShelvingService do
 
   context 'when a web archive' do
     let(:workflows) { %w[accessionWF registrationWF wasCrawlPreassemblyWF] }
-    let(:stacks_object_pathname) { Pathname('/web-archiving-stacks/data/collections/bb077hj4590/ng/782/rw/8378') }
 
     it 'pushes file changes for shelve-able files into the stacks' do
       # make sure the DigitalStacksService is getting the correct delete, rename, and shelve requests

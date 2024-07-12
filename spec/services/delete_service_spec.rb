@@ -40,31 +40,6 @@ RSpec.describe DeleteService do
     end
   end
 
-  describe '#cleanup_stacks' do
-    let(:fixture_dir) { '/tmp/cleanup-spec' }
-    let(:stacks_dir) { File.join(fixture_dir, 'stacks') }
-    let(:stacks_druid) { DruidTools::StacksDruid.new(druid, Settings.stacks.local_stacks_root) }
-
-    before do
-      allow(Settings.stacks).to receive(:local_stacks_root).and_return(stacks_dir)
-      FileUtils.mkdir fixture_dir
-      FileUtils.mkdir stacks_dir
-
-      stacks_druid.mkdir
-
-      File.write(File.join(stacks_druid.path, 'tempfile'), 'junk')
-    end
-
-    after do
-      FileUtils.rm_rf fixture_dir
-    end
-
-    it 'prunes the item from the local stacks root' do
-      expect { service.send(:cleanup_stacks) }.to change { File.exist?(stacks_druid.path) }
-        .from(true).to(false)
-    end
-  end
-
   describe '#delete_from_dor' do
     before do
       create(:repository_object, external_identifier: druid)

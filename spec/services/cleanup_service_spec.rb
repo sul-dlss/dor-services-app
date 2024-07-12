@@ -203,7 +203,6 @@ RSpec.describe CleanupService do
     let(:workspace_dir) { File.join(fixture_dir, 'workspace') }
     let(:export_dir) { File.join(fixture_dir, 'export') }
     let(:assembly_dir) { File.join(fixture_dir, 'assembly') }
-    let(:stacks_dir) { File.join(fixture_dir, 'stacks') }
 
     let(:druid1) { 'druid:cd456ef7890' }
     let(:druid2) { 'druid:cd456gh1234' }
@@ -214,13 +213,11 @@ RSpec.describe CleanupService do
         local_export_home: export_dir,
         local_assembly_root: assembly_dir
       )
-      allow(Settings.stacks).to receive(:local_stacks_root).and_return(stacks_dir)
 
       FileUtils.mkdir fixture_dir
       FileUtils.mkdir workspace_dir
       FileUtils.mkdir export_dir
       FileUtils.mkdir assembly_dir
-      FileUtils.mkdir stacks_dir
     end
 
     after do
