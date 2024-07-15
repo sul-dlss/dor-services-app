@@ -43,7 +43,7 @@ module Cocina
           if subtypes.blank?
             self_deposit_type(self_deposit_form)
           else
-            subtypes.filter_map { |subtype| subtype if subtype != resource_type_general }.compact.join('; ')
+            subtypes.select { |subtype| subtype if subtype != resource_type_general }.join('; ')
           end
         end
       end
