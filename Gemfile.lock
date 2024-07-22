@@ -238,11 +238,11 @@ GEM
       activesupport (>= 6.1)
     graphiql-rails (1.10.0)
       railties
-    graphql (2.3.8)
+    graphql (2.3.10)
       base64
     hashdiff (1.1.0)
     hashie (5.0.0)
-    honeybadger (5.14.0)
+    honeybadger (5.15.0)
     http-cookie (1.0.6)
       domain_name (~> 0.5)
     i18n (1.14.5)
@@ -427,7 +427,7 @@ GEM
     request_store (1.7.0)
       rack (>= 1.4)
     retries (0.0.5)
-    rexml (3.3.1)
+    rexml (3.3.2)
       strscan
     rsolr (2.6.0)
       builder (>= 2.1.2)
