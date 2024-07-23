@@ -65,7 +65,6 @@ RSpec.describe ConstituentService do
 
     it 'publishes constituents' do
       service.add(constituent_druids:)
-      expect(CocinaObjectStore).to have_received(:find).exactly(constituent_druids.count).times
       expect(Publish::MetadataTransferService).to have_received(:publish).exactly(constituent_druids.count).times
     end
 

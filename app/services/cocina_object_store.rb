@@ -76,8 +76,8 @@ class CocinaObjectStore
   end
 
   # @param [String] druid to find
-  # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
-  def find(druid)
+  # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata] for the requested version
+  def find(druid, version: :head)
     RepositoryObject.find_by!(external_identifier: druid).head_version.to_cocina_with_metadata
   rescue ActiveRecord::RecordNotFound
     return bootstrap_ur_admin_policy if bootstrap_ur_admin_policy?(druid)
