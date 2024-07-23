@@ -32,7 +32,7 @@ RSpec.describe PublishJob do
     end
 
     it 'invokes the Publish::MetadataTransferService' do
-      expect(Publish::MetadataTransferService).to have_received(:publish).with(item, workflow:).once
+      expect(Publish::MetadataTransferService).to have_received(:publish).with(druid:, workflow:).once
     end
 
     it 'marks the job as complete' do

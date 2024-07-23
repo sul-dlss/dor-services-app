@@ -52,6 +52,23 @@ class UserVersionService
     user_version_for(druid:, user_version:).present?
   end
 
+  # @param [String] druid of the item
+  # @param [integer,nil] user_version of the latest UserVersion or nil if the item has no UserVersions
+  # @raise [UserVersionService::UserVersioningError] RepositoryObject not found for the druid
+  def self.latest_user_version(druid:)
+    repository_object = repository_object(druid:)
+    repository_object.user_versions.maximum(:version)
+  end
+
+  # @param [String] druid of the item
+  # @param [integer] user_version of the UserVersion
+  # @return [Integer] The object version
+  def self.object_version_for(druid:, user_version:)
+    user_version_for(druid:, user_version:).repository_object_version.version
+  end
+
+  # private below
+
   # @return [RepositoryObject] The repository object for the druid
   # @raise [UserVersionService::UserVersioningError] RepositoryObject not found for the druid
   def self.repository_object(druid:)
@@ -60,7 +77,7 @@ class UserVersionService
     raise(UserVersioningError, "RepositoryObject not found for #{druid}")
   end
 
-  # @return [RepositoryObjectVersion] The repository object version for the version number
+  # @return [RepositoryObjectVersion] The repository object version for the version number or for the head version if version not provided
   # @raise [UserVersionService::UserVersioningError] RepositoryObjectVersion not found for the version
   def self.repository_object_version(druid:, version:)
     repository_object = repository_object(druid:)

@@ -21,7 +21,7 @@ class PublishJob < ApplicationJob
                                          output: { errors: [{ title: 'Publishing error', detail: 'Cannot publish an admin policy' }] })
     end
 
-    Publish::MetadataTransferService.publish(cocina_object, workflow:)
+    Publish::MetadataTransferService.publish(druid:, workflow:)
     EventFactory.create(druid:, event_type: 'publishing_complete', data: { background_job_result_id: background_job_result.id })
     return unless log_success
 

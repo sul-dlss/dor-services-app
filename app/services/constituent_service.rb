@@ -57,8 +57,7 @@ class ConstituentService
 
   def publish_constituents!(constituent_druids)
     constituent_druids.each do |constituent_druid|
-      cocina_item = CocinaObjectStore.find(constituent_druid)
-      Publish::MetadataTransferService.publish(cocina_item)
+      Publish::MetadataTransferService.publish(druid: constituent_druid)
     end
   end
 end

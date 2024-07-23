@@ -1,22 +1,26 @@
 # frozen_string_literal: true
 
 module Publish
-  # Merges contentMetadata from several objects into one and sends it to PURL
+  # Updates access system with the content and metadata of the object, i.e., publishing and shelving.
+  # Note that if a user_version is specified, that user version will be published.
+  # If a user_version is not specified and the object has user versions, the latest user version will be published.
+  # If the object does not have user versions, the latest closed version will be published as version 1.
   class MetadataTransferService
-    # @param [Cocina::Models::DRO,Cocina::Models::Collection] cocina_object the object to be publshed
+    # @param [String] druid for the object to be published
+    # @param [String] user_version if a specific version is to be published
     # @param [String] workflow (optional) the workflow used for reporting back status to (defaults to 'accessionWF')
-    def self.publish(cocina_object, workflow: 'accessionWF')
-      new(cocina_object, workflow:).publish
+    def self.publish(druid:, user_version: nil, workflow: 'accessionWF')
+      new(druid:, workflow:, user_version:).publish
     end
 
-    def initialize(cocina_object, workflow:)
-      @cocina_object = cocina_object
+    def initialize(druid:, workflow:, user_version:)
       @workflow = workflow
+      @public_cocina = PublicCocina.new(druid:, user_version:)
     end
 
-    # Appends contentMetadata file resources from the source objects to this object
+    # Updates access system with the content and metadata of the object
     def publish
-      republish_collection_members!
+      republish_collection_members! if cocina_object.collection?
       return publish_delete_on_success unless discoverable?
 
       publish_shelve
@@ -26,33 +30,21 @@ module Publish
 
     private
 
-    attr_reader :cocina_object, :workflow
+    attr_reader :workflow
 
-    def public_cocina
-      @public_cocina ||= PublicCocinaService.create(cocina_object)
-    end
-
-    def druid
-      cocina_object.externalIdentifier
-    end
-
-    def discoverable?
-      cocina_object.access.view != 'dark'
-    end
+    delegate :cocina_object, :druid, :public_cocina, :public_version, :user_version, :discoverable?, :version_date, :must_version?, to: :@public_cocina
 
     def republish_collection_members!
-      return unless cocina_object&.collection?
-
       Array.wrap(
-        MemberService.for(cocina_object.externalIdentifier, exclude_opened: true, only_published: true)
-      ).each do |druid|
-        PublishJob.set(queue: :publish_low).perform_later(druid:, background_job_result: BackgroundJobResult.create, workflow:, log_success: false)
+        MemberService.for(druid, exclude_opened: true, only_published: true)
+      ).each do |member_druid|
+        PublishJob.set(queue: :publish_low).perform_later(druid: member_druid, background_job_result: BackgroundJobResult.create, workflow:, log_success: false)
       end
     end
 
     def republish_virtual_object_constituents!
-      VirtualObjectService.constituents(cocina_object, exclude_opened: true, only_published: true).each do |druid|
-        PublishJob.set(queue: :publish_low).perform_later(druid:, background_job_result: BackgroundJobResult.create, workflow:, log_success: false)
+      VirtualObjectService.constituents(cocina_object, exclude_opened: true, only_published: true).each do |constituent_druid|
+        PublishJob.set(queue: :publish_low).perform_later(druid: constituent_druid, background_job_result: BackgroundJobResult.create, workflow:, log_success: false)
       end
     end
 
@@ -72,17 +64,28 @@ module Publish
     # When deleting a PURL, we notify purl-fetcher of changes.
     #
     def publish_delete_on_success
-      PurlFetcher::Client::Unpublish.unpublish(druid:)
+      PurlFetcher::Client::Unpublish.unpublish(druid:, version: public_version)
     rescue PurlFetcher::Client::AlreadyDeletedResponseError
       # It's fine. The object is already deleted.
     end
 
     def publish_shelve
-      ShelvableFilesStager.stage(druid:, version: cocina_object.version, filepaths: filepaths_to_shelve, workspace_content_pathname:) if filepaths_to_shelve.present?
-      filepath_map.each do |filename, stage_filename|
-        copy(workspace_content_pathname.join(filename), transfer_stage_pathname.join(stage_filename))
+      if filepaths_to_shelve.present?
+        ShelvableFilesStager.stage(druid:, version: cocina_object.version, filepaths: filepaths_to_shelve, workspace_content_pathname:)
+        TransferStager.copy(druid:, filepath_map:, workspace_content_pathname:)
       end
-      PurlFetcher::Client::Publish.publish(cocina: public_cocina, file_uploads: filepath_map)
+      PurlFetcher::Client::Publish.publish(cocina: public_cocina, file_uploads: filepath_map, version: public_version,
+                                           must_version: must_version?, version_date:)
+    end
+
+    def filepaths_to_shelve
+      @filepaths_to_shelve ||= public_cocina.dro? ? DigitalStacksDiffer.call(cocina_object: public_cocina) : []
+    end
+
+    def filepath_map
+      @filepath_map ||= filepaths_to_shelve.index_with do |_filename|
+        SecureRandom.uuid
+      end
     end
 
     def workspace_content_pathname
@@ -101,26 +104,53 @@ module Publish
       end
     end
 
-    def copy(src_pathname, dest_pathname)
-      return if dest_pathname.exist?
+    # Encapsulates cocina to be published.
+    class PublicCocina
+      def initialize(druid:, user_version:)
+        @druid = druid
+        @user_version = user_version || UserVersionService.latest_user_version(druid:)
+      end
 
-      Rails.logger.info("Copying #{src_pathname} (#{src_pathname.size} bytes) to #{dest_pathname} for #{druid}")
-      FileUtils.copy(src_pathname, dest_pathname)
+      # @return [Cocina::Models::DRO, Cocina::Models::Collection] the cocina object to publish
+      def cocina_object
+        repository_object_version.to_cocina_with_metadata
+      end
 
-      raise "Copy #{src_pathname} to #{dest_pathname} failed" unless dest_pathname.exist? && dest_pathname.size == src_pathname.size
-    end
+      def public_cocina
+        @public_cocina ||= PublicCocinaService.create(cocina_object)
+      end
 
-    def transfer_stage_pathname
-      @transfer_stage_pathname ||= Pathname(Settings.stacks.transfer_stage_root)
-    end
+      def public_version
+        @public_version ||= user_version || 1
+      end
 
-    def filepaths_to_shelve
-      @filepaths_to_shelve ||= public_cocina.dro? ? DigitalStacksDiffer.call(cocina_object: public_cocina) : []
-    end
+      def version_date
+        repository_object_version.closed_at
+      end
 
-    def filepath_map
-      @filepath_map ||= filepaths_to_shelve.index_with do |_filename|
-        SecureRandom.uuid
+      def discoverable?
+        cocina_object.access.view != 'dark'
+      end
+
+      def must_version?
+        user_version.present?
+      end
+
+      attr_reader :druid, :user_version
+
+      private
+
+      def repository_object
+        @repository_object ||= RepositoryObject.find_by!(external_identifier: druid)
+      end
+
+      def repository_object_version
+        @repository_object_version ||= if user_version
+                                         object_version = UserVersionService.object_version_for(druid:, user_version:)
+                                         repository_object.versions.find_by!(version: object_version)
+                                       else
+                                         repository_object.last_closed_version
+                                       end
       end
     end
   end
