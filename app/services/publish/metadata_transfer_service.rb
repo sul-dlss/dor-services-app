@@ -24,6 +24,7 @@ module Publish
       return publish_delete_on_success unless discoverable?
 
       publish_shelve
+      check_stacks if public_cocina.dro?
       republish_virtual_object_constituents!
       release_tags_on_success
     end
@@ -76,6 +77,12 @@ module Publish
       end
       PurlFetcher::Client::Publish.publish(cocina: public_cocina, file_uploads: filepath_map, version: public_version,
                                            must_version: must_version?, version_date:)
+    end
+
+    def check_stacks
+      missing_filepaths = DigitalStacksDiffer.call(cocina_object: public_cocina)
+
+      raise "Files are missing from stacks: #{missing_filepaths}" if missing_filepaths.present?
     end
 
     def filepaths_to_shelve

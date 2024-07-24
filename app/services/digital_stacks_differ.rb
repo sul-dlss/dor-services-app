@@ -31,7 +31,7 @@ class DigitalStacksDiffer
   end
 
   def purl_file_md5s
-    @purl_file_md5s ||= purl_fetcher_reader.files_by_digest(bare_druid).map { |md5_file| md5_file.keys.first }
+    @purl_file_md5s ||= purl_fetcher_reader.files_by_digest(bare_druid).map { |md5_file| md5_file.keys.first }.uniq
   rescue PurlFetcher::Client::NotFoundResponseError
     []
   rescue PurlFetcher::Client::ResponseError => e
