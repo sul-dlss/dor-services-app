@@ -3461,6 +3461,18 @@ components:
         userVersion:
           type: integer
           description: the number of the user version
+        withdrawn:
+          type: boolean
+          description: whether the user version is withdrawn
+        withdrawable:
+          type: boolean
+          description: whether the user version can be withdrawn
+        restorable:
+          type: boolean
+          description: whether the user version can be restored
+        head:
+          type: boolean
+          description: whether the user version is the head
     UserVersionLog:
       type: object
       description: "User versions for an object."
