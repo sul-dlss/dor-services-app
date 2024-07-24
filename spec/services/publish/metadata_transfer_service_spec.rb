@@ -105,7 +105,7 @@ RSpec.describe Publish::MetadataTransferService do
       before do
         repository_object_version = create(:repository_object_version, :with_repository_object, external_identifier: druid, closed_at:, structural:)
         repository_object_version.repository_object.open_version!(description: 'This is a draft repository object version; it should not be used.')
-        allow(DigitalStacksDiffer).to receive(:call).and_return(['00001.html'])
+        allow(DigitalStacksDiffer).to receive(:call).and_return(['00001.html'], [])
         allow(ShelvableFilesStager).to receive(:stage)
         allow(SecureRandom).to receive(:uuid).and_return(uuid)
       end
@@ -113,7 +113,7 @@ RSpec.describe Publish::MetadataTransferService do
       it 'publishes the item' do
         described_class.publish(druid:)
 
-        expect(DigitalStacksDiffer).to have_received(:call).with(cocina_object: public_cocina)
+        expect(DigitalStacksDiffer).to have_received(:call).with(cocina_object: public_cocina).twice
         expect(ShelvableFilesStager).to have_received(:stage).with(druid:,
                                                                    version: 1, filepaths: ['00001.html'],
                                                                    workspace_content_pathname: Pathname.new('tmp/dor/workspace/bc/123/df/4567/bc123df4567/content'))
@@ -183,7 +183,7 @@ RSpec.describe Publish::MetadataTransferService do
       before do
         repository_object_version = create(:repository_object_version, :with_repository_object, external_identifier: druid, closed_at:, structural:)
         create(:user_version, repository_object_version:, version: 2)
-        allow(DigitalStacksDiffer).to receive(:call).and_return(['00001.html'])
+        allow(DigitalStacksDiffer).to receive(:call).and_return(['00001.html'], [])
         allow(ShelvableFilesStager).to receive(:stage)
         allow(SecureRandom).to receive(:uuid).and_return(uuid)
       end
@@ -191,7 +191,7 @@ RSpec.describe Publish::MetadataTransferService do
       it 'publishes the item' do
         described_class.publish(druid:)
 
-        expect(DigitalStacksDiffer).to have_received(:call).with(cocina_object: public_cocina)
+        expect(DigitalStacksDiffer).to have_received(:call).with(cocina_object: public_cocina).twice
         expect(ShelvableFilesStager).to have_received(:stage).with(druid:,
                                                                    version: 1, filepaths: ['00001.html'],
                                                                    workspace_content_pathname: Pathname.new('tmp/dor/workspace/bc/123/df/4567/bc123df4567/content'))
@@ -252,6 +252,54 @@ RSpec.describe Publish::MetadataTransferService do
                                                                              must_version: false, version_date: closed_at)
         expect(Publish::TransferStager).not_to have_received(:copy)
         expect(PurlFetcher::Client::ReleaseTags).to have_received(:release).with(druid:, index: ['Searchworks'], delete: ['Earthworks'])
+      end
+    end
+
+    context 'when a file missing from shelves' do
+      let(:public_cocina) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, dro?: true) }
+
+      let(:structural) do
+        { contains: [
+          {
+            type: Cocina::Models::FileSetType.file,
+            externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/123-456-789', label: 'Page 1', version: 1,
+            structural: {
+              contains: [
+                {
+                  type: Cocina::Models::ObjectType.file,
+                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/123-456-789',
+                  label: '00001.html',
+                  filename: '00001.html',
+                  size: 0,
+                  version: 1,
+                  hasMimeType: 'text/html',
+                  use: 'transcription',
+                  hasMessageDigests: [
+                    {
+                      type: 'sha1', digest: 'cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7'
+                    }, {
+                      type: 'md5', digest: 'e6d52da47a5ade91ae31227b978fb023'
+                    }
+                  ],
+                  access: { view: 'world', download: 'world' },
+                  administrative: { publish: true, sdrPreserve: true, shelve: true }
+                }
+              ]
+            }
+          }
+        ] }
+      end
+
+      before do
+        repository_object_version = create(:repository_object_version, :with_repository_object, external_identifier: druid, closed_at:, structural:)
+        repository_object_version.repository_object.open_version!(description: 'This is a draft repository object version; it should not be used.')
+        allow(DigitalStacksDiffer).to receive(:call).and_return(['00001.html'])
+        allow(ShelvableFilesStager).to receive(:stage)
+        allow(SecureRandom).to receive(:uuid).and_return(uuid)
+      end
+
+      it 'raises' do
+        expect { described_class.publish(druid:) }.to raise_error('Files are missing from stacks: ["00001.html"]')
       end
     end
   end
