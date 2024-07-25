@@ -11,7 +11,7 @@ class PreservationVersions
 
   def report
     # Objects with a closed version, indicating they have been accessioned.
-    data = RepositoryObject.joins(:head_version).where.not(last_closed_version: nil).pluck(:external_identifier, :version)
+    data = RepositoryObject.joins(:last_closed_version).where.not(last_closed_version: nil).pluck(:external_identifier, :version)
 
     progress_bar = tty_progress_bar(data.length)
     progress_bar.start
