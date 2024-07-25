@@ -114,8 +114,7 @@ RSpec.describe Publish::MetadataTransferService do
         described_class.publish(druid:)
 
         expect(DigitalStacksDiffer).to have_received(:call).with(cocina_object: public_cocina).twice
-        expect(ShelvableFilesStager).to have_received(:stage).with(druid:,
-                                                                   version: 1, filepaths: ['00001.html'],
+        expect(ShelvableFilesStager).to have_received(:stage).with(cocina_object: Cocina::Models::DROWithMetadata, filepaths: ['00001.html'],
                                                                    workspace_content_pathname: Pathname.new('tmp/dor/workspace/bc/123/df/4567/bc123df4567/content'))
         expect(Publish::TransferStager).to have_received(:copy).with(druid:, filepath_map: { '00001.html' => uuid }, workspace_content_pathname:)
         expect(PurlFetcher::Client::Publish).to have_received(:publish).with(cocina: public_cocina,
@@ -192,8 +191,8 @@ RSpec.describe Publish::MetadataTransferService do
         described_class.publish(druid:)
 
         expect(DigitalStacksDiffer).to have_received(:call).with(cocina_object: public_cocina).twice
-        expect(ShelvableFilesStager).to have_received(:stage).with(druid:,
-                                                                   version: 1, filepaths: ['00001.html'],
+        expect(ShelvableFilesStager).to have_received(:stage).with(cocina_object: Cocina::Models::DROWithMetadata,
+                                                                   filepaths: ['00001.html'],
                                                                    workspace_content_pathname: Pathname.new('tmp/dor/workspace/bc/123/df/4567/bc123df4567/content'))
         expect(Publish::TransferStager).to have_received(:copy).with(druid:, filepath_map: { '00001.html' => uuid }, workspace_content_pathname:)
         expect(PurlFetcher::Client::Publish).to have_received(:publish).with(cocina: public_cocina,
