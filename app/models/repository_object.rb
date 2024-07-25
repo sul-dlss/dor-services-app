@@ -37,6 +37,10 @@ class RepositoryObject < ApplicationRecord
 
   delegate :to_cocina, :to_cocina_with_metadata, to: :head_version
 
+  def head_user_version
+    @head_user_version ||= user_versions.maximum(:version)
+  end
+
   # NOTE: This block uses metaprogramming to create the equivalent of scopes that query the RepositoryObjectVersion table using only rows that are a `current` in the RepositoryObject table
   #
   # So it's a more easily extensible version of:

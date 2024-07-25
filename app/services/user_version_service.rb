@@ -27,8 +27,10 @@ class UserVersionService
   # @raise [UserVersionService::UserVersioningError] RepositoryObject not found for the druid
   # @raise [UserVersionService::UserVersioningError] RepositoryObjectVersion not found for the version
   def self.withdraw(druid:, user_version:, withdraw: true)
-    user_version_for(druid:, user_version:).update(withdrawn: withdraw)
+    user_version_for(druid:, user_version:).update!(withdrawn: withdraw)
     EventFactory.create(druid:, event_type: 'user_version_withdrawn', data: { version: user_version.to_s, withdrawn: withdraw })
+  rescue ActiveRecord::RecordInvalid => e
+    raise(UserVersioningError, e.message)
   end
 
   # @param [String] druid of the item
