@@ -9,18 +9,10 @@ class VersionService
 
   DEFAULT_USER_VERSION_MODE = :update_if_existing
 
-  # @param [String] druid of the item
-  # @param [Integer] version of the item
-  # @raise [CocinaObjectNotFoundError] if the object is not found
-  # @raise [VersioningError] if the version does not match the head version
   def self.open?(...)
     new(...).open?
   end
 
-  # @param [Cocina::Models::DRO,Cocina::Models::Collection] cocina_object the item being acted upon
-  # @param [String] description set description of version change
-  # @param [String] opening_user_name add opening username to the events datastream
-  # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
   def self.open(cocina_object:, description:, opening_user_name: nil, assume_accessioned: false)
     new(druid: cocina_object.externalIdentifier, version: cocina_object.version)
       .open(description:,
@@ -29,19 +21,10 @@ class VersionService
             cocina_object:)
   end
 
-  # @param [String] druid of the item
-  # @param [Integer] version of the item
-  # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
   def self.can_open?(druid:, version:, assume_accessioned: false)
     new(druid:, version:).can_open?(assume_accessioned:)
   end
 
-  # @param [String] druid of the item
-  # @param [Integer] version of the item
-  # @param [String] description describes the version change
-  # @param [String] user_name add username to the events datastream
-  # @param [Boolean] start_accession (true) set to true if you want accessioning to start, false otherwise
-  # @param [Symbol] :user_version_mode :create, :update, :update_if_existing (default), or :none (do nothing) with user_versions on close
   def self.close(druid:, version:, description: nil, user_name: nil, start_accession: true, user_version_mode: DEFAULT_USER_VERSION_MODE)
     new(druid:, version:).close(description:,
                                 user_name:,
@@ -49,8 +32,6 @@ class VersionService
                                 user_version_mode:)
   end
 
-  # @param [String] druid of the item
-  # @param [Integer] version of the item
   def self.can_close?(druid:, version:)
     new(druid:, version:).can_close?
   end
