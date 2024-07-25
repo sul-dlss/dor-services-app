@@ -91,6 +91,7 @@ class VersionsController < ApplicationController
       :user_name,
       :user_versions
     ).to_h.symbolize_keys
+    new_params[:user_version_mode] = new_params.delete(:user_versions).to_sym if new_params.key?(:user_versions)
     boolean_param(new_params, :start_accession)
   end
 

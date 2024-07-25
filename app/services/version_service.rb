@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
 # Open and close versions
+# rubocop:disable Metrics/ClassLength
 class VersionService
   class VersioningError < StandardError; end
 
   class CocinaObjectNotFoundError < VersioningError; end
+
+  DEFAULT_USER_VERSION_MODE = :update_if_existing
 
   # @param [String] druid of the item
   # @param [Integer] version of the item
@@ -38,12 +41,12 @@ class VersionService
   # @param [String] description describes the version change
   # @param [String] user_name add username to the events datastream
   # @param [Boolean] start_accession (true) set to true if you want accessioning to start, false otherwise
-  # @param [String] user_versions (none) one of none, new, update
-  def self.close(druid:, version:, description: nil, user_name: nil, start_accession: true, user_versions: 'none')
+  # @param [Symbol] :user_version_mode :create, :update, :update_if_existing (default), or :none (do nothing) with user_versions on close
+  def self.close(druid:, version:, description: nil, user_name: nil, start_accession: true, user_version_mode: DEFAULT_USER_VERSION_MODE)
     new(druid:, version:).close(description:,
                                 user_name:,
                                 start_accession:,
-                                user_versions:)
+                                user_version_mode:)
   end
 
   # @param [String] druid of the item
@@ -115,14 +118,14 @@ class VersionService
   # @param [String] :description describes the version change
   # @param [String] :user_name add username to the events datastream
   # @param [Boolean] :start_accession set to true if you want accessioning to start (default), false otherwise
-  # @param [String] :user_versions create, update, or do nothing with user_versions on close
+  # @param [Symbol] :user_version_mode :none (do nothing), :new, :update, or :update_if_existing (default) with user_versions on close
   # @raise [VersionService::VersioningError] if the object hasn't been opened for versioning, or if accessionWF has
   #   already been instantiated or the current version is missing a description
   # @raise [ArgumentError] if user_versions is not one of none, new, update
-  def close(description:, user_name:, start_accession: true, user_versions: 'none')
-    user_version_options = %w[none new update]
+  def close(description:, user_name:, start_accession: true, user_version_mode: DEFAULT_USER_VERSION_MODE)
+    user_version_mode_options = %i[none new update update_if_existing]
 
-    raise ArgumentError, "user_version must be one of #{user_version_options.join(', ')}" unless user_version_options.include?(user_versions)
+    raise ArgumentError, "user_version_mode must be one of #{user_version_mode_options.join(', ')}" unless user_version_mode_options.include?(user_version_mode)
 
     ensure_closeable!
 
@@ -133,7 +136,7 @@ class VersionService
 
     EventFactory.create(druid:, event_type: 'version_close', data: { who: user_name, version: version.to_s })
 
-    update_user_version(user_versions:, repository_object:)
+    update_user_version(user_version_mode:, repository_object:)
   end
 
   # Determines whether a version can be closed for an object.
@@ -195,15 +198,28 @@ class VersionService
     raise VersionService::VersioningError, "accessionWF already created for versioned object #{druid}" if accessioning?
   end
 
-  def update_user_version(user_versions:, repository_object:)
-    return if user_versions == 'none'
-    return UserVersionService.create(druid:, version: repository_object.last_closed_version.version) if user_versions == 'new'
+  def update_user_version(user_version_mode:, repository_object:)
+    case user_version_mode
+    when :new
+      create_user_version(repository_object)
+    when :update
+      no_user_versions?(repository_object) ? create_user_version(repository_object) : move_user_version(repository_object)
+    when :update_if_existing
+      move_user_version(repository_object) unless no_user_versions?(repository_object)
+    end
+    # :none falls through and does nothing
+  end
 
-    # If called with 'update', but there are no user versions to update, create a new user version.
-    return UserVersionService.create(druid:, version: repository_object.last_closed_version.version) if repository_object.user_versions.empty?
+  def no_user_versions?(repository_object)
+    repository_object.user_versions.empty?
+  end
 
-    max_user_version = repository_object.user_versions.maximum(:version)
-    UserVersionService.move(druid:, version: repository_object.last_closed_version.version, user_version: max_user_version)
+  def create_user_version(repository_object)
+    UserVersionService.create(druid:, version: repository_object.last_closed_version.version)
+  end
+
+  def move_user_version(repository_object)
+    UserVersionService.move(druid:, version: repository_object.last_closed_version.version, user_version: repository_object.head_user_version)
   end
 
   def check_version!(current_version:)
@@ -216,3 +232,4 @@ class VersionService
     raise VersionService::VersioningError, "Version from Preservation is out of sync. Preservation expects #{preservation_version} but current version is #{current_version}"
   end
 end
+# rubocop:enable Metrics/ClassLength
