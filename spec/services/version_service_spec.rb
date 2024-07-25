@@ -208,12 +208,12 @@ RSpec.describe VersionService do
                             description:,
                             user_name: 'jcoyne',
                             start_accession:,
-                            user_versions: user_version_param)
+                            user_version_mode:)
     end
 
     let(:version) { 2 }
     let(:start_accession) { true }
-    let(:user_version_param) { 'none' }
+    let(:user_version_mode) { :none }
     let(:description) { 'closing text' }
     let(:workflow_client) do
       instance_double(Dor::Workflow::Client, create_workflow_by_name: true)
@@ -251,7 +251,7 @@ RSpec.describe VersionService do
       end
 
       context 'when user_version is new' do
-        let(:user_version_param) { 'new' }
+        let(:user_version_mode) { :new }
 
         it 'creates a new user version' do
           close
@@ -262,7 +262,7 @@ RSpec.describe VersionService do
       end
 
       context 'when user_version is new and there is an existing user version' do
-        let(:user_version_param) { 'new' }
+        let(:user_version_mode) { :new }
         let(:version) { 3 }
 
         before do
@@ -271,7 +271,7 @@ RSpec.describe VersionService do
                                 description:,
                                 user_name: 'jcoyne',
                                 start_accession:,
-                                user_versions: 'new')
+                                user_version_mode: :new)
           allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
           allow(Preservation::Client.objects).to receive(:current_version).and_return(2)
           allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
@@ -291,7 +291,7 @@ RSpec.describe VersionService do
       end
 
       context 'when user_version is update' do
-        let(:user_version_param) { 'update' }
+        let(:user_version_mode) { :update }
         let(:version) { 3 }
 
         before do
@@ -300,7 +300,7 @@ RSpec.describe VersionService do
                                 description:,
                                 user_name: 'jcoyne',
                                 start_accession:,
-                                user_versions: 'new')
+                                user_version_mode: :new)
           allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
           allow(Preservation::Client.objects).to receive(:current_version).and_return(2)
           allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
@@ -321,7 +321,7 @@ RSpec.describe VersionService do
       end
 
       context 'when user_version is update but there is no previous user version' do
-        let(:user_version_param) { 'update' }
+        let(:user_version_mode) { :update }
         let(:version) { 3 }
 
         before do
@@ -330,7 +330,7 @@ RSpec.describe VersionService do
                                 description:,
                                 user_name: 'jcoyne',
                                 start_accession:,
-                                user_versions: 'none')
+                                user_version_mode: :none)
           allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
           allow(Preservation::Client.objects).to receive(:current_version).and_return(2)
           allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
@@ -346,6 +346,64 @@ RSpec.describe VersionService do
           expect(repository_object.reload.last_closed_version).to be_present
           expect(repository_object.last_closed_version.user_versions.count).to eq 1
           expect(repository_object.last_closed_version.user_versions.first.version).to eq 1
+        end
+      end
+
+      context 'when user_version is update_if_existing' do
+        let(:user_version_mode) { :update_if_existing }
+        let(:version) { 3 }
+
+        before do
+          described_class.close(druid:,
+                                version: 2,
+                                description:,
+                                user_name: 'jcoyne',
+                                start_accession:,
+                                user_version_mode: :new)
+          allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
+          allow(Preservation::Client.objects).to receive(:current_version).and_return(2)
+          allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
+          allow(cocina_object).to receive(:version).and_return(2)
+          described_class.open(cocina_object:, description: 'same as it ever was', opening_user_name: 'sunetid')
+          repository_object.versions.last.update!(closed_at: nil)
+          repository_object.head_version = repository_object.versions.last
+          repository_object.last_closed_version = repository_object.versions.first
+        end
+
+        it 'moves the user version' do
+          close
+          expect(repository_object.reload.last_closed_version).to be_present
+          expect(repository_object.last_closed_version.user_versions.count).to eq 1
+          expect(repository_object.last_closed_version.user_versions.first.version).to eq 1
+          expect(repository_object.versions.find_by(version: 2).user_versions.count).to eq 0
+        end
+      end
+
+      context 'when user_version is update_if_existing but there is no previous user version' do
+        let(:user_version_mode) { :update_if_existing }
+        let(:version) { 3 }
+
+        before do
+          described_class.close(druid:,
+                                version: 2,
+                                description:,
+                                user_name: 'jcoyne',
+                                start_accession:,
+                                user_version_mode: :none)
+          allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
+          allow(Preservation::Client.objects).to receive(:current_version).and_return(2)
+          allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
+          allow(cocina_object).to receive(:version).and_return(2)
+          described_class.open(cocina_object:, description: 'same as it ever was', opening_user_name: 'sunetid')
+          repository_object.versions.last.update!(closed_at: nil)
+          repository_object.head_version = repository_object.versions.last
+          repository_object.last_closed_version = repository_object.versions.first
+        end
+
+        it 'does nothing' do
+          close
+          expect(repository_object.last_closed_version.user_versions).to be_empty
+          expect(repository_object.user_versions).to be_empty
         end
       end
     end

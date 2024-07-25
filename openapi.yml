@@ -1028,6 +1028,7 @@ paths:
               - "none"
               - "new"
               - "update"
+              - "update_if_existing"
   "/v1/objects/{object_id}/versions":
     get:
       tags:
