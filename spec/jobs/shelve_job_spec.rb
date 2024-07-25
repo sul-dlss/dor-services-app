@@ -12,7 +12,8 @@ RSpec.describe ShelveJob do
   before do
     allow(CocinaObjectStore).to receive(:find).with(druid).and_return(cocina_object)
     allow(result).to receive(:processing!)
-    allow(ShelvingService).to receive(:shelve)
+    allow(EventFactory).to receive(:create)
+    allow(WasShelvingService).to receive(:shelve)
     allow(LogSuccessJob).to receive(:perform_later)
   end
 
@@ -23,7 +24,7 @@ RSpec.describe ShelveJob do
 
     it 'skips shelving' do
       perform
-      expect(ShelvingService).not_to have_received(:shelve)
+      expect(WasShelvingService).not_to have_received(:shelve)
       expect(LogSuccessJob).to have_received(:perform_later)
         .with(druid:,
               background_job_result: result,
@@ -39,12 +40,32 @@ RSpec.describe ShelveJob do
 
     it 'performs shelving' do
       perform
-      expect(ShelvingService).to have_received(:shelve).with(cocina_object).once
+      expect(WasShelvingService).to have_received(:shelve).with(cocina_object).once
       expect(LogSuccessJob).to have_received(:perform_later)
         .with(druid:,
               background_job_result: result,
               workflow: 'accessionWF',
               workflow_process: 'shelve')
+    end
+  end
+
+  context 'when there is an error' do
+    before do
+      allow(WasService).to receive(:crawl?).with(druid:).and_return(true)
+      allow(WasShelvingService).to receive(:shelve).and_raise(StandardError)
+      allow(LogFailureJob).to receive(:perform_later)
+      allow(Honeybadger).to receive(:notify)
+    end
+
+    it 'raises and notifies Honeybadger' do
+      perform
+      expect(LogFailureJob).to have_received(:perform_later)
+        .with(druid:,
+              background_job_result: result,
+              workflow: 'accessionWF',
+              workflow_process: 'shelve',
+              output: { errors: [{ detail: 'StandardError', title: 'Unable to shelve web archive files' }] })
+      expect(Honeybadger).to have_received(:notify)
     end
   end
 end
