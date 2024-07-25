@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe ShelvableFilesStager do
-  subject(:stage) { described_class.stage(druid:, workspace_content_pathname: content_dir, version: 2, filepaths:) }
+  let(:cocina_object) { build(:dro, id: druid, version: 2) }
 
   let(:workspace_root) { Dir.mktmpdir }
   let(:druid) { 'druid:jq937jp0017' }
@@ -18,51 +18,95 @@ RSpec.describe ShelvableFilesStager do
     allow(Preservation::Client.objects).to receive(:content)
   end
 
-  context 'when the content files are in the workspace area' do
-    before do
-      # put the content files in the content_pathname location .../ng/782/rw/8378/ng782rw8378/content
-      # deltas = shelve_diff.file_deltas
-      # filelist = deltas[:modified] + deltas[:added] + deltas[:copyadded].collect { |_old, new| new }
-      filepaths.each do |filepath|
-        path = content_dir.join(filepath)
-        FileUtils.mkdir_p(File.dirname(path))
-        FileUtils.touch(path)
+  describe '#stage' do
+    subject(:stage) { described_class.stage(cocina_object:, workspace_content_pathname: content_dir, filepaths:) }
+
+    context 'when the content files are in the workspace area' do
+      before do
+        filepaths.each do |filepath|
+          path = content_dir.join(filepath)
+          FileUtils.mkdir_p(File.dirname(path))
+          FileUtils.touch(path)
+        end
+      end
+
+      it 'does not retrieve any files from preservation' do
+        stage
+        expect(Preservation::Client.objects).not_to have_received(:content)
       end
     end
 
-    it 'does not retrieve any files from preservation' do
-      stage
-      expect(Preservation::Client.objects).not_to have_received(:content)
+    context 'when the content files are not in the workspace area' do
+      # Note that for this test, the expected file size check passes because there are no matching files in the cocina.
+      it 'retrieve files from preservation' do
+        stage
+        expect(Preservation::Client.objects).to have_received(:content).with(druid:, filepath: 'file1.txt', version: 1,
+                                                                             on_data: an_instance_of(Proc))
+        expect(Preservation::Client.objects).to have_received(:content).with(druid:, filepath: 'dir/file2.txt', version: 1,
+                                                                             on_data: an_instance_of(Proc))
+      end
+    end
+
+    context 'when the content files are not found in preservation' do
+      before do
+        allow(Preservation::Client.objects).to receive(:content).and_raise(Preservation::Client::NotFoundError)
+      end
+
+      it 'raises' do
+        expect { stage }.to raise_error(ShelvableFilesStager::FileNotFound)
+      end
     end
   end
 
-  context 'when the content files are not in the workspace area' do
-    it 'retrieve files from preservation' do
-      stage
-      expect(Preservation::Client.objects).to have_received(:content).with(druid:, filepath: 'file1.txt', version: 1,
-                                                                           on_data: an_instance_of(Proc))
-      expect(Preservation::Client.objects).to have_received(:content).with(druid:, filepath: 'dir/file2.txt', version: 1,
-                                                                           on_data: an_instance_of(Proc))
-    end
-  end
+  describe '#check_filesize' do
+    subject(:check_file_size) { described_class.new(filepaths:, cocina_object:, workspace_content_pathname: content_dir).send(:check_filesize, file_pathname: content_dir.join('file1.txt'), filepath: 'file1.txt', received: received_bytes) }
 
-  context 'when the content files are not found in preservation' do
-    before do
-      allow(Preservation::Client.objects).to receive(:content).and_raise(Preservation::Client::NotFoundError)
+    let(:cocina_object) do
+      build(:dro, id: druid, version: 2).new(access: { view: 'world' }, structural: Cocina::Models::DROStructural.new(
+        contains: [
+          Cocina::Models::FileSet.new(
+            externalIdentifier: 'bc123df4567_2',
+            type: Cocina::Models::FileSetType.file,
+            label: 'text file',
+            version: 1,
+            structural: Cocina::Models::FileSetStructural.new(
+              contains: [
+                Cocina::Models::File.new(
+                  externalIdentifier: '1234',
+                  type: Cocina::Models::ObjectType.file,
+                  label: 'file1.txt',
+                  filename: 'file1.txt',
+                  version: 1,
+                  size: 9,
+                  hasMessageDigests: [
+                    { type: 'md5', digest: '327d41a48b459a2807d750324bd864ce' }
+                  ],
+                  administrative: {
+                    publish: true,
+                    shelve: true
+                  }
+                )
+              ]
+            )
+          )
+        ]
+      ))
     end
 
-    it 'raises' do
-      expect { stage }.to raise_error(ShelvableFilesStager::FileNotFound)
-    end
-  end
+    context 'when the content length matches' do
+      let(:received_bytes) { 9 }
 
-  context 'when the content length does not match' do
-    before do
-      allow(Preservation::Client.objects).to receive(:content).and_return(instance_double(Faraday::Response, headers: { 'content-length' => '42' }))
+      it 'does not raise' do
+        expect { check_file_size }.not_to raise_error
+      end
     end
 
-    it 'raises' do
-      expect { stage }.to raise_error('File copied from preservation was not the expected size. Expected 42 bytes for file1.txt; received 0 bytes.')
+    context 'when the content length does not match' do
+      let(:received_bytes) { 10 }
+
+      it 'raises' do
+        expect { check_file_size }.to raise_error('File copied from preservation was not the expected size. Expected 9 bytes for file1.txt; received 10 bytes.')
+      end
     end
   end
 end

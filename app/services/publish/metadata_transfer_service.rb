@@ -72,10 +72,10 @@ module Publish
 
     def publish_shelve
       if filepaths_to_shelve.present?
-        ShelvableFilesStager.stage(druid:, version: cocina_object.version, filepaths: filepaths_to_shelve, workspace_content_pathname:)
-        TransferStager.copy(druid:, filepath_map:, workspace_content_pathname:)
+        ShelvableFilesStager.stage(cocina_object:, filepaths: filepaths_to_shelve, workspace_content_pathname:)
+        TransferStager.copy(druid:, filepath_map: filepath_uuid_map, workspace_content_pathname:)
       end
-      PurlFetcher::Client::Publish.publish(cocina: public_cocina, file_uploads: filepath_map, version: public_version,
+      PurlFetcher::Client::Publish.publish(cocina: public_cocina, file_uploads: filepath_uuid_map, version: public_version,
                                            must_version: must_version?, version_date:)
     end
 
@@ -89,8 +89,8 @@ module Publish
       @filepaths_to_shelve ||= public_cocina.dro? ? DigitalStacksDiffer.call(cocina_object: public_cocina) : []
     end
 
-    def filepath_map
-      @filepath_map ||= filepaths_to_shelve.index_with do |_filename|
+    def filepath_uuid_map
+      @filepath_uuid_map ||= filepaths_to_shelve.index_with do |_filename|
         SecureRandom.uuid
       end
     end
