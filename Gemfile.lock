@@ -170,7 +170,7 @@ GEM
       capistrano-one_time_key (>= 0.2.0)
       capistrano-shared_configs
       ed25519
-    docile (1.4.0)
+    docile (1.4.1)
     domain_name (0.6.20240107)
     dor-workflow-client (7.5.0)
       activesupport (>= 3.2.1, < 8)
@@ -223,7 +223,7 @@ GEM
     faraday-cookie_jar (0.0.7)
       faraday (>= 0.8.0)
       http-cookie (~> 1.0.0)
-    faraday-net_http (3.1.0)
+    faraday-net_http (3.1.1)
       net-http
     faraday-retry (2.2.1)
       faraday (~> 2.0)
@@ -242,7 +242,7 @@ GEM
       base64
     hashdiff (1.1.0)
     hashie (5.0.0)
-    honeybadger (5.15.0)
+    honeybadger (5.15.3)
     http-cookie (1.0.6)
       domain_name (~> 0.5)
     i18n (1.14.5)
@@ -323,13 +323,13 @@ GEM
       net-protocol
     net-ssh (7.2.3)
     nio4r (2.7.3)
-    nokogiri (1.16.6-aarch64-linux)
+    nokogiri (1.16.7-aarch64-linux)
       racc (~> 1.4)
-    nokogiri (1.16.6-arm64-darwin)
+    nokogiri (1.16.7-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.16.6-x86_64-darwin)
+    nokogiri (1.16.7-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.16.6-x86_64-linux)
+    nokogiri (1.16.7-x86_64-linux)
       racc (~> 1.4)
     nokogiri-happymapper (0.10.0)
       nokogiri (~> 1.5)
@@ -354,7 +354,7 @@ GEM
       racc
     patience_diff (1.2.0)
       optimist (~> 3.0)
-    pg (1.5.6)
+    pg (1.5.7)
     preservation-client (6.2.0)
       activesupport (>= 4.2, < 8)
       faraday (~> 2.0)
@@ -367,7 +367,7 @@ GEM
       railties (>= 7.0.0)
     psych (5.1.2)
       stringio
-    public_suffix (6.0.0)
+    public_suffix (6.0.1)
     puma (6.4.2)
       nio4r (~> 2.0)
     purl_fetcher-client (2.0.0)
