@@ -6,11 +6,16 @@ class VersionsController < ApplicationController
   before_action :load_version, only: %i[current close_current openable status]
 
   def index
-    repository_object = RepositoryObject.find_by!(external_identifier: params[:object_id])
+    render json: { versions: repository_object_version_content(find_repository_object.versions) }
+  end
 
-    # add an entry with version id and description for each RepositoryObjectVersion
+  def show
+    repository_object = find_repository_object
+    repository_object_version = repository_object.versions.find_by!(version: params[:id])
 
-    render json: { versions: repository_object_version_content(repository_object.versions) }
+    render json: repository_object_version.to_cocina_with_metadata
+  rescue RepositoryObjectVersion::NoCocina => e
+    render build_error('No content for this version', e, status: :bad_request)
   end
 
   def create
@@ -111,5 +116,9 @@ class VersionsController < ApplicationController
         message: repository_object_version.version_description
       }
     end
+  end
+
+  def find_repository_object
+    RepositoryObject.find_by!(external_identifier: params[:object_id])
   end
 end
