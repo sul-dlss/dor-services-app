@@ -3533,6 +3533,9 @@ components:
         message:
           type: string
           description: a message that explains what changed
+        cocina:
+          type: boolean
+          description: whether the version has cocina data. (Legacy versions may not have cocina data.)
     VersionLog:
       type: object
       description: "Similar to the version inventory specified by OCFL: https://ocfl.io/draft/spec/#version-inventory"
