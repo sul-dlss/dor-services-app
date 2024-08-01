@@ -7,11 +7,12 @@
 # For versioning operations, see VersionService.
 # For persistence, see CreateObjectService and UpdateObjectService.
 # For destroying, see DeleteService.
-class RepositoryObject < ApplicationRecord
+class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
   self.locking_column = 'lock'
 
   class VersionAlreadyOpened < StandardError; end
   class VersionNotOpened < StandardError; end
+  class VersionNotDiscardable < StandardError; end
 
   has_many :versions, -> { order(version: :asc) }, class_name: 'RepositoryObjectVersion', dependent: :destroy, inverse_of: 'repository_object', autosave: true
   has_many :user_versions, through: :versions
@@ -108,6 +109,24 @@ class RepositoryObject < ApplicationRecord
     end
   end
 
+  def can_discard_open_version?
+    check_discard_open_version
+    true
+  rescue VersionNotDiscardable
+    false
+  end
+
+  def discard_open_version!
+    check_discard_open_version
+    # TODO: Raise if last closed version doesn't have cocina.
+
+    RepositoryObject.transaction do
+      discard_version = opened_version
+      update!(opened_version: nil, head_version: last_closed_version)
+      discard_version.destroy!
+    end
+  end
+
   def open?
     head_version == opened_version
   end
@@ -168,5 +187,11 @@ class RepositoryObject < ApplicationRecord
     return if head_version.nil? || head_version == last_closed_version || head_version == opened_version
 
     errors.add(:head_version, 'must point at either the last closed version or the opened version')
+  end
+
+  def check_discard_open_version
+    raise VersionNotDiscardable, 'Cannot discard version because head version is closed' if closed?
+    raise VersionNotDiscardable, 'Cannot discard version because this is the first version' if last_closed_version.nil?
+    raise VersionNotDiscardable, 'Cannot discard version because last closed version does not have cocina' unless last_closed_version.has_cocina?
   end
 end

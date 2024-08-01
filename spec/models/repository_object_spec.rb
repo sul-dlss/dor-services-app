@@ -226,4 +226,77 @@ RSpec.describe RepositoryObject do
       expect(repository_object.version_xml).to be_equivalent_to(expected_xml)
     end
   end
+
+  describe '#can_discard_open_version?' do
+    subject(:repository_object) { create(:repository_object, **attrs) }
+
+    context 'when head version is open' do
+      before do
+        repository_object.close_version!
+        repository_object.head_version.update!(cocina_version: Cocina::Models::VERSION)
+        repository_object.open_version!(description: 'draft')
+      end
+
+      it 'returns true' do
+        expect(repository_object.can_discard_open_version?).to be(true)
+      end
+    end
+
+    context 'when head version is closed' do
+      before do
+        repository_object.close_version!
+        repository_object.head_version.update!(cocina_version: Cocina::Models::VERSION)
+        repository_object.open_version!(description: 'draft')
+        repository_object.close_version!
+      end
+
+      it 'returns false' do
+        expect(repository_object.can_discard_open_version?).to be(false)
+      end
+    end
+
+    context 'when head version is first version' do
+      it 'returns false' do
+        expect(repository_object.can_discard_open_version?).to be(false)
+      end
+    end
+
+    context 'when last closed version does not have cocina' do
+      before do
+        repository_object.close_version!
+        repository_object.open_version!(description: 'draft')
+      end
+
+      it 'returns false' do
+        expect(repository_object.can_discard_open_version?).to be(false)
+      end
+    end
+  end
+
+  describe '#discard_open_version!' do
+    subject(:repository_object) { create(:repository_object, **attrs) }
+
+    context 'when head version is discardable' do
+      before do
+        repository_object.close_version!
+        repository_object.head_version.update!(cocina_version: Cocina::Models::VERSION)
+        repository_object.open_version!(description: 'draft')
+      end
+
+      it 'discards draft' do
+        expect { repository_object.discard_open_version! }
+          .to change { repository_object.versions.count }
+          .by(-1)
+          .and change(repository_object, :head_version)
+          .to(repository_object.versions.first)
+          .and change(repository_object, :opened_version).to(nil)
+      end
+    end
+
+    context 'when head version is not discardable' do
+      it 'raises an error' do
+        expect { repository_object.discard_open_version! }.to raise_error(described_class::VersionNotDiscardable)
+      end
+    end
+  end
 end
