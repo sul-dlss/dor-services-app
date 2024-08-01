@@ -17,7 +17,7 @@ RSpec.describe 'Versions' do
 
   before do
     repository_object.save # we need at least one persisted version so we can run this test
-    repository_object.versions.create!(version: 2, version_description: 'draft')
+    repository_object.versions.create!(version: 2, version_description: 'draft', cocina_version: Cocina::Models::CocinaVersion)
   end
 
   it 'returns a 200' do
@@ -25,7 +25,7 @@ RSpec.describe 'Versions' do
         headers: { 'Authorization' => "Bearer #{jwt}" }
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to eq '{"versions":[{"versionId":1,"message":"Initial version"},' \
-                                '{"versionId":2,"message":"draft"}]}'
+    expect(response.body).to eq '{"versions":[{"versionId":1,"message":"Initial version","cocina":false},' \
+                                '{"versionId":2,"message":"draft","cocina":true}]}'
   end
 end

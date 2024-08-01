@@ -113,7 +113,8 @@ class VersionsController < ApplicationController
     repository_object_versions.map do |repository_object_version|
       {
         versionId: repository_object_version.version,
-        message: repository_object_version.version_description
+        message: repository_object_version.version_description,
+        cocina: repository_object_version.has_cocina?
       }
     end
   end
