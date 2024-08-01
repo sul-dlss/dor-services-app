@@ -113,6 +113,20 @@ RSpec.describe CleanupService do
       end
     end
 
+    context 'when head version can be reopened' do
+      before do
+        repository_object.close_version!
+      end
+
+      it 'cleans up and reopens repository object' do
+        expect { described_class.stop_accessioning(druid) }.to output(/Reopening object #{druid}/).to_stdout
+        expect(repository_object.reload).to be_open
+        expect(service).to have_received(:backup_content_by_druid).once
+        expect(service).to have_received(:cleanup_by_druid).once
+        expect(service).to have_received(:delete_accessioning_workflows).once
+      end
+    end
+
     context 'when object cannot be opened and preservationIngestWF does not exist' do
       before do
         allow(VersionService).to receive_messages(can_open?: false)

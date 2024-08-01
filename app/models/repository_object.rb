@@ -118,12 +118,22 @@ class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def discard_open_version!
     check_discard_open_version
-    # TODO: Raise if last closed version doesn't have cocina.
 
     RepositoryObject.transaction do
       discard_version = opened_version
       update!(opened_version: nil, head_version: last_closed_version)
       discard_version.destroy!
+    end
+  end
+
+  # Reopening should only be performed as part of remediation or cleanup.
+  def reopen!
+    raise VersionAlreadyOpened, 'Cannot reopen version because already open' if open?
+
+    RepositoryObject.transaction do
+      head_version.update!(closed_at: nil)
+      # Yes, this may set last_closed_version to nil. That's fine.
+      update!(opened_version: head_version, last_closed_version: versions.find_by(version: head_version.version - 1))
     end
   end
 

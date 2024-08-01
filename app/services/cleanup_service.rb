@@ -36,14 +36,21 @@ class CleanupService
 
     @version = repository_object.head_version.version
 
-    $stdout.puts "Head version of object #{druid} cannot be discarded" unless repository_object.can_discard_open_version?
-
-    repository_object.discard_open_version! if repository_object.can_discard_open_version? && !dryrun
-
     $stdout.puts '*** DRY RUN - NO ACTIONS WILL BE PERFORMED' if dryrun
     $stdout.puts "...object found is an item: version #{version}"
 
     $stdout.puts "...v#{version} of the object has not been sent to preservation"
+
+    if repository_object.can_discard_open_version?
+      $stdout.puts "Discarding head version of object #{druid}"
+      repository_object.discard_open_version! unless dryrun
+    else
+      $stdout.puts "Head version of object #{druid} cannot be discarded"
+      if repository_object.closed?
+        $stdout.puts "Reopening object #{druid}"
+        repository_object.reopen! unless dryrun
+      end
+    end
 
     # backup folders
     $stdout.puts '...backing up content folders'
