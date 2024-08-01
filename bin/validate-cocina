@@ -61,26 +61,28 @@ def validate(sample_size, processes)
   Parallel.map(obj_ids.each_slice(100),
                in_processes: processes,
                finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |slice_obj_ids|
-    RepositoryObject.find(slice_obj_ids).map do |obj|
-      cocina_obj = obj.head_version.to_cocina
-      Cocina::Models::Mapping::ToMods::Description.transform(cocina_obj.description, cocina_obj.externalIdentifier)
-      [obj.external_identifier, nil]
-    rescue StandardError => e
-      collection = if obj.object_type == 'dro'
-                     obj.head_version.structural['isMemberOf'].join(' ')
-                   else
-                     ''
-                   end
-      [obj.external_identifier, obj.object_type, collection, e.message]
+    RepositoryObject.find(slice_obj_ids).map do |repository_object|
+      repository_object.versions.where.not(cocina_version: nil).map do |repository_object_version|
+        cocina_obj = repository_object_version.to_cocina
+        Cocina::Models::Mapping::ToMods::Description.transform(cocina_obj.description, cocina_obj.externalIdentifier)
+        [repository_object.external_identifier, repository_object_version.version, nil]
+      rescue StandardError => e
+        collection = if repository_object.object_type == 'dro'
+                       repository_object_version.structural['isMemberOf'].join(' ')
+                     else
+                       ''
+                     end
+        [repository_object.external_identifier, repository_object_version.version, repository_object.object_type, collection, e.message]
+      end
     end
-  end.flatten(1)
+  end.flatten(2)
 end
 
 results = validate(options[:sample], options[:processes])
 
 CSV.open('validate-cocina.csv', 'w') do |writer|
-  writer << %w[druid type collection message]
-  results.each do |(druid, type, collection, error)|
-    writer << [druid, type, collection, error] if error
+  writer << %w[druid version type collection message]
+  results.each do |(druid, version, type, collection, error)|
+    writer << [druid, version, type, collection, error] if error
   end
 end
