@@ -299,4 +299,42 @@ RSpec.describe RepositoryObject do
       end
     end
   end
+
+  describe '#reopen!' do
+    subject(:repository_object) { create(:repository_object, **attrs) }
+
+    context 'when head version is open' do
+      it 'raises an error' do
+        expect { repository_object.reopen! }.to raise_error(described_class::VersionAlreadyOpened)
+      end
+    end
+
+    context 'when only the first version exists' do
+      before do
+        repository_object.close_version!
+      end
+
+      it 'sets last_closed_version to nil' do
+        expect { repository_object.reopen! }
+          .to change(repository_object, :last_closed_version)
+          .to(nil)
+          .and change(repository_object, :opened_version).to(repository_object.versions.first)
+      end
+    end
+
+    context 'when others versions exists' do
+      before do
+        repository_object.close_version!
+        repository_object.open_version!(description: 'second version')
+        repository_object.close_version!
+      end
+
+      it 'sets last_closed_version' do
+        expect { repository_object.reopen! }
+          .to change(repository_object, :last_closed_version)
+          .to(repository_object.versions.first)
+          .and change(repository_object, :opened_version).to(repository_object.versions.last)
+      end
+    end
+  end
 end
