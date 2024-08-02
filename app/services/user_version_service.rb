@@ -6,7 +6,7 @@ class UserVersionService
 
   # @param [String] druid of the item
   # @param [Integer] version of the item
-  # @return [Integer] The version number of the new user version object
+  # @return [UserVersion] The new user version
   # @raise [UserVersionService::UserVersioningError] RepositoryObject not found for the druid
   # @raise [UserVersionService::UserVersioningError] RepositoryObjectVersion not found for the version
   # @raise [UserVersionService::UserVersioningError] RepositoryObjectVersion not closed
@@ -16,14 +16,15 @@ class UserVersionService
 
     # Get the next increment of the user version (or 1 if this is the first user version)
     next_user_version = repository_object_version.repository_object.user_versions.maximum(:version)&.next || 1
-    UserVersion.create!(version: next_user_version, repository_object_version:)
+    user_version = UserVersion.create!(version: next_user_version, repository_object_version:)
     EventFactory.create(druid:, event_type: 'user_version_created', data: { version: version.to_s })
-    next_user_version
+    user_version
   end
 
   # @param [String] druid of the item
   # @param [integer] user_version version to withdraw
   # @param [Boolean] withdraw true to withdraw the user version, false to unwithdraw
+  # @return [UserVersion] The user version
   # @raise [UserVersionService::UserVersioningError] RepositoryObject not found for the druid
   # @raise [UserVersionService::UserVersioningError] RepositoryObjectVersion not found for the version
   def self.withdraw(druid:, user_version:, withdraw: true)
@@ -31,6 +32,7 @@ class UserVersionService
     user_version.update!(withdrawn: withdraw)
     WithdrawRestoreJob.perform_later(user_version:)
     EventFactory.create(druid:, event_type: 'user_version_withdrawn', data: { version: user_version.to_s, withdrawn: withdraw })
+    user_version
   rescue ActiveRecord::RecordInvalid => e
     raise(UserVersioningError, e.message)
   end
@@ -38,6 +40,7 @@ class UserVersionService
   # @param [String] druid of the item
   # @param [Integer] RepositoryObjectVersion version of the item to move to
   # @param [integer] user_version version to move
+  # @return [UserVersion] The user version
   # @raise [UserVersionService::UserVersioningError] RepositoryObject not found for the druid
   # @raise [UserVersionService::UserVersioningError] RepositoryObjectVersion not found for the version
   # @raise [UserVersionService::UserVersioningError] RepositoryObjectVersion not closed
@@ -45,8 +48,10 @@ class UserVersionService
     repository_object_version = repository_object_version(druid:, version:)
     raise(UserVersioningError, 'RepositoryObjectVersion not closed') unless repository_object_version.closed?
 
-    user_version_for(druid:, user_version:).update(repository_object_version:)
+    user_version = user_version_for(druid:, user_version:)
+    user_version.update(repository_object_version:)
     EventFactory.create(druid:, event_type: 'user_version_moved', data: { version: user_version.to_s })
+    user_version
   end
 
   # @param [String] druid of the item

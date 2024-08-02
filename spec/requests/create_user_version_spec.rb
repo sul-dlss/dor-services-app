@@ -31,7 +31,7 @@ RSpec.describe 'Create user version' do
       expect(response).to have_http_status(:unprocessable_entity)
       # .parsed_body won't work here because content-type is application/vnd.api+json
       expect(JSON.parse(response.body)).to eq({ errors: [ # rubocop:disable Rails/ResponseParsedBody
-        { status: '422', title: 'Unprocessable Content', detail: 'Repository object version cannot set a user version to an open RepositoryObjectVersion' }
+        { status: '422', title: 'Unprocessable Content', detail: 'RepositoryObjectVersion not closed' }
       ] }.with_indifferent_access)
 
       expect(repository_object_version.reload.user_versions.count).to eq(0)

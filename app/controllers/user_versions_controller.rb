@@ -2,8 +2,12 @@
 
 # Controller for user versions
 class UserVersionsController < ApplicationController
-  before_action :find_repository_object
+  before_action :find_repository_object, except: %i[create]
   before_action :find_user_version, only: %i[show update solr]
+
+  rescue_from UserVersionService::UserVersioningError do |e|
+    json_api_error(status: :unprocessable_entity, message: e.message)
+  end
 
   def index
     render json: { user_versions: @repository_object.user_versions.map(&:as_json) }
@@ -16,26 +20,15 @@ class UserVersionsController < ApplicationController
   end
 
   def create
-    repository_object_version = @repository_object.versions.find_by!(version: params[:version])
-    user_version = UserVersion.new(repository_object_version:)
-    if user_version.save
-      render json: user_version.as_json, status: :created
-    else
-      json_api_error(status: :unprocessable_entity, message: user_version.errors.full_messages.to_sentence)
-    end
+    user_version = UserVersionService.create(druid: druid_param, version: params[:version])
+    render json: user_version.as_json, status: :created
   end
 
   def update
-    @user_version.withdrawn = params[:withdrawn] if params.key?(:withdrawn)
-    if params.key?(:version)
-      repository_object_version = @repository_object.versions.find_by!(version: params[:version])
-      @user_version.repository_object_version = repository_object_version
-    end
-    if @user_version.save
-      render json: @user_version.as_json
-    else
-      json_api_error(status: :unprocessable_entity, message: @user_version.errors.full_messages.to_sentence)
-    end
+    @user_version = UserVersionService.withdraw(druid: druid_param, user_version: user_version_param, withdraw: params[:withdrawn]) if params.key?(:withdrawn)
+    @user_version = UserVersionService.move(druid: druid_param, version: params[:version], user_version: user_version_param) if params.key?(:version)
+
+    render json: @user_version.as_json
   end
 
   def solr
@@ -46,11 +39,19 @@ class UserVersionsController < ApplicationController
 
   private
 
+  def druid_param
+    params[:object_id]
+  end
+
+  def user_version_param
+    params[:id]
+  end
+
   def find_repository_object
-    @repository_object = RepositoryObject.find_by!(external_identifier: params[:object_id])
+    @repository_object = RepositoryObject.find_by!(external_identifier: druid_param)
   end
 
   def find_user_version
-    @user_version = @repository_object.user_versions.find_by!(version: params[:id])
+    @user_version = @repository_object.user_versions.find_by!(version: user_version_param)
   end
 end
