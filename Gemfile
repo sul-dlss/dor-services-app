@@ -17,7 +17,8 @@ gem 'marc'
 gem 'marc-vocab', '~> 0.3.0' # for indexing
 gem 'moab-versioning', '~> 6.0', require: 'moab/stanford'
 gem 'preservation-client', '~> 6.0'
-gem 'purl_fetcher-client', '~> 2.0'
+# gem 'purl_fetcher-client', '~> 2.0'
+gem 'purl_fetcher-client', github: 'sul-dlss/purl_fetcher-client', branch: 'put_publish'
 gem 'stanford-mods' # for indexing
 gem 'sul_orcid_client', '~> 0.3'
 

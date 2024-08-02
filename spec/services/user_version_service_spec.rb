@@ -45,6 +45,10 @@ RSpec.describe UserVersionService do
 
     let!(:user_version) { UserVersion.create!(version: 1, repository_object_version: repository_object_version1) }
 
+    before do
+      allow(WithdrawRestoreJob).to receive(:perform_later)
+    end
+
     context 'when the user version can be withdrawn' do
       before do
         UserVersion.create!(version: 2, repository_object_version: repository_object_version2)
@@ -54,6 +58,7 @@ RSpec.describe UserVersionService do
         expect(user_version.withdrawn).to be false
         user_version_service_withdraw
         expect(user_version.reload.withdrawn).to be true
+        expect(WithdrawRestoreJob).to have_received(:perform_later).with(user_version:)
       end
     end
 
@@ -61,6 +66,7 @@ RSpec.describe UserVersionService do
       it 'raises' do
         expect(user_version.withdrawn).to be false
         expect { user_version_service_withdraw }.to raise_error UserVersionService::UserVersioningError, 'Validation failed: Repository object version head version cannot be withdrawn'
+        expect(WithdrawRestoreJob).not_to have_received(:perform_later)
       end
     end
   end
