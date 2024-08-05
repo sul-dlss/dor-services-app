@@ -76,6 +76,9 @@ Rails.application.routes.draw do
           get 'status'
           post 'current/close', action: 'close_current'
         end
+        member do
+          get 'solr'
+        end
       end
 
       resources :user_versions, only: %i[index show create update] do
