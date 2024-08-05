@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Show single user version' do
+RSpec.describe 'Show solr for a user version' do
   let(:druid) { 'druid:mx123qw2323' }
 
   context 'when found' do

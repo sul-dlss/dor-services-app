@@ -4,18 +4,18 @@ class VersionsController < ApplicationController
   before_action :load_cocina_object, only: %i[create]
   before_action :check_cocina_object_exists, only: %i[index]
   before_action :load_version, only: %i[current close_current openable status]
+  before_action :load_repository_object_version, only: %i[show solr]
+
+  rescue_from RepositoryObjectVersion::NoCocina do |e|
+    render build_error('No content for this version', e, status: :bad_request)
+  end
 
   def index
     render json: { versions: repository_object_version_content(find_repository_object.versions) }
   end
 
   def show
-    repository_object = find_repository_object
-    repository_object_version = repository_object.versions.find_by!(version: params[:id])
-
-    render json: repository_object_version.to_cocina_with_metadata
-  rescue RepositoryObjectVersion::NoCocina => e
-    render build_error('No content for this version', e, status: :bad_request)
+    render json: @repository_object_version.to_cocina_with_metadata
   end
 
   def create
@@ -58,6 +58,12 @@ class VersionsController < ApplicationController
       accessioning: workflow_state_service.accessioning?,
       closeable: version_service.can_close?
     }
+  end
+
+  def solr
+    render json: Indexing::Builders::DocumentBuilder.for(
+      model: @repository_object_version.to_cocina_with_metadata
+    ).to_solr
   end
 
   private
@@ -121,5 +127,9 @@ class VersionsController < ApplicationController
 
   def find_repository_object
     RepositoryObject.find_by!(external_identifier: params[:object_id])
+  end
+
+  def load_repository_object_version
+    @repository_object_version = find_repository_object.versions.find_by!(version: params[:id])
   end
 end

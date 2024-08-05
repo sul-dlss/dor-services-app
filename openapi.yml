@@ -1141,6 +1141,38 @@ paths:
           required: true
           schema:
             type: string
+  "/v1/objects/{object_id}/versions/{version_id}/solr":
+    get:
+      tags:
+        - versions
+      summary: Show solr document for a particular object version
+      operationId: "versions#solr"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"
+        - name: version_id
+          in: path
+          description: ID of the version
+          required: true
+          schema:
+            type: string            
   "/v1/objects/{object_id}/user_versions":
     get:
       tags:
