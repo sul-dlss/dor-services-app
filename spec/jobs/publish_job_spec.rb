@@ -32,7 +32,7 @@ RSpec.describe PublishJob do
     end
 
     it 'invokes the Publish::MetadataTransferService' do
-      expect(Publish::MetadataTransferService).to have_received(:publish).with(druid:, workflow:).once
+      expect(Publish::MetadataTransferService).to have_received(:publish).with(druid:, workflow:, user_version: nil).once
     end
 
     it 'marks the job as complete' do
@@ -44,10 +44,11 @@ RSpec.describe PublishJob do
 
     context 'when log_success is set to false' do
       subject(:perform) do
-        described_class.perform_now(druid:, background_job_result: result, workflow:, log_success: false)
+        described_class.perform_now(druid:, user_version: 4, background_job_result: result, workflow:, log_success: false)
       end
 
       it 'does not mark the job as complete' do
+        expect(Publish::MetadataTransferService).to have_received(:publish).with(druid:, workflow:, user_version: 4).once
         expect(EventFactory).to have_received(:create)
 
         expect(LogSuccessJob).not_to have_received(:perform_later)

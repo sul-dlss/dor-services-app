@@ -11,6 +11,7 @@ RSpec.describe UserVersionService do
 
   before do
     allow(EventFactory).to receive(:create)
+    allow(PublishJob).to receive(:perform_later)
   end
 
   describe '.create' do
@@ -84,6 +85,7 @@ RSpec.describe UserVersionService do
       expect(user_version.repository_object_version).to eq repository_object_version1
       user_version_service_move
       expect(user_version.reload.repository_object_version).to eq repository_object_version2
+      expect(PublishJob).to have_received(:perform_later).with(druid:, user_version: 1, background_job_result: BackgroundJobResult)
     end
   end
 
