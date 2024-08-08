@@ -29,7 +29,7 @@ class UserVersionService
   # @raise [UserVersionService::UserVersioningError] RepositoryObjectVersion not found for the version
   def self.withdraw(druid:, user_version:, withdraw: true)
     user_version = user_version_for(druid:, user_version:)
-    user_version.update!(withdrawn: withdraw)
+    user_version.update!(state: withdraw ? 'withdrawn' : 'available')
     WithdrawRestoreJob.perform_later(user_version:)
     EventFactory.create(druid:, event_type: 'user_version_withdrawn', data: { version: user_version.to_s, withdrawn: withdraw })
     user_version
@@ -74,6 +74,24 @@ class UserVersionService
   # @return [Integer] The object version
   def self.object_version_for(druid:, user_version:)
     user_version_for(druid:, user_version:).repository_object_version.version
+  end
+
+  # Mark all UserVersions other than the latest as permanently withdrawn
+  # @param [String] druid of the item
+  # @raise [UserVersionService::UserVersioningError] RepositoryObject not found for the druid
+  def self.permanently_withdraw_previous_user_versions(druid:)
+    # No need to notify Purl-Fetcher; it will delete the user versions because the object is being made dark.
+    repository_object = repository_object(druid:)
+    latest_user_version = latest_user_version(druid:)
+    RepositoryObject.transaction do
+      repository_object.user_versions.each do |user_version|
+        next if user_version.version == latest_user_version
+        next if user_version.permanently_withdrawn?
+
+        user_version.permanently_withdrawn!
+        EventFactory.create(druid:, event_type: 'user_version_permanently_withdrawn', data: { version: user_version.to_s })
+      end
+    end
   end
 
   # private below

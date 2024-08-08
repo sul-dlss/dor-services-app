@@ -7,7 +7,7 @@ class WithdrawRestoreJob < ApplicationJob
   def perform(user_version:)
     druid = user_version.repository_object_version.repository_object.external_identifier
     version = user_version.version
-    if user_version.withdrawn
+    if user_version.withdrawn?
       PurlFetcher::Client::Withdraw.withdraw(druid:, version:)
     else
       PurlFetcher::Client::Withdraw.restore(druid:, version:)

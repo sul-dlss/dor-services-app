@@ -10,6 +10,13 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: public; Type: SCHEMA; Schema: -; Owner: -
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+--
 -- Name: background_job_result_status; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -340,10 +347,10 @@ ALTER SEQUENCE public.tag_labels_id_seq OWNED BY public.tag_labels.id;
 CREATE TABLE public.user_versions (
     id bigint NOT NULL,
     version integer NOT NULL,
-    withdrawn boolean DEFAULT false NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    repository_object_version_id bigint NOT NULL
+    repository_object_version_id bigint NOT NULL,
+    state character varying DEFAULT 'available'::character varying NOT NULL
 );
 
 
@@ -719,6 +726,7 @@ ALTER TABLE ONLY public.repository_objects
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240807210223'),
 ('20240531122304'),
 ('20240522142556'),
 ('20240430144139'),

@@ -5,9 +5,13 @@ require 'rails_helper'
 RSpec.describe UserVersionService do
   let(:druid) { repository_object.external_identifier }
   let(:repository_object) { repository_object_version1.repository_object }
-  let(:repository_object_version1) { create(:repository_object_version, :with_repository_object, closed_at: Time.zone.now) }
+  let(:repository_object_version1) { create(:repository_object_version, :with_repository_object, closed_at: Time.zone.now, version: 1) }
   let!(:repository_object_version2) { create(:repository_object_version, version: 2, repository_object:, closed_at: Time.zone.now) }
   let(:object_type) { 'dro' }
+
+  before do
+    allow(EventFactory).to receive(:create)
+  end
 
   describe '.create' do
     subject(:user_version_service_create) { described_class.create(druid:, version: 1) }
@@ -55,16 +59,16 @@ RSpec.describe UserVersionService do
       end
 
       it 'withdraws the user version' do
-        expect(user_version.withdrawn).to be false
+        expect(user_version.withdrawn?).to be false
         user_version_service_withdraw
-        expect(user_version.reload.withdrawn).to be true
+        expect(user_version.reload.withdrawn?).to be true
         expect(WithdrawRestoreJob).to have_received(:perform_later).with(user_version:)
       end
     end
 
     context 'when the user version cannot be withdrawn' do
       it 'raises' do
-        expect(user_version.withdrawn).to be false
+        expect(user_version.withdrawn?).to be false
         expect { user_version_service_withdraw }.to raise_error UserVersionService::UserVersioningError, 'Validation failed: Repository object version head version cannot be withdrawn'
         expect(WithdrawRestoreJob).not_to have_received(:perform_later)
       end
@@ -95,6 +99,23 @@ RSpec.describe UserVersionService do
     it 'returns false if the user version does not exist' do
       user_version.destroy
       expect(user_version_service_exist?).to be false
+    end
+  end
+
+  describe '.permanently_withdraw_previous_user_versions' do
+    subject(:user_version_service_permanently_withdraw) { described_class.permanently_withdraw_previous_user_versions(druid:) }
+
+    let!(:user_version1) { UserVersion.create!(version: 1, repository_object_version: repository_object_version1, state: 'permanently_withdrawn') }
+    let!(:user_version2) { UserVersion.create!(version: 2, repository_object_version: repository_object_version1) }
+    let!(:user_version3) { UserVersion.create!(version: 3, repository_object_version: repository_object_version1) }
+
+    it 'permanently withdraws the previous user versions' do
+      user_version_service_permanently_withdraw
+      expect(user_version1.reload.permanently_withdrawn?).to be true
+      expect(user_version2.reload.permanently_withdrawn?).to be true
+      expect(user_version3.reload.available?).to be true
+
+      expect(EventFactory).to have_received(:create).once
     end
   end
 end
