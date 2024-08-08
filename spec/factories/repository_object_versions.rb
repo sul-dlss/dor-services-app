@@ -7,7 +7,7 @@ FactoryBot.define do
       is_member_of { [] }
       source_id { "sul:#{SecureRandom.uuid}" }
     end
-    version { 1 }
+    sequence(:version)
     version_description { 'Best version ever' }
     lock { 2 }
     cocina_version { Cocina::Models::VERSION }

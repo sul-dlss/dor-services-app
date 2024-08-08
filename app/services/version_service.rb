@@ -118,6 +118,7 @@ class VersionService
     EventFactory.create(druid:, event_type: 'version_close', data: { who: user_name, version: version.to_s })
 
     update_user_version(user_version_mode:, repository_object:)
+    update_previous_user_versions(repository_object:)
   end
 
   # Determines whether a version can be closed for an object.
@@ -211,6 +212,15 @@ class VersionService
     return if preservation_version == current_version
 
     raise VersionService::VersioningError, "Version from Preservation is out of sync. Preservation expects #{preservation_version} but current version is #{current_version}"
+  end
+
+  def update_previous_user_versions(repository_object:)
+    return unless repository_object.user_versions.length > 1
+
+    cocina_object = repository_object.to_cocina
+    return unless cocina_object.access.view == 'dark'
+
+    UserVersionService.permanently_withdraw_previous_user_versions(druid:)
   end
 end
 # rubocop:enable Metrics/ClassLength

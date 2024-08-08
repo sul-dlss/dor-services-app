@@ -14,9 +14,9 @@ RSpec.describe 'Create user version' do
            params: { version: repository_object_version.version }.to_json
 
       expect(response).to have_http_status(:created)
-      expect(response.parsed_body).to eq({ 'userVersion' => 1, 'version' => 1, 'withdrawn' => false, 'withdrawable' => false, 'restorable' => false, 'head' => true })
-
       expect(repository_object_version.reload.user_versions.count).to eq(1)
+      user_version = repository_object_version.user_versions.first
+      expect(response.parsed_body).to eq({ 'userVersion' => user_version.version, 'version' => repository_object_version.version, 'withdrawn' => false, 'withdrawable' => false, 'restorable' => false, 'head' => true })
     end
   end
 

@@ -3,6 +3,7 @@
 FactoryBot.define do
   factory :user_version do
     sequence(:version)
-    withdrawn { false }
+    state { 'available' }
+    repository_object_version
   end
 end

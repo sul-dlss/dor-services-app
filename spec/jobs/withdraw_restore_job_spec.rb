@@ -8,11 +8,11 @@ RSpec.describe WithdrawRestoreJob do
   end
 
   let(:druid) { 'druid:mk420bs7601' }
-  let(:user_version) { create(:user_version, withdrawn:, repository_object_version:) }
+  let(:user_version) { create(:user_version, state:, repository_object_version:) }
   let(:repository_object_version) { create(:repository_object_version, :with_repository_object, external_identifier: druid, closed_at: Time.current) }
 
   context 'when the version is withdrawn' do
-    let(:withdrawn) { true }
+    let(:state) { 'withdrawn' }
 
     before do
       allow(PurlFetcher::Client::Withdraw).to receive(:withdraw)
@@ -25,7 +25,7 @@ RSpec.describe WithdrawRestoreJob do
   end
 
   context 'when the version is not withdrawn' do
-    let(:withdrawn) { false }
+    let(:state) { 'available' }
 
     before do
       allow(PurlFetcher::Client::Withdraw).to receive(:restore)

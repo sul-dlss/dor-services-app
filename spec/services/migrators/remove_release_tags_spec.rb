@@ -5,8 +5,8 @@ require 'rails_helper'
 RSpec.describe Migrators::RemoveReleaseTags do
   subject(:migrator) { described_class.new(repository_object) }
 
-  let(:repository_object) { create(:repository_object, :with_repository_object_version, repository_object_version:) }
-  let(:repository_object_version) { build(:repository_object_version, administrative:) }
+  let(:repository_object) { repository_object_version.repository_object }
+  let(:repository_object_version) { build(:repository_object_version, :with_repository_object, administrative:) }
   let(:administrative) { { hasAdminPolicy: 'druid:hy787xj5878', releaseTags: [] } }
 
   describe '#migrate?' do

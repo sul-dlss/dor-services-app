@@ -226,6 +226,7 @@ RSpec.describe VersionService do
       repository_object.head_version.update!(version: 2, version_description: 'A Second Version')
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
       allow(workflow_client).to receive(:create_workflow_by_name)
+      allow(UserVersionService).to receive(:permanently_withdraw_previous_user_versions)
     end
 
     context 'when description and user_name are passed in' do
@@ -477,6 +478,58 @@ RSpec.describe VersionService do
         expect(repository_object.reload.last_closed_version).to be_present
         expect(repository_object.last_closed_version.version_description).to eq 'A Second Version'
         expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'accessionWF', version: '2')
+      end
+    end
+
+    context 'when multiple user versions and access is dark' do
+      let(:version) { 3 }
+
+      before do
+        allow(workflow_state_service).to receive_messages(assembling?: false, accessioning?: false)
+        repository_object.close_version!
+        repository_object.open_version!(description: 'A new version')
+        repository_object.head_version.update!(access: { view: 'dark', download: 'none' })
+        create(:user_version, repository_object_version: repository_object.versions.first)
+        create(:user_version, repository_object_version: repository_object.versions.first)
+      end
+
+      it 'permanently withdraws previous user versions' do
+        close
+        expect(UserVersionService).to have_received(:permanently_withdraw_previous_user_versions).with(druid:)
+      end
+    end
+
+    context 'when multiple user versions and access is not dark' do
+      let(:version) { 3 }
+
+      before do
+        allow(workflow_state_service).to receive_messages(assembling?: false, accessioning?: false)
+        repository_object.close_version!
+        repository_object.open_version!(description: 'A new version')
+        create(:user_version, repository_object_version: repository_object.versions.first)
+        create(:user_version, repository_object_version: repository_object.versions.first)
+      end
+
+      it 'does not permanently withdraw' do
+        close
+        expect(UserVersionService).not_to have_received(:permanently_withdraw_previous_user_versions)
+      end
+    end
+
+    context 'when single user versions and access is dark' do
+      let(:version) { 3 }
+
+      before do
+        allow(workflow_state_service).to receive_messages(assembling?: false, accessioning?: false)
+        repository_object.head_version.update!(access: { view: 'dark', download: 'none' })
+        repository_object.close_version!
+        repository_object.open_version!(description: 'A new version')
+        create(:user_version, repository_object_version: repository_object.versions.first)
+      end
+
+      it 'does not permanently withdraw' do
+        close
+        expect(UserVersionService).not_to have_received(:permanently_withdraw_previous_user_versions)
       end
     end
   end
