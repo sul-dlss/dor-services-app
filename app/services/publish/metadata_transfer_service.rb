@@ -7,7 +7,7 @@ module Publish
   # If the object does not have user versions, the latest closed version will be published as version 1.
   class MetadataTransferService
     # @param [String] druid for the object to be published
-    # @param [String] user_version if a specific version is to be published
+    # @param [Integer] user_version if a specific version is to be published
     # @param [String] workflow (optional) the workflow used for reporting back status to (defaults to 'accessionWF')
     def self.publish(druid:, user_version: nil, workflow: 'accessionWF')
       new(druid:, workflow:, user_version:).publish

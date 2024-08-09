@@ -39,7 +39,7 @@ class UserVersionService
 
   # @param [String] druid of the item
   # @param [Integer] RepositoryObjectVersion version of the item to move to
-  # @param [integer] user_version version to move
+  # @param [Integer] user_version version to move
   # @return [UserVersion] The user version
   # @raise [UserVersionService::UserVersioningError] RepositoryObject not found for the druid
   # @raise [UserVersionService::UserVersioningError] RepositoryObjectVersion not found for the version
@@ -48,10 +48,11 @@ class UserVersionService
     repository_object_version = repository_object_version(druid:, version:)
     raise(UserVersioningError, 'RepositoryObjectVersion not closed') unless repository_object_version.closed?
 
-    user_version = user_version_for(druid:, user_version:)
-    user_version.update(repository_object_version:)
+    user_version_obj = user_version_for(druid:, user_version:)
+    user_version_obj.update(repository_object_version:)
+    PublishJob.perform_later(druid:, user_version:, background_job_result: BackgroundJobResult.create)
     EventFactory.create(druid:, event_type: 'user_version_moved', data: { version: user_version.to_s })
-    user_version
+    user_version_obj
   end
 
   # @param [String] druid of the item
