@@ -17,7 +17,9 @@ RSpec.describe VersionService do
   end
 
   describe '.open' do
-    subject(:open) { described_class.open(cocina_object:, description: 'same as it ever was', opening_user_name: 'sunetid') }
+    subject(:open) { described_class.open(cocina_object:, description: 'same as it ever was', opening_user_name: 'sunetid', from_version:) }
+
+    let(:from_version) { nil }
 
     let(:workflow_client) do
       instance_double(Dor::Workflow::Client, create_workflow_by_name: true)
@@ -88,6 +90,32 @@ RSpec.describe VersionService do
       it 'raises an exception' do
         errmsg = "Preservation (SDR) is not yet answering queries about this object. When an object has just been transferred, Preservation isn't immediately ready to answer queries."
         expect { open }.to raise_error(VersionService::VersioningError, errmsg)
+      end
+    end
+
+    context 'when a from version is provided' do
+      let(:from_version) { 1 }
+
+      before do
+        repository_object.open_version!(description: 'A new version')
+        repository_object.head_version.update!(label: 'New version label')
+        repository_object.close_version!
+      end
+
+      it 'creates an object version and starts a workflow' do
+        expect(open).to be_a(Cocina::Models::DROWithMetadata)
+        expect(open.label).not_to eq 'New version label'
+        expect(workflow_state_service).to have_received(:accessioned?)
+        expect(workflow_state_service).to have_received(:accessioning?)
+        expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '3')
+
+        expect(EventFactory).to have_received(:create).with(data: { version: '3', who: 'sunetid' },
+                                                            druid:,
+                                                            event_type: 'version_open')
+
+        expect(Indexer).to have_received(:reindex_later).with(cocina_object: repository_object.reload.to_cocina_with_metadata)
+        expect(repository_object.opened_version.version).to eq 3
+        expect(repository_object.opened_version.version_description).to eq 'same as it ever was'
       end
     end
   end

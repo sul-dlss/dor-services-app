@@ -13,12 +13,9 @@ class VersionService
     new(...).open?
   end
 
-  def self.open(cocina_object:, description:, opening_user_name: nil, assume_accessioned: false)
+  def self.open(cocina_object:, description:, opening_user_name: nil, assume_accessioned: false, from_version: nil)
     new(druid: cocina_object.externalIdentifier, version: cocina_object.version)
-      .open(description:,
-            opening_user_name:,
-            assume_accessioned:,
-            cocina_object:)
+      .open(description:, opening_user_name:, assume_accessioned:, cocina_object:, from_version:)
   end
 
   def self.can_open?(druid:, version:, assume_accessioned: false)
@@ -48,17 +45,20 @@ class VersionService
   # @param [String] description set description of version change (required)
   # @param [String] opening_user_name add opening username to the events datastream (optional)
   # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
+  # @param [Integer,nil] from_version existing version to base the new version on, otherwise uses last_closed_version
   # @return [Cocina::Models::DROWithMetadata, Cocina::Models::AdminPolicyWithMetadata, Cocina::Models::CollectionWithMetadata] updated cocina object
   # @raise [VersionService::VersioningError] if the object hasn't been accessioned, or if a version is already opened
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  def open(cocina_object:, description:, assume_accessioned:, opening_user_name: nil)
+  def open(cocina_object:, description:, assume_accessioned:, opening_user_name: nil, from_version: nil)
     raise ArgumentError, 'description is required to open a new version' if description.blank?
 
     ensure_openable!(assume_accessioned:)
     repository_object = RepositoryObject.find_by!(external_identifier: cocina_object.externalIdentifier)
-    check_version!(current_version: repository_object.head_version.version)
+    check_version!(current_version: repository_object.head_version.version) unless from_version
 
-    repository_object.open_version!(description:)
+    from_repository_object_version = from_version ? repository_object.versions.find_by!(version: from_version) : nil
+
+    repository_object.open_version!(description:, from_version: from_repository_object_version)
 
     # Reloading to get correct lock value.
     Indexer.reindex_later(cocina_object: repository_object.reload.to_cocina_with_metadata)
