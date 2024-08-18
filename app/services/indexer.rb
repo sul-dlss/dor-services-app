@@ -4,6 +4,8 @@
 class Indexer
   # @param [Cocina::Models::DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata]
   def self.reindex(cocina_object:)
+    return unless Settings.solr.enabled
+
     solr_doc = Indexing::Builders::DocumentBuilder.for(
       model: cocina_object
     ).to_solr
@@ -12,6 +14,8 @@ class Indexer
   end
 
   def self.delete(druid:)
+    return unless Settings.solr.enabled
+
     solr.delete_by_id(druid)
     solr.commit
   end

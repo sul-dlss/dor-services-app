@@ -27,6 +27,19 @@ RSpec.describe Indexer do
       expect(solr).to have_received(:add).with(solr_doc)
       expect(solr).to have_received(:commit)
     end
+
+    context 'when solr is not enabled' do
+      before do
+        allow(Settings.solr).to receive(:enabled).and_return(false)
+      end
+
+      it 'does not reindex the object' do
+        described_class.reindex(cocina_object:)
+        expect(Indexing::Builders::DocumentBuilder).not_to have_received(:for)
+        expect(solr).not_to have_received(:add)
+        expect(solr).not_to have_received(:commit)
+      end
+    end
   end
 
   describe '#delete' do
@@ -34,6 +47,18 @@ RSpec.describe Indexer do
       described_class.delete(druid:)
       expect(solr).to have_received(:delete_by_id).with(druid)
       expect(solr).to have_received(:commit)
+    end
+
+    context 'when solr is not enabled' do
+      before do
+        allow(Settings.solr).to receive(:enabled).and_return(false)
+      end
+
+      it 'does not delete the object' do
+        described_class.delete(druid:)
+        expect(solr).not_to have_received(:delete_by_id)
+        expect(solr).not_to have_received(:commit)
+      end
     end
   end
 
