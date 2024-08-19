@@ -37,6 +37,7 @@ version_service:
 
 # URLs
 solr:
+  enabled: true
   select_path: 'select'
   timeout: 120
   url: 'https://solr.example.com/solr/collection'
