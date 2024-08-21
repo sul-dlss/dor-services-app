@@ -90,12 +90,14 @@ class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
     reload # Syncs up head_version and opened_version
   end
 
-  def open_version!(description:)
+  # @param [String] description for the version
+  # @param [RepositoryObjectVersion,nil] from_version existing version to base the new version on. If nil, then uses last_closed_version.
+  def open_version!(description:, from_version: nil)
     raise VersionAlreadyOpened, "Cannot open new version because one is already open: #{head_version.version}" if open?
 
     RepositoryObject.transaction do
-      new_version = last_closed_version.dup
-      new_version.update!(version: new_version.version + 1, version_description: description, closed_at: nil)
+      new_version = (from_version || last_closed_version).dup
+      new_version.update!(version: last_closed_version.version + 1, version_description: description, closed_at: nil)
       update!(opened_version: new_version, head_version: new_version)
     end
   end

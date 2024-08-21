@@ -143,6 +143,26 @@ RSpec.describe RepositoryObject do
         expect(newly_created_version.closed_at).to be_nil
       end
     end
+
+    context 'when based on an earlier version' do
+      before do
+        repository_object.head_version.label = 'Version 1'
+        repository_object.close_version!
+        repository_object.open_version!(description: 'Another version')
+        repository_object.head_version.label = 'Version 2'
+        repository_object.close_version!
+      end
+
+      it 'creates a new version and updates the head and opened version pointers' do
+        expect { repository_object.open_version!(description:, from_version: repository_object.versions.first) }.to change(RepositoryObjectVersion, :count).by(1)
+        newly_created_version = repository_object.versions.last
+        expect(newly_created_version.version).to eq(3)
+        expect(repository_object.head_version).to eq(newly_created_version)
+        expect(repository_object.opened_version).to eq(newly_created_version)
+        expect(newly_created_version.label).to eq 'Version 1'
+        expect(newly_created_version.closed_at).to be_nil
+      end
+    end
   end
 
   describe '#close_version!' do
