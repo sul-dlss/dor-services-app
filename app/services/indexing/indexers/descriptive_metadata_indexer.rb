@@ -52,7 +52,7 @@ module Indexing
           'descriptive_tiv' => all_search_text, # ICU tokenized, ICU folded
           'descriptive_text_nostem_i' => all_search_text, # whitespace tokenized, ICU folded, word delimited
           'descriptive_teiv' => all_search_text # ICU tokenized, ICU folded, minimal stemming
-        }.select { |_k, v| v.present? }
+        }.compact_blank
       end
 
       private
