@@ -4,9 +4,8 @@ require 'rails_helper'
 
 RSpec.describe VirtualObjectService do
   describe '#constituents' do
-    let(:constituents) { described_class.constituents(cocina_object, only_published:, exclude_opened:).sort }
-    let(:only_published) { false }
-    let(:exclude_opened) { false }
+    let(:constituents) { described_class.constituents(cocina_object, publishable:).sort }
+    let(:publishable) { false }
 
     context 'when the virtual object is a DRO' do
       let(:cocina_object) do
@@ -15,9 +14,9 @@ RSpec.describe VirtualObjectService do
                           hasMemberOrders: [
                             {
                               members: [
-                                'druid:dj321gm8879', # published and closed
-                                'druid:vs491yc7072', # published and open
-                                'druid:bc778pm9866' # unpublished and closed
+                                'druid:dj321gm8879', # has a closed version with cocina, thus publishable
+                                'druid:vs491yc7072', # has a closed version without cocina, thus not publishable
+                                'druid:bc778pm9866' # lacks a closed version, thus not publishable
                               ],
                               viewingDirection: 'left-to-right'
                             }
@@ -27,12 +26,11 @@ RSpec.describe VirtualObjectService do
       end
 
       before do
-        create(:repository_object, :closed, external_identifier: 'druid:dj321gm8879')
-        create(:repository_object, external_identifier: 'druid:vs491yc7072')
-        create(:repository_object, :closed, external_identifier: 'druid:bc778pm9866')
-        allow(WorkflowStateService).to receive(:published?).with(druid: 'druid:dj321gm8879', version: 1).and_return(true)
-        allow(WorkflowStateService).to receive(:published?).with(druid: 'druid:vs491yc7072', version: 1).and_return(true)
-        allow(WorkflowStateService).to receive(:published?).with(druid: 'druid:bc778pm9866', version: 1).and_return(false)
+        create(:repository_object, :closed, external_identifier: 'druid:dj321gm8879').tap do |object|
+          object.last_closed_version.update!(cocina_version: 1)
+        end
+        create(:repository_object, :closed, external_identifier: 'druid:vs491yc7072')
+        create(:repository_object, external_identifier: 'druid:bc778pm9866')
       end
 
       context 'when not limited' do
@@ -41,19 +39,11 @@ RSpec.describe VirtualObjectService do
         end
       end
 
-      context 'when only published' do
-        let(:only_published) { true }
+      context 'when limited to publishable constituents' do
+        let(:publishable) { true }
 
-        it 'returns the druids of the constituent objects' do
-          expect(constituents).to eq(['druid:dj321gm8879', 'druid:vs491yc7072'])
-        end
-      end
-
-      context 'when only closed' do
-        let(:exclude_opened) { true }
-
-        it 'returns the druids of the constituent objects' do
-          expect(constituents).to eq(['druid:bc778pm9866', 'druid:dj321gm8879'])
+        it 'returns the druids of the constituent objects that are publishable' do
+          expect(constituents).to eq(['druid:dj321gm8879'])
         end
       end
     end

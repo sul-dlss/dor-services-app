@@ -37,14 +37,14 @@ module Publish
 
     def republish_collection_members!
       Array.wrap(
-        MemberService.for(druid, exclude_opened: true, only_published: true)
+        MemberService.for(druid, publishable: true)
       ).each do |member_druid|
         PublishJob.set(queue: :publish_low).perform_later(druid: member_druid, background_job_result: BackgroundJobResult.create, workflow:, log_success: false)
       end
     end
 
     def republish_virtual_object_constituents!
-      VirtualObjectService.constituents(cocina_object, exclude_opened: true, only_published: true).each do |constituent_druid|
+      VirtualObjectService.constituents(cocina_object, publishable: true).each do |constituent_druid|
         PublishJob.set(queue: :publish_low).perform_later(druid: constituent_druid, background_job_result: BackgroundJobResult.create, workflow:, log_success: false)
       end
     end

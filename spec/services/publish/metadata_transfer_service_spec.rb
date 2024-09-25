@@ -39,7 +39,7 @@ RSpec.describe Publish::MetadataTransferService do
       it 'publishes the collection and its members' do
         described_class.publish(druid:)
 
-        expect(MemberService).to have_received(:for).with(druid, exclude_opened: true, only_published: true)
+        expect(MemberService).to have_received(:for).with(druid, publishable: true)
         expect(publish_job).to have_received(:perform_later).once.with(druid: member_druid, background_job_result: BackgroundJobResult, workflow: 'accessionWF', log_success: false)
         expect(PurlFetcher::Client::Publish).to have_received(:publish).with(cocina: public_cocina, file_uploads: {}, version: 1,
                                                                              must_version: false, version_date: closed_at)
@@ -245,7 +245,7 @@ RSpec.describe Publish::MetadataTransferService do
       it 'publishes the virtual object and its constituents' do
         described_class.publish(druid:)
 
-        expect(VirtualObjectService).to have_received(:constituents).with(Cocina::Models::DROWithMetadata, exclude_opened: true, only_published: true)
+        expect(VirtualObjectService).to have_received(:constituents).with(Cocina::Models::DROWithMetadata, publishable: true)
         expect(publish_job).to have_received(:perform_later).once.with(druid: constituent_druid, background_job_result: BackgroundJobResult, workflow: 'accessionWF', log_success: false)
         expect(PurlFetcher::Client::Publish).to have_received(:publish).with(cocina: public_cocina, file_uploads: {}, version: 1,
                                                                              must_version: false, version_date: closed_at)
