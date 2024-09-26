@@ -119,6 +119,36 @@ RSpec.describe RepositoryObject do
     end
   end
 
+  describe '#publishable?' do
+    subject(:repository_object) { create(:repository_object, **attrs) }
+
+    context 'without a last closed version' do
+      it 'returns false' do
+        expect(repository_object).not_to be_publishable
+      end
+    end
+
+    context 'with a last closed version lacking cocina' do
+      before do
+        repository_object.update(last_closed_version: repository_object.versions.create!(version: 2, version_description: 'closed'))
+      end
+
+      it 'returns false' do
+        expect(repository_object).not_to be_publishable
+      end
+    end
+
+    context 'with a last closed version containing cocina' do
+      before do
+        repository_object.update(last_closed_version: repository_object.versions.create!(version: 2, version_description: 'closed', cocina_version: 1))
+      end
+
+      it 'returns true' do
+        expect(repository_object).to be_publishable
+      end
+    end
+  end
+
   describe '#open_version!' do
     subject(:repository_object) { create(:repository_object, **attrs) }
 

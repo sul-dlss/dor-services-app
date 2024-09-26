@@ -147,6 +147,13 @@ class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
     head_version == last_closed_version
   end
 
+  # When a collection object is published, publish the collection members that:
+  # * have a last closed version (meaning they are not Registered - they've been accessioned); and
+  # * there's cocina for that last closed version (meaning they've been closed at least once since we moved to the new version model)
+  def publishable?
+    last_closed_version.present? && last_closed_version.has_cocina?
+  end
+
   # @return [String] xml representation of version metadata
   def version_xml
     Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
