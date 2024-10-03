@@ -15,17 +15,16 @@ RSpec.describe ResetWorkspaceJob do
   before do
     allow(result).to receive(:processing!)
     allow(LogSuccessJob).to receive(:perform_later)
+    allow(ResetWorkspaceService).to receive(:reset)
+    allow(CleanupService).to receive(:cleanup_by_druid)
   end
 
   context 'with no errors' do
-    before do
-      allow(ResetWorkspaceService).to receive(:reset)
-    end
-
-    it 'invokes the ResetService and logs success' do
+    it 'invokes the ResetService and CleanupService and logs success' do
       perform
       expect(result).to have_received(:processing!).once
       expect(ResetWorkspaceService).to have_received(:reset).with(druid:, version:).once
+      expect(CleanupService).to have_received(:cleanup_by_druid).with(druid).once
       expect(LogSuccessJob).to have_received(:perform_later)
         .with(druid:, background_job_result: result, workflow: 'accessionWF', workflow_process: 'reset-workspace')
     end
@@ -44,7 +43,7 @@ RSpec.describe ResetWorkspaceJob do
     end
   end
 
-  context 'when an error' do
+  context 'when an error in ResetWorkspaceService' do
     before do
       allow(ResetWorkspaceService).to receive(:reset).and_raise('Grrrr')
       allow(LogFailureJob).to receive(:perform_later)
@@ -53,9 +52,26 @@ RSpec.describe ResetWorkspaceJob do
     it 'logs failure' do
       perform
       expect(ResetWorkspaceService).to have_received(:reset).with(druid:, version:).once
+      expect(CleanupService).not_to have_received(:cleanup_by_druid).with(druid)
       expect(LogFailureJob).to have_received(:perform_later)
         .with(druid:, background_job_result: result, workflow: 'accessionWF', workflow_process: 'reset-workspace',
               output: { errors: [{ detail: 'Grrrr', title: 'Unable to cleanup/reset workspace' }] })
+    end
+  end
+
+  context 'when an error in CleanupService' do
+    before do
+      allow(CleanupService).to receive(:cleanup_by_druid).and_raise('Doh')
+      allow(LogFailureJob).to receive(:perform_later)
+    end
+
+    it 'logs failure' do
+      perform
+      expect(ResetWorkspaceService).to have_received(:reset).with(druid:, version:).once
+      expect(CleanupService).to have_received(:cleanup_by_druid).with(druid).once
+      expect(LogFailureJob).to have_received(:perform_later)
+        .with(druid:, background_job_result: result, workflow: 'accessionWF', workflow_process: 'reset-workspace',
+              output: { errors: [{ detail: 'Doh', title: 'Unable to cleanup/reset workspace' }] })
     end
   end
 end
