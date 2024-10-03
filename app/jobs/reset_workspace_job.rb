@@ -15,15 +15,22 @@ class ResetWorkspaceJob < ApplicationJob
 
     begin
       ResetWorkspaceService.reset(druid:, version:)
+      CleanupService.cleanup_by_druid druid
+
+      EventFactory.create(druid:,
+                          event_type: 'reset-workspace',
+                          data: { status: 'success' })
     rescue ResetWorkspaceService::DirectoryAlreadyExists
       # We're trapping errors and doing nothing, because the belief is that these indicate
       # this API has already been called and completed.
     rescue StandardError => e
+      EventFactory.create(druid:, event_type: 'reset-workspace',
+                          data: { status: 'failure', message: e.message, backtrace: e.backtrace })
       return LogFailureJob.perform_later(druid:,
                                          background_job_result:,
                                          workflow:,
                                          workflow_process: WORKFLOW_PROCESS,
-                                         output: { errors: [{ title: 'Unable to reset workspace', detail: e.message }] })
+                                         output: { errors: [{ title: 'Unable to cleanup/reset workspace', detail: e.message }] })
     end
 
     LogSuccessJob.perform_later(druid:,
