@@ -13,8 +13,8 @@ RSpec.describe 'Reset workspace' do
 
   context 'when the request is succcessful' do
     it 'is successful' do
-      post "/v1/objects/#{druid}/workspace/reset?workflow=accessionWF&lane-id=low",
-           headers: { 'Authorization' => "Bearer #{jwt}" }
+      delete "/v1/objects/#{druid}/workspace?workflow=accessionWF&lane-id=low",
+             headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(ResetWorkspaceJob).to have_received(:set).with(queue: 'low')
       expect(job).to have_received(:perform_later)
         .with(druid:, version: 2, background_job_result: BackgroundJobResult, workflow: 'accessionWF')

@@ -55,7 +55,7 @@ RSpec.describe ResetWorkspaceJob do
       expect(ResetWorkspaceService).to have_received(:reset).with(druid:, version:).once
       expect(LogFailureJob).to have_received(:perform_later)
         .with(druid:, background_job_result: result, workflow: 'accessionWF', workflow_process: 'reset-workspace',
-              output: { errors: [{ detail: 'Grrrr', title: 'Unable to reset workspace' }] })
+              output: { errors: [{ detail: 'Grrrr', title: 'Unable to cleanup/reset workspace' }] })
     end
   end
 end

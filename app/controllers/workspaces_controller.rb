@@ -16,6 +16,7 @@ class WorkspacesController < ApplicationController
 
   def destroy
     result = BackgroundJobResult.create
+    version = CocinaObjectStore.version(params[:object_id])
     EventFactory.create(druid: params[:object_id], event_type: 'reset_request_received', data: { background_job_result_id: result.id })
     ResetWorkspaceJob.set(queue: params['lane-id']).perform_later(druid: params[:object_id], version:, background_job_result: result, workflow: params[:workflow])
     head :created, location: result
