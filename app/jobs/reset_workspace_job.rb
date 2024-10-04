@@ -14,7 +14,6 @@ class ResetWorkspaceJob < ApplicationJob
     background_job_result.processing!
 
     begin
-      ResetWorkspaceService.reset(druid:, version:)
       CleanupService.cleanup_by_druid druid
 
       EventFactory.create(druid:,
