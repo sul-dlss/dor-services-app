@@ -36,7 +36,7 @@ RSpec.describe CleanupJob do
       expect(EventFactory).to have_received(:create)
 
       expect(LogSuccessJob).to have_received(:perform_later)
-        .with(druid:, background_job_result: result, workflow: 'accessionWF', workflow_process: 'end-accession')
+        .with(druid:, background_job_result: result, workflow: 'accessionWF', workflow_process: 'reset-workspace')
     end
   end
 
@@ -52,7 +52,7 @@ RSpec.describe CleanupJob do
         .with(druid:,
               background_job_result: result,
               workflow: 'accessionWF',
-              workflow_process: 'end-accession',
+              workflow_process: 'reset-workspace',
               output: { errors: [{ detail: 'No such file or directory', title: 'Unable to cleanup workspace' }] })
     end
   end

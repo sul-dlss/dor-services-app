@@ -59,11 +59,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resource :workspace, only: [:create, :destroy] do
-        collection do
-          post 'reset'
-        end
-      end
+      resource :workspace, only: [:create, :destroy]
 
       resource :shelve, only: [:create]
 

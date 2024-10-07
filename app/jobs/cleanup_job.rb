@@ -4,13 +4,13 @@
 class CleanupJob < ApplicationJob
   queue_as :default
 
-  # @param [String] druid the identifier of the object to be shelved
+  # @param [String] druid the identifier of the object to be cleaned up
   # @param [BackgroundJobResult] background_job_result identifier of a background job result to store status info
   # @param [String] workflow Which workflow should this be reported to?
   def perform(druid:, background_job_result:, workflow:)
     background_job_result.processing!
 
-    workflow_process = workflow == 'accessionWF' ? 'end-accession' : 'cleanup'
+    workflow_process = workflow == 'accessionWF' ? 'reset-workspace' : 'cleanup'
 
     begin
       CleanupService.cleanup_by_druid druid
