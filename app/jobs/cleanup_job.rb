@@ -6,11 +6,12 @@ class CleanupJob < ApplicationJob
 
   # @param [String] druid the identifier of the object to be cleaned up
   # @param [BackgroundJobResult] background_job_result identifier of a background job result to store status info
-  # @param [String] workflow Which workflow should this be reported to?
-  def perform(druid:, background_job_result:, workflow:)
+  def perform(druid:, background_job_result:)
     background_job_result.processing!
 
-    workflow_process = workflow == 'accessionWF' ? 'reset-workspace' : 'cleanup'
+    # this job is only called by accessionWF:reset-workspace, so it should complete it when done
+    workflow = 'accessionWF'
+    workflow_process = 'reset-workspace'
 
     begin
       CleanupService.cleanup_by_druid druid

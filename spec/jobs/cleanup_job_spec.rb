@@ -4,12 +4,11 @@ require 'rails_helper'
 
 RSpec.describe CleanupJob do
   subject(:perform) do
-    described_class.perform_now(druid:, background_job_result: result, workflow:)
+    described_class.perform_now(druid:, background_job_result: result)
   end
 
   let(:druid) { 'druid:mk420bs7601' }
   let(:result) { create(:background_job_result) }
-  let(:workflow) { 'accessionWF' }
 
   before do
     # allow(CocinaObjectStore).to receive(:find).with(druid).and_return(item)
