@@ -377,7 +377,7 @@ GEM
     public_suffix (6.0.1)
     puma (6.4.3)
       nio4r (~> 2.0)
-    purl_fetcher-client (2.1.0)
+    purl_fetcher-client (2.1.1)
       activesupport
       faraday (~> 2.1)
     racc (1.8.1)
