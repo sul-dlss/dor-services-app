@@ -13,11 +13,11 @@ RSpec.describe 'Cleanup workspace' do
     end
 
     it 'returns 200' do
-      delete "/v1/objects/#{druid}/workspace?workflow=accessionWF&lane-id=low",
+      delete "/v1/objects/#{druid}/workspace?lane-id=low",
              headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(CleanupJob).to have_received(:set).with(queue: 'low')
       expect(job).to have_received(:perform_later)
-        .with(druid:, background_job_result: BackgroundJobResult, workflow: 'accessionWF')
+        .with(druid:, background_job_result: BackgroundJobResult)
       expect(response).to have_http_status(:created)
       expect(EventFactory).to have_received(:create)
     end
