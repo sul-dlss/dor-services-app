@@ -15,11 +15,12 @@ class PublishStatus
       csv << %w[druid closed publishable not_dark first_published]
 
       druids.each do |druid|
-        object = RepositoryObject.where(external_identifier: druid).first
+        object = RepositoryObject.find_by(external_identifier: druid)
         latest = object.head_version
         not_dark = latest.access.fetch('view') != 'dark'
 
         milestones = workflow_client.milestones(druid:)
+        # to determine if this was published before versioning changes took effect, get the date of the first published milestone
         published = milestones.filter { |milestone| milestone[:version] == '1' && milestone[:milestone] == 'published' }
         date = published.first[:at] if published.any?
 
