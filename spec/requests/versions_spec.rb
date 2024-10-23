@@ -21,7 +21,7 @@ RSpec.describe 'Operations regarding object versions' do
     allow(CocinaObjectStore).to receive_messages(find: cocina_object_with_metadata, version:)
   end
 
-  describe '/versions/current' do
+  describe 'GET /versions/current' do
     it 'returns the latest version for an object' do
       get '/v1/objects/druid:mx123qw2323/versions/current',
           headers: { 'Authorization' => "Bearer #{jwt}" }
@@ -30,7 +30,38 @@ RSpec.describe 'Operations regarding object versions' do
     end
   end
 
-  describe '/versions/current/close' do
+  describe 'DELETE /versions/current' do
+    context 'when discarding a version succeeds' do
+      before do
+        allow(VersionService).to receive(:discard)
+        allow(CleanupVersionJob).to receive(:perform_later)
+      end
+
+      it 'returns no content' do
+        delete '/v1/objects/druid:mx123qw2323/versions/current',
+               headers: { 'Authorization' => "Bearer #{jwt}" }
+
+        expect(response).to have_http_status :no_content
+        expect(VersionService).to have_received(:discard).with(druid: druid, version: version)
+        expect(CleanupVersionJob).to have_received(:perform_later).with(druid: druid, version: version)
+      end
+    end
+
+    context 'when discarding a version fails' do
+      before do
+        allow(VersionService).to receive(:discard).and_raise(VersionService::VersioningError, 'Trying to discard a version that is not discardable')
+      end
+
+      it 'returns conflict' do
+        delete '/v1/objects/druid:mx123qw2323/versions/current',
+               headers: { 'Authorization' => "Bearer #{jwt}" }
+
+        expect(response).to have_http_status :conflict
+      end
+    end
+  end
+
+  describe 'POST /versions/current/close' do
     let(:close_params) do
       {
         description: 'some text',
@@ -146,7 +177,7 @@ RSpec.describe 'Operations regarding object versions' do
     end
   end
 
-  describe '/versions/openable' do
+  describe 'GET /versions/openable' do
     context 'when a new version can be opened' do
       before do
         allow(VersionService).to receive(:can_open?).and_return(true)
@@ -185,29 +216,30 @@ RSpec.describe 'Operations regarding object versions' do
         expect(response).to have_http_status :internal_server_error
       end
     end
+  end
 
-    describe '/versions/status' do
-      let(:version_service) { instance_double(VersionService, can_open?: false, can_close?: true, open?: true) }
-      let(:workflow_state_service) { instance_double(WorkflowStateService, assembling?: true, accessioning?: false) }
+  describe 'GET /versions/status' do
+    let(:version_service) { instance_double(VersionService, can_open?: false, can_close?: true, open?: true, can_discard?: true) }
+    let(:workflow_state_service) { instance_double(WorkflowStateService, assembling?: true, accessioning?: false) }
 
-      before do
-        allow(VersionService).to receive(:new).and_return(version_service)
-        allow(WorkflowStateService).to receive(:new).and_return(workflow_state_service)
-      end
+    before do
+      allow(VersionService).to receive(:new).and_return(version_service)
+      allow(WorkflowStateService).to receive(:new).and_return(workflow_state_service)
+    end
 
-      it 'returns the version status for an object' do
-        get '/v1/objects/druid:mx123qw2323/versions/status',
-            headers: { 'Authorization' => "Bearer #{jwt}" }
+    it 'returns the version status for an object' do
+      get '/v1/objects/druid:mx123qw2323/versions/status',
+          headers: { 'Authorization' => "Bearer #{jwt}" }
 
-        expect(response.parsed_body.with_indifferent_access).to match({
-                                                                        versionId: 1,
-                                                                        open: true,
-                                                                        openable: false,
-                                                                        assembling: true,
-                                                                        accessioning: false,
-                                                                        closeable: true
-                                                                      })
-      end
+      expect(response.parsed_body.with_indifferent_access).to match({
+                                                                      versionId: 1,
+                                                                      open: true,
+                                                                      openable: false,
+                                                                      assembling: true,
+                                                                      accessioning: false,
+                                                                      closeable: true,
+                                                                      discardable: true
+                                                                    })
     end
   end
 end

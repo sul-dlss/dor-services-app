@@ -29,8 +29,20 @@ class VersionService
                                 user_version_mode:)
   end
 
-  def self.can_close?(druid:, version:)
-    new(druid:, version:).can_close?
+  def self.can_close?(...)
+    new(...).can_close?
+  end
+
+  def self.can_discard?(...)
+    new(...).can_discard?
+  end
+
+  def self.ensure_discardable!(...)
+    new(...).ensure_discardable!
+  end
+
+  def self.discard(...)
+    new(...).discard
   end
 
   # @param [String] druid of the item
@@ -158,6 +170,36 @@ class VersionService
   rescue Preservation::Client::NotFoundError
     raise VersionService::VersioningError, 'Preservation (SDR) is not yet answering queries about this object. ' \
                                            "When an object has just been transferred, Preservation isn't immediately ready to answer queries."
+  end
+
+  # Discards (delete) the current version of an object
+  # @raise [VersionService::VersioningError] if the version cannot be discarded
+  def discard
+    ensure_discardable!
+    repository_object = RepositoryObject.find_by!(external_identifier: druid)
+    repository_object.discard_open_version!
+    EventFactory.create(druid: druid, event_type: 'version_discard', data: { version: version })
+  end
+
+  # Performs checks on whether a version can be discarded (deleted)
+  # @return [Boolean] true if the version can be discarded.
+  def can_discard?
+    ensure_discardable!
+    true
+  rescue VersionService::VersioningError
+    false
+  end
+
+  # Performs checks on whether a version can be discarded (deleted)
+  # @return [Void]
+  # @raise [VersionService::VersioningError] if the version cannot be discarded
+  def ensure_discardable!
+    repository_object = RepositoryObject.find_by!(external_identifier: druid)
+    raise VersionService::VersioningError, 'Only the head version can be discarded' unless repository_object.head_version.version == version
+
+    repository_object.check_discard_open_version!
+  rescue RepositoryObject::VersionNotDiscardable => e
+    raise VersionService::VersioningError, e.message
   end
 
   attr_reader :druid, :version

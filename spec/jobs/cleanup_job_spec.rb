@@ -11,7 +11,6 @@ RSpec.describe CleanupJob do
   let(:result) { create(:background_job_result) }
 
   before do
-    # allow(CocinaObjectStore).to receive(:find).with(druid).and_return(item)
     allow(result).to receive(:processing!)
     allow(EventFactory).to receive(:create)
   end
