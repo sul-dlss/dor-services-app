@@ -363,7 +363,7 @@ GEM
     patience_diff (1.2.0)
       optimist (~> 3.0)
     pg (1.5.8)
-    preservation-client (6.2.0)
+    preservation-client (7.0.1)
       activesupport (>= 4.2, < 8)
       faraday (~> 2.0)
       moab-versioning (>= 5.0.0, < 7)
@@ -618,7 +618,7 @@ DEPENDENCIES
   okcomputer
   parallel
   pg
-  preservation-client (~> 6.0)
+  preservation-client (~> 7.0)
   propshaft
   puma (~> 6.0)
   purl_fetcher-client (~> 2.1)
