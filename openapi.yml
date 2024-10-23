@@ -960,6 +960,26 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/Druid"
+    delete:
+      tags:
+        - versions
+      summary: Destroys current open version for this object
+      description: ""
+      operationId: "versions#destroy_current"
+      responses:
+        "204":
+          description: Deleted
+        "409":
+          description: Current version is not open
+        "404":
+          description: Object not found
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"
   "/v1/objects/{object_id}/versions/status":
     get:
       tags:
@@ -3585,6 +3605,7 @@ components:
         - assembling
         - accessioning
         - closeable
+        - discardable
       properties:
         versionId:
           type: integer

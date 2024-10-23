@@ -607,5 +607,113 @@ RSpec.describe VersionService do
       end
     end
   end
+
+  describe '.can_discard?' do
+    subject(:can_discard) do
+      described_class.can_discard?(druid:, version:)
+    end
+
+    let(:version) { 2 }
+
+    before do
+      # Starts with version 1 being closed.
+      repository_object.open_version!(description: 'A new version')
+    end
+
+    context 'when version is not the head version' do
+      let(:version) { 1 }
+
+      it 'returns false' do
+        expect(can_discard).to be false
+      end
+    end
+
+    context 'when version is not open' do
+      before do
+        repository_object.close_version!
+      end
+
+      it 'returns false' do
+        expect(can_discard).to be false
+      end
+    end
+
+    context 'when the version is discardable' do
+      it 'returns true' do
+        expect(can_discard).to be true
+      end
+    end
+  end
+
+  describe '.ensure_discardable!' do
+    subject(:ensure_discardable!) do
+      described_class.ensure_discardable!(druid:, version:)
+    end
+
+    let(:version) { 2 }
+
+    before do
+      # Starts with version 1 being closed.
+      repository_object.open_version!(description: 'A new version')
+    end
+
+    context 'when version is not the head version' do
+      let(:version) { 1 }
+
+      it 'raises' do
+        expect { ensure_discardable! }.to raise_error(VersionService::VersioningError, 'Only the head version can be discarded')
+      end
+    end
+
+    context 'when version is not open' do
+      before do
+        repository_object.close_version!
+      end
+
+      it 'raises' do
+        expect { ensure_discardable! }.to raise_error(VersionService::VersioningError, 'Cannot discard version because head version is closed')
+      end
+    end
+
+    context 'when the version is discardable' do
+      it 'does not raise' do
+        expect { ensure_discardable! }.not_to raise_error
+      end
+    end
+  end
+
+  describe '.discard' do
+    subject(:discard) do
+      described_class.discard(druid:, version:)
+    end
+
+    let(:version) { 2 }
+
+    before do
+      # Starts with version 1 being closed.
+      repository_object.open_version!(description: 'A new version')
+    end
+
+    context 'when version is discardable' do
+      let(:version) { 1 }
+
+      it 'raises' do
+        expect { discard }.to raise_error(VersionService::VersioningError)
+      end
+    end
+
+    context 'when the version is discardable' do
+      it 'discards the repository object version' do
+        discard
+        expect(repository_object.reload.opened_version).to be_nil
+        expect(repository_object.head_version).to eq repository_object.versions.first
+        expect(repository_object.versions.count).to eq 1
+
+        expect(EventFactory).to have_received(:create).with(data: { version: },
+                                                            druid:,
+                                                            event_type: 'version_discard')
+      end
+    end
+  end
 end
 # rubocop:enable RSpec/LetSetup
