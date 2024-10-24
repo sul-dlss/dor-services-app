@@ -12,6 +12,7 @@ gem 'dor-workflow-client', '~> 7.3'
 gem 'druid-tools', '~> 2.2'
 gem 'folio_client', '~> 0.8'
 gem 'graphql'
+gem 'lyber-core' # For robots
 gem 'mais_orcid_client'
 gem 'marc'
 gem 'marc-vocab', '~> 0.3.0' # for indexing

@@ -173,6 +173,13 @@ GEM
       ed25519
     docile (1.4.1)
     domain_name (0.6.20240107)
+    dor-services-client (15.1.0)
+      activesupport (>= 4.2, < 8)
+      cocina-models (~> 0.99.0)
+      deprecation
+      faraday (~> 2.0)
+      faraday-retry
+      zeitwerk (~> 2.1)
     dor-workflow-client (7.5.0)
       activesupport (>= 3.2.1, < 8)
       deprecation (>= 0.99.0)
@@ -278,6 +285,15 @@ GEM
     loofah (2.22.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
+    lyber-core (7.6.0)
+      activesupport
+      config
+      dor-services-client (~> 15.0)
+      dor-workflow-client (>= 7.4)
+      druid-tools
+      honeybadger
+      sidekiq (~> 7.0)
+      zeitwerk
     mail (2.8.1)
       mini_mime (>= 0.1.1)
       net-imap
@@ -611,6 +627,7 @@ DEPENDENCIES
   jsonpath (~> 1.1)
   jwt
   lograge
+  lyber-core
   mais_orcid_client
   marc
   marc-vocab (~> 0.3.0)
