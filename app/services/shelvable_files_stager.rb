@@ -27,7 +27,7 @@ class ShelvableFilesStager
       file_pathname = workspace_content_pathname.join(filepath)
       next if file_pathname.exist?
 
-      copy_file_from_preservation(file_pathname:, filepath:)
+      retrieve_from_preservation(file_pathname:, filepath:)
     end
   end
 
@@ -36,21 +36,41 @@ class ShelvableFilesStager
   attr_reader :filepaths, :workspace_content_pathname, :cocina_object
 
   # Try to copy from preservation into the workspace
-  def copy_file_from_preservation(file_pathname:, filepath:)
+  def retrieve_from_preservation(file_pathname:, filepath:)
     Rails.logger.info("Copying #{filepath} from preservation to #{file_pathname} for #{druid}")
     FileUtils.mkdir_p(file_pathname.dirname)
+    # Try copying from the current version first.
+    # If not found and there is a previous version, try the previous version.
+    # If still not found, raise an error.
+
+    return if copy_from_preservation(file_pathname: file_pathname, filepath: filepath, version: version, raise_if_not_found: version == 1)
+
+    copy_from_preservation(file_pathname: file_pathname, filepath: filepath, version: version - 1, raise_if_not_found: true)
+  end
+
+  def copy_from_preservation(file_pathname:, filepath:, version:, raise_if_not_found: false)
     received_bytes = 0
     File.open(file_pathname, 'wb') do |streamed|
       writer = proc do |chunk, overall_received_bytes|
         streamed.write chunk
         received_bytes = overall_received_bytes
       end
-      Preservation::Client.objects.content(druid:, filepath:, version: version - 1, on_data: writer)
+      Preservation::Client.objects.content(druid:, filepath:, version: version, on_data: writer)
       check_filesize(file_pathname:, filepath:, received: received_bytes)
+      true
     end
-  rescue Preservation::Client::NotFoundError, Faraday::ResourceNotFound
-    file_pathname.delete if file_pathname.exist? # 404 body is written to file
-    raise FileNotFound, "Unable to find #{filepath} in the content directory"
+  rescue Preservation::Client::NotFoundError
+    cleanup(file_pathname)
+    raise FileNotFound, "Unable to find #{filepath} in the content directory" if raise_if_not_found
+
+    false
+  rescue Preservation::Client::Error
+    cleanup(file_pathname)
+    raise
+  end
+
+  def cleanup(file_pathname)
+    file_pathname.delete if file_pathname.exist?
   end
 
   def check_filesize(file_pathname:, filepath:, received:)
