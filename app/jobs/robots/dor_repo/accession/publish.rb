@@ -1,8 +1,7 @@
 module Robots
   module DorRepo
     module Accession
-      # Sends initial metadata to PURL, in robots/release/release_publish we push
-      # to PURL again with updates to identityMetadata
+      # Publishing metadata and shelving files for object.
       class Publish < Robots::Robot
         def initialize
           super('accessionWF', 'publish')
@@ -11,15 +10,8 @@ module Robots
         def perform_work
           return LyberCore::ReturnState.new(status: :skipped, note: 'Admin policy objects are not published') if cocina_object.admin_policy?
 
-          # # Calls asynchronous process, which will set the publish workflow step to complete when it is done.
-          # object_client.publish(workflow: 'accessionWF', lane_id:)
-          # LyberCore::ReturnState.new(status: :noop, note: 'Initiated publish API call.')
-          result = BackgroundJobResult.create
-          PublishJob.set(queue: publish_queue).perform_later(druid:, background_job_result: result, workflow: 'accessionWF')
-        end
-
-        def publish_queue
-          lane_id == 'low' ? :publish_low : :publish_default
+          ::Publish::MetadataTransferService.publish(druid:)
+          EventFactory.create(druid:, event_type: 'publishing_complete', data: {})
         end
       end
     end
