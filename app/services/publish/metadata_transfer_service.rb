@@ -8,13 +8,11 @@ module Publish
   class MetadataTransferService
     # @param [String] druid for the object to be published
     # @param [Integer] user_version if a specific version is to be published
-    # @param [String] workflow (optional) the workflow used for reporting back status to (defaults to 'accessionWF')
-    def self.publish(druid:, user_version: nil, workflow: 'accessionWF')
-      new(druid:, workflow:, user_version:).publish
+    def self.publish(druid:, user_version: nil)
+      new(druid:, user_version:).publish
     end
 
-    def initialize(druid:, workflow:, user_version:)
-      @workflow = workflow
+    def initialize(druid:, user_version:)
       @public_cocina = PublicCocina.new(druid:, user_version:)
     end
 
@@ -39,13 +37,13 @@ module Publish
       Array.wrap(
         MemberService.for(druid, publishable: true)
       ).each do |member_druid|
-        PublishJob.set(queue: :publish_low).perform_later(druid: member_druid, background_job_result: BackgroundJobResult.create, workflow:, log_success: false)
+        PublishJob.set(queue: :publish_low).perform_later(druid: member_druid, background_job_result: BackgroundJobResult.create)
       end
     end
 
     def republish_virtual_object_constituents!
       VirtualObjectService.constituents(cocina_object, publishable: true).each do |constituent_druid|
-        PublishJob.set(queue: :publish_low).perform_later(druid: constituent_druid, background_job_result: BackgroundJobResult.create, workflow:, log_success: false)
+        PublishJob.set(queue: :publish_low).perform_later(druid: constituent_druid, background_job_result: BackgroundJobResult.create)
       end
     end
 

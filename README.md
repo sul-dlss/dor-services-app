@@ -159,6 +159,21 @@ $ sudo systemctl restart rolling-index
 
 **NOTE 3**: The rolling indexer logs to `{capistrano_shared_dir}/log/rolling_indexer.log`
 
+## Robots
+
+DSA hosts robots that perform DSA actions. This replaces the previous pattern in which a common accessioning robot would invoke a DSA endpoint that would start a DSA job that would perform the action and then update the workflow status.
+
+Robots are in `jobs/robots/*`. All DSA robots must be added to Workflow Server Rails' `QueueService` so that the workflow jobs are handled by DSA robots (instead of normal robots).
+
+There also must be a sidekiq process to handle the DSA robot queues. For example:
+```
+:labels:
+ - robot
+:concurrency: 5
+:queues:
+  - [accessionWF_default_dsa, 2]
+  - accessionWF_low_dsa
+```
 
 ## Other tools
 

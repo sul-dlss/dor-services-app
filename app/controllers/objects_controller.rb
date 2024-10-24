@@ -107,7 +107,7 @@ class ObjectsController < ApplicationController
   def publish
     result = BackgroundJobResult.create
     EventFactory.create(druid: params[:id], event_type: 'publish_request_received', data: { background_job_result_id: result.id })
-    PublishJob.set(queue: publish_queue).perform_later(druid: params[:id], background_job_result: result, workflow: params[:workflow])
+    PublishJob.set(queue: publish_queue).perform_later(druid: params[:id], background_job_result: result)
     head :created, location: result
   end
 
