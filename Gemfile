@@ -22,6 +22,10 @@ gem 'purl_fetcher-client', '~> 2.1'
 gem 'stanford-mods' # for indexing
 gem 'sul_orcid_client', '~> 0.3'
 
+source 'https://gems.contribsys.com/' do
+  gem 'sidekiq-pro'
+end
+
 # Ruby general dependencies
 gem 'bootsnap', '>= 1.4.2', require: false
 gem 'bunny', '~> 2.17' # Send messages to RabbitMQ
