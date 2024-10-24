@@ -3,7 +3,7 @@ module Robots
     module Accession
       # Sends initial metadata to PURL, in robots/release/release_publish we push
       # to PURL again with updates to identityMetadata
-      class Publish < LyberCore::Robot
+      class Publish < Robots::Robot
         def initialize
           super('accessionWF', 'publish')
         end
@@ -16,6 +16,10 @@ module Robots
           # LyberCore::ReturnState.new(status: :noop, note: 'Initiated publish API call.')
           result = BackgroundJobResult.create
           PublishJob.set(queue: publish_queue).perform_later(druid:, background_job_result: result, workflow: 'accessionWF')
+        end
+
+        def publish_queue
+          lane_id == 'low' ? :publish_low : :publish_default
         end
       end
     end
