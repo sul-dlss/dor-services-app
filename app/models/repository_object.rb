@@ -111,15 +111,21 @@ class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
     end
   end
 
+  def check_discard_open_version!
+    raise VersionNotDiscardable, 'Cannot discard version because head version is closed' if closed?
+    raise VersionNotDiscardable, 'Cannot discard version because this is the first version' if last_closed_version.nil?
+    raise VersionNotDiscardable, 'Cannot discard version because last closed version does not have cocina' unless last_closed_version.has_cocina?
+  end
+
   def can_discard_open_version?
-    check_discard_open_version
+    check_discard_open_version!
     true
   rescue VersionNotDiscardable
     false
   end
 
   def discard_open_version!
-    check_discard_open_version
+    check_discard_open_version!
 
     RepositoryObject.transaction do
       discard_version = opened_version
@@ -206,11 +212,5 @@ class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
     return if head_version.nil? || head_version == last_closed_version || head_version == opened_version
 
     errors.add(:head_version, 'must point at either the last closed version or the opened version')
-  end
-
-  def check_discard_open_version
-    raise VersionNotDiscardable, 'Cannot discard version because head version is closed' if closed?
-    raise VersionNotDiscardable, 'Cannot discard version because this is the first version' if last_closed_version.nil?
-    raise VersionNotDiscardable, 'Cannot discard version because last closed version does not have cocina' unless last_closed_version.has_cocina?
   end
 end

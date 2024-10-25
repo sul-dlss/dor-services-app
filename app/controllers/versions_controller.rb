@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
 class VersionsController < ApplicationController
   before_action :load_cocina_object, only: %i[create]
   before_action :check_cocina_object_exists, only: %i[index]
-  before_action :load_version, only: %i[current close_current openable status]
+  before_action :load_version, only: %i[current close_current destroy_current openable status]
   before_action :load_repository_object_version, only: %i[show solr]
 
   rescue_from RepositoryObjectVersion::NoCocina do |e|
@@ -40,6 +41,16 @@ class VersionsController < ApplicationController
     render build_error('Unable to close version', e)
   end
 
+  def destroy_current
+    # Updating RepositoryObject synchronously, but cleaning up directories and workflows asynchronously.
+    VersionService.discard(druid: params[:object_id], version: @version)
+    CleanupVersionJob.perform_later(druid: params[:object_id], version: @version)
+
+    head :no_content
+  rescue VersionService::VersioningError => e
+    render build_error('Unable to delete version', e, status: :conflict)
+  end
+
   def openable
     render plain: VersionService.can_open?(druid: params[:object_id], version: @version).to_s
   rescue Preservation::Client::Error => e
@@ -56,7 +67,8 @@ class VersionsController < ApplicationController
       openable: version_service.can_open?,
       assembling: workflow_state_service.assembling?,
       accessioning: workflow_state_service.accessioning?,
-      closeable: version_service.can_close?
+      closeable: version_service.can_close?,
+      discardable: version_service.can_discard?
     }
   end
 
@@ -133,3 +145,4 @@ class VersionsController < ApplicationController
     @repository_object_version = find_repository_object.versions.find_by!(version: params[:id])
   end
 end
+# rubocop:enable Metrics/ClassLength
