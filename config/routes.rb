@@ -39,7 +39,6 @@ Rails.application.routes.draw do
         post 'update_marc_record'
         post 'update_doi_metadata'
         post 'update_orcid_work'
-        post 'unpublish'
         post 'notify_goobi'
         post 'accession'
         post 'refresh_metadata', to: 'metadata_refresh#refresh'
