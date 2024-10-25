@@ -749,3 +749,16 @@ RSpec/InstanceVariable:
   Enabled: false
 RSpec/BeforeAfterAll:
   Enabled: false
+
+Gemspec/AddRuntimeDependency: # new in 1.65
+  Enabled: true
+Lint/DuplicateSetElement: # new in 1.67
+  Enabled: true
+Lint/UselessNumericOperation: # new in 1.66
+  Enabled: true
+Style/RedundantInterpolationUnfreeze: # new in 1.66
+  Enabled: true
+Rails/EnumSyntax: # new in 2.26
+  Enabled: true
+RSpec/StringAsInstanceDoubleConstant: # new in 3.1
+  Enabled: true
