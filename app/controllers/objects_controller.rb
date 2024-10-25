@@ -3,7 +3,7 @@
 # rubocop:disable Metrics/ClassLength
 class ObjectsController < ApplicationController
   before_action :load_cocina_object, only: %i[update_doi_metadata update_marc_record notify_goobi accession destroy show update_orcid_work reindex]
-  before_action :check_cocina_object_exists, only: %i[preserve publish unpublish]
+  before_action :check_cocina_object_exists, only: %i[preserve publish]
 
   rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
     json_api_error(status: :not_found, message: e.message)
@@ -116,13 +116,6 @@ class ObjectsController < ApplicationController
     EventFactory.create(druid: params[:id], event_type: 'preserve_request_received', data: { background_job_result_id: result.id })
     PreserveJob.set(queue:).perform_later(druid: params[:id], background_job_result: result)
     head :created, location: result
-  end
-
-  def unpublish
-    result = BackgroundJobResult.create
-    EventFactory.create(druid: params[:id], event_type: 'unpublish_request_received', data: { background_job_result_id: result.id })
-    UnpublishJob.set(queue: publish_queue).perform_later(druid: params[:id], background_job_result: result)
-    head :accepted, location: result
   end
 
   # Called by common-accessioning
