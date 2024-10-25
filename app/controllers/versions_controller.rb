@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ClassLength
 class VersionsController < ApplicationController
   before_action :load_cocina_object, only: %i[create]
   before_action :check_cocina_object_exists, only: %i[index]
-  before_action :load_version, only: %i[current close_current destroy_current openable status]
+  before_action :load_version, only: %i[current close_current destroy_current status]
   before_action :load_repository_object_version, only: %i[show solr]
 
   rescue_from RepositoryObjectVersion::NoCocina do |e|
@@ -49,12 +48,6 @@ class VersionsController < ApplicationController
     head :no_content
   rescue VersionService::VersioningError => e
     render build_error('Unable to delete version', e, status: :conflict)
-  end
-
-  def openable
-    render plain: VersionService.can_open?(druid: params[:object_id], version: @version).to_s
-  rescue Preservation::Client::Error => e
-    render build_error('Unable to check if openable due to preservation client error', e, status: :internal_server_error)
   end
 
   def status
@@ -145,4 +138,3 @@ class VersionsController < ApplicationController
     @repository_object_version = find_repository_object.versions.find_by!(version: params[:id])
   end
 end
-# rubocop:enable Metrics/ClassLength

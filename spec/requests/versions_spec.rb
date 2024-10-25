@@ -177,47 +177,6 @@ RSpec.describe 'Operations regarding object versions' do
     end
   end
 
-  describe 'GET /versions/openable' do
-    context 'when a new version can be opened' do
-      before do
-        allow(VersionService).to receive(:can_open?).and_return(true)
-      end
-
-      it 'returns true' do
-        get '/v1/objects/druid:mx123qw2323/versions/openable',
-            headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.body).to eq('true')
-        expect(response).to be_successful
-      end
-    end
-
-    context 'when a new version cannot be opened' do
-      before do
-        allow(VersionService).to receive(:can_open?).and_return(false)
-      end
-
-      it 'returns false' do
-        get '/v1/objects/druid:mx123qw2323/versions/openable',
-            headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.body).to eq('false')
-        expect(response).to be_successful
-      end
-    end
-
-    context 'when preservation client call fails' do
-      before do
-        allow(VersionService).to receive(:can_open?).and_raise(Preservation::Client::UnexpectedResponseError, 'Oops, a 500')
-      end
-
-      it 'returns an error' do
-        get '/v1/objects/druid:mx123qw2323/versions/openable',
-            headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.body).to eq('{"errors":[{"status":"500","title":"Unable to check if openable due to preservation client error","detail":"Oops, a 500"}]}')
-        expect(response).to have_http_status :internal_server_error
-      end
-    end
-  end
-
   describe 'GET /versions/status' do
     let(:version_service) { instance_double(VersionService, can_open?: false, can_close?: true, open?: true, can_discard?: true) }
     let(:workflow_state_service) { instance_double(WorkflowStateService, assembling?: true, accessioning?: false) }
