@@ -14,13 +14,6 @@ class WorkspacesController < ApplicationController
     render status: :created, json: { path: result }
   end
 
-  def destroy
-    result = BackgroundJobResult.create
-    EventFactory.create(druid: params[:object_id], event_type: 'cleanup_request_received', data: { background_job_result_id: result.id })
-    CleanupJob.set(queue: params['lane-id']).perform_later(druid: params[:object_id], background_job_result: result)
-    head :created, location: result
-  end
-
   private
 
   # JSON-API error response
