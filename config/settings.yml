@@ -45,7 +45,9 @@ dor_indexing:
   url: 'https://dor-indexing-app.example.edu/dor'
 redis_url: 'redis://localhost:6379/'
 
-workflow_url: 'https://workflow.example.com/workflow'
+workflow:
+  url: 'https://workflow.example.com/workflow'
+  timeout: 60
 sdr:
   local_workspace_root: /dor/workspace
   local_export_home: /dor/export
