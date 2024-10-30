@@ -28,7 +28,7 @@ services:
       SETTINGS__REDIS_URL: redis://redis:6379/
       SETTINGS__SOLR__URL: http://solr:8983/solr/dorservices
       SETTINGS__SURI__URL: http://suri:3000
-      SETTINGS__WORKFLOW_URL: http://workflow:3000
+      SETTINGS__WORKFLOW__URL: http://workflow:3000
   workers:
     build: .
     volumes:
@@ -44,7 +44,7 @@ services:
       SETTINGS__REDIS_URL: redis://redis:6379/
       SETTINGS__SOLR__URL: http://solr:8983/solr/dorservices
       SETTINGS__SURI__URL: http://suri:3000
-      SETTINGS__WORKFLOW_URL: http://workflow:3000
+      SETTINGS__WORKFLOW__URL: http://workflow:3000
       # We don't actually use this anywhere but the rails server needs it in production env
       SECRET_KEY_BASE: 1
   redis:
