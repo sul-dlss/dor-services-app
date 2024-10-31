@@ -8,10 +8,11 @@ gem 'rails', '~> 7.1.0'
 # DLSS/domain-specific dependencies
 gem 'cocina-models', '~> 0.99.0'
 gem 'datacite', '~> 0.3.0'
-gem 'dor-workflow-client', '~> 7.3'
+gem 'dor-workflow-client', '~> 7.6'
 gem 'druid-tools', '~> 2.2'
 gem 'folio_client', '~> 0.8'
 gem 'graphql'
+gem 'lyber-core', '~> 7.7' # For robots
 gem 'mais_orcid_client'
 gem 'marc'
 gem 'marc-vocab', '~> 0.3.0' # for indexing
@@ -20,6 +21,10 @@ gem 'preservation-client', '~> 7.0'
 gem 'purl_fetcher-client', '~> 2.1'
 gem 'stanford-mods' # for indexing
 gem 'sul_orcid_client', '~> 0.3'
+
+source 'https://gems.contribsys.com/' do
+  gem 'sidekiq-pro'
+end
 
 # Ruby general dependencies
 gem 'bootsnap', '>= 1.4.2', require: false

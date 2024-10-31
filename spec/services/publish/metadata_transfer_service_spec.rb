@@ -40,7 +40,7 @@ RSpec.describe Publish::MetadataTransferService do
         described_class.publish(druid:)
 
         expect(MemberService).to have_received(:for).with(druid, publishable: true)
-        expect(publish_job).to have_received(:perform_later).once.with(druid: member_druid, background_job_result: BackgroundJobResult, workflow: 'accessionWF', log_success: false)
+        expect(publish_job).to have_received(:perform_later).once.with(druid: member_druid, background_job_result: BackgroundJobResult)
         expect(PurlFetcher::Client::Publish).to have_received(:publish).with(cocina: public_cocina, file_uploads: {}, version: 1,
                                                                              must_version: false, version_date: closed_at)
         expect(Publish::TransferStager).not_to have_received(:copy)
@@ -246,7 +246,7 @@ RSpec.describe Publish::MetadataTransferService do
         described_class.publish(druid:)
 
         expect(VirtualObjectService).to have_received(:constituents).with(Cocina::Models::DROWithMetadata, publishable: true)
-        expect(publish_job).to have_received(:perform_later).once.with(druid: constituent_druid, background_job_result: BackgroundJobResult, workflow: 'accessionWF', log_success: false)
+        expect(publish_job).to have_received(:perform_later).once.with(druid: constituent_druid, background_job_result: BackgroundJobResult)
         expect(PurlFetcher::Client::Publish).to have_received(:publish).with(cocina: public_cocina, file_uploads: {}, version: 1,
                                                                              must_version: false, version_date: closed_at)
         expect(Publish::TransferStager).not_to have_received(:copy)

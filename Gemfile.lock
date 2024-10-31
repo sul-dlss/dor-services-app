@@ -1,4 +1,10 @@
 GEM
+  remote: https://gems.contribsys.com/
+  specs:
+    sidekiq-pro (7.3.2)
+      sidekiq (>= 7.3.0, < 8)
+
+GEM
   remote: https://rubygems.org/
   specs:
     actioncable (7.1.4.2)
@@ -173,7 +179,14 @@ GEM
       ed25519
     docile (1.4.1)
     domain_name (0.6.20240107)
-    dor-workflow-client (7.5.0)
+    dor-services-client (15.2.0)
+      activesupport (>= 4.2, < 8)
+      cocina-models (~> 0.99.0)
+      deprecation
+      faraday (~> 2.0)
+      faraday-retry
+      zeitwerk (~> 2.1)
+    dor-workflow-client (7.6.0)
       activesupport (>= 3.2.1, < 8)
       deprecation (>= 0.99.0)
       faraday (~> 2.0)
@@ -278,6 +291,15 @@ GEM
     loofah (2.23.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
+    lyber-core (7.7.0)
+      activesupport
+      config
+      dor-services-client
+      dor-workflow-client (>= 7.6)
+      druid-tools
+      honeybadger
+      sidekiq (~> 7.0)
+      zeitwerk
     mail (2.8.1)
       mini_mime (>= 0.1.1)
       net-imap
@@ -594,7 +616,7 @@ DEPENDENCIES
   debug
   diffy
   dlss-capistrano
-  dor-workflow-client (~> 7.3)
+  dor-workflow-client (~> 7.6)
   druid-tools (~> 2.2)
   dry-monads
   edtf (~> 3.0)
@@ -610,6 +632,7 @@ DEPENDENCIES
   jsonpath (~> 1.1)
   jwt
   lograge
+  lyber-core (~> 7.7)
   mais_orcid_client
   marc
   marc-vocab (~> 0.3.0)
@@ -636,6 +659,7 @@ DEPENDENCIES
   rubocop-rspec_rails
   ruby-cache (~> 0.3.0)
   sidekiq (~> 7.0)
+  sidekiq-pro!
   simplecov
   sneakers (~> 2.11)
   stanford-mods

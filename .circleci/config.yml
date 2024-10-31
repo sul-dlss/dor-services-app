@@ -8,9 +8,11 @@ workflows:
           name: validate
       - ruby-rails/lint:
           name: lint
+          context: dlss
       - ruby-rails/test-rails:
           name: test
           api-only: true
+          context: dlss
       - ruby-rails/docker-publish:
           context: dlss
           name: publish-latest
