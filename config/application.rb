@@ -43,7 +43,7 @@ end
 module DorServices
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.0
+    config.load_defaults 7.2
 
     accept_proc = proc { |request| request.path.start_with?('/v1') }
     config.middleware.use(
@@ -74,11 +74,6 @@ module DorServices
       Cocina::Models::Mapping::Purl.base_url = Settings.release.purl_base_url
     end
 
-    # Settings in config/environments/* take precedence over those specified here.
-    # Application configuration can go into files in config/initializers
-    # -- all .rb files in that directory are automatically loaded after loading
-    # the framework and any gems in your application.
-
     # Only loads a smaller set of middleware suitable for API only apps.
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
@@ -90,5 +85,21 @@ module DorServices
     # Set up a session store so we can access the Sidekiq Web UI
     # See: https://github.com/mperham/sidekiq/wiki/Monitoring#rails-api-application-session-configuration
     config.session_store :cookie_store, key: '_dor-services-app_session'
+
+    # Please, add to the `ignore` list any other `lib` subdirectories that do
+    # not contain `.rb` files, or that should not be reloaded or eager loaded.
+    # Common ones are `templates`, `generators`, or `middleware`, for example.
+    config.autoload_lib(ignore: %w[assets tasks])
+
+    # Configuration for the application, engines, and railties goes here.
+    #
+    # These settings can be overridden in specific environments using the files
+    # in config/environments, which are processed later.
+    #
+    # config.time_zone = "Central Time (US & Canada)"
+    # config.eager_load_paths << Rails.root.join("extras")
+
+    # Don't generate system test files.
+    config.generators.system_tests = nil
   end
 end
