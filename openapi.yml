@@ -197,23 +197,6 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/Druid"
-  "/v1/objects/{id}/notify_goobi":
-    post:
-      tags:
-        - integrations
-      summary: Registers an object with the Goobi server
-      description: ""
-      operationId: "objects#notify_goobi"
-      responses:
-        "200":
-          description: OK
-      parameters:
-        - name: id
-          in: path
-          description: ID of object
-          required: true
-          schema:
-            $ref: "#/components/schemas/Druid"
   "/v1/objects/{id}/reindex":
     post:
       tags:
