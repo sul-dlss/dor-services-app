@@ -17,6 +17,7 @@ workflows:
           context: dlss
           name: publish-latest
           image: suldlss/dor-services-app
+          extra_build_args: --build-arg BUNDLE_GEMS__CONTRIBSYS__COM
           requires:
             - validate
             - lint
