@@ -2,12 +2,13 @@
 
 require 'rails_helper'
 
-RSpec.describe UpdateOrcidWorkJob do
-  subject(:perform) do
-    described_class.perform_now(cocina_item.to_json)
-  end
+RSpec.describe Robots::DorRepo::Accession::UpdateOrcidWork, type: :robot do
+  subject(:perform) { test_perform(robot, druid) }
 
-  let(:cocina_item) do
+  let(:druid) { 'druid:bc234fg5678' }
+  let(:robot) { described_class.new }
+
+  let(:object) do
     build(:dro, id: 'druid:bc234fg5678').new(
       identification: {
         doi: '10.25740/bc123df4567',
@@ -79,8 +80,38 @@ RSpec.describe UpdateOrcidWorkJob do
   end
 
   before do
+    allow(CocinaObjectStore).to receive(:find).with(druid).and_return(object)
     allow(MaisOrcidClient).to receive(:configure).and_return(mais_orcid_client)
     allow(SulOrcidClient).to receive(:configure).and_return(orcid_client)
+  end
+
+  context 'when the object is an admin policy' do
+    let(:object) { build(:admin_policy, id: druid) }
+
+    it 'skips the object' do
+      expect(perform.status).to eq 'skipped'
+      expect(perform.note).to eq 'Orcid works are not supported on non-Item objects'
+    end
+  end
+
+  context 'when the object is a collection policy' do
+    let(:object) { build(:collection, id: druid) }
+
+    it 'skips the object' do
+      expect(perform.status).to eq 'skipped'
+      expect(perform.note).to eq 'Orcid works are not supported on non-Item objects'
+    end
+  end
+
+  context 'when the object belongs to the SDR graveyard APO' do
+    let(:object) do
+      build(:dro, id: druid, admin_policy_id: Settings.graveyard_admin_policy.druid)
+    end
+
+    it 'skips the object' do
+      expect(perform.status).to eq 'skipped'
+      expect(perform.note).to eq 'Object belongs to the SDR graveyard APO'
+    end
   end
 
   context 'when adding a work' do
@@ -170,4 +201,27 @@ RSpec.describe UpdateOrcidWorkJob do
       expect(orcid_client).not_to have_received(:update_work)
     end
   end
+
+  # context 'when the object is not exportable' do
+  #   let(:exportable) { false }
+
+  #   it 'raises an error' do
+  #     expect { perform }.to raise_error(RuntimeError, /Item requested a DOI be updated, but it doesn't meet all the preconditions/)
+  #     expect(Cocina::ToDatacite::Attributes).to have_received(:exportable?).with(object)
+  #   end
+  # end
+
+  # context 'when Datacite returns an error' do
+  #   let(:datacite_response_status) { 500 }
+
+  #   it 'raises an error' do
+  #     expect { perform }.to raise_error(RuntimeError, /Error connecting to datacite/)
+  #   end
+  # end
+
+  # context 'with no errors' do
+  #   it 'succeeds' do
+  #     expect { perform }.not_to raise_error
+  #   end
+  # end
 end
