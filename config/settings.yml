@@ -26,6 +26,7 @@ suri:
 
 # Workflow
 workflow:
+  url: 'https://workflow.example.com/workflow'
   logfile: 'log/workflow_service.log'
   shift_age: 'weekly'
   timeout: 60
@@ -45,9 +46,6 @@ dor_indexing:
   url: 'https://dor-indexing-app.example.edu/dor'
 redis_url: 'redis://localhost:6379/'
 
-workflow:
-  url: 'https://workflow.example.com/workflow'
-  timeout: 60
 sdr:
   local_workspace_root: /dor/workspace
   local_export_home: /dor/export
