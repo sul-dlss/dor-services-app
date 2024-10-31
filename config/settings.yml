@@ -11,6 +11,10 @@ ur_admin_policy:
   agreement: druid:wv961pm7301
   label: Ur-APO
 
+# Graveyard Admin Policy
+graveyard_admin_policy:
+  druid: 'druid:kg712km1576'
+
 # Stacks
 stacks:
   document_cache_host: 'purl-test.stanford.edu'
