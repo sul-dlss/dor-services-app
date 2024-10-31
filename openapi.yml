@@ -703,46 +703,6 @@ paths:
           schema:
             $ref: "#/components/schemas/Druid"
   "/v1/objects/{object_id}/workspace":
-    delete:
-      tags:
-        - workspaces
-      summary: Remove an object's workspace
-      description: ""
-      operationId: "workspaces#destroy"
-      responses:
-        "200":
-          description: OK
-        "422":
-          description: There was a problem removing the workspace.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      parameters:
-        - name: object_id
-          in: path
-          description: ID of object
-          required: true
-          schema:
-            $ref: "#/components/schemas/Druid"
-        - name: workflow
-          in: query
-          description: which workflow should this be reported to
-          schema:
-            type: string
-            enum:
-              - accessionWF
-              - releaseWF
-          example: releaseWF
-        - name: lane-id
-          in: query
-          description: Lane for prioritizing the work
-          schema:
-            type: string
-            enum:
-              - "default"
-              - "low"
-            default: "default"
     post:
       tags:
         - workspaces
