@@ -36,6 +36,10 @@ class GoobiService
     end
   end
 
+  def self.register(...)
+    new(...).register
+  end
+
   def initialize(cocina_obj)
     @cocina_obj = cocina_obj
   end

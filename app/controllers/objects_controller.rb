@@ -2,7 +2,7 @@
 
 # rubocop:disable Metrics/ClassLength
 class ObjectsController < ApplicationController
-  before_action :load_cocina_object, only: %i[update_marc_record notify_goobi accession destroy show reindex]
+  before_action :load_cocina_object, only: %i[update_marc_record accession destroy show reindex]
   before_action :check_cocina_object_exists, only: :publish
 
   rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
@@ -127,16 +127,6 @@ class ObjectsController < ApplicationController
                    message: e.message)
   end
 
-  # This endpoint is called by the goobi-notify process in the goobiWF
-  # (code in https://github.com/sul-dlss/common-accessioning/blob/main/lib/robots/dor_repo/goobi/goobi_notify.rb)
-  # This proxies a request to the Goobi server and proxies it's response to the client.
-  def notify_goobi
-    response = GoobiService.new(@cocina_object).register
-    return json_api_error(status: :conflict, message: response.body) if response.status == 409
-
-    proxy_faraday_response(response)
-  end
-
   def reindex
     Indexer.reindex(cocina_object: @cocina_object)
     head :no_content
@@ -154,10 +144,6 @@ class ObjectsController < ApplicationController
 
   def workflow_client
     WorkflowClientFactory.build
-  end
-
-  def proxy_faraday_response(response)
-    render status: response.status, content_type: response.headers['Content-Type'], body: response.body
   end
 
   def from_etag(etag)
