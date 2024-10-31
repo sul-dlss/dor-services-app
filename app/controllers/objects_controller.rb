@@ -2,7 +2,7 @@
 
 # rubocop:disable Metrics/ClassLength
 class ObjectsController < ApplicationController
-  before_action :load_cocina_object, only: %i[update_doi_metadata update_marc_record notify_goobi accession destroy show update_orcid_work reindex]
+  before_action :load_cocina_object, only: %i[update_marc_record notify_goobi accession destroy show update_orcid_work reindex]
   before_action :check_cocina_object_exists, only: :publish
 
   rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
@@ -115,22 +115,6 @@ class ObjectsController < ApplicationController
   def update_marc_record
     result = BackgroundJobResult.create
     UpdateMarcJob.perform_later(druid: params[:id], background_job_result: result)
-    head :accepted
-  end
-
-  # Called by the robots.
-  def update_doi_metadata
-    return head :no_content unless Settings.enabled_features.datacite_update && @cocina_object.identification.doi
-
-    # Check to see if these meet the conditions necessary to export to datacite
-    unless Cocina::ToDatacite::Attributes.exportable?(@cocina_object)
-      return json_api_error(status: :conflict,
-                            message: "Item requested a DOI be updated, but it doesn't meet all the preconditions. " \
-                                     'Datacite requires that this object have creators and a datacite extension with resourceTypeGeneral')
-    end
-
-    UpdateDoiMetadataJob.perform_later(Cocina::Models.without_metadata(@cocina_object).to_json)
-
     head :accepted
   end
 
