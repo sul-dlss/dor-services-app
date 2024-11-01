@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ClassLength
 class ObjectsController < ApplicationController
-  before_action :load_cocina_object, only: %i[update_marc_record accession destroy show reindex]
+  before_action :load_cocina_object, only: %i[accession destroy show reindex]
   before_action :check_cocina_object_exists, only: :publish
 
   rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
@@ -111,13 +110,6 @@ class ObjectsController < ApplicationController
     head :created, location: result
   end
 
-  # Called by common-accessioning
-  def update_marc_record
-    result = BackgroundJobResult.create
-    UpdateMarcJob.perform_later(druid: params[:id], background_job_result: result)
-    head :accepted
-  end
-
   def destroy
     DeleteService.destroy(@cocina_object, user_name: params[:user_name])
     head :no_content
@@ -170,6 +162,4 @@ class ObjectsController < ApplicationController
     new_params[:user_name] = params[:opening_user_name] if params[:opening_user_name]
     new_params
   end
-
-  # rubocop:enable Metrics/ClassLength
 end

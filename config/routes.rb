@@ -36,7 +36,6 @@ Rails.application.routes.draw do
       member do
         post 'publish'
         post 'preserve'
-        post 'update_marc_record'
         post 'update_orcid_work'
         post 'accession'
         post 'refresh_metadata', to: 'metadata_refresh#refresh'
