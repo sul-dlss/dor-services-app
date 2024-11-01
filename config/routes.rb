@@ -57,8 +57,6 @@ Rails.application.routes.draw do
 
       resource :workspace, only: [:create, :destroy]
 
-      resource :shelve, only: [:create]
-
       resources :events, only: [:create, :index], defaults: { format: :json }
 
       resources :versions, only: %i[create index show] do
