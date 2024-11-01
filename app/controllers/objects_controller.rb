@@ -100,9 +100,7 @@ class ObjectsController < ApplicationController
     head :created
   end
 
-  # called from Argo, the accessionWF and from the releaseWF.
-  # Takes an optional 'workflow' argument, which will call back to
-  # the 'publish-complete' step of that workflow if provided
+  # Called from Argo.
   def publish
     result = BackgroundJobResult.create
     EventFactory.create(druid: params[:id], event_type: 'publish_request_received', data: { background_job_result_id: result.id })
