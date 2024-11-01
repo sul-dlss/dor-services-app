@@ -7,9 +7,8 @@ require 'moab/stanford'
 # NOTE:  this class makes use of data structures from moab-versioning gem,
 #  but it does NOT access any preservation storage roots directly
 class PreservationIngestService
-  # @param [Cocina::Models::DRO, Cocina::Models::Collection] cocina_object The representation of the digital object
-  # @return [void] Create the Moab/bag manifests for new version, export data to BagIt bag, kick off the SDR preservation workflow
-  # @raise [Preservation::Client::Error] if bad response from preservation catalog.
+  class VersionMismatchError < StandardError; end
+
   def self.transfer(cocina_object)
     new(cocina_object).transfer
   end
@@ -21,6 +20,7 @@ class PreservationIngestService
   # @param [Cocina::Models::DRO, Cocina::Models::Collection] cocina_object The representation of the digital object
   # @return [void] Create the Moab/bag manifests for new version, export data to BagIt bag, kick off the SDR preservation workflow
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
+  # @raise [PreservationIngestService::VersionMismatchError] if the versionMetadata.xml version does not match the expected version from preservation.
   def transfer
     # Writes versionMetadata.xml, contentMetadata.xml, and cocina.json
     metadata_dir = PreservationMetadataExtractor.extract(workspace:, cocina_object:)
@@ -76,7 +76,7 @@ class PreservationIngestService
   # @param [Integer] expected The version number that should be in the file
   # @param [Integer] found The version number that is actually in the file
   def verify_version_id(pathname, expected, found)
-    raise "Version mismatch in #{pathname}, expected #{expected}, found #{found}" unless expected == found
+    raise VersionMismatchError, "Version mismatch in #{pathname}, expected #{expected}, found #{found}" unless expected == found
 
     true
   end
