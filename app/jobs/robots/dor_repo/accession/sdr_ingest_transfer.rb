@@ -6,7 +6,8 @@ module Robots
       # Transfers the object to preservation
       class SdrIngestTransfer < Robots::Robot
         def initialize
-          super('accessionWF', 'sdr-ingest-transfer')
+          # VersionMismatchError may be caused by storage latency, so retrying.
+          super('accessionWF', 'sdr-ingest-transfer', retriable_exceptions: [PreservationIngestService::VersionMismatchError])
         end
 
         def perform_work

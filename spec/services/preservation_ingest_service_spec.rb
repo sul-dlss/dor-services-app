@@ -146,7 +146,7 @@ RSpec.describe PreservationIngestService do
 
     it 'verifies the version' do
       expect(service.send(:verify_version_id, '/mypath/myfile', 2, 2)).to be_truthy
-      expect { service.send(:verify_version_id, '/mypath/myfile', 1, 2) }.to raise_exception('Version mismatch in /mypath/myfile, expected 1, found 2')
+      expect { service.send(:verify_version_id, '/mypath/myfile', 1, 2) }.to raise_exception(described_class::VersionMismatchError, 'Version mismatch in /mypath/myfile, expected 1, found 2')
     end
   end
 
