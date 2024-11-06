@@ -16,7 +16,6 @@ require 'action_view/railtie'
 # require "action_cable/engine"
 # require 'rails/test_unit/railtie'
 require 'active_support'
-require 'active_support/core_ext/integer/time'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
