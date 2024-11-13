@@ -33,6 +33,7 @@ class WorkflowStateService
       active_workflow_except_step?(workflow: 'wasSeedPreassemblyWF', process: 'end-was-seed-preassembly') ||
       active_workflow_except_step?(workflow: 'gisDeliveryWF', process: 'start-accession-workflow') ||
       active_workflow_except_step?(workflow: 'ocrWF', process: 'end-ocr') ||
+      active_workflow_except_step?(workflow: 'speechToTextWF', process: 'end-stt') ||
       active_workflow?(workflow: 'gisAssemblyWF')
   end
 
