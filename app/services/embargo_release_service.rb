@@ -28,15 +28,10 @@ class EmbargoReleaseService
   end
 
   def release
-    unless WorkflowClientFactory.build.lifecycle(druid:, milestone_name: 'accessioned')
-      Rails.logger.warn("Skipping #{druid} - not yet accessioned")
-      return
-    end
+    return unless WorkflowClientFactory.build.lifecycle(druid:, milestone_name: 'accessioned')
 
-    unless VersionService.can_open?(druid: cocina_object.externalIdentifier, version: cocina_object.version)
-      Rails.logger.warn("Skipping #{druid} - object is already open")
-      return
-    end
+    return unless VersionService.can_open?(druid: cocina_object.externalIdentifier, version: cocina_object.version)
+
     Rails.logger.info("Releasing embargo for #{druid}")
 
     updated_cocina_object = VersionService.open(cocina_object:, description: 'embargo released')

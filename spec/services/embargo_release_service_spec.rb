@@ -38,7 +38,6 @@ RSpec.describe EmbargoReleaseService do
 
       it 'skips' do
         service.release
-        expect(Rails.logger).to have_received(:warn).with("Skipping #{druid} - not yet accessioned")
         expect(workflow_client).to have_received(:lifecycle).with(druid:, milestone_name: 'accessioned')
         expect(VersionService).not_to have_received(:can_open?)
       end
@@ -49,7 +48,6 @@ RSpec.describe EmbargoReleaseService do
 
       it 'skips' do
         service.release
-        expect(Rails.logger).to have_received(:warn).with("Skipping #{druid} - object is already open")
         expect(VersionService).to have_received(:can_open?).with(druid:, version: 1)
         expect(VersionService).not_to have_received(:open)
       end
