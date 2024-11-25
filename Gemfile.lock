@@ -1,7 +1,7 @@
 GEM
   remote: https://gems.contribsys.com/
   specs:
-    sidekiq-pro (7.3.2)
+    sidekiq-pro (7.3.3)
       sidekiq (>= 7.3.0, < 8)
 
 GEM
@@ -253,12 +253,12 @@ GEM
       activesupport (>= 6.1)
     graphiql-rails (1.10.1)
       railties
-    graphql (2.4.3)
+    graphql (2.4.4)
       base64
       fiber-storage
     hashdiff (1.1.2)
     hashie (5.0.0)
-    honeybadger (5.22.0)
+    honeybadger (5.24.0)
       logger
     http-cookie (1.0.7)
       domain_name (~> 0.5)
@@ -317,7 +317,7 @@ GEM
     marc-vocab (0.3.0)
     marcel (1.0.4)
     mini_mime (1.1.5)
-    minitest (5.25.1)
+    minitest (5.25.2)
     moab-versioning (6.1.0)
       druid-tools (>= 1.0.0)
       json
@@ -396,7 +396,7 @@ GEM
     psych (5.2.0)
       stringio
     public_suffix (6.0.1)
-    puma (6.4.3)
+    puma (6.5.0)
       nio4r (~> 2.0)
     purl_fetcher-client (2.1.2)
       activesupport
@@ -444,7 +444,7 @@ GEM
     rainbow (3.1.1)
     rake (12.3.3)
     rbtree (0.4.6)
-    rdoc (6.7.0)
+    rdoc (6.8.1)
       psych (>= 4.0.0)
     redis-client (0.22.2)
       connection_pool
@@ -513,7 +513,7 @@ GEM
     serverengine (2.1.1)
       sigdump (~> 0.2.2)
     set (1.1.0)
-    sidekiq (7.3.5)
+    sidekiq (7.3.6)
       connection_pool (>= 2.3.0)
       logger
       rack (>= 2.2.4)
