@@ -13,6 +13,21 @@ set :deploy_to, "/opt/app/dor_services/#{fetch(:application)}"
 set :sneakers_systemd_role, :worker
 set :sneakers_systemd_use_hooks, true
 
+namespace :rabbitmq do
+  desc 'Runs rake rabbitmq:setup'
+  task setup: ['deploy:set_rails_env'] do
+    on roles(:worker) do
+      within release_path do
+        with rails_env: fetch(:rails_env) do
+          execute :rake, 'rabbitmq:setup'
+        end
+      end
+    end
+  end
+
+  before 'sneakers_systemd:start', 'rabbitmq:setup'
+end
+
 # Default value for :scm is :git
 # set :scm, :git
 
