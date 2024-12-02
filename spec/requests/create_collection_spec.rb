@@ -128,7 +128,7 @@ RSpec.describe 'Create object' do
             "title":[{"value":"#{title}"}],
             "note":[{"value":"coll abstract","type":"abstract"}]
             },
-          "identification": {}
+          "identification": {"sourceId": "sulcollection:1234"}
           }
 
       JSON
@@ -166,7 +166,7 @@ RSpec.describe 'Create object' do
           "version":1,
           "access":{ "view": "world" },
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
-          "identification":{}
+          "identification":{ "sourceId": "sulcollection:1234" }
           }
       JSON
     end
