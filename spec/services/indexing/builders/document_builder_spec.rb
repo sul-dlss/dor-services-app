@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+
 RSpec.describe Indexing::Builders::DocumentBuilder do
   subject(:indexer) do
     described_class.for(model: cocina_with_metadata)
@@ -10,7 +11,6 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
     Cocina::Models.with_metadata(cocina, 'unknown_lock', created: DateTime.parse('Wed, 01 Jan 2020 12:00:01 GMT'),
                                                          modified: DateTime.parse('Thu, 04 Mar 2021 23:05:34 GMT'))
   end
-
   let(:druid) { 'druid:xx999xx9999' }
   let(:releasable) do
     instance_double(Indexing::Indexers::ReleasableIndexer, to_solr: { 'released_to_ssim' => %w[searchworks earthworks] })
@@ -96,6 +96,22 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
                 administrative_tags: [],
                 parent_collections: [])
         expect(Honeybadger).to have_received(:notify).with('Bad association found on druid:xx999xx9999. druid:bc999df2323 could not be found')
+      end
+    end
+
+    context 'when an exception is raised' do
+      let(:collections) { [] }
+      let(:error_message) { 'nil is not a symbol nor a string' }
+
+      before do
+        allow(Honeybadger).to receive(:notify)
+        allow(Cocina::Models::Mapping::ToMods::Description).to receive(:transform).and_raise(TypeError, error_message)
+      end
+
+      it 'logs a data error to honeybadger' do
+        expect { indexer }.to raise_error(TypeError, error_message)
+
+        expect(Honeybadger).to have_received(:notify).once.with(/Unexpected indexing exception/, hash_including(:backtrace, :context, :error_message, :tags))
       end
     end
   end
