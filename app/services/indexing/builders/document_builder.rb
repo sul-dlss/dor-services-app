@@ -66,6 +66,13 @@ module Indexing
                                          cocina: model,
                                          parent_collections:,
                                          administrative_tags:)
+      rescue StandardError => e
+        Honeybadger.notify('[DATA ERROR] Unexpected indexing exception',
+                           tags: 'data_error',
+                           error_message: e.message,
+                           backtrace: e.backtrace,
+                           context: { druid: id })
+        raise e
       end
 
       private
