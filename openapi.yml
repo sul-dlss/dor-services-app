@@ -1240,6 +1240,39 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /v1/objects/versions/status:
+    post:
+      tags:
+        - versions
+      summary: Finds versions for multiple objects.
+      description: |- 
+        This endpoint is used to find the versions for multiple objects. The request body should be an array of druids.
+
+        The response will be an object with the druids as keys and the version status as values.
+
+        If an object is not found, it will not be included in the response.
+      operationId: "versions#batch_status"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              # Using an object instead of array due to https://github.com/interagent/committee/issues/220
+              type: object
+              properties:
+                externalIdentifiers:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Druid"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: "#/components/schemas/VersionStatus"
   "/v1/objects/{id}":
     patch:
       tags:

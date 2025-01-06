@@ -30,6 +30,15 @@ RSpec.describe 'Operations regarding object versions' do
     end
   end
 
+  describe 'POST /versions' do
+    it 'returns the version status for the provided druids' do
+      get '/v1/objects/druid:mx123qw2323/versions/current',
+          headers: { 'Authorization' => "Bearer #{jwt}" }
+
+      expect(response.body).to eq('1')
+    end
+  end
+
   describe 'DELETE /versions/current' do
     context 'when discarding a version succeeds' do
       before do
@@ -198,6 +207,50 @@ RSpec.describe 'Operations regarding object versions' do
                                                                       accessioning: false,
                                                                       closeable: true,
                                                                       discardable: true
+                                                                    })
+    end
+  end
+
+  describe 'POST /versions/status' do
+    let(:druids) { ['druid:mx123qw2323', 'druid:fp165nz4391', 'druid:bm077td6448'] }
+    let(:version_service1) { instance_double(VersionService, can_open?: false, can_close?: true, open?: true, can_discard?: true) }
+    let(:version_service2) { instance_double(VersionService, can_open?: true, can_close?: false, open?: false, can_discard?: false) }
+    let(:workflow_state_service1) { instance_double(WorkflowStateService, assembling?: true, accessioning?: false) }
+    let(:workflow_state_service2) { instance_double(WorkflowStateService, assembling?: false, accessioning?: true) }
+
+    before do
+      allow(CocinaObjectStore).to receive(:version).with(druids[0]).and_return(1)
+      allow(CocinaObjectStore).to receive(:version).with(druids[1]).and_return(2)
+      allow(CocinaObjectStore).to receive(:version).with(druids[2]).and_raise(CocinaObjectStore::CocinaObjectNotFoundError)
+
+      allow(VersionService).to receive(:new).with(druid: druids[0], version: 1).and_return(version_service1)
+      allow(VersionService).to receive(:new).with(druid: druids[1], version: 2).and_return(version_service2)
+      allow(WorkflowStateService).to receive(:new).with(druid: druids[0], version: 1).and_return(workflow_state_service1)
+      allow(WorkflowStateService).to receive(:new).with(druid: druids[1], version: 2).and_return(workflow_state_service2)
+    end
+
+    it 'returns the version status for the provided druids' do
+      post '/v1/objects/versions/status',
+           params: { externalIdentifiers: druids }.to_json,
+           headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+
+      expect(response.parsed_body.with_indifferent_access).to match('druid:mx123qw2323' => {
+                                                                      versionId: 1,
+                                                                      open: true,
+                                                                      openable: false,
+                                                                      assembling: true,
+                                                                      accessioning: false,
+                                                                      closeable: true,
+                                                                      discardable: true
+                                                                    },
+                                                                    'druid:fp165nz4391' => {
+                                                                      versionId: 2,
+                                                                      open: false,
+                                                                      openable: true,
+                                                                      assembling: false,
+                                                                      accessioning: true,
+                                                                      closeable: false,
+                                                                      discardable: false
                                                                     })
     end
   end
