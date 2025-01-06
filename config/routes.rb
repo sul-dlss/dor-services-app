@@ -45,6 +45,7 @@ Rails.application.routes.draw do
 
       collection do
         get 'find'
+        post 'versions/status', to: 'versions#batch_status'
       end
 
       resources :members, only: [:index], defaults: { format: :json }

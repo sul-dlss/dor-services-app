@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class VersionsController < ApplicationController
+class VersionsController < ApplicationController # rubocop:disable Metrics/ClassLength
   before_action :load_cocina_object, only: %i[create]
   before_action :check_cocina_object_exists, only: %i[index]
   before_action :load_version, only: %i[current close_current destroy_current status]
@@ -51,18 +51,18 @@ class VersionsController < ApplicationController
   end
 
   def status
-    version_service = VersionService.new(druid: params[:object_id], version: @version)
-    workflow_state_service = WorkflowStateService.new(druid: params[:object_id], version: @version)
+    render json: status_for(druid: params[:object_id], version: @version)
+  end
 
-    render json: {
-      versionId: @version,
-      open: version_service.open?,
-      openable: version_service.can_open?,
-      assembling: workflow_state_service.assembling?,
-      accessioning: workflow_state_service.accessioning?,
-      closeable: version_service.can_close?,
-      discardable: version_service.can_discard?
-    }
+  def batch_status
+    druids = params.require([:externalIdentifiers]).first
+    statuses = druids.filter_map do |druid|
+      version = CocinaObjectStore.version(druid)
+      [druid, status_for(druid: druid, version: version)]
+    rescue CocinaObjectStore::CocinaObjectNotFoundError
+      nil
+    end
+    render json: statuses.to_h
   end
 
   def solr
@@ -136,5 +136,20 @@ class VersionsController < ApplicationController
 
   def load_repository_object_version
     @repository_object_version = find_repository_object.versions.find_by!(version: params[:id])
+  end
+
+  def status_for(druid:, version:)
+    version_service = VersionService.new(druid:, version:)
+    workflow_state_service = WorkflowStateService.new(druid:, version:)
+
+    {
+      versionId: version,
+      open: version_service.open?,
+      openable: version_service.can_open?,
+      assembling: workflow_state_service.assembling?,
+      accessioning: workflow_state_service.accessioning?,
+      closeable: version_service.can_close?,
+      discardable: version_service.can_discard?
+    }
   end
 end
