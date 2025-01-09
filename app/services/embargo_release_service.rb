@@ -11,7 +11,7 @@ class EmbargoReleaseService
 
     return Rails.logger.info('No objects to process') if embargoed_items_to_release.none?
 
-    Rails.logger.info("Found #{embargoed_items_to_release.count} objects")
+    Rails.logger.debug { "Found #{embargoed_items_to_release.count} objects" }
 
     embargoed_items_to_release.pluck(:external_identifier).each do |druid|
       release(druid)
