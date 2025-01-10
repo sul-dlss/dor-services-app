@@ -3,14 +3,15 @@
 # Invoke via:
 # bin/rails r -e production "RelatedResourceTypes.report" > related_resource_types.csv
 class RelatedResourceTypes
-  # path within description
-  JSON_PATH = '$.relatedResource[*].type'
+  # NOTE: Prefer strict JSON querying over lax when using the `.**` operator, per
+  # https://www.postgresql.org/docs/14/functions-json.html#STRICT-AND-LAX-MODES
+  # relatedResource may be within a relatedResource, so we need to use .**
+  JSON_PATH = 'strict $.**.relatedResource[*].type'
   SQL = <<~SQL.squish.freeze
     SELECT jsonb_path_query_array(rov.description, '#{JSON_PATH}') as values
             FROM repository_objects AS ro, repository_object_versions AS rov WHERE
             ro.head_version_id = rov.id
             AND ro.object_type = 'dro'
-            AND jsonb_path_exists(rov.description, '#{JSON_PATH}')
   SQL
 
   def self.report
