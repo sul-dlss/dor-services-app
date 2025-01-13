@@ -46,7 +46,7 @@ module Indexing
       delegate :status, :name, :state, :error_message, :datetime, to: :process
 
       def time?
-        datetime && (status == 'completed' || status == 'error')
+        datetime && ['completed', 'error'].include?(status)
       end
 
       # index the error message without the druid so we hopefully get some overlap
