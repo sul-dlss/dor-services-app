@@ -1,7 +1,7 @@
 GEM
   remote: https://gems.contribsys.com/
   specs:
-    sidekiq-pro (7.3.4)
+    sidekiq-pro (7.3.5)
       sidekiq (>= 7.3.7, < 8)
 
 GEM
@@ -172,7 +172,7 @@ GEM
       ed25519
     docile (1.4.1)
     domain_name (0.6.20240107)
-    dor-services-client (15.2.1)
+    dor-services-client (15.3.0)
       activesupport (>= 7.0.0)
       cocina-models (~> 0.99.0)
       deprecation
@@ -199,9 +199,9 @@ GEM
       concurrent-ruby (~> 1.0)
       dry-core (~> 1.1)
       zeitwerk (~> 2.6)
-    dry-monads (1.6.0)
+    dry-monads (1.7.0)
       concurrent-ruby (~> 1.0)
-      dry-core (~> 1.0, < 2)
+      dry-core (~> 1.1)
       zeitwerk (~> 2.6)
     dry-struct (1.7.0)
       dry-core (~> 1.1)
@@ -254,8 +254,9 @@ GEM
       fiber-storage
     hashdiff (1.1.2)
     hashie (5.0.0)
-    honeybadger (5.26.1)
+    honeybadger (5.26.2)
       logger
+      ostruct
     http-cookie (1.0.8)
       domain_name (~> 0.5)
     i18n (1.14.6)
@@ -277,7 +278,7 @@ GEM
     jwt (2.10.1)
       base64
     language_server-protocol (3.17.0.3)
-    logger (1.6.4)
+    logger (1.6.5)
     lograge (0.14.0)
       actionpack (>= 4)
       activesupport (>= 4)
@@ -306,10 +307,9 @@ GEM
       faraday-retry
       oauth2
       zeitwerk
-    marc (1.2.0)
+    marc (1.3.0)
+      nokogiri (~> 1.0)
       rexml
-      scrub_rb (>= 1.0.1, < 2)
-      unf
     marc-vocab (0.3.0)
     marcel (1.0.4)
     mini_mime (1.1.5)
@@ -366,7 +366,7 @@ GEM
       rack (>= 1.2, < 4)
       snaky_hash (~> 2.0)
       version_gem (~> 1.1)
-    okcomputer (1.18.5)
+    okcomputer (1.18.6)
     openapi_parser (1.0.0)
     optimist (3.2.0)
     ostruct (0.6.1)
@@ -442,7 +442,7 @@ GEM
     rbtree (0.4.6)
     rdoc (6.10.0)
       psych (>= 4.0.0)
-    redis-client (0.23.0)
+    redis-client (0.23.1)
       connection_pool
     regexp_parser (2.10.0)
     reline (0.6.0)
@@ -473,7 +473,7 @@ GEM
     rspec-support (3.13.2)
     rspec_junit_formatter (0.6.0)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (1.69.2)
+    rubocop (1.70.0)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
@@ -504,7 +504,6 @@ GEM
       rubocop-rspec (~> 3, >= 3.0.1)
     ruby-cache (0.3.0)
     ruby-progressbar (1.13.0)
-    scrub_rb (1.0.1)
     securerandom (0.4.1)
     serverengine (2.1.1)
       sigdump (~> 0.2.2)
@@ -566,7 +565,6 @@ GEM
     tty-screen (0.8.2)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    unf (0.2.0)
     unicode-display_width (2.6.0)
     uri (1.0.2)
     useragent (0.16.11)
