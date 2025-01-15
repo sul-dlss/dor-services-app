@@ -103,7 +103,7 @@ RSpec.describe Catalog::FolioWriter do
 
     before do
       allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
-      allow(FolioClient).to receive(:edit_marc_json).and_yield(folio_response_json)
+      allow(FolioClient).to receive(:edit_marc_json).and_yield(folio_response_json).and_return(nil)
       allow(ReleaseTagService).to receive(:released_to_searchworks?).and_return(release_data)
       allow(FolioClient).to receive_messages(fetch_instance_info: instance_record, fetch_marc_hash: source_record)
       allow(Honeybadger).to receive(:notify)
@@ -137,6 +137,24 @@ RSpec.describe Catalog::FolioWriter do
 
         it 'raises' do
           expect { folio_writer.save }.to raise_error(FolioClient::ResourceNotFound)
+        end
+      end
+
+      context 'when edit operation returns errors' do
+        let(:error_response) do
+          JSON.parse({
+            message: "Record is too long to be a valid MARC binary record, it's length would be 100106 which is more than 99999 bytes",
+            type: '-4',
+            code: 'INTERNAL_SERVER_ERROR'
+          }.to_json)
+        end
+
+        before do
+          allow(FolioClient).to receive(:edit_marc_json).and_raise(FolioClient::ResourceNotFound).and_return(error_response)
+        end
+
+        it 'raises a RuntimeError with the given response message' do
+          expect { folio_writer.save }.to raise_error(/Record is too long to be a valid MARC binary record/)
         end
       end
 
@@ -275,8 +293,7 @@ RSpec.describe Catalog::FolioWriter do
           expect(Honeybadger).to have_received(:notify)
             .with(
               'Error updating Folio record',
-              error_message: 'No matching PURL found in instance record after update.',
-              context: { druid: }
+              error_message: 'No matching PURL found in instance record after update.'
             )
             .once
         end
@@ -310,8 +327,7 @@ RSpec.describe Catalog::FolioWriter do
           expect(Honeybadger).to have_received(:notify)
             .with(
               'Error updating Folio record',
-              error_message: 'More than one matching field with a PURL found on FOLIO record.',
-              context: { druid: }
+              error_message: 'More than one matching field with a PURL found on FOLIO record.'
             )
             .once
         end
@@ -354,8 +370,7 @@ RSpec.describe Catalog::FolioWriter do
           expect(Honeybadger).to have_received(:notify)
             .with(
               'Error updating Folio record',
-              error_message: 'PURL still found in instance record after update.',
-              context: { druid: }
+              error_message: 'PURL still found in instance record after update.'
             )
             .once
         end
@@ -459,7 +474,7 @@ RSpec.describe Catalog::FolioWriter do
       before do
         allow(FolioClient).to receive(:fetch_instance_info).and_return(instance_record_unreleased)
         allow(FolioClient).to receive(:edit_marc_json).with(hrid: 'a8832160').and_raise(FolioClient::ResourceNotFound)
-        allow(FolioClient).to receive(:edit_marc_json).with(hrid: 'a8832161').and_yield(folio_response_json)
+        allow(FolioClient).to receive(:edit_marc_json).with(hrid: 'a8832161').and_yield(folio_response_json).and_return(nil)
       end
 
       it 'updates MARC record that exists to not include the 856' do

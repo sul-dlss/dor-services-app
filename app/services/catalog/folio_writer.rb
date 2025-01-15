@@ -19,6 +19,12 @@ module Catalog
     def save
       return if catalog_record_ids.empty? && previous_catalog_record_ids.empty?
 
+      Honeybadger.context(
+        druid: cocina_object.externalIdentifier,
+        catalog_record_ids:,
+        previous_catalog_record_ids:
+      )
+
       # remove 856 for previous catkeys
       previous_catalog_record_ids.each { |previous_id| delete_previous_ids(catalog_record_id: previous_id, ignore_not_found: true) }
 
@@ -31,9 +37,11 @@ module Catalog
     attr_reader :marc_856_data, :cocina_object
 
     def delete_previous_ids(catalog_record_id:, ignore_not_found: false)
-      FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
+      response = FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
         marc_json['fields'].reject! { |field| (field['tag'] == '856') && field['content'].include?(purl_no_protocol) }
       end
+
+      validate_quickmarc_response!(response)
 
       retry_lookup do
         # check that update has completed in FOLIO
@@ -47,10 +55,12 @@ module Catalog
     end
 
     def update_current_ids(catalog_record_id:)
-      FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
+      response = FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
         marc_json['fields'].reject! { |field| (field['tag'] == '856') && field['content'].include?(purl_no_protocol) }
         marc_json['fields'] << marc_856_field if ReleaseTagService.released_to_searchworks?(cocina_object:)
       end
+
+      validate_quickmarc_response!(response)
 
       retry_lookup do
         if ReleaseTagService.released_to_searchworks?(cocina_object:)
@@ -64,24 +74,29 @@ module Catalog
       end
     end
 
+    # @param [Hash,NilClass] response quickmarc response e.g.,
+    #   {"message"=>"Record is too long to be a valid MARC binary record, it's length would be 100106 which is more than 99999 bytes", "type"=>"-4", "code"=>"INTERNAL_SERVER_ERROR"}
+    def validate_quickmarc_response!(response)
+      return if response.nil?
+
+      Honeybadger.context(quickmarc_response: response)
+
+      raise response['message']
+    end
+
     def retry_lookup
       @try_count ||= 0
       yield
     rescue StandardError => e
       @try_count += 1
       Rails.logger.warn "Retrying Folio client operation for #{cocina_object.externalIdentifier} (#{@try_count} tries)"
+
       if @try_count <= MAX_TRIES
         sleep Settings.catalog.folio.sleep_seconds
         retry
       end
 
-      Honeybadger.notify(
-        'Error updating Folio record',
-        error_message: e.message,
-        context: {
-          druid: cocina_object.externalIdentifier
-        }
-      )
+      Honeybadger.notify('Error updating Folio record', error_message: e.message)
 
       raise StandardError, 'FOLIO update not completed.'
     end
