@@ -23,9 +23,10 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
     let(:indexer) do
       Indexing::Indexers::CompositeIndexer.new(
         described_class
-      ).new(id: 'druid:ab123cd4567', cocina:, workflow_client: instance_double(Dor::Workflow::Client))
+      ).new(id: 'druid:ab123cd4567', cocina:, workflow_client: instance_double(Dor::Workflow::Client), trace_id:)
     end
     let(:doc) { indexer.to_solr }
+    let(:trace_id) { 'abc123' }
 
     context 'with collections' do
       let(:structural) do
@@ -42,7 +43,8 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
           'is_member_of_collection_ssim' => ['info:fedora/druid:bb777bb7777', 'info:fedora/druid:dd666dd6666'],
           'modified_latest_dttsi' => '2021-03-04T23:05:34Z',
           'created_at_dttsi' => '2020-01-01T12:00:01Z',
-          'id' => 'druid:xx999xx9999'
+          'id' => 'druid:xx999xx9999',
+          'trace_id_ss' => 'abc123'
         )
       end
     end
@@ -62,7 +64,8 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
           'has_constituents_ssim' => nil,
           'modified_latest_dttsi' => '2021-03-04T23:05:34Z',
           'created_at_dttsi' => '2020-01-01T12:00:01Z',
-          'id' => 'druid:xx999xx9999'
+          'id' => 'druid:xx999xx9999',
+          'trace_id_ss' => 'abc123'
         )
       end
     end
@@ -82,7 +85,8 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
           'is_member_of_collection_ssim' => [],
           'modified_latest_dttsi' => '2021-03-04T23:05:34Z',
           'created_at_dttsi' => '2020-01-01T12:00:01Z',
-          'id' => 'druid:xx999xx9999'
+          'id' => 'druid:xx999xx9999',
+          'trace_id_ss' => 'abc123'
         )
       end
     end

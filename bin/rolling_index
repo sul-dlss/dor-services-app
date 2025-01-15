@@ -43,7 +43,8 @@ Daemons.run_proc(
           cocina_object = CocinaObjectStore.find(identifier)
           # This returns a Solr doc hash
           Indexing::Builders::DocumentBuilder.for(
-            model: cocina_object
+            model: cocina_object,
+            trace_id: Indexer.trace_id_for(druid: identifier)
           ).to_solr
         rescue CocinaObjectStore::CocinaObjectNotFoundError
           Honeybadger.notify('Rolling indexer cannot reindex since not found.', { druid: identifier })

@@ -4,10 +4,11 @@ module Indexing
   module Indexers
     # Basic indexing for any object
     class BasicIndexer
-      attr_reader :cocina, :workflow_client
+      attr_reader :cocina, :workflow_client, :trace_id
 
-      def initialize(cocina:, **)
+      def initialize(cocina:, trace_id:, **)
         @cocina = cocina
+        @trace_id = trace_id
         @workflow_client = workflow_client
       end
 
@@ -15,6 +16,7 @@ module Indexing
       def to_solr
         {}.tap do |solr_doc|
           solr_doc[:id] = cocina.externalIdentifier
+          solr_doc['trace_id_ss'] = trace_id
           solr_doc['current_version_isi'] = cocina.version # Argo Facet field "Version"
           solr_doc['obj_label_tesim'] = cocina.label
 
