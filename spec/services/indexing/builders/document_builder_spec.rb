@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Indexing::Builders::DocumentBuilder do
   subject(:indexer) do
-    described_class.for(model: cocina_with_metadata)
+    described_class.for(model: cocina_with_metadata, trace_id:)
   end
 
   let(:cocina_with_metadata) do
@@ -12,6 +12,8 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
                                                          modified: DateTime.parse('Thu, 04 Mar 2021 23:05:34 GMT'))
   end
   let(:druid) { 'druid:xx999xx9999' }
+  let(:trace_id) { 'abc123' }
+
   let(:releasable) do
     instance_double(Indexing::Indexers::ReleasableIndexer, to_solr: { 'released_to_ssim' => %w[searchworks earthworks] })
   end
@@ -68,7 +70,8 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
       before do
         allow(CocinaObjectStore).to receive(:find).and_return(related)
         described_class.for(
-          model: cocina_with_metadata
+          model: cocina_with_metadata,
+          trace_id:
         )
       end
 
@@ -94,7 +97,8 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
           .with(cocina: Cocina::Models::DROWithMetadata,
                 id: String,
                 administrative_tags: [],
-                parent_collections: [])
+                parent_collections: [],
+                trace_id:)
         expect(Honeybadger).to have_received(:notify).with('Bad association found on druid:xx999xx9999. druid:bc999df2323 could not be found')
       end
     end

@@ -56,8 +56,9 @@ module Indexing
         @@parent_collections = {} # rubocop:disable Style/ClassVars
       end
 
-      def initialize(model:)
+      def initialize(model:, trace_id: SecureRandom.uuid)
         @model = model
+        @trace_id = trace_id
       end
 
       # @param [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Model::AdminPolicyWithMetadata] model
@@ -65,7 +66,8 @@ module Indexing
         indexer_for_type(model.type).new(id:,
                                          cocina: model,
                                          parent_collections:,
-                                         administrative_tags:)
+                                         administrative_tags:,
+                                         trace_id:)
       rescue StandardError => e
         Honeybadger.notify('[DATA ERROR] Unexpected indexing exception',
                            tags: 'data_error',
@@ -77,7 +79,7 @@ module Indexing
 
       private
 
-      attr_reader :model, :workflow_client
+      attr_reader :model, :workflow_client, :trace_id
 
       def id
         model.externalIdentifier
