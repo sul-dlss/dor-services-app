@@ -17,10 +17,10 @@ Lint/SuppressedException:
 Metrics/AbcSize:
   Max: 39
 
-# Offense count: 6
+# Offense count: 7
 # Configuration parameters: CountComments, CountAsOne.
 Metrics/ClassLength:
-  Max: 114
+  Max: 118
 
 # Offense count: 15
 # Configuration parameters: AllowedMethods, AllowedPatterns.
