@@ -1,4 +1,4 @@
-FROM ruby:3.3.1-bookworm
+FROM ruby:3.4.1-bookworm
 
 ENV RAILS_ENV=production
 ENV BUNDLER_WITHOUT="development test"
