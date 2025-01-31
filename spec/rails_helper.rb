@@ -6,6 +6,12 @@ SimpleCov.start :rails do
   add_filter '/bin/'
   add_filter '/app/reports/'
   add_filter '/db/'
+
+  if ENV['CI']
+    require 'simplecov_json_formatter'
+
+    formatter SimpleCov::Formatter::JSONFormatter
+  end
 end
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
