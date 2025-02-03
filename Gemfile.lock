@@ -1,7 +1,7 @@
 GEM
   remote: https://gems.contribsys.com/
   specs:
-    sidekiq-pro (7.3.5)
+    sidekiq-pro (7.3.6)
       sidekiq (>= 7.3.7, < 8)
 
 GEM
@@ -87,6 +87,8 @@ GEM
     attr_extras (7.1.0)
     base64 (0.2.0)
     bcrypt_pbkdf (1.1.1)
+    bcrypt_pbkdf (1.1.1-arm64-darwin)
+    bcrypt_pbkdf (1.1.1-x86_64-darwin)
     benchmark (0.4.0)
     bigdecimal (3.1.9)
     bootsnap (1.18.4)
@@ -201,12 +203,12 @@ GEM
       concurrent-ruby (~> 1.0)
       dry-core (~> 1.1)
       zeitwerk (~> 2.6)
-    dry-struct (1.7.0)
+    dry-struct (1.7.1)
       dry-core (~> 1.1)
-      dry-types (~> 1.8)
+      dry-types (~> 1.8, >= 1.8.2)
       ice_nine (~> 0.11)
       zeitwerk (~> 2.6)
-    dry-types (1.8.1)
+    dry-types (1.8.2)
       bigdecimal (~> 3.0)
       concurrent-ruby (~> 1.0)
       dry-core (~> 1.0)
@@ -219,8 +221,8 @@ GEM
     equivalent-xml (0.6.0)
       nokogiri (>= 1.4.3)
     erubi (1.13.1)
-    factory_bot (6.5.0)
-      activesupport (>= 5.0.0)
+    factory_bot (6.5.1)
+      activesupport (>= 6.1.0)
     factory_bot_rails (6.4.4)
       factory_bot (~> 6.5)
       railties (>= 5.0.0)
@@ -247,9 +249,10 @@ GEM
       activesupport (>= 6.1)
     graphiql-rails (1.10.1)
       railties
-    graphql (2.4.8)
+    graphql (2.4.9)
       base64
       fiber-storage
+      logger
     hashdiff (1.1.2)
     hashie (5.0.0)
     honeybadger (5.26.2)
@@ -276,7 +279,7 @@ GEM
       multi_json
     jwt (2.10.1)
       base64
-    language_server-protocol (3.17.0.3)
+    language_server-protocol (3.17.0.4)
     logger (1.6.5)
     lograge (0.14.0)
       actionpack (>= 4)
@@ -378,7 +381,7 @@ GEM
     pg (1.5.9)
     pp (0.6.2)
       prettyprint
-    preservation-client (7.0.1)
+    preservation-client (7.0.2)
       activesupport (>= 4.2, < 8)
       faraday (~> 2.0)
       moab-versioning (>= 5.0.0, < 7)
@@ -393,13 +396,13 @@ GEM
       date
       stringio
     public_suffix (6.0.1)
-    puma (6.5.0)
+    puma (6.6.0)
       nio4r (~> 2.0)
     purl_fetcher-client (2.1.2)
       activesupport
       faraday (~> 2.1)
     racc (1.8.1)
-    rack (3.1.8)
+    rack (3.1.9)
     rack-console (1.4.1)
       rack (~> 3.0)
       rack-test
@@ -475,17 +478,17 @@ GEM
     rspec-support (3.13.2)
     rspec_junit_formatter (0.6.0)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (1.71.0)
+    rubocop (1.71.1)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
       parser (>= 3.3.0.2)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 2.9.3, < 3.0)
-      rubocop-ast (>= 1.36.2, < 2.0)
+      rubocop-ast (>= 1.38.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 4.0)
-    rubocop-ast (1.37.0)
+    rubocop-ast (1.38.0)
       parser (>= 3.3.1.0)
     rubocop-capybara (2.21.0)
       rubocop (~> 1.41)
