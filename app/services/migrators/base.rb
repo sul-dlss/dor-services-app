@@ -41,7 +41,7 @@ module Migrators
       raise NotImplementedError
     end
 
-    protected
+    private
 
     attr_reader :repository_object
   end
