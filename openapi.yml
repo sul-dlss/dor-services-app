@@ -3395,6 +3395,7 @@ components:
         - accessioning
         - closeable
         - discardable
+        - versionDescription
       properties:
         versionId:
           type: integer
@@ -3414,6 +3415,9 @@ components:
         closeable:
           type: boolean
           description: whether the version can be closed
+        versionDescription:
+          type: string
+          description: a message that explains what changed
     BackgroundJobResultResponse:
       type: object
       properties:

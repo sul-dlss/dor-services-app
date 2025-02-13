@@ -193,6 +193,7 @@ RSpec.describe 'Operations regarding object versions' do
     before do
       allow(VersionService).to receive(:new).and_return(version_service)
       allow(WorkflowStateService).to receive(:new).and_return(workflow_state_service)
+      create(:repository_object_version, :with_repository_object, external_identifier: druid, version: 1)
     end
 
     it 'returns the version status for an object' do
@@ -206,7 +207,8 @@ RSpec.describe 'Operations regarding object versions' do
                                                                       assembling: true,
                                                                       accessioning: false,
                                                                       closeable: true,
-                                                                      discardable: true
+                                                                      discardable: true,
+                                                                      versionDescription: 'Best version ever'
                                                                     })
     end
   end
@@ -219,6 +221,8 @@ RSpec.describe 'Operations regarding object versions' do
     let(:workflow_state_service2) { instance_double(WorkflowStateService, assembling?: false, accessioning?: true) }
 
     before do
+      create(:repository_object_version, :with_repository_object, external_identifier: druids[0], version: 1)
+      create(:repository_object_version, :with_repository_object, external_identifier: druids[1], version: 2)
       allow(CocinaObjectStore).to receive(:version).with(druids[0]).and_return(1)
       allow(CocinaObjectStore).to receive(:version).with(druids[1]).and_return(2)
       allow(CocinaObjectStore).to receive(:version).with(druids[2]).and_raise(CocinaObjectStore::CocinaObjectNotFoundError)
@@ -241,7 +245,8 @@ RSpec.describe 'Operations regarding object versions' do
                                                                       assembling: true,
                                                                       accessioning: false,
                                                                       closeable: true,
-                                                                      discardable: true
+                                                                      discardable: true,
+                                                                      versionDescription: 'Best version ever'
                                                                     },
                                                                     'druid:fp165nz4391' => {
                                                                       versionId: 2,
@@ -250,7 +255,8 @@ RSpec.describe 'Operations regarding object versions' do
                                                                       assembling: false,
                                                                       accessioning: true,
                                                                       closeable: false,
-                                                                      discardable: false
+                                                                      discardable: false,
+                                                                      versionDescription: 'Best version ever'
                                                                     })
     end
   end
