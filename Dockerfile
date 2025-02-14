@@ -5,7 +5,6 @@ ENV BUNDLER_WITHOUT="development test"
 
 # For Sidekiq Pro
 ARG BUNDLE_GEMS__CONTRIBSYS__COM
-ENV BUNDLE_GEMS__CONTRIBSYS__COM $BUNDLE_GEMS__CONTRIBSYS__COM
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \

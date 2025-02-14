@@ -1,6 +1,9 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      args:
+        BUNDLE_GEMS__CONTRIBSYS__COM: "${BUNDLE_GEMS__CONTRIBSYS__COM}"
     volumes:
       - ./:/app
     working_dir: /app
@@ -30,7 +33,10 @@ services:
       SETTINGS__SURI__URL: http://suri:3000
       SETTINGS__WORKFLOW__URL: http://workflow:3000
   workers:
-    build: .
+    build:
+      context: .
+      args:
+        BUNDLE_GEMS__CONTRIBSYS__COM: "${BUNDLE_GEMS__CONTRIBSYS__COM}"
     volumes:
       - ./:/app
     working_dir: /app
