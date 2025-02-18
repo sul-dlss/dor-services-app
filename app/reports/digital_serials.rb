@@ -35,7 +35,7 @@ class DigitalSerials
         row['druid'],
         collection_druid,
         "\"#{collection_name}\"",
-        row['catalogRecordId'],
+        row['catalog_record_id'],
         row['refresh']
       ].join(',')
     end
