@@ -5,8 +5,6 @@
 class DigitalSerials
   # NOTE: Prefer strict JSON querying over lax when using the `.**` operator, per
   # https://www.postgresql.org/docs/14/functions-json.html#STRICT-AND-LAX-MODES
-  # There may be some part name/number types missing a value, so it is not possible to use strict mode .**.type as required.
-  # Column will be blank.
   SQL = <<~SQL.squish.freeze
     SELECT ro.external_identifier as druid,
       jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id,
