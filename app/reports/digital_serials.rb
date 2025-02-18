@@ -20,9 +20,24 @@ class DigitalSerials
   SQL
 
   def self.report
-    puts 'druid,catalogRecordId,refresh\n'
-    ActiveRecord::Base.connection.execute(SQL).each do |row|
-      puts [row['druid'], row['collection_id'], row['catalog_record_id'], row['refresh']].join(',')
+    puts 'druid,collection_id,collection_name,catalogRecordId,refresh'
+    rows(SQL).compact.each { |row| puts row }
+  end
+
+  def self.rows(sql_query)
+    sql_result_rows = ActiveRecord::Base.connection.execute(sql_query).to_a
+
+    sql_result_rows.map do |row|
+      collection_druid = row['collection_id']
+      collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
+
+      [
+        row['druid'],
+        collection_druid,
+        "\"#{collection_name}\"",
+        row['catalog_record_id'],
+        row['refresh']
+      ].join(',')
     end
   end
 end
