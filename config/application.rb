@@ -73,6 +73,11 @@ module DorServices
       Cocina::Models::Mapping::Purl.base_url = Settings.release.purl_base_url
     end
 
+    # Add timestamps to all loggers (both Rack-based ones and e.g. Sidekiq's)
+    config.log_formatter = proc do |severity, datetime, _progname, msg|
+      "[#{datetime.to_fs(:iso8601)}] [#{severity}] #{msg}\n"
+    end
+
     # Only loads a smaller set of middleware suitable for API only apps.
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
