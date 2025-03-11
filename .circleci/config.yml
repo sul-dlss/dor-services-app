@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  ruby-rails: sul-dlss/ruby-rails@4.5.0
+  ruby-rails: sul-dlss/ruby-rails@4.6.0
 workflows:
   build:
     jobs:
@@ -13,7 +13,6 @@ workflows:
           name: test
           api-only: true
           context: dlss
-          use-codecov: true
       - ruby-rails/docker-publish:
           context: dlss
           name: publish-latest
