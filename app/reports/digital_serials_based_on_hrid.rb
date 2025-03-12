@@ -27,7 +27,7 @@ class DigitalSerialsBasedOnHrid
   def self.rows(sql_query)
     sql_result_rows = ActiveRecord::Base.connection.execute(sql_query).to_a
 
-    hrid_counts = sql_result_rows.transform_values { |row| row['catalog_record_id'] }.map { |k, v| [k, v.size] }
+    hrid_counts = sql_result_rows.group_by { |row| row['catalog_record_id'] }.map { |k, v| [k, v.size] }.to_h
 
     sql_result_rows.map do |row|
       next unless hrid_counts[row['catalog_record_id']] > 1
@@ -40,7 +40,8 @@ class DigitalSerialsBasedOnHrid
         collection_druid,
         "\"#{collection_name}\"",
         row['catalog_record_id'],
-        row['refresh']
+        row['refresh'],
+        hrid_counts[row['catalog_record_id']]
       ].join(',')
     end
   end
