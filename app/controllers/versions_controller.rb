@@ -147,7 +147,7 @@ class VersionsController < ApplicationController # rubocop:disable Metrics/Class
     {
       versionId: version,
       open: version_service.open?,
-      openable: version_service.can_open?,
+      openable: version_service.can_open?(check_preservation: false),
       assembling: workflow_state_service.assembling?,
       accessioning: workflow_state_service.accessioning?,
       closeable: version_service.can_close?,

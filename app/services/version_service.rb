@@ -67,7 +67,7 @@ class VersionService
     raise ArgumentError, 'description is required to open a new version' if description.blank?
 
     ensure_openable!(assume_accessioned:)
-    repository_object = RepositoryObject.find_by!(external_identifier: cocina_object.externalIdentifier)
+    repository_object = RepositoryObject.includes(:head_version).find_by!(external_identifier: cocina_object.externalIdentifier)
     check_version!(current_version: repository_object.head_version.version) unless from_version
 
     from_repository_object_version = from_version ? repository_object.versions.find_by!(version: from_version) : nil
@@ -89,7 +89,7 @@ class VersionService
   # @raise [VersioningError] if the version does not match the head version
   def open?
     @open ||=  begin
-      repo_obj = RepositoryObject.find_by(external_identifier: druid)
+      repo_obj = RepositoryObject.includes(:head_version).find_by(external_identifier: druid)
 
       raise CocinaObjectNotFoundError, "Couldn't find object with 'external_identifier'=#{druid}" unless repo_obj
 
@@ -203,7 +203,7 @@ class VersionService
   # @return [Void]
   # @raise [VersionService::VersioningError] if the version cannot be discarded
   def ensure_discardable!
-    repository_object = RepositoryObject.find_by!(external_identifier: druid)
+    repository_object = RepositoryObject.includes(:head_version).find_by!(external_identifier: druid)
     raise VersionService::VersioningError, 'Only the head version can be discarded' unless repository_object.head_version.version == version
 
     repository_object.check_discard_open_version!
