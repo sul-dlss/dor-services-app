@@ -74,23 +74,31 @@ class WorkflowStateService
 
   # @return [Boolean] true if there is a workflow for the current version and it has incomplete steps.
   def active_workflow?(workflow:)
-    workflow_response = workflow_client.workflow(pid: druid, workflow_name: workflow)
+    workflow_response = workflow_for(workflow_name: workflow)
     # Note that active_for? checks if there are any steps in this workflow.
     # This is a different meaning of active used in this class.
     # Is there a workflow for the current version? If not, then it can't be active.
-    return false unless workflow_response.active_for?(version:)
+    return false unless workflow_response&.active_for?(version:)
 
     # There are incomplete steps in the workflow.
     !workflow_response.complete_for?(version:)
   end
 
   def active_workflow_except_step?(workflow:, process:)
-    workflow_response = workflow_client.workflow(pid: druid, workflow_name: workflow)
+    workflow_response = workflow_for(workflow_name: workflow)
 
     # Is there a workflow for the current version? If not, then it can't be active.
-    return false unless workflow_response.active_for?(version:)
+    return false unless workflow_response&.active_for?(version:)
 
     # Does the active workflow contain any processes *other* than the one we're ignoring? If so, consider it active.
     workflow_response.incomplete_processes_for(version:).any? { |step| step.name != process }
+  end
+
+  def all_workflows
+    @all_workflows ||= workflow_client.all_workflows(pid: druid)
+  end
+
+  def workflow_for(workflow_name:)
+    all_workflows.workflows.find { |workflow| workflow.workflow_name == workflow_name }
   end
 end

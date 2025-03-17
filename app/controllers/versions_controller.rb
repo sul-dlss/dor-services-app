@@ -139,8 +139,8 @@ class VersionsController < ApplicationController # rubocop:disable Metrics/Class
   end
 
   def status_for(druid:, version:)
-    version_service = VersionService.new(druid:, version:)
     workflow_state_service = WorkflowStateService.new(druid:, version:)
+    version_service = VersionService.new(druid:, version:, workflow_state_service:)
     repository_object = RepositoryObject.find_by!(external_identifier: druid)
     version_description = repository_object.versions.select(:version_description).find_by!(version:).version_description
 

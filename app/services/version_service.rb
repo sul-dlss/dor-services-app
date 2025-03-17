@@ -47,9 +47,11 @@ class VersionService
 
   # @param [String] druid of the item
   # @param [Integer] version of the item
-  def initialize(druid:, version:)
+  # @param [WorkflowStateService] workflow_state_service
+  def initialize(druid:, version:, workflow_state_service: nil)
     @druid = druid
     @version = version
+    @workflow_state_service = workflow_state_service
   end
 
   # Increments the version number and initializes versioningWF for the object
