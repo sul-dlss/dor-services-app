@@ -101,12 +101,13 @@ class VersionService
 
   # Determines whether a new version can be opened for an object.
   # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
+  # @param [Boolean] check_preservation If true, checks Preservation for the current version.
   # @return [Boolean] true if a new version can be opened.
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  def can_open?(assume_accessioned: false)
+  def can_open?(assume_accessioned: false, check_preservation: true)
     @can_open ||= begin
       ensure_openable!(assume_accessioned:)
-      retrieve_version_from_preservation if Settings.version_service.sync_with_preservation
+      retrieve_version_from_preservation if check_preservation && Settings.version_service.sync_with_preservation
       true
     rescue VersionService::VersioningError
       false
