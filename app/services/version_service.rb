@@ -88,13 +88,15 @@ class VersionService
   # @raise [CocinaObjectNotFoundError] if the object is not found
   # @raise [VersioningError] if the version does not match the head version
   def open?
-    repo_obj = RepositoryObject.find_by(external_identifier: druid)
+    @open ||=  begin
+      repo_obj = RepositoryObject.find_by(external_identifier: druid)
 
-    raise CocinaObjectNotFoundError, "Couldn't find object with 'external_identifier'=#{druid}" unless repo_obj
+      raise CocinaObjectNotFoundError, "Couldn't find object with 'external_identifier'=#{druid}" unless repo_obj
 
-    raise VersioningError, "Version #{version} does not match head version #{repo_obj.head_version.version}" if version != repo_obj.head_version.version
+      raise VersioningError, "Version #{version} does not match head version #{repo_obj.head_version.version}" if version != repo_obj.head_version.version
 
-    repo_obj.open?
+      repo_obj.open?
+    end
   end
 
   # Determines whether a new version can be opened for an object.
@@ -102,11 +104,13 @@ class VersionService
   # @return [Boolean] true if a new version can be opened.
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   def can_open?(assume_accessioned: false)
-    ensure_openable!(assume_accessioned:)
-    retrieve_version_from_preservation if Settings.version_service.sync_with_preservation
-    true
-  rescue VersionService::VersioningError
-    false
+    @can_open ||= begin
+      ensure_openable!(assume_accessioned:)
+      retrieve_version_from_preservation if Settings.version_service.sync_with_preservation
+      true
+    rescue VersionService::VersioningError
+      false
+    end
   end
 
   # Sets versioningWF:submit-version to completed and initiates accessionWF for the object
@@ -138,10 +142,12 @@ class VersionService
   # Determines whether a version can be closed for an object.
   # @return [Boolean] true if the version can be closed.
   def can_close?
-    ensure_closeable!
-    true
-  rescue VersionService::VersioningError
-    false
+    @can_close ||= begin
+      ensure_closeable!
+      true
+    rescue VersionService::VersioningError
+      false
+    end
   end
 
   # Performs checks on whether a new version can be opened for an object

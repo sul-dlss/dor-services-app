@@ -28,13 +28,13 @@ class WorkflowStateService
     # The exception is GIS workflows.
     # gisAssemblyWF kicks off the gisDeliveryWF, the last step of which is closing the version.
     # For these purposes, we'll be considering gisDeliveryWF as an assemblyWF.
-    active_workflow_except_step?(workflow: 'assemblyWF', process: 'accessioning-initiate') ||
-      active_workflow_except_step?(workflow: 'wasCrawlPreassemblyWF', process: 'end-was-crawl-preassembly') ||
-      active_workflow_except_step?(workflow: 'wasSeedPreassemblyWF', process: 'end-was-seed-preassembly') ||
-      active_workflow_except_step?(workflow: 'gisDeliveryWF', process: 'start-accession-workflow') ||
-      active_workflow_except_step?(workflow: 'ocrWF', process: 'end-ocr') ||
-      active_workflow_except_step?(workflow: 'speechToTextWF', process: 'end-stt') ||
-      active_workflow?(workflow: 'gisAssemblyWF')
+    @assembling ||= active_workflow_except_step?(workflow: 'assemblyWF', process: 'accessioning-initiate') ||
+                    active_workflow_except_step?(workflow: 'wasCrawlPreassemblyWF', process: 'end-was-crawl-preassembly') ||
+                    active_workflow_except_step?(workflow: 'wasSeedPreassemblyWF', process: 'end-was-seed-preassembly') ||
+                    active_workflow_except_step?(workflow: 'gisDeliveryWF', process: 'start-accession-workflow') ||
+                    active_workflow_except_step?(workflow: 'ocrWF', process: 'end-ocr') ||
+                    active_workflow_except_step?(workflow: 'speechToTextWF', process: 'end-stt') ||
+                    active_workflow?(workflow: 'gisAssemblyWF')
   end
 
   # The following methods were extracted from VersionService.
@@ -49,19 +49,17 @@ class WorkflowStateService
   # because it will not complete the `sdr-ingest-received` step, which will cause this to return true as well.
   # @return [Boolean] true if object is currently being accessioned or is failing an audit
   def accessioning?
-    active_workflow_except_step?(workflow: 'accessionWF', process: 'end-accession')
+    @accessioning ||= active_workflow_except_step?(workflow: 'accessionWF', process: 'end-accession')
   end
 
   # @return [Boolean] true if the object has previously been accessioned.
   def accessioned?
-    return true if workflow_client.lifecycle(druid:, milestone_name: 'accessioned')
-
-    false
+    @accessioned ||= workflow_client.lifecycle(druid:, milestone_name: 'accessioned') ? true : false
   end
 
   # @return [Boolean] true if the object has previously been published for the version.
   def published?
-    workflow_client.lifecycle(druid:, milestone_name: 'published', version:).present?
+    @published ||= workflow_client.lifecycle(druid:, milestone_name: 'published', version:).present?
   end
 
   private
