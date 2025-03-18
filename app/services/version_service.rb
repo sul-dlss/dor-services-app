@@ -47,9 +47,11 @@ class VersionService
 
   # @param [String] druid of the item
   # @param [Integer] version of the item
-  def initialize(druid:, version:)
+  # @param [WorkflowStateService] workflow_state_service
+  def initialize(druid:, version:, workflow_state_service: nil)
     @druid = druid
     @version = version
+    @workflow_state_service = workflow_state_service
   end
 
   # Increments the version number and initializes versioningWF for the object
@@ -65,7 +67,7 @@ class VersionService
     raise ArgumentError, 'description is required to open a new version' if description.blank?
 
     ensure_openable!(assume_accessioned:)
-    repository_object = RepositoryObject.find_by!(external_identifier: cocina_object.externalIdentifier)
+    repository_object = RepositoryObject.includes(:head_version).find_by!(external_identifier: cocina_object.externalIdentifier)
     check_version!(current_version: repository_object.head_version.version) unless from_version
 
     from_repository_object_version = from_version ? repository_object.versions.find_by!(version: from_version) : nil
@@ -86,25 +88,30 @@ class VersionService
   # @raise [CocinaObjectNotFoundError] if the object is not found
   # @raise [VersioningError] if the version does not match the head version
   def open?
-    repo_obj = RepositoryObject.find_by(external_identifier: druid)
+    @open ||=  begin
+      repo_obj = RepositoryObject.includes(:head_version).find_by(external_identifier: druid)
 
-    raise CocinaObjectNotFoundError, "Couldn't find object with 'external_identifier'=#{druid}" unless repo_obj
+      raise CocinaObjectNotFoundError, "Couldn't find object with 'external_identifier'=#{druid}" unless repo_obj
 
-    raise VersioningError, "Version #{version} does not match head version #{repo_obj.head_version.version}" if version != repo_obj.head_version.version
+      raise VersioningError, "Version #{version} does not match head version #{repo_obj.head_version.version}" if version != repo_obj.head_version.version
 
-    repo_obj.open?
+      repo_obj.open?
+    end
   end
 
   # Determines whether a new version can be opened for an object.
   # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
+  # @param [Boolean] check_preservation If true, checks Preservation for the current version.
   # @return [Boolean] true if a new version can be opened.
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  def can_open?(assume_accessioned: false)
-    ensure_openable!(assume_accessioned:)
-    retrieve_version_from_preservation if Settings.version_service.sync_with_preservation
-    true
-  rescue VersionService::VersioningError
-    false
+  def can_open?(assume_accessioned: false, check_preservation: true)
+    @can_open ||= begin
+      ensure_openable!(assume_accessioned:)
+      retrieve_version_from_preservation if check_preservation && Settings.version_service.sync_with_preservation
+      true
+    rescue VersionService::VersioningError
+      false
+    end
   end
 
   # Sets versioningWF:submit-version to completed and initiates accessionWF for the object
@@ -136,10 +143,12 @@ class VersionService
   # Determines whether a version can be closed for an object.
   # @return [Boolean] true if the version can be closed.
   def can_close?
-    ensure_closeable!
-    true
-  rescue VersionService::VersioningError
-    false
+    @can_close ||= begin
+      ensure_closeable!
+      true
+    rescue VersionService::VersioningError
+      false
+    end
   end
 
   # Performs checks on whether a new version can be opened for an object
@@ -194,7 +203,7 @@ class VersionService
   # @return [Void]
   # @raise [VersionService::VersioningError] if the version cannot be discarded
   def ensure_discardable!
-    repository_object = RepositoryObject.find_by!(external_identifier: druid)
+    repository_object = RepositoryObject.includes(:head_version).find_by!(external_identifier: druid)
     raise VersionService::VersioningError, 'Only the head version can be discarded' unless repository_object.head_version.version == version
 
     repository_object.check_discard_open_version!

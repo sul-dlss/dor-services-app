@@ -227,8 +227,8 @@ RSpec.describe 'Operations regarding object versions' do
       allow(CocinaObjectStore).to receive(:version).with(druids[1]).and_return(2)
       allow(CocinaObjectStore).to receive(:version).with(druids[2]).and_raise(CocinaObjectStore::CocinaObjectNotFoundError)
 
-      allow(VersionService).to receive(:new).with(druid: druids[0], version: 1).and_return(version_service1)
-      allow(VersionService).to receive(:new).with(druid: druids[1], version: 2).and_return(version_service2)
+      allow(VersionService).to receive(:new).with(druid: druids[0], version: 1, workflow_state_service: workflow_state_service1).and_return(version_service1)
+      allow(VersionService).to receive(:new).with(druid: druids[1], version: 2, workflow_state_service: workflow_state_service2).and_return(version_service2)
       allow(WorkflowStateService).to receive(:new).with(druid: druids[0], version: 1).and_return(workflow_state_service1)
       allow(WorkflowStateService).to receive(:new).with(druid: druids[1], version: 2).and_return(workflow_state_service2)
     end

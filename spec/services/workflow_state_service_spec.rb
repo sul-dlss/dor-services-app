@@ -37,11 +37,13 @@ RSpec.describe WorkflowStateService do
   end
 
   describe '.accessioning?' do
-    let(:accession_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
+    let(:accession_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false, workflow_name: 'accessionWF') }
+    let(:other_wf_response) { instance_double(Dor::Workflow::Response::Workflow, workflow_name: 'otherWF') }
+    let(:wf_responses) { instance_double(Dor::Workflow::Response::Workflows, workflows: [other_wf_response, accession_wf_response]) }
     let(:process) { instance_double(Dor::Workflow::Response::Process, name: process_name) }
 
     before do
-      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'accessionWF').and_return(accession_wf_response)
+      allow(workflow_client).to receive(:all_workflows).with(pid: druid).and_return(wf_responses)
     end
 
     context 'when there is an active accessioningWF with a non-ignored step' do
@@ -53,7 +55,7 @@ RSpec.describe WorkflowStateService do
 
       it 'returns true' do
         expect(workflow_state).to be_accessioning
-        expect(workflow_client).to have_received(:workflow).with(pid: druid, workflow_name: 'accessionWF')
+        expect(workflow_client).to have_received(:all_workflows).with(pid: druid)
       end
     end
 
@@ -66,36 +68,38 @@ RSpec.describe WorkflowStateService do
 
       it 'returns false' do
         expect(workflow_state).not_to be_accessioning
-        expect(workflow_client).to have_received(:workflow).with(pid: druid, workflow_name: 'accessionWF')
       end
     end
 
     context 'when there is not an active accessioningWF' do
+      before do
+        allow(workflow_client).to receive(:all_workflows).with(pid: druid).and_return(wf_responses)
+      end
+
       it 'returns false' do
         expect(workflow_state).not_to be_accessioning
-        expect(workflow_client).to have_received(:workflow).with(pid: druid, workflow_name: 'accessionWF')
       end
     end
   end
 
   describe '.assembling?' do
-    let(:assembly_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
-    let(:was_crawl_preassembly_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
-    let(:was_seed_preassembly_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
-    let(:gis_delivery_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
-    let(:gis_assembly_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
-    let(:ocr_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
-    let(:stt_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false) }
+    let(:assembly_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false, workflow_name: 'assemblyWF') }
+    let(:was_crawl_preassembly_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false, workflow_name: 'wasCrawlPreassemblyWF') }
+    let(:was_seed_preassembly_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false, workflow_name: 'wasSeedPreassemblyWF') }
+    let(:gis_delivery_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false, workflow_name: 'gisDeliveryWF') }
+    let(:gis_assembly_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false, workflow_name: 'gisAssemblyWF') }
+    let(:ocr_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false, workflow_name: 'ocrWF') }
+    let(:stt_wf_response) { instance_double(Dor::Workflow::Response::Workflow, active_for?: false, workflow_name: 'speechToTextWF') }
+    let(:workflow_responses) do
+      instance_double(Dor::Workflow::Response::Workflows, workflows: [
+                        assembly_wf_response, was_crawl_preassembly_wf_response, was_seed_preassembly_wf_response,
+                        gis_delivery_wf_response, gis_assembly_wf_response, ocr_wf_response, stt_wf_response
+                      ])
+    end
     let(:process) { instance_double(Dor::Workflow::Response::Process, name: 'arbitrary') }
 
     before do
-      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'assemblyWF').and_return(assembly_wf_response)
-      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'wasCrawlPreassemblyWF').and_return(was_crawl_preassembly_wf_response)
-      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'wasSeedPreassemblyWF').and_return(was_seed_preassembly_wf_response)
-      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'gisDeliveryWF').and_return(gis_delivery_wf_response)
-      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'gisAssemblyWF').and_return(gis_assembly_wf_response)
-      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'ocrWF').and_return(ocr_wf_response)
-      allow(workflow_client).to receive(:workflow).with(pid: druid, workflow_name: 'speechToTextWF').and_return(stt_wf_response)
+      allow(workflow_client).to receive(:all_workflows).with(pid: druid).and_return(workflow_responses)
     end
 
     context 'when there is an active assemblyWF' do
