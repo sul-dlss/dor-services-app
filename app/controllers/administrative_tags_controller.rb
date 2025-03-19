@@ -31,7 +31,7 @@ class AdministrativeTagsController < ApplicationController
                        })
     render status: :conflict, plain: e.message
   else
-    Indexer.reindex_later(cocina_object: @cocina_object)
+    Indexer.reindex_later(druid: @cocina_object.externalIdentifier)
     head :created
   end
 
@@ -50,7 +50,7 @@ class AdministrativeTagsController < ApplicationController
                        })
     render status: :conflict, plain: e.message
   else
-    Indexer.reindex_later(cocina_object: @cocina_object)
+    Indexer.reindex_later(druid: @cocina_object.externalIdentifier)
     head :no_content
   end
 
@@ -59,6 +59,6 @@ class AdministrativeTagsController < ApplicationController
   rescue ActiveRecord::RecordNotFound => e
     render status: :not_found, plain: e.message
   else
-    Indexer.reindex_later(cocina_object: @cocina_object)
+    Indexer.reindex_later(druid: @cocina_object.externalIdentifier)
   end
 end
