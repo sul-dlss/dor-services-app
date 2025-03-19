@@ -53,7 +53,7 @@ set :log_level, :info
 # set :keep_releases, 5
 
 set :linked_dirs, %w[log tmp/pids tmp/cache tmp/sockets vendor/bundle config/certs config/settings]
-set :linked_files, %w[config/honeybadger.yml config/database.yml]
+set :linked_files, %w[config/database.yml]
 
 # Namespace crontab entries by application and stage
 set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }

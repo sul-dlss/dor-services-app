@@ -7,8 +7,7 @@ class PublishItemsModifiedJob < ApplicationJob
   # @param [String] collection_identifier the identifier of the collection whos items need to be reindexed
   def perform(collection_identifier)
     MemberService.for(collection_identifier).each do |druid|
-      cocina_object_with_metadata = CocinaObjectStore.find(druid)
-      Indexer.reindex_later(cocina_object: cocina_object_with_metadata)
+      Indexer.reindex_later(druid:)
     end
   end
 end

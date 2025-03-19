@@ -4,21 +4,28 @@ require 'rails_helper'
 
 RSpec.describe ReindexJob do
   subject(:perform) do
-    described_class.perform_now(model: dro.to_h, created: Time.zone.now, modified: Time.zone.now, trace_id:)
+    described_class.perform_now(druid: dro.externalIdentifier, trace_id:)
   end
 
   let(:dro) { build(:dro) }
   let(:trace_id) { 'abc123' }
 
+  before do
+    allow(CocinaObjectStore).to receive(:find).and_return(dro)
+  end
+
   context 'when no errors' do
     before do
       allow(Indexer).to receive(:reindex)
+      allow(RedisLock).to receive(:lock).and_return(true)
+      allow(RedisLock).to receive(:clear_lock)
     end
 
     it 'invokes the Indexer' do
       perform
-      expect(Indexer).to have_received(:reindex).with(cocina_object: an_instance_of(Cocina::Models::DROWithMetadata),
-                                                      trace_id:)
+      expect(Indexer).to have_received(:reindex).with(cocina_object: dro, trace_id:)
+      expect(RedisLock).to have_received(:lock).with(key: "reindex-#{dro.externalIdentifier}", lock_timeout: Integer)
+      expect(RedisLock).to have_received(:clear_lock)
     end
   end
 
@@ -26,13 +33,28 @@ RSpec.describe ReindexJob do
     before do
       allow(Indexer).to receive(:reindex).and_raise(CocinaObjectStore::CocinaObjectStoreError)
       allow(Honeybadger).to receive(:notify)
+      allow(RedisLock).to receive(:lock).and_return(true)
+      allow(RedisLock).to receive(:clear_lock)
     end
 
     it 'Honeybadger alerts' do
       perform
-      expect(Indexer).to have_received(:reindex).with(cocina_object: an_instance_of(Cocina::Models::DROWithMetadata),
-                                                      trace_id:)
+      expect(Indexer).to have_received(:reindex).with(cocina_object: dro, trace_id:)
       expect(Honeybadger).to have_received(:notify)
+      expect(RedisLock).to have_received(:lock)
+      expect(RedisLock).to have_received(:clear_lock)
+    end
+  end
+
+  context 'when getting a lock fails' do
+    before do
+      allow(RedisLock).to receive(:lock).and_return(false)
+    end
+
+    it 'raises' do
+      expect do
+        described_class.new.perform(druid: dro.externalIdentifier, trace_id:)
+      end.to raise_error(ReindexJob::DeadLockError)
     end
   end
 end

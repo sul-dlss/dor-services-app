@@ -75,13 +75,13 @@ class VersionService
 
     repository_object.open_version!(description:, from_version: from_repository_object_version)
 
-    # Reloading to get correct lock value.
-    Indexer.reindex_later(cocina_object: repository_object.reload.to_cocina_with_metadata)
+    Indexer.reindex_later(druid: cocina_object.externalIdentifier)
 
     new_version = repository_object.opened_version.version
     WorkflowService.create(druid:, workflow_name: 'versioningWF', version: new_version.to_s)
     EventFactory.create(druid:, event_type: 'version_open', data: { who: opening_user_name, version: new_version.to_s })
-    repository_object.to_cocina_with_metadata
+    # Reloading to get correct lock value.
+    repository_object.reload.to_cocina_with_metadata
   end
 
   # @param [String] druid of the item

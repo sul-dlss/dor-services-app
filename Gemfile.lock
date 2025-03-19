@@ -449,6 +449,8 @@ GEM
     rbtree (0.4.6)
     rdoc (6.13.1)
       psych (>= 4.0.0)
+    redis (5.4.0)
+      redis-client (>= 0.22.0)
     redis-client (0.24.0)
       connection_pool
     regexp_parser (2.10.0)
@@ -616,6 +618,7 @@ DEPENDENCIES
   cocina-models (~> 0.101.0)
   committee
   config
+  connection_pool
   csv
   daemons
   datacite (~> 0.3.0)
@@ -652,6 +655,7 @@ DEPENDENCIES
   purl_fetcher-client (~> 2.1)
   rack-console
   rails (~> 7.2.1)
+  redis (~> 5.0)
   retries
   rsolr
   rspec-rails

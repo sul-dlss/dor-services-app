@@ -48,9 +48,8 @@ RSpec.describe VersionService do
                                                             druid:,
                                                             event_type: 'version_open')
 
-        expect(Indexer).to have_received(:reindex_later)
-          .with(cocina_object: repository_object.reload.to_cocina_with_metadata)
-        expect(repository_object.opened_version.version).to eq 2
+        expect(Indexer).to have_received(:reindex_later).with(druid:)
+        expect(repository_object.reload.opened_version.version).to eq 2
         expect(repository_object.opened_version.version_description).to eq 'same as it ever was'
       end
     end
@@ -126,9 +125,8 @@ RSpec.describe VersionService do
                                                             druid:,
                                                             event_type: 'version_open')
 
-        expect(Indexer).to have_received(:reindex_later)
-          .with(cocina_object: repository_object.reload.to_cocina_with_metadata)
-        expect(repository_object.opened_version.version).to eq 3
+        expect(Indexer).to have_received(:reindex_later).with(druid:)
+        expect(repository_object.reload.opened_version.version).to eq 3
         expect(repository_object.opened_version.version_description).to eq 'same as it ever was'
       end
     end

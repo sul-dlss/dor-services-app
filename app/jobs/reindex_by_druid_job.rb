@@ -11,19 +11,8 @@ class ReindexByDruidJob
   from_queue 'dor.indexing-by-druid', env: nil
 
   def work(msg)
-    druid = druid_from_message(msg)
-    cocina_object = CocinaObjectStore.find(druid)
-    Indexer.reindex(cocina_object:)
+    druid = JSON.parse(msg).fetch('druid')
+    Indexer.reindex_later(druid: druid)
     ack!
-  rescue CocinaObjectStore::CocinaObjectNotFoundError
-    Honeybadger.notify('Cannot reindex since not found. This may be because applications (e.g., PresCat) are ' \
-                       'creating workflow steps for deleted objects.',
-                       { druid: druid_from_message(msg) })
-    Rails.logger.info("Cannot reindex #{druid_from_message(msg)} by druid since it is not found.")
-    ack!
-  end
-
-  def druid_from_message(str)
-    JSON.parse(str).fetch('druid')
   end
 end

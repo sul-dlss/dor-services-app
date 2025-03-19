@@ -3,3 +3,6 @@ request:
   filter_keys:
     - 'HTTP_AUTHORIZATION'
     - 'HTTP_X_AUTH'
+exceptions:
+  ignore:
+    - 'ReindexJob::DeadLockError'
