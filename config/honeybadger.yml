@@ -1,3 +1,4 @@
 ---
 exceptions:
-  ignore: []
+  ignore:
+    - 'ReindexJob::DeadLockError'
