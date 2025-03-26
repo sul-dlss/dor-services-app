@@ -3,6 +3,9 @@
 # Invoke via:
 # bin/rails r -e production "DigitalSerials.report" > digital_serials.csv
 class DigitalSerials
+  # Report on possible digital serials, based on usage of note and title types in description plus catalog ids.
+  # Excludes objects in the Google Books collection:
+  # prod: druid:yh583fk3400; stage: druid:ks963md4872; qa: druid:kd593mk1175
   # NOTE: Prefer strict JSON querying over lax when using the `.**` operator, per
   # https://www.postgresql.org/docs/14/functions-json.html#STRICT-AND-LAX-MODES
   SQL = <<~SQL.squish.freeze
@@ -10,10 +13,10 @@ class DigitalSerials
       jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id,
       jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalog_record_id,
       jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").refresh') ->> 0 as refresh
-      FROM repository_objects AS ro, repository_object_versions AS rov WHERE
-        jsonb_path_exists(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio")')
-        AND (jsonb_path_exists(rov.description, 'strict $.title.**.type ? (@ like_regex "part name|part number")') OR
-        jsonb_path_exists(rov.description, 'strict $.note.**.type ? (@ like_regex "date\/sequential designation")'))
+    FROM repository_objects AS ro, repository_object_versions AS rov
+    WHERE jsonb_path_exists(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio")')
+        AND (jsonb_path_exists(rov.description, 'strict $.title.**.type ? (@ like_regex "part name|part number")')
+        OR jsonb_path_exists(rov.description, 'strict $.note.**.type ? (@ like_regex "date\/sequential designation")'))
         AND jsonb_path_exists(rov.structural, '$.isMemberOf[*] ? (@ != "druid:yh583fk3400")')
         AND ro.head_version_id = rov.id
         AND ro.object_type = 'dro';
