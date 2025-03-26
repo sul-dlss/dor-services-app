@@ -119,7 +119,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                   {
                                     name: [
                                       {
-                                        value: 'Stanford University'
+                                        value: 'National Institute of Health'
                                       }
                                     ],
                                     type: 'organization',
@@ -169,6 +169,48 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                         value: 'author',
                                         code: 'aut',
                                         uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                                        source: {
+                                          code: 'marcrelator',
+                                          uri: 'http://id.loc.gov/vocabulary/relators/'
+                                        }
+                                      }
+                                    ],
+                                    note: [
+                                      {
+                                        type: 'citation status',
+                                        value: 'false'
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    name: [
+                                      {
+                                        structuredValue: [
+                                          {
+                                            value: 'Stanford University',
+                                            identifier: [
+                                              {
+                                                type: 'ROR',
+                                                uri: 'https://ror.org/00f54p054',
+                                                source: {
+                                                  code: 'ror'
+                                                }
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            value: 'Department of Animal Husbandry'
+                                          }
+                                        ]
+                                      }
+                                    ],
+                                    type: 'organization',
+                                    status: 'primary',
+                                    role: [
+                                      {
+                                        value: 'degree granting institution',
+                                        code: 'dgg',
+                                        uri: 'http://id.loc.gov/vocabulary/relators/dgg',
                                         source: {
                                           code: 'marcrelator',
                                           uri: 'http://id.loc.gov/vocabulary/relators/'
@@ -277,20 +319,33 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           ],
           creators: [
             {
-              name: 'Stanford University',
+              name: 'National Institute of Health',
               nameType: 'Organizational'
             }
           ],
-          contributors: [{
-            name: 'Stanford, Jane',
-            givenName: 'Jane',
-            familyName: 'Stanford',
-            nameType: 'Personal',
-            contributorType: 'Other'
-          }],
+          contributors: [
+            {
+              name: 'Stanford, Jane',
+              givenName: 'Jane',
+              familyName: 'Stanford',
+              nameType: 'Personal',
+              contributorType: 'Other'
+            },
+            {
+              name: 'Stanford University',
+              nameType: 'Organizational',
+              contributorType: 'Other',
+              nameIdentifiers: [
+                {
+                  nameIdentifier: 'https://ror.org/00f54p054',
+                  nameIdentifierScheme: 'ROR'
+                }
+              ]
+            }
+          ],
           fundingReferences: [
             {
-              funderName: 'Stanford University'
+              funderName: 'National Institute of Health'
             }
           ],
           dates: [],

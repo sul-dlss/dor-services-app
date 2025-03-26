@@ -88,19 +88,21 @@ module Cocina
       end
 
       def organizational_name(cocina_contributor)
+        name = cocina_contributor.name.first.structuredValue.first || cocina_contributor.name.first
         {
-          name: cocina_contributor.name.first.value,
-          nameType: 'Organizational'
-        }
+          name: name.value,
+          nameType: 'Organizational',
+          nameIdentifiers: name_identifiers(name).presence
+        }.compact
       end
 
       def name_identifiers(cocina_contributor)
         Array(cocina_contributor.identifier).map do |identifier|
           {
-            nameIdentifier: identifier.value,
+            nameIdentifier: identifier.value || identifier.uri,
             nameIdentifierScheme: identifier.type,
             schemeURI: identifier.source.uri
-          }
+          }.compact
         end
       end
 
