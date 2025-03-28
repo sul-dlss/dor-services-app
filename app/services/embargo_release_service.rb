@@ -18,7 +18,7 @@ class EmbargoReleaseService
     end
   end
 
-  def self.release(druid)
+  def self.release(druid:, version:)
     new(druid).release
   end
 
@@ -28,9 +28,9 @@ class EmbargoReleaseService
   end
 
   def release
-    return unless WorkflowClientFactory.build.lifecycle(druid:, milestone_name: 'accessioned')
+    return unless WorkflowStateService.accessioned?(druid:, version:)
 
-    return unless VersionService.can_open?(druid: cocina_object.externalIdentifier, version: cocina_object.version)
+    return unless VersionService.can_open?(druid:, version: version)
 
     Rails.logger.info("Releasing embargo for #{druid}")
 
@@ -38,7 +38,7 @@ class EmbargoReleaseService
 
     updated_cocina_object = release_cocina_object(updated_cocina_object)
 
-    VersionService.close(druid: updated_cocina_object.externalIdentifier, version: updated_cocina_object.version)
+    VersionService.close(druid:, version: updated_cocina_object.version)
 
     EventFactory.create(druid:, event_type: 'embargo_released', data: {})
 
@@ -52,6 +52,8 @@ class EmbargoReleaseService
   private
 
   attr_reader :druid
+
+  delegate :version, to: :cocina_object
 
   def release_cocina_object(cocina_object)
     access_props = access_props_for(cocina_object)
