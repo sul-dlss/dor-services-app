@@ -67,7 +67,6 @@ RSpec.describe CleanupService do
 
   describe '.stop_accessioning' do
     let(:repository_object) { create(:repository_object, external_identifier: druid) }
-    let(:client) { instance_double(Dor::Workflow::Client) }
 
     before do
       repository_object.close_version!
@@ -81,9 +80,6 @@ RSpec.describe CleanupService do
     context 'when object cannot be opened and preservationIngestWF exists and is completed' do
       before do
         allow(VersionService).to receive_messages(can_open?: false)
-        allow(WorkflowClientFactory).to receive(:build).and_return(client)
-        allow(client).to receive(:workflow_status).with(druid:, workflow: 'preservationIngestWF',
-                                                        process: 'complete-ingest').and_return('completed')
       end
 
       it 'discards draft, backups, cleans up content, and delete workflows' do
@@ -138,9 +134,6 @@ RSpec.describe CleanupService do
     context 'when object cannot be opened and preservationIngestWF does not exist' do
       before do
         allow(VersionService).to receive_messages(can_open?: false)
-        allow(WorkflowClientFactory).to receive(:build).and_return(client)
-        allow(client).to receive(:workflow_status).with(druid:, workflow: 'preservationIngestWF',
-                                                        process: 'complete-ingest').and_return(nil)
       end
 
       it 'backups, cleans up content, and delete workflows' do
@@ -195,18 +188,17 @@ RSpec.describe CleanupService do
   end
 
   describe '.delete_accessioning_workflows' do
-    let(:client) { instance_double(Dor::Workflow::Client, delete_workflow: nil) }
     let(:version) { 1 }
 
     before do
-      allow(WorkflowClientFactory).to receive(:build).and_return(client)
+      allow(WorkflowService).to receive(:delete)
     end
 
     it 'calls workflow client to delete each accessioning workflow' do
       described_class.delete_accessioning_workflows(druid, version)
-      expect(client).to have_received(:delete_workflow).once.with(druid:, workflow: 'accessionWF', version:)
-      expect(client).to have_received(:delete_workflow).once.with(druid:, workflow: 'assemblyWF', version:)
-      expect(client).to have_received(:delete_workflow).once.with(druid:, workflow: 'versioningWF', version:)
+      expect(WorkflowService).to have_received(:delete).once.with(druid:, workflow_name: 'accessionWF', version:)
+      expect(WorkflowService).to have_received(:delete).once.with(druid:, workflow_name: 'assemblyWF', version:)
+      expect(WorkflowService).to have_received(:delete).once.with(druid:, workflow_name: 'versioningWF', version:)
     end
   end
 

@@ -32,7 +32,7 @@ class DeleteService
   attr_reader :cocina_object, :user_name
 
   def remove_active_workflows
-    WorkflowClientFactory.build.delete_all_workflows(pid: druid)
+    WorkflowService.delete_all(druid:)
   end
 
   # Delete an object from DOR.

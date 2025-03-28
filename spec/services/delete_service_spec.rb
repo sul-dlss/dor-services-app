@@ -8,11 +8,10 @@ RSpec.describe DeleteService do
   let(:druid) { 'druid:bb408qn5061' }
   let(:source_id) { 'hydrus:object-63-sdr-client' }
   let(:user_name) { 'some_person' }
-  let(:client) { instance_double(Dor::Workflow::Client, delete_all_workflows: nil) }
 
   before do
-    allow(WorkflowClientFactory).to receive(:build).and_return(client)
     allow(EventFactory).to receive(:create).and_return(nil)
+    allow(WorkflowService).to receive(:delete_all)
   end
 
   describe '#destroy' do
@@ -37,7 +36,7 @@ RSpec.describe DeleteService do
   describe '#remove_active_workflows' do
     it 'calls the workflow client' do
       service.send(:remove_active_workflows)
-      expect(client).to have_received(:delete_all_workflows).with(pid: druid)
+      expect(WorkflowService).to have_received(:delete_all).with(druid:)
     end
   end
 
