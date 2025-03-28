@@ -5,7 +5,6 @@ class ApplyAdminPolicyDefaults
   class UnsupportedObjectTypeError < StandardError; end
   class UnsupportedWorkflowStateError < StandardError; end
 
-  ALLOWED_WORKFLOW_STATES = %w[Registered Opened].freeze
   COLLECTION_ACCESS = {
     'citation-only' => 'world',
     'dark' => 'dark',
@@ -43,38 +42,27 @@ class ApplyAdminPolicyDefaults
   private
 
   def validate_object_type!
-    return if @cocina_object.dro? || @cocina_object.collection?
+    return if cocina_object.dro? || cocina_object.collection?
 
-    raise UnsupportedObjectTypeError, "#{@cocina_object.externalIdentifier} is a #{@cocina_object.class} and this type cannot have APO defaults applied"
+    raise UnsupportedObjectTypeError, "#{cocina_object.externalIdentifier} is a #{cocina_object.class} and this type cannot have APO defaults applied"
   end
 
   def validate_workflow_state!
-    return if current_workflow_state.in?(ALLOWED_WORKFLOW_STATES)
+    return if VersionService.open?(druid: cocina_object.externalIdentifier, version: cocina_object.version)
 
-    raise UnsupportedWorkflowStateError, <<~ERROR_MESSAGE.chomp
-      #{@cocina_object.externalIdentifier} is in a state in which it cannot be modified \
-      (#{current_workflow_state}): APO defaults can only be applied when an object is either \
-      registered or opened for versioning
-    ERROR_MESSAGE
-  end
-
-  def current_workflow_state
-    WorkflowClientFactory
-      .build
-      .status(druid: @cocina_object.externalIdentifier, version: @cocina_object.version)
-      .display_simplified
+    raise UnsupportedWorkflowStateError, "#{cocina_object.externalIdentifier} is not open"
   end
 
   def updated_cocina_object
-    access_updated = @cocina_object.new(
+    access_updated = cocina_object.new(
       # Note that this is a replace, not a merge.
       access: access_properties_for(type: cocina_type)
     )
     return access_updated unless access_updated.dro? && access_updated.structural&.contains&.any?
 
     access_updated.new(
-      structural: @cocina_object.structural.new(
-        contains: @cocina_object.structural.contains.map do |file_set|
+      structural: cocina_object.structural.new(
+        contains: cocina_object.structural.contains.map do |file_set|
           file_set.new(
             structural: file_set.structural.new(
               contains: file_set.structural.contains.map do |file|
@@ -118,7 +106,7 @@ class ApplyAdminPolicyDefaults
 
   def default_access_from_apo
     @default_access_from_apo ||= CocinaObjectStore
-                                 .find(@cocina_object.administrative.hasAdminPolicy)
+                                 .find(cocina_object.administrative.hasAdminPolicy)
                                  .administrative
                                  .accessTemplate
                                  .to_h
