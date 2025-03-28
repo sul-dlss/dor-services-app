@@ -637,7 +637,7 @@ DEPENDENCIES
   jwt
   lograge
   lyber-core (~> 7.7)
-  mais_orcid_client
+  mais_orcid_client (< 1)
   marc
   marc-vocab (~> 0.3.0)
   moab-versioning (~> 6.0)

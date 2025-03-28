@@ -13,7 +13,7 @@ gem 'druid-tools', '~> 2.2'
 gem 'folio_client', '~> 0.8'
 gem 'graphql'
 gem 'lyber-core', '~> 7.7' # For robots
-gem 'mais_orcid_client'
+gem 'mais_orcid_client', '< 1' # MAIS ORCID Client will have breaking changes in v1.0, see https://github.com/sul-dlss/mais_orcid_client/issues/108
 gem 'marc'
 gem 'marc-vocab', '~> 0.3.0' # for indexing
 gem 'moab-versioning', '~> 6.0', require: 'moab/stanford'
