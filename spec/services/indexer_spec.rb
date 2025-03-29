@@ -82,22 +82,18 @@ RSpec.describe Indexer do
     end
 
     it 'reindexes the object later' do
-      described_class.reindex_later(cocina_object:, trace_id:)
+      described_class.reindex_later(druid:, trace_id:)
       expect(ReindexJob).to have_received(:perform_later).with(
-        model: cocina_object.to_h,
-        created: cocina_object.created,
-        modified: cocina_object.modified,
+        druid:,
         trace_id:
       )
     end
 
     context 'when trace_id is not provided' do
       it 'generates a trace_id' do
-        described_class.reindex_later(cocina_object:)
+        described_class.reindex_later(druid:)
         expect(ReindexJob).to have_received(:perform_later).with(
-          model: cocina_object.to_h,
-          created: cocina_object.created,
-          modified: cocina_object.modified,
+          druid:,
           trace_id: generated_trace_id
         )
       end
