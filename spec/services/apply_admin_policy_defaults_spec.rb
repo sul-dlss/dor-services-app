@@ -14,13 +14,11 @@ RSpec.describe ApplyAdminPolicyDefaults do
   let(:cocina_object) do
     build(:dro, id: object_druid, admin_policy_id: apo_druid).new(access: access_props)
   end
-  let(:workflow_state) { 'Registered' }
-  let(:workflow_client) { instance_double(Dor::Workflow::Client, status: status_client) }
-  let(:status_client) { instance_double(Dor::Workflow::Client::Status, display_simplified: workflow_state) }
   let(:access_props) { {} }
+  let(:open) { true }
 
   before do
-    allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
+    allow(VersionService).to receive(:open?).and_return(open)
   end
 
   describe '.apply' do
@@ -62,27 +60,12 @@ RSpec.describe ApplyAdminPolicyDefaults do
       end
     end
 
-    described_class::ALLOWED_WORKFLOW_STATES.each do |workflow_state|
-      context "with an object in '#{workflow_state}' state" do
-        let(:workflow_state) { workflow_state }
+    context 'when not open' do
+      let(:open) { false }
 
-        it 'validates the object type and creates an instance' do
-          expect { described_class.new(cocina_object:) }.not_to raise_error
-        end
-      end
-    end
-
-    ['Unknown Status', 'In accessioning', 'Accessioned'].each do |workflow_state|
-      context "with an object in '#{workflow_state}' state" do
-        let(:workflow_state) { workflow_state }
-
-        it 'invalidates the object type and raises a custom exception' do
-          expect { described_class.new(cocina_object:) }.to raise_error(
-            described_class::UnsupportedWorkflowStateError,
-            "#{object_druid} is in a state in which it cannot be modified (#{workflow_state}): " \
-            'APO defaults can only be applied when an object is either registered or opened for versioning'
-          )
-        end
+      it 'raises' do
+        expect { described_class.new(cocina_object:) }.to raise_error(described_class::UnsupportedWorkflowStateError)
+        expect(VersionService).to have_received(:open?).with(druid: object_druid, version: cocina_object.version)
       end
     end
   end
