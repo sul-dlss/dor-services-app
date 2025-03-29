@@ -14,8 +14,6 @@ RSpec.describe EmbargoReleaseService do
 
     let(:released_cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, version: 3) }
 
-    let(:workflow_client) { instance_double(Dor::Workflow::Client, lifecycle: accessioned?) }
-
     let(:accessioned?) { true }
 
     let(:can_open?) { true }
@@ -24,7 +22,7 @@ RSpec.describe EmbargoReleaseService do
       allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
       allow(VersionService).to receive_messages(can_open?: can_open?, open: open_cocina_object)
       allow(VersionService).to receive(:close)
-      allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
+      allow(WorkflowStateService).to receive(:accessioned?).and_return(accessioned?)
       allow(service).to receive(:release_cocina_object).and_return(released_cocina_object)
       allow(Rails.logger).to receive(:warn)
       allow(Notifications::EmbargoLifted).to receive(:publish)
@@ -38,7 +36,7 @@ RSpec.describe EmbargoReleaseService do
 
       it 'skips' do
         service.release
-        expect(workflow_client).to have_received(:lifecycle).with(druid:, milestone_name: 'accessioned')
+        expect(WorkflowStateService).to have_received(:accessioned?).with(druid:, version: 1)
         expect(VersionService).not_to have_received(:can_open?)
       end
     end
