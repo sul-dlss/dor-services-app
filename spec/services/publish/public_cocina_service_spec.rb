@@ -154,7 +154,9 @@ RSpec.describe Publish::PublicCocinaService do
       end
 
       it 'throws an exception' do
-        expect { create }.to raise_error(RuntimeError, 'unexpected call to PublicCocinaService.build for druid:bc123df4567')
+        expect do
+          create
+        end.to raise_error(RuntimeError, 'unexpected call to PublicCocinaService.build for druid:bc123df4567')
       end
     end
   end

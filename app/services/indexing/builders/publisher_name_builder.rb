@@ -14,7 +14,11 @@ module Indexing
         contributors = events.flat_map(&:contributor).compact
         return [] if contributors.blank?
 
-        contributors.select { |contributor| Array(contributor.role).any? { |role| role.value&.downcase == 'publisher' } }
+        contributors.select do |contributor|
+          Array(contributor.role).any? do |role|
+            role.value&.downcase == 'publisher'
+          end
+        end
       end
 
       # Returns the primary publisher if available.

@@ -20,8 +20,10 @@ RSpec.describe 'User versions' do
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq('user_versions' => [
-                                           { 'userVersion' => 1, 'version' => 2, 'withdrawn' => false, 'withdrawable' => true, 'restorable' => false, 'head' => false },
-                                           { 'userVersion' => 2, 'version' => 3, 'withdrawn' => false, 'withdrawable' => false, 'restorable' => false, 'head' => true }
+                                           { 'userVersion' => 1, 'version' => 2, 'withdrawn' => false,
+                                             'withdrawable' => true, 'restorable' => false, 'head' => false },
+                                           { 'userVersion' => 2, 'version' => 3, 'withdrawn' => false,
+                                             'withdrawable' => false, 'restorable' => false, 'head' => true }
                                          ])
     end
   end

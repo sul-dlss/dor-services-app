@@ -8,6 +8,7 @@ require 'okcomputer'
 OkComputer.mount_at = 'status'
 OkComputer.check_in_parallel = true
 
+# Custom check to get the version from the VERSION file
 class CustomAppVersionCheck < OkComputer::AppVersionCheck
   def version
     version_from_version_file || super
@@ -20,6 +21,7 @@ class CustomAppVersionCheck < OkComputer::AppVersionCheck
   end
 end
 
+# Check if the Folio API is reachable
 class FolioCheck < OkComputer::Check
   def check
     Timeout.timeout(5) do
@@ -60,9 +62,11 @@ end
 
 OkComputer::Registry.register 'version', CustomAppVersionCheck.new
 OkComputer::Registry.register 'external-folio', FolioCheck.new
-OkComputer::Registry.register 'background_jobs', OkComputer::SidekiqLatencyCheck.new('default', Settings.sidekiq.latency_threshold)
+OkComputer::Registry.register 'background_jobs',
+                              OkComputer::SidekiqLatencyCheck.new('default', Settings.sidekiq.latency_threshold)
 OkComputer::Registry.register 'feature-tables-have-data', TablesHaveDataCheck.new
 
+# Check if the RabbitMQ queues exist
 class RabbitQueueExistsCheck < OkComputer::Check
   attr_reader :queue_names, :conn
 
@@ -75,7 +79,7 @@ class RabbitQueueExistsCheck < OkComputer::Check
     super()
   end
 
-  def check
+  def check # rubocop:disable Metrics/AbcSize
     conn.start
     status = conn.status
     missing_queue_names = queue_names.reject { |queue_name| conn.queue_exists?(queue_name) }
@@ -92,8 +96,13 @@ class RabbitQueueExistsCheck < OkComputer::Check
   end
 end
 
-OkComputer::Registry.register 'rabbit-queues', RabbitQueueExistsCheck.new(['dsa.create-event', 'dor.indexing-by-druid']) if Settings.rabbitmq.enabled
+if Settings.rabbitmq.enabled
+  OkComputer::Registry.register 'rabbit-queues',
+                                RabbitQueueExistsCheck.new(['dsa.create-event',
+                                                            'dor.indexing-by-druid'])
+end
 
-OkComputer.make_optional %w(external-folio)
+OkComputer.make_optional %w[external-folio]
 
-OkComputer::Registry.register 'external-solr', OkComputer::HttpCheck.new("#{Settings.solr.url.gsub(%r{/$}, '')}/admin/ping")
+OkComputer::Registry.register 'external-solr',
+                              OkComputer::HttpCheck.new("#{Settings.solr.url.gsub(%r{/$}, '')}/admin/ping")

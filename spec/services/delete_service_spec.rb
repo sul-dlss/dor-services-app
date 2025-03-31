@@ -28,7 +28,8 @@ RSpec.describe DeleteService do
       expect { destroy }
         .to change(RepositoryObject, :count).by(-1)
         .and change(RepositoryObjectVersion, :count).by(-1)
-      expect(EventFactory).to have_received(:create).with(druid:, event_type: 'delete', data: { request: cocina_object.to_h, source_id:, user_name: })
+      expect(EventFactory).to have_received(:create).with(druid:, event_type: 'delete',
+                                                          data: { request: cocina_object.to_h, source_id:, user_name: })
       expect(Indexer).to have_received(:delete)
     end
   end

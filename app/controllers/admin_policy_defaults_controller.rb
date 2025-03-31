@@ -10,6 +10,7 @@ class AdminPolicyDefaultsController < ApplicationController
   rescue ApplyAdminPolicyDefaults::UnsupportedObjectTypeError => e
     json_api_error(status: :bad_request, message: e.message, title: 'Object cannot inherit APO access defaults')
   rescue ApplyAdminPolicyDefaults::UnsupportedWorkflowStateError => e
-    json_api_error(status: :unprocessable_content, message: e.message, title: 'Object cannot be modified in current state')
+    json_api_error(status: :unprocessable_content, message: e.message,
+                   title: 'Object cannot be modified in current state')
   end
 end

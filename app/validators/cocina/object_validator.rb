@@ -9,14 +9,15 @@ module Cocina
 
     attr_reader :error
 
-    # @param [Cocina::Models::RequestAdminPolicy,Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::DRO,Cocina::Models::AdminPolicy,Cocina::Models::Collection]
+    # @param [Cocina::Models::RequestAdminPolicy,Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,
+    # Cocina::Models::DRO,Cocina::Models::AdminPolicy,Cocina::Models::Collection]
     # @raise [ValidationError] if not valid
     def self.validate(cocina_object)
       new(cocina_object).validate
     end
 
     # @raise [ValidationError] if not valid
-    def validate
+    def validate # rubocop:disable Metrics/AbcSize
       validator = Cocina::ApoExistenceValidator.new(cocina_object)
       raise ValidationError, validator.error unless validator.valid?
 

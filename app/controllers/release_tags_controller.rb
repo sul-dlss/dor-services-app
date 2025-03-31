@@ -2,7 +2,7 @@
 
 # Provides an API for release tags
 class ReleaseTagsController < ApplicationController
-  before_action :load_cocina_object, only: [:index, :create]
+  before_action :load_cocina_object, only: %i[index create]
 
   rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
     json_api_error(status: :not_found, message: e.message)
@@ -15,7 +15,12 @@ class ReleaseTagsController < ApplicationController
                             message: 'Only Collection or DROs can have release tags.')
     end
 
-    render json: params[:public] ? ReleaseTagService.for_public_metadata(cocina_object: @cocina_object) : ReleaseTagService.item_tags(cocina_object: @cocina_object)
+    json = if params[:public]
+             ReleaseTagService.for_public_metadata(cocina_object: @cocina_object)
+           else
+             ReleaseTagService.item_tags(cocina_object: @cocina_object)
+           end
+    render json: json
   end
 
   def create

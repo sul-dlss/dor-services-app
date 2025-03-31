@@ -52,7 +52,10 @@ class ReleaseTagService
   end
 
   def collection_tags
-    collection_druids.flat_map { |collection_druid| tags_for(collection_druid) }.select { |tag| tag.what == 'collection' }
+    tags = collection_druids.flat_map do |collection_druid|
+      tags_for(collection_druid)
+    end
+    tags.select { |tag| tag.what == 'collection' }
   end
 
   def collection_druids

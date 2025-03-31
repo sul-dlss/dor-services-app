@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
-# rubocop: disable Metrics/BlockLength
 namespace :cleanup do
   # Stop accessioning in progress for the supplied druid (if possible).
   # bundle exec rake cleanup:stop_accessioning['druid:ab123bc4567']
   # bundle exec rake cleanup:stop_accessioning['druid:ab123bc4567',:dryrun] # shows output but does not actually delete
   desc 'Stop Accessioning for single druid'
-  task :stop_accessioning, [:druid, :dryrun] => :environment do |_task, args|
+  task :stop_accessioning, %i[druid dryrun] => :environment do |_task, args|
     dryrun = args[:dryrun] || false
     druid = args[:druid]
 
@@ -18,9 +17,10 @@ namespace :cleanup do
 
   # Stop accessioning in progress for multiple druids supplied in a CSV (one per line, no header)
   # bundle exec rake cleanup:bulk_stop_accessioning['tmp/druids.csv']
-  # bundle exec rake cleanup:bulk_stop_accessioning['tmp/druids.csv',:dryrun] # shows output but does not actually delete
+  # bundle exec rake cleanup:bulk_stop_accessioning['tmp/druids.csv',:dryrun] # shows output but does not actually
+  #   delete
   desc 'Stop Accessioning for multiple druids provided in a CSV'
-  task :bulk_stop_accessioning, [:input_file, :dryrun] => :environment do |_task, args|
+  task :bulk_stop_accessioning, %i[input_file dryrun] => :environment do |_task, args|
     input_file = args[:input_file]
     raise 'CSV file not found' unless File.exist? input_file
 
@@ -44,4 +44,3 @@ namespace :cleanup do
     end
   end
 end
-# rubocop: enable Metrics/BlockLength

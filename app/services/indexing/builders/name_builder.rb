@@ -5,14 +5,16 @@ module Indexing
     # class methods return the name values to go in Solr document fields
     #   used for both contributors and for topics
     class NameBuilder
-      # @param [Symbol] strategy ":first" is the strategy for how to choose a name if primary and display name is not found
+      # @param [Symbol] strategy ":first" is the strategy for how to choose a name if primary and display name
+      # is not found
       # @return [Array<String>] names
       def self.build_all(cocina_contributors)
         flat_names = cocina_contributors.filter_map { |cocina_contributor| flat_names_for(cocina_contributor) }.flatten
         flat_names.filter_map { |name| build_name(name) }
       end
 
-      # @param [Symbol] strategy ":first" is the strategy for how to choose a name if primary and display name is not found
+      # @param [Symbol] strategy ":first" is the strategy for how to choose a name if primary and display name
+      # is not found
       # @return [String] name
       def self.build_primary_name(names, strategy: :first)
         names = Array(names) unless names.is_a?(Array)
@@ -24,7 +26,7 @@ module Indexing
         flat_names.filter_map { |one| build_name(one) }.first
       end
 
-      def self.build_name(name)
+      def self.build_name(name) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         if name.groupedValue.present?
           name.groupedValue.find { |grouped_value| grouped_value.type == 'name' }&.value
         elsif name.structuredValue.present?
@@ -56,7 +58,9 @@ module Indexing
       end
 
       def self.joined_name_parts(name, type, joiner)
-        join_parts(name.structuredValue.select { |structured_value| structured_value.type == type }.map(&:value), joiner)
+        join_parts(name.structuredValue.select do |structured_value|
+          structured_value.type == type
+        end.map(&:value), joiner)
       end
 
       def self.join_parts(parts, joiner)

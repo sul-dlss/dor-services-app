@@ -25,8 +25,10 @@ RSpec.describe 'Create object' do
     allow(SuriService).to receive(:mint_id).and_return(druid)
     allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
     allow(Indexer).to receive(:reindex)
-    repository_object_version = build(:repository_object_version, :admin_policy_repository_object_version, access_template:, external_identifier: admin_policy_id)
-    create(:repository_object, :admin_policy, :with_repository_object_version, repository_object_version:, external_identifier: admin_policy_id).external_identifier
+    repository_object_version = build(:repository_object_version, :admin_policy_repository_object_version,
+                                      access_template:, external_identifier: admin_policy_id)
+    create(:repository_object, :admin_policy, :with_repository_object_version,
+           repository_object_version:, external_identifier: admin_policy_id).external_identifier
   end
 
   context 'when a DRO is provided' do
@@ -36,16 +38,17 @@ RSpec.describe 'Create object' do
     let(:expected_structural) { {} }
     let(:view) { 'world' }
     let(:expected) do
-      build(:dro, id: druid, label: expected_label, title:, type: Cocina::Models::ObjectType.image, admin_policy_id:).new(
-        identification: expected_identification,
-        structural: expected_structural,
-        access: {
-          view:,
-          download: 'none',
-          copyright: 'All rights reserved unless otherwise indicated.',
-          useAndReproductionStatement: 'Property rights reside with the repository...'
-        }
-      )
+      build(:dro, id: druid, label: expected_label, title:, type: Cocina::Models::ObjectType.image, admin_policy_id:)
+        .new(
+          identification: expected_identification,
+          structural: expected_structural,
+          access: {
+            view:,
+            download: 'none',
+            copyright: 'All rights reserved unless otherwise indicated.',
+            useAndReproductionStatement: 'Property rights reside with the repository...'
+          }
+        )
     end
 
     let(:data) do
@@ -88,13 +91,14 @@ RSpec.describe 'Create object' do
              params: data,
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status :service_unavailable
-        expect(response.body).to eq '{"errors":[{"status":"503","title":"Service Unavailable","detail":"Registration is temporarily disabled"}]}'
+        expect(response.body).to eq '{"errors":[{"status":"503","title":"Service Unavailable","detail":"Registration is temporarily disabled"}]}' # rubocop:disable Layout/LineLength
       end
     end
 
     context 'when an object already exists' do
       before do
-        create(:repository_object, :with_repository_object_version, source_id: 'googlebooks:999999', external_identifier: 'druid:bc234fg5678')
+        create(:repository_object, :with_repository_object_version, source_id: 'googlebooks:999999',
+                                                                    external_identifier: 'druid:bc234fg5678')
         # Dro.new(Dro.to_model_hash(build(:dro).new(identification:))).save!
       end
 
@@ -104,7 +108,8 @@ RSpec.describe 'Create object' do
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status(:conflict)
         json = JSON.parse(response.body) # rubocop:disable Rails/ResponseParsedBody
-        expect(json.dig('errors', 0, 'detail')).to eq "An object (druid:bc234fg5678) with the source ID 'googlebooks:999999' has already been registered."
+        expect(json.dig('errors', 0,
+                        'detail')).to eq "An object (druid:bc234fg5678) with the source ID 'googlebooks:999999' has already been registered." # rubocop:disable Layout/LineLength
       end
     end
 
@@ -167,7 +172,8 @@ RSpec.describe 'Create object' do
 
       context 'when catalog returns a 404' do
         before do
-          allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogRecordNotFoundError, 'unable to find folio instance hrid')
+          allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogRecordNotFoundError,
+                                                          'unable to find folio instance hrid')
         end
 
         it 'draws an error message' do
@@ -359,7 +365,8 @@ RSpec.describe 'Create object' do
           { contains: [
             {
               type: Cocina::Models::FileSetType.file,
-              externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/gg777gg7777-123-456-789', label: 'Page 1', version: 1,
+              externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/gg777gg7777-123-456-789',
+              label: 'Page 1', version: 1,
               structural: {
                 contains: [
                   {
@@ -460,7 +467,8 @@ RSpec.describe 'Create object' do
           expect(response).to have_http_status :bad_request
           expect(response.body).to eq '{"errors":[' \
                                       '{"status":"400","title":"Bad Request",' \
-                                      '"detail":"Not all files have dark access and/or are unshelved when object access is dark: ' \
+                                      '"detail":"Not all files have dark access and/or are unshelved when object ' \
+                                      'access is dark: ' \
                                       '[\\"00001.html\\", \\"00001.jp2\\", \\"00002.html\\", \\"00002.jp2\\"]"}]}'
         end
       end
@@ -469,7 +477,9 @@ RSpec.describe 'Create object' do
     context 'when it is a member of a collection' do
       let(:structural) { { isMemberOf: [collection_id] } }
       let(:expected_structural) { structural }
-      let(:collection_id) { create(:repository_object, :collection, :with_repository_object_version).external_identifier }
+      let(:collection_id) do
+        create(:repository_object, :collection, :with_repository_object_version).external_identifier
+      end
 
       it 'creates collection relationship' do
         post '/v1/objects',
@@ -521,18 +531,19 @@ RSpec.describe 'Create object' do
     let(:title) { 'This is my title' }
     let(:expected_label) { label }
     let(:expected) do
-      build(:dro, id: druid, title:, label: expected_label, admin_policy_id:, type: Cocina::Models::ObjectType.book).new(
-        identification: { sourceId: 'googlebooks:999999' },
-        structural: {
-          hasMemberOrders: [
-            { viewingDirection: 'right-to-left' }
-          ]
-        },
-        access: {
-          view: 'world',
-          download: 'world'
-        }
-      )
+      build(:dro, id: druid, title:, label: expected_label, admin_policy_id:,
+                  type: Cocina::Models::ObjectType.book).new(
+                    identification: { sourceId: 'googlebooks:999999' },
+                    structural: {
+                      hasMemberOrders: [
+                        { viewingDirection: 'right-to-left' }
+                      ]
+                    },
+                    access: {
+                      view: 'world',
+                      download: 'world'
+                    }
+                  )
     end
     let(:data) do
       <<~JSON
@@ -682,7 +693,8 @@ RSpec.describe 'Create object' do
                                 view: 'stanford',
                                 download: 'none',
                                 controlledDigitalLending: false,
-                                embargo: { view: 'world', download: 'world', releaseDate: '2020-02-29T07:00:00.000+00:00' }
+                                embargo: { view: 'world', download: 'world',
+                                           releaseDate: '2020-02-29T07:00:00.000+00:00' }
                               })
     end
     let(:data) do
@@ -775,18 +787,19 @@ RSpec.describe 'Create object' do
 
   context 'when no-download access is specified' do
     let(:expected) do
-      build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my title', type: Cocina::Models::ObjectType.book, admin_policy_id:).new(
-        structural: {
-          hasMemberOrders: [
-            { viewingDirection: 'right-to-left' }
-          ]
-        },
-        access: {
-          view: 'world',
-          download: 'none'
-        },
-        identification: { sourceId: 'googlebooks:999999' }
-      )
+      build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my title',
+                  type: Cocina::Models::ObjectType.book, admin_policy_id:).new(
+                    structural: {
+                      hasMemberOrders: [
+                        { viewingDirection: 'right-to-left' }
+                      ]
+                    },
+                    access: {
+                      view: 'world',
+                      download: 'none'
+                    },
+                    identification: { sourceId: 'googlebooks:999999' }
+                  )
     end
     let(:data) do
       <<~JSON
@@ -822,9 +835,10 @@ RSpec.describe 'Create object' do
   context 'when no description is provided (registration use case)' do
     context 'when structural is provided' do
       let(:expected) do
-        build(:dro, id: 'druid:gg777gg7777', admin_policy_id:, label: 'This is my label', title: 'This is my label').new(
-          identification: { sourceId: 'googlebooks:999999' }
-        )
+        build(:dro, id: 'druid:gg777gg7777', admin_policy_id:, label: 'This is my label',
+                    title: 'This is my label').new(
+                      identification: { sourceId: 'googlebooks:999999' }
+                    )
       end
       let(:data) do
         <<~JSON
@@ -856,9 +870,10 @@ RSpec.describe 'Create object' do
 
     context 'when structural is not provided' do
       let(:expected) do
-        build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my label', admin_policy_id:).new(
-          identification: { sourceId: 'googlebooks:999999' }
-        )
+        build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my label',
+                    admin_policy_id:).new(
+                      identification: { sourceId: 'googlebooks:999999' }
+                    )
       end
       let(:data) do
         <<~JSON
@@ -891,9 +906,10 @@ RSpec.describe 'Create object' do
 
     context 'when access is not provided' do
       let(:expected) do
-        build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my label', admin_policy_id:).new(
-          identification: { sourceId: 'googlebooks:999999' }
-        )
+        build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my label',
+                    admin_policy_id:).new(
+                      identification: { sourceId: 'googlebooks:999999' }
+                    )
       end
 
       let(:data) do

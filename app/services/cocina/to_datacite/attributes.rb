@@ -45,7 +45,8 @@ module Cocina
           types: types_attributes,
           publicationYear: publication_year,
           publisher: 'Stanford Digital Repository'
-          # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the ReST API v2.
+          # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported
+          # in the ReST API v2.
           # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
           # relatedItems: related_item
         }.merge(creator_contributor_funder_attributes).compact

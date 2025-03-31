@@ -36,7 +36,8 @@ module Migrators
     end
 
     # if version? is ever true, then version_description must be implemented
-    # A migrator may override the version_description method to provide a version description for versionined SDR objects
+    # A migrator may override the version_description method to provide a version description for
+    # versionined SDR objects
     def version_description
       raise NotImplementedError
     end

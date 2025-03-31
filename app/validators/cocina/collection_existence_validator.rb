@@ -16,7 +16,9 @@ module Cocina
       begin
         collection_ids.each do |collection_id|
           collection = CocinaObjectStore.find(collection_id)
-          @error = "Expected '#{collection_id}' to be a Collection but it is a #{collection.class}" unless collection.collection?
+          unless collection.collection?
+            @error = "Expected '#{collection_id}' to be a Collection but it is a #{collection.class}"
+          end
         end
       rescue CocinaObjectStore::CocinaObjectNotFoundError => e
         @error = "Unable to find collection: '#{e.message}'"

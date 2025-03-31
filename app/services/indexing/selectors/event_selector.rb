@@ -89,7 +89,7 @@ module Indexing
 
       # @param [Cocina::Models::DescriptiveValue] a date object from an event
       # @return [String, nil] type from date object
-      def self.date_type(date)
+      def self.date_type(date) # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
         return date.type if date&.type.present?
 
         Array(date.structuredValue).find do |structured_value|

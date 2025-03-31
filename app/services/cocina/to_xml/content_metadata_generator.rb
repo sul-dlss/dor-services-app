@@ -53,7 +53,7 @@ module Cocina
         @xml_doc.root.add_child(book_data)
       end
 
-      def add_members_data
+      def add_members_data # rubocop:disable Metrics/AbcSize
         members = structural&.hasMemberOrders&.first&.members
         return if members.blank?
 
@@ -74,7 +74,7 @@ module Cocina
 
       # @param [Hash] cocina_file
       # @return [Nokogiri::XML::Node] the file node
-      def create_file_node(cocina_file)
+      def create_file_node(cocina_file) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         Nokogiri::XML::Node.new('file', @xml_doc).tap do |file_node|
           file_node['id'] = cocina_file.filename
           file_node['mimetype'] = cocina_file.hasMimeType
@@ -87,7 +87,10 @@ module Cocina
           Array(cocina_file.hasMessageDigests).each do |message_digest|
             file_node.add_child(create_checksum_node(message_digest.type, message_digest.digest))
           end
-          file_node.add_child(create_image_data_node(cocina_file.presentation.height, cocina_file.presentation.width)) if cocina_file.presentation
+          if cocina_file.presentation
+            file_node.add_child(create_image_data_node(cocina_file.presentation.height,
+                                                       cocina_file.presentation.width))
+          end
         end
       end
 
@@ -119,9 +122,10 @@ module Cocina
 
       # @param [Hash] cocina_fileset the cocina fileset
       # @param [Integer] sequence
-      def create_resource_node(cocina_fileset, sequence)
+      def create_resource_node(cocina_fileset, sequence) # rubocop:disable Metrics/AbcSize
         Nokogiri::XML::Node.new('resource', @xml_doc).tap do |resource|
-          resource['id'] = IdGenerator.generate_or_existing_fileset_id(resource_id: cocina_fileset.try(:externalIdentifier), druid:)
+          resource['id'] =
+            IdGenerator.generate_or_existing_fileset_id(resource_id: cocina_fileset.try(:externalIdentifier), druid:)
           resource['sequence'] = sequence
           resource['type'] = type_for(cocina_fileset)
 
@@ -136,7 +140,8 @@ module Cocina
 
       def create_external_resource_node(cocina_fileset, sequence, external_druid, label:)
         Nokogiri::XML::Node.new('resource', @xml_doc).tap do |resource|
-          resource['id'] = IdGenerator.generate_or_existing_fileset_id(resource_id: cocina_fileset.try(:externalIdentifier), druid:)
+          resource['id'] =
+            IdGenerator.generate_or_existing_fileset_id(resource_id: cocina_fileset.try(:externalIdentifier), druid:)
           resource['sequence'] = sequence
           resource['type'] = type_for(cocina_fileset)
 
@@ -145,16 +150,20 @@ module Cocina
       end
 
       def create_external_file_nodes(resource, cocina_fileset, external_druid, label:)
-        #   <externalFile fileId="PC0170_s1_B_0540.jp2" mimetype="image/jp2" objectId="druid:tm207xk5096" resourceId="tm207xk5096_1"/>
+        #   <externalFile fileId="PC0170_s1_B_0540.jp2" mimetype="image/jp2" objectId="druid:tm207xk5096"
+        #   resourceId="tm207xk5096_1"/>
         #     <relationship objectId="druid:tm207xk5096" type="alsoAvailableAs"/>
         # Note: Only creating if published.
-        cocina_fileset.structural.contains.filter { |cocina_file| cocina_file.administrative.publish }.each do |cocina_file|
+        cocina_files = cocina_fileset.structural.contains.filter do |cocina_file|
+          cocina_file.administrative.publish
+        end
+        cocina_files.each do |cocina_file|
           resource.add_child(Nokogiri::XML::Node.new('label', @xml_doc).tap { |tag| tag.content = label })
           resource.add_child(create_external_file_node(cocina_file, cocina_fileset.externalIdentifier, external_druid))
         end
       end
 
-      def create_external_file_node(cocina_file, resource_id, external_druid)
+      def create_external_file_node(cocina_file, resource_id, external_druid) # rubocop:disable Metrics/AbcSize
         Nokogiri::XML::Node.new('externalFile', @xml_doc).tap do |file_node|
           file_node['fileId'] = cocina_file.filename
           file_node['mimetype'] = cocina_file.hasMimeType

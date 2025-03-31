@@ -21,9 +21,10 @@ module Migrators
     end
 
     # A migrator must implement a migrate method that migrates (mutates) the RepositoryObject instance.
-    def migrate
+    def migrate # rubocop:disable Metrics/AbcSize
       repository_object.head_version.label = mark_migrated(repository_object.head_version.label)
-      repository_object.head_version.description['title'].first['value'] = mark_migrated(repository_object.head_version.description['title'].first['value'])
+      repository_object.head_version.description['title'].first['value'] =
+        mark_migrated(repository_object.head_version.description['title'].first['value'])
     end
 
     private

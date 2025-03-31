@@ -42,7 +42,7 @@ module Indexing
 
       # @param [Cocina::Models::Contributor] contributor to check
       # @return [String, nil] orcid id including host if present
-      def orcidid(contributor)
+      def orcidid(contributor) # rubocop:disable Metrics/AbcSize
         identifier = contributor.identifier.find { |id| id.type == 'ORCID' }
         return unless identifier
 

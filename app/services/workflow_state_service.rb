@@ -22,15 +22,17 @@ class WorkflowStateService
 
   # Checks if the latest version has any assembly workflows with incomplete steps.
   # @return [Boolean] true if object is currently being assembled
-  def assembling?
+  def assembling? # rubocop:disable Metrics/CyclomaticComplexity
     # Omitting the last step for these workflows since the last step is closing the version.
     # Without this the version can't be closed.
     # The exception is GIS workflows.
     # gisAssemblyWF kicks off the gisDeliveryWF, the last step of which is closing the version.
     # For these purposes, we'll be considering gisDeliveryWF as an assemblyWF.
     @assembling ||= active_workflow_except_step?(workflow: 'assemblyWF', process: 'accessioning-initiate') ||
-                    active_workflow_except_step?(workflow: 'wasCrawlPreassemblyWF', process: 'end-was-crawl-preassembly') ||
-                    active_workflow_except_step?(workflow: 'wasSeedPreassemblyWF', process: 'end-was-seed-preassembly') ||
+                    active_workflow_except_step?(workflow: 'wasCrawlPreassemblyWF',
+                                                 process: 'end-was-crawl-preassembly') ||
+                    active_workflow_except_step?(workflow: 'wasSeedPreassemblyWF',
+                                                 process: 'end-was-seed-preassembly') ||
                     active_workflow_except_step?(workflow: 'gisDeliveryWF', process: 'start-accession-workflow') ||
                     active_workflow_except_step?(workflow: 'ocrWF', process: 'end-ocr') ||
                     active_workflow_except_step?(workflow: 'speechToTextWF', process: 'end-stt') ||

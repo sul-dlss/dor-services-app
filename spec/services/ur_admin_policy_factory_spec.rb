@@ -15,6 +15,7 @@ RSpec.describe UrAdminPolicyFactory do
     expect(RepositoryObject.exists?(external_identifier: druid)).to be false
     policy
     expect(RepositoryObject.exists?(external_identifier: druid)).to be true
-    expect(Indexer).to have_received(:reindex).with(cocina_object: an_instance_of(Cocina::Models::AdminPolicyWithMetadata))
+    expect(Indexer).to have_received(:reindex)
+      .with(cocina_object: an_instance_of(Cocina::Models::AdminPolicyWithMetadata))
   end
 end

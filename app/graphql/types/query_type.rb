@@ -23,7 +23,8 @@ module Types
       # Lookahead allows access to the actual fields that were requested.
       selected_fields = lookahead.selections.map(&:name)
       # The type of cocina object isn't known, so attempt to retrieve all types.
-      cocina_object = find_cocina_object(clazz: RepositoryObject, selected_fields:, allowed_fields: DRO_ALLOWED_FIELDS, external_identifier:)
+      cocina_object = find_cocina_object(clazz: RepositoryObject, selected_fields:, allowed_fields: DRO_ALLOWED_FIELDS,
+                                         external_identifier:)
 
       raise GraphQL::ExecutionError, 'Cocina object not found' if cocina_object.nil?
 

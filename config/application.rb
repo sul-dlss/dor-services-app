@@ -21,6 +21,7 @@ require 'active_support'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+# Custom API error class for JSONAPI responses
 class JSONAPIError < Committee::ValidationError
   def error_body
     {
@@ -40,6 +41,7 @@ class JSONAPIError < Committee::ValidationError
 end
 
 module DorServices
+  # The main application class for the Dor Services application.
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.2

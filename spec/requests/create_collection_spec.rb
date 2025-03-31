@@ -13,7 +13,8 @@ RSpec.describe 'Create object' do
 
   before do
     allow(SuriService).to receive(:mint_id).and_return(druid)
-    allow_any_instance_of(CocinaObjectStore).to receive(:find).with('druid:dd999df4567').and_return(minimal_cocina_admin_policy)
+    allow_any_instance_of(CocinaObjectStore).to receive(:find) # rubocop:disable RSpec/AnyInstance
+      .with('druid:dd999df4567').and_return(minimal_cocina_admin_policy)
     allow(Indexer).to receive(:reindex)
   end
 
@@ -171,11 +172,12 @@ RSpec.describe 'Create object' do
       JSON
     end
     let(:expected) do
-      build(:collection, id: druid, label: expected_label, title: expected_label, admin_policy_id: 'druid:dd999df4567').new(
-        access: {
-          view: 'world'
-        }
-      )
+      build(:collection, id: druid, label: expected_label, title: expected_label,
+                         admin_policy_id: 'druid:dd999df4567').new(
+                           access: {
+                             view: 'world'
+                           }
+                         )
     end
 
     it 'creates the collection with populated access' do

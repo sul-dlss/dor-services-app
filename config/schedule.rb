@@ -28,7 +28,8 @@ Config.load_and_set_settings(Config.setting_files('config', 'production'))
 
 # These define jobs that checkin with Honeybadger.
 # If changing the schedule of one of these jobs, also update at https://app.honeybadger.io/projects/50568/check_ins
-job_type :rake_hb, 'cd :path && :environment_variable=:environment bundle exec rake --silent ":task" :output && curl --silent https://api.honeybadger.io/v1/check_in/:check_in'
+job_type :rake_hb,
+         'cd :path && :environment_variable=:environment bundle exec rake --silent ":task" :output && curl --silent https://api.honeybadger.io/v1/check_in/:check_in'
 
 # Suppress warnings to avoid unnecessary cron emails.
 env 'RUBYOPT', '-W0'

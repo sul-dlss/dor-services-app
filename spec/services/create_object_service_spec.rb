@@ -103,7 +103,8 @@ RSpec.describe CreateObjectService do
 
       it 'does not cause a failure' do
         store.create(requested_cocina_object)
-        expect(RefreshDescriptionFromCatalog).to have_received(:run).with(cocina_object: requested_cocina_object, druid:)
+        expect(RefreshDescriptionFromCatalog).to have_received(:run).with(cocina_object: requested_cocina_object,
+                                                                          druid:)
       end
     end
 
@@ -199,7 +200,8 @@ RSpec.describe CreateObjectService do
       let(:description) do
         {
           title: [{ value: 'My Work' }],
-          note: [{ type: 'preferred citation', value: 'Keller, Michael. (2022). My Work. Stanford Digital Repository. Available at :link:. :doi:' }]
+          note: [{ type: 'preferred citation',
+                   value: 'Keller, Michael. (2022). My Work. Stanford Digital Repository. Available at :link:. :doi:' }]
         }
       end
 

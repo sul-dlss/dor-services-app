@@ -15,7 +15,9 @@ RSpec.describe Migrators::AddLaneHrid do
 
   describe '#migrate?' do
     context 'when a matching druid and no hrid' do
-      let(:repository_object) { create(:repository_object, :with_repository_object_version, external_identifier: 'druid:bc836hv7886') }
+      let(:repository_object) do
+        create(:repository_object, :with_repository_object_version, external_identifier: 'druid:bc836hv7886')
+      end
 
       it 'returns true' do
         expect(migrator.migrate?).to be true
@@ -24,7 +26,10 @@ RSpec.describe Migrators::AddLaneHrid do
 
     context 'when a matching druid and has hrid' do
       let(:repository_object_version) { build(:repository_object_version, identification:) }
-      let(:repository_object) { create(:repository_object, :with_repository_object_version, repository_object_version:, external_identifier: 'druid:bc836hv7886') }
+      let(:repository_object) do
+        create(:repository_object, :with_repository_object_version, repository_object_version:,
+                                                                    external_identifier: 'druid:bc836hv7886')
+      end
       let(:identification) do
         {
           sourceId: 'sul:1234',
@@ -40,7 +45,9 @@ RSpec.describe Migrators::AddLaneHrid do
     end
 
     context 'when a non-matching druid' do
-      let(:repository_object) { create(:repository_object, :with_repository_object_version, external_identifier: 'druid:bc836hv7887') }
+      let(:repository_object) do
+        create(:repository_object, :with_repository_object_version, external_identifier: 'druid:bc836hv7887')
+      end
 
       it 'returns false' do
         expect(migrator.migrate?).to be false
@@ -51,7 +58,10 @@ RSpec.describe Migrators::AddLaneHrid do
   describe 'migrate' do
     context 'when no existing catalog links' do
       let(:repository_object_version) { build(:repository_object_version, identification:) }
-      let(:repository_object) { create(:repository_object, :with_repository_object_version, repository_object_version:, external_identifier: 'druid:bc836hv7886') }
+      let(:repository_object) do
+        create(:repository_object, :with_repository_object_version, repository_object_version:,
+                                                                    external_identifier: 'druid:bc836hv7886')
+      end
       let(:identification) do
         {
           sourceId: 'sul:1234',
@@ -71,11 +81,14 @@ RSpec.describe Migrators::AddLaneHrid do
     end
 
     context 'when existing catalog links' do
-      let(:repository_object) { create(:repository_object, :with_repository_object_version, external_identifier: 'druid:bc836hv7886') }
+      let(:repository_object) do
+        create(:repository_object, :with_repository_object_version, external_identifier: 'druid:bc836hv7886')
+      end
 
       it 'appends catalog link' do
         migrator.migrate
-        expect(repository_object.head_version.identification['catalogLinks']).to eq [{ 'catalog' => 'folio', 'catalogRecordId' => 'L123456', 'refresh' => true }]
+        expect(repository_object.head_version.identification['catalogLinks'])
+          .to eq [{ 'catalog' => 'folio', 'catalogRecordId' => 'L123456', 'refresh' => true }]
       end
     end
   end

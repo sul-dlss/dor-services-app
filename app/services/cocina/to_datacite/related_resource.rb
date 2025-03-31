@@ -11,7 +11,8 @@ module Cocina
     #  see https://schema.datacite.org/meta/kernel-4.4/
     class RelatedResource
       # @param [Cocina::Models::Description] cocina_desc
-      # @return [Hash] Hash of DataCite relatedItem attributes, conforming to the expectations of HTTP PUT request to DataCite
+      # @return [Hash] Hash of DataCite relatedItem attributes, conforming to the expectations of HTTP PUT
+      # request to DataCite
       #  see https://support.datacite.org/reference/dois-2#put_dois-id
       def self.related_item_attributes(cocina_desc)
         new(cocina_desc).related_item_attributes
@@ -21,7 +22,8 @@ module Cocina
         @cocina_desc = cocina_desc
       end
 
-      # @return [Hash] Hash of DataCite relatedItem attributes, conforming to the expectations of HTTP PUT request to DataCite
+      # @return [Hash] Hash of DataCite relatedItem attributes, conforming to the expectations of HTTP PUT
+      # request to DataCite
       #  see https://support.datacite.org/reference/dois-2#put_dois-id
       def related_item_attributes
         return {} if related_resource_blank?

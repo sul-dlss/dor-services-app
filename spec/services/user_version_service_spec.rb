@@ -5,8 +5,12 @@ require 'rails_helper'
 RSpec.describe UserVersionService do
   let(:druid) { repository_object.external_identifier }
   let(:repository_object) { repository_object_version1.repository_object }
-  let(:repository_object_version1) { create(:repository_object_version, :with_repository_object, closed_at: Time.zone.now, version: 1) }
-  let!(:repository_object_version2) { create(:repository_object_version, version: 2, repository_object:, closed_at: Time.zone.now) }
+  let(:repository_object_version1) do
+    create(:repository_object_version, :with_repository_object, closed_at: Time.zone.now, version: 1)
+  end
+  let!(:repository_object_version2) do
+    create(:repository_object_version, version: 2, repository_object:, closed_at: Time.zone.now)
+  end
   let(:object_type) { 'dro' }
 
   before do
@@ -70,7 +74,10 @@ RSpec.describe UserVersionService do
     context 'when the user version cannot be withdrawn' do
       it 'raises' do
         expect(user_version.withdrawn?).to be false
-        expect { user_version_service_withdraw }.to raise_error UserVersionService::UserVersioningError, 'Validation failed: Repository object version head version cannot be withdrawn'
+        expect do
+          user_version_service_withdraw
+        end.to raise_error UserVersionService::UserVersioningError,
+                           'Validation failed: Repository object version head version cannot be withdrawn'
         expect(WithdrawRestoreJob).not_to have_received(:perform_later)
       end
     end
@@ -85,7 +92,8 @@ RSpec.describe UserVersionService do
       expect(user_version.repository_object_version).to eq repository_object_version1
       user_version_service_move
       expect(user_version.reload.repository_object_version).to eq repository_object_version2
-      expect(PublishJob).to have_received(:perform_later).with(druid:, user_version: 1, background_job_result: BackgroundJobResult)
+      expect(PublishJob).to have_received(:perform_later).with(druid:, user_version: 1,
+                                                               background_job_result: BackgroundJobResult)
     end
   end
 
@@ -105,9 +113,14 @@ RSpec.describe UserVersionService do
   end
 
   describe '.permanently_withdraw_previous_user_versions' do
-    subject(:user_version_service_permanently_withdraw) { described_class.permanently_withdraw_previous_user_versions(druid:) }
+    subject(:user_version_service_permanently_withdraw) do
+      described_class.permanently_withdraw_previous_user_versions(druid:)
+    end
 
-    let!(:user_version1) { UserVersion.create!(version: 1, repository_object_version: repository_object_version1, state: 'permanently_withdrawn') }
+    let!(:user_version1) do
+      UserVersion.create!(version: 1, repository_object_version: repository_object_version1,
+                          state: 'permanently_withdrawn')
+    end
     let!(:user_version2) { UserVersion.create!(version: 2, repository_object_version: repository_object_version1) }
     let!(:user_version3) { UserVersion.create!(version: 3, repository_object_version: repository_object_version1) }
 

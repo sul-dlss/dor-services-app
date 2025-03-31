@@ -7,7 +7,9 @@ RSpec.describe Notifications::ObjectCreated do
 
   let(:created_at) { '04 Feb 2022' }
   let(:updated_at) { '04 Feb 2022' }
-  let(:message) { "{\"model\":#{model_json},\"created_at\":\"Fri, 04 Feb 2022 00:00:00 GMT\",\"modified_at\":\"Fri, 04 Feb 2022 00:00:00 GMT\"}" }
+  let(:message) do
+    "{\"model\":#{model_json},\"created_at\":\"Fri, 04 Feb 2022 00:00:00 GMT\",\"modified_at\":\"Fri, 04 Feb 2022 00:00:00 GMT\"}" # rubocop:disable Layout/LineLength
+  end
   let(:model_json) { model.to_cocina.to_json }
 
   let(:channel) { instance_double(Notifications::RabbitChannel, topic:) }

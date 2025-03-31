@@ -108,7 +108,8 @@ RSpec.describe AdministrativeTags do
     context 'with more than one matching row in the database' do
       before do
         create(:administrative_tag, druid: identifier, tag_label: create(:tag_label, tag: 'Project : Google Books'))
-        create(:administrative_tag, druid: identifier, tag_label: create(:tag_label, tag: 'Project : Fraggle Rock Collection'))
+        create(:administrative_tag, druid: identifier,
+                                    tag_label: create(:tag_label, tag: 'Project : Fraggle Rock Collection'))
       end
 
       it 'parses and returns the first content type' do

@@ -12,7 +12,9 @@ RSpec.describe 'Get the object' do
     end
   end
 
-  let(:collection_repository_object_versions) { create_list(:repository_object_version, 1, :collection_repository_object_version, :with_repository_object) }
+  let(:collection_repository_object_versions) do
+    create_list(:repository_object_version, 1, :collection_repository_object_version, :with_repository_object)
+  end
   let(:collections) { collection_repository_object_versions.map(&:to_cocina) }
 
   let(:expected) do
@@ -52,7 +54,9 @@ RSpec.describe 'Get the object' do
   end
 
   describe 'more than one collection' do
-    let(:collection_repository_object_versions) { create_list(:repository_object_version, 2, :collection_repository_object_version, :with_repository_object) }
+    let(:collection_repository_object_versions) do
+      create_list(:repository_object_version, 2, :collection_repository_object_version, :with_repository_object)
+    end
 
     it 'returns an empty array for collections' do
       get "/v1/objects/#{dro.externalIdentifier}/query/collections",

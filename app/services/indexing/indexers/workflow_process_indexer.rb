@@ -21,7 +21,7 @@ module Indexing
       end
 
       # @return [Hash] the partial solr document for a single workflow process
-      def to_solr
+      def to_solr # rubocop:disable Metrics/AbcSize
         return unless status
 
         # add a record of the robot having operated on this item, so we can track robot activity
@@ -54,7 +54,8 @@ module Indexing
       def index_error_message
         return unless error_message
 
-        solr_doc.error = "#{workflow_name}:#{name}:#{error_message}".truncate(MAX_ERROR_LENGTH, omission: ERROR_OMISSION)
+        solr_doc.error = "#{workflow_name}:#{name}:#{error_message}".truncate(MAX_ERROR_LENGTH,
+                                                                              omission: ERROR_OMISSION)
       end
     end
   end

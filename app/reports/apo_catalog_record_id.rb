@@ -14,7 +14,7 @@ class ApoCatalogRecordId
       druids = []
       # borrowed from bin/generate-druid-list
       loop do
-        results = SolrService.query('*:*', fl: 'id', rows: 10000, fq: query, start: druids.length, sort: 'id asc')
+        results = SolrService.query('*:*', fl: 'id', rows: 10_000, fq: query, start: druids.length, sort: 'id asc')
         break if results.empty?
 
         results.each { |r| druids << r['id'] }
@@ -26,7 +26,12 @@ class ApoCatalogRecordId
       druids.each_with_index do |druid, i|
         puts "#{i + 1} of #{num_dros} : #{druid}"
         cocina_object = CocinaObjectStore.find(druid)
-        catalog_record_ids = cocina_object.identification.catalogLinks.filter_map { |link| [link.catalog_record_id, link.refresh] if link.catalog == 'folio' }.flatten
+        catalog_record_ids = cocina_object.identification.catalogLinks.filter_map do |link|
+          if link.catalog == 'folio'
+            [link.catalog_record_id,
+             link.refresh]
+          end
+        end.flatten
         csv << ([druid] + catalog_record_ids) if catalog_record_ids.size.positive?
       end
       puts "Report written to #{output_file}"

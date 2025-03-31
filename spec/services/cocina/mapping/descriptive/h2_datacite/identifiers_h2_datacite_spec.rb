@@ -6,7 +6,9 @@ RSpec.describe 'Cocina --> DataCite mappings for identifier and alternateIdentif
   # NOTE: Because we haven't set a title in this Cocina::Models::Description, it will not validate against the openapi.
   let(:cocina_description) { Cocina::Models::Description.new(cocina.merge(purl: cocina.fetch(:purl, 'https://purl.stanford.edu/gz708sf9862')), false, false) }
   let(:identifier_attributes) { Cocina::ToDatacite::Identifier.identifier_attributes(cocina_description) }
-  let(:alternate_identifier_attributes) { Cocina::ToDatacite::Identifier.alternate_identifier_attributes(cocina_description) }
+  let(:alternate_identifier_attributes) do
+    Cocina::ToDatacite::Identifier.alternate_identifier_attributes(cocina_description)
+  end
 
   describe 'DOI' do
     # DOI: 10.5072/example

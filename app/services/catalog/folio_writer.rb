@@ -26,7 +26,9 @@ module Catalog
       )
 
       # remove 856 for previous catkeys
-      previous_catalog_record_ids.each { |previous_id| delete_previous_ids(catalog_record_id: previous_id, ignore_not_found: true) }
+      previous_catalog_record_ids.each do |previous_id|
+        delete_previous_ids(catalog_record_id: previous_id, ignore_not_found: true)
+      end
 
       # replace 856 for current catkeys
       catalog_record_ids.each { |catalog_record_id| update_current_ids(catalog_record_id:) }
@@ -45,7 +47,10 @@ module Catalog
 
       retry_lookup do
         # check that update has completed in FOLIO
-        raise StandardError, 'PURL still found in instance record after update.' if instance_has_purl?(catalog_record_id:)
+        if instance_has_purl?(catalog_record_id:)
+          raise StandardError,
+                'PURL still found in instance record after update.'
+        end
       end
     rescue FolioClient::ResourceNotFound
       raise unless ignore_not_found
@@ -54,7 +59,7 @@ module Catalog
       Rails.logger.warn "Previous folio instance id #{catalog_record_id} not found in FOLIO. Skipping."
     end
 
-    def update_current_ids(catalog_record_id:)
+    def update_current_ids(catalog_record_id:) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       response = FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
         marc_json['fields'].reject! { |field| (field['tag'] == '856') && field['content'].include?(purl_no_protocol) }
         marc_json['fields'] << marc_856_field if ReleaseTagService.released_to_searchworks?(cocina_object:)
@@ -64,9 +69,15 @@ module Catalog
 
       retry_lookup do
         if ReleaseTagService.released_to_searchworks?(cocina_object:)
-          raise StandardError, 'No matching PURL found in instance record after update.' unless instance_has_purl?(catalog_record_id:)
+          unless instance_has_purl?(catalog_record_id:)
+            raise StandardError,
+                  'No matching PURL found in instance record after update.'
+          end
 
-          raise StandardError, 'No completely matching 856 found in source record after update.' unless updated?(catalog_record_id:)
+          unless updated?(catalog_record_id:)
+            raise StandardError,
+                  'No completely matching 856 found in source record after update.'
+          end
         elsif instance_has_purl?(catalog_record_id:) # not released_to_searchworks
           # when unreleasing, checking instance record is sufficient for determining update completed
           raise StandardError, 'PURL still found in instance record after update.'
@@ -75,7 +86,8 @@ module Catalog
     end
 
     # @param [Hash,NilClass] response quickmarc response e.g.,
-    #   {"message"=>"Record is too long to be a valid MARC binary record, it's length would be 100106 which is more than 99999 bytes", "type"=>"-4", "code"=>"INTERNAL_SERVER_ERROR"}
+    #   {"message"=>"Record is too long to be a valid MARC binary record, it's length would be 100106 which is
+    #   more than 99999 bytes", "type"=>"-4", "code"=>"INTERNAL_SERVER_ERROR"}
     def validate_quickmarc_response!(response)
       return if response.nil?
 
@@ -120,12 +132,16 @@ module Catalog
     # @return [Array] previous or current catalog_record_ids for the object in an array, empty array if none exist
     def fetch_catalog_record_ids(current:)
       catalog_record_id_type = current ? 'folio' : 'previous folio'
-      @cocina_object.identification.catalogLinks.filter_map { |link| link.catalogRecordId if link.catalog == catalog_record_id_type }
+      @cocina_object.identification.catalogLinks.filter_map do |link|
+        link.catalogRecordId if link.catalog == catalog_record_id_type
+      end
     end
 
     def marc_856_field
       field = { tag: '856', isProtected: false }
-      content = marc_856_data[:subfields].filter_map { |subfield| "$#{subfield[:code]} #{subfield[:value]}" unless subfield[:value].nil? }
+      content = marc_856_data[:subfields].filter_map do |subfield|
+        "$#{subfield[:code]} #{subfield[:value]}" unless subfield[:value].nil?
+      end
       field[:indicators] = marc_856_data[:indicators].chars
       field[:content] = content.join(' ')
       field.stringify_keys
@@ -138,12 +154,15 @@ module Catalog
       purls.present?
     end
 
-    # transform marc_856_data to source record format which has a different JSON format than what was initially sent in edit_marc_json
-    def source_856_field
+    # transform marc_856_data to source record format which has a different JSON format than what was initially sent
+    # in edit_marc_json
+    def source_856_field # rubocop:disable Metrics/AbcSize
       content = {}
       content[:ind1] = marc_856_data[:indicators][0]
       content[:ind2] = marc_856_data[:indicators][1]
-      content[:subfields] = marc_856_data[:subfields].filter_map { |subfield| { subfield[:code] => subfield[:value] } unless subfield[:value].nil? }
+      content[:subfields] = marc_856_data[:subfields].filter_map do |subfield|
+        { subfield[:code] => subfield[:value] } unless subfield[:value].nil?
+      end
       full_field = { 856 => content }
       full_field.deep_stringify_keys
     end
@@ -156,12 +175,16 @@ module Catalog
     end
 
     # get the matching 856 on the current source record in FOLIO
-    def current_folio856(catalog_record_id:)
+    def current_folio856(catalog_record_id:) # rubocop:disable Metrics/AbcSize
       source_record = FolioClient.fetch_marc_hash(instance_hrid: catalog_record_id)
       source_record_856s = source_record['fields'].select { |tag| tag.key?('856') }
       raise StandardError, 'No 856 in source record.' unless source_record_856s
 
-      matching_fields = source_record_856s.select { |field| field['856']['subfields'].any? { |subfield| subfield['u'] == cocina_object.description.purl } }
+      matching_fields = source_record_856s.select do |field|
+        field['856']['subfields'].any? do |subfield|
+          subfield['u'] == cocina_object.description.purl
+        end
+      end
       return matching_fields.first unless matching_fields.size > 1
 
       raise StandardError, 'More than one matching field with a PURL found on FOLIO record.'

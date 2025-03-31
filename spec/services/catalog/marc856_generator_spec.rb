@@ -267,7 +267,8 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns a non-blank access message' do
-        expect(marc_856_generator.send(:subfield_z_access)).to eq({ code: 'z', value: 'Available to Stanford-affiliated users.' })
+        expect(marc_856_generator.send(:subfield_z_access)).to eq({ code: 'z',
+                                                                    value: 'Available to Stanford-affiliated users.' })
       end
     end
 
@@ -279,7 +280,8 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns a non-blank access message for a location restricted object' do
-        expect(marc_856_generator.send(:subfield_z_access)).to eq({ code: 'z', value: 'Available to Stanford-affiliated users.' })
+        expect(marc_856_generator.send(:subfield_z_access)).to eq({ code: 'z',
+                                                                    value: 'Available to Stanford-affiliated users.' })
       end
     end
   end
@@ -383,7 +385,8 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns a part label' do
-        expect(marc_856_generator.send(:subfield_x_parts)).to eq([{ code: 'x', value: 'label:55th legislature, 1997-1998' }])
+        expect(marc_856_generator.send(:subfield_x_parts)).to eq([{ code: 'x',
+                                                                    value: 'label:55th legislature, 1997-1998' }])
       end
     end
 
@@ -453,7 +456,8 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns both the label and part number' do
-        expect(marc_856_generator.send(:subfield_x_parts)).to eq([{ code: 'x', value: 'label:Issue #3. 2011' }, { code: 'x', value: 'sort:123' }])
+        expect(marc_856_generator.send(:subfield_x_parts)).to eq([{ code: 'x', value: 'label:Issue #3. 2011' },
+                                                                  { code: 'x', value: 'sort:123' }])
       end
     end
 
@@ -523,7 +527,8 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns both the label and part number' do
-        expect(marc_856_generator.send(:subfield_x_parts)).to eq([{ code: 'x', value: 'label:Issue #3. 2011' }, { code: 'x', value: 'sort:2011' }])
+        expect(marc_856_generator.send(:subfield_x_parts)).to eq([{ code: 'x', value: 'label:Issue #3. 2011' },
+                                                                  { code: 'x', value: 'sort:2011' }])
       end
     end
 
@@ -688,7 +693,8 @@ RSpec.describe Catalog::Marc856Generator do
       end
 
       it 'returns the label from the parallel title' do
-        expect(marc_856_generator.send(:subfield_x_parts)).to eq([{ code: 'x', value: 'label:Issue #3' }, { code: 'x', value: 'sort:123' }])
+        expect(marc_856_generator.send(:subfield_x_parts)).to eq([{ code: 'x', value: 'label:Issue #3' },
+                                                                  { code: 'x', value: 'sort:123' }])
       end
     end
   end

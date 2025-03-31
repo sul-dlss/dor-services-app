@@ -52,7 +52,8 @@ RSpec.describe 'Operations on release tags' do
         end
 
         let!(:collection_tag) do
-          ReleaseTag.create!(druid: collection.externalIdentifier, who: 'petucket', what: 'collection', released_to: 'PURL Sitemap', release: true)
+          ReleaseTag.create!(druid: collection.externalIdentifier, who: 'petucket', what: 'collection',
+                             released_to: 'PURL Sitemap', release: true)
                     .to_cocina
         end
 

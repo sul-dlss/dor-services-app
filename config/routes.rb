@@ -56,9 +56,9 @@ Rails.application.routes.draw do
         end
       end
 
-      resource :workspace, only: [:create, :destroy]
+      resource :workspace, only: %i[create destroy]
 
-      resources :events, only: [:create, :index], defaults: { format: :json }
+      resources :events, only: %i[create index], defaults: { format: :json }
 
       resources :versions, only: %i[create index show] do
         collection do
@@ -79,7 +79,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :release_tags, only: [:create, :index]
+      resources :release_tags, only: %i[create index]
     end
   end
 end

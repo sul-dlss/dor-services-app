@@ -15,7 +15,7 @@ module Indexing
       end
 
       # @return [Hash] the partial solr document for administrative tags
-      def to_solr
+      def to_solr # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
         solr_doc = {
           'tag_ssim' => [],
           'tag_text_unstemmed_im' => [],

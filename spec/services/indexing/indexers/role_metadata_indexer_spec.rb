@@ -38,7 +38,8 @@ RSpec.describe Indexing::Indexers::RoleMetadataIndexer do
     subject(:doc) { indexer.to_solr }
 
     it 'has the fields used by argo' do
-      expect(doc['apo_register_permissions_ssim']).to eq ['workgroup:dlss:dor-admin', 'workgroup:sdr:developer', 'sunetid:tcramer']
+      expect(doc['apo_register_permissions_ssim']).to eq ['workgroup:dlss:dor-admin', 'workgroup:sdr:developer',
+                                                          'sunetid:tcramer']
       expect(doc['apo_role_dor-apo-manager_ssim']).to eq ['workgroup:dlss:dor-admin', 'workgroup:sdr:developer']
       expect(doc['apo_role_person_dor-apo-manager_ssim']).to eq ['sunetid:tcramer']
     end

@@ -138,7 +138,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       it 'selects display name of contributor' do
         expect(doc).to include('author_text_nostem_im' => 'Sayers, Dorothy L.',
                                'author_display_ss' => 'Sayers, Dorothy L.',
-                               'contributor_text_nostem_im' => ['Sayers, Dorothy L. (Dorothy Leigh), 1893-1957', 'Sayers, Dorothy L.'])
+                               'contributor_text_nostem_im' => ['Sayers, Dorothy L. (Dorothy Leigh), 1893-1957',
+                                                                'Sayers, Dorothy L.'])
       end
     end
 
@@ -169,7 +170,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       it 'selects primary name of contributor' do
         expect(doc).to include('author_text_nostem_im' => 'Sayers, Dorothy L.',
                                'author_display_ss' => 'Sayers, Dorothy L.',
-                               'contributor_text_nostem_im' => ['Sayers, Dorothy L.', 'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957'])
+                               'contributor_text_nostem_im' => ['Sayers, Dorothy L.',
+                                                                'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957'])
       end
     end
 
@@ -199,7 +201,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       it 'selects first name of contributor' do
         expect(doc).to include('author_text_nostem_im' => 'Sayers, Dorothy L.',
                                'author_display_ss' => 'Sayers, Dorothy L.',
-                               'contributor_text_nostem_im' => ['Sayers, Dorothy L.', 'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957'])
+                               'contributor_text_nostem_im' => ['Sayers, Dorothy L.',
+                                                                'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957'])
       end
     end
 
@@ -234,7 +237,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       it 'selects primary name from parallelValue' do
         expect(doc).to include('author_text_nostem_im' => 'Bulgakov, Mikhail Afanasʹevich',
                                'author_display_ss' => 'Bulgakov, Mikhail Afanasʹevich',
-                               'contributor_text_nostem_im' => ['Булгаков, Михаил Афанасьевич', 'Bulgakov, Mikhail Afanasʹevich'])
+                               'contributor_text_nostem_im' => ['Булгаков, Михаил Афанасьевич',
+                                                                'Bulgakov, Mikhail Afanasʹevich'])
       end
     end
 
@@ -268,7 +272,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       it 'selects first name from parallelValue' do
         expect(doc).to include('author_text_nostem_im' => 'Булгаков, Михаил Афанасьевич',
                                'author_display_ss' => 'Булгаков, Михаил Афанасьевич',
-                               'contributor_text_nostem_im' => ['Булгаков, Михаил Афанасьевич', 'Bulgakov, Mikhail Afanasʹevich'])
+                               'contributor_text_nostem_im' => ['Булгаков, Михаил Афанасьевич',
+                                                                'Bulgakov, Mikhail Afanasʹevich'])
       end
     end
 

@@ -253,7 +253,10 @@ RSpec.describe RepositoryObjectVersion do
   describe '.to_model_hash' do
     subject(:model_hash) { described_class.to_model_hash(cocina_instance) }
 
-    let(:cocina_instance) { build(cocina_object_type).new(cocinaVersion: '0.5.0') } # Will test that updated to latest cocina version
+    # Will test that updated to latest cocina version
+    let(:cocina_instance) do
+      build(cocina_object_type).new(cocinaVersion: '0.5.0')
+    end
 
     context 'with a DRO' do
       let(:cocina_object_type) { :dro }

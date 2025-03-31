@@ -18,7 +18,7 @@ module Indexing
         extract_temporal_from_subjects(subjects)
       end
 
-      def extract_temporal_from_subjects(local_subjects)
+      def extract_temporal_from_subjects(local_subjects) # rubocop:disable Metrics/AbcSize
         (
           build_temporal_nodes(local_subjects.select { |node| node.type == 'time' }) +
           local_subjects.reject(&:type).flat_map do |subject|

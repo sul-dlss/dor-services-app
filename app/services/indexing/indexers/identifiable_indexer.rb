@@ -21,7 +21,10 @@ module Indexing
         {}.tap do |solr_doc|
           add_apo_titles(solr_doc, cocina.administrative.hasAdminPolicy)
 
-          solr_doc['metadata_source_ssim'] = identity_metadata_sources unless cocina.is_a? Cocina::Models::AdminPolicyWithMetadata
+          unless cocina.is_a? Cocina::Models::AdminPolicyWithMetadata
+            solr_doc['metadata_source_ssim'] =
+              identity_metadata_sources
+          end
           solr_doc['druid_prefixed_ssi'] = cocina.externalIdentifier
           solr_doc['druid_bare_ssi'] = cocina.externalIdentifier.delete_prefix('druid:')
         end

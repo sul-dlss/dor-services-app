@@ -35,7 +35,8 @@ RSpec.describe 'Batch creation of virtual objects' do
            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
-      expect(body['errors'][0]['detail']).to eq('#/paths/~1v1~1virtual_objects/post/requestBody/content/application~1json/schema missing required parameters: virtual_objects')
+      expect(body['errors'][0]['detail'])
+        .to eq('#/paths/~1v1~1virtual_objects/post/requestBody/content/application~1json/schema missing required parameters: virtual_objects') # rubocop:disable Layout/LineLength
     end
   end
 
@@ -46,8 +47,8 @@ RSpec.describe 'Batch creation of virtual objects' do
            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
-      expect(body['errors'][0]['detail']).to eq('#/paths/~1v1~1virtual_objects/post/requestBody/content/application~1json/schema/properties/virtual_objects ' \
-                                                "expected array, but received String: \"#{constituent1_id}\"")
+      expect(body['errors'][0]['detail'])
+        .to eq("#/paths/~1v1~1virtual_objects/post/requestBody/content/application~1json/schema/properties/virtual_objects expected array, but received String: \"#{constituent1_id}\"") # rubocop:disable Layout/LineLength
     end
   end
 
@@ -58,7 +59,8 @@ RSpec.describe 'Batch creation of virtual objects' do
            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
-      expect(body['errors'][0]['detail']).to eq('#/paths/~1v1~1virtual_objects/post/requestBody/content/application~1json/schema/properties/virtual_objects [] contains fewer than min items')
+      expect(body['errors'][0]['detail'])
+        .to eq('#/paths/~1v1~1virtual_objects/post/requestBody/content/application~1json/schema/properties/virtual_objects [] contains fewer than min items') # rubocop:disable Layout/LineLength
     end
   end
 
@@ -69,7 +71,8 @@ RSpec.describe 'Batch creation of virtual objects' do
            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
-      expect(body['errors'][0]['detail']).to eq('#/components/schemas/VirtualObjectRequest missing required parameters: virtual_object_id')
+      expect(body['errors'][0]['detail'])
+        .to eq('#/components/schemas/VirtualObjectRequest missing required parameters: virtual_object_id')
     end
   end
 
@@ -80,7 +83,8 @@ RSpec.describe 'Batch creation of virtual objects' do
            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
-      expect(body['errors'][0]['detail']).to eq("#/components/schemas/Druid pattern #{druid_pattern} does not match value: \"\", example: druid:bc123df4567")
+      expect(body['errors'][0]['detail'])
+        .to eq("#/components/schemas/Druid pattern #{druid_pattern} does not match value: \"\", example: druid:bc123df4567") # rubocop:disable Layout/LineLength
     end
   end
 
@@ -91,7 +95,8 @@ RSpec.describe 'Batch creation of virtual objects' do
            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
-      expect(body['errors'][0]['detail']).to eq('#/components/schemas/VirtualObjectRequest missing required parameters: constituent_ids')
+      expect(body['errors'][0]['detail'])
+        .to eq('#/components/schemas/VirtualObjectRequest missing required parameters: constituent_ids')
     end
   end
 
@@ -102,7 +107,8 @@ RSpec.describe 'Batch creation of virtual objects' do
            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
-      expect(body['errors'][0]['detail']).to eq('#/components/schemas/VirtualObjectRequest/properties/constituent_ids expected array, but received String: ""')
+      expect(body['errors'][0]['detail'])
+        .to eq('#/components/schemas/VirtualObjectRequest/properties/constituent_ids expected array, but received String: ""') # rubocop:disable Layout/LineLength
     end
   end
 
@@ -120,11 +126,13 @@ RSpec.describe 'Batch creation of virtual objects' do
   context 'when virtual_objects array has a hash w/ constituent_ids containing empties' do
     it 'renders an error' do
       post '/v1/virtual_objects',
-           params: { virtual_objects: [{ virtual_object_id: 'druid:bb111cc3333', constituent_ids: ['druid:ff111cc3333', 'druid:cc111dd3333', ''] }] }.to_json,
+           params: { virtual_objects: [{ virtual_object_id: 'druid:bb111cc3333',
+                                         constituent_ids: ['druid:ff111cc3333', 'druid:cc111dd3333', ''] }] }.to_json,
            headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
-      expect(body['errors'][0]['detail']).to eq("#/components/schemas/Druid pattern #{druid_pattern} does not match value: \"\", example: druid:bc123df4567")
+      expect(body['errors'][0]['detail'])
+        .to eq("#/components/schemas/Druid pattern #{druid_pattern} does not match value: \"\", example: druid:bc123df4567") # rubocop:disable Layout/LineLength
     end
   end
 end

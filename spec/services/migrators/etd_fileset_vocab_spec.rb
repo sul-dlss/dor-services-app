@@ -201,7 +201,9 @@ RSpec.describe Migrators::EtdFilesetVocab do
     }
   end
 
-  let(:repository_object) { create(:repository_object, :with_repository_object_version, external_identifier: non_matching_druid) }
+  let(:repository_object) do
+    create(:repository_object, :with_repository_object_version, external_identifier: non_matching_druid)
+  end
 
   describe '.druids' do
     it 'returns an array of size 8225' do
@@ -214,7 +216,10 @@ RSpec.describe Migrators::EtdFilesetVocab do
     context 'when a matching druid' do
       context 'when cocina has a matching fileset type' do
         let(:repository_object_version) { build(:repository_object_version, structural: structural_etd_and_non) }
-        let(:repository_object) { create(:repository_object, :with_repository_object_version, repository_object_version:, external_identifier: matching_druid) }
+        let(:repository_object) do
+          create(:repository_object, :with_repository_object_version, repository_object_version:,
+                                                                      external_identifier: matching_druid)
+        end
 
         it 'returns true' do
           expect(migrator.migrate?).to be true
@@ -223,7 +228,10 @@ RSpec.describe Migrators::EtdFilesetVocab do
 
       context 'when cocina has no matching fileset type' do
         let(:repository_object_version) { build(:repository_object_version, structural: structural_no_match) }
-        let(:repository_object) { create(:repository_object, :with_repository_object_version, repository_object_version:, external_identifier: matching_druid) }
+        let(:repository_object) do
+          create(:repository_object, :with_repository_object_version, repository_object_version:,
+                                                                      external_identifier: matching_druid)
+        end
 
         it 'returns false' do
           expect(migrator.migrate?).to be false
@@ -232,7 +240,9 @@ RSpec.describe Migrators::EtdFilesetVocab do
     end
 
     context 'when not a matching druid' do
-      let(:repository_object) { create(:repository_object, :with_repository_object_version, external_identifier: non_matching_druid) }
+      let(:repository_object) do
+        create(:repository_object, :with_repository_object_version, external_identifier: non_matching_druid)
+      end
 
       it 'returns false' do
         expect(migrator.migrate?).to be false
@@ -242,7 +252,10 @@ RSpec.describe Migrators::EtdFilesetVocab do
 
   describe 'migrate' do
     let(:repository_object_version) { build(:repository_object_version, structural: structural_etd) }
-    let(:repository_object) { create(:repository_object, :with_repository_object_version, repository_object_version:, external_identifier: matching_druid) }
+    let(:repository_object) do
+      create(:repository_object, :with_repository_object_version, repository_object_version:,
+                                                                  external_identifier: matching_druid)
+    end
 
     context 'when at least one fileset type matches' do
       let(:structural_etd) do
@@ -259,8 +272,10 @@ RSpec.describe Migrators::EtdFilesetVocab do
 
       it 'migrates the matching fileset types to Cocina::Models::FileSetType.file' do
         migrator.migrate
-        expect(repository_object.head_version.structural['contains'].first['type']).to eq 'https://cocina.sul.stanford.edu/models/resources/file'
-        expect(repository_object.head_version.structural['contains'].last['type']).to eq Cocina::Models::FileSetType.file
+        expect(repository_object.head_version.structural['contains'].first['type'])
+          .to eq 'https://cocina.sul.stanford.edu/models/resources/file'
+        expect(repository_object.head_version.structural['contains'].last['type'])
+          .to eq Cocina::Models::FileSetType.file
       end
 
       context 'when fileset label is already present' do
@@ -295,7 +310,8 @@ RSpec.describe Migrators::EtdFilesetVocab do
           let(:fileset_blank_label) { main_original_fileset.dup.tap { |fileset| fileset[:label] = '' } }
 
           it 'main-original fileset gets "Body of dissertation (as submitted)"' do
-            expect(repository_object.head_version.structural['contains'].first['label']).to eq 'Body of dissertation (as submitted)'
+            expect(repository_object.head_version.structural['contains'].first['label'])
+              .to eq 'Body of dissertation (as submitted)'
           end
         end
 
@@ -326,7 +342,10 @@ RSpec.describe Migrators::EtdFilesetVocab do
 
       context 'when some fileset types match' do
         let(:repository_object_version) { build(:repository_object_version, structural: structural_etd_and_non) }
-        let(:repository_object) { create(:repository_object, :with_repository_object_version, repository_object_version:, external_identifier: matching_druid) }
+        let(:repository_object) do
+          create(:repository_object, :with_repository_object_version, repository_object_version:,
+                                                                      external_identifier: matching_druid)
+        end
 
         before do
           migrator.migrate

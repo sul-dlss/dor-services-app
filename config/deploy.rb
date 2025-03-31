@@ -52,8 +52,8 @@ set :log_level, :info
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
-set :linked_dirs, %w(log tmp/pids tmp/cache tmp/sockets vendor/bundle config/certs config/settings)
-set :linked_files, %w(config/honeybadger.yml config/database.yml)
+set :linked_dirs, %w[log tmp/pids tmp/cache tmp/sockets vendor/bundle config/certs config/settings]
+set :linked_files, %w[config/honeybadger.yml config/database.yml]
 
 # Namespace crontab entries by application and stage
 set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
@@ -75,7 +75,7 @@ set :honeybadger_env, fetch(:stage)
 before 'deploy:restart', 'shared_configs:update'
 
 # Tasks for managing the rolling indexer
-namespace :rolling_indexer do # rubocop:disable Metrics/BlockLength
+namespace :rolling_indexer do
   desc 'Stop rolling indexer'
   task :stop do
     on roles(:rolling_indexer) do

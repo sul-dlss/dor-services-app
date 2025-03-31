@@ -4,7 +4,9 @@ require 'rails_helper'
 
 RSpec.describe Publish::TransferStager do
   describe '.copy' do
-    let(:stager) { described_class.new(druid:, filepath_map:, workspace_content_pathname: Pathname.new(workspace_content_path)) }
+    let(:stager) do
+      described_class.new(druid:, filepath_map:, workspace_content_pathname: Pathname.new(workspace_content_path))
+    end
 
     let(:druid) { 'druid:bc123df4567' }
     let(:filepath_map) { { 'file1.txt' => 'uuid1', 'files/file2.txt' => 'uuid2', 'file3.txt' => 'uuid3' } }

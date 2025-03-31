@@ -44,7 +44,7 @@ RSpec.describe Catalog::FolioWriter do
          indicators: ['f', 'f'],
          isProtected: true },
        { tag: '856',
-         content: '$u https://purl.stanford.edu/bc123dg9393 $x SDR-PURL $x item $x barcode:36105216275185 $x rights:world',
+         content: '$u https://purl.stanford.edu/bc123dg9393 $x SDR-PURL $x item $x barcode:36105216275185 $x rights:world', # rubocop:disable Layout/LineLength
          indicators: ['4', '1'],
          isProtected: false }],
       updateInfo: {
@@ -143,14 +143,15 @@ RSpec.describe Catalog::FolioWriter do
       context 'when edit operation returns errors' do
         let(:error_response) do
           JSON.parse({
-            message: "Record is too long to be a valid MARC binary record, it's length would be 100106 which is more than 99999 bytes",
+            message: "Record is too long to be a valid MARC binary record, it's length would be 100106 which is more than 99999 bytes", # rubocop:disable Layout/LineLength
             type: '-4',
             code: 'INTERNAL_SERVER_ERROR'
           }.to_json)
         end
 
         before do
-          allow(FolioClient).to receive(:edit_marc_json).and_raise(FolioClient::ResourceNotFound).and_return(error_response)
+          allow(FolioClient).to receive(:edit_marc_json)
+            .and_raise(FolioClient::ResourceNotFound).and_return(error_response)
         end
 
         it 'raises a RuntimeError with the given response message' do
@@ -225,7 +226,8 @@ RSpec.describe Catalog::FolioWriter do
         end
 
         before do
-          allow(FolioClient).to receive(:fetch_instance_info).and_return(instance_record_first_lookup, instance_record, instance_record)
+          allow(FolioClient).to receive(:fetch_instance_info).and_return(instance_record_first_lookup, instance_record,
+                                                                         instance_record)
           allow(FolioClient).to receive(:fetch_marc_hash).and_return(source_record_first_lookup, source_record)
           allow(Rails.logger).to receive(:warn)
         end
@@ -281,7 +283,8 @@ RSpec.describe Catalog::FolioWriter do
         end
 
         before do
-          allow(FolioClient).to receive_messages(fetch_instance_info: instance_record_unreleased, fetch_marc_hash: source_record)
+          allow(FolioClient).to receive_messages(fetch_instance_info: instance_record_unreleased,
+                                                 fetch_marc_hash: source_record)
           allow(Rails.logger).to receive(:warn)
         end
 
@@ -395,8 +398,10 @@ RSpec.describe Catalog::FolioWriter do
       end
 
       before do
-        allow(FolioClient).to receive(:fetch_instance_info).with(hrid: 'a8832160').and_return(instance_record_unreleased)
-        allow(FolioClient).to receive(:fetch_instance_info).with(hrid: 'a8832162').and_return(instance_record)
+        allow(FolioClient).to receive(:fetch_instance_info)
+          .with(hrid: 'a8832160').and_return(instance_record_unreleased)
+        allow(FolioClient).to receive(:fetch_instance_info)
+          .with(hrid: 'a8832162').and_return(instance_record)
       end
 
       it 'updates the MARC record' do
@@ -474,7 +479,8 @@ RSpec.describe Catalog::FolioWriter do
       before do
         allow(FolioClient).to receive(:fetch_instance_info).and_return(instance_record_unreleased)
         allow(FolioClient).to receive(:edit_marc_json).with(hrid: 'a8832160').and_raise(FolioClient::ResourceNotFound)
-        allow(FolioClient).to receive(:edit_marc_json).with(hrid: 'a8832161').and_yield(folio_response_json).and_return(nil)
+        allow(FolioClient).to receive(:edit_marc_json).with(hrid: 'a8832161')
+                                                      .and_yield(folio_response_json).and_return(nil)
       end
 
       it 'updates MARC record that exists to not include the 856' do

@@ -11,7 +11,8 @@ RSpec.describe 'Show single user version' do
 
   context 'when found' do
     before do
-      repository_object = create(:repository_object, :with_repository_object_version, :closed, external_identifier: druid)
+      repository_object = create(:repository_object, :with_repository_object_version, :closed,
+                                 external_identifier: druid)
       create(:user_version, version: 1, repository_object_version: repository_object.versions.first)
       allow(Indexing::Indexers::WorkflowsIndexer).to receive(:new).and_return(workflows)
       allow(Indexing::WorkflowFields).to receive(:for).and_return({ milestones_ssim: %w[foo bar] })

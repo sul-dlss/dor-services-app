@@ -9,7 +9,9 @@ RSpec.describe WithdrawRestoreJob do
 
   let(:druid) { 'druid:mk420bs7601' }
   let(:user_version) { create(:user_version, state:, repository_object_version:) }
-  let(:repository_object_version) { create(:repository_object_version, :with_repository_object, external_identifier: druid, closed_at: Time.current) }
+  let(:repository_object_version) do
+    create(:repository_object_version, :with_repository_object, external_identifier: druid, closed_at: Time.current)
+  end
 
   context 'when the version is withdrawn' do
     let(:state) { 'withdrawn' }

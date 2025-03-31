@@ -4,8 +4,12 @@ require 'rails_helper'
 
 RSpec.describe 'Update user version' do
   let(:repository_object) { repository_object_version1.repository_object }
-  let(:repository_object_version1) { create(:repository_object_version, :with_repository_object, closed_at: Time.zone.now, version: 1) }
-  let!(:repository_object_version2) { create(:repository_object_version, version: 2, repository_object:, closed_at: Time.zone.now) }
+  let(:repository_object_version1) do
+    create(:repository_object_version, :with_repository_object, closed_at: Time.zone.now, version: 1)
+  end
+  let!(:repository_object_version2) do
+    create(:repository_object_version, version: 2, repository_object:, closed_at: Time.zone.now)
+  end
   let(:user_version) { create(:user_version, repository_object_version: repository_object_version1, version: 1) }
 
   before do
@@ -19,7 +23,8 @@ RSpec.describe 'Update user version' do
             params: { version: 2 }.to_json
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to eq({ 'userVersion' => user_version.version, 'version' => 2, 'withdrawn' => false, 'withdrawable' => true, 'restorable' => false, 'head' => false })
+      expect(response.parsed_body).to eq({ 'userVersion' => user_version.version, 'version' => 2, 'withdrawn' => false,
+                                           'withdrawable' => true, 'restorable' => false, 'head' => false })
 
       expect(user_version.reload.repository_object_version).to eq(repository_object_version2)
     end
@@ -32,7 +37,8 @@ RSpec.describe 'Update user version' do
             params: { withdrawn: true }.to_json
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to eq({ 'userVersion' => user_version.version, 'version' => 1, 'withdrawn' => true, 'withdrawable' => false, 'restorable' => true, 'head' => false })
+      expect(response.parsed_body).to eq({ 'userVersion' => user_version.version, 'version' => 1, 'withdrawn' => true,
+                                           'withdrawable' => false, 'restorable' => true, 'head' => false })
 
       expect(user_version.reload.withdrawn?).to be(true)
     end

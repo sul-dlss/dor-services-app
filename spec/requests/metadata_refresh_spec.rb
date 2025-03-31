@@ -142,7 +142,8 @@ RSpec.describe 'Refresh metadata' do
       end
 
       before do
-        allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogResponseError, 'Something went wrong')
+        allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogResponseError,
+                                                        'Something went wrong')
       end
 
       it 'returns a 500 error' do
@@ -161,14 +162,17 @@ RSpec.describe 'Refresh metadata' do
       before do
         allow(marc_service).to receive(:marc_record).and_return(MARC::Record.new)
         allow(Nokogiri).to receive(:XSLT).and_return(xslt)
-        allow(xslt).to receive(:transform).and_raise(RuntimeError, 'Cannot add attributes to an element if children have been already added to the element.')
+        allow(xslt).to receive(:transform)
+          .and_raise(RuntimeError,
+                     'Cannot add attributes to an element if children have been already added to the element.')
       end
 
       it 'returns a 500 error' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:internal_server_error)
-        expect(response.body).to match('Cannot add attributes to an element if children have been already added to the element.')
+        expect(response.body)
+          .to match('Cannot add attributes to an element if children have been already added to the element.')
       end
     end
 

@@ -24,7 +24,8 @@ RSpec.describe Cocina::ApoExistenceValidator do
     let(:item) { build(:dro, admin_policy_id: 'druid:df123cd4567') }
 
     it 'returns false' do
-      allow(CocinaObjectStore).to receive(:find).with('druid:df123cd4567').and_raise(CocinaObjectStore::CocinaObjectNotFoundError)
+      allow(CocinaObjectStore).to receive(:find)
+        .with('druid:df123cd4567').and_raise(CocinaObjectStore::CocinaObjectNotFoundError)
       expect(validator.valid?).to be false
     end
   end

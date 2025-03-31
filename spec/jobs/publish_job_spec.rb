@@ -50,7 +50,8 @@ RSpec.describe PublishJob do
     end
 
     it 'marks the job as a failure' do
-      expect(result).to have_received(:output=).with({ errors: [{ title: 'Publishing error', detail: 'Cannot publish an admin policy' }] })
+      expect(result).to have_received(:output=).with({ errors: [{ title: 'Publishing error',
+                                                                  detail: 'Cannot publish an admin policy' }] })
       expect(result).to have_received(:complete!).once
     end
 

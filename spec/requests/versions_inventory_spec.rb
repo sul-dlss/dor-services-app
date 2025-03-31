@@ -17,7 +17,8 @@ RSpec.describe 'Versions' do
 
   before do
     repository_object.save # we need at least one persisted version so we can run this test
-    repository_object.versions.create!(version: 2, version_description: 'draft', cocina_version: Cocina::Models::CocinaVersion)
+    repository_object.versions.create!(version: 2, version_description: 'draft',
+                                       cocina_version: Cocina::Models::CocinaVersion)
   end
 
   it 'returns a 200' do

@@ -2,7 +2,8 @@
 
 module Indexing
   module Indexers
-    # Allows Indexing::Builders::DocumentBuilder class (which builds the solr doc for an object) to be much more readable
+    # Allows Indexing::Builders::DocumentBuilder class (which builds the solr doc for an object) to be much
+    # more readable
     # Borrowed from https://github.com/samvera/valkyrie/blob/master/lib/valkyrie/persistence/solr/composite_indexer.rb
     class CompositeIndexer
       attr_reader :indexers

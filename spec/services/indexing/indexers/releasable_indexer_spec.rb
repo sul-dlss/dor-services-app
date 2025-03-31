@@ -28,8 +28,10 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
             Dor::ReleaseTag.new(to: 'Project', release: false, date: '2016-12-21T17:31:18.000+00:00', what: 'self'),
             Dor::ReleaseTag.new(to: 'Project', release: true, date: '2021-05-12T21:05:21.000+00:00', what: 'self'),
             Dor::ReleaseTag.new(to: 'test_target', release: true, what: 'self'),
-            Dor::ReleaseTag.new(to: 'test_nontarget', release: false, date: '2016-12-16T22:52:35.000+00:00', what: 'self'),
-            Dor::ReleaseTag.new(to: 'test_nontarget', release: true, date: '2016-11-16T22:52:35.000+00:00', what: 'self')
+            Dor::ReleaseTag.new(to: 'test_nontarget', release: false, date: '2016-12-16T22:52:35.000+00:00',
+                                what: 'self'),
+            Dor::ReleaseTag.new(to: 'test_nontarget', release: true, date: '2016-11-16T22:52:35.000+00:00',
+                                what: 'self')
           ]
         end
 
@@ -71,7 +73,8 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
       context 'when a collection with a collection releaseTag' do
         let(:release_tags) do
           [
-            Dor::ReleaseTag.new(to: 'Project', release: true, date: '2016-11-16T22:52:35.000+00:00', what: 'collection'),
+            Dor::ReleaseTag.new(to: 'Project', release: true, date: '2016-11-16T22:52:35.000+00:00',
+                                what: 'collection'),
             Dor::ReleaseTag.new(to: 'test_target', release: true, what: 'self')
           ]
         end
@@ -91,7 +94,8 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
       let(:collection_release_tags) { [] }
 
       before do
-        allow(ReleaseTagService).to receive(:item_tags).with(cocina_object: collection).and_return(collection_release_tags)
+        allow(ReleaseTagService).to receive(:item_tags).with(cocina_object: collection)
+                                                       .and_return(collection_release_tags)
       end
 
       context 'when the parent collection has self releaseTags' do
@@ -111,7 +115,8 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
         let(:release_tags) { [] }
         let(:collection_release_tags) do
           [
-            Dor::ReleaseTag.new(to: 'test_target', release: true, date: '2016-12-21T17:31:18.000+00:00', what: 'collection')
+            Dor::ReleaseTag.new(to: 'test_target', release: true, date: '2016-12-21T17:31:18.000+00:00',
+                                what: 'collection')
           ]
         end
 
@@ -127,7 +132,8 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
           [Dor::ReleaseTag.new(to: 'test_target', release: true, date: '2016-12-21T17:31:18.000+00:00', what: 'self')]
         end
         let(:collection_release_tags) do
-          [Dor::ReleaseTag.new(to: 'test_target', release: true, date: '2016-12-21T17:31:18.000+00:00', what: 'collection')]
+          [Dor::ReleaseTag.new(to: 'test_target', release: true, date: '2016-12-21T17:31:18.000+00:00',
+                               what: 'collection')]
         end
 
         it 'indexes release tags' do
@@ -145,7 +151,8 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
         end
         let(:collection_release_tags) do
           [
-            Dor::ReleaseTag.new(to: 'test_target', release: true, date: '2016-12-21T17:31:18.000+00:00', what: 'collection')
+            Dor::ReleaseTag.new(to: 'test_target', release: true, date: '2016-12-21T17:31:18.000+00:00',
+                                what: 'collection')
           ]
         end
 

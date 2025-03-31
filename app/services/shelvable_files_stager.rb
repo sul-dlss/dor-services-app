@@ -43,12 +43,14 @@ class ShelvableFilesStager
     # If not found and there is a previous version, try the previous version.
     # If still not found, raise an error.
 
-    return if copy_from_preservation(file_pathname: file_pathname, filepath: filepath, version: version, raise_if_not_found: version == 1)
+    return if copy_from_preservation(file_pathname: file_pathname, filepath: filepath, version: version,
+                                     raise_if_not_found: version == 1)
 
-    copy_from_preservation(file_pathname: file_pathname, filepath: filepath, version: version - 1, raise_if_not_found: true)
+    copy_from_preservation(file_pathname: file_pathname, filepath: filepath, version: version - 1,
+                           raise_if_not_found: true)
   end
 
-  def copy_from_preservation(file_pathname:, filepath:, version:, raise_if_not_found: false)
+  def copy_from_preservation(file_pathname:, filepath:, version:, raise_if_not_found: false) # rubocop:disable Metrics/MethodLength
     received_bytes = 0
     File.open(file_pathname, 'wb') do |streamed|
       writer = proc do |chunk, overall_received_bytes|
@@ -78,7 +80,8 @@ class ShelvableFilesStager
     return if expected.nil? || expected == received
 
     file_pathname.delete if file_pathname.exist?
-    raise "File copied from preservation was not the expected size. Expected #{expected} bytes for #{filepath}; received #{received} bytes."
+    raise "File copied from preservation was not the expected size. Expected #{expected} bytes for #{filepath}; " \
+          "received #{received} bytes."
   end
 
   def cocina_filesize_for(filename)

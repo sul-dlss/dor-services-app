@@ -77,7 +77,8 @@ class AuditTechnicalMetadataFileList
   end
 
   def audit_one_druid(druid:)
-    RepositoryObject.dros.where(external_identifier: druid).closed.joins(:head_version).pick(:external_identifier, FILES_FROM_RESOURCES_SQL).tap do |dro_row|
+    RepositoryObject.dros.where(external_identifier: druid).closed.joins(:head_version).pick(:external_identifier,
+                                                                                             FILES_FROM_RESOURCES_SQL).tap do |dro_row|
       self.class.process_dro_row(dro_row, techmd_connection, logger)
     end
   end
@@ -94,7 +95,8 @@ class AuditTechnicalMetadataFileList
 
       logger.debug("auditing #{{ druid:, preserved_file_list: }}")
       req_params = { expected_files: preserved_file_list }.to_json
-      response = techmd_connection.post("/v1/technical-metadata/audit/#{druid}", req_params, 'Content-Type' => 'application/json')
+      response = techmd_connection.post("/v1/technical-metadata/audit/#{druid}", req_params,
+                                        'Content-Type' => 'application/json')
       logger.debug "#{druid}: audited technical-metadata-service; response status: #{response.status}; response body: #{response.body}"
 
       process_response(druid, response, logger)

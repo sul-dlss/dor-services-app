@@ -19,7 +19,10 @@ class WorkspaceService
 
   def self.mkdir_with_final_link(druid_obj:, source:)
     new_path = druid_obj.path
-    raise DruidTools::DifferentContentExistsError, "Unable to create link, directory already exists: #{new_path}" if File.directory?(new_path) && !File.symlink?(new_path)
+    if File.directory?(new_path) && !File.symlink?(new_path)
+      raise DruidTools::DifferentContentExistsError,
+            "Unable to create link, directory already exists: #{new_path}"
+    end
 
     real_path = File.expand_path('..', new_path)
     FileUtils.mkdir_p(real_path)

@@ -16,7 +16,7 @@ module Migrators
     end
 
     # A migrator must implement a migrate method that migrates (mutates) the ActiveRecord cocina object.
-    def migrate
+    def migrate # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
       Array(repository_object.head_version.structural['contains']).each do |fileset|
         next unless FILESET_TYPES_TO_MIGRATE.include?(fileset['type'])
 

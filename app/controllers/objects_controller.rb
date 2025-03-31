@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Controller for repository objects.
 class ObjectsController < ApplicationController
   before_action :load_cocina_object, only: %i[accession destroy show reindex]
   before_action :check_cocina_object_exists, only: :publish
@@ -15,17 +16,22 @@ class ObjectsController < ApplicationController
     render json: Cocina::Models.without_metadata(@cocina_object)
   end
 
-  def create
-    return json_api_error(status: :service_unavailable, message: 'Registration is temporarily disabled') unless Settings.enabled_features.registration
+  def create # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    unless Settings.enabled_features.registration
+      return json_api_error(status: :service_unavailable,
+                            message: 'Registration is temporarily disabled')
+    end
 
     model_request = Cocina::Models.build_request(params.except(:action, :controller, :assign_doi).to_unsafe_h)
     cocina_object = CreateObjectService.create(model_request, assign_doi: params[:assign_doi])
 
     add_headers(cocina_object)
-    render status: :created, location: object_path(cocina_object.externalIdentifier), json: Cocina::Models.without_metadata(cocina_object)
+    render status: :created, location: object_path(cocina_object.externalIdentifier),
+           json: Cocina::Models.without_metadata(cocina_object)
   rescue Catalog::MarcService::CatalogResponseError => e
     Honeybadger.notify(e)
-    json_api_error(status: :bad_gateway, title: 'Catalog connection error', message: 'Unable to read descriptive metadata from the catalog')
+    json_api_error(status: :bad_gateway, title: 'Catalog connection error',
+                   message: 'Unable to read descriptive metadata from the catalog')
   rescue Catalog::MarcService::CatalogRecordNotFoundError => e
     json_api_error(status: :bad_request, title: 'Record not found in catalog', message: e.message)
   rescue Catalog::MarcService::MarcServiceError => e
@@ -37,11 +43,14 @@ class ObjectsController < ApplicationController
     json_api_error(status: 400, message: e.message)
   end
 
-  def update
+  def update # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     cocina_object = Cocina::Models.build(params.except(:action, :controller, :id).to_unsafe_h)
 
     # Ensure the id in the path matches the id in the post body.
-    raise Cocina::ValidationError, "Identifier on the query and in the body don't match" if params[:id] != cocina_object.externalIdentifier
+    if params[:id] != cocina_object.externalIdentifier
+      raise Cocina::ValidationError,
+            "Identifier on the query and in the body don't match"
+    end
 
     # ETag / optimistic locking is optional.
     etag = from_etag(request.headers['If-Match'])
@@ -58,7 +67,8 @@ class ObjectsController < ApplicationController
   rescue CocinaObjectStore::StaleLockError => e
     json_api_error(status: :precondition_failed,
                    title: 'ETag mismatch',
-                   message: "You are attempting to update a stale copy of the object: #{e.message} Refetch the object and attempt your change again.")
+                   message: "You are attempting to update a stale copy of the object: #{e.message} " \
+                            'Refetch the object and attempt your change again.')
   end
 
   def find
@@ -71,14 +81,15 @@ class ObjectsController < ApplicationController
   # Initialize specified workflow (assemblyWF by default), and also version if needed
   # called by pre-assembly and goobi kick off accessioning for a new or existing object
   #
-  # You can specify params when POSTing to this method to include when opening a version (if that is required to accession).
+  # You can specify params when POSTing to this method to include when opening a version (if that is required
+  # to accession).
   # The versioning params are included below for reference.
   #  :descriptions [String] (required) description of version change
   #  :opening_user_name [String] (optional) opening sunetid to add to the events datastream
   # You can also pass information that will be used to start the workflow:
   #  :workflow [String] (optional) the workflow to start (defaults to 'assemblyWF')
   #  :context [Hash] (optional) workflow context to pass to the workflow service (defaults to nil)
-  def accession
+  def accession # rubocop:disable Metrics/AbcSize
     workflow = params[:workflow] || 'assemblyWF'
     EventFactory.create(druid: params[:id], event_type: 'accession_request', data: { workflow: })
 
@@ -92,18 +103,21 @@ class ObjectsController < ApplicationController
                               message: 'This object cannot be opened for versioning.')
       end
 
-      updated_cocina_object = version_service.open(cocina_object: @cocina_object, assume_accessioned: false, **version_open_params)
+      updated_cocina_object = version_service.open(cocina_object: @cocina_object, assume_accessioned: false,
+                                                   **version_open_params)
     end
 
     # initialize workflow
-    workflow_client.create_workflow_by_name(@cocina_object.externalIdentifier, workflow, version: updated_cocina_object.version.to_s, context: workflow_context)
+    workflow_client.create_workflow_by_name(@cocina_object.externalIdentifier, workflow,
+                                            version: updated_cocina_object.version.to_s, context: workflow_context)
     head :created
   end
 
   # Called from Argo.
   def publish
     result = BackgroundJobResult.create
-    EventFactory.create(druid: params[:id], event_type: 'publish_request_received', data: { background_job_result_id: result.id })
+    EventFactory.create(druid: params[:id], event_type: 'publish_request_received',
+                        data: { background_job_result_id: result.id })
     PublishJob.set(queue: publish_queue).perform_later(druid: params[:id], background_job_result: result)
     head :created, location: result
   end

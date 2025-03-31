@@ -20,7 +20,8 @@ RSpec.describe Robots::DorRepo::Accession::ResetWorkspace, type: :robot do
     it 'performs cleanup' do
       expect(perform).to be_nil # no return state defaults to completed.
       expect(CleanupService).to have_received(:cleanup_by_druid).with(druid).once
-      expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'cleanup-workspace', data: { status: 'success' })
+      expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'cleanup-workspace',
+                                                          data: { status: 'success' })
     end
   end
 
@@ -31,7 +32,9 @@ RSpec.describe Robots::DorRepo::Accession::ResetWorkspace, type: :robot do
 
     it 'raises' do
       expect { perform }.to raise_error(Errno::ENOENT)
-      expect(EventFactory).to have_received(:create).with(druid:, event_type: 'cleanup-workspace', data: { status: 'failure', message: 'No such file or directory' })
+      expect(EventFactory).to have_received(:create)
+        .with(druid:, event_type: 'cleanup-workspace', data: { status: 'failure',
+                                                               message: 'No such file or directory' })
     end
   end
 end

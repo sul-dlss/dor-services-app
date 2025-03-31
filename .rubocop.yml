@@ -1,5 +1,3 @@
-inherit_from: .rubocop_todo.yml
-
 plugins:
   - rubocop-capybara
   - rubocop-factory_bot
@@ -27,13 +25,25 @@ Rails:
   Enabled: true
 
 Layout/LineLength:
+  Max: 120
   Exclude:
     - "spec/services/cocina/mapping/descriptive/h2_datacite/subject_h2_datacite_spec.rb"
+    - "app/reports/**/*"
 
 Lint/UnusedMethodArgument:
   AllowUnusedKeywordArguments: true
 
+Metrics/AbcSize:
+  Exclude:
+    - "bin/*"
+    - "app/reports/**/*"
+
 Metrics/BlockLength:
+  AllowedMethods:
+    - describe
+    - context
+    - namespace
+    - class_methods
   Exclude:
     - "spec/**/*"
     - "config/routes.rb"
@@ -41,9 +51,28 @@ Metrics/BlockLength:
     - "lib/tasks/missing_druids.rake"
 
 Metrics/ClassLength:
+  Max: 150 # default 100
   Exclude:
     - "app/services/cocina/to_datacite/event.rb"
     - "app/services/cocina/to_xml/content_metadata_generator.rb"
+
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - "bin/*"
+    - "app/reports/**/*"
+
+Metrics/MethodLength:
+  CountAsOne:
+    - 'hash'
+  Max: 15 # default 10
+  Exclude:
+    - "bin/*"
+    - "app/reports/**/*"
+
+Metrics/PerceivedComplexity:
+  Exclude:
+    - "bin/*"
+    - "app/reports/**/*"
 
 Performance/CollectionLiteralInLoop:
   Enabled: true
@@ -74,11 +103,10 @@ RSpec/DescribeClass:
     - "spec/services/cocina/mapping/**/*"
 
 RSpec/ExampleLength:
-  Max: 8
   Enabled: false
 
 RSpec/MultipleExpectations:
-  Max: 19
+  Enabled: false
 
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
@@ -93,6 +121,10 @@ RSpec/NestedGroups:
 RSpec/SubjectStub:
   Exclude:
     - "spec/services/catalog/update_marc856_record_service_spec.rb"
+
+Style/Documentation:
+  Exclude:
+    - "app/graphql/**/*"
 
 Style/RedundantStringEscape:
   Enabled: true

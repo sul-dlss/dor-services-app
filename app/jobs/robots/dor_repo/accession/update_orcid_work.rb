@@ -10,8 +10,14 @@ module Robots
         end
 
         def perform_work
-          return LyberCore::ReturnState.new(status: :skipped, note: 'Orcid works are not supported on non-Item objects') unless cocina_object.dro?
-          return LyberCore::ReturnState.new(status: :skipped, note: 'Object belongs to the SDR graveyard APO') if cocina_object.administrative.hasAdminPolicy == Settings.graveyard_admin_policy.druid
+          unless cocina_object.dro?
+            return LyberCore::ReturnState.new(status: :skipped,
+                                              note: 'Orcid works are not supported on non-Item objects')
+          end
+          if cocina_object.administrative.hasAdminPolicy == Settings.graveyard_admin_policy.druid
+            return LyberCore::ReturnState.new(status: :skipped,
+                                              note: 'Object belongs to the SDR graveyard APO')
+          end
 
           create_or_update_orcid_works
           delete_orcid_works
@@ -37,7 +43,8 @@ module Robots
             ar_orcid_work = OrcidWork.find_by(orcidid: orcid_user.orcidid, druid:)
 
             Rails.logger.info("Deleting Orcid work for #{druid} / #{orcid_user.orcidid}")
-            orcid_client.delete_work(orcidid: orcid_user.orcidid, token: orcid_user.access_token, put_code: ar_orcid_work.put_code)
+            orcid_client.delete_work(orcidid: orcid_user.orcidid, token: orcid_user.access_token,
+                                     put_code: ar_orcid_work.put_code)
             ar_orcid_work.destroy
           end
         end
@@ -87,7 +94,8 @@ module Robots
         end
 
         def work
-          @work ||= SulOrcidClient::WorkMapper.map(description: cocina_object.description, doi: cocina_object.identification.doi)
+          @work ||= SulOrcidClient::WorkMapper.map(description: cocina_object.description,
+                                                   doi: cocina_object.identification.doi)
         end
 
         def md5
@@ -102,7 +110,8 @@ module Robots
 
         def update(orcid_user, ar_orcid_work)
           Rails.logger.info("Updating Orcid work for #{druid} / #{orcid_user.orcidid}")
-          orcid_client.update_work(orcidid: orcid_user.orcidid, work:, token: orcid_user.access_token, put_code: ar_orcid_work.put_code)
+          orcid_client.update_work(orcidid: orcid_user.orcidid, work:, token: orcid_user.access_token,
+                                   put_code: ar_orcid_work.put_code)
           ar_orcid_work.update(md5:)
         end
       end

@@ -13,7 +13,8 @@ RSpec.describe ConstituentService do
     let(:virtual_object_druid) { 'druid:bc123df4567' }
 
     before do
-      allow(ItemQueryService).to receive_messages(find_combinable_item: virtual_object, validate_combinable_items: item_errors)
+      allow(ItemQueryService).to receive_messages(find_combinable_item: virtual_object,
+                                                  validate_combinable_items: item_errors)
       allow(VersionService).to receive_messages(open: virtual_object)
       allow(VersionService).to receive(:close)
       allow(VersionService).to receive(:open?).and_return(open_for_versioning)
@@ -55,7 +56,8 @@ RSpec.describe ConstituentService do
 
     it 'closes open version' do
       service.add(constituent_druids:)
-      expect(VersionService).to have_received(:close).with(druid: virtual_object.externalIdentifier, version: virtual_object.version)
+      expect(VersionService).to have_received(:close).with(druid: virtual_object.externalIdentifier,
+                                                           version: virtual_object.version)
     end
 
     it 'indexes virtual object' do

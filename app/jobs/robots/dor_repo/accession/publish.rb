@@ -10,7 +10,10 @@ module Robots
         end
 
         def perform_work
-          return LyberCore::ReturnState.new(status: :skipped, note: 'Admin policy objects are not published') if cocina_object.admin_policy?
+          if cocina_object.admin_policy?
+            return LyberCore::ReturnState.new(status: :skipped,
+                                              note: 'Admin policy objects are not published')
+          end
 
           ::Publish::MetadataTransferService.publish(druid:)
           EventFactory.create(druid:, event_type: 'publishing_complete', data: {})

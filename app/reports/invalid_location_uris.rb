@@ -40,7 +40,8 @@ class InvalidLocationUris
     result = ActiveRecord::Base.connection.execute(sql)
 
     result.to_a.map do |row|
-      [row['external_identifier'], row['catalogRecordId'], row['collection_id'], row['uri'], row['code'], "\"#{row['value']}\""].join(',')
+      [row['external_identifier'], row['catalogRecordId'], row['collection_id'], row['uri'], row['code'],
+       "\"#{row['value']}\""].join(',')
     end
   end
 end

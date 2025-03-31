@@ -13,7 +13,8 @@ gem 'druid-tools', '~> 2.2'
 gem 'folio_client', '~> 0.8'
 gem 'graphql'
 gem 'lyber-core', '~> 7.7' # For robots
-gem 'mais_orcid_client', '< 1' # MAIS ORCID Client will have breaking changes in v1.0, see https://github.com/sul-dlss/mais_orcid_client/issues/108
+# MAIS ORCID Client will have breaking changes in v1.0, see https://github.com/sul-dlss/mais_orcid_client/issues/108
+gem 'mais_orcid_client', '< 1'
 gem 'marc'
 gem 'marc-vocab', '~> 0.3.0' # for indexing
 gem 'moab-versioning', '~> 6.0', require: 'moab/stanford'
@@ -58,7 +59,8 @@ gem 'whenever', require: false
 group :test, :development do
   gem 'debug'
   gem 'diffy'
-  # NOTE: factory_bot_rails >= 6.3.0 requires env/test.rb to have config.factory_bot.reject_primary_key_attributes = false
+  # NOTE: factory_bot_rails >= 6.3.0 requires env/test.rb to have
+  # config.factory_bot.reject_primary_key_attributes = false
   gem 'factory_bot_rails'
   gem 'rack-console'
   gem 'rspec_junit_formatter'

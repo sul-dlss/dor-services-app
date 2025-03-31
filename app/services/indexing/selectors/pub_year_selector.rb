@@ -19,7 +19,7 @@ module Indexing
         ParseDate.earliest_year(date).to_s if date.present?
       end
 
-      def find_date
+      def find_date # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
         primary_date(events) ||
           EventDateBuilder.build(production_event, 'production') ||
           EventDateBuilder.build(publication_event, 'publication') ||
@@ -55,7 +55,7 @@ module Indexing
         date_value(dates.first)
       end
 
-      def date_value(date)
+      def date_value(date) # rubocop:disable Metrics/AbcSize
         return date.value if date.value
         return if date.parallelValue.blank?
 

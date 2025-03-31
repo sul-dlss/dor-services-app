@@ -14,7 +14,7 @@ module Cocina
       ## The deposit date (cocina event type deposit, date type publication)
       #
       # @return [String] publication year, conforming to the expectations of HTTP PUT request to DataCite
-      def pub_year
+      def pub_year # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         if embargo?
           embargo_release_date = cocina_dro_access&.embargo&.releaseDate
           embargo_release_date&.year&.to_s
@@ -26,16 +26,18 @@ module Cocina
       # H2 publisher role > same cocina event as publication date > see DataCite contributor mappings
       # Add Stanford Digital Repository as publisher to cocina release event if present, otherwise deposit event
       #
-      # sdr is the publisher for the event where the content becomes public via purl -- deposit if no embargo, release if embargo present.
+      # sdr is the publisher for the event where the content becomes public via purl -- deposit if no embargo,
+      # release if embargo present.
       # if it's not public via purl, sdr should not be the publisher;
-      #   the user may enter someone with the publisher role in h2, referring to publication in another venue, regardless of the purl status.
+      #   the user may enter someone with the publisher role in h2, referring to publication in another venue,
+      #   regardless of the purl status.
       def publisher
         # TODO: implement this
       end
 
       # DataCite date (YYYY-MM-DD) is repeatable and each DataCite data has an associated type attribute
       # @return [Array<Hash>] DataCite date hashs, conforming to the expectations of HTTP PUT request to DataCite
-      def dates
+      def dates # rubocop:disable Metrics/AbcSize
         [].tap do |dates|
           dates << submitted_date if submitted_date.present?
           dates << available_date if available_date.present?
@@ -58,7 +60,7 @@ module Cocina
       #   Cocina event type deposit, date type publication maps to DataCite date type Submitted
       # If no embargo and no deposit event with date type publication,
       #   Cocina event type publication, date type publication maps to DataCite date type Submitted
-      def submitted_date
+      def submitted_date # rubocop:disable Metrics/AbcSize
         @submitted_date ||= {}.tap do |submitted_date|
           if embargo? && deposit_event_deposit_date_value.present?
             submitted_date[:date] = deposit_event_deposit_date_value
@@ -97,7 +99,7 @@ module Cocina
       end
 
       # Cocina event type creation, date type creation maps to DataCite date type Created
-      def created_date
+      def created_date # rubocop:disable Metrics/AbcSize
         return if creation_event_creation_date.blank?
 
         @created_date ||= begin
@@ -106,7 +108,10 @@ module Cocina
           }
           if creation_event_creation_date.value
             created_date[:date] = creation_event_creation_date.value
-            created_date[:dateInformation] = creation_event_creation_date.qualifier if creation_event_creation_date.qualifier.present?
+            if creation_event_creation_date.qualifier.present?
+              created_date[:dateInformation] =
+                creation_event_creation_date.qualifier
+            end
           else
             created_date.merge!(structured_date_result(creation_event_creation_date))
           end
@@ -120,7 +125,9 @@ module Cocina
       end
 
       def deposit_event_publication_date_value
-        @deposit_event_publication_date_value ||= deposit_event&.date&.find { |date| date&.type == 'publication' }&.value
+        @deposit_event_publication_date_value ||= deposit_event&.date&.find do |date|
+          date&.type == 'publication'
+        end&.value
       end
 
       def deposit_event
@@ -128,7 +135,9 @@ module Cocina
       end
 
       def publication_event_publication_date_value
-        @publication_event_publication_date_value ||= publication_event&.date&.find { |date| date&.type == 'publication' }&.value
+        @publication_event_publication_date_value ||= publication_event&.date&.find do |date|
+          date&.type == 'publication'
+        end&.value
       end
 
       def publication_event
@@ -143,9 +152,7 @@ module Cocina
         @creation_event ||= cocina_events&.find { |event| event&.type == 'creation' }
       end
 
-      # rubocop:disable Metrics/CyclomaticComplexity
-      # rubocop:disable Metrics/PerceivedComplexity
-      def structured_date_result(date)
+      def structured_date_result(date) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         return unless date.structuredValue
 
         start_date, end_date, = ''
@@ -170,8 +177,6 @@ module Cocina
           attributes[:dateInformation] = info if info.present? && result_date.present?
         end.compact
       end
-      # rubocop:enable Metrics/CyclomaticComplexity
-      # rubocop:enable Metrics/PerceivedComplexity
 
       def cocina_events
         @cocina_events ||= cocina_item.description.event

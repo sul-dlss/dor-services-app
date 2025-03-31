@@ -32,12 +32,13 @@ module Indexing
       end
 
       # @return [Hash] the partial solr document for descriptive metadata
-      def to_solr
+      def to_solr # rubocop:disable Metrics/AbcSize
         {
           # title
           'main_title_tenim' => main_title, # for searching; 2 more field types are copyFields in solr schema.xml
           'full_title_tenim' => full_title, # for searching; 1 more field type is copyField in solr schema.xml
-          'additional_titles_tenim' => additional_titles, # for searching; 1 more field type is copyField in solr schema.xml
+          'additional_titles_tenim' => additional_titles, # for searching; 1 more field type is copyField in
+          # solr schema.xml
           'display_title_ss' => display_title, # for display in Argo
 
           # contributor
@@ -130,12 +131,14 @@ module Indexing
 
       # rubocop:disable Metrics/CyclomaticComplexity
       # rubocop:disable Metrics/PerceivedComplexity
-      def sw_format
+      def sw_format # rubocop:disable Metrics/AbcSize
         return ['Map'] if resource_type?('software, multimedia') && resource_type?('cartographic')
         return ['Dataset'] if resource_type?('software, multimedia') && genre?('dataset')
         return ['Archived website'] if resource_type?('text') && genre?('archived website')
         return ['Book'] if resource_type?('text') && issuance?('monographic')
-        return ['Journal/Periodical'] if resource_type?('text') && (issuance?('continuing') || issuance?('serial') || frequency?)
+        if resource_type?('text') && (issuance?('continuing') || issuance?('serial') || frequency?)
+          return ['Journal/Periodical']
+        end
 
         resource_type_formats = flat_forms_for('resource type').map { |form| FORMAT[form.value&.downcase] }.uniq.compact
         resource_type_formats.delete('Book') if resource_type_formats.include?('Archive/Manuscript')

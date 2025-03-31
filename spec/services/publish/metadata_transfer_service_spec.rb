@@ -25,14 +25,16 @@ RSpec.describe Publish::MetadataTransferService do
       allow(Publish::PublicCocinaService).to receive(:create).and_return(public_cocina)
       allow(Publish::TransferStager).to receive(:copy)
       allow(PurlFetcher::Client::ReleaseTags).to receive(:release)
-      allow(ReleaseTagService).to receive(:for_public_metadata).and_return([searchworks_release_tag, earthworks_release_tag])
+      allow(ReleaseTagService).to receive(:for_public_metadata).and_return([searchworks_release_tag,
+                                                                            earthworks_release_tag])
     end
 
     context 'when a collection' do
       let(:public_cocina) { instance_double(Cocina::Models::Collection, externalIdentifier: druid, dro?: false) }
 
       before do
-        create(:repository_object_version, :collection_repository_object_version, :with_repository_object, external_identifier: druid, closed_at:)
+        create(:repository_object_version, :collection_repository_object_version, :with_repository_object,
+               external_identifier: druid, closed_at:)
         allow(MemberService).to receive(:for).and_return([member_druid])
       end
 
@@ -40,11 +42,13 @@ RSpec.describe Publish::MetadataTransferService do
         described_class.publish(druid:)
 
         expect(MemberService).to have_received(:for).with(druid, publishable: true)
-        expect(publish_job).to have_received(:perform_later).once.with(druid: member_druid, background_job_result: BackgroundJobResult)
-        expect(PurlFetcher::Client::Publish).to have_received(:publish).with(cocina: public_cocina, file_uploads: {}, version: 1,
-                                                                             must_version: false, version_date: closed_at)
+        expect(publish_job).to have_received(:perform_later).once.with(druid: member_druid,
+                                                                       background_job_result: BackgroundJobResult)
+        expect(PurlFetcher::Client::Publish).to have_received(:publish)
+          .with(cocina: public_cocina, file_uploads: {}, version: 1, must_version: false, version_date: closed_at)
         expect(Publish::TransferStager).not_to have_received(:copy)
-        expect(PurlFetcher::Client::ReleaseTags).to have_received(:release).with(druid:, index: ['Searchworks'], delete: ['Earthworks'])
+        expect(PurlFetcher::Client::ReleaseTags).to have_received(:release)
+          .with(druid:, index: ['Searchworks'], delete: ['Earthworks'])
       end
     end
 
@@ -103,8 +107,10 @@ RSpec.describe Publish::MetadataTransferService do
       end
 
       before do
-        repository_object_version = create(:repository_object_version, :with_repository_object, external_identifier: druid, closed_at:, structural:)
-        repository_object_version.repository_object.open_version!(description: 'This is a draft repository object version; it should not be used.')
+        repository_object_version = create(:repository_object_version, :with_repository_object,
+                                           external_identifier: druid, closed_at:, structural:)
+        repository_object_version.repository_object.open_version!(description: 'This is a draft repository object ' \
+                                                                               'version; it should not be used.')
         allow(DigitalStacksDiffer).to receive(:call).and_return(['00001.html'], [])
         allow(ShelvableFilesStager).to receive(:stage)
         allow(SecureRandom).to receive(:uuid).and_return(uuid)
@@ -114,14 +120,16 @@ RSpec.describe Publish::MetadataTransferService do
         described_class.publish(druid:)
 
         expect(DigitalStacksDiffer).to have_received(:call).with(cocina_object: public_cocina).twice
-        expect(ShelvableFilesStager).to have_received(:stage).with(cocina_object: Cocina::Models::DROWithMetadata, filepaths: ['00001.html'],
-                                                                   workspace_content_pathname: Pathname.new('tmp/dor/workspace/bc/123/df/4567/bc123df4567/content'))
-        expect(Publish::TransferStager).to have_received(:copy).with(druid:, filepath_map: { '00001.html' => uuid }, workspace_content_pathname:)
-        expect(PurlFetcher::Client::Publish).to have_received(:publish).with(cocina: public_cocina,
-                                                                             file_uploads: { '00001.html' => uuid },
-                                                                             version: 1,
-                                                                             must_version: false, version_date: closed_at)
-        expect(PurlFetcher::Client::ReleaseTags).to have_received(:release).with(druid:, index: ['Searchworks'], delete: ['Earthworks'])
+        expect(ShelvableFilesStager).to have_received(:stage)
+          .with(cocina_object: Cocina::Models::DROWithMetadata, filepaths: ['00001.html'],
+                workspace_content_pathname: Pathname.new('tmp/dor/workspace/bc/123/df/4567/bc123df4567/content'))
+        expect(Publish::TransferStager).to have_received(:copy)
+          .with(druid:, filepath_map: { '00001.html' => uuid }, workspace_content_pathname:)
+        expect(PurlFetcher::Client::Publish).to have_received(:publish)
+          .with(cocina: public_cocina, file_uploads: { '00001.html' => uuid }, version: 1,
+                must_version: false, version_date: closed_at)
+        expect(PurlFetcher::Client::ReleaseTags).to have_received(:release)
+          .with(druid:, index: ['Searchworks'], delete: ['Earthworks'])
       end
     end
 
@@ -180,7 +188,8 @@ RSpec.describe Publish::MetadataTransferService do
       end
 
       before do
-        repository_object_version = create(:repository_object_version, :with_repository_object, external_identifier: druid, closed_at:, structural:)
+        repository_object_version = create(:repository_object_version, :with_repository_object,
+                                           external_identifier: druid, closed_at:, structural:)
         create(:user_version, repository_object_version:, version: 2)
         allow(DigitalStacksDiffer).to receive(:call).and_return(['00001.html'], [])
         allow(ShelvableFilesStager).to receive(:stage)
@@ -191,15 +200,16 @@ RSpec.describe Publish::MetadataTransferService do
         described_class.publish(druid:)
 
         expect(DigitalStacksDiffer).to have_received(:call).with(cocina_object: public_cocina).twice
-        expect(ShelvableFilesStager).to have_received(:stage).with(cocina_object: Cocina::Models::DROWithMetadata,
-                                                                   filepaths: ['00001.html'],
-                                                                   workspace_content_pathname: Pathname.new('tmp/dor/workspace/bc/123/df/4567/bc123df4567/content'))
-        expect(Publish::TransferStager).to have_received(:copy).with(druid:, filepath_map: { '00001.html' => uuid }, workspace_content_pathname:)
-        expect(PurlFetcher::Client::Publish).to have_received(:publish).with(cocina: public_cocina,
-                                                                             file_uploads: { '00001.html' => uuid },
-                                                                             version: 2,
-                                                                             must_version: true, version_date: closed_at)
-        expect(PurlFetcher::Client::ReleaseTags).to have_received(:release).with(druid:, index: ['Searchworks'], delete: ['Earthworks'])
+        expect(ShelvableFilesStager).to have_received(:stage)
+          .with(cocina_object: Cocina::Models::DROWithMetadata, filepaths: ['00001.html'],
+                workspace_content_pathname: Pathname.new('tmp/dor/workspace/bc/123/df/4567/bc123df4567/content'))
+        expect(Publish::TransferStager).to have_received(:copy)
+          .with(druid:, filepath_map: { '00001.html' => uuid }, workspace_content_pathname:)
+        expect(PurlFetcher::Client::Publish).to have_received(:publish)
+          .with(cocina: public_cocina, file_uploads: { '00001.html' => uuid }, version: 2, must_version: true,
+                version_date: closed_at)
+        expect(PurlFetcher::Client::ReleaseTags).to have_received(:release)
+          .with(druid:, index: ['Searchworks'], delete: ['Earthworks'])
       end
     end
 
@@ -207,7 +217,8 @@ RSpec.describe Publish::MetadataTransferService do
       let(:public_cocina) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, dro?: true) }
 
       before do
-        create(:repository_object_version, :with_repository_object, external_identifier: druid, closed_at:, access: { view: 'dark' })
+        create(:repository_object_version, :with_repository_object, external_identifier: druid, closed_at:,
+                                                                    access: { view: 'dark' })
         allow(PurlFetcher::Client::Unpublish).to receive(:unpublish)
       end
 
@@ -222,8 +233,10 @@ RSpec.describe Publish::MetadataTransferService do
       let(:public_cocina) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, dro?: true) }
 
       before do
-        create(:repository_object_version, :with_repository_object, external_identifier: druid, closed_at:, access: { view: 'dark' })
-        allow(PurlFetcher::Client::Unpublish).to receive(:unpublish).and_raise(PurlFetcher::Client::AlreadyDeletedResponseError)
+        create(:repository_object_version, :with_repository_object, external_identifier: druid, closed_at:,
+                                                                    access: { view: 'dark' })
+        allow(PurlFetcher::Client::Unpublish).to receive(:unpublish)
+          .and_raise(PurlFetcher::Client::AlreadyDeletedResponseError)
       end
 
       it 'ignores the error' do
@@ -245,12 +258,16 @@ RSpec.describe Publish::MetadataTransferService do
       it 'publishes the virtual object and its constituents' do
         described_class.publish(druid:)
 
-        expect(VirtualObjectService).to have_received(:constituents).with(Cocina::Models::DROWithMetadata, publishable: true)
-        expect(publish_job).to have_received(:perform_later).once.with(druid: constituent_druid, background_job_result: BackgroundJobResult)
-        expect(PurlFetcher::Client::Publish).to have_received(:publish).with(cocina: public_cocina, file_uploads: {}, version: 1,
-                                                                             must_version: false, version_date: closed_at)
+        expect(VirtualObjectService).to have_received(:constituents)
+          .with(Cocina::Models::DROWithMetadata, publishable: true)
+        expect(publish_job).to have_received(:perform_later)
+          .once
+          .with(druid: constituent_druid, background_job_result: BackgroundJobResult)
+        expect(PurlFetcher::Client::Publish).to have_received(:publish)
+          .with(cocina: public_cocina, file_uploads: {}, version: 1, must_version: false, version_date: closed_at)
         expect(Publish::TransferStager).not_to have_received(:copy)
-        expect(PurlFetcher::Client::ReleaseTags).to have_received(:release).with(druid:, index: ['Searchworks'], delete: ['Earthworks'])
+        expect(PurlFetcher::Client::ReleaseTags).to have_received(:release)
+          .with(druid:, index: ['Searchworks'], delete: ['Earthworks'])
       end
     end
 
@@ -290,8 +307,10 @@ RSpec.describe Publish::MetadataTransferService do
       end
 
       before do
-        repository_object_version = create(:repository_object_version, :with_repository_object, external_identifier: druid, closed_at:, structural:)
-        repository_object_version.repository_object.open_version!(description: 'This is a draft repository object version; it should not be used.')
+        repository_object_version = create(:repository_object_version, :with_repository_object,
+                                           external_identifier: druid, closed_at:, structural:)
+        repository_object_version.repository_object
+                                 .open_version!(description: 'This is a draft repository object version; it should not be used.') # rubocop:disable Layout/LineLength
         allow(DigitalStacksDiffer).to receive(:call).and_return(['00001.html'])
         allow(ShelvableFilesStager).to receive(:stage)
         allow(SecureRandom).to receive(:uuid).and_return(uuid)

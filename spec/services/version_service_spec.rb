@@ -5,7 +5,9 @@ require 'rails_helper'
 # rubocop:disable RSpec/LetSetup
 RSpec.describe VersionService do
   let(:druid) { 'druid:xz456jk0987' }
-  let!(:repository_object) { create(:repository_object, :with_repository_object_version, :closed, external_identifier: druid) }
+  let!(:repository_object) do
+    create(:repository_object, :with_repository_object_version, :closed, external_identifier: druid)
+  end
   let(:cocina_object) { repository_object.to_cocina_with_metadata }
   let(:version) { 1 }
   let(:workflow_state_service) { instance_double(WorkflowStateService) }
@@ -17,7 +19,10 @@ RSpec.describe VersionService do
   end
 
   describe '.open' do
-    subject(:open) { described_class.open(cocina_object:, description: 'same as it ever was', opening_user_name: 'sunetid', from_version:) }
+    subject(:open) do
+      described_class.open(cocina_object:, description: 'same as it ever was', opening_user_name: 'sunetid',
+                           from_version:)
+    end
 
     let(:from_version) { nil }
 
@@ -42,7 +47,8 @@ RSpec.describe VersionService do
                                                             druid:,
                                                             event_type: 'version_open')
 
-        expect(Indexer).to have_received(:reindex_later).with(cocina_object: repository_object.reload.to_cocina_with_metadata)
+        expect(Indexer).to have_received(:reindex_later)
+          .with(cocina_object: repository_object.reload.to_cocina_with_metadata)
         expect(repository_object.opened_version.version).to eq 2
         expect(repository_object.opened_version.version_description).to eq 'same as it ever was'
       end
@@ -66,7 +72,8 @@ RSpec.describe VersionService do
       let(:instance) { described_class.new(druid:, version:) }
 
       before do
-        allow(instance).to receive(:ensure_openable!).and_raise(VersionService::VersioningError, 'Object net yet accessioned')
+        allow(instance).to receive(:ensure_openable!).and_raise(VersionService::VersioningError,
+                                                                'Object net yet accessioned')
         allow(described_class).to receive(:new).and_return(instance)
       end
 
@@ -77,8 +84,11 @@ RSpec.describe VersionService do
 
     context "when Preservation's current version is greater than the current version" do
       it 'raises an exception' do
-        expect(Preservation::Client.objects).to receive(:current_version).and_return(3)
-        expect { open }.to raise_error(VersionService::VersioningError, 'Version from Preservation is out of sync. Preservation expects 3 but current version is 1')
+        allow(Preservation::Client.objects).to receive(:current_version).and_return(3)
+        expect do
+          open
+        end.to raise_error(VersionService::VersioningError,
+                           'Version from Preservation is out of sync. Preservation expects 3 but current version is 1')
       end
     end
 
@@ -88,7 +98,8 @@ RSpec.describe VersionService do
       end
 
       it 'raises an exception' do
-        errmsg = "Preservation (SDR) is not yet answering queries about this object. When an object has just been transferred, Preservation isn't immediately ready to answer queries."
+        errmsg = 'Preservation (SDR) is not yet answering queries about this object. When an object has just been ' \
+                 'transferred, Preservation isn\'t immediately ready to answer queries.'
         expect { open }.to raise_error(VersionService::VersioningError, errmsg)
       end
     end
@@ -113,7 +124,8 @@ RSpec.describe VersionService do
                                                             druid:,
                                                             event_type: 'version_open')
 
-        expect(Indexer).to have_received(:reindex_later).with(cocina_object: repository_object.reload.to_cocina_with_metadata)
+        expect(Indexer).to have_received(:reindex_later)
+          .with(cocina_object: repository_object.reload.to_cocina_with_metadata)
         expect(repository_object.opened_version.version).to eq 3
         expect(repository_object.opened_version.version_description).to eq 'same as it ever was'
       end
@@ -301,7 +313,8 @@ RSpec.describe VersionService do
                                 user_name: 'jcoyne',
                                 start_accession:,
                                 user_version_mode: :new)
-          allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
+          allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator,
+                                                                                     validate: true))
           allow(Preservation::Client.objects).to receive(:current_version).and_return(2)
           allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
           allow(cocina_object).to receive(:version).and_return(2)
@@ -330,7 +343,8 @@ RSpec.describe VersionService do
                                 user_name: 'jcoyne',
                                 start_accession:,
                                 user_version_mode: :new)
-          allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
+          allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator,
+                                                                                     validate: true))
           allow(Preservation::Client.objects).to receive(:current_version).and_return(2)
           allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
           allow(cocina_object).to receive(:version).and_return(2)
@@ -360,7 +374,8 @@ RSpec.describe VersionService do
                                 user_name: 'jcoyne',
                                 start_accession:,
                                 user_version_mode: :none)
-          allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
+          allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator,
+                                                                                     validate: true))
           allow(Preservation::Client.objects).to receive(:current_version).and_return(2)
           allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
           allow(cocina_object).to receive(:version).and_return(2)
@@ -389,7 +404,8 @@ RSpec.describe VersionService do
                                 user_name: 'jcoyne',
                                 start_accession:,
                                 user_version_mode: :new)
-          allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
+          allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator,
+                                                                                     validate: true))
           allow(Preservation::Client.objects).to receive(:current_version).and_return(2)
           allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
           allow(cocina_object).to receive(:version).and_return(2)
@@ -419,7 +435,8 @@ RSpec.describe VersionService do
                                 user_name: 'jcoyne',
                                 start_accession:,
                                 user_version_mode: :none)
-          allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator, validate: true))
+          allow(Cocina::ObjectValidator).to receive(:new).and_return(instance_double(Cocina::ObjectValidator,
+                                                                                     validate: true))
           allow(Preservation::Client.objects).to receive(:current_version).and_return(2)
           allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
           allow(cocina_object).to receive(:version).and_return(2)
@@ -456,7 +473,10 @@ RSpec.describe VersionService do
       let!(:repository_object) { create(:repository_object, :closed, external_identifier: druid) }
 
       it 'raises an exception' do
-        expect { close }.to raise_error(VersionService::VersioningError, "Trying to close version 2 on #{druid} which is not opened for versioning")
+        expect do
+          close
+        end.to raise_error(VersionService::VersioningError,
+                           "Trying to close version 2 on #{druid} which is not opened for versioning")
       end
     end
 
@@ -466,7 +486,9 @@ RSpec.describe VersionService do
       end
 
       it 'raises an exception' do
-        expect { close }.to raise_error(VersionService::VersioningError, "accessionWF already created for versioned object #{druid}")
+        expect do
+          close
+        end.to raise_error(VersionService::VersioningError, "accessionWF already created for versioned object #{druid}")
       end
     end
 
@@ -476,7 +498,10 @@ RSpec.describe VersionService do
       end
 
       it 'raises an exception' do
-        expect { close }.to raise_error(VersionService::VersioningError, "Trying to close version 2 on #{druid} which has active assemblyWF")
+        expect do
+          close
+        end.to raise_error(VersionService::VersioningError,
+                           "Trying to close version 2 on #{druid} which has active assemblyWF")
         expect(workflow_state_service).to have_received(:assembling?)
       end
     end
@@ -661,7 +686,9 @@ RSpec.describe VersionService do
       let(:version) { 1 }
 
       it 'raises' do
-        expect { ensure_discardable! }.to raise_error(VersionService::VersioningError, 'Only the head version can be discarded')
+        expect do
+          ensure_discardable!
+        end.to raise_error(VersionService::VersioningError, 'Only the head version can be discarded')
       end
     end
 
@@ -671,7 +698,10 @@ RSpec.describe VersionService do
       end
 
       it 'raises' do
-        expect { ensure_discardable! }.to raise_error(VersionService::VersioningError, 'Cannot discard version because head version is closed')
+        expect do
+          ensure_discardable!
+        end.to raise_error(VersionService::VersioningError,
+                           'Cannot discard version because head version is closed')
       end
     end
 

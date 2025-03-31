@@ -12,7 +12,8 @@ RSpec::Matchers.define :be_deep_equal do |expected|
   end
 
   failure_message_when_negated do |actual|
-    "expected that #{actual} would not be deep equal with #{expected}. Differences in order shown in diff CAN BE IGNORED."
+    "expected that #{actual} would not be deep equal with #{expected}. " \
+      'Differences in order shown in diff CAN BE IGNORED.'
   end
 
   description do

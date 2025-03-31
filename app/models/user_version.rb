@@ -14,12 +14,18 @@ class UserVersion < ApplicationRecord
 
   def repository_object_version_is_closed
     # Validate that the repository object version is closed
-    errors.add(:repository_object_version, 'cannot set a user version to an open RepositoryObjectVersion') if repository_object_version.open?
+    return unless repository_object_version.open?
+
+    errors.add(:repository_object_version,
+               'cannot set a user version to an open RepositoryObjectVersion')
   end
 
   def repository_object_version_has_cocina
     # Validate that the repository object version has cocina (legacy versions may not)
-    errors.add(:repository_object_version, 'cannot set a user version to an RepositoryObjectVersion without cocina') unless repository_object_version.has_cocina?
+    return if repository_object_version.has_cocina?
+
+    errors.add(:repository_object_version,
+               'cannot set a user version to an RepositoryObjectVersion without cocina')
   end
 
   def can_withdraw
@@ -29,7 +35,10 @@ class UserVersion < ApplicationRecord
 
   def when_permanently_withdrawn
     # Validate that the user version state cannot be changed from permanently withdrawn
-    errors.add(:repository_object_version, 'cannot set user version state when permanently withdrawn') if changed_attributes['state'] == 'permanently_withdrawn'
+    return unless changed_attributes['state'] == 'permanently_withdrawn'
+
+    errors.add(:repository_object_version,
+               'cannot set user version state when permanently withdrawn')
   end
 
   def as_json

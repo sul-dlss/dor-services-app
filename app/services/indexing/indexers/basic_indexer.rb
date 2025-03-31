@@ -13,7 +13,7 @@ module Indexing
       end
 
       # @return [Hash] the partial solr document for basic data
-      def to_solr
+      def to_solr # rubocop:disable Metrics/AbcSize
         {}.tap do |solr_doc|
           solr_doc[:id] = cocina.externalIdentifier
           solr_doc['trace_id_ss'] = trace_id

@@ -5,7 +5,7 @@ module Cocina
     # This transforms the DRO.type attribute to the
     # Fedora 3 data model contentMetadata#contentType value
     class ContentType
-      def self.map(object_type)
+      def self.map(object_type) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
         case object_type
         when Cocina::Models::ObjectType.image, Cocina::Models::ObjectType.manuscript
           'image'

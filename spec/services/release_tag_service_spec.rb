@@ -60,7 +60,9 @@ RSpec.describe ReleaseTagService do
     context 'when a collection has a collection tag' do
       let(:collection_ids) { [collection_druid] }
 
-      let!(:collection_release_tag) { create(:release_tag, druid: collection_druid, released_to: 'Searchworks', what: 'collection') }
+      let!(:collection_release_tag) do
+        create(:release_tag, druid: collection_druid, released_to: 'Searchworks', what: 'collection')
+      end
 
       it 'returns the collection tag' do
         expect(releases).to eq [collection_release_tag.to_cocina]
@@ -73,7 +75,8 @@ RSpec.describe ReleaseTagService do
       let!(:self_release_tag) { create(:release_tag, druid:, released_to: 'Searchworks', what: 'self') }
 
       before do
-        create(:release_tag, druid: collection_druid, released_to: 'Searchworks', what: 'collection', created_at: 1.day.ago)
+        create(:release_tag, druid: collection_druid, released_to: 'Searchworks', what: 'collection',
+                             created_at: 1.day.ago)
       end
 
       it 'prioritizes the item self tag' do
@@ -84,7 +87,9 @@ RSpec.describe ReleaseTagService do
     context 'when a collection has a collection tag and the item has a self tag (created first)' do
       let(:collection_ids) { [collection_druid] }
 
-      let!(:self_release_tag) { create(:release_tag, druid:, released_to: 'Searchworks', what: 'self', created_at: 1.day.ago) }
+      let!(:self_release_tag) do
+        create(:release_tag, druid:, released_to: 'Searchworks', what: 'self', created_at: 1.day.ago)
+      end
 
       before do
         create(:release_tag, druid: collection_druid, released_to: 'Searchworks', what: 'collection')

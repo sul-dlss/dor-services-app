@@ -27,7 +27,7 @@ class GraphqlController < ApplicationController
   private
 
   # Handle variables in form data, JSON body, or a blank value
-  def prepare_variables(variables_param)
+  def prepare_variables(variables_param) # rubocop:disable Metrics/MethodLength
     case variables_param
     when String
       if variables_param.present?
@@ -50,6 +50,7 @@ class GraphqlController < ApplicationController
     logger.error error.message
     logger.error error.backtrace.join("\n")
 
-    render json: { errors: [{ message: error.message, backtrace: error.backtrace }], data: {} }, status: :internal_server_error
+    render json: { errors: [{ message: error.message, backtrace: error.backtrace }], data: {} },
+           status: :internal_server_error
   end
 end

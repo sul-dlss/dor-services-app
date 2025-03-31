@@ -42,7 +42,8 @@ class RegistrationCsvConverter
   #   9: rights_view (required)
   #  10: rights_download (required)
   #  11: rights_location (required if "view" or "download" uses "location-based")
-  #  12: rights_controlledDigitalLending (optional: "true" is valid only when "view" is "stanford" and "download" is "none")
+  #  12: rights_controlledDigitalLending (optional: "true" is valid only when "view" is "stanford" and "download"
+  #   is "none")
   #  13: project_name (optional)
   #  14: tags (optional, may repeat)
 
@@ -87,8 +88,7 @@ class RegistrationCsvConverter
     end.compact
   end
 
-  # rubocop:disable Metrics/CyclomaticComplexity
-  def dro_type(content_type)
+  def dro_type(content_type) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/MethodLength
     # for CSV registration, we already have the URI
     return content_type if CONTENT_TYPES.include?(content_type)
 
@@ -117,7 +117,6 @@ class RegistrationCsvConverter
       Cocina::Models::ObjectType.object
     end
   end
-  # rubocop:enable Metrics/CyclomaticComplexity
 
   def structural(row)
     {}.tap do |structural|
@@ -128,7 +127,7 @@ class RegistrationCsvConverter
     end
   end
 
-  def access(row)
+  def access(row) # rubocop:disable Metrics/AbcSize
     {}.tap do |access|
       access[:view] = row['rights_view']
       access[:download] = row['rights_download'] || ('none' if %w[citation-only dark].include? access[:view])

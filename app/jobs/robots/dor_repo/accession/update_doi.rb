@@ -9,10 +9,17 @@ module Robots
           super('accessionWF', 'update-doi')
         end
 
-        def perform_work
-          return LyberCore::ReturnState.new(status: :skipped, note: 'DOIs are not supported on non-Item objects') unless cocina_object.dro?
+        def perform_work # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+          unless cocina_object.dro?
+            return LyberCore::ReturnState.new(status: :skipped,
+                                              note: 'DOIs are not supported on non-Item objects')
+          end
           return LyberCore::ReturnState.new(status: :skipped, note: 'Object does not have a DOI') unless doi
-          return LyberCore::ReturnState.new(status: :skipped, note: 'Object belongs to the SDR graveyard APO') if cocina_object.administrative.hasAdminPolicy == Settings.graveyard_admin_policy.druid
+
+          if cocina_object.administrative.hasAdminPolicy == Settings.graveyard_admin_policy.druid
+            return LyberCore::ReturnState.new(status: :skipped,
+                                              note: 'Object belongs to the SDR graveyard APO')
+          end
 
           # Check to see if these meet the conditions necessary to export to datacite
           unless Cocina::ToDatacite::Attributes.exportable?(cocina_object)

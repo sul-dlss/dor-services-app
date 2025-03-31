@@ -21,13 +21,15 @@ class ConstituentService
   # @raise [VersionService::VersioningError] if the object hasn't been opened for versioning, or if accessionWF has
   #   already been instantiated or the current version is missing a description
   # @return [NilClass, Hash] true if successful, hash of errors otherwise (if combinable validation fails)
-  def add(constituent_druids:)
-    errors = ItemQueryService.validate_combinable_items(virtual_object: virtual_object_druid, constituents: constituent_druids)
+  def add(constituent_druids:) # rubocop:disable Metrics/AbcSize
+    errors = ItemQueryService.validate_combinable_items(virtual_object: virtual_object_druid,
+                                                        constituents: constituent_druids)
 
     return errors if errors.any?
 
     # Make sure the virtual object is open before making modifications
-    updated_virtual_object = if VersionService.open?(druid: virtual_object.externalIdentifier, version: virtual_object.version)
+    updated_virtual_object = if VersionService.open?(druid: virtual_object.externalIdentifier,
+                                                     version: virtual_object.version)
                                virtual_object
                              else
                                VersionService.open(cocina_object: virtual_object,

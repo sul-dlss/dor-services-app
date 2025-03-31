@@ -5,9 +5,12 @@ class ModsUtils
   # @param [Nokogiri::Document] ng_xml
   # @return [Nokogiri::Element]
   def self.primary_title_info(ng_xml)
-    title_info = ng_xml.xpath('//mods:mods/mods:titleInfo[not(@type)]', mods: Cocina::Models::Mapping::FromMods::Description::DESC_METADATA_NS).first
-    title_info ||= ng_xml.xpath('//mods:mods/mods:titleInfo[@usage="primary"]', mods: Cocina::Models::Mapping::FromMods::Description::DESC_METADATA_NS).first
-    title_info ||= ng_xml.xpath('//mods:mods/mods:titleInfo', mods: Cocina::Models::Mapping::FromMods::Description::DESC_METADATA_NSS).first
+    title_info = ng_xml.xpath('//mods:mods/mods:titleInfo[not(@type)]',
+                              mods: Cocina::Models::Mapping::FromMods::Description::DESC_METADATA_NS).first
+    title_info ||= ng_xml.xpath('//mods:mods/mods:titleInfo[@usage="primary"]',
+                                mods: Cocina::Models::Mapping::FromMods::Description::DESC_METADATA_NS).first
+    title_info ||= ng_xml.xpath('//mods:mods/mods:titleInfo',
+                                mods: Cocina::Models::Mapping::FromMods::Description::DESC_METADATA_NSS).first
 
     title_info
   end
