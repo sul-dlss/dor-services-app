@@ -18,7 +18,7 @@ module Indexing
         extract_place_from_subjects(subjects)
       end
 
-      def extract_place_from_subjects(local_subjects)
+      def extract_place_from_subjects(local_subjects) # rubocop:disable Metrics/AbcSize
         (
           build_place_nodes(local_subjects.select { |node| node.type == 'place' }) +
           local_subjects.reject(&:type).flat_map do |subject|

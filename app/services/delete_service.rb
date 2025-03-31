@@ -22,7 +22,9 @@ class DeleteService
     CleanupService.cleanup_by_druid druid
     remove_active_workflows
     delete_from_dor
-    EventFactory.create(druid:, event_type: 'delete', data: { request: cocina_object.to_h, source_id: cocina_object&.identification&.sourceId, user_name: })
+    EventFactory.create(druid:, event_type: 'delete',
+                        data: { request: cocina_object.to_h, source_id: cocina_object&.identification&.sourceId,
+                                user_name: })
   end
 
   private

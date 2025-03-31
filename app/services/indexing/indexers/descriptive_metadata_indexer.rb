@@ -7,6 +7,22 @@ module Indexing
     # Indexes the descriptive metadata
     # rubocop:disable Metrics/ClassLength
     class DescriptiveMetadataIndexer
+      # See https://github.com/sul-dlss/stanford-mods/blob/master/lib/stanford-mods/searchworks.rb#L244
+      FORMAT = {
+        'cartographic' => 'Map',
+        'manuscript' => 'Archive/Manuscript',
+        'mixed material' => 'Archive/Manuscript',
+        'moving image' => 'Video',
+        'notated music' => 'Music score',
+        'software, multimedia' => 'Software/Multimedia',
+        'sound recording-musical' => 'Music recording',
+        'sound recording-nonmusical' => 'Sound recording',
+        'sound recording' => 'Sound recording',
+        'still image' => 'Image',
+        'three dimensional object' => 'Object',
+        'text' => 'Book'
+      }.freeze
+
       attr_reader :cocina, :stanford_mods_record
 
       def initialize(cocina:, **)
@@ -16,12 +32,13 @@ module Indexing
       end
 
       # @return [Hash] the partial solr document for descriptive metadata
-      def to_solr
+      def to_solr # rubocop:disable Metrics/AbcSize
         {
           # title
           'main_title_tenim' => main_title, # for searching; 2 more field types are copyFields in solr schema.xml
           'full_title_tenim' => full_title, # for searching; 1 more field type is copyField in solr schema.xml
-          'additional_titles_tenim' => additional_titles, # for searching; 1 more field type is copyField in solr schema.xml
+          'additional_titles_tenim' => additional_titles, # for searching; 1 more field type is copyField in
+          # solr schema.xml
           'display_title_ss' => display_title, # for display in Argo
 
           # contributor
@@ -112,30 +129,16 @@ module Indexing
         end.map(&:value)
       end
 
-      # See https://github.com/sul-dlss/stanford-mods/blob/master/lib/stanford-mods/searchworks.rb#L244
-      FORMAT = {
-        'cartographic' => 'Map',
-        'manuscript' => 'Archive/Manuscript',
-        'mixed material' => 'Archive/Manuscript',
-        'moving image' => 'Video',
-        'notated music' => 'Music score',
-        'software, multimedia' => 'Software/Multimedia',
-        'sound recording-musical' => 'Music recording',
-        'sound recording-nonmusical' => 'Sound recording',
-        'sound recording' => 'Sound recording',
-        'still image' => 'Image',
-        'three dimensional object' => 'Object',
-        'text' => 'Book'
-      }.freeze
-
       # rubocop:disable Metrics/CyclomaticComplexity
       # rubocop:disable Metrics/PerceivedComplexity
-      def sw_format
+      def sw_format # rubocop:disable Metrics/AbcSize
         return ['Map'] if resource_type?('software, multimedia') && resource_type?('cartographic')
         return ['Dataset'] if resource_type?('software, multimedia') && genre?('dataset')
         return ['Archived website'] if resource_type?('text') && genre?('archived website')
         return ['Book'] if resource_type?('text') && issuance?('monographic')
-        return ['Journal/Periodical'] if resource_type?('text') && (issuance?('continuing') || issuance?('serial') || frequency?)
+        if resource_type?('text') && (issuance?('continuing') || issuance?('serial') || frequency?)
+          return ['Journal/Periodical']
+        end
 
         resource_type_formats = flat_forms_for('resource type').map { |form| FORMAT[form.value&.downcase] }.uniq.compact
         resource_type_formats.delete('Book') if resource_type_formats.include?('Archive/Manuscript')

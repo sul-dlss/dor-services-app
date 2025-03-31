@@ -11,6 +11,6 @@ FactoryBot.define do
     idx = n - 1
     format_str = 'druid:%s%s%03d%s%s%04d'
     format(format_str, letters.sample, letters.sample,
-           idx / 10000, letters.sample, letters.sample, idx)
+           idx / 10_000, letters.sample, letters.sample, idx)
   end
 end

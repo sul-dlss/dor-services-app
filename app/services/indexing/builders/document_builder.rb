@@ -61,7 +61,7 @@ module Indexing
         @trace_id = trace_id
       end
 
-      # @param [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Model::AdminPolicyWithMetadata] model
+      # @param [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Model::AdminPolicyWithMetadata] model # rubocop:disable Layout/LineLength
       def for
         indexer_for_type(model.type).new(id:,
                                          cocina: model,

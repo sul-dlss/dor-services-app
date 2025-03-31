@@ -22,7 +22,8 @@ class VersionService
     new(druid:, version:).can_open?(assume_accessioned:)
   end
 
-  def self.close(druid:, version:, description: nil, user_name: nil, start_accession: true, user_version_mode: DEFAULT_USER_VERSION_MODE)
+  def self.close(druid:, version:, description: nil, user_name: nil, start_accession: true, # rubocop:disable Metrics/ParameterLists
+                 user_version_mode: DEFAULT_USER_VERSION_MODE)
     new(druid:, version:).close(description:,
                                 user_name:,
                                 start_accession:,
@@ -60,14 +61,14 @@ class VersionService
   # @param [String] opening_user_name add opening username to the events datastream (optional)
   # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
   # @param [Integer,nil] from_version existing version to base the new version on, otherwise uses last_closed_version
-  # @return [Cocina::Models::DROWithMetadata, Cocina::Models::AdminPolicyWithMetadata, Cocina::Models::CollectionWithMetadata] updated cocina object
-  # @raise [VersionService::VersioningError] if the object hasn't been accessioned, or if a version is already opened
+  # @return [Cocina::Models::DROWithMetadata, Cocina::Models::AdminPolicyWithMetadata, Cocina::Models::CollectionWithMetadata] updated cocina object # rubocop:disable Layout/LineLength
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  def open(cocina_object:, description:, assume_accessioned:, opening_user_name: nil, from_version: nil)
+  def open(cocina_object:, description:, assume_accessioned:, opening_user_name: nil, from_version: nil) # rubocop:disable Metrics/AbcSize
     raise ArgumentError, 'description is required to open a new version' if description.blank?
 
     ensure_openable!(assume_accessioned:)
-    repository_object = RepositoryObject.includes(:head_version).find_by!(external_identifier: cocina_object.externalIdentifier)
+    repository_object = RepositoryObject.includes(:head_version)
+                                        .find_by!(external_identifier: cocina_object.externalIdentifier)
     check_version!(current_version: repository_object.head_version.version) unless from_version
 
     from_repository_object_version = from_version ? repository_object.versions.find_by!(version: from_version) : nil
@@ -93,7 +94,10 @@ class VersionService
 
       raise CocinaObjectNotFoundError, "Couldn't find object with 'external_identifier'=#{druid}" unless repo_obj
 
-      raise VersioningError, "Version #{version} does not match head version #{repo_obj.head_version.version}" if version != repo_obj.head_version.version
+      if version != repo_obj.head_version.version
+        raise VersioningError,
+              "Version #{version} does not match head version #{repo_obj.head_version.version}"
+      end
 
       repo_obj.open?
     end
@@ -118,14 +122,18 @@ class VersionService
   # @param [String] :description describes the version change
   # @param [String] :user_name add username to the events datastream
   # @param [Boolean] :start_accession set to true if you want accessioning to start (default), false otherwise
-  # @param [Symbol] :user_version_mode :none (do nothing), :new, :update, or :update_if_existing (default) with user_versions on close
+  # @param [Symbol] :user_version_mode :none (do nothing), :new, :update, or :update_if_existing (default) with
+  # user_versions on close
   # @raise [VersionService::VersioningError] if the object hasn't been opened for versioning, or if accessionWF has
   #   already been instantiated or the current version is missing a description
   # @raise [ArgumentError] if user_versions is not one of none, new, update
-  def close(description:, user_name:, start_accession: true, user_version_mode: DEFAULT_USER_VERSION_MODE)
+  def close(description:, user_name:, start_accession: true, user_version_mode: DEFAULT_USER_VERSION_MODE) # rubocop:disable Metrics/AbcSize
     user_version_mode_options = %i[none new update update_if_existing]
 
-    raise ArgumentError, "user_version_mode must be one of #{user_version_mode_options.join(', ')}" unless user_version_mode_options.include?(user_version_mode)
+    unless user_version_mode_options.include?(user_version_mode)
+      raise ArgumentError,
+            "user_version_mode must be one of #{user_version_mode_options.join(', ')}"
+    end
 
     ensure_closeable!
 
@@ -177,8 +185,9 @@ class VersionService
   def retrieve_version_from_preservation
     Preservation::Client.objects.current_version(druid)
   rescue Preservation::Client::NotFoundError
-    raise VersionService::VersioningError, 'Preservation (SDR) is not yet answering queries about this object. ' \
-                                           "When an object has just been transferred, Preservation isn't immediately ready to answer queries."
+    raise VersionService::VersioningError, 'Preservation (SDR) is not yet answering queries about this object. When ' \
+                                           'an object has just been transferred, Preservation isn\'t immediately ' \
+                                           'ready to answer queries.'
   end
 
   # Discards (delete) the current version of an object
@@ -204,7 +213,10 @@ class VersionService
   # @raise [VersionService::VersioningError] if the version cannot be discarded
   def ensure_discardable!
     repository_object = RepositoryObject.includes(:head_version).find_by!(external_identifier: druid)
-    raise VersionService::VersioningError, 'Only the head version can be discarded' unless repository_object.head_version.version == version
+    unless repository_object.head_version.version == version
+      raise VersionService::VersioningError,
+            'Only the head version can be discarded'
+    end
 
     repository_object.check_discard_open_version!
   rescue RepositoryObject::VersionNotDiscardable => e
@@ -226,8 +238,14 @@ class VersionService
   end
 
   def ensure_closeable!
-    raise VersionService::VersioningError, "Trying to close version #{version} on #{druid} which is not opened for versioning" unless open?
-    raise VersionService::VersioningError, "Trying to close version #{version} on #{druid} which has active assemblyWF" if assembling?
+    unless open?
+      raise VersionService::VersioningError,
+            "Trying to close version #{version} on #{druid} which is not opened for versioning"
+    end
+    if assembling?
+      raise VersionService::VersioningError,
+            "Trying to close version #{version} on #{druid} which has active assemblyWF"
+    end
     raise VersionService::VersioningError, "accessionWF already created for versioned object #{druid}" if accessioning?
   end
 
@@ -236,7 +254,11 @@ class VersionService
     when :new
       create_user_version(repository_object)
     when :update
-      no_user_versions?(repository_object) ? create_user_version(repository_object) : move_user_version(repository_object)
+      if no_user_versions?(repository_object)
+        create_user_version(repository_object)
+      else
+        move_user_version(repository_object)
+      end
     when :update_if_existing
       move_user_version(repository_object) unless no_user_versions?(repository_object)
     end
@@ -252,7 +274,8 @@ class VersionService
   end
 
   def move_user_version(repository_object)
-    UserVersionService.move(druid:, version: repository_object.last_closed_version.version, user_version: repository_object.head_user_version)
+    UserVersionService.move(druid:, version: repository_object.last_closed_version.version,
+                            user_version: repository_object.head_user_version)
   end
 
   def check_version!(current_version:)
@@ -262,7 +285,9 @@ class VersionService
 
     return if preservation_version == current_version
 
-    raise VersionService::VersioningError, "Version from Preservation is out of sync. Preservation expects #{preservation_version} but current version is #{current_version}"
+    raise VersionService::VersioningError,
+          "Version from Preservation is out of sync. Preservation expects #{preservation_version} but current " \
+          "version is #{current_version}"
   end
 
   def update_previous_user_versions(repository_object:)

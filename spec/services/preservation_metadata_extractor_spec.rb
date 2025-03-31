@@ -6,7 +6,9 @@ RSpec.describe PreservationMetadataExtractor do
   let(:workspace) { instance_double(DruidTools::Druid, path: 'foo') }
   let(:druid) { 'druid:nc893zj8956' }
   let(:instance) { described_class.new(workspace:, cocina_object:) }
-  let(:cocina_object) { create(:repository_object, :with_repository_object_version, external_identifier: druid).to_cocina }
+  let(:cocina_object) do
+    create(:repository_object, :with_repository_object_version, external_identifier: druid).to_cocina
+  end
 
   describe '.extract' do
     subject(:extract) { instance.extract }
@@ -19,8 +21,8 @@ RSpec.describe PreservationMetadataExtractor do
 
     before do
       allow(workspace).to receive(:path).with('metadata', true).and_return('metadata_dir')
-      expect(Pathname).to receive(:new).with('metadata_dir').and_return(metadata_dir)
       allow(Pathname).to receive(:new).and_call_original
+      allow(Pathname).to receive(:new).with('metadata_dir').and_return(metadata_dir)
       allow(metadata_dir).to receive(:join).with('versionMetadata.xml').and_return(version_path)
       allow(metadata_dir).to receive(:join).with('contentMetadata.xml').and_return(content_path)
 
@@ -69,7 +71,7 @@ RSpec.describe PreservationMetadataExtractor do
 
     before do
       allow(workspace).to receive(:path).with('metadata', true).and_return('metadata_dir')
-      expect(Pathname).to receive(:new).with('metadata_dir').and_return(metadata_dir)
+      allow(Pathname).to receive(:new).with('metadata_dir').and_return(metadata_dir)
       allow(metadata_dir).to receive(:join).and_return(metadata_file)
       allow(metadata_file).to receive(:open).and_yield(file)
     end

@@ -28,11 +28,13 @@ RSpec.describe Indexing::Indexers::AdministrativeTagIndexer do
 
     it 'indexes exploded tags' do
       expect(document['exploded_nonproject_tag_ssim'])
-        .to contain_exactly('Google Books', 'Google Books : Phase 1', 'Google Books', 'Google Books : Scan source STANFORD',
-                            'Registered By',
-                            'Registered By : blalbrit', 'DPG', 'DPG : Beautiful Books', 'DPG : Beautiful Books : Octavo',
+        .to contain_exactly('Google Books', 'Google Books : Phase 1', 'Google Books',
+                            'Google Books : Scan source STANFORD', 'Registered By',
+                            'Registered By : blalbrit', 'DPG', 'DPG : Beautiful Books',
+                            'DPG : Beautiful Books : Octavo',
                             'DPG : Beautiful Books : Octavo : newpri', 'Remediated By', 'Remediated By : 4.15.4')
-      expect(document['exploded_project_tag_ssim']).to contain_exactly('Beautiful Books', 'Rare Books', 'Rare Books : Very Old Books')
+      expect(document['exploded_project_tag_ssim']).to contain_exactly('Beautiful Books', 'Rare Books',
+                                                                       'Rare Books : Very Old Books')
       expect(document).not_to have_key('exploded_registered_by_tag_ssim')
     end
 

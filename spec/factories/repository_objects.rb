@@ -29,7 +29,9 @@ FactoryBot.define do
     end
     after(:create) do |repo_object, context|
       repo_object_version = context.repository_object_version ||
-                            build(:repository_object_version, :"#{repo_object.object_type}_repository_object_version", external_identifier: repo_object.external_identifier, source_id: repo_object.source_id, version: context.version)
+                            build(:repository_object_version, :"#{repo_object.object_type}_repository_object_version",
+                                  external_identifier: repo_object.external_identifier,
+                                  source_id: repo_object.source_id, version: context.version)
       if (existing_repo_object_version = repo_object.versions.find_by(version: repo_object_version.version))
         repo_object.update!(last_closed_version: nil, head_version: nil, opened_version: nil)
         existing_repo_object_version.destroy!

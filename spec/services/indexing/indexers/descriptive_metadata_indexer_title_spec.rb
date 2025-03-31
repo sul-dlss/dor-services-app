@@ -18,7 +18,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
   let(:cocina) { build(:dro, id: druid).new(description:) }
 
   describe 'title mappings from Cocina to Solr' do
-    # 'main_title_tenim' => main_title, # for searching; 2 more field types are copyFields in solr schema.xml (to improve search results)
+    # 'main_title_tenim' => main_title, # for searching; 2 more field types are copyFields in solr schema.xml
+    # (to improve search results)
     # 'full_title_tenim' => full_title, # for searching; 1 more field type is copyField in solr schema.xml
     # 'additional_titles_tenim' => additional_titles, # for searching; 1 more field type is copyField in solr schema.xml
     # 'display_title_ss' => display_title, # for display in Argo

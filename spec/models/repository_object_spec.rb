@@ -72,8 +72,10 @@ RSpec.describe RepositoryObject do
       before do
         repository_object.save # we need at least one persisted version so we can run this validation
         repository_object.update(head_version: repository_object.versions.first)
-        repository_object.update(last_closed_version: repository_object.versions.create!(version: 2, version_description: 'closed'))
-        repository_object.update(opened_version: repository_object.versions.create!(version: 3, version_description: 'draft'))
+        repository_object.update(last_closed_version: repository_object.versions.create!(version: 2,
+                                                                                         version_description: 'closed'))
+        repository_object.update(opened_version: repository_object.versions.create!(version: 3,
+                                                                                    version_description: 'draft'))
       end
 
       it { is_expected.not_to be_valid }
@@ -130,7 +132,8 @@ RSpec.describe RepositoryObject do
 
     context 'with a last closed version lacking cocina' do
       before do
-        repository_object.update(last_closed_version: repository_object.versions.create!(version: 2, version_description: 'closed'))
+        repository_object.update(last_closed_version: repository_object.versions
+        .create!(version: 2, version_description: 'closed'))
       end
 
       it 'returns false' do
@@ -140,7 +143,9 @@ RSpec.describe RepositoryObject do
 
     context 'with a last closed version containing cocina' do
       before do
-        repository_object.update(last_closed_version: repository_object.versions.create!(version: 2, version_description: 'closed', cocina_version: 1))
+        repository_object
+          .update(last_closed_version: repository_object.versions
+          .create!(version: 2, version_description: 'closed', cocina_version: 1))
       end
 
       it 'returns true' do
@@ -184,7 +189,10 @@ RSpec.describe RepositoryObject do
       end
 
       it 'creates a new version and updates the head and opened version pointers' do
-        expect { repository_object.open_version!(description:, from_version: repository_object.versions.first) }.to change(RepositoryObjectVersion, :count).by(1)
+        expect do
+          repository_object.open_version!(description:,
+                                          from_version: repository_object.versions.first)
+        end.to change(RepositoryObjectVersion, :count).by(1)
         newly_created_version = repository_object.versions.last
         expect(newly_created_version.version).to eq(3)
         expect(repository_object.head_version).to eq(newly_created_version)
@@ -201,7 +209,10 @@ RSpec.describe RepositoryObject do
     let(:description) { 'my closed version' }
 
     it 'sets the closed_at field' do
-      expect { repository_object.close_version! }.to change(repository_object.head_version, :closed_at).to(instance_of(ActiveSupport::TimeWithZone))
+      expect do
+        repository_object.close_version!
+      end.to change(repository_object.head_version,
+                    :closed_at).to(instance_of(ActiveSupport::TimeWithZone))
     end
 
     it 'updates the head, last closed, and opened version pointers' do

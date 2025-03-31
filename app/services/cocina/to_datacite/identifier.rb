@@ -2,17 +2,20 @@
 
 module Cocina
   module ToDatacite
-    # Transform the Cocina::Models::Description identifier and purl attributes to the DataCite identifer and alternateIdentifier attributes
+    # Transform the Cocina::Models::Description identifier and purl attributes to the DataCite identifer
+    # and alternateIdentifier attributes
     #  see https://support.datacite.org/reference/dois-2#put_dois-id
     class Identifier
       # @param [Cocina::Models::Description] cocina_desc
-      # @return [NilClass, Array<Hash>] list of DataCite identifier attributes, conforming to the expectations of HTTP PUT request to DataCite
+      # @return [NilClass, Array<Hash>] list of DataCite identifier attributes, conforming to the expectations of
+      # HTTP PUT request to DataCite
       def self.identifier_attributes(cocina_desc)
         new(cocina_desc).identifier_attributes
       end
 
       # @param [Cocina::Models::Description] cocina_desc
-      # @return [NilClass, Array<Hash>] list of DataCite alternateIdentifier attributes, conforming to the expectations of HTTP PUT request to DataCite
+      # @return [NilClass, Array<Hash>] list of DataCite alternateIdentifier attributes, conforming to the
+      # expectations of HTTP PUT request to DataCite
       def self.alternate_identifier_attributes(cocina_desc)
         new(cocina_desc).alternate_identifier_attributes
       end
@@ -21,7 +24,8 @@ module Cocina
         @cocina_desc = cocina_desc
       end
 
-      # @return [NilClass, Array<Hash>] list of DataCite identifier attributes, conforming to the expectations of HTTP PUT request to DataCite
+      # @return [NilClass, Array<Hash>] list of DataCite identifier attributes, conforming to the expectations of
+      # HTTP PUT request to DataCite
       def identifier_attributes
         return if doi.blank?
 
@@ -31,7 +35,8 @@ module Cocina
         }]
       end
 
-      # @return [NilClass, Array<Hash>] list of DataCite alternateIdentifier attributes, conforming to the expectations of HTTP PUT request to DataCite
+      # @return [NilClass, Array<Hash>] list of DataCite alternateIdentifier attributes, conforming to the
+      # expectations of HTTP PUT request to DataCite
       def alternate_identifier_attributes
         return if purl.blank?
 

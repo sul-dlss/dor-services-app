@@ -15,7 +15,9 @@ RSpec.describe Migrators::Exemplar do
 
   describe '#migrate?' do
     context 'when a matching druid' do
-      let(:repository_object) { create(:repository_object, :with_repository_object_version, external_identifier: 'druid:bc177tq6734') }
+      let(:repository_object) do
+        create(:repository_object, :with_repository_object_version, external_identifier: 'druid:bc177tq6734')
+      end
 
       it 'returns true' do
         expect(migrator.migrate?).to be true
@@ -36,7 +38,8 @@ RSpec.describe Migrators::Exemplar do
     it 'updates label and title' do
       migrator.migrate
       expect(repository_object.head_version.label).to match(/Test DRO - migrated \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/)
-      expect(repository_object.head_version.description['title'].first['value']).to match(/Test DRO - migrated \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/)
+      expect(repository_object.head_version.description['title'].first['value'])
+        .to match(/Test DRO - migrated \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/)
     end
   end
 

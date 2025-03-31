@@ -4,40 +4,6 @@ module Migrators
   # Adds Lane HRIDs.
   # See https://github.com/sul-dlss/dor-services-app/issues/4388 for context.
   class AddLaneHrid < Base
-    def self.druids
-      HRID_MAP.keys
-    end
-
-    def migrate?
-      HRID_MAP.key?(repository_object.external_identifier) && !has_hrid?
-    end
-
-    def migrate
-      catalog_links << { 'catalogRecordId' => hrid, 'catalog' => 'folio', 'refresh' => true }
-    end
-
-    def version?
-      true
-    end
-
-    def version_description
-      'Add Lane HRID'
-    end
-
-    private
-
-    def hrid
-      @hrid ||= HRID_MAP.fetch(repository_object.external_identifier)
-    end
-
-    def has_hrid?
-      catalog_links.any? { |link| link['catalogRecordId'] == hrid }
-    end
-
-    def catalog_links
-      @catalog_links ||= repository_object.head_version.identification['catalogLinks'] ||= []
-    end
-
     HRID_MAP = {
       'druid:xx702qn0170' => 'L79041',
       'druid:wc042cz6208' => 'L114671',
@@ -91,5 +57,39 @@ module Migrators
       # This is on QA only (does not exist on prod)
       'druid:bc836hv7886' => 'L123456'
     }.freeze
+
+    def self.druids
+      HRID_MAP.keys
+    end
+
+    def migrate?
+      HRID_MAP.key?(repository_object.external_identifier) && !has_hrid?
+    end
+
+    def migrate
+      catalog_links << { 'catalogRecordId' => hrid, 'catalog' => 'folio', 'refresh' => true }
+    end
+
+    def version?
+      true
+    end
+
+    def version_description
+      'Add Lane HRID'
+    end
+
+    private
+
+    def hrid
+      @hrid ||= HRID_MAP.fetch(repository_object.external_identifier)
+    end
+
+    def has_hrid?
+      catalog_links.any? { |link| link['catalogRecordId'] == hrid }
+    end
+
+    def catalog_links
+      @catalog_links ||= repository_object.head_version.identification['catalogLinks'] ||= []
+    end
   end
 end

@@ -18,10 +18,12 @@ class PreservationIngestService
   end
 
   # @param [Cocina::Models::DRO, Cocina::Models::Collection] cocina_object The representation of the digital object
-  # @return [void] Create the Moab/bag manifests for new version, export data to BagIt bag, kick off the SDR preservation workflow
+  # @return [void] Create the Moab/bag manifests for new version, export data to BagIt bag, kick off the SDR
+  #   preservation workflow
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  # @raise [PreservationIngestService::VersionMismatchError] if the versionMetadata.xml version does not match the expected version from preservation.
-  def transfer
+  # @raise [PreservationIngestService::VersionMismatchError] if the versionMetadata.xml version does not match the
+  #   expected version from preservation.
+  def transfer # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     # Writes versionMetadata.xml, contentMetadata.xml, and cocina.json
     metadata_dir = PreservationMetadataExtractor.extract(workspace:, cocina_object:)
 
@@ -44,7 +46,10 @@ class PreservationIngestService
     content_group = version_inventory.group('content')
 
     # Regenerate the fixitites for content (md5, sha1, sha256) if they are missing.
-    signature_catalog.normalize_group_signatures(content_group, content_dir) unless content_group.nil? || content_group.files.empty?
+    unless content_group.nil? || content_group.files.empty?
+      signature_catalog.normalize_group_signatures(content_group,
+                                                   content_dir)
+    end
 
     export(version_inventory, content_dir, metadata_dir)
   end
@@ -76,7 +81,10 @@ class PreservationIngestService
   # @param [Integer] expected The version number that should be in the file
   # @param [Integer] found The version number that is actually in the file
   def verify_version_id(pathname, expected, found)
-    raise VersionMismatchError, "Version mismatch in #{pathname}, expected #{expected}, found #{found}" unless expected == found
+    unless expected == found
+      raise VersionMismatchError,
+            "Version mismatch in #{pathname}, expected #{expected}, found #{found}"
+    end
 
     true
   end

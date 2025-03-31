@@ -10,7 +10,8 @@ module Robots
         end
 
         def perform_work
-          Catalog::UpdateMarc856RecordService.update(cocina_object, thumbnail_service: ThumbnailService.new(cocina_object))
+          Catalog::UpdateMarc856RecordService.update(cocina_object,
+                                                     thumbnail_service: ThumbnailService.new(cocina_object))
         end
       end
     end

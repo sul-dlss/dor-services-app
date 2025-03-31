@@ -17,8 +17,9 @@ module Catalog
     end
 
     # @return [MARC::Record]
-    # @raise FolioClient::UnexpectedResponse::ResourceNotFound, and FolioClient::UnexpectedResponse::MultipleResourcesFound, and Catalog::FolioReader::NotFound
-    def to_marc
+    # @raise FolioClient::UnexpectedResponse::ResourceNotFound, and
+    # FolioClient::UnexpectedResponse::MultipleResourcesFound, and Catalog::FolioReader::NotFound
+    def to_marc # rubocop:disable Metrics/AbcSize
       # we need an instance_hrid to do a marc lookup, so fetch from the barcode if no instance_hrid was passed in
       @folio_instance_hrid ||= FolioClient.fetch_hrid(barcode:)
 

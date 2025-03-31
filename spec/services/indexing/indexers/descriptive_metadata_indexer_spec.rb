@@ -377,12 +377,12 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
 
   describe '#to_solr' do
     it 'populates expected fields' do
-      all_search_text = 'The complete works of Henry George 4 George, Henry 1839-1897 George, Henry 1862-1916 George, Bush ' \
-                        'Wiles, Simon Doubleday, Page [Library ed.] monographic Garden City, N. Y text electronic ' \
-                        'preservation reformatted digital On cover: Complete works of Henry George. Fels fund. ' \
-                        'Library edition. I. Progress and poverty.--II. Social problems.--III. The land question. ' \
-                        'Property in land. blah blah print 10 v. fronts (v. 1-9) ports. 21 cm. Economics 1800-1900 ' \
-                        'Economics Europe cats'
+      all_search_text = 'The complete works of Henry George 4 George, Henry 1839-1897 George, Henry 1862-1916 ' \
+                        'George, Bush Wiles, Simon Doubleday, Page [Library ed.] monographic Garden City, N. Y text ' \
+                        'electronic preservation reformatted digital On cover: Complete works of Henry George. Fels ' \
+                        'fund. Library edition. I. Progress and poverty.--II. Social problems.--III. The land ' \
+                        'question. Property in land. blah blah print 10 v. fronts (v. 1-9) ports. 21 cm. Economics ' \
+                        '1800-1900 Economics Europe cats'
       expect(doc).to eq(
         'descriptive_tiv' => all_search_text,
         'descriptive_teiv' => all_search_text,
@@ -395,7 +395,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'sw_pub_date_facet_ssi' => '1911',
         'author_display_ss' => 'George, Henry, 1839-1897',
         'author_text_nostem_im' => 'George, Henry, 1839-1897',
-        'contributor_text_nostem_im' => ['George, Henry, 1839-1897', 'George, Henry, 1862-1916', 'George, Bush', 'Wiles, Simon'],
+        'contributor_text_nostem_im' => ['George, Henry, 1839-1897', 'George, Henry, 1862-1916', 'George, Bush',
+                                         'Wiles, Simon'],
         'main_title_tenim' => ['The complete works of Henry George'],
         'full_title_tenim' => ['The complete works of Henry George'],
         # 'additional_titles_tenim' => '', # not populated by the example; see indexer_spec instead
@@ -405,7 +406,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'topic_ssim' => %w[Economics cats],
         'topic_tesim' => %w[cats Economics],
         'originInfo_place_placeTerm_tesim' => 'Garden City, N. Y',
-        'contributor_orcids_ssim' => ['https://orcid.org/0000-1111-2222-3333', 'https://sandbox.orcid.org/1111-2222-3333-4444', 'https://orcid.org/0000-0001-5321-289X']
+        'contributor_orcids_ssim' => ['https://orcid.org/0000-1111-2222-3333',
+                                      'https://sandbox.orcid.org/1111-2222-3333-4444', 'https://orcid.org/0000-0001-5321-289X']
       )
     end
     # rubocop:enable Style/StringHashKeys

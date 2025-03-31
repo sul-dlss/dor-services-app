@@ -6,7 +6,8 @@ module Cocina
     #  see https://support.datacite.org/reference/dois-2#put_dois-id
     class Note
       # @param [Cocina::Models::Description] cocina_desc
-      # @return [NilClass, Array<Hash>] list of DataCite descriptions attributes, conforming to the expectations of HTTP PUT request to DataCite
+      # @return [NilClass, Array<Hash>] list of DataCite descriptions attributes, conforming to the expectations of
+      # HTTP PUT request to DataCite
       def self.descriptions_attributes(cocina_desc)
         new(cocina_desc).descriptions_attributes
       end
@@ -15,7 +16,8 @@ module Cocina
         @cocina_desc = cocina_desc
       end
 
-      # @return [NilClass, Array<Hash>] list of DataCite descriptions attributes, conforming to the expectations of HTTP PUT request to DataCite
+      # @return [NilClass, Array<Hash>] list of DataCite descriptions attributes, conforming to the expectations of
+      # HTTP PUT request to DataCite
       def descriptions_attributes
         return unless abstract
 

@@ -11,6 +11,5 @@ begin
   # Clear the default task injected by rspec
   task(:default).clear
 
-  task default: [:rubocop, :spec]
-rescue LoadError
+  task default: %i[rubocop spec]
 end

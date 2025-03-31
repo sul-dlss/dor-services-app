@@ -6,7 +6,8 @@ module Cocina
     #  see https://support.datacite.org/reference/dois-2#put_dois-id
     class Title
       # @param [Cocina::Models::Description] cocina_desc
-      # @return [Array<Hash>] list of titles for DataCite, conforming to the expectations of HTTP PUT request to DataCite
+      # @return [Array<Hash>] list of titles for DataCite, conforming to the expectations of HTTP PUT request
+      # to DataCite
       def self.title_attributes(cocina_desc)
         new(cocina_desc).title_attributes
       end
@@ -15,7 +16,8 @@ module Cocina
         @cocina_desc = cocina_desc
       end
 
-      # @return [Array<Hash>] list of titles for DataCite, conforming to the expectations of HTTP PUT request to DataCite
+      # @return [Array<Hash>] list of titles for DataCite, conforming to the expectations of HTTP PUT request
+      # to DataCite
       def title_attributes
         [{ title: cocina_desc.title.first.value }]
       end

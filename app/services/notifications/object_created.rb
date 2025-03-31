@@ -20,14 +20,15 @@ module Notifications
       @channel = channel
     end
 
-    def publish
+    def publish # rubocop:disable Metrics/AbcSize
       message = {
         model: Cocina::Models.without_metadata(model).to_h,
         created_at: model.created.to_datetime.httpdate,
         modified_at: model.modified.to_datetime.httpdate
       }
       # Using the project as a routing key because listeners may only care about their projects.
-      exchange.publish(message.to_json, routing_key: AdministrativeTags.project(identifier: model.externalIdentifier).first)
+      exchange.publish(message.to_json,
+                       routing_key: AdministrativeTags.project(identifier: model.externalIdentifier).first)
     end
 
     private

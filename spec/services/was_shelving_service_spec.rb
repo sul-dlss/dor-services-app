@@ -5,42 +5,51 @@ require 'rails_helper'
 RSpec.describe WasShelvingService do
   let(:druid) { 'druid:bc123df4567' }
   let(:cocina_object) do
-    instance_double(Cocina::Models::DRO, externalIdentifier: druid, structural:, type: Cocina::Models::ObjectType.webarchive_binary)
+    instance_double(Cocina::Models::DRO, externalIdentifier: druid, structural:,
+                                         type: Cocina::Models::ObjectType.webarchive_binary)
   end
   let(:structural) do
     Cocina::Models::DROStructural.new(
-      { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
-                     type: Cocina::Models::FileSetType.file,
-                     version: 1,
-                     label: '',
-                     structural: { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
-                                                type: Cocina::Models::ObjectType.file,
-                                                label: 'ARCHIVEIT-123-1.warc.gz',
-                                                filename: 'ARCHIVEIT-123-1.warc.gz',
-                                                size: 78880,
-                                                version: 1,
-                                                hasMessageDigests: [{ type: 'sha1',
-                                                                      digest: '61dfac472b7904e1413e0cbf4de432bda2a97627' },
-                                                                    { type: 'md5', digest: 'e2837b9f02e0b0b76f526eeb81c7aa7b' }],
-                                                access: { view: 'world', download: 'world' },
-                                                administrative: { publish: false, sdrPreserve: true, shelve: true },
-                                                hasMimeType: 'application/warc' }] } },
-                   { externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-000000000',
-                     type: Cocina::Models::FileSetType.file,
-                     version: 1,
-                     label: '',
-                     structural: { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-00000000000',
-                                                type: Cocina::Models::ObjectType.file,
-                                                label: 'ARCHIVEIT-234-2.warc.gz',
-                                                filename: 'ARCHIVEIT-234-2.warc.gz',
-                                                size: 78880,
-                                                version: 1,
-                                                hasMessageDigests: [{ type: 'sha1',
-                                                                      digest: '61dfac472b7904e1413e0cbf4de432bda2a97627' },
-                                                                    { type: 'md5', digest: 'e2837b9f02e0b0b76f526eeb81c7aa7b' }],
-                                                access: { view: 'world', download: 'world' },
-                                                administrative: { publish: false, sdrPreserve: true, shelve: false },
-                                                hasMimeType: 'application/warc' }] } }],
+      { contains: [
+          { externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-f168a1f4213f',
+            type: Cocina::Models::FileSetType.file,
+            version: 1,
+            label: '',
+            structural: {
+              contains: [
+                { externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-8d6f496a3181',
+                  type: Cocina::Models::ObjectType.file,
+                  label: 'ARCHIVEIT-123-1.warc.gz',
+                  filename: 'ARCHIVEIT-123-1.warc.gz',
+                  size: 78_880,
+                  version: 1,
+                  hasMessageDigests: [{ type: 'sha1',
+                                        digest: '61dfac472b7904e1413e0cbf4de432bda2a97627' },
+                                      { type: 'md5',
+                                        digest: 'e2837b9f02e0b0b76f526eeb81c7aa7b' }],
+                  access: { view: 'world', download: 'world' },
+                  administrative: { publish: false, sdrPreserve: true, shelve: true },
+                  hasMimeType: 'application/warc' }
+              ]
+            } },
+          { externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/8d17c28b-5b3e-477e-912c-000000000',
+            type: Cocina::Models::FileSetType.file,
+            version: 1,
+            label: '',
+            structural: { contains: [{ externalIdentifier: 'https://cocina.sul.stanford.edu/file/be451fd9-7908-4559-9e81-00000000000',
+                                       type: Cocina::Models::ObjectType.file,
+                                       label: 'ARCHIVEIT-234-2.warc.gz',
+                                       filename: 'ARCHIVEIT-234-2.warc.gz',
+                                       size: 78_880,
+                                       version: 1,
+                                       hasMessageDigests: [{ type: 'sha1',
+                                                             digest: '61dfac472b7904e1413e0cbf4de432bda2a97627' },
+                                                           { type: 'md5',
+                                                             digest: 'e2837b9f02e0b0b76f526eeb81c7aa7b' }],
+                                       access: { view: 'world', download: 'world' },
+                                       administrative: { publish: false, sdrPreserve: true, shelve: false },
+                                       hasMimeType: 'application/warc' }] } }
+        ],
         isMemberOf: collections }
     )
   end
@@ -75,7 +84,8 @@ RSpec.describe WasShelvingService do
       described_class.shelve(cocina_object)
       expect(was_stacks_destination).to exist
       expect(was_stacks_destination2).not_to exist
-      expect(Rails.logger).to have_received(:debug).with("[Was Shelve] Copying #{workspace_filename} to #{was_stacks_destination}")
+      expect(Rails.logger).to have_received(:debug)
+        .with("[Was Shelve] Copying #{workspace_filename} to #{was_stacks_destination}")
     end
   end
 

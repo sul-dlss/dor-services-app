@@ -31,19 +31,22 @@ module Publish
 
     attr_reader :workflow
 
-    delegate :cocina_object, :druid, :public_cocina, :public_version, :user_version, :discoverable?, :version_date, :must_version?, to: :@public_cocina
+    delegate :cocina_object, :druid, :public_cocina, :public_version, :user_version, :discoverable?, :version_date,
+             :must_version?, to: :@public_cocina
 
     def republish_collection_members!
       Array.wrap(
         MemberService.for(druid, publishable: true)
       ).each do |member_druid|
-        PublishJob.set(queue: :publish_low).perform_later(druid: member_druid, background_job_result: BackgroundJobResult.create)
+        PublishJob.set(queue: :publish_low).perform_later(druid: member_druid,
+                                                          background_job_result: BackgroundJobResult.create)
       end
     end
 
     def republish_virtual_object_constituents!
       VirtualObjectService.constituents(cocina_object, publishable: true).each do |constituent_druid|
-        PublishJob.set(queue: :publish_low).perform_later(druid: constituent_druid, background_job_result: BackgroundJobResult.create)
+        PublishJob.set(queue: :publish_low).perform_later(druid: constituent_druid,
+                                                          background_job_result: BackgroundJobResult.create)
       end
     end
 
@@ -54,8 +57,8 @@ module Publish
           releases[tag.release ? :index : :delete] << tag.to
         end
       end
-      # It is important to make this call even if there are no release tags for this object, because purl-fetcher will automatically add:
-      # SearchWorksPreview and ContentSearch
+      # It is important to make this call even if there are no release tags for this object, because purl-fetcher
+      # will automatically add: SearchWorksPreview and ContentSearch
       PurlFetcher::Client::ReleaseTags.release(druid:, **actions)
     end
 
@@ -73,7 +76,8 @@ module Publish
         ShelvableFilesStager.stage(cocina_object:, filepaths: filepaths_to_shelve, workspace_content_pathname:)
         TransferStager.copy(druid:, filepath_map: filepath_uuid_map, workspace_content_pathname:)
       end
-      PurlFetcher::Client::Publish.publish(cocina: public_cocina, file_uploads: filepath_uuid_map, version: public_version,
+      PurlFetcher::Client::Publish.publish(cocina: public_cocina, file_uploads: filepath_uuid_map,
+                                           version: public_version,
                                            must_version: must_version?, version_date:)
     end
 

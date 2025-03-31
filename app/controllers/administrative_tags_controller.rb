@@ -18,7 +18,7 @@ class AdministrativeTagsController < ApplicationController
     render json: results
   end
 
-  def create
+  def create # rubocop:disable Metrics/AbcSize
     AdministrativeTags.create(identifier: params[:object_id],
                               tags: params.require(:administrative_tags),
                               replace: params[:replace])
@@ -35,7 +35,7 @@ class AdministrativeTagsController < ApplicationController
     head :created
   end
 
-  def update
+  def update # rubocop:disable Metrics/AbcSize
     AdministrativeTags.update(identifier: params[:object_id],
                               current: CGI.unescape(params[:id]),
                               new: params.require(:administrative_tag))

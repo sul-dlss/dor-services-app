@@ -2,19 +2,22 @@
 
 # Models a repository object (item/DRO, collection, or admin policy)
 
-# In general, the direct use of RepositoryObjects should be limited; most components should be using Cocina Models and using the services below:
+# In general, the direct use of RepositoryObjects should be limited; most components should be using Cocina Models
+# and using the services below:
 # For finding / querying, see CocinaObjectStore.
 # For versioning operations, see VersionService.
 # For persistence, see CreateObjectService and UpdateObjectService.
 # For destroying, see DeleteService.
-class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
+class RepositoryObject < ApplicationRecord
   self.locking_column = 'lock'
 
   class VersionAlreadyOpened < StandardError; end
   class VersionNotOpened < StandardError; end
   class VersionNotDiscardable < StandardError; end
 
-  has_many :versions, -> { order(version: :asc) }, class_name: 'RepositoryObjectVersion', dependent: :destroy, inverse_of: 'repository_object', autosave: true
+  has_many :versions, lambda {
+    order(version: :asc)
+  }, class_name: 'RepositoryObjectVersion', dependent: :destroy, inverse_of: 'repository_object', autosave: true
   has_many :user_versions, through: :versions
 
   belongs_to :head_version, class_name: 'RepositoryObjectVersion', optional: true
@@ -42,12 +45,15 @@ class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
     @head_user_version ||= user_versions.maximum(:version)
   end
 
-  # NOTE: This block uses metaprogramming to create the equivalent of scopes that query the RepositoryObjectVersion table using only rows that are a `current` in the RepositoryObject table
+  # NOTE: This block uses metaprogramming to create the equivalent of scopes that query the RepositoryObjectVersion
+  # table using only rows that are a `current` in the RepositoryObject table
   #
   # So it's a more easily extensible version of:
   #
-  # scope :currently_in_virtual_objects, ->(member_druid) { joins(:head_version).merge(RepositoryObjectVersion.in_virtual_objects(member_druid)) }
-  # scope :currently_members_of_collection, ->(collection_druid) { joins(:head_version).merge(RepositoryObjectVersion.members_of_collection(collection_druid)) }
+  # scope :currently_in_virtual_objects, ->(member_druid) { joins(:head_version).merge(RepositoryObjectVersion
+  # .in_virtual_objects(member_druid)) }
+  # scope :currently_members_of_collection, ->(collection_druid) { joins(:head_version).merge(RepositoryObjectVersion
+  # .members_of_collection(collection_druid)) }
   class << self
     def method_missing(method_name, ...)
       if method_name.to_s =~ /#{current_scope_prefix}(.*)/
@@ -91,7 +97,8 @@ class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   # @param [String] description for the version
-  # @param [RepositoryObjectVersion,nil] from_version existing version to base the new version on. If nil, then uses last_closed_version.
+  # @param [RepositoryObjectVersion,nil] from_version existing version to base the new version on. If nil, then uses
+  # last_closed_version.
   def open_version!(description:, from_version: nil)
     raise VersionAlreadyOpened, "Cannot open new version because one is already open: #{head_version.version}" if open?
 
@@ -106,7 +113,8 @@ class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
     raise VersionNotOpened, "Cannot close version because head version is closed: #{head_version.version}" if closed?
 
     RepositoryObject.transaction do
-      opened_version.update!(closed_at: Time.current, version_description: description || opened_version.version_description)
+      opened_version.update!(closed_at: Time.current,
+                             version_description: description || opened_version.version_description)
       update!(opened_version: nil, last_closed_version: opened_version, head_version: opened_version)
     end
   end
@@ -114,7 +122,11 @@ class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
   def check_discard_open_version!
     raise VersionNotDiscardable, 'Cannot discard version because head version is closed' if closed?
     raise VersionNotDiscardable, 'Cannot discard version because this is the first version' if last_closed_version.nil?
-    raise VersionNotDiscardable, 'Cannot discard version because last closed version does not have cocina' unless last_closed_version.has_cocina?
+
+    return if last_closed_version.has_cocina?
+
+    raise VersionNotDiscardable,
+          'Cannot discard version because last closed version does not have cocina'
   end
 
   def can_discard_open_version?
@@ -155,7 +167,8 @@ class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   # When a collection object is published, publish the collection members that:
   # * have a last closed version (meaning they are not Registered - they've been accessioned); and
-  # * there's cocina for that last closed version (meaning they've been closed at least once since we moved to the new version model)
+  # * there's cocina for that last closed version (meaning they've been closed at least once since we moved to
+  # the new version model)
   def publishable?
     last_closed_version.present? && last_closed_version.has_cocina?
   end

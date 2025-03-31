@@ -66,7 +66,7 @@ class GoobiService
     goobi_tag_list.map(&:to_xml).join
   end
 
-  def xml_request
+  def xml_request # rubocop:disable Metrics/AbcSize
     <<-XML
         <stanfordCreationRequest>
             <objectId>#{cocina_obj.externalIdentifier}</objectId>
@@ -129,12 +129,15 @@ class GoobiService
   # @return [String] first project tag value if one exists (blank if none)
   def project_name
     project_tag_id = 'Project : '
-    content_tag = AdministrativeTags.for(identifier: cocina_obj.externalIdentifier).select { |tag| tag.include?(project_tag_id) }
+    content_tag = AdministrativeTags.for(identifier: cocina_obj.externalIdentifier).select do |tag|
+      tag.include?(project_tag_id)
+    end
     content_tag.empty? ? '' : content_tag[0].gsub(project_tag_id, '').strip
   end
 
-  # returns an array of arrays, each element contains an array of [name, value] of DOR object tags in the format expected to pass to Goobi
-  # the name of the tag is the first namespace part of the tag (before first colon), value of the tag is everything after this
+  # returns an array of arrays, each element contains an array of [name, value] of DOR object tags in the format
+  # expected to pass to Goobi the name of the tag is the first namespace part of the tag (before first colon),
+  # value of the tag is everything after this
   # @return [Array] of GoobiTag objects
   def goobi_tag_list
     AdministrativeTags.for(identifier: cocina_obj.externalIdentifier).map do |tag|
@@ -147,7 +150,10 @@ class GoobiService
   # @return [boolean]
   def goobi_ocr_tag_present?
     dpg_goobi_ocr_tag = 'DPG : OCR : TRUE'
-    AdministrativeTags.for(identifier: cocina_obj.externalIdentifier).any? { |tag| tag.casecmp?(dpg_goobi_ocr_tag) } # case insensitive compare
+    # case insensitive compare
+    AdministrativeTags.for(identifier: cocina_obj.externalIdentifier).any? do |tag|
+      tag.casecmp?(dpg_goobi_ocr_tag)
+    end
   end
 
   # returns the first collection_id the object is contained in (if any)
@@ -164,7 +170,8 @@ class GoobiService
 
   def title_or_label
     if cocina_obj.description
-      desc_ng_xml = Cocina::Models::Mapping::ToMods::Description.transform(cocina_obj.description, cocina_obj.externalIdentifier)
+      desc_ng_xml = Cocina::Models::Mapping::ToMods::Description.transform(cocina_obj.description,
+                                                                           cocina_obj.externalIdentifier)
       title_element = ModsUtils.primary_title_info(desc_ng_xml)
       return title_element.content.strip if title_element.respond_to?(:content) && title_element.content.present?
     end

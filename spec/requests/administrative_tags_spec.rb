@@ -65,7 +65,8 @@ RSpec.describe 'Administrative tags' do
     context 'when item is not found' do
       before do
         allow(CocinaObjectStore).to receive(:find)
-          .and_raise(CocinaObjectStore::CocinaObjectNotFoundError, "Unable to find '#{druid}' in repository. See logger for details.")
+          .and_raise(CocinaObjectStore::CocinaObjectNotFoundError,
+                     "Unable to find '#{druid}' in repository. See logger for details.")
       end
 
       it 'returns a 404' do
@@ -84,7 +85,8 @@ RSpec.describe 'Administrative tags' do
              params: %( {"administrative_tags":#{tags.to_json}} ),
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:bad_request)
-        expect(response.body).to eq('{"errors":[{"title":"bad request","detail":"param is missing or the value is empty: administrative_tags"}]}')
+        expect(response.body)
+          .to eq('{"errors":[{"title":"bad request","detail":"param is missing or the value is empty: administrative_tags"}]}') # rubocop:disable Layout/LineLength
       end
     end
 
@@ -94,9 +96,10 @@ RSpec.describe 'Administrative tags' do
              params: %( {"foo":"bar"} ),
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status(:bad_request)
-        expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":' \
-                                    '"#/paths/~1v1~1objects~1{object_id}~1administrative_tags/post/requestBody/content/application~1json/schema ' \
-                                    'missing required parameters: administrative_tags"}]}')
+        expect(response.body)
+          .to eq('{"errors":[{"status":"bad_request","detail":' \
+                 '"#/paths/~1v1~1objects~1{object_id}~1administrative_tags/post/requestBody/content/application~1' \
+                 'json/schema missing required parameters: administrative_tags"}]}')
       end
     end
 
@@ -106,9 +109,10 @@ RSpec.describe 'Administrative tags' do
              params: %( {"administrative_tags":[]} ),
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status(:bad_request)
-        expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":' \
-                                    '"#/paths/~1v1~1objects~1{object_id}~1administrative_tags/post/requestBody/content/application~1json/schema' \
-                                    '/properties/administrative_tags [] contains fewer than min items"}]}')
+        expect(response.body)
+          .to eq('{"errors":[{"status":"bad_request","detail":"#/paths/~1v1~1objects~1{object_id}' \
+                 '~1administrative_tags/post/requestBody/content/application~1json/schema' \
+                 '/properties/administrative_tags [] contains fewer than min items"}]}')
       end
     end
   end
@@ -151,7 +155,8 @@ RSpec.describe 'Administrative tags' do
     context 'when item is not found' do
       before do
         allow(CocinaObjectStore).to receive(:find)
-          .and_raise(CocinaObjectStore::CocinaObjectNotFoundError, "Unable to find '#{druid}' in repository. See logger for details.")
+          .and_raise(CocinaObjectStore::CocinaObjectNotFoundError,
+                     "Unable to find '#{druid}' in repository. See logger for details.")
       end
 
       it 'returns a 404' do
@@ -184,7 +189,8 @@ RSpec.describe 'Administrative tags' do
             params: %( {"administrative_tag":"#{new_tag}"} ),
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:bad_request)
-        expect(response.body).to eq('{"errors":[{"title":"bad request","detail":"param is missing or the value is empty: administrative_tag"}]}')
+        expect(response.body)
+          .to eq('{"errors":[{"title":"bad request","detail":"param is missing or the value is empty: administrative_tag"}]}') # rubocop:disable Layout/LineLength
       end
     end
 
@@ -195,8 +201,7 @@ RSpec.describe 'Administrative tags' do
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status(:bad_request)
         expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":' \
-                                    '"#/paths/~1v1~1objects~1{object_id}~1administrative_tags~1{id}/put/requestBody/content/application~1json/schema ' \
-                                    'missing required parameters: administrative_tag"}]}')
+                                    '"#/paths/~1v1~1objects~1{object_id}~1administrative_tags~1{id}/put/requestBody/content/application~1json/schema missing required parameters: administrative_tag"}]}') # rubocop:disable Layout/LineLength
       end
     end
 
@@ -206,8 +211,8 @@ RSpec.describe 'Administrative tags' do
             params: %( {"administrative_tag":""} ),
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status(:bad_request)
-        expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":' \
-                                    '"#/components/schemas/AdministrativeTag pattern ^.+( : .+)+$ does not match value: \\"\\", example: Foo : Bar : Baz"}]}')
+        expect(response.body)
+          .to eq('{"errors":[{"status":"bad_request","detail":"#/components/schemas/AdministrativeTag pattern ^.+( : .+)+$ does not match value: \\"\\", example: Foo : Bar : Baz"}]}') # rubocop:disable Layout/LineLength
       end
     end
 
@@ -243,7 +248,8 @@ RSpec.describe 'Administrative tags' do
             params: %( {"administrative_tag":"#{new_tag}"} ),
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status(:conflict)
-        expect(response.body).to eq('Validation failed: Tag has already been assigned to the given druid (no duplicate tags for a druid)')
+        expect(response.body)
+          .to eq('Validation failed: Tag has already been assigned to the given druid (no duplicate tags for a druid)')
       end
     end
   end
@@ -282,7 +288,8 @@ RSpec.describe 'Administrative tags' do
     context 'when item is not found' do
       before do
         allow(CocinaObjectStore).to receive(:find)
-          .and_raise(CocinaObjectStore::CocinaObjectNotFoundError, "Unable to find '#{druid}' in repository. See logger for details.")
+          .and_raise(CocinaObjectStore::CocinaObjectNotFoundError,
+                     "Unable to find '#{druid}' in repository. See logger for details.")
       end
 
       it 'returns a 404' do

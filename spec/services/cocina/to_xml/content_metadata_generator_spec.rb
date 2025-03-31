@@ -53,7 +53,7 @@ RSpec.describe Cocina::ToXml::ContentMetadataGenerator do
       'filename' => '00001.jp2',
       'label' => '00001.jp2',
       'hasMimeType' => 'image/jp2',
-      'size' => 149570,
+      'size' => 149_570,
       'administrative' => {
         'publish' => true,
         'sdrPreserve' => true,
@@ -99,7 +99,7 @@ RSpec.describe Cocina::ToXml::ContentMetadataGenerator do
       'filename' => '00002.jp2',
       'label' => '00002.jp2',
       'hasMimeType' => 'image/jp2',
-      'size' => 111467,
+      'size' => 111_467,
       'administrative' => {
         'publish' => true,
         'sdrPreserve' => true,
@@ -120,7 +120,7 @@ RSpec.describe Cocina::ToXml::ContentMetadataGenerator do
       'filename' => 'checksum.txt',
       'label' => 'checksum.txt',
       'hasMimeType' => 'text/plain',
-      'size' => 11468,
+      'size' => 11_468,
       'administrative' => {
         'publish' => true,
         'sdrPreserve' => true,
@@ -671,7 +671,8 @@ RSpec.describe Cocina::ToXml::ContentMetadataGenerator do
           'type' => Cocina::Models::FileSetType.file,
           'label' => 'Page 1',
           'structural' => { 'contains' => [file1, file2] },
-          'externalIdentifier' => 'https://cocina.sul.stanford.edu/fileSet/bc123df5678/012-345-678' # Existing id should be retained.
+          # Existing id should be retained.
+          'externalIdentifier' => 'https://cocina.sul.stanford.edu/fileSet/bc123df5678/012-345-678'
         },
         {
           'version' => 1,
@@ -837,7 +838,7 @@ RSpec.describe Cocina::ToXml::ContentMetadataGenerator do
         'filename' => '00001.jp2',
         'label' => '00001.jp2',
         'hasMimeType' => 'image/jp2',
-        'size' => 149570,
+        'size' => 149_570,
         'administrative' => {
           'publish' => true,
           'sdrPreserve' => true,
@@ -885,7 +886,7 @@ RSpec.describe Cocina::ToXml::ContentMetadataGenerator do
         'filename' => '00002.jp2',
         'label' => '00002.jp2',
         'hasMimeType' => 'image/jp2',
-        'size' => 111467,
+        'size' => 111_467,
         'administrative' => {
           'publish' => true,
           'sdrPreserve' => true,

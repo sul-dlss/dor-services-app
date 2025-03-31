@@ -17,7 +17,8 @@ RSpec.describe ReindexJob do
 
     it 'invokes the Indexer' do
       perform
-      expect(Indexer).to have_received(:reindex).with(cocina_object: an_instance_of(Cocina::Models::DROWithMetadata), trace_id:)
+      expect(Indexer).to have_received(:reindex).with(cocina_object: an_instance_of(Cocina::Models::DROWithMetadata),
+                                                      trace_id:)
     end
   end
 
@@ -29,7 +30,8 @@ RSpec.describe ReindexJob do
 
     it 'Honeybadger alerts' do
       perform
-      expect(Indexer).to have_received(:reindex).with(cocina_object: an_instance_of(Cocina::Models::DROWithMetadata), trace_id:)
+      expect(Indexer).to have_received(:reindex).with(cocina_object: an_instance_of(Cocina::Models::DROWithMetadata),
+                                                      trace_id:)
       expect(Honeybadger).to have_received(:notify)
     end
   end

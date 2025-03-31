@@ -6,7 +6,7 @@ class CreateVirtualObjectsJob < ApplicationJob
 
   # @param [Array] virtual_objects an array of hashes representing a batch of virtual objects
   # @param [BackgroundJobResult] background_job_result identifier of a background job result to store status info
-  def perform(virtual_objects:, background_job_result:)
+  def perform(virtual_objects:, background_job_result:) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     background_job_result.processing!
     errors = []
 

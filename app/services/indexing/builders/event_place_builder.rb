@@ -36,14 +36,16 @@ module Indexing
           marccountry_code_for(locations)
       end
 
-      def flat_locations
+      def flat_locations # rubocop:disable Metrics/AbcSize
         @flat_locations ||= begin
           locations = if event.parallelEvent.present?
                         event.parallelEvent.flat_map { |parallel_event| Array(parallel_event.location) }
                       else
                         Array(event.location)
                       end
-          locations.flat_map { |location| location.parallelValue.presence || location.structuredValue.presence || location }
+          locations.flat_map do |location|
+            location.parallelValue.presence || location.structuredValue.presence || location
+          end
         end
       end
 
@@ -51,9 +53,11 @@ module Indexing
         locations.find { |location| marc_country?(location) && location.value }&.value
       end
 
-      def marccountry_code_for(locations)
+      def marccountry_code_for(locations) # rubocop:disable Metrics/CyclomaticComplexity
         Indexing::MarcCountry.from_code(locations.find { |location| marc_country?(location) && location.code }&.code) ||
-          Indexing::MarcCountry.from_uri(locations.find { |location| location.uri&.start_with?(Indexing::MarcCountry::MARC_COUNTRY_URI) }&.uri)
+          Indexing::MarcCountry.from_uri(locations.find do |location|
+            location.uri&.start_with?(Indexing::MarcCountry::MARC_COUNTRY_URI)
+          end&.uri)
       end
 
       def value_locations_for(locations)

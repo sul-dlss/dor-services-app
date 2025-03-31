@@ -6,7 +6,9 @@ RSpec.describe AccessMergeService do
   let(:merged_access) { described_class.merge(cocina_object, apo_object) }
 
   let(:apo_object) { instance_double(Cocina::Models::AdminPolicy, administrative: apo_administrative) }
-  let(:apo_administrative) { instance_double(Cocina::Models::AdminPolicyAdministrative, accessTemplate: default_access) }
+  let(:apo_administrative) do
+    instance_double(Cocina::Models::AdminPolicyAdministrative, accessTemplate: default_access)
+  end
 
   context 'when a RequestDRO' do
     let(:cocina_object) { instance_double(Cocina::Models::RequestDRO, access:, collection?: false) }

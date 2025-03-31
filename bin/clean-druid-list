@@ -9,7 +9,8 @@ parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/clean-druid-list [options]'
 
   option_parser.on('-iFILENAME', '--input FILENAME', String, 'File containing list of druids (instead of druids.txt).')
-  option_parser.on('-oFILENAME', '--output FILENAME', String, 'File to write list of druids (instead of druids.clean.txt).')
+  option_parser.on('-oFILENAME', '--output FILENAME', String,
+                   'File to write list of druids (instead of druids.clean.txt).')
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
     exit

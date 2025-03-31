@@ -12,12 +12,15 @@ module Indexing
 
       # @return [Hash] the partial solr document for identityMetadata
       def to_solr
-        return { 'objectType_ssim' => [object_type] } if object_type == 'adminPolicy' || cocina_object.identification.blank?
+        if object_type == 'adminPolicy' || cocina_object.identification.blank?
+          return { 'objectType_ssim' => [object_type] }
+        end
 
         {
           'objectType_ssim' => [object_type],
           'identifier_ssim' => prefixed_identifiers, # sourceid, barcode, folio_instance_hrid for display
-          'identifier_tesim' => prefixed_identifiers, # ditto ^^, for search, tokenized (can search prefix and value as separate tokens)
+          'identifier_tesim' => prefixed_identifiers, # ditto ^^, for search, tokenized (can search prefix and value
+          # as separate tokens)
           'barcode_id_ssim' => [barcode].compact,
           'source_id_ssi' => source_id, # for search and display (reports, track_sheet)
           'source_id_text_nostem_i' => source_id, # for search, tokenized per request from accessioneers
@@ -41,7 +44,9 @@ module Indexing
       end
 
       def folio_instance_hrid
-        @folio_instance_hrid ||= Array(cocina_object.identification.catalogLinks).find { |link| link.catalog == 'folio' }&.catalogRecordId
+        @folio_instance_hrid ||= Array(cocina_object.identification.catalogLinks).find do |link|
+          link.catalog == 'folio'
+        end&.catalogRecordId
       end
 
       def object_type

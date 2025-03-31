@@ -15,7 +15,7 @@ module Publish
     # remove any file that is not published
     # remove any file_set that doesn't have at least one published file
     # remove partOfProject (similar to how we remove tags from identityMetadata)
-    def build
+    def build # rubocop:disable Metrics/AbcSize
       label = Cocina::Models::Builders::TitleBuilder.build(cocina.description.title)
       if cocina.dro?
         cocina.new(label:, structural: build_structural, administrative: build_administrative)
@@ -36,7 +36,7 @@ module Publish
       Cocina::Models::Administrative.new(cocina.administrative.to_h.except(:partOfProject))
     end
 
-    def build_structural
+    def build_structural # rubocop:disable Metrics/AbcSize
       return {} unless cocina.structural
 
       file_sets = Array(cocina.structural.contains)

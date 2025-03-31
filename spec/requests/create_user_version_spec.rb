@@ -6,7 +6,9 @@ RSpec.describe 'Create user version' do
   let(:repository_object) { repository_object_version.repository_object }
 
   context 'when the user version can be created' do
-    let(:repository_object_version) { create(:repository_object_version, :with_repository_object, closed_at: Time.zone.now) }
+    let(:repository_object_version) do
+      create(:repository_object_version, :with_repository_object, closed_at: Time.zone.now)
+    end
 
     it 'returns created' do
       post "/v1/objects/#{repository_object.external_identifier}/user_versions",
@@ -16,7 +18,10 @@ RSpec.describe 'Create user version' do
       expect(response).to have_http_status(:created)
       expect(repository_object_version.reload.user_versions.count).to eq(1)
       user_version = repository_object_version.user_versions.first
-      expect(response.parsed_body).to eq({ 'userVersion' => user_version.version, 'version' => repository_object_version.version, 'withdrawn' => false, 'withdrawable' => false, 'restorable' => false, 'head' => true })
+      expect(response.parsed_body).to eq({ 'userVersion' => user_version.version,
+                                           'version' => repository_object_version.version,
+                                           'withdrawn' => false, 'withdrawable' => false, 'restorable' => false,
+                                           'head' => true })
     end
   end
 

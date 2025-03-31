@@ -107,7 +107,8 @@ RSpec.describe 'Update object' do
     expect(item.reload.head_version.to_cocina.to_json).to equal_cocina_model(expected)
     expect(Cocina::ObjectValidator).to have_received(:validate)
 
-    expect(EventFactory).to have_received(:create).with(druid:, data: hash_including(:request, success: true), event_type: 'update')
+    expect(EventFactory).to have_received(:create).with(druid:, data: hash_including(:request, success: true),
+                                                        event_type: 'update')
   end
 
   context 'with a non-matching druid (Cocina::Models::ValidationError)' do
@@ -215,16 +216,17 @@ RSpec.describe 'Update object' do
     end
     let(:view) { 'world' }
     let(:expected) do
-      build(:dro, id: druid, type: Cocina::Models::ObjectType.image, label: expected_label, title:, admin_policy_id: 'druid:dd999df4567').new(
-        access: {
-          view:,
-          download: 'world',
-          copyright: 'All rights reserved unless otherwise indicated.',
-          useAndReproductionStatement: 'Property rights reside with the repository...'
-        },
-        identification:,
-        structural:
-      )
+      build(:dro, id: druid, type: Cocina::Models::ObjectType.image, label: expected_label, title:,
+                  admin_policy_id: 'druid:dd999df4567').new(
+                    access: {
+                      view:,
+                      download: 'world',
+                      copyright: 'All rights reserved unless otherwise indicated.',
+                      useAndReproductionStatement: 'Property rights reside with the repository...'
+                    },
+                    identification:,
+                    structural:
+                  )
     end
     let(:data) do
       <<~JSON
@@ -585,16 +587,17 @@ RSpec.describe 'Update object' do
     let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
     let(:expected) do
-      build(:dro, id: druid, type: Cocina::Models::ObjectType.book, label:, title:, admin_policy_id: 'druid:dd999df4567').new(
-        identification: { sourceId: 'googlebooks:999999' },
-        structural: {
-          hasMemberOrders: [
-            { viewingDirection: 'right-to-left' }
-          ],
-          isMemberOf: ['druid:xx888xx7777']
-        },
-        access: { view: 'world', download: 'world' }
-      )
+      build(:dro, id: druid, type: Cocina::Models::ObjectType.book, label:, title:,
+                  admin_policy_id: 'druid:dd999df4567').new(
+                    identification: { sourceId: 'googlebooks:999999' },
+                    structural: {
+                      hasMemberOrders: [
+                        { viewingDirection: 'right-to-left' }
+                      ],
+                      isMemberOf: ['druid:xx888xx7777']
+                    },
+                    access: { view: 'world', download: 'world' }
+                  )
     end
     let(:data) do
       <<~JSON
@@ -688,8 +691,10 @@ RSpec.describe 'Update object' do
   context 'when an APO is provided' do
     let(:druid) { 'druid:yq561fh2083' }
     let!(:item) do
-      repository_object_version = build(:repository_object_version, :admin_policy_repository_object_version, external_identifier: druid, access_template: default_access, version: 1)
-      create(:repository_object, :collection, :with_repository_object_version, repository_object_version:, external_identifier: druid)
+      repository_object_version = build(:repository_object_version, :admin_policy_repository_object_version,
+                                        external_identifier: druid, access_template: default_access, version: 1)
+      create(:repository_object, :collection, :with_repository_object_version, repository_object_version:,
+                                                                               external_identifier: druid)
     end
 
     let(:expected) do
@@ -789,23 +794,24 @@ RSpec.describe 'Update object' do
 
   context 'when an embargo is provided' do
     let(:expected) do
-      build(:dro, id: druid, label: 'This is my label', title: 'This is my title', admin_policy_id: apo_druid, type: Cocina::Models::ObjectType.book).new(
-        identification: { sourceId: 'googlebooks:999999' },
-        structural: {
-          hasMemberOrders: [
-            { viewingDirection: 'right-to-left' }
-          ]
-        },
-        access: {
-          view: 'stanford',
-          download: 'stanford',
-          embargo: {
-            view: 'world',
-            download: 'world',
-            releaseDate: '2020-02-29T07:00:00.000+00:00'
-          }
-        }
-      )
+      build(:dro, id: druid, label: 'This is my label', title: 'This is my title', admin_policy_id: apo_druid,
+                  type: Cocina::Models::ObjectType.book).new(
+                    identification: { sourceId: 'googlebooks:999999' },
+                    structural: {
+                      hasMemberOrders: [
+                        { viewingDirection: 'right-to-left' }
+                      ]
+                    },
+                    access: {
+                      view: 'stanford',
+                      download: 'stanford',
+                      embargo: {
+                        view: 'world',
+                        download: 'world',
+                        releaseDate: '2020-02-29T07:00:00.000+00:00'
+                      }
+                    }
+                  )
     end
     let(:data) do
       <<~JSON

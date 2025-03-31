@@ -70,7 +70,9 @@ RSpec.describe Robots::DorRepo::Accession::UpdateDoi, type: :robot do
     let(:exportable) { false }
 
     it 'raises an error' do
-      expect { perform }.to raise_error(RuntimeError, /Item requested a DOI be updated, but it doesn't meet all the preconditions/)
+      expect do
+        perform
+      end.to raise_error(RuntimeError, /Item requested a DOI be updated, but it doesn't meet all the preconditions/)
       expect(Cocina::ToDatacite::Attributes).to have_received(:exportable?).with(object)
     end
   end

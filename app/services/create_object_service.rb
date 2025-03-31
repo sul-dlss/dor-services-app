@@ -9,12 +9,15 @@
 #   Importing access from the admin_policy if none is provided
 #   Minting a doi if requested
 class CreateObjectService
-  # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object
+  # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object # rubocop:disable Layout/LineLength
   # @param [boolean] assign_doi
-  # @param [#call] id_minter assigns identifiers. You can provide your own minter if you want to use a specific druid for an item.
-  # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata]
-  # @raise [Catalog::MarcService::MarcServiceError::CatalogRecordNotFoundError] if catalog identifer not found when refreshing descMetadata
-  # @raise [Catalog::MarcService::MarcServiceError::CatalogResponseError] if other error occurred refreshing descMetadata from catalog source
+  # @param [#call] id_minter assigns identifiers. You can provide your own minter if you want to use a specific druid
+  # for an item.
+  # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata] # rubocop:disable Layout/LineLength
+  # @raise [Catalog::MarcService::MarcServiceError::CatalogRecordNotFoundError] if catalog identifer not found when
+  # refreshing descMetadata
+  # @raise [Catalog::MarcService::MarcServiceError::CatalogResponseError] if other error occurred refreshing
+  # descMetadata from catalog source
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
   def self.create(cocina_request_object, assign_doi: false, id_minter: -> { SuriService.mint_id })
     new(id_minter:).create(cocina_request_object, assign_doi:)
@@ -26,7 +29,7 @@ class CreateObjectService
 
   # @raise Catalog::MarcService::MarcServiceError
   # @raise [Cocina::ValidationError] if externalIdentifier or sourceId not unique
-  def create(cocina_request_object, assign_doi: false)
+  def create(cocina_request_object, assign_doi: false) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     ensure_ur_admin_policy_exists(cocina_request_object)
     Cocina::ObjectValidator.validate(cocina_request_object)
     updated_cocina_request_object = merge_access_for(cocina_request_object)
@@ -63,9 +66,13 @@ class CreateObjectService
   # If an object references the Ur-AdminPolicy, it has to exist first.
   # This is particularly important in testing, where the repository may be empty.
   def ensure_ur_admin_policy_exists(cocina_object)
-    return unless Settings.enabled_features.create_ur_admin_policy && cocina_object.administrative.hasAdminPolicy == Settings.ur_admin_policy.druid
+    unless Settings.enabled_features.create_ur_admin_policy &&
+           cocina_object.administrative.hasAdminPolicy == Settings.ur_admin_policy.druid
+      return
+    end
 
-    CocinaObjectStore.exists?(Settings.ur_admin_policy.druid, type: CocinaObjectStore::ADMIN_POLICY) || UrAdminPolicyFactory.create
+    CocinaObjectStore.exists?(Settings.ur_admin_policy.druid,
+                              type: CocinaObjectStore::ADMIN_POLICY) || UrAdminPolicyFactory.create
   end
 
   # Merge the rights, use statement, license and copyright statement from the
@@ -106,11 +113,11 @@ class CreateObjectService
     cocina_object.new(identification: identification.new(doi: Doi.for(druid: cocina_object.externalIdentifier)))
   end
 
-  # Converts from Cocina::Models::RequestDRO|RequestCollection|RequestAdminPolicy to Cocina::Models::DRO|Collection||AdminPolicy
+  # Converts from Cocina::Models::RequestDRO|RequestCollection|RequestAdminPolicy to Cocina::Models::DRO|Collection||AdminPolicy # rubocop:disable Layout/LineLength
   # rubocop:disable Metrics/AbcSize
   # rubocop:disable Metrics/CyclomaticComplexity
   # rubocop:disable Metrics/PerceivedComplexity
-  def cocina_from_request(cocina_request_object, druid, assign_doi)
+  def cocina_from_request(cocina_request_object, druid, assign_doi) # rubocop:disable Metrics/MethodLength
     props = cocina_request_object.to_h.with_indifferent_access
     props[:externalIdentifier] = druid
 
@@ -133,7 +140,10 @@ class CreateObjectService
       fileset_id = fileset_props[:externalIdentifier] || Cocina::IdGenerator.generate_or_existing_fileset_id(druid:)
       fileset_props[:externalIdentifier] = fileset_id
       Array(fileset_props.dig(:structural, :contains)).each do |file_props|
-        file_id = file_props[:externalIdentifier] || Cocina::IdGenerator.generate_or_existing_file_id(druid:, resource_id: fileset_id, file_id: file_props[:filename])
+        file_id = file_props[:externalIdentifier] ||
+                  Cocina::IdGenerator.generate_or_existing_file_id(druid:,
+                                                                   resource_id: fileset_id,
+                                                                   file_id: file_props[:filename])
         file_props[:externalIdentifier] = file_id
       end
     end

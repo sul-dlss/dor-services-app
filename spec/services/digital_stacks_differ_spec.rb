@@ -152,7 +152,8 @@ RSpec.describe DigitalStacksDiffer do
   let(:purl_fetcher_reader) { instance_double(PurlFetcher::Client::Reader, files_by_digest: purl_files_by_digest) }
 
   before do
-    allow(PurlFetcher::Client::Reader).to receive(:new).with(host: Settings.purl_fetcher.url).and_return(purl_fetcher_reader)
+    allow(PurlFetcher::Client::Reader).to receive(:new)
+      .with(host: Settings.purl_fetcher.url).and_return(purl_fetcher_reader)
   end
 
   it 'returns diff' do
@@ -166,7 +167,8 @@ RSpec.describe DigitalStacksDiffer do
     end
 
     it 'returns diff' do
-      expect(described_class.call(cocina_object:)).to eq(['not_on_shelves.jpg', 'changed_on_shelves.jpg', 'same_on_shelves.jpg'])
+      expect(described_class.call(cocina_object:)).to eq(['not_on_shelves.jpg', 'changed_on_shelves.jpg',
+                                                          'same_on_shelves.jpg'])
     end
   end
 
@@ -191,7 +193,10 @@ RSpec.describe DigitalStacksDiffer do
     end
 
     it 'raises an error' do
-      expect { described_class.call(cocina_object:) }.to raise_error(DigitalStacksDiffer::Error, 'Unable to find md5 for file druid:hj185xx2222/not_on_shelves.jpg')
+      expect do
+        described_class.call(cocina_object:)
+      end.to raise_error(DigitalStacksDiffer::Error,
+                         'Unable to find md5 for file druid:hj185xx2222/not_on_shelves.jpg')
     end
   end
 end

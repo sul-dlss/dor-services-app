@@ -2,7 +2,7 @@
 
 SEEDS_DIR = 'seeds'
 
-namespace :seed do # rubocop:disable Metrics/BlockLength
+namespace :seed do
   desc 'Stash an APO, Collection, or Agreement seed'
   task :stash, [:druid] => :environment do |_task, args|
     FileUtils.mkdir_p(SEEDS_DIR)
@@ -32,7 +32,9 @@ namespace :seed do # rubocop:disable Metrics/BlockLength
 
     cocina_request_object = Cocina::Models.build_request(cocina_params)
 
-    raise 'Only Collections and APOs are supported' if cocina_request_object.dro? && cocina_request_object.type != Cocina::Models::ObjectType.agreement
+    if cocina_request_object.dro? && cocina_request_object.type != Cocina::Models::ObjectType.agreement
+      raise 'Only Collections and APOs are supported'
+    end
 
     CreateObjectService.create(cocina_request_object, id_minter: -> { druid })
 

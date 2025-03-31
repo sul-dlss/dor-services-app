@@ -4,24 +4,6 @@ module Indexing
   module Builders
     # Extracts useful text for searching from Cocina Description
     class AllSearchTextBuilder
-      def self.build(cocina_description)
-        new(cocina_description).build
-      end
-
-      def initialize(cocina_description)
-        @cocina_description = cocina_description
-      end
-
-      def build
-        @text = []
-        recurse(cocina_description)
-        text.join(' ')
-      end
-
-      private
-
-      attr_reader :cocina_description, :text
-
       # this originally had displayLabel, but Arcadia recommends against it
       TEXT_KEYS = %i[
         value
@@ -42,6 +24,24 @@ module Indexing
         name
         location
       ].freeze
+
+      def self.build(cocina_description)
+        new(cocina_description).build
+      end
+
+      def initialize(cocina_description)
+        @cocina_description = cocina_description
+      end
+
+      def build
+        @text = []
+        recurse(cocina_description)
+        text.join(' ')
+      end
+
+      private
+
+      attr_reader :cocina_description, :text
 
       def recurse(desc)
         TEXT_KEYS.each do |key|

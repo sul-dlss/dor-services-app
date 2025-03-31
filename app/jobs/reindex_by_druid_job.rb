@@ -16,7 +16,8 @@ class ReindexByDruidJob
     Indexer.reindex(cocina_object:)
     ack!
   rescue CocinaObjectStore::CocinaObjectNotFoundError
-    Honeybadger.notify('Cannot reindex since not found. This may be because applications (e.g., PresCat) are creating workflow steps for deleted objects.',
+    Honeybadger.notify('Cannot reindex since not found. This may be because applications (e.g., PresCat) are ' \
+                       'creating workflow steps for deleted objects.',
                        { druid: druid_from_message(msg) })
     Rails.logger.info("Cannot reindex #{druid_from_message(msg)} by druid since it is not found.")
     ack!

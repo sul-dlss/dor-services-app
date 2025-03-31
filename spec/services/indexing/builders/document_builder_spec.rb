@@ -15,7 +15,8 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
   let(:trace_id) { 'abc123' }
 
   let(:releasable) do
-    instance_double(Indexing::Indexers::ReleasableIndexer, to_solr: { 'released_to_ssim' => %w[searchworks earthworks] })
+    instance_double(Indexing::Indexers::ReleasableIndexer,
+                    to_solr: { 'released_to_ssim' => %w[searchworks earthworks] })
   end
   let(:workflows) do
     instance_double(Indexing::Indexers::WorkflowsIndexer, to_solr: { 'wf_ssim' => ['accessionWF'] })
@@ -99,7 +100,8 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
                 administrative_tags: [],
                 parent_collections: [],
                 trace_id:)
-        expect(Honeybadger).to have_received(:notify).with('Bad association found on druid:xx999xx9999. druid:bc999df2323 could not be found')
+        expect(Honeybadger).to have_received(:notify)
+          .with('Bad association found on druid:xx999xx9999. druid:bc999df2323 could not be found')
       end
     end
 
@@ -115,7 +117,9 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
       it 'logs a data error to honeybadger' do
         expect { indexer }.to raise_error(TypeError, error_message)
 
-        expect(Honeybadger).to have_received(:notify).once.with(/Unexpected indexing exception/, hash_including(:backtrace, :context, :error_message, :tags))
+        expect(Honeybadger).to have_received(:notify).once.with(/Unexpected indexing exception/,
+                                                                hash_including(:backtrace, :context, :error_message,
+                                                                               :tags))
       end
     end
   end

@@ -30,7 +30,8 @@ Daemons.run_proc(
     first_doc_str = "#{response_docs.first['id']} (#{response_docs.first['timestamp']})"
     last_doc_str = "#{response_docs.last['id']} (#{response_docs.last['timestamp']})"
     # The Daemons gem will redirect this to its log
-    puts "#{Time.zone.now}\tGot #{response_docs.size} Solr doc ids in #{solr_query_seconds}\t#{first_doc_str} - #{last_doc_str}"
+    puts "#{Time.zone.now}\tGot #{response_docs.size} Solr doc ids in #{solr_query_seconds}\t#{first_doc_str} - " \
+         "#{last_doc_str}"
 
     batches = response_docs.each_slice(Settings.rolling_indexer.batch_size)
     batches.each.with_index do |batch, _index|
@@ -38,7 +39,10 @@ Daemons.run_proc(
       solr_docs = Parallel.filter_map(batch, in_processes: Settings.rolling_indexer.num_parallel_processes) do |doc|
         identifier = doc['id'].scrub('')
         # Occasionally, we've seen invalid bytes in the identifier, so try to catch those:
-        Honeybadger.notify("Identifier isn't valid utf-8", { identifier:, bytes: identifier.unpack('C*') }) unless doc['id'].valid_encoding?
+        unless doc['id'].valid_encoding?
+          Honeybadger.notify("Identifier isn't valid utf-8",
+                             { identifier:, bytes: identifier.unpack('C*') })
+        end
         begin
           cocina_object = CocinaObjectStore.find(identifier)
           # This returns a Solr doc hash
@@ -64,13 +68,16 @@ Daemons.run_proc(
       first_doc_str = "#{batch.first['id']} (#{batch.first['timestamp']})"
       last_doc_str = "#{batch.last['id']} (#{batch.last['timestamp']})"
       # The Daemons gem will redirect this to its log
-      puts "#{Time.zone.now}\tIndexed #{Settings.rolling_indexer.batch_size} documents in #{batch_run_seconds}\t#{first_doc_str} - #{last_doc_str}"
+      puts "#{Time.zone.now}\tIndexed #{Settings.rolling_indexer.batch_size} documents in #{batch_run_seconds}\t" \
+           "#{first_doc_str} - #{last_doc_str}"
     end
     indexing_time = (Time.zone.now - query_end_time).round(3)
-    puts "#{Time.zone.now}\tIndexed #{response_docs.size} documents in #{indexing_time}\t#{first_doc_str} - #{last_doc_str}"
+    puts "#{Time.zone.now}\tIndexed #{response_docs.size} documents in #{indexing_time}\t" \
+         "#{first_doc_str} - #{last_doc_str}"
 
     # Pause for the last batch so that solr can commit before querying it again.
-    puts "#{Time.zone.now}\tsleeping for #{Settings.rolling_indexer.pause_for_solr} seconds to ensure next Solr id query has latest changes"
+    puts "#{Time.zone.now}\tsleeping for #{Settings.rolling_indexer.pause_for_solr} seconds to ensure " \
+         'next Solr id query has latest changes'
     sleep(Settings.rolling_indexer.pause_for_solr)
   end
 end

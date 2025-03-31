@@ -12,7 +12,9 @@ RSpec.describe ItemQueryService do
   end
   let(:created_at) { Time.zone.now }
   let(:updated_at) { Time.zone.now }
-  let(:cocina_object_with_metadata) { Cocina::Models.with_metadata(cocina_object, '1', created: created_at, modified: updated_at) }
+  let(:cocina_object_with_metadata) do
+    Cocina::Models.with_metadata(cocina_object, '1', created: created_at, modified: updated_at)
+  end
 
   before do
     allow(CocinaObjectStore).to receive(:find).with(druid).and_return(cocina_object_with_metadata)
@@ -125,7 +127,9 @@ RSpec.describe ItemQueryService do
     context 'when any items are uncombinable' do
       before do
         allow(described_class).to receive(:find_combinable_item)
-        allow(described_class).to receive(:find_combinable_item).with(druid).and_raise(described_class::UncombinableItemError, "Item #{druid} is dark")
+        allow(described_class).to receive(:find_combinable_item).with(druid).and_raise(
+          described_class::UncombinableItemError, "Item #{druid} is dark"
+        )
         allow(described_class).to receive(:check_virtual)
         allow(described_class).to receive(:check_accessioned)
       end
@@ -173,18 +177,24 @@ RSpec.describe ItemQueryService do
           access: { view: 'citation-only', download: 'none' }
         )
       end
-      let(:cocina_object_constituent_with_metadata) { Cocina::Models.with_metadata(cocina_object_constituent, '1', created: created_at, modified: updated_at) }
+      let(:cocina_object_constituent_with_metadata) do
+        Cocina::Models.with_metadata(cocina_object_constituent, '1', created: created_at, modified: updated_at)
+      end
 
       let(:cocina_object_constituent1) do
         build(:dro, id: constituent_druids[1]).new(
           access: { view: 'dark' }
         )
       end
-      let(:cocina_object_constituent1_with_metadata) { Cocina::Models.with_metadata(cocina_object_constituent1, '1', created: created_at, modified: updated_at) }
+      let(:cocina_object_constituent1_with_metadata) do
+        Cocina::Models.with_metadata(cocina_object_constituent1, '1', created: created_at, modified: updated_at)
+      end
 
       before do
-        allow(CocinaObjectStore).to receive(:find).with(constituent_druids[0]).and_return(cocina_object_constituent_with_metadata)
-        allow(CocinaObjectStore).to receive(:find).with(constituent_druids[1]).and_return(cocina_object_constituent1_with_metadata)
+        allow(CocinaObjectStore).to receive(:find).with(constituent_druids[0])
+                                                  .and_return(cocina_object_constituent_with_metadata)
+        allow(CocinaObjectStore).to receive(:find).with(constituent_druids[1])
+                                                  .and_return(cocina_object_constituent1_with_metadata)
         allow(described_class).to receive(:check_virtual)
       end
 
@@ -215,10 +225,13 @@ RSpec.describe ItemQueryService do
           }
         )
       end
-      let(:cocina_object_constituent_with_metadata) { Cocina::Models.with_metadata(cocina_object_constituent, '1', created: created_at, modified: updated_at) }
+      let(:cocina_object_constituent_with_metadata) do
+        Cocina::Models.with_metadata(cocina_object_constituent, '1', created: created_at, modified: updated_at)
+      end
 
       before do
-        allow(CocinaObjectStore).to receive(:find).with(constituent_druid).and_return(cocina_object_constituent_with_metadata)
+        allow(CocinaObjectStore).to receive(:find)
+          .with(constituent_druid).and_return(cocina_object_constituent_with_metadata)
       end
 
       it 'returns an error' do

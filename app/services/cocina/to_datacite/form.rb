@@ -6,7 +6,8 @@ module Cocina
     #  see https://support.datacite.org/reference/dois-2#put_dois-id
     class Form
       # @param [Cocina::Models::Description] cocina_desc
-      # @return [NilClass, Hash] the DataCite types attributes, conforming to the expectations of HTTP PUT request to DataCite
+      # @return [NilClass, Hash] the DataCite types attributes, conforming to the expectations of HTTP PUT request
+      # to DataCite
       def self.type_attributes(cocina_desc)
         new(cocina_desc).type_attributes
       end
@@ -15,7 +16,8 @@ module Cocina
         @cocina_desc = cocina_desc
       end
 
-      # @return [NilClass, Hash] the DataCite types attributes, conforming to the expectations of HTTP PUT request to DataCite
+      # @return [NilClass, Hash] the DataCite types attributes, conforming to the expectations of HTTP PUT request
+      # to DataCite
       def type_attributes
         return unless resource_type_general || resource_type
 
@@ -31,7 +33,9 @@ module Cocina
 
       # @return String DataCite resourceTypeGeneral value
       def resource_type_general
-        @resource_type_general ||= Array(cocina_desc.form).find { |cocina_form| datacite_resource_types_form?(cocina_form) }&.value
+        @resource_type_general ||= Array(cocina_desc.form).find do |cocina_form|
+          datacite_resource_types_form?(cocina_form)
+        end&.value
       end
 
       # @return [String] DataCite resourceType value

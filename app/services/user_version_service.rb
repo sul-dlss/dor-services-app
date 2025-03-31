@@ -31,7 +31,8 @@ class UserVersionService
     user_version = user_version_for(druid:, user_version:)
     user_version.update!(state: withdraw ? 'withdrawn' : 'available')
     WithdrawRestoreJob.perform_later(user_version:)
-    EventFactory.create(druid:, event_type: 'user_version_withdrawn', data: { version: user_version.to_s, withdrawn: withdraw })
+    EventFactory.create(druid:, event_type: 'user_version_withdrawn',
+                        data: { version: user_version.to_s, withdrawn: withdraw })
     user_version
   rescue ActiveRecord::RecordInvalid => e
     raise(UserVersioningError, e.message)
@@ -90,7 +91,8 @@ class UserVersionService
         next if user_version.permanently_withdrawn?
 
         user_version.permanently_withdrawn!
-        EventFactory.create(druid:, event_type: 'user_version_permanently_withdrawn', data: { version: user_version.to_s })
+        EventFactory.create(druid:, event_type: 'user_version_permanently_withdrawn',
+                            data: { version: user_version.to_s })
       end
     end
   end
@@ -105,7 +107,8 @@ class UserVersionService
     raise(UserVersioningError, "RepositoryObject not found for #{druid}")
   end
 
-  # @return [RepositoryObjectVersion] The repository object version for the version number or for the head version if version not provided
+  # @return [RepositoryObjectVersion] The repository object version for the version number or for the head version if
+  # version not provided
   # @raise [UserVersionService::UserVersioningError] RepositoryObjectVersion not found for the version
   def self.repository_object_version(druid:, version:)
     repository_object = repository_object(druid:)

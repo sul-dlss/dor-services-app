@@ -8,7 +8,9 @@ RSpec.describe 'Get the object' do
 
   context 'when the requested object is an item' do
     let(:response_model) { response.parsed_body.deep_symbolize_keys }
-    let(:object) { create(:repository_object, :with_repository_object_version, source_id: 'googlebooks:d1', version: 1) }
+    let(:object) do
+      create(:repository_object, :with_repository_object_version, source_id: 'googlebooks:d1', version: 1)
+    end
 
     context 'when the object exists with full metadata' do
       let(:expected) do
@@ -164,7 +166,8 @@ RSpec.describe 'Get the object' do
     let(:druid) { 'druid:mf309wt4240' }
 
     before do
-      repository_object_version = build(:repository_object_version, :admin_policy_repository_object_version, external_identifier: druid, version: 1, administrative: {
+      repository_object_version = build(:repository_object_version, :admin_policy_repository_object_version,
+                                        external_identifier: druid, version: 1, administrative: {
                                           registrationWorkflow: %w[registrationWF goobiWF],
                                           disseminationWorkflow: 'wasCrawlPreassemblyWF',
                                           hasAdminPolicy: 'druid:bc123df4567',
@@ -194,7 +197,8 @@ RSpec.describe 'Get the object' do
                                             }
                                           ]
                                         })
-      create(:repository_object, :admin_policy, :with_repository_object_version, repository_object_version:, external_identifier: druid)
+      create(:repository_object, :admin_policy, :with_repository_object_version, repository_object_version:,
+                                                                                 external_identifier: druid)
     end
 
     context 'when the object exists with all metadata' do

@@ -27,7 +27,7 @@ class EmbargoReleaseService
     @druid = druid
   end
 
-  def release
+  def release # rubocop:disable Metrics/AbcSize
     return unless WorkflowStateService.accessioned?(druid:, version:)
 
     return unless VersionService.can_open?(druid:, version: version)
@@ -64,9 +64,10 @@ class EmbargoReleaseService
   end
 
   def access_props_for(cocina_object)
-    # Copy access > embargo > useAndReproductionStatement, view, download, location, controlledDigitalLending to access >
-    # Remove access > embargo
-    access_props = cocina_object.access.to_h.except(:view, :download, :location, :controlledDigitalLending, :useAndReproductionStatement)
+    # Copy access > embargo > useAndReproductionStatement, view, download, location, controlledDigitalLending
+    # to access > Remove access > embargo
+    access_props = cocina_object.access.to_h.except(:view, :download, :location, :controlledDigitalLending,
+                                                    :useAndReproductionStatement)
     access_props.merge!(access_props[:embargo].except(:releaseDate))
     # Remove embargo
     access_props.delete(:embargo)

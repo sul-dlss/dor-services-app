@@ -6,7 +6,8 @@ module Cocina
     #  see https://support.datacite.org/reference/dois-2#put_dois-id
     class Subject
       # @param [Cocina::Models::Description] cocina_desc
-      # @return [NilClass,Array<Hash>] list of DataCite subjects attributes, conforming to the expectations of HTTP PUT request to DataCite
+      # @return [NilClass,Array<Hash>] list of DataCite subjects attributes, conforming to the expectations of
+      # HTTP PUT request to DataCite
       def self.subjects_attributes(cocina_desc)
         new(cocina_desc).subjects_attributes
       end
@@ -15,7 +16,8 @@ module Cocina
         @cocina_desc = cocina_desc
       end
 
-      # @return [NilClass,Array<Hash>] list of DataCite subjects attributes, conforming to the expectations of HTTP PUT request to DataCite
+      # @return [NilClass,Array<Hash>] list of DataCite subjects attributes, conforming to the expectations of
+      # HTTP PUT request to DataCite
       def subjects_attributes
         return if cocina_desc&.subject.blank?
 

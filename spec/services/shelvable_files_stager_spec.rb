@@ -43,21 +43,23 @@ RSpec.describe ShelvableFilesStager do
       # Note that for this test, the expected file size check passes because there are no matching files in the cocina.
       it 'retrieve files from preservation' do
         stage
-        expect(Preservation::Client.objects).to have_received(:content).with(druid:, filepath: 'file1.txt', version: 2,
-                                                                             on_data: an_instance_of(Proc))
-        expect(Preservation::Client.objects).to have_received(:content).with(druid:, filepath: 'dir/file2.txt', version: 2,
-                                                                             on_data: an_instance_of(Proc))
+        expect(Preservation::Client.objects).to have_received(:content)
+          .with(druid:, filepath: 'file1.txt', version: 2, on_data: an_instance_of(Proc))
+        expect(Preservation::Client.objects).to have_received(:content)
+          .with(druid:, filepath: 'dir/file2.txt', version: 2, on_data: an_instance_of(Proc))
       end
     end
 
     context 'when the content files are not found in preservation' do
       before do
-        allow(Preservation::Client.objects).to receive(:content).with(druid:, filepath: 'file1.txt', version: 2,
-                                                                      on_data: an_instance_of(Proc))
-        allow(Preservation::Client.objects).to receive(:content).with(druid:, filepath: 'dir/file2.txt', version: 2,
-                                                                      on_data: an_instance_of(Proc)).and_raise(Preservation::Client::NotFoundError)
-        allow(Preservation::Client.objects).to receive(:content).with(druid:, filepath: 'dir/file2.txt', version: 1,
-                                                                      on_data: an_instance_of(Proc)).and_raise(Preservation::Client::NotFoundError)
+        allow(Preservation::Client.objects).to receive(:content)
+          .with(druid:, filepath: 'file1.txt', version: 2, on_data: an_instance_of(Proc))
+        allow(Preservation::Client.objects).to receive(:content)
+          .with(druid:, filepath: 'dir/file2.txt', version: 2, on_data: an_instance_of(Proc))
+          .and_raise(Preservation::Client::NotFoundError)
+        allow(Preservation::Client.objects).to receive(:content)
+          .with(druid:, filepath: 'dir/file2.txt', version: 1, on_data: an_instance_of(Proc))
+          .and_raise(Preservation::Client::NotFoundError)
       end
 
       it 'raises' do
@@ -67,22 +69,23 @@ RSpec.describe ShelvableFilesStager do
 
     context 'when the content file is found on version - 1' do
       before do
-        allow(Preservation::Client.objects).to receive(:content).with(druid:, filepath: 'file1.txt', version: 2,
-                                                                      on_data: an_instance_of(Proc))
-        allow(Preservation::Client.objects).to receive(:content).with(druid:, filepath: 'dir/file2.txt', version: 2,
-                                                                      on_data: an_instance_of(Proc)).and_raise(Preservation::Client::NotFoundError)
-        allow(Preservation::Client.objects).to receive(:content).with(druid:, filepath: 'dir/file2.txt', version: 1,
-                                                                      on_data: an_instance_of(Proc))
+        allow(Preservation::Client.objects).to receive(:content)
+          .with(druid:, filepath: 'file1.txt', version: 2, on_data: an_instance_of(Proc))
+        allow(Preservation::Client.objects).to receive(:content)
+          .with(druid:, filepath: 'dir/file2.txt', version: 2, on_data: an_instance_of(Proc))
+          .and_raise(Preservation::Client::NotFoundError)
+        allow(Preservation::Client.objects).to receive(:content)
+          .with(druid:, filepath: 'dir/file2.txt', version: 1, on_data: an_instance_of(Proc))
       end
 
       it 'retrieves the files from preservation' do
         stage
-        expect(Preservation::Client.objects).to have_received(:content).with(druid:, filepath: 'file1.txt', version: 2,
-                                                                             on_data: an_instance_of(Proc))
-        expect(Preservation::Client.objects).to have_received(:content).with(druid:, filepath: 'dir/file2.txt', version: 2,
-                                                                             on_data: an_instance_of(Proc))
-        expect(Preservation::Client.objects).to have_received(:content).with(druid:, filepath: 'dir/file2.txt', version: 1,
-                                                                             on_data: an_instance_of(Proc))
+        expect(Preservation::Client.objects).to have_received(:content)
+          .with(druid:, filepath: 'file1.txt', version: 2, on_data: an_instance_of(Proc))
+        expect(Preservation::Client.objects).to have_received(:content)
+          .with(druid:, filepath: 'dir/file2.txt', version: 2, on_data: an_instance_of(Proc))
+        expect(Preservation::Client.objects).to have_received(:content)
+          .with(druid:, filepath: 'dir/file2.txt', version: 1, on_data: an_instance_of(Proc))
       end
     end
 
@@ -90,10 +93,11 @@ RSpec.describe ShelvableFilesStager do
       let(:version) { 1 }
 
       before do
-        allow(Preservation::Client.objects).to receive(:content).with(druid:, filepath: 'file1.txt', version: 1,
-                                                                      on_data: an_instance_of(Proc))
-        allow(Preservation::Client.objects).to receive(:content).with(druid:, filepath: 'dir/file2.txt', version: 1,
-                                                                      on_data: an_instance_of(Proc)).and_raise(Preservation::Client::NotFoundError)
+        allow(Preservation::Client.objects).to receive(:content)
+          .with(druid:, filepath: 'file1.txt', version: 1, on_data: an_instance_of(Proc))
+        allow(Preservation::Client.objects).to receive(:content)
+          .with(druid:, filepath: 'dir/file2.txt', version: 1, on_data: an_instance_of(Proc))
+          .and_raise(Preservation::Client::NotFoundError)
       end
 
       it 'raises after only trying to retrieve version 1' do
@@ -103,7 +107,11 @@ RSpec.describe ShelvableFilesStager do
   end
 
   describe '#check_filesize' do
-    subject(:check_file_size) { described_class.new(filepaths:, cocina_object:, workspace_content_pathname: content_dir).send(:check_filesize, file_pathname: content_dir.join('file1.txt'), filepath: 'file1.txt', received: received_bytes) }
+    subject(:check_file_size) do
+      described_class.new(filepaths:, cocina_object:, workspace_content_pathname: content_dir)
+                     .send(:check_filesize, file_pathname: content_dir.join('file1.txt'),
+                                            filepath: 'file1.txt', received: received_bytes)
+    end
 
     let(:cocina_object) do
       build(:dro, id: druid, version: 2).new(access: { view: 'world' }, structural: Cocina::Models::DROStructural.new(
@@ -149,7 +157,10 @@ RSpec.describe ShelvableFilesStager do
       let(:received_bytes) { 10 }
 
       it 'raises' do
-        expect { check_file_size }.to raise_error('File copied from preservation was not the expected size. Expected 9 bytes for file1.txt; received 10 bytes.')
+        expect do
+          check_file_size
+        end.to raise_error('File copied from preservation was not the expected size. Expected 9 bytes for file1.txt; ' \
+                           'received 10 bytes.')
       end
     end
   end

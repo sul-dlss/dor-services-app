@@ -109,7 +109,8 @@ class AdministrativeTags
     @retry_count += 1
     raise if @retry_count > 5
 
-    Rails.logger.warn("Possible race condition creating tags: #{tags}.  This should only happen one time, otherwise this might be an error")
+    Rails.logger.warn("Possible race condition creating tags: #{tags}. " \
+                      'This should only happen one time, otherwise this might be an error')
     sleep(@retry_count)
     retry
   end
@@ -138,7 +139,8 @@ class AdministrativeTags
     @retry_count += 1
     raise if @retry_count > 5
 
-    Rails.logger.warn("Possible race condition updating tag: #{current} with #{new}.  This should only happen one time, otherwise this might be an error")
+    Rails.logger.warn("Possible race condition updating tag: #{current} with #{new}. " \
+                      'This should only happen one time, otherwise this might be an error')
     sleep(@retry_count)
     retry
   end

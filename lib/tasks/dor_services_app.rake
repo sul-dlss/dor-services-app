@@ -15,7 +15,8 @@ namespace :dsa do
 
   desc 'Move a user version'
   task :move_user_version, %i[druid user_version to_version] => :environment do |_task, args|
-    UserVersionService.move(druid: args[:druid], version: args[:to_version].to_i, user_version: args[:user_version].to_i)
+    UserVersionService.move(druid: args[:druid], version: args[:to_version].to_i,
+                            user_version: args[:user_version].to_i)
   end
 
   desc 'Closes a repository object without changing a user version'

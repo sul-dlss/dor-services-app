@@ -22,6 +22,7 @@ RSpec.describe Robots::DorRepo::Accession::SdrIngestTransfer, type: :robot do
   it 'preserves the object' do
     expect(perform).to be_nil # no return state defaults to completed.
     expect(PreservationIngestService).to have_received(:transfer).with(object)
-    expect(workflow_service).to have_received(:create_workflow_by_name).with(druid, 'preservationIngestWF', version: object.version, lane_id: 'low')
+    expect(workflow_service).to have_received(:create_workflow_by_name).with(druid, 'preservationIngestWF',
+                                                                             version: object.version, lane_id: 'low')
   end
 end

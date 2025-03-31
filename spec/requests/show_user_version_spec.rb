@@ -7,7 +7,8 @@ RSpec.describe 'Show solr for a user version' do
 
   context 'when found' do
     before do
-      repository_object = create(:repository_object, :with_repository_object_version, :closed, external_identifier: druid)
+      repository_object = create(:repository_object, :with_repository_object_version, :closed,
+                                 external_identifier: druid)
       create(:repository_object_version, repository_object:, version: 2, closed_at: Time.zone.now)
       create(:user_version, version: 1, repository_object_version: repository_object.versions.first)
       create(:user_version, version: 2, repository_object_version: repository_object.versions.last)

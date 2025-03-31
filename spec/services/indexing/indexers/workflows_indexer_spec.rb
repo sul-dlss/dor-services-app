@@ -113,7 +113,8 @@ RSpec.describe Indexing::Indexers::WorkflowsIndexer do
     end
     let(:workflow_client) { instance_double(Dor::Workflow::Client, workflow_routes:) }
     let(:workflow_routes) do
-      instance_double(Dor::Workflow::Client::WorkflowRoutes, all_workflows: Dor::Workflow::Response::Workflows.new(xml:))
+      instance_double(Dor::Workflow::Client::WorkflowRoutes,
+                      all_workflows: Dor::Workflow::Response::Workflows.new(xml:))
     end
 
     before do
@@ -129,8 +130,8 @@ RSpec.describe Indexing::Indexers::WorkflowsIndexer do
       let(:doc) { solr_doc['workflow_status_ssim'] }
 
       it 'returns document' do
-        expect(doc).to eq ['accessionWF|completed|0', 'assemblyWF|active|1', 'disseminationWF|completed|0', 'hydrusAssemblyWF|completed|0',
-                           'versioningWF|completed|0']
+        expect(doc).to eq ['accessionWF|completed|0', 'assemblyWF|active|1', 'disseminationWF|completed|0',
+                           'hydrusAssemblyWF|completed|0', 'versioningWF|completed|0']
       end
     end
   end

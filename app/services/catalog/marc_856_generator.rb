@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ClassLength
 module Catalog
   # Creates a hash of identifiers and MARC 856 field data given a cocina object.
   class Marc856Generator
@@ -28,7 +27,8 @@ module Catalog
     # x - sdr_purl_marker (required): The string SDR-PURL as a marker to identify 856 entries managed through DOR
     # x - object_type (required): Object type (<identityMetadata><objectType>) - item, collection,
     #                         (future types of sets to describe other aggregations like albums, atlases, etc)
-    # x - barcode (optional): the barcode if known (<identityMetadata><otherId name="barcode">, recorded as barcode:barcode-value
+    # x - barcode (optional): the barcode if known (<identityMetadata><otherId name="barcode">,
+    # recorded as barcode:barcode-value
     # x - thumbnail (optional): the file-id to be used as thumb if available, recorded as file:file-id-value
     # x - collections (optional): Collection(s) this object is a member of, formatted as: druid:catalog_record_id:label
     # x - parts-label (optional):
@@ -118,7 +118,7 @@ module Catalog
 
     # returns the collection information subfields if exists
     # @return [String] the collection information druid-value:catalog-record-id-value:title format
-    def subfield_x_collections
+    def subfield_x_collections # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
       return unless cocina_object.respond_to?(:structural) && cocina_object.structural
 
       collections = cocina_object.structural.isMemberOf
@@ -129,7 +129,10 @@ module Catalog
         next unless ReleaseTagService.released_to_searchworks?(cocina_object: collection)
 
         catalog_link = collection.identification&.catalogLinks&.find { |link| link.catalog == catalog }
-        collection_info << { code: 'x', value: "collection:#{collection.externalIdentifier.sub('druid:', '')}:#{catalog_link&.catalogRecordId}:#{Cocina::Models::Builders::TitleBuilder.build(collection.description.title)}" }
+        collection_info << { code: 'x',
+                             value: "collection:#{collection.externalIdentifier.delete_prefix('druid:')}:" \
+                                    "#{catalog_link&.catalogRecordId}:" \
+                                    "#{Cocina::Models::Builders::TitleBuilder.build(collection.description.title)}" }
       end
 
       collection_info
@@ -144,7 +147,7 @@ module Catalog
       end
     end
 
-    def subfield_x_rights
+    def subfield_x_rights # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
       return [{ code: 'x', value: "rights:#{access.view}" }] unless access.respond_to?(:download)
 
       values = []
@@ -177,13 +180,15 @@ module Catalog
       ['part name', 'part number']
     end
 
-    def part_label
+    def part_label # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
       @part_label ||= begin
         title_info = cocina_object.description.title.first
         # Need to check both structuredValue on title_info and in parallelValues
         structured_values = []
         structured_values << title_info.structuredValue if title_info.structuredValue.present?
-        title_info.parallelValue.each { |parallel_value| structured_values << parallel_value.structuredValue if parallel_value.structuredValue.present? }
+        title_info.parallelValue.each do |parallel_value|
+          structured_values << parallel_value.structuredValue if parallel_value.structuredValue.present?
+        end
 
         part_parts = []
         structured_values.each do |structured_value|
@@ -201,4 +206,3 @@ module Catalog
     end
   end
 end
-# rubocop:enable Metrics/ClassLength

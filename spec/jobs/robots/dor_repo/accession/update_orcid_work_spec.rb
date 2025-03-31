@@ -117,23 +117,31 @@ RSpec.describe Robots::DorRepo::Accession::UpdateOrcidWork, type: :robot do
   context 'when adding a work' do
     it 'creates orcid work and AR orcid work' do
       perform
-      expect(mais_orcid_client).to have_received(:fetch_orcid_user).with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X')
+      expect(mais_orcid_client).to have_received(:fetch_orcid_user)
+        .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X')
       expect(orcid_client).to have_received(:add_work)
-        .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X', work:, token: 'FAKE-294e-4bc8-8afd-96315b06ae04')
-      ar_orcid_work = OrcidWork.find_by(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X', druid: 'druid:bc234fg5678')
+        .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X', work:,
+              token: 'FAKE-294e-4bc8-8afd-96315b06ae04')
+      ar_orcid_work = OrcidWork.find_by(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X',
+                                        druid: 'druid:bc234fg5678')
       expect(ar_orcid_work.put_code).to eq('12345')
       expect(ar_orcid_work.md5).to eq('78aa93d1819c1bf3c7a8dceba861c613')
     end
   end
 
   context 'when updating a work' do
-    let(:ar_orcid_work) { OrcidWork.create(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X', druid: 'druid:bc234fg5678', put_code: '45678', md5: 'd41d8cd98f00b204e9800998ecf8427e') }
+    let(:ar_orcid_work) do
+      OrcidWork.create(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X',
+                       druid: 'druid:bc234fg5678', put_code: '45678', md5: 'd41d8cd98f00b204e9800998ecf8427e')
+    end
 
     it 'updates orcid work and AR orcid work' do
       expect { perform }.to change { ar_orcid_work.reload.md5 }.to('78aa93d1819c1bf3c7a8dceba861c613')
-      expect(mais_orcid_client).to have_received(:fetch_orcid_user).with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X')
+      expect(mais_orcid_client).to have_received(:fetch_orcid_user)
+        .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X')
       expect(orcid_client).to have_received(:update_work)
-        .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X', work:, token: 'FAKE-294e-4bc8-8afd-96315b06ae04', put_code: '45678')
+        .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X', work:,
+              token: 'FAKE-294e-4bc8-8afd-96315b06ae04', put_code: '45678')
     end
   end
 
@@ -142,23 +150,32 @@ RSpec.describe Robots::DorRepo::Accession::UpdateOrcidWork, type: :robot do
       []
     end
 
-    let!(:ar_orcid_work) { OrcidWork.create(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X', druid: 'druid:bc234fg5678', put_code: '45678', md5: 'd41d8cd98f00b204e9800998ecf8427e') }
+    let!(:ar_orcid_work) do
+      OrcidWork.create(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X',
+                       druid: 'druid:bc234fg5678', put_code: '45678', md5: 'd41d8cd98f00b204e9800998ecf8427e')
+    end
 
     it 'deletes orcid work and AR orcid work' do
       perform
       expect { ar_orcid_work.reload }.to raise_error(ActiveRecord::RecordNotFound)
-      expect(mais_orcid_client).to have_received(:fetch_orcid_user).with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X')
+      expect(mais_orcid_client).to have_received(:fetch_orcid_user)
+        .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X')
       expect(orcid_client).to have_received(:delete_work)
-        .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X', token: 'FAKE-294e-4bc8-8afd-96315b06ae04', put_code: '45678')
+        .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X',
+              token: 'FAKE-294e-4bc8-8afd-96315b06ae04', put_code: '45678')
     end
   end
 
   context 'when work has not changed' do
-    let(:ar_orcid_work) { OrcidWork.create(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X', druid: 'druid:bc234fg5678', put_code: '45678', md5: '78aa93d1819c1bf3c7a8dceba861c613') }
+    let(:ar_orcid_work) do
+      OrcidWork.create(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X',
+                       druid: 'druid:bc234fg5678', put_code: '45678', md5: '78aa93d1819c1bf3c7a8dceba861c613')
+    end
 
     it 'does nothing' do
       expect { perform }.not_to(change { ar_orcid_work })
-      expect(mais_orcid_client).to have_received(:fetch_orcid_user).with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X')
+      expect(mais_orcid_client).to have_received(:fetch_orcid_user)
+        .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X')
       expect(orcid_client).not_to have_received(:update_work)
     end
   end
@@ -175,7 +192,8 @@ RSpec.describe Robots::DorRepo::Accession::UpdateOrcidWork, type: :robot do
 
     it 'does nothing' do
       expect { perform }.not_to(change(OrcidWork, :count))
-      expect(mais_orcid_client).to have_received(:fetch_orcid_user).with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X')
+      expect(mais_orcid_client).to have_received(:fetch_orcid_user)
+        .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X')
       expect(orcid_client).not_to have_received(:update_work)
     end
   end
@@ -187,7 +205,8 @@ RSpec.describe Robots::DorRepo::Accession::UpdateOrcidWork, type: :robot do
 
     it 'does nothing' do
       expect { perform }.not_to(change(OrcidWork, :count))
-      expect(mais_orcid_client).to have_received(:fetch_orcid_user).with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X')
+      expect(mais_orcid_client).to have_received(:fetch_orcid_user)
+        .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X')
       expect(orcid_client).not_to have_received(:update_work)
     end
   end
@@ -206,7 +225,8 @@ RSpec.describe Robots::DorRepo::Accession::UpdateOrcidWork, type: :robot do
   #   let(:exportable) { false }
 
   #   it 'raises an error' do
-  #     expect { perform }.to raise_error(RuntimeError, /Item requested a DOI be updated, but it doesn't meet all the preconditions/)
+  #     expect { perform }.to raise_error(RuntimeError, /Item requested a DOI be updated, but it doesn't meet all the
+  #     preconditions/)
   #     expect(Cocina::ToDatacite::Attributes).to have_received(:exportable?).with(object)
   #   end
   # end

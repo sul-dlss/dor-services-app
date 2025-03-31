@@ -14,7 +14,11 @@ RSpec.describe CleanupService do
   let(:export_pathname) { Pathname(Settings.cleanup.local_export_home) }
   let(:bag_pathname) { export_pathname.join(druid.split(':').last) }
   let(:tarfile_pathname) { export_pathname.join("#{bag_pathname}.tar") }
-  let(:workspace_backup_path) { Pathname(Settings.cleanup.local_backup_path).join(File.basename(workitem_pathname), File.basename(workspace_root_pathname)) } # e.g. tmp/stopped/aa123bb4567/workspace
+  # e.g. tmp/stopped/aa123bb4567/workspace
+  let(:workspace_backup_path) do
+    Pathname(Settings.cleanup.local_backup_path).join(File.basename(workitem_pathname),
+                                                      File.basename(workspace_root_pathname))
+  end
 
   before do
     allow(described_class).to receive(:new).and_return(service)
@@ -50,13 +54,14 @@ RSpec.describe CleanupService do
   end
 
   describe '.cleanup_by_druid' do
-    before do
-      allow(service).to receive(:cleanup_export)
-    end
-
-    it 'calls cleanup_export' do
+    it 'can do a complete cleanup' do
+      expect(workitem_pathname.join('content')).to exist
+      expect(bag_pathname).to exist
+      expect(tarfile_pathname).to exist
       described_class.cleanup_by_druid(druid)
-      expect(service).to have_received(:cleanup_export).once
+      expect(workitem_pathname.parent.parent.parent.parent).not_to exist
+      expect(bag_pathname).not_to exist
+      expect(tarfile_pathname).not_to exist
     end
   end
 
@@ -77,7 +82,8 @@ RSpec.describe CleanupService do
       before do
         allow(VersionService).to receive_messages(can_open?: false)
         allow(WorkflowClientFactory).to receive(:build).and_return(client)
-        allow(client).to receive(:workflow_status).with(druid:, workflow: 'preservationIngestWF', process: 'complete-ingest').and_return('completed')
+        allow(client).to receive(:workflow_status).with(druid:, workflow: 'preservationIngestWF',
+                                                        process: 'complete-ingest').and_return('completed')
       end
 
       it 'discards draft, backups, cleans up content, and delete workflows' do
@@ -105,7 +111,9 @@ RSpec.describe CleanupService do
       end
 
       it 'cleans up without changing repository object' do
-        expect { described_class.stop_accessioning(druid) }.to output(/Head version of object #{druid} cannot be discarded/).to_stdout
+        expect do
+          described_class.stop_accessioning(druid)
+        end.to output(/Head version of object #{druid} cannot be discarded/).to_stdout
         expect(repository_object.reload.head_version).to be_open
         expect(service).to have_received(:backup_content_by_druid).once
         expect(service).to have_received(:cleanup_by_druid).once
@@ -131,7 +139,8 @@ RSpec.describe CleanupService do
       before do
         allow(VersionService).to receive_messages(can_open?: false)
         allow(WorkflowClientFactory).to receive(:build).and_return(client)
-        allow(client).to receive(:workflow_status).with(druid:, workflow: 'preservationIngestWF', process: 'complete-ingest').and_return(nil)
+        allow(client).to receive(:workflow_status).with(druid:, workflow: 'preservationIngestWF',
+                                                        process: 'complete-ingest').and_return(nil)
       end
 
       it 'backups, cleans up content, and delete workflows' do
@@ -176,9 +185,12 @@ RSpec.describe CleanupService do
 
     it 'calls backup_content for each workspace area' do
       described_class.backup_content_by_druid(druid)
-      expect(service).to have_received(:backup_content).once.with(Settings.cleanup.local_workspace_root, Settings.cleanup.local_backup_path)
-      expect(service).to have_received(:backup_content).once.with(Settings.cleanup.local_assembly_root, Settings.cleanup.local_backup_path)
-      expect(service).to have_received(:backup_content).once.with(Settings.cleanup.local_export_home, Settings.cleanup.local_backup_path)
+      expect(service).to have_received(:backup_content).once.with(Settings.cleanup.local_workspace_root,
+                                                                  Settings.cleanup.local_backup_path)
+      expect(service).to have_received(:backup_content).once.with(Settings.cleanup.local_assembly_root,
+                                                                  Settings.cleanup.local_backup_path)
+      expect(service).to have_received(:backup_content).once.with(Settings.cleanup.local_export_home,
+                                                                  Settings.cleanup.local_backup_path)
     end
   end
 
@@ -218,18 +230,6 @@ RSpec.describe CleanupService do
       service.send(:backup_content, workspace_root_pathname, Settings.cleanup.local_backup_path)
       expect(workitem_pathname.join('content')).to exist # main content is still there!
       expect(workspace_backup_path.join('content')).to exist # backup content is now there
-    end
-  end
-
-  describe '.cleanup_by_druid' do
-    it 'can do a complete cleanup' do
-      expect(workitem_pathname.join('content')).to exist
-      expect(bag_pathname).to exist
-      expect(tarfile_pathname).to exist
-      described_class.cleanup_by_druid(druid)
-      expect(workitem_pathname.parent.parent.parent.parent).not_to exist
-      expect(bag_pathname).not_to exist
-      expect(tarfile_pathname).not_to exist
     end
   end
 

@@ -7,7 +7,9 @@ RSpec.describe UpdateObjectService do
   let(:store) { described_class.new(cocina_object:, skip_lock: true, skip_open_check: false) }
   let(:open) { true }
   let(:druid) { 'druid:zr174jb7823' }
-  let!(:repository_object) { create(:repository_object, :with_repository_object_version, external_identifier: druid, version: 1) }
+  let!(:repository_object) do
+    create(:repository_object, :with_repository_object_version, external_identifier: druid, version: 1)
+  end
 
   describe '#update' do
     before do
@@ -48,7 +50,9 @@ RSpec.describe UpdateObjectService do
         let(:lock) { "#{druid}=#{repository_object.lock}=#{repository_object.head_version.lock}" }
 
         let(:cocina_object) do
-          Cocina::Models.with_metadata(repository_object.head_version.to_cocina, lock, created: repository_object.created_at.utc, modified: repository_object.updated_at.utc)
+          Cocina::Models.with_metadata(repository_object.head_version.to_cocina, lock,
+                                       created: repository_object.created_at.utc,
+                                       modified: repository_object.updated_at.utc)
                         .new(label: 'new label')
         end
 
@@ -63,7 +67,9 @@ RSpec.describe UpdateObjectService do
         let(:lock) { '64e8320d19d62ddb73c501276c5655cf' }
 
         let(:cocina_object) do
-          Cocina::Models.with_metadata(repository_object.head_version.to_cocina, lock, created: repository_object.created_at.utc, modified: repository_object.updated_at.utc)
+          Cocina::Models.with_metadata(repository_object.head_version.to_cocina, lock,
+                                       created: repository_object.created_at.utc,
+                                       modified: repository_object.updated_at.utc)
                         .new(label: 'new label')
         end
 
@@ -79,12 +85,16 @@ RSpec.describe UpdateObjectService do
         let(:lock) { "#{druid}=0" }
 
         let(:cocina_object) do
-          Cocina::Models.with_metadata(repository_object.head_version.to_cocina, lock, created: repository_object.created_at.utc, modified: repository_object.updated_at.utc)
+          Cocina::Models.with_metadata(repository_object.head_version.to_cocina, lock,
+                                       created: repository_object.created_at.utc,
+                                       modified: repository_object.updated_at.utc)
                         .new(label: 'new label')
         end
 
         it 'raises' do
-          expect { store.update }.to raise_error(StandardError, "Updating repository item #{druid} without an open version")
+          expect do
+            store.update
+          end.to raise_error(StandardError, "Updating repository item #{druid} without an open version")
         end
       end
 
@@ -113,7 +123,10 @@ RSpec.describe UpdateObjectService do
     end
 
     context 'when object is an AdminPolicy' do
-      let!(:repository_object) { create(:repository_object, :admin_policy, :with_repository_object_version, external_identifier: druid, version: 1) }
+      let!(:repository_object) do
+        create(:repository_object, :admin_policy, :with_repository_object_version, external_identifier: druid,
+                                                                                   version: 1)
+      end
 
       let(:cocina_object) do
         Cocina::Models::AdminPolicy.new({
@@ -137,7 +150,9 @@ RSpec.describe UpdateObjectService do
     end
 
     context 'when object is a Collection' do
-      let!(:repository_object) { create(:repository_object, :collection, :with_repository_object_version, external_identifier: druid, version: 1) }
+      let!(:repository_object) do
+        create(:repository_object, :collection, :with_repository_object_version, external_identifier: druid, version: 1)
+      end
 
       let(:cocina_object) do
         Cocina::Models::Collection.new({
@@ -176,10 +191,12 @@ RSpec.describe UpdateObjectService do
 
       before do
         # Create a existing record without a source id
-        create(:repository_object, :collection, :with_repository_object_version, external_identifier: cocina_object.externalIdentifier)
+        create(:repository_object, :collection, :with_repository_object_version,
+               external_identifier: cocina_object.externalIdentifier)
 
         # Create a duplicate record with the same sourceId
-        create(:repository_object, :collection, :with_repository_object_version, external_identifier: 'druid:dd645sg2172', source_id: cocina_object.identification.sourceId)
+        create(:repository_object, :collection, :with_repository_object_version,
+               external_identifier: 'druid:dd645sg2172', source_id: cocina_object.identification.sourceId)
 
         allow(PublishItemsModifiedJob).to receive(:perform_later)
       end

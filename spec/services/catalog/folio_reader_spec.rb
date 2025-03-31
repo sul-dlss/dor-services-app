@@ -28,20 +28,21 @@ RSpec.describe Catalog::FolioReader do
             'subfields' =>
             [{ 'a' => 'Sonata no. 7, in B flat, for violoncello and piano.' },
              { 'c' =>
-               'Edited with realization of the basso continuo by Fritz Spiegl and Walter Bergamnn. Violoncello part edited by Joan Dickson.' }] } },
+               'Edited with realization of the basso continuo by Fritz Spiegl and Walter Bergamnn. Violoncello part edited by Joan Dickson.' }] } }, # rubocop:disable Layout/LineLength
         { '260' =>
           { 'ind1' => ' ',
             'ind2' => ' ',
             'subfields' =>
             [{ 'a' => 'London, Schott; New York, Associated Music Publishers' }, { 'c' => '[c1961]' }] } },
-        { '300' => { 'ind1' => ' ', 'ind2' => ' ', 'subfields' => [{ 'a' => 'score (20 p.) & part.' }, { 'c' => '29cm.' }] } },
+        { '300' => { 'ind1' => ' ', 'ind2' => ' ',
+                     'subfields' => [{ 'a' => 'score (20 p.) & part.' }, { 'c' => '29cm.' }] } },
         { '490' => { 'ind1' => '1', 'ind2' => ' ', 'subfields' => [{ 'a' => 'Edition [Schott]  10731' }] } },
         { '500' =>
           { 'ind1' => ' ',
             'ind2' => ' ',
             'subfields' =>
             [{ 'a' =>
-              "Edited from a recently discovered ms. Closely parallels Gruetzmacher's free arrangement of the Violoncello concerto, G. 482." }] } },
+              "Edited from a recently discovered ms. Closely parallels Gruetzmacher's free arrangement of the Violoncello concerto, G. 482." }] } }, # rubocop:disable Layout/LineLength
         { '596' => { 'ind1' => ' ', 'ind2' => ' ', 'subfields' => [{ 'a' => '31' }] } },
         { '650' => { 'ind1' => ' ', 'ind2' => '0', 'subfields' => [{ 'a' => 'Sonatas (Cello and harpsichord)' }] } },
         { '700' =>
@@ -97,11 +98,14 @@ RSpec.describe Catalog::FolioReader do
 
       context 'when folio_client encounters an unexpected response and raises an error' do
         before do
-          allow(FolioClient).to receive(:fetch_marc_hash).with(instance_hrid:).and_raise(FolioClient::ResourceNotFound, "No records found for #{instance_hrid}")
+          allow(FolioClient).to receive(:fetch_marc_hash)
+            .with(instance_hrid:).and_raise(FolioClient::ResourceNotFound, "No records found for #{instance_hrid}")
         end
 
         it 'lets the exception bubble up to the caller' do
-          expect { folio_reader_marc_result }.to raise_error(FolioClient::ResourceNotFound, "No records found for #{instance_hrid}")
+          expect do
+            folio_reader_marc_result
+          end.to raise_error(FolioClient::ResourceNotFound, "No records found for #{instance_hrid}")
         end
       end
     end

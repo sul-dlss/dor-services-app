@@ -44,7 +44,8 @@ class ApplyAdminPolicyDefaults
   def validate_object_type!
     return if cocina_object.dro? || cocina_object.collection?
 
-    raise UnsupportedObjectTypeError, "#{cocina_object.externalIdentifier} is a #{cocina_object.class} and this type cannot have APO defaults applied"
+    raise UnsupportedObjectTypeError,
+          "#{cocina_object.externalIdentifier} is a #{cocina_object.class} and this type cannot have APO defaults applied" # rubocop:disable Layout/LineLength
   end
 
   def validate_workflow_state!
@@ -53,7 +54,7 @@ class ApplyAdminPolicyDefaults
     raise UnsupportedWorkflowStateError, "#{cocina_object.externalIdentifier} is not open"
   end
 
-  def updated_cocina_object
+  def updated_cocina_object # rubocop:disable Metrics/AbcSize
     access_updated = cocina_object.new(
       # Note that this is a replace, not a merge.
       access: access_properties_for(type: cocina_type)
@@ -98,7 +99,9 @@ class ApplyAdminPolicyDefaults
     when :file
       default_access_from_apo.slice(*FILE_ACCESS_PROPS).tap { |access| access[:view] = FILE_ACCESS[access[:view]] }
     when :collection
-      default_access_from_apo.slice(*COLLECTION_ACCESS_PROPS).tap { |access| access[:view] = COLLECTION_ACCESS[access[:view]] }
+      default_access_from_apo.slice(*COLLECTION_ACCESS_PROPS).tap do |access|
+        access[:view] = COLLECTION_ACCESS[access[:view]]
+      end
     when :dro
       default_access_from_apo
     end

@@ -14,7 +14,7 @@ class AccessMergeService
     @apo_object = apo_object
   end
 
-  def merge
+  def merge # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
     # Admin policy may not have default access.
     if default_access.nil?
       # access is optional on a request, so may be nil.
@@ -30,7 +30,10 @@ class AccessMergeService
 
     # Add others
     props[:copyright] = default_access.copyright unless props.key?(:copyright)
-    props[:useAndReproductionStatement] = default_access.useAndReproductionStatement unless props.key?(:useAndReproductionStatement)
+    unless props.key?(:useAndReproductionStatement)
+      props[:useAndReproductionStatement] =
+        default_access.useAndReproductionStatement
+    end
     props[:license] = default_access.license unless props.key?(:license)
 
     access_class.new(props.compact)

@@ -26,7 +26,8 @@ RSpec.describe CocinaObjectStore do
       let(:repository_object) { create(:repository_object, :admin_policy, :with_repository_object_version) }
 
       it 'returns Cocina::Models::AdminPolicy' do
-        expect(store.find(repository_object.external_identifier)).to be_instance_of(Cocina::Models::AdminPolicyWithMetadata)
+        expect(store.find(repository_object.external_identifier))
+          .to be_instance_of(Cocina::Models::AdminPolicyWithMetadata)
       end
     end
 
@@ -46,7 +47,8 @@ RSpec.describe CocinaObjectStore do
       let(:repository_object) { create(:repository_object, :collection, :with_repository_object_version) }
 
       it 'returns Cocina::Models::Collection' do
-        expect(store.find(repository_object.external_identifier)).to be_instance_of(Cocina::Models::CollectionWithMetadata)
+        expect(store.find(repository_object.external_identifier))
+          .to be_instance_of(Cocina::Models::CollectionWithMetadata)
       end
     end
   end

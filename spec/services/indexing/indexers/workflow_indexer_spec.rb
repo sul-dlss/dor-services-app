@@ -5,7 +5,9 @@ RSpec.describe Indexing::Indexers::WorkflowIndexer do
   let(:document) { Dor::Workflow::Response::Workflow.new(xml:) }
   let(:indexer) { described_class.new(workflow: document) }
 
-  let(:workflow_client) { instance_double(Dor::Workflow::Client, workflow_template: JSON.parse(workflow_template_json)) }
+  let(:workflow_client) do
+    instance_double(Dor::Workflow::Client, workflow_template: JSON.parse(workflow_template_json))
+  end
   let(:workflow_template_json) do
     '{"processes":[{"name":"hello"},{"name":"goodbye"},{"name":"technical-metadata"},{"name":"some-other-step"}]}'
   end
@@ -36,12 +38,12 @@ RSpec.describe Indexing::Indexers::WorkflowIndexer do
         XML
       end
 
-      it 'creates the workflow_status field with the workflow repository included, and indicates that the workflow is still active' do
+      it 'creates the workflow_status with workflow repository included, and indicates that workflow is still active' do
         expect(solr_doc['workflow_status_ssim'].first).to eq('accessionWF|active|0')
       end
     end
 
-    context 'when the template has been changed to have new steps, but the workflow service indicates all steps are completed' do
+    context 'when the template has new steps, but the workflow service indicates all steps are completed' do
       let(:workflow_template_json) do
         '{"processes":[{"name":"hello"},{"name":"goodbye"},{"name":"technical-metadata"},{"name":"some-other-step"}]}'
       end
@@ -148,7 +150,7 @@ RSpec.describe Indexing::Indexers::WorkflowIndexer do
       end
 
       it 'indexes the error messages' do
-        expect(wf_error).to eq ['accessionWF:technical-metadata:druid:gv054hp4128 - Item error; caused by 413 Request Entity Too Large:']
+        expect(wf_error).to eq ['accessionWF:technical-metadata:druid:gv054hp4128 - Item error; caused by 413 Request Entity Too Large:'] # rubocop:disable Layout/LineLength
       end
     end
 

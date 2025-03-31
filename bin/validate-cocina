@@ -18,7 +18,8 @@ end
 options = { processes: 4 }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/validate-cocina [options]'
-  option_parser.on('-pPROCESSES', '--processes PROCESSES', Integer, "Number of processes. Default is #{options[:processes]}.")
+  option_parser.on('-pPROCESSES', '--processes PROCESSES', Integer,
+                   "Number of processes. Default is #{options[:processes]}.")
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size per type, otherwise all objects.')
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
@@ -41,7 +42,8 @@ end
 
 def tty_progress_bar(count)
   TTY::ProgressBar.new(
-    'Validating [:bar] (:percent (:current/:total), rate: :rate/s, mean rate: :mean_rate/s, :elapsed total, ETA: :eta_time)',
+    'Validating [:bar] (:percent (:current/:total), rate: :rate/s, mean rate: :mean_rate/s, :elapsed total, ' \
+    'ETA: :eta_time)',
     bar_format: :box,
     advance: num_for_progress_advance(count),
     total: count
@@ -72,7 +74,8 @@ def validate(sample_size, processes)
                      else
                        ''
                      end
-        [repository_object.external_identifier, repository_object_version.version, repository_object.object_type, collection, e.message]
+        [repository_object.external_identifier, repository_object_version.version, repository_object.object_type,
+         collection, e.message]
       end
     end
   end.flatten(2)

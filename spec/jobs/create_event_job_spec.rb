@@ -25,7 +25,7 @@ RSpec.describe CreateEventJob do
       parts_info: [
         {
           md5: '1a528419dea59d86cfd0c456e9f10024',
-          size: 123630,
+          size: 123_630,
           s3_key: 'bb/408/qn/5061/bb408qn5061.v0019.zip'
         }
       ],

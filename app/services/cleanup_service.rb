@@ -30,8 +30,7 @@ class CleanupService
   end
 
   # @param [boolean] dryrun if true, will just display output but not perform actions
-  def stop_accessioning(dryrun: false)
-    # Verify druid exists and can be stopped
+  def stop_accessioning(dryrun: false) # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/MethodLength
     raise "Object #{druid} not found in repository" unless repository_object
 
     @version = repository_object.head_version.version
@@ -114,7 +113,7 @@ class CleanupService
     return unless File.directory?(content_path.path)
 
     base_backup_path = File.join(backup_path, content_path.id) # e.g. /dor/staging/stopped/ab123bc4567
-    specific_backup_path = File.join(base_backup_path, File.basename(base)) # e.g. /dor/staging/stopped/ab123bc4567/workspace
+    specific_backup_path = File.join(base_backup_path, File.basename(base)) # e.g. /dor/staging/stopped/ab123bc4567/workspace # rubocop:disable Metrics/LineLength
 
     FileUtils.mkdir_p(base_backup_path)
     FileUtils.cp_r(content_path.path, specific_backup_path)

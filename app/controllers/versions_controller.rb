@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-class VersionsController < ApplicationController # rubocop:disable Metrics/ClassLength
+# Controller for repository object versions.
+class VersionsController < ApplicationController
   before_action :load_cocina_object, only: %i[create]
   before_action :check_cocina_object_exists, only: %i[index]
   before_action :load_version, only: %i[current close_current destroy_current status]

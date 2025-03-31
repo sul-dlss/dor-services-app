@@ -2,15 +2,14 @@
 
 # This writes the object metadata files to the workspace metadata directory
 class PreservationMetadataExtractor
-  # @param [Cocina::Models::DRO, Cocina::Models::AdminPolicy, Cocina::Models::Collection] cocina_object The representation of the digital object
-  # @param [DruidTools::Druid] workspace The representation of the item's work area
+  # @param [Cocina::Models::DRO, Cocina::Models::AdminPolicy, Cocina::Models::Collection] cocina_object The representation of the digital object # rubocop:disable Layout/LineLength
   # @return [Pathname] Pull all the datastreams specified in the configuration file
   #   into the workspace's metadata directory, overwriting existing file if present
   def self.extract(cocina_object:, workspace:)
     new(workspace:, cocina_object:).extract
   end
 
-  # @param [Cocina::Models::DRO, Cocina::Models::AdminPolicy, Cocina::Models::Collection] cocina_object The representation of the digital object
+  # @param [Cocina::Models::DRO, Cocina::Models::AdminPolicy, Cocina::Models::Collection] cocina_object The representation of the digital object # rubocop:disable Layout/LineLength
   # @param [DruidTools::Druid] workspace The representation of the item's work area
   def initialize(cocina_object:, workspace:)
     @cocina_object = cocina_object
@@ -44,7 +43,8 @@ class PreservationMetadataExtractor
   def content_xml
     return if cocina_object.admin_policy? || cocina_object.collection?
 
-    Cocina::ToXml::ContentMetadataGenerator.generate(druid: cocina_object.externalIdentifier, structural: cocina_object.structural, type: cocina_object.type)
+    Cocina::ToXml::ContentMetadataGenerator.generate(druid: cocina_object.externalIdentifier,
+                                                     structural: cocina_object.structural, type: cocina_object.type)
   end
 
   def extract_cocina

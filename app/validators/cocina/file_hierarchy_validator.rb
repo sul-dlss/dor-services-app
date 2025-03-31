@@ -22,7 +22,11 @@ module Cocina
     def file_hierarchy_present?
       return false unless cocina_object.structural
 
-      cocina_object.structural.contains.any? { |file_set| file_set.structural.contains.any? { |file| file.filename.include?('/') } }
+      cocina_object.structural.contains.any? do |file_set|
+        file_set.structural.contains.any? do |file|
+          file.filename.include?('/')
+        end
+      end
     end
 
     def file_content_type?

@@ -2,10 +2,12 @@
 
 require 'rails_helper'
 
-# NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the DataCite ReST API v2.
+# NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the
+# DataCite ReST API v2.
 # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the DataCite ReST API.
 
-# relatedItem attribute new in DataCite MetadataKerne schema v. 4.4 and not included in the DataCite ReST API docs as of 2021-07
+# relatedItem attribute new in DataCite MetadataKerne schema v. 4.4 and not included in the DataCite ReST API
+# docs as of 2021-07
 RSpec.describe 'Cocina --> DataCite mappings for relatedItem' do
   # NOTE: Because we haven't set a title in this Cocina::Models::Description, it will not validate against the openapi.
   let(:cocina_description) { Cocina::Models::Description.new(cocina.merge(purl: cocina.fetch(:purl, 'https://purl.stanford.edu/gz708sf9862')), false, false) }
@@ -18,7 +20,8 @@ RSpec.describe 'Cocina --> DataCite mappings for relatedItem' do
           {
             note: [
               {
-                value: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. Atmospheric Pressure. Professor Maya Aguirre. Department of Earth Sciences, Stanford University.',
+                value: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. Atmospheric Pressure. ' \
+                       'Professor Maya Aguirre. Department of Earth Sciences, Stanford University.',
                 type: 'preferred citation'
               }
             ]
@@ -45,7 +48,8 @@ RSpec.describe 'Cocina --> DataCite mappings for relatedItem' do
           relationType: 'References',
           titles: [
             {
-              title: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. Atmospheric Pressure. Professor Maya Aguirre. Department of Earth Sciences, Stanford University.'
+              title: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. Atmospheric Pressure. Professor ' \
+                     'Maya Aguirre. Department of Earth Sciences, Stanford University.'
             }
           ]
         }

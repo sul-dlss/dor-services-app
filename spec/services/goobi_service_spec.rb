@@ -109,7 +109,7 @@ RSpec.describe GoobiService do
   end
 
   describe '#goobi_xml_tags' do
-    subject { goobi.send(:goobi_xml_tags) }
+    subject(:result) { goobi.send(:goobi_xml_tags) }
 
     before do
       allow(AdministrativeTags).to receive(:for).and_return(tags)
@@ -118,7 +118,9 @@ RSpec.describe GoobiService do
     context 'without ocr tag present' do
       let(:tags) { ['DPG : Workflow : book_workflow & stuff', 'Process : Content Type : Book', 'LAB : MAPS'] }
 
-      it { is_expected.to eq('<tag name="DPG" value="Workflow : book_workflow &amp; stuff"/><tag name="Process" value="Content Type : Book"/><tag name="LAB" value="MAPS"/>') }
+      it {
+        expect(result).to eq('<tag name="DPG" value="Workflow : book_workflow &amp; stuff"/><tag name="Process" value="Content Type : Book"/><tag name="LAB" value="MAPS"/>') # rubocop:disable Layout/LineLength
+      }
     end
 
     context 'with ocr tag present' do
@@ -150,7 +152,10 @@ RSpec.describe GoobiService do
     end
 
     context 'with multiple tags' do
-      let(:tags) { ['DPG : Workflow : book_workflow', 'DPG : Workflow : another_workflow', 'Process : Content Type : Book (flipbook, ltr)'] }
+      let(:tags) do
+        ['DPG : Workflow : book_workflow', 'DPG : Workflow : another_workflow',
+         'Process : Content Type : Book (flipbook, ltr)']
+      end
 
       it 'returns value parsed from first DPG admin tag' do
         expect(goobi_workflow_name).to eq('book_workflow')
@@ -180,8 +185,10 @@ RSpec.describe GoobiService do
   describe '#goobi_tag_list' do
     let(:goobi_tag_list) { goobi.send(:goobi_tag_list) }
 
-    it 'returns an array of arrays with the tags from the object in the key:value format expected to be passed to goobi' do
-      allow(AdministrativeTags).to receive(:for).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)', 'LAB : Map Work'])
+    it 'returns an array of arrays with the tags from the object in the key:value format expected by goobi' do
+      allow(AdministrativeTags).to receive(:for)
+        .and_return(['DPG : Workflow : book_workflow',
+                     'Process : Content Type : Book (flipbook, ltr)', 'LAB : Map Work'])
       expect(goobi_tag_list.length).to eq 3
       goobi_tag_list.each { |goobi_tag| expect(goobi_tag.class).to eq Dor::GoobiTag }
       expect(goobi_tag_list[0]).to have_attributes(name: 'DPG', value: 'Workflow : book_workflow')
@@ -207,7 +214,8 @@ RSpec.describe GoobiService do
     let(:goobi_ocr_tag_present) { goobi.send(:goobi_ocr_tag_present?) }
 
     it 'returns false if the goobi ocr tag is not present' do
-      allow(AdministrativeTags).to receive(:for).and_return(['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)'])
+      allow(AdministrativeTags).to receive(:for).and_return(['DPG : Workflow : book_workflow',
+                                                             'Process : Content Type : Book (flipbook, ltr)'])
       expect(goobi_ocr_tag_present).to be false
     end
 
@@ -226,7 +234,8 @@ RSpec.describe GoobiService do
     subject(:xml_request) { goobi.send(:xml_request) }
 
     before do
-      allow(goobi).to receive_messages(goobi_workflow_name: 'goobi_workflow', collection_id: 'druid:oo000oo0001', collection_name: 'collection name', project_name: 'Project Name')
+      allow(goobi).to receive_messages(goobi_workflow_name: 'goobi_workflow', collection_id: 'druid:oo000oo0001',
+                                       collection_name: 'collection name', project_name: 'Project Name')
       allow(AdministrativeTags).to receive(:for).and_return(tags)
     end
 
@@ -370,7 +379,8 @@ RSpec.describe GoobiService do
     subject(:project_name) { goobi.send :project_name }
 
     it 'returns project name from a valid identityMetadata' do
-      allow(AdministrativeTags).to receive(:for).and_return(['Project : Batchelor Maps : Batch 1', 'Process : Content Type : Book (flipbook, ltr)'])
+      allow(AdministrativeTags).to receive(:for).and_return(['Project : Batchelor Maps : Batch 1',
+                                                             'Process : Content Type : Book (flipbook, ltr)'])
       expect(project_name).to eq('Batchelor Maps : Batch 1')
     end
 

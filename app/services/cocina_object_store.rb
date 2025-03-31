@@ -26,7 +26,7 @@ class CocinaObjectStore
 
   # Retrieves a Cocina object from the datastore.
   # @param [String] druid
-  # @return [Cocina::Models::DROWithMetadata, Cocina::Models::CollectionWithMetadata, Cocina::Models::AdminPolicyWithMetadata] cocina_object
+  # @return [Cocina::Models::DROWithMetadata, Cocina::Models::CollectionWithMetadata, Cocina::Models::AdminPolicyWithMetadata] cocina_object #rubocop:disable Layout/LineLength
   # @raise [CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
   def self.find(druid)
     new.find(druid)
@@ -76,7 +76,7 @@ class CocinaObjectStore
   end
 
   # @param [String] druid to find
-  # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata] for the requested version
+  # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata] for the requested version #rubocop:disable Layout/LineLength
   def find(druid, version: :head)
     RepositoryObject.find_by!(external_identifier: druid).head_version.to_cocina_with_metadata
   rescue ActiveRecord::RecordNotFound

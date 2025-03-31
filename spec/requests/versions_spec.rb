@@ -58,7 +58,8 @@ RSpec.describe 'Operations regarding object versions' do
 
     context 'when discarding a version fails' do
       before do
-        allow(VersionService).to receive(:discard).and_raise(VersionService::VersioningError, 'Trying to discard a version that is not discardable')
+        allow(VersionService).to receive(:discard).and_raise(VersionService::VersioningError,
+                                                             'Trying to discard a version that is not discardable')
       end
 
       it 'returns conflict' do
@@ -167,7 +168,7 @@ RSpec.describe 'Operations regarding object versions' do
       it 'returns an error' do
         post "/v1/objects/druid:mx123qw2323/versions?#{open_params.to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.body).to eq('{"errors":[{"status":"422","title":"Unable to open version","detail":"Object net yet accessioned"}]}')
+        expect(response.body).to eq('{"errors":[{"status":"422","title":"Unable to open version","detail":"Object net yet accessioned"}]}') # rubocop:disable Layout/LineLength
         expect(response).to have_http_status :unprocessable_content
       end
     end
@@ -180,14 +181,16 @@ RSpec.describe 'Operations regarding object versions' do
       it 'returns an error' do
         post "/v1/objects/druid:mx123qw2323/versions?#{open_params.to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.body).to eq('{"errors":[{"status":"500","title":"Unable to open version due to preservation client error","detail":"Oops, a 500"}]}')
+        expect(response.body).to eq('{"errors":[{"status":"500","title":"Unable to open version due to preservation client error","detail":"Oops, a 500"}]}') # rubocop:disable Layout/LineLength
         expect(response).to have_http_status :internal_server_error
       end
     end
   end
 
   describe 'GET /versions/status' do
-    let(:version_service) { instance_double(VersionService, can_open?: false, can_close?: true, open?: true, can_discard?: true) }
+    let(:version_service) do
+      instance_double(VersionService, can_open?: false, can_close?: true, open?: true, can_discard?: true)
+    end
     let(:workflow_state_service) { instance_double(WorkflowStateService, assembling?: true, accessioning?: false) }
 
     before do
@@ -215,22 +218,37 @@ RSpec.describe 'Operations regarding object versions' do
 
   describe 'POST /versions/status' do
     let(:druids) { ['druid:mx123qw2323', 'druid:fp165nz4391', 'druid:bm077td6448'] }
-    let(:version_service1) { instance_double(VersionService, can_open?: false, can_close?: true, open?: true, can_discard?: true) }
-    let(:version_service2) { instance_double(VersionService, can_open?: true, can_close?: false, open?: false, can_discard?: false) }
+    let(:version_service1) do
+      instance_double(VersionService, can_open?: false, can_close?: true, open?: true, can_discard?: true)
+    end
+    let(:version_service2) do
+      instance_double(VersionService, can_open?: true, can_close?: false, open?: false, can_discard?: false)
+    end
     let(:workflow_state_service1) { instance_double(WorkflowStateService, assembling?: true, accessioning?: false) }
     let(:workflow_state_service2) { instance_double(WorkflowStateService, assembling?: false, accessioning?: true) }
 
     before do
       create(:repository_object_version, :with_repository_object, external_identifier: druids[0], version: 1)
       create(:repository_object_version, :with_repository_object, external_identifier: druids[1], version: 2)
-      allow(CocinaObjectStore).to receive(:version).with(druids[0]).and_return(1)
-      allow(CocinaObjectStore).to receive(:version).with(druids[1]).and_return(2)
-      allow(CocinaObjectStore).to receive(:version).with(druids[2]).and_raise(CocinaObjectStore::CocinaObjectNotFoundError)
+      allow(CocinaObjectStore).to receive(:version)
+        .with(druids[0]).and_return(1)
+      allow(CocinaObjectStore).to receive(:version)
+        .with(druids[1]).and_return(2)
+      allow(CocinaObjectStore).to receive(:version)
+        .with(druids[2]).and_raise(CocinaObjectStore::CocinaObjectNotFoundError)
 
-      allow(VersionService).to receive(:new).with(druid: druids[0], version: 1, workflow_state_service: workflow_state_service1).and_return(version_service1)
-      allow(VersionService).to receive(:new).with(druid: druids[1], version: 2, workflow_state_service: workflow_state_service2).and_return(version_service2)
-      allow(WorkflowStateService).to receive(:new).with(druid: druids[0], version: 1).and_return(workflow_state_service1)
-      allow(WorkflowStateService).to receive(:new).with(druid: druids[1], version: 2).and_return(workflow_state_service2)
+      allow(VersionService).to receive(:new)
+        .with(druid: druids[0], version: 1,
+              workflow_state_service: workflow_state_service1).and_return(version_service1)
+      allow(VersionService).to receive(:new)
+        .with(druid: druids[1], version: 2,
+              workflow_state_service: workflow_state_service2).and_return(version_service2)
+      allow(WorkflowStateService).to receive(:new)
+        .with(druid: druids[0],
+              version: 1).and_return(workflow_state_service1)
+      allow(WorkflowStateService).to receive(:new)
+        .with(druid: druids[1],
+              version: 2).and_return(workflow_state_service2)
     end
 
     it 'returns the version status for the provided druids' do

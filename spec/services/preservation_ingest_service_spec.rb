@@ -42,7 +42,8 @@ RSpec.describe PreservationIngestService do
 
     before do
       allow(Preservation::Client.objects).to receive(:signature_catalog).and_return(fixture_sig_cat_obj)
-      expect(PreservationMetadataExtractor).to receive(:extract).with(workspace: an_instance_of(DruidTools::Druid), cocina_object:).and_return(metadata_dir)
+      allow(PreservationMetadataExtractor).to receive(:extract).with(workspace: an_instance_of(DruidTools::Druid),
+                                                                     cocina_object:).and_return(metadata_dir)
     end
 
     specify 'with content changes' do
@@ -81,7 +82,8 @@ RSpec.describe PreservationIngestService do
 
     specify 'with no change in content' do
       v1_content_metadata = fixtures.join('sdr_repo/dd116zh0343/v0001/data/metadata/contentMetadata.xml')
-      allow_any_instance_of(Preserve::FileInventoryBuilder).to receive(:content_metadata).and_return(v1_content_metadata.read)
+      allow_any_instance_of(Preserve::FileInventoryBuilder).to receive(:content_metadata) # rubocop:disable RSpec/AnyInstance
+        .and_return(v1_content_metadata.read)
       described_class.transfer(cocina_object)
       files = []
       fixtures.join('export/dd116zh0343').find { |f| files << f.relative_path_from(fixtures).to_s }
@@ -128,7 +130,8 @@ RSpec.describe PreservationIngestService do
 
     context 'when signature_catalog does not exist in preservation' do
       before do
-        allow(Preservation::Client.objects).to receive(:signature_catalog).and_raise(Preservation::Client::NotFoundError)
+        allow(Preservation::Client.objects).to receive(:signature_catalog)
+          .and_raise(Preservation::Client::NotFoundError)
       end
 
       it 'returns a Moab::SignatureCatalog object for version 0' do
@@ -146,7 +149,11 @@ RSpec.describe PreservationIngestService do
 
     it 'verifies the version' do
       expect(service.send(:verify_version_id, '/mypath/myfile', 2, 2)).to be_truthy
-      expect { service.send(:verify_version_id, '/mypath/myfile', 1, 2) }.to raise_exception(described_class::VersionMismatchError, 'Version mismatch in /mypath/myfile, expected 1, found 2')
+      expect do
+        service.send(:verify_version_id, '/mypath/myfile', 1,
+                     2)
+      end.to raise_exception(described_class::VersionMismatchError,
+                             'Version mismatch in /mypath/myfile, expected 1, found 2')
     end
   end
 

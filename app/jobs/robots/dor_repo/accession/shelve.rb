@@ -10,12 +10,16 @@ module Robots
         end
 
         def perform_work
-          return LyberCore::ReturnState.new(status: :skipped, note: 'Not a WAS crawl, nothing to do') unless cocina_object.dro? && WasService.crawl?(druid: druid)
+          unless cocina_object.dro? && WasService.crawl?(druid: druid)
+            return LyberCore::ReturnState.new(status: :skipped,
+                                              note: 'Not a WAS crawl, nothing to do')
+          end
 
           WasShelvingService.shelve(cocina_object)
 
           # Shelving can take a long time and can cause the database connections to get stale.
-          # So reset to avoid: ActiveRecord::StatementInvalid: PG::ConnectionBad: PQconsumeInput() could not receive data from server: Connection timed out : BEGIN
+          # So reset to avoid: ActiveRecord::StatementInvalid: PG::ConnectionBad: PQconsumeInput() could not receive
+          # data from server: Connection timed out : BEGIN
           ActiveRecord::Base.connection_handler.clear_active_connections!
           EventFactory.create(druid:, event_type: 'shelving_complete', data: {})
         end

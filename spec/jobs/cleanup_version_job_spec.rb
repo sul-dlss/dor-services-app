@@ -25,7 +25,8 @@ RSpec.describe CleanupVersionJob do
 
       expect(CleanupService).to have_received(:delete_accessioning_workflows).with(druid, version)
       expect(CleanupService).to have_received(:cleanup_by_druid).with(druid)
-      expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'cleanup-workspace', data: { status: 'success' })
+      expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'cleanup-workspace',
+                                                          data: { status: 'success' })
     end
   end
 
@@ -37,7 +38,9 @@ RSpec.describe CleanupVersionJob do
     it 'records an event' do
       perform
 
-      expect(EventFactory).to have_received(:create).with(druid: druid, event_type: 'cleanup-workspace', data: { status: 'failure', message: 'No such file or directory', backtrace: Array })
+      expect(EventFactory).to have_received(:create)
+        .with(druid: druid, event_type: 'cleanup-workspace',
+              data: { status: 'failure', message: 'No such file or directory', backtrace: Array })
     end
   end
 end

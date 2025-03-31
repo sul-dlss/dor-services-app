@@ -25,8 +25,14 @@ class UserVersionsController < ApplicationController
   end
 
   def update
-    @user_version = UserVersionService.withdraw(druid: druid_param, user_version: user_version_param, withdraw: params[:withdrawn]) if params.key?(:withdrawn)
-    @user_version = UserVersionService.move(druid: druid_param, version: params[:version], user_version: user_version_param) if params.key?(:version)
+    if params.key?(:withdrawn)
+      @user_version = UserVersionService.withdraw(druid: druid_param, user_version: user_version_param,
+                                                  withdraw: params[:withdrawn])
+    end
+    if params.key?(:version)
+      @user_version = UserVersionService.move(druid: druid_param, version: params[:version],
+                                              user_version: user_version_param)
+    end
 
     render json: @user_version.as_json
   end

@@ -35,13 +35,19 @@ RSpec.describe UserVersion do
         }
       end
 
-      it { is_expected.to include 'Repository object version cannot set a user version to an open RepositoryObjectVersion' }
+      it {
+        expect(errors)
+          .to include 'Repository object version cannot set a user version to an open RepositoryObjectVersion'
+      }
     end
 
     context 'when the repository object version is has no cocina' do
       let(:repository_object_version) { RepositoryObjectVersion.new(**attrs) }
 
-      it { is_expected.to include 'Repository object version cannot set a user version to an RepositoryObjectVersion without cocina' }
+      it {
+        expect(errors)
+          .to include 'Repository object version cannot set a user version to an RepositoryObjectVersion without cocina'
+      }
     end
 
     context 'when the user version cannot be withdrawn' do
