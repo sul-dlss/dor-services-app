@@ -4,6 +4,12 @@ module Migrators
   # Migrator that will be used to test the migration.
   # See Migrators::Base for more information.
   class Exemplar < Base
+    # NOTE: these are QA druids from 2023-02-23
+    TEST_DRUIDS = [
+      'druid:bc177tq6734',
+      'druid:rd069rk9728'
+    ].freeze
+
     # A migrator may provide a list of druids to be migrated (optional).
     def self.druids
       TEST_DRUIDS
@@ -21,12 +27,6 @@ module Migrators
     end
 
     private
-
-    # NOTE: these are QA druids from 2023-02-23
-    TEST_DRUIDS = [
-      'druid:bc177tq6734',
-      'druid:rd069rk9728'
-    ].freeze
 
     def mark_migrated(label)
       "#{label.gsub(/ - migrated .+$/, '')} - migrated #{Time.now.utc.iso8601}"

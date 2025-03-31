@@ -4,6 +4,19 @@ module Indexing
   module Indexers
     # Indexes the information about files in the object
     class ObjectFilesIndexer
+      TYPES = {
+        Cocina::Models::ObjectType.image => 'image',
+        Cocina::Models::ObjectType.manuscript => 'image',
+        Cocina::Models::ObjectType.book => 'book',
+        Cocina::Models::ObjectType.map => 'map',
+        Cocina::Models::ObjectType.three_dimensional => '3d',
+        Cocina::Models::ObjectType.media => 'media',
+        Cocina::Models::ObjectType.webarchive_seed => 'webarchive-seed',
+        Cocina::Models::ObjectType.webarchive_binary => 'webarchive-binary',
+        Cocina::Models::ObjectType.geo => 'geo',
+        Cocina::Models::ObjectType.document => 'document'
+      }.freeze
+
       attr_reader :cocina
 
       def initialize(cocina:, **)
@@ -47,19 +60,6 @@ module Indexing
       def file_sets
         @file_sets ||= Array(cocina.structural&.contains)
       end
-
-      TYPES = {
-        Cocina::Models::ObjectType.image => 'image',
-        Cocina::Models::ObjectType.manuscript => 'image',
-        Cocina::Models::ObjectType.book => 'book',
-        Cocina::Models::ObjectType.map => 'map',
-        Cocina::Models::ObjectType.three_dimensional => '3d',
-        Cocina::Models::ObjectType.media => 'media',
-        Cocina::Models::ObjectType.webarchive_seed => 'webarchive-seed',
-        Cocina::Models::ObjectType.webarchive_binary => 'webarchive-binary',
-        Cocina::Models::ObjectType.geo => 'geo',
-        Cocina::Models::ObjectType.document => 'document'
-      }.freeze
 
       def type(object_type)
         TYPES.fetch(object_type, 'file')

@@ -8,6 +8,10 @@ module Types
     include GraphQL::Types::Relay::HasNodeField
     include GraphQL::Types::Relay::HasNodesField
 
+    BASE_ALLOWED_FIELDS = %i[external_identifier cocina_version label version administrative description].freeze
+    DRO_ALLOWED_FIELDS = BASE_ALLOWED_FIELDS + %i[content_type access identification structural geographic]
+    COLLECTION_ALLOWED_FIELDS = BASE_ALLOWED_FIELDS + %i[collection_type access identification]
+
     # Add root-level fields here.
     # They will be entry points for queries on your schema.
 
@@ -27,10 +31,6 @@ module Types
     end
 
     private
-
-    BASE_ALLOWED_FIELDS = %i[external_identifier cocina_version label version administrative description].freeze
-    DRO_ALLOWED_FIELDS = BASE_ALLOWED_FIELDS + %i[content_type access identification structural geographic]
-    COLLECTION_ALLOWED_FIELDS = BASE_ALLOWED_FIELDS + %i[collection_type access identification]
 
     def find_cocina_object(selected_fields:, allowed_fields:, external_identifier:, clazz:)
       # Use an AR select to only retrieve the fields that were requested.

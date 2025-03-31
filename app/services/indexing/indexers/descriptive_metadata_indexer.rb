@@ -7,6 +7,22 @@ module Indexing
     # Indexes the descriptive metadata
     # rubocop:disable Metrics/ClassLength
     class DescriptiveMetadataIndexer
+      # See https://github.com/sul-dlss/stanford-mods/blob/master/lib/stanford-mods/searchworks.rb#L244
+      FORMAT = {
+        'cartographic' => 'Map',
+        'manuscript' => 'Archive/Manuscript',
+        'mixed material' => 'Archive/Manuscript',
+        'moving image' => 'Video',
+        'notated music' => 'Music score',
+        'software, multimedia' => 'Software/Multimedia',
+        'sound recording-musical' => 'Music recording',
+        'sound recording-nonmusical' => 'Sound recording',
+        'sound recording' => 'Sound recording',
+        'still image' => 'Image',
+        'three dimensional object' => 'Object',
+        'text' => 'Book'
+      }.freeze
+
       attr_reader :cocina, :stanford_mods_record
 
       def initialize(cocina:, **)
@@ -111,22 +127,6 @@ module Indexing
             %w[collection manuscript].exclude?(form.value)
         end.map(&:value)
       end
-
-      # See https://github.com/sul-dlss/stanford-mods/blob/master/lib/stanford-mods/searchworks.rb#L244
-      FORMAT = {
-        'cartographic' => 'Map',
-        'manuscript' => 'Archive/Manuscript',
-        'mixed material' => 'Archive/Manuscript',
-        'moving image' => 'Video',
-        'notated music' => 'Music score',
-        'software, multimedia' => 'Software/Multimedia',
-        'sound recording-musical' => 'Music recording',
-        'sound recording-nonmusical' => 'Sound recording',
-        'sound recording' => 'Sound recording',
-        'still image' => 'Image',
-        'three dimensional object' => 'Object',
-        'text' => 'Book'
-      }.freeze
 
       # rubocop:disable Metrics/CyclomaticComplexity
       # rubocop:disable Metrics/PerceivedComplexity

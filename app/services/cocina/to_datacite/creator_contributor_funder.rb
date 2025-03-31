@@ -5,6 +5,26 @@ module Cocina
     # Transform the Cocina::Models::Description form attributes to the DataCite types attributes
     #  see https://support.datacite.org/reference/dois-2#put_dois-id
     class CreatorContributorFunder
+      DATACITE_PERSON_CONTRIBUTOR_TYPES = {
+        'copyright holder' => 'RightsHolder',
+        'compiler' => 'DataCollector',
+        'editor' => 'Editor',
+        'organizer' => 'Supervisor',
+        'research team head' => 'ProjectLeader',
+        'researcher' => 'Researcher'
+      }.freeze
+
+      DATACITE_ORGANIZATION_CONTRIBUTOR_TYPES = {
+        'copyright holder' => 'RightsHolder',
+        'compiler' => 'DataCollector',
+        'distributor' => 'Distributor',
+        'host institution' => 'HostingInstitution',
+        'issuing body' => 'Distributor',
+        'publisher' => 'Distributor',
+        'researcher' => 'ResearchGroup',
+        'sponsor' => 'Sponsor'
+      }.freeze
+
       # @param [Cocina::Models::Description] cocina_desc
       # @return [Hash] Hash of DataCite attributes containing creators, contributors, and fundingReferences keys
       def self.attributes(cocina_desc)
@@ -117,26 +137,6 @@ module Cocina
           role&.source&.code == 'marcrelator'
         end&.value
       end
-
-      DATACITE_PERSON_CONTRIBUTOR_TYPES = {
-        'copyright holder' => 'RightsHolder',
-        'compiler' => 'DataCollector',
-        'editor' => 'Editor',
-        'organizer' => 'Supervisor',
-        'research team head' => 'ProjectLeader',
-        'researcher' => 'Researcher'
-      }.freeze
-
-      DATACITE_ORGANIZATION_CONTRIBUTOR_TYPES = {
-        'copyright holder' => 'RightsHolder',
-        'compiler' => 'DataCollector',
-        'distributor' => 'Distributor',
-        'host institution' => 'HostingInstitution',
-        'issuing body' => 'Distributor',
-        'publisher' => 'Distributor',
-        'researcher' => 'ResearchGroup',
-        'sponsor' => 'Sponsor'
-      }.freeze
     end
   end
 end

@@ -2,6 +2,8 @@
 
 # Show the relationships that are publically available
 class PublishedRelationshipsFilter
+  INDENT = "\n      "
+
   # @param [Cocina::Models::DRO] cocina_object
   # @param [Array<Hash>] constituents a list of constituents (virtual object members) that are part of this object
   def initialize(cocina_object, constituents)
@@ -24,8 +26,6 @@ class PublishedRelationshipsFilter
   private
 
   attr_reader :cocina_object, :constituents
-
-  INDENT = "\n      "
 
   def collections
     return unless cocina_object.dro?

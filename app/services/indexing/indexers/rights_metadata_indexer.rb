@@ -4,24 +4,6 @@ module Indexing
   module Indexers
     # Indexes the rights metadata
     class RightsMetadataIndexer
-      attr_reader :cocina
-
-      def initialize(cocina:, **)
-        @cocina = cocina
-      end
-
-      # @return [Hash] the partial solr document for rightsMetadata
-      def to_solr
-        {
-          'copyright_ssim' => cocina.access.copyright,
-          'use_statement_ssim' => cocina.access.useAndReproductionStatement,
-          'use_license_machine_ssi' => license,
-          'rights_descriptions_ssim' => rights_description
-        }.compact
-      end
-
-      private
-
       LICENSE_CODE = {
         'http://cocina.sul.stanford.edu/licenses/none' => 'none', # Only used in some legacy ETDs.
         'https://creativecommons.org/licenses/by/3.0/legalcode' => 'CC-BY-3.0',
@@ -42,6 +24,24 @@ module Indexing
         'https://opendatacommons.org/licenses/by/1-0/' => 'ODC-By-1.0',
         'https://opendatacommons.org/licenses/odbl/1-0/' => 'ODbL-1.0'
       }.freeze
+
+      attr_reader :cocina
+
+      def initialize(cocina:, **)
+        @cocina = cocina
+      end
+
+      # @return [Hash] the partial solr document for rightsMetadata
+      def to_solr
+        {
+          'copyright_ssim' => cocina.access.copyright,
+          'use_statement_ssim' => cocina.access.useAndReproductionStatement,
+          'use_license_machine_ssi' => license,
+          'rights_descriptions_ssim' => rights_description
+        }.compact
+      end
+
+      private
 
       def rights_description
         return Indexing::Builders::CollectionRightsDescriptionBuilder.build(cocina) if cocina.collection?
