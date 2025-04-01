@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe EmbargoReleaseService do
-  let(:service) { described_class.new(druid) }
+  let(:service) { described_class.new(druid:) }
 
   let(:druid) { 'druid:bb033gt0615' }
 
@@ -244,7 +244,7 @@ RSpec.describe EmbargoReleaseService do
 
     it 'releases based on db query' do
       described_class.release_all
-      expect(described_class).to have_received(:release).with(item_with_releasable_embargo.external_identifier)
+      expect(described_class).to have_received(:release).with(druid: item_with_releasable_embargo.external_identifier)
     end
   end
 end
