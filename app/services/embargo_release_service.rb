@@ -14,16 +14,16 @@ class EmbargoReleaseService
     Rails.logger.debug { "Found #{embargoed_items_to_release.count} objects" }
 
     embargoed_items_to_release.pluck(:external_identifier).each do |druid|
-      release(druid)
+      release(druid:)
     end
   end
 
-  def self.release(druid:, version:)
-    new(druid).release
+  def self.release(druid:)
+    new(druid:).release
   end
 
   # @param [druid] druid
-  def initialize(druid)
+  def initialize(druid:)
     @druid = druid
   end
 
