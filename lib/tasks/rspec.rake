@@ -12,4 +12,5 @@ begin
   task(:default).clear
 
   task default: %i[rubocop spec]
+rescue LoadError # rubocop:disable Lint/SuppressedException
 end
