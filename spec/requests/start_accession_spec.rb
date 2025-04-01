@@ -6,7 +6,6 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
   let(:druid) { 'druid:mx123qw2323' }
   let(:cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, version: 1) }
   let(:updated_cocina_object) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, version: 2) }
-  let(:workflow_client) { instance_double(Dor::Workflow::Client, create_workflow_by_name: true) }
   let(:default_start_accession_workflow) { 'assemblyWF' }
 
   let(:params) do
@@ -21,8 +20,8 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
   before do
     allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
     allow(VersionService).to receive(:new).and_return(version_service)
-    allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
     allow(EventFactory).to receive(:create)
+    allow(WorkflowService).to receive(:create)
   end
 
   context 'when already open' do
@@ -39,8 +38,8 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
           druid: 'druid:mx123qw2323',
           event_type: 'accession_request' }
       )
-      expect(workflow_client).to have_received(:create_workflow_by_name)
-        .with(druid, default_start_accession_workflow, version: '1', context: nil)
+      expect(WorkflowService).to have_received(:create).with(druid:, workflow_name: default_start_accession_workflow,
+                                                             version: '1', context: nil)
       expect(version_service).not_to have_received(:open)
     end
 
@@ -48,8 +47,8 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
       post "/v1/objects/#{druid}/accession?#{params.merge(workflow: 'gisAssemblyWF').to_query}",
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
-      expect(workflow_client).to have_received(:create_workflow_by_name)
-        .with(druid, 'gisAssemblyWF', version: '1', context: nil)
+      expect(WorkflowService).to have_received(:create).with(druid:, workflow_name: 'gisAssemblyWF', version: '1',
+                                                             context: nil)
     end
   end
 
@@ -61,8 +60,8 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     it 'opens a version and starts default workflow' do
       post("/v1/objects/#{druid}/accession?#{params.to_query}",
            headers: { 'Authorization' => "Bearer #{jwt}" })
-      expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, default_start_accession_workflow,
-                                                                              version: '2', context: nil)
+      expect(WorkflowService).to have_received(:create).with(druid:, workflow_name: default_start_accession_workflow,
+                                                             version: '2', context: nil)
       expect(version_service).to have_received(:open).with(
         assume_accessioned: false,
         cocina_object:,
@@ -73,8 +72,8 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     it 'can override the default workflow' do
       post "/v1/objects/#{druid}/accession?#{params.merge(workflow: 'gisAssemblyWF').to_query}",
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(workflow_client).to have_received(:create_workflow_by_name)
-        .with(druid, 'gisAssemblyWF', version: '2', context: nil)
+      expect(WorkflowService).to have_received(:create).with(druid:, workflow_name: 'gisAssemblyWF', version: '2',
+                                                             context: nil)
     end
 
     context 'with context' do
@@ -84,8 +83,8 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
         post "/v1/objects/#{druid}/accession?#{params.to_query}",
              params: { context: workflow_context }.to_json,
              headers: { 'Authorization' => "Bearer #{jwt}", 'CONTENT_TYPE' => 'application/json' }
-        expect(workflow_client).to have_received(:create_workflow_by_name)
-          .with(druid, default_start_accession_workflow, version: '2', context: workflow_context)
+        expect(WorkflowService).to have_received(:create).with(druid:, workflow_name: default_start_accession_workflow,
+                                                               version: '2', context: workflow_context)
       end
     end
   end
@@ -112,7 +111,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
           druid: 'druid:mx123qw2323',
           event_type: 'accession_request_aborted' }
       )
-      expect(workflow_client).not_to have_received(:create_workflow_by_name)
+      expect(WorkflowService).not_to have_received(:create)
       expect(version_service).not_to have_received(:open)
     end
   end

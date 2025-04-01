@@ -108,8 +108,8 @@ class ObjectsController < ApplicationController
     end
 
     # initialize workflow
-    workflow_client.create_workflow_by_name(@cocina_object.externalIdentifier, workflow,
-                                            version: updated_cocina_object.version.to_s, context: workflow_context)
+    WorkflowService.create(druid: @cocina_object.externalIdentifier, workflow_name: workflow,
+                           version: updated_cocina_object.version.to_s, context: workflow_context)
     head :created
   end
 
@@ -144,10 +144,6 @@ class ObjectsController < ApplicationController
 
   def publish_queue
     params['lane-id'] == 'low' ? :publish_low : :publish_default
-  end
-
-  def workflow_client
-    WorkflowClientFactory.build
   end
 
   def from_etag(etag)
