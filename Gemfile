@@ -32,6 +32,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 gem 'bunny', '~> 2.17' # Send messages to RabbitMQ
 gem 'committee' # validates Open API spec (OAS)
 gem 'config'
+gem 'connection_pool' # Used for redis
 gem 'csv'
 gem 'daemons' # for rolling indexer
 gem 'dry-monads'
@@ -47,6 +48,7 @@ gem 'lograge'
 gem 'okcomputer'
 gem 'parallel' # used for validating cocina tools and for rolling indexer
 gem 'pg'
+gem 'redis', '~> 5.0' # used for unique jobs
 gem 'retries' # for Goobi
 gem 'rsolr'
 gem 'ruby-cache', '~> 0.3.0'
