@@ -16,8 +16,8 @@ module Robots
           PreservationIngestService.transfer(cocina_object)
 
           # start SDR preservation workflow
-          workflow_service.create_workflow_by_name(druid, 'preservationIngestWF', version: cocina_object.version,
-                                                                                  lane_id:)
+          WorkflowService.create(druid:, workflow_name: 'preservationIngestWF', version: cocina_object.version,
+                                 lane_id:)
         end
       end
     end

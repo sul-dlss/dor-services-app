@@ -79,7 +79,7 @@ class VersionService
     Indexer.reindex_later(cocina_object: repository_object.reload.to_cocina_with_metadata)
 
     new_version = repository_object.opened_version.version
-    workflow_client.create_workflow_by_name(druid, 'versioningWF', version: new_version.to_s)
+    WorkflowService.create(druid:, workflow_name: 'versioningWF', version: new_version.to_s)
     EventFactory.create(druid:, event_type: 'version_open', data: { who: opening_user_name, version: new_version.to_s })
     repository_object.to_cocina_with_metadata
   end
@@ -140,7 +140,7 @@ class VersionService
     repository_object = RepositoryObject.find_by!(external_identifier: druid)
 
     repository_object.close_version!(description:)
-    workflow_client.create_workflow_by_name(druid, 'accessionWF', version: version.to_s) if start_accession
+    WorkflowService.create(druid:, workflow_name: 'accessionWF', version: version.to_s) if start_accession
 
     EventFactory.create(druid:, event_type: 'version_close', data: { who: user_name, version: version.to_s })
 

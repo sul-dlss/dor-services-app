@@ -10,9 +10,8 @@ module Robots
         end
 
         def perform_work
-          unless cocina_object.dro? && WasService.crawl?(druid: druid)
-            return LyberCore::ReturnState.new(status: :skipped,
-                                              note: 'Not a WAS crawl, nothing to do')
+          unless cocina_object.dro? && was_crawl?
+            return LyberCore::ReturnState.new(status: :skipped, note: 'Not a WAS crawl, nothing to do')
           end
 
           WasShelvingService.shelve(cocina_object)
@@ -22,6 +21,11 @@ module Robots
           # data from server: Connection timed out : BEGIN
           ActiveRecord::Base.connection_handler.clear_active_connections!
           EventFactory.create(druid:, event_type: 'shelving_complete', data: {})
+        end
+
+        def was_crawl?
+          # The presence of the wasCrawlPreassemblyWF workflow indicates that this is a crawl.
+          WorkflowService.workflow?(druid:, workflow_name: 'wasCrawlPreassemblyWF')
         end
       end
     end

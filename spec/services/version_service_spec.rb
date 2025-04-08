@@ -41,7 +41,8 @@ RSpec.describe VersionService do
         expect(open).to be_a(Cocina::Models::DROWithMetadata)
         expect(workflow_state_service).to have_received(:accessioned?)
         expect(workflow_state_service).to have_received(:accessioning?)
-        expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '2')
+        expect(workflow_client).to have_received(:create_workflow_by_name)
+          .with(druid, 'versioningWF', version: '2', lane_id: nil, context: nil)
 
         expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
                                                             druid:,
@@ -118,7 +119,8 @@ RSpec.describe VersionService do
         expect(open.label).not_to eq 'New version label'
         expect(workflow_state_service).to have_received(:accessioned?)
         expect(workflow_state_service).to have_received(:accessioning?)
-        expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'versioningWF', version: '3')
+        expect(workflow_client).to have_received(:create_workflow_by_name)
+          .with(druid, 'versioningWF', version: '3', lane_id: nil, context: nil)
 
         expect(EventFactory).to have_received(:create).with(data: { version: '3', who: 'sunetid' },
                                                             druid:,
@@ -285,7 +287,7 @@ RSpec.describe VersionService do
                                                               event_type: 'version_close')
 
           expect(workflow_client).to have_received(:create_workflow_by_name)
-            .with(druid, 'accessionWF', version: '2')
+            .with(druid, 'accessionWF', version: '2', lane_id: nil, context: nil)
 
           expect(repository_object.last_closed_version.user_versions.count).to eq 0
         end
@@ -515,7 +517,8 @@ RSpec.describe VersionService do
         close
         expect(repository_object.reload.last_closed_version).to be_present
         expect(workflow_state_service).to have_received(:assembling?)
-        expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'accessionWF', version: '2')
+        expect(workflow_client).to have_received(:create_workflow_by_name)
+          .with(druid, 'accessionWF', version: '2', lane_id: nil, context: nil)
       end
     end
 
@@ -530,7 +533,8 @@ RSpec.describe VersionService do
         close
         expect(repository_object.reload.last_closed_version).to be_present
         expect(repository_object.last_closed_version.version_description).to eq 'A Second Version'
-        expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, 'accessionWF', version: '2')
+        expect(workflow_client).to have_received(:create_workflow_by_name)
+          .with(druid, 'accessionWF', version: '2', lane_id: nil, context: nil)
       end
     end
 
@@ -739,9 +743,8 @@ RSpec.describe VersionService do
         expect(repository_object.head_version).to eq repository_object.versions.first
         expect(repository_object.versions.count).to eq 1
 
-        expect(EventFactory).to have_received(:create).with(data: { version: },
-                                                            druid:,
-                                                            event_type: 'version_discard')
+        expect(EventFactory).to have_received(:create)
+          .with(data: { version: }, druid:, event_type: 'version_discard')
       end
     end
   end
