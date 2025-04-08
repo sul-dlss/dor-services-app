@@ -38,7 +38,7 @@ class UpdateObjectService
     EventFactory.create(druid:, event_type: 'update',
                         data: { success: true, request: cocina_object_without_metadata.to_h })
 
-    Indexer.reindex_later(cocina_object: updated_cocina_object_with_metadata)
+    Indexer.reindex_later(druid:)
 
     # Update all items in the collection if necessary
     PublishItemsModifiedJob.perform_later(druid) if update_items
