@@ -2436,6 +2436,12 @@ components:
             - $ref: "#/components/schemas/MigratedFromSymphonyIdentifier"
             - $ref: "#/components/schemas/MigratedFromVoyagerIdentifier"
             - $ref: "#/components/schemas/CreatedInFolioIdentifier"
+        partLabel:
+          description: Label for use in display of serials via Folio record
+          type: string
+        sortKey:
+          description: Sorting information for use in display of serials via Folio record
+          type: string
       required:
         - catalog
         - catalogRecordId

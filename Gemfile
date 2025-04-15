@@ -6,7 +6,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 gem 'rails', '~> 7.2.1'
 
 # DLSS/domain-specific dependencies
-gem 'cocina-models', '~> 0.100.0'
+gem 'cocina-models', '~> 0.101.0'
 gem 'datacite', '~> 0.3.0'
 gem 'dor-workflow-client', '~> 7.6'
 gem 'druid-tools', '~> 2.2'
