@@ -58,6 +58,20 @@ RSpec.describe Catalog::Marc856Generator do
       ]
     }
   end
+  let(:identity_metadata_part_label) do
+    {
+      sourceId: 'sul:36105216275185',
+      catalogLinks: [
+        {
+          catalog: 'folio',
+          catalogRecordId: 'a8832162',
+          refresh: true,
+          sortKey: '1',
+          partLabel: 'Part 1'
+        }
+      ]
+    }
+  end
   let(:attachment1) do
     {
       type: Cocina::Models::ObjectType.file,
@@ -529,6 +543,46 @@ RSpec.describe Catalog::Marc856Generator do
       it 'returns both the label and part number' do
         expect(marc_856_generator.send(:subfield_x_parts)).to eq([{ code: 'x', value: 'label:Issue #3. 2011' },
                                                                   { code: 'x', value: 'sort:2011' }])
+      end
+    end
+
+    context 'when description and identification both have part label info' do
+      let(:cocina_object) do
+        build(:dro, id: druid).new(
+          description: {
+            title: [
+              {
+                structuredValue: [
+                  {
+                    value: 'Some label',
+                    type: 'main title'
+                  },
+                  {
+                    value: 'Issue #3',
+                    type: 'part name'
+                  },
+                  {
+                    value: '2011',
+                    type: 'part number'
+                  }
+                ]
+              }
+            ],
+            note: [
+              {
+                value: '2011',
+                type: 'date/sequential designation'
+              }
+            ],
+            purl: "https://purl.stanford.edu/#{bare_druid}"
+          },
+          identification: identity_metadata_part_label
+        )
+      end
+
+      it 'returns both the label and part number' do
+        expect(marc_856_generator.send(:subfield_x_parts)).to eq([{ code: 'x', value: 'label:Part 1' },
+                                                                  { code: 'x', value: 'sort:1' }])
       end
     end
 

@@ -113,7 +113,10 @@ class CleanupService
     return unless File.directory?(content_path.path)
 
     base_backup_path = File.join(backup_path, content_path.id) # e.g. /dor/staging/stopped/ab123bc4567
-    specific_backup_path = File.join(base_backup_path, File.basename(base)) # e.g. /dor/staging/stopped/ab123bc4567/workspace # rubocop:disable Metrics/LineLength
+    specific_backup_path = File.join(
+      base_backup_path,
+      File.basename(base)
+    ) # e.g. /dor/staging/stopped/ab123bc4567/workspace
 
     FileUtils.mkdir_p(base_backup_path)
     FileUtils.cp_r(content_path.path, specific_backup_path)
