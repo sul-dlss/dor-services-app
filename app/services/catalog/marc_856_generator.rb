@@ -5,6 +5,7 @@ module Catalog
   class Marc856Generator
     # objects goverened by these APOs (ETD and EEMs) will get indicator 2 = 0, else 1
     BORN_DIGITAL_APOS = %w[druid:bx911tp9024 druid:jj305hm5259].freeze
+    DEFAULT_CATALOG = 'folio'
 
     def self.create(cocina_object, thumbnail_service:, catalog: 'folio')
       new(cocina_object, thumbnail_service:, catalog:).create
@@ -13,10 +14,10 @@ module Catalog
     # @param [Cocina::Models::DRO,Cocina::Models::Collection,Cocina::Models::AdminPolicy] cocina_object
     # @param [ThumbnailService] thumbnail_service
     # @param [String] catalog used to determine the catalog record id to use for the collection
-    def initialize(cocina_object, thumbnail_service:, catalog: 'folio')
+    def initialize(cocina_object, thumbnail_service:, catalog: DEFAULT_CATALOG)
       @cocina_object = cocina_object
       @thumbnail_service = thumbnail_service
-      @catalog = catalog
+      @catalog = catalog || DEFAULT_CATALOG
     end
 
     # @return [Hash] of data required to update 856 fields for purls pertaining to this object
@@ -180,29 +181,43 @@ module Catalog
       ['part name', 'part number']
     end
 
-    def part_label # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
-      @part_label ||= begin
-        title_info = cocina_object.description.title.first
-        # Need to check both structuredValue on title_info and in parallelValues
-        structured_values = []
-        structured_values << title_info.structuredValue if title_info.structuredValue.present?
-        title_info.parallelValue.each do |parallel_value|
-          structured_values << parallel_value.structuredValue if parallel_value.structuredValue.present?
-        end
+    def part_label
+      @part_label ||= part_label_from_catalog_links || part_label_from_title
+    end
 
-        part_parts = []
-        structured_values.each do |structured_value|
-          structured_value.each do |part|
-            part_parts << part if part_types.include? part.type
-          end
-        end
+    def part_label_from_catalog_links
+      cocina_object.identification&.catalogLinks&.find { |link| link.catalog == DEFAULT_CATALOG }&.partLabel
+    end
 
-        part_parts.filter_map(&:value).join(parts_delimiter(part_parts))
+    def part_label_from_title # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
+      title_info = cocina_object.description.title.first
+      # Need to check both structuredValue on title_info and in parallelValues
+      structured_values = []
+      structured_values << title_info.structuredValue if title_info.structuredValue.present?
+      title_info.parallelValue.each do |parallel_value|
+        structured_values << parallel_value.structuredValue if parallel_value.structuredValue.present?
       end
+
+      part_parts = []
+      structured_values.each do |structured_value|
+        structured_value.each do |part|
+          part_parts << part if part_types.include?(part.type)
+        end
+      end
+
+      part_parts.filter_map(&:value).join(parts_delimiter(part_parts))
     end
 
     def part_sort
-      @part_sort ||= cocina_object.description.note.find { |note| note.type == 'date/sequential designation' }&.value
+      @part_sort ||= part_sort_from_catalog_links || part_sort_from_note
+    end
+
+    def part_sort_from_catalog_links
+      cocina_object.identification&.catalogLinks&.find { |link| link.catalog == DEFAULT_CATALOG }&.sortKey
+    end
+
+    def part_sort_from_note
+      cocina_object.description.note.find { |note| note.type == 'date/sequential designation' }&.value
     end
   end
 end
