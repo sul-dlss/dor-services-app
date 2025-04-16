@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Invoke via:
-# bin/rails r -e production "DruidsRefreshFalse.report" > druids_do_not_refresh.csv
+# bin/rails r -e production "DruidsRefreshFalse.report"
 class DruidsRefreshFalse
   # Query to find items where refresh is set to false.
   SQL = <<~SQL.squish.freeze
@@ -17,8 +17,15 @@ class DruidsRefreshFalse
   SQL
 
   def self.report
-    puts 'catalogRecordId,druid,object_type,label,collection_name,collection_druid,refresh'
-    rows(SQL).compact.each { |row| puts row }
+    output_file = 'tmp/druids_do_not_refresh.csv'
+
+    CSV.open(output_file, 'w') do |csv|
+      csv << %w[catalogRecordId druid object_type label collection_name collection_druid refresh]
+
+      rows(SQL).compact.each do |row|
+        csv << row
+      end
+    end
   end
 
   def self.rows(sql_query)
@@ -32,11 +39,11 @@ class DruidsRefreshFalse
         row['catalog_record_id'],
         row['druid'],
         row['object_type'],
-        "\"#{row['label']}\"",
-        "\"#{collection_name}\"",
+        row['label'],
+        collection_name,
         collection_druid,
         row['refresh']
-      ].join(',')
+      ]
     end
   end
 end
