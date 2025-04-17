@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Queries the workflow state of an object.
+# Queries the workflow state of an object for a specific version.
 # This is primarily intended to support versioning.
 class WorkflowStateService
   def self.accessioning?(...)

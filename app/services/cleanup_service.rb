@@ -81,8 +81,8 @@ class CleanupService
 
   # @param [String] version The object version to delete workflows for
   def delete_accessioning_workflows(version:)
-    %w[accessionWF assemblyWF versioningWF].each do |workflow|
-      WorkflowClientFactory.build.delete_workflow(druid:, workflow:, version:)
+    %w[accessionWF assemblyWF versioningWF].each do |workflow_name|
+      WorkflowService.delete(druid:, workflow_name:, version:)
     end
   end
 
