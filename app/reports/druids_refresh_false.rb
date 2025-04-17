@@ -22,7 +22,7 @@ class DruidsRefreshFalse
     output_file = 'tmp/druids_do_not_refresh.csv'
 
     CSV.open(output_file, 'w') do |csv|
-      csv << %w[catalogRecordId druid object_type label structured_title title collection_name collection_druid refresh]
+      csv << %w[catalogRecordId druid object_type label structured_title title collection_name collection_druid]
 
       rows(SQL).compact.each do |row|
         csv << row
@@ -45,8 +45,7 @@ class DruidsRefreshFalse
         row['structured_title'],
         row['title'],
         collection_name,
-        collection_druid,
-        row['refresh']
+        collection_druid
       ]
     end
   end
