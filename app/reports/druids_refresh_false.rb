@@ -3,19 +3,19 @@
 # Invoke via:
 # bin/rails r -e production "DruidsRefreshFalse.report"
 class DruidsRefreshFalse
-  # Query to find items where refresh is set to false.
+  # Query for description and identification metadata for records where the folio catalogRecordId refresh is set to false.
   SQL = <<~SQL.squish.freeze
     SELECT ro.external_identifier as druid,
       jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id,
-      jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalog_record_id,
-      jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").refresh') ->> 0 as refresh,
+      jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio" && @.refresh == false).catalogRecordId') ->> 0 as catalog_record_id,
       jsonb_path_query(rov.description, '$.title[0].structuredValue[*] ? (@.type == "main title").value') ->> 0 as structured_title,
       jsonb_path_query(rov.description, '$.title[0].value') ->> 0 as title,
       ro.object_type as object_type,
       rov.label as label
-      FROM repository_objects AS ro, repository_object_versions AS rov WHERE
-        jsonb_path_exists(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio" && @.refresh == false)')
-        AND ro.head_version_id = rov.id;
+    FROM repository_objects AS ro, repository_object_versions AS rov
+    WHERE
+      jsonb_path_exists(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio" && @.refresh == false)')
+      AND ro.head_version_id = rov.id;
   SQL
 
   def self.report
