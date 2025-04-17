@@ -9,6 +9,8 @@ class DruidsRefreshFalse
       jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id,
       jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalog_record_id,
       jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").refresh') ->> 0 as refresh,
+      jsonb_path_query(rov.description, '$.title[0].structuredValue[*] ? (@.type == "main title").value') ->> 0 as structured_title,
+      jsonb_path_query(rov.description, '$.title[0].value') ->> 0 as title,
       ro.object_type as object_type,
       rov.label as label
       FROM repository_objects AS ro, repository_object_versions AS rov WHERE
@@ -20,7 +22,7 @@ class DruidsRefreshFalse
     output_file = 'tmp/druids_do_not_refresh.csv'
 
     CSV.open(output_file, 'w') do |csv|
-      csv << %w[catalogRecordId druid object_type label collection_name collection_druid refresh]
+      csv << %w[catalogRecordId druid object_type label structured_title title collection_name collection_druid refresh]
 
       rows(SQL).compact.each do |row|
         csv << row
@@ -40,6 +42,8 @@ class DruidsRefreshFalse
         row['druid'],
         row['object_type'],
         row['label'],
+        row['structured_title'],
+        row['title'],
         collection_name,
         collection_druid,
         row['refresh']
