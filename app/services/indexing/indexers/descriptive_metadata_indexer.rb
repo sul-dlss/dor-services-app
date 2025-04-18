@@ -115,7 +115,8 @@ module Indexing
       end
 
       def display_title
-        Cocina::Models::Builders::TitleBuilder.build(cocina.description.title)
+        Cocina::Models::Builders::TitleBuilder.build(cocina.description.title,
+                                                     catalog_links: cocina.identification.catalogLinks)
       end
 
       def forms
