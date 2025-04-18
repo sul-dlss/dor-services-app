@@ -84,7 +84,9 @@ RSpec.describe UserVersionService do
   end
 
   describe '.move' do
-    subject(:user_version_service_move) { described_class.move(druid:, version: 2, user_version: 1) }
+    subject(:user_version_service_move) { described_class.move(druid:, version: 2, user_version: 1, publish:) }
+
+    let(:publish) { true }
 
     let!(:user_version) { UserVersion.create!(version: 1, repository_object_version: repository_object_version1) }
 
@@ -94,6 +96,15 @@ RSpec.describe UserVersionService do
       expect(user_version.reload.repository_object_version).to eq repository_object_version2
       expect(PublishJob).to have_received(:perform_later).with(druid:, user_version: 1,
                                                                background_job_result: BackgroundJobResult)
+    end
+
+    context 'when publishing is false' do
+      let(:publish) { false }
+
+      it 'does not publish the user version' do
+        user_version_service_move
+        expect(PublishJob).not_to have_received(:perform_later)
+      end
     end
   end
 
