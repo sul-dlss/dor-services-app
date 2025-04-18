@@ -1,3 +1,23 @@
+GIT
+  remote: https://github.com/sul-dlss/cocina-models.git
+  revision: fe216286b8972a489b59e8a34e3213771c978a49
+  branch: bump-dependencies
+  specs:
+    cocina-models (0.101.1)
+      activesupport
+      deprecation
+      dry-struct (~> 1.0)
+      dry-types (~> 1.1)
+      edtf
+      equivalent-xml
+      i18n
+      jsonpath
+      nokogiri
+      openapi_parser (~> 2.0)
+      super_diff
+      thor
+      zeitwerk (~> 2.1)
+
 GEM
   remote: https://gems.contribsys.com/
   specs:
@@ -120,29 +140,15 @@ GEM
       capistrano-bundler (>= 1.1, < 3)
     capistrano-shared_configs (0.2.2)
     chronic (0.10.2)
-    cocina-models (0.101.1)
-      activesupport
-      deprecation
-      dry-struct (~> 1.0)
-      dry-types (~> 1.1)
-      edtf
-      equivalent-xml
-      i18n
-      jsonpath
-      nokogiri
-      openapi_parser (~> 1.0)
-      super_diff
-      thor
-      zeitwerk (~> 2.1)
-    committee (5.0.0)
+    committee (5.5.3)
       json_schema (~> 0.14, >= 0.14.3)
-      openapi_parser (~> 1.0)
-      rack (>= 1.5)
+      openapi_parser (~> 2.0)
+      rack (>= 1.5, < 3.2)
     concurrent-ruby (1.3.5)
     config (5.5.2)
       deep_merge (~> 1.2, >= 1.2.1)
       ostruct
-    connection_pool (2.5.0)
+    connection_pool (2.5.1)
     crack (1.0.0)
       bigdecimal
       rexml
@@ -370,7 +376,7 @@ GEM
       snaky_hash (~> 2.0)
       version_gem (~> 1.1)
     okcomputer (1.19.0)
-    openapi_parser (1.0.0)
+    openapi_parser (2.2.6)
     optimist (3.2.1)
     ostruct (0.6.1)
     parallel (1.26.3)
@@ -615,7 +621,7 @@ DEPENDENCIES
   capistrano-passenger
   capistrano-rails
   capistrano-shared_configs
-  cocina-models (~> 0.101.1)
+  cocina-models!
   committee
   config
   connection_pool
