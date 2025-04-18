@@ -18,13 +18,13 @@ RSpec.describe WorkflowService do
     let(:accessioning_workflow) { instance_double(Dor::Workflow::Response::Workflow, workflow_name: 'accessioningWF') }
 
     before do
-      allow(workflow_client).to receive(:all_workflows).with(druid).and_return(workflows)
+      allow(workflow_client).to receive(:all_workflows).with(pid: druid).and_return(workflows)
     end
 
     context 'when the workflow exists' do
       it 'returns true' do
         expect(described_class.workflow?(druid:, workflow_name: 'wasCrawlPreassemblyWF')).to be true
-        expect(workflow_client).to have_received(:all_workflows).with(druid)
+        expect(workflow_client).to have_received(:all_workflows).with(pid: druid)
       end
     end
 
