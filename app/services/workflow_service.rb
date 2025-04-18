@@ -25,7 +25,7 @@ class WorkflowService
   # @param [String] workflow_name the name of the workflow to check
   # @return [boolean] returns true if the object has the workflow for any version
   def workflow?(workflow_name:)
-    workflow_client.all_workflows(druid).workflows.any? { |workflow| workflow.workflow_name == workflow_name }
+    workflow_client.all_workflows(pid: druid).workflows.any? { |workflow| workflow.workflow_name == workflow_name }
   end
 
   # @param [String] workflow_name the name of the workflow to create
