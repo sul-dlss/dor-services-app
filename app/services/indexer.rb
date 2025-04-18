@@ -25,13 +25,11 @@ class Indexer
     solr.commit
   end
 
-  # @param [Cocina::Models::DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata]
-  def self.reindex_later(cocina_object:, trace_id: nil)
+  # @param [string] druid
+  def self.reindex_later(druid:, trace_id: nil)
     ReindexJob.perform_later(
-      model: cocina_object.to_h,
-      created: cocina_object.created,
-      modified: cocina_object.modified,
-      trace_id: trace_id || trace_id_for(druid: cocina_object.externalIdentifier)
+      druid:,
+      trace_id: trace_id || trace_id_for(druid:)
     )
   end
 
