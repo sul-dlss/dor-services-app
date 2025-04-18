@@ -350,6 +350,7 @@ RSpec.describe VersionService do
           allow(Preservation::Client.objects).to receive(:current_version).and_return(2)
           allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
           allow(cocina_object).to receive(:version).and_return(2)
+          allow(UserVersionService).to receive(:move).and_call_original
           described_class.open(cocina_object:, description: 'same as it ever was', opening_user_name: 'sunetid')
           repository_object.versions.last.update!(closed_at: nil)
           repository_object.head_version = repository_object.versions.last
@@ -362,6 +363,7 @@ RSpec.describe VersionService do
           expect(repository_object.last_closed_version.user_versions.count).to eq 1
           expect(repository_object.last_closed_version.user_versions.first.version).to eq 1
           expect(repository_object.versions.find_by(version: 2).user_versions.count).to eq 0
+          expect(UserVersionService).to have_received(:move).with(druid:, version: 3, user_version: 1, publish: false)
         end
       end
 

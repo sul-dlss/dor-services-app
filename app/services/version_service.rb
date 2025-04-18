@@ -144,7 +144,8 @@ class VersionService
 
     EventFactory.create(druid:, event_type: 'version_close', data: { who: user_name, version: version.to_s })
 
-    update_user_version(user_version_mode:, repository_object:)
+    # Accessioning will perform the publishing, so don't publish here
+    update_user_version(user_version_mode:, repository_object:, publish: !start_accession)
     update_previous_user_versions(repository_object:)
   end
 
@@ -249,7 +250,7 @@ class VersionService
     raise VersionService::VersioningError, "accessionWF already created for versioned object #{druid}" if accessioning?
   end
 
-  def update_user_version(user_version_mode:, repository_object:)
+  def update_user_version(user_version_mode:, repository_object:, publish:)
     case user_version_mode
     when :new
       create_user_version(repository_object)
@@ -257,10 +258,10 @@ class VersionService
       if no_user_versions?(repository_object)
         create_user_version(repository_object)
       else
-        move_user_version(repository_object)
+        move_user_version(repository_object, publish)
       end
     when :update_if_existing
-      move_user_version(repository_object) unless no_user_versions?(repository_object)
+      move_user_version(repository_object, publish) unless no_user_versions?(repository_object)
     end
     # :none falls through and does nothing
   end
@@ -273,9 +274,9 @@ class VersionService
     UserVersionService.create(druid:, version: repository_object.last_closed_version.version)
   end
 
-  def move_user_version(repository_object)
+  def move_user_version(repository_object, publish)
     UserVersionService.move(druid:, version: repository_object.last_closed_version.version,
-                            user_version: repository_object.head_user_version)
+                            user_version: repository_object.head_user_version, publish:)
   end
 
   def check_version!(current_version:)
