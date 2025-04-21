@@ -116,7 +116,7 @@ module Indexing
 
       def display_title
         Cocina::Models::Builders::TitleBuilder.build(cocina.description.title,
-                                                     catalog_links: cocina.identification.catalogLinks)
+                                                     catalog_links: catalog_links)
       end
 
       def forms
@@ -233,6 +233,12 @@ module Indexing
 
       def all_search_text
         @all_search_text ||= Indexing::Builders::AllSearchTextBuilder.build(cocina.description)
+      end
+
+      def catalog_links
+        return [] if cocina.is_a?(Cocina::Models::AdminPolicyWithMetadata)
+
+        cocina.identification.catalogLinks
       end
     end
     # rubocop:enable Metrics/ClassLength
