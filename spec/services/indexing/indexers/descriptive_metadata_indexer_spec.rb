@@ -12,8 +12,23 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
   let(:doc) { indexer.to_solr }
   let(:cocina) do
     build(:dro, id: druid).new(
-      description: description.merge({ purl: "https://purl.stanford.edu/#{bare_druid}" })
+      description: description.merge({ purl: "https://purl.stanford.edu/#{bare_druid}" }),
+      identification: identification
     )
+  end
+  let(:identification) do
+    {
+      catalogLinks: [
+        {
+          catalog: 'folio',
+          refresh: true,
+          catalogRecordId: 'in1234',
+          partLabel: 'Part 1',
+          sortKey: '1'
+        }
+      ],
+      sourceId: 'sul1:123'
+    }
   end
   let(:description) do
     {
@@ -400,7 +415,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'main_title_tenim' => ['The complete works of Henry George'],
         'full_title_tenim' => ['The complete works of Henry George'],
         # 'additional_titles_tenim' => '', # not populated by the example; see indexer_spec instead
-        'display_title_ss' => 'The complete works of Henry George',
+        'display_title_ss' => 'The complete works of Henry George, Part 1',
         # 'originInfo_date_created_tesim' => '', # not populated by the example; see indexer_spec instead
         'originInfo_publisher_tesim' => 'Doubleday, Page',
         'topic_ssim' => %w[Economics cats],
@@ -475,7 +490,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
           'full_title_tenim' => ['Toldot ha-Yehudim be-artsot ha-Islam ha-ʻet ha-ḥadashah-ʻad emtsaʻ ha-meʼah ha-19',
                                  'תולדות היהודים בארצות האיסלאם העת החדשה עד אמצע המאה ה־19'],
           'additional_titles_tenim' => ['History of the Jews in the Islamic countries'],
-          'display_title_ss' => 'Toldot ha-Yehudim be-artsot ha-Islam : ha-ʻet ha-ḥadashah-ʻad emtsaʻ ha-meʼah ha-19'
+          'display_title_ss' =>
+            'Toldot ha-Yehudim be-artsot ha-Islam : ha-ʻet ha-ḥadashah-ʻad emtsaʻ ha-meʼah ha-19, Part 1'
         )
         # rubocop:enable Style/StringHashKeys
       end
