@@ -289,16 +289,11 @@ RSpec.describe Catalog::FolioWriter do
         end
 
         it 'updates the MARC record and retries lookup until max_tries reached' do
-          expect { folio_writer.save }.to raise_error(StandardError, 'FOLIO update not completed.')
+          expect { folio_writer.save }.to raise_error(StandardError,
+                                                      'No matching PURL found in instance record after update.')
           expect(FolioClient).to have_received(:fetch_instance_info).exactly(4).times
           expect(FolioClient).to have_received(:edit_marc_json).with(hrid:).once
           expect(Rails.logger).to have_received(:warn).exactly(4).times
-          expect(Honeybadger).to have_received(:notify)
-            .with(
-              'Error updating Folio record',
-              error_message: 'No matching PURL found in instance record after update.'
-            )
-            .once
         end
       end
 
@@ -326,13 +321,8 @@ RSpec.describe Catalog::FolioWriter do
         before { allow(FolioClient).to receive(:fetch_marc_hash).and_return(source_record_two_856s) }
 
         it 'raises an error' do
-          expect { folio_writer.save }.to raise_error(StandardError, 'FOLIO update not completed.')
-          expect(Honeybadger).to have_received(:notify)
-            .with(
-              'Error updating Folio record',
-              error_message: 'More than one matching field with a PURL found on FOLIO record.'
-            )
-            .once
+          expect { folio_writer.save }.to raise_error(StandardError,
+                                                      'More than one matching field with a PURL found on FOLIO record.')
         end
       end
     end
@@ -368,14 +358,9 @@ RSpec.describe Catalog::FolioWriter do
         before { allow(FolioClient).to receive(:fetch_instance_info).and_return(instance_record) }
 
         it 'raises an error' do
-          expect { folio_writer.save }.to raise_error(StandardError, 'FOLIO update not completed.')
+          expect { folio_writer.save }.to raise_error(StandardError,
+                                                      'PURL still found in instance record after update.')
           expect(FolioClient).to have_received(:edit_marc_json).with(hrid:)
-          expect(Honeybadger).to have_received(:notify)
-            .with(
-              'Error updating Folio record',
-              error_message: 'PURL still found in instance record after update.'
-            )
-            .once
         end
       end
     end
