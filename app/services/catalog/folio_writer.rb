@@ -108,9 +108,9 @@ module Catalog
         retry
       end
 
-      Honeybadger.notify('Error updating Folio record', error_message: e.message)
+      Honeybadger.context(try_count: @try_count)
 
-      raise StandardError, 'FOLIO update not completed.'
+      raise e
     end
 
     # allow match with older catalog records' 856 fields with purls starting with http://
