@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Invoke via:
-# bin/rails r -e production "DigitalSerialsTitleParts.report(filename: '/opt/app/deploy/dor-services-app/druid_list.txt')" > digital_serials_title_parts.csv
+# bin/rails r -e production "DigitalSerialsTitleParts.report(filename: '/opt/app/deploy/dor-services-app/druid_list.txt')"
 class DigitalSerialsTitleParts
   # Report on title part names and part numbers for a provided set of druids.
   # The provided file contains a list of druids, one per line, without the 'druid:' prefix.
@@ -24,8 +24,15 @@ class DigitalSerialsTitleParts
       druid = "druid:#{raw_line.chomp}"
       cocina_object = CocinaObjectStore.find(druid)
       catalog_record_ids = cocina_object.identification.catalogLinks.select { |link| link.catalog == 'folio' }.map(&:catalogRecordId)
-      part_names = cocina_object.description.title.map(&:structuredValue).flatten.select { |part| part.type == 'part name' }.map(&:value)
-      part_numbers = cocina_object.description.title.map(&:structuredValue).flatten.select { |part| part.type == 'part number' }.map(&:value)
+
+      structured_part_names = cocina_object.description.title.map(&:structuredValue).flatten.select { |part| part.type == 'part name' }.map(&:value)
+      parallel_part_names = cocina_object.description.title.map(&:parallelValue).flatten.map(&:structuredValue).flatten.select { |part| part.type == 'part name' }.map(&:value)
+
+      structured_part_numbers = cocina_object.description.title.map(&:structuredValue).flatten.select { |part| part.type == 'part number' }.map(&:value)
+      parallel_part_numbers = cocina_object.description.title.map(&:parallelValue).flatten.map(&:structuredValue).flatten.select { |part| part.type == 'part number' }.map(&:value)
+
+      part_names = structured_part_names + parallel_part_names
+      part_numbers = structured_part_numbers + parallel_part_numbers
 
       line = [
         druid,
