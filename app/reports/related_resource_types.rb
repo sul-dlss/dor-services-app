@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Invoke via:
-# bin/rails r -e production "RelatedResourceTypes.report" > related_resource_types.csv
+# bin/rails r -e production "RelatedResourceTypes.report"
 class RelatedResourceTypes
   # NOTE: Prefer strict JSON querying over lax when using the `.**` operator, per
   # https://www.postgresql.org/docs/14/functions-json.html#STRICT-AND-LAX-MODES

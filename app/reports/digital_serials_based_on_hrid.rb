@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Invoke via:
-# bin/rails r -e production "DigitalSerialsBasedOnHrid.report" > digital_serials_based_on_hrid.csv
+# bin/rails r -e production "DigitalSerialsBasedOnHrid.report"
 class DigitalSerialsBasedOnHrid
   # Query to find records where the HRID occurs in more than one record. Excludes those in the Google Books collection.
   # prod: druid:yh583fk3400; stage: druid:ks963md4872; qa: druid:kd593mk1175

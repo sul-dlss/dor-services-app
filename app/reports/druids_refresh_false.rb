@@ -19,15 +19,8 @@ class DruidsRefreshFalse
   SQL
 
   def self.report
-    output_file = 'tmp/druids_do_not_refresh.csv'
-
-    CSV.open(output_file, 'w') do |csv|
-      csv << %w[catalogRecordId druid object_type label structured_title title collection_name collection_druid]
-
-      rows(SQL).compact.each do |row|
-        csv << row
-      end
-    end
+    puts %w[catalogRecordId druid object_type label structured_title title collection_name collection_druid].join(',')
+    rows(SQL).compact.each { |row| puts row }
   end
 
   def self.rows(sql_query)

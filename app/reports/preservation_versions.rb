@@ -30,10 +30,8 @@ class PreservationVersions
       end
     end.flatten(1).compact
 
-    CSV.open('preservation_versions_report.csv', 'w') do |csv|
-      csv << %w[druid version preservation_version]
-      results.each { |result| csv << result }
-    end
+    puts %w[druid version preservation_version].join(',')
+    results.each { |result| puts result.join(',') }
   end
 
   def tty_progress_bar(count)

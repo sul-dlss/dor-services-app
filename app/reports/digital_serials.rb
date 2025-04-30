@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Invoke via:
-# bin/rails r -e production "DigitalSerials.report" > digital_serials.csv
+# bin/rails r -e production "DigitalSerials.report"
 class DigitalSerials
   # Report on possible digital serials, based on usage of note and title types in description plus catalog ids.
   # Excludes objects in the Google Books collection:
