@@ -6,11 +6,12 @@ module Cocina
     #  see https://support.datacite.org/reference/dois-2#put_dois-id
     class Attributes
       # @param [Cocina::Models::DRO] cocina_item
+      # @param [String] url URL to be used for the item. If not provided, will use the PURL for the item.
       # @return [Hash] Hash of DataCite attributes, conforming to the expectations of HTTP PUT request to DataCite
-      def self.mapped_from_cocina(cocina_item)
+      def self.mapped_from_cocina(cocina_item, url: nil)
         return unless cocina_item&.dro?
 
-        new(cocina_item).mapped_from_cocina
+        new(cocina_item, url:).mapped_from_cocina
       end
 
       # @param [Cocina::Models::DRO] cocina_item
@@ -24,17 +25,18 @@ module Cocina
         types_attributes&.fetch(:resourceTypeGeneral).present? && creators.present?
       end
 
-      def initialize(cocina_item)
+      def initialize(cocina_item, url: nil)
         @access = cocina_item.access
         @description = cocina_item.description
         @purl = Purl.for(druid: cocina_item.externalIdentifier)
+        @url = url || @purl
       end
 
       # @return [Hash] Hash of DataCite attributes, conforming to the expectations of HTTP PUT request to DataCite
       def mapped_from_cocina
         {
           event: 'publish', # Makes a findable DOI
-          url: purl,
+          url:,
           descriptions:,
           alternateIdentifiers: alternate_identifiers,
           dates: [], # to be implemented from event_h2 mapping
@@ -54,7 +56,7 @@ module Cocina
 
       private
 
-      attr_reader :access, :description, :purl
+      attr_reader :access, :description, :purl, :url
 
       def publication_year
         date = if access.embargo

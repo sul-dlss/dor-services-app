@@ -26,7 +26,9 @@ module Robots
             raise "Item requested a DOI be updated, but it doesn't meet all the preconditions. " \
                   'Datacite requires that this object have creators and a datacite extension with resourceTypeGeneral'
           end
-          attributes = Cocina::ToDatacite::Attributes.mapped_from_cocina(Cocina::Models.without_metadata(cocina_object))
+
+          attributes = Cocina::ToDatacite::Attributes
+                       .mapped_from_cocina(Cocina::Models.without_metadata(cocina_object), url:)
 
           Honeybadger.context(attributes:, doi:, druid:)
 
@@ -40,6 +42,14 @@ module Robots
 
         def doi
           @doi ||= cocina_object.identification&.doi
+        end
+
+        def url
+          metadata_result = client.metadata(id: doi)
+          return unless metadata_result.success?
+
+          metadata = metadata_result.value!
+          metadata.dig('data', 'attributes', 'url')
         end
 
         def client

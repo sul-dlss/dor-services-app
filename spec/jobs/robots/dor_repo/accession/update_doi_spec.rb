@@ -20,6 +20,10 @@ RSpec.describe Robots::DorRepo::Accession::UpdateDoi, type: :robot do
   before do
     allow(CocinaObjectStore).to receive(:find).with(druid).and_return(object)
     allow(Cocina::ToDatacite::Attributes).to receive_messages(exportable?: exportable, mapped_from_cocina: attributes)
+
+    stub_request(:get, 'https://fake.datacite.example.com/dois/10.80343/zz000zz0001')
+      .to_return(status: 404, headers: { 'Content-Type' => 'application/json' })
+
     stub_request(:put, 'https://fake.datacite.example.com/dois/10.80343/zz000zz0001')
       .with(
         body: '{"data":{"attributes":{"titles":[{"title":"test deposit"}]}}}'
@@ -88,6 +92,23 @@ RSpec.describe Robots::DorRepo::Accession::UpdateDoi, type: :robot do
   context 'with no errors' do
     it 'succeeds' do
       expect { perform }.not_to raise_error
+      expect(Cocina::ToDatacite::Attributes).to have_received(:mapped_from_cocina).with(object, url: nil)
+    end
+  end
+
+  context 'when there is an existing DOI with a URL' do
+    let(:url) { 'https://example.com/doi' }
+
+    before do
+      stub_request(:get, 'https://fake.datacite.example.com/dois/10.80343/zz000zz0001')
+        .to_return(status: 200,
+                   body: { data: { attributes: { url: } } }.to_json,
+                   headers: { 'Content-Type' => 'application/json' })
+    end
+
+    it 'provides that url when generating attributes' do
+      expect { perform }.not_to raise_error
+      expect(Cocina::ToDatacite::Attributes).to have_received(:mapped_from_cocina).with(object, url:)
     end
   end
 end

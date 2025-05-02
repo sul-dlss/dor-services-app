@@ -3,7 +3,26 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ToDatacite::Attributes do
-  let(:attributes) { described_class.mapped_from_cocina(cocina_item) }
+  let(:attributes) { described_class.mapped_from_cocina(cocina_item, url:) }
+  let(:cocina_item) do
+    Cocina::Models::DRO.new(externalIdentifier: druid,
+                            type: Cocina::Models::ObjectType.object,
+                            label:,
+                            version: 1,
+                            description: {
+                              title: [{ value: title }],
+                              purl:
+                            },
+                            identification: {
+                              sourceId: 'sul:8.559351',
+                              doi:
+                            },
+                            access: {},
+                            administrative: {
+                              hasAdminPolicy: apo_druid
+                            },
+                            structural: {})
+  end
 
   let(:druid) { 'druid:bb666bb1234' }
   let(:doi) { "10.25740/#{druid.split(':').last}" }
@@ -11,32 +30,13 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   let(:label) { 'label' }
   let(:title) { 'title' }
   let(:apo_druid) { 'druid:pp000pp0000' }
+  let(:url) { nil }
 
   before do
     allow(Time.zone).to receive(:today).and_return(instance_double(Date, year: 2011))
   end
 
   context 'with a minimal description' do
-    let(:cocina_item) do
-      Cocina::Models::DRO.new(externalIdentifier: druid,
-                              type: Cocina::Models::ObjectType.object,
-                              label:,
-                              version: 1,
-                              description: {
-                                title: [{ value: title }],
-                                purl:
-                              },
-                              identification: {
-                                sourceId: 'sul:8.559351',
-                                doi:
-                              },
-                              access: {},
-                              administrative: {
-                                hasAdminPolicy: apo_druid
-                              },
-                              structural: {})
-    end
-
     it 'creates the attributes hash' do
       expect(attributes).to eq(
         {
@@ -57,6 +57,14 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           ]
         }
       )
+    end
+  end
+
+  context 'with a provided url' do
+    let(:url) { 'https://example.com' }
+
+    it 'uses the url in the attributes hash' do
+      expect(attributes[:url]).to eq(url)
     end
   end
 
