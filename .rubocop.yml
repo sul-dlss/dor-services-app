@@ -49,6 +49,7 @@ Metrics/BlockLength:
     - "config/routes.rb"
     - "config/initializers/dor_config.rb"
     - "lib/tasks/missing_druids.rake"
+    - "app/reports/**/*.rb"
 
 Metrics/ClassLength:
   Max: 150 # default 100
