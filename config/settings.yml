@@ -140,6 +140,7 @@ mais_orcid:
   client_id: ~
   client_secret: ~
   base_url: https://mais-sandbox.stanford.edu
+  token_url: https://mais-sandbox-token.stanford.edu
 
 rolling_indexer:
   # number of ids to get from Solr in a query
