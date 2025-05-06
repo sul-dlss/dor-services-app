@@ -5,9 +5,32 @@ require 'rails_helper'
 RSpec.describe Migrators::MoveDigitalSerials do
   subject(:migrator) { described_class.new(repository_object) }
 
-  let(:repository_object) { repository_object_version.repository_object }
-  let(:repository_object_version) { build(:repository_object_version, :with_repository_object, identification:) }
-  let(:identification) { { catalogLinks: [{ catalog: 'folio', catalogRecordId: 'a1234', refresh: 'false' }] } }
+  let(:repository_object_version) { build(:repository_object_version, description:, identification:) }
+  let(:repository_object) do
+    create(:repository_object, :with_repository_object_version, repository_object_version:,
+                                                                external_identifier: 'druid:bc177tq6734')
+  end
+  let(:identification) do
+    { catalogLinks: [{ catalog: 'folio', catalogRecordId: 'a1234', refresh: 'false' }],
+      sourceId: 'sul:sourceId' }
+  end
+  let(:description) do
+    {
+      title: [
+        {
+          structuredValue: [
+            { type: 'main title', value: 'Main Title' },
+            { type: 'part number', value: 'Volume 1' },
+            { type: 'part name', value: 'Spring' }
+          ]
+        }
+      ],
+      note: [
+        { type: 'date/sequential designation', value: '2023.01' },
+        { type: 'abstract', value: 'An abstract' }
+      ]
+    }
+  end
 
   describe '#migrate?' do
     subject { migrator.migrate? }
@@ -16,16 +39,48 @@ RSpec.describe Migrators::MoveDigitalSerials do
   end
 
   describe 'migrate' do
-    it 'populates the catalogLink partLabel and sortKey' do
+    it 'populates the catalogLink partLabel and sortKey and deletes from description' do
       migrator.migrate
-      expect(repository_object.versions.first.identification).to eq({ catalogLinks: [{ catalog: 'folio',
-                                                                                       catalogRecordId: 'a1234', refresh: 'false', partLabel: '', sortKey: '' }] })
+      expect(repository_object.head_version.identification).to eq({ 'catalogLinks' => [{ 'catalog' => 'folio',
+                                                                                         'catalogRecordId' => 'a1234',
+                                                                                         'refresh' => true,
+                                                                                         'partLabel' => 'Volume 1, Spring',
+                                                                                         'sortKey' => '2023.01' }],
+                                                                    'sourceId' => 'sul:sourceId' })
+      expect(repository_object.head_version.description).to eq({ 'title' => [{ 'structuredValue' => [{ 'type' => 'main title',
+                                                                                                       'value' => 'Main Title' }] }],
+                                                                 'note' => [{
+                                                                   'type' => 'abstract', 'value' => 'An abstract'
+                                                                 }] })
     end
 
-    it 'removes the description title parts' do
-    end
+    context 'when a parallelValue is present' do
+      let(:description) do
+        {
+          title: [
+            { parallelValue: [
+              {
+                structuredValue: [
+                  { type: 'main title', value: 'Main Title' },
+                  { type: 'part number', value: 'Volume 1' },
+                  { type: 'part name', value: 'Summer' }
+                ]
+              }
+            ] }
+          ]
+        }
+      end
 
-    it 'removes the description note' do
+      it 'populates the catalogLink partLabel and sortKey and deletes from description' do
+        migrator.migrate
+        expect(repository_object.head_version.identification).to eq({ 'catalogLinks' => [{ 'catalog' => 'folio',
+                                                                                           'catalogRecordId' => 'a1234',
+                                                                                           'refresh' => true,
+                                                                                           'partLabel' => 'Volume 1, Summer' }],
+                                                                      'sourceId' => 'sul:sourceId' })
+        expect(repository_object.head_version.description).to eq({ 'title' => [{ 'parallelValue' => [{ 'structuredValue' => [{ 'type' => 'main title',
+                                                                                                                               'value' => 'Main Title' }] }] }] })
+      end
     end
   end
 
