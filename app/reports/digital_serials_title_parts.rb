@@ -21,7 +21,7 @@ class DigitalSerialsTitleParts
     raise "Input file missing: #{filename}" unless File.exist?(filename)
 
     puts 'druid,catalogRecordId,part_names,part_numbers,part_label'
-    File.foreach(filename) do |bare_druid|
+    File.foreach(filename, chomp: true) do |bare_druid|
       druid = "druid:#{bare_druid}"
       @cocina_object = CocinaObjectStore.find(druid)
       catalog_record_id = @cocina_object.identification.catalogLinks.find { |link| link.catalog == 'folio' }&.catalogRecordId
@@ -80,8 +80,8 @@ class DigitalSerialsTitleParts
     # Need to check both structuredValue on title and in parallelValues
     structured_values = []
     structured_values << @title.structuredValue if @title.structuredValue.present?
-    @title.parallelValue.each do |parallel_value|
-      structured_values << parallel_value.structuredValue if parallel_value.structuredValue.present?
+    if @title.parallelValue.present? && @title.parallelValue.first.structuredValue.present?
+      structured_values << @title.parallelValue.first.structuredValue
     end
 
     part_parts = []
@@ -91,7 +91,7 @@ class DigitalSerialsTitleParts
       end
     end
 
-    part_parts.with_index do |part, index|
+    part_parts.map.with_index do |part, index|
       # if the part is not the first one, check the previous part type to determine the delimiter
       delimiter = if index.positive? && part_parts[index - 1].type == 'part number'
                     ', '
