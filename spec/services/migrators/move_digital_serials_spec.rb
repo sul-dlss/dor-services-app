@@ -148,6 +148,65 @@ RSpec.describe Migrators::MoveDigitalSerials do
         expect(repository_object.head_version.identification).to eq({ 'sourceId' => 'sul:sourceId' })
       end
     end
+
+    context 'when head version is not last closed version' do
+      let(:repository_object) { create(:repository_object, :closed) }
+      let!(:repository_object_version2) do
+        create(:repository_object_version, repository_object:, closed_at: Time.zone.now, description: description1,
+                                           identification:, version: 2)
+      end
+      let!(:repository_object_version3) do
+        create(:repository_object_version, repository_object:, description:, identification:, version: 3)
+      end
+      let(:description1) do
+        {
+          title: [
+            {
+              structuredValue: [
+                { type: 'main title', value: 'Main Title' },
+                { type: 'part number', value: 'Volume 1' },
+                { type: 'part name', value: 'Winter' }
+              ]
+            }
+          ],
+          note: [
+            { type: 'date/sequential designation', value: '2020.01' },
+            { type: 'abstract', value: 'An abstract' }
+          ]
+        }
+      end
+
+      before do
+        repository_object.update(head_version: repository_object_version3, opened_version: repository_object_version3,
+                                 last_closed_version: repository_object_version2)
+      end
+
+      it 'migrates both the last closed version and head version' do
+        migrator.migrate
+        expect(repository_object.head_version.identification).to eq({ 'catalogLinks' => [{ 'catalog' => 'folio',
+                                                                                           'catalogRecordId' => 'a1234',
+                                                                                           'refresh' => true,
+                                                                                           'partLabel' => 'Volume 1, Spring',
+                                                                                           'sortKey' => '2023.01' }],
+                                                                      'sourceId' => 'sul:sourceId' })
+        expect(repository_object.head_version.description).to eq({ 'title' => [{ 'structuredValue' => [{ 'type' => 'main title',
+                                                                                                         'value' => 'Main Title' }] }],
+                                                                   'note' => [{
+                                                                     'type' => 'abstract', 'value' => 'An abstract'
+                                                                   }] })
+        expect(repository_object.last_closed_version.identification).to eq({ 'catalogLinks' => [{ 'catalog' => 'folio',
+                                                                                                  'catalogRecordId' => 'a1234',
+                                                                                                  'refresh' => true,
+                                                                                                  'partLabel' => 'Volume 1, Winter',
+                                                                                                  'sortKey' => '2020.01' }],
+                                                                             'sourceId' => 'sul:sourceId' })
+        expect(repository_object.last_closed_version.description).to eq({ 'title' => [{ 'structuredValue' => [{ 'type' => 'main title',
+                                                                                                                'value' => 'Main Title' }] }],
+                                                                          'note' => [{
+                                                                            'type' => 'abstract', 'value' => 'An abstract'
+                                                                          }] })
+      end
+    end
   end
 
   describe '#publish?' do

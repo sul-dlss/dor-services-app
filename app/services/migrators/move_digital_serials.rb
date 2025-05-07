@@ -14,16 +14,28 @@ module Migrators
     end
 
     def migrate
-      return if repository_object.head_version.identification['catalogLinks'].blank?
+      versions = [repository_object.head_version]
 
-      catalog_link = repository_object.head_version.identification['catalogLinks'].find do |link|
+      if repository_object.open? && repository_object.last_closed_version.present?
+        versions << repository_object.last_closed_version
+      end
+
+      versions.each do |version|
+        migrate_version(version)
+      end
+    end
+
+    def migrate_version(version)
+      return if version.identification['catalogLinks'].blank?
+
+      catalog_link = version.identification['catalogLinks'].find do |link|
         link['catalog'] == 'folio'
       end
       return unless catalog_link
 
       # create the partLabel if not already populated
       if catalog_link['partLabel'].blank?
-        title = repository_object.head_version.description['title'].first
+        title = version.description['title'].first
         part_label = part_label_from_title(title)
         if part_label.present?
           catalog_link['partLabel'] = part_label
@@ -31,23 +43,19 @@ module Migrators
         end
       end
       # create the sortKey
-      if catalog_link['sortKey'].blank? && repository_object.head_version.description['note'].present?
-        sort_note = repository_object.head_version.description['note'].find do |note|
+      if catalog_link['sortKey'].blank? && version.description['note'].present?
+        sort_note = version.description['note'].find do |note|
           note['type'] == 'date/sequential designation'
         end
         if sort_note.present?
           catalog_link['sortKey'] = sort_note['value']
-          repository_object.head_version.description['note'].delete(sort_note)
+          version.description['note'].delete(sort_note)
         end
       end
 
       return unless catalog_link['partLabel'] || catalog_link['sortKey']
 
       catalog_link['refresh'] = true
-
-      # if the head version is open, then also migrate the last closed version
-      # if repository_object.head_version.open?
-      # repository_object.last_closed_version
     end
 
     def part_types
