@@ -13,8 +13,9 @@ module Migrators
       DRUIDS.include?(repository_object.external_identifier)
     end
 
-    # A migrator must implement a migrate method that migrates (mutates) the RepositoryObject instance.
     def migrate
+      return if repository_object.head_version.identification['catalogLinks'].blank?
+
       catalog_link = repository_object.head_version.identification['catalogLinks'].find do |link|
         link['catalog'] == 'folio'
       end
@@ -22,9 +23,11 @@ module Migrators
 
       # create the partLabel if not already populated
       if catalog_link['partLabel'].blank?
-        catalog_link['partLabel'] = part_label_from_title(repository_object.head_version.description['title'].first)
-        if catalog_link['partLabel'].present?
-          delete_title_parts(repository_object.head_version.description['title'].first)
+        title = repository_object.head_version.description['title'].first
+        part_label = part_label_from_title(title)
+        if part_label.present?
+          catalog_link['partLabel'] = part_label
+          delete_title_parts(title)
         end
       end
       # create the sortKey
@@ -37,7 +40,11 @@ module Migrators
           repository_object.head_version.description['note'].delete(sort_note)
         end
       end
+
+      return unless catalog_link['partLabel'] || catalog_link['sortKey']
+
       catalog_link['refresh'] = true
+
       # if the head version is open, then also migrate the last closed version
       # if repository_object.head_version.open?
       # repository_object.last_closed_version
@@ -48,14 +55,12 @@ module Migrators
     end
 
     def part_label_from_title(title)
-      # Need to check both structuredValue on title and in parallelValues
+      # Need to check both structuredValue on title and in parallelValue
       structured_values = []
       structured_values << title['structuredValue'] if title['structuredValue'].present?
-      # TODO: find out if we need to limit this to just the first structuredValue in a parallelValue
-      if title['parallelValue'].present?
-        title['parallelValue'].each do |parallel_value|
-          structured_values << parallel_value['structuredValue'] if parallel_value['structuredValue'].present?
-        end
+      # should only check the first value in parallelValue and for a structuredValue
+      if title['parallelValue'].present? && title['parallelValue'].first['structuredValue'].present?
+        structured_values << title['parallelValue'].first['structuredValue']
       end
 
       part_parts = []
@@ -64,6 +69,8 @@ module Migrators
           part_parts << part if part_types.include?(part['type'])
         end
       end
+
+      return if part_parts.blank?
 
       part_parts.each_with_index.map do |part, index|
         # if the part is not the first one, check the previous part type to determine the delimiter
@@ -79,22 +86,24 @@ module Migrators
     end
 
     def delete_title_parts(title)
+      # delete structuredValue parts from title
       if title['structuredValue'].present?
-        title['structuredValue'].each do |structured_value|
-          title['structuredValue'].delete(structured_value) if structured_value['type'] == 'part name'
-          title['structuredValue'].delete(structured_value) if structured_value['type'] == 'part number'
+        parts_to_delete = title['structuredValue'].select do |part|
+          part_types.include?(part['type'])
+        end
+        parts_to_delete.each do |part|
+          title['structuredValue'].delete(part)
         end
       end
-      # TODO: find out if we need to limit this to just the first structuredValue in a parallelValue
-      return unless title['parallelValue'].present?
 
-      title['parallelValue'].each do |parallel_value|
-        next unless parallel_value['structuredValue'].present?
+      return unless title['parallelValue'].present? && title['parallelValue'].first['structuredValue'].present?
 
-        parallel_value['structuredValue'].each do |structured_value|
-          parallel_value['structuredValue'].delete(structured_value) if structured_value['type'] == 'part name'
-          parallel_value['structuredValue'].delete(structured_value) if structured_value['type'] == 'part number'
-        end
+      # delete title.parallelValue.structuredValue parts from title
+      parts_to_delete = title['parallelValue'].first['structuredValue'].select do |part|
+        part_types.include?(part['type'])
+      end
+      parts_to_delete.each do |part|
+        title['parallelValue'].first['structuredValue'].delete(part)
       end
     end
 

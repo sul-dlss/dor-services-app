@@ -11,7 +11,7 @@ RSpec.describe Migrators::MoveDigitalSerials do
                                                                 external_identifier: 'druid:bc177tq6734')
   end
   let(:identification) do
-    { catalogLinks: [{ catalog: 'folio', catalogRecordId: 'a1234', refresh: 'false' }],
+    { catalogLinks: [{ catalog: 'folio', catalogRecordId: 'a1234', refresh: false }],
       sourceId: 'sul:sourceId' }
   end
   let(:description) do
@@ -80,6 +80,72 @@ RSpec.describe Migrators::MoveDigitalSerials do
                                                                       'sourceId' => 'sul:sourceId' })
         expect(repository_object.head_version.description).to eq({ 'title' => [{ 'parallelValue' => [{ 'structuredValue' => [{ 'type' => 'main title',
                                                                                                                                'value' => 'Main Title' }] }] }] })
+      end
+    end
+
+    context 'when no parts are present' do
+      let(:description) do
+        {
+          title: [
+            {
+              structuredValue: [
+                { type: 'main title', value: 'Main Title' }
+              ]
+            }
+          ]
+        }
+      end
+
+      it 'does not change the catalogLink or title' do
+        migrator.migrate
+        expect(repository_object.head_version.identification).to eq({ 'catalogLinks' => [{ 'catalog' => 'folio',
+                                                                                           'catalogRecordId' => 'a1234',
+                                                                                           'refresh' => false }],
+                                                                      'sourceId' => 'sul:sourceId' })
+        expect(repository_object.head_version.description).to eq({ 'title' => [{ 'structuredValue' => [{ 'type' => 'main title',
+                                                                                                         'value' => 'Main Title' }] }] })
+      end
+    end
+
+    context 'when no folio catalogLink is present' do
+      let(:identification) do
+        {  catalogLinks: [{ catalog: 'symphony', catalogRecordId: '1234', refresh: false }],
+           sourceId: 'sul:sourceId' }
+      end
+
+      it 'does not populate the catalogLink partLabel and sortKey' do
+        migrator.migrate
+
+        expect(repository_object.head_version.identification).to eq({ 'catalogLinks' => [{ 'catalog' => 'symphony',
+                                                                                           'catalogRecordId' => '1234',
+                                                                                           'refresh' => false }],
+                                                                      'sourceId' => 'sul:sourceId' })
+      end
+
+      it 'does not delete the title parts' do
+        migrator.migrate
+
+        expect(repository_object.head_version.description).to eq({ 'title' => [{ 'structuredValue' => [{ 'type' => 'main title',
+                                                                                                         'value' => 'Main Title' },
+                                                                                                       { 'type' => 'part number',
+                                                                                                         'value' => 'Volume 1' },
+                                                                                                       { 'type' => 'part name',
+                                                                                                         'value' => 'Spring' }] }],
+                                                                   'note' => [{ 'type' => 'date/sequential designation', 'value' => '2023.01' },
+                                                                              { 'type' => 'abstract',
+                                                                                'value' => 'An abstract' }] })
+      end
+    end
+
+    context 'when no catalogLink is present' do
+      let(:identification) do
+        { sourceId: 'sul:sourceId' }
+      end
+
+      it 'does not populate the catalogLink partLabel and sortKey' do
+        migrator.migrate
+
+        expect(repository_object.head_version.identification).to eq({ 'sourceId' => 'sul:sourceId' })
       end
     end
   end
