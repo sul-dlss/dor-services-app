@@ -91,6 +91,38 @@ RSpec.describe Migrators::MoveDigitalSerials do
       end
     end
 
+    context 'when there are three title parts' do
+      let(:description) do
+        {
+          title: [
+            {
+              structuredValue: [
+                { type: 'main title', value: 'Main Title' },
+                { type: 'part number', value: 'Volume 1' },
+                { type: 'part name', value: 'Spring' },
+                { type: 'part number', value: '2023 May' }
+              ]
+            }
+          ]
+        }
+      end
+
+      it 'populates the catalogLink partLabel with correct punctuation' do
+        migrator.migrate
+        expect(repository_object.head_version.identification).to eq(
+          { 'catalogLinks' => [{ 'catalog' => 'folio',
+                                 'catalogRecordId' => 'a1234',
+                                 'refresh' => true,
+                                 'partLabel' => 'Volume 1, Spring. 2023 May' }],
+            'sourceId' => 'sul:sourceId' }
+        )
+        expect(repository_object.head_version.description).to eq(
+          { 'title' => [{ 'structuredValue' => [{ 'type' => 'main title',
+                                                  'value' => 'Main Title' }] }] }
+        )
+      end
+    end
+
     context 'when no parts are present' do
       let(:description) do
         {
