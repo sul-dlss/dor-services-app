@@ -6,9 +6,9 @@ namespace :missing_druids do
     results = SolrService.query('id:*', fl: 'id', rows: 10_000_000, wt: 'csv')
     druids_from_solr = results.pluck('id')
 
-    druids_from_db = RepositoryObject.order(external_identifier: :asc).pluck(:external_identifier)
+    druids_from_db = RepositoryObject.order(updated_at: :desc).pluck(:external_identifier)
 
-    missing_druids = druids_from_db - druids_from_solr.sort
+    missing_druids = druids_from_db - druids_from_solr
     File.open('missing_druids.txt', 'w') do |file|
       missing_druids.map { |druid| file.write("#{druid}\n") }
     end
