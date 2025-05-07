@@ -25,7 +25,7 @@ module Migrators
       end
     end
 
-    def migrate_version(version)
+    def migrate_version(version) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       return if version.identification['catalogLinks'].blank?
 
       catalog_link = version.identification['catalogLinks'].find do |link|
@@ -33,7 +33,7 @@ module Migrators
       end
       return unless catalog_link
 
-      # create the partLabel if not already populated
+      # create the partLabel if not already populated and delete the title parts
       if catalog_link['partLabel'].blank?
         title = version.description['title'].first
         part_label = part_label_from_title(title)
@@ -42,7 +42,8 @@ module Migrators
           delete_title_parts(title)
         end
       end
-      # create the sortKey
+
+      # create the sortKey if not already populated and delete the note
       if catalog_link['sortKey'].blank? && version.description['note'].present?
         sort_note = version.description['note'].find do |note|
           note['type'] == 'date/sequential designation'
@@ -53,6 +54,7 @@ module Migrators
         end
       end
 
+      # only update refresh if partLabel or sortKey exists
       return unless catalog_link['partLabel'] || catalog_link['sortKey']
 
       catalog_link['refresh'] = true
@@ -62,11 +64,11 @@ module Migrators
       ['part name', 'part number']
     end
 
-    def part_label_from_title(title)
+    def part_label_from_title(title) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       # Need to check both structuredValue on title and in parallelValue
       structured_values = []
       structured_values << title['structuredValue'] if title['structuredValue'].present?
-      # should only check the first value in parallelValue and for a structuredValue
+      # should only check the first value in parallelValue, and for a structuredValue
       if title['parallelValue'].present? && title['parallelValue'].first['structuredValue'].present?
         structured_values << title['parallelValue'].first['structuredValue']
       end
@@ -93,7 +95,7 @@ module Migrators
       end.join
     end
 
-    def delete_title_parts(title)
+    def delete_title_parts(title) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
       # delete structuredValue parts from title
       if title['structuredValue'].present?
         parts_to_delete = title['structuredValue'].select do |part|
@@ -106,11 +108,11 @@ module Migrators
 
       return unless title['parallelValue'].present? && title['parallelValue'].first['structuredValue'].present?
 
-      # delete title.parallelValue.structuredValue parts from title
-      parts_to_delete = title['parallelValue'].first['structuredValue'].select do |part|
+      # delete title.parallelValue.first.structuredValue parts from title
+      parallel_parts_to_delete = title['parallelValue'].first['structuredValue'].select do |part|
         part_types.include?(part['type'])
       end
-      parts_to_delete.each do |part|
+      parallel_parts_to_delete.each do |part|
         title['parallelValue'].first['structuredValue'].delete(part)
       end
     end

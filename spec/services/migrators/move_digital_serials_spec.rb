@@ -41,17 +41,21 @@ RSpec.describe Migrators::MoveDigitalSerials do
   describe 'migrate' do
     it 'populates the catalogLink partLabel and sortKey and deletes from description' do
       migrator.migrate
-      expect(repository_object.head_version.identification).to eq({ 'catalogLinks' => [{ 'catalog' => 'folio',
-                                                                                         'catalogRecordId' => 'a1234',
-                                                                                         'refresh' => true,
-                                                                                         'partLabel' => 'Volume 1, Spring',
-                                                                                         'sortKey' => '2023.01' }],
-                                                                    'sourceId' => 'sul:sourceId' })
-      expect(repository_object.head_version.description).to eq({ 'title' => [{ 'structuredValue' => [{ 'type' => 'main title',
-                                                                                                       'value' => 'Main Title' }] }],
-                                                                 'note' => [{
-                                                                   'type' => 'abstract', 'value' => 'An abstract'
-                                                                 }] })
+      expect(repository_object.head_version.identification).to eq(
+        { 'catalogLinks' => [{ 'catalog' => 'folio',
+                               'catalogRecordId' => 'a1234',
+                               'refresh' => true,
+                               'partLabel' => 'Volume 1, Spring',
+                               'sortKey' => '2023.01' }],
+          'sourceId' => 'sul:sourceId' }
+      )
+      expect(repository_object.head_version.description).to eq(
+        { 'title' => [{ 'structuredValue' => [{ 'type' => 'main title',
+                                                'value' => 'Main Title' }] }],
+          'note' => [{
+            'type' => 'abstract', 'value' => 'An abstract'
+          }] }
+      )
     end
 
     context 'when a parallelValue is present' do
@@ -73,13 +77,17 @@ RSpec.describe Migrators::MoveDigitalSerials do
 
       it 'populates the catalogLink partLabel and sortKey and deletes from description' do
         migrator.migrate
-        expect(repository_object.head_version.identification).to eq({ 'catalogLinks' => [{ 'catalog' => 'folio',
-                                                                                           'catalogRecordId' => 'a1234',
-                                                                                           'refresh' => true,
-                                                                                           'partLabel' => 'Volume 1, Summer' }],
-                                                                      'sourceId' => 'sul:sourceId' })
-        expect(repository_object.head_version.description).to eq({ 'title' => [{ 'parallelValue' => [{ 'structuredValue' => [{ 'type' => 'main title',
-                                                                                                                               'value' => 'Main Title' }] }] }] })
+        expect(repository_object.head_version.identification).to eq(
+          { 'catalogLinks' => [{ 'catalog' => 'folio',
+                                 'catalogRecordId' => 'a1234',
+                                 'refresh' => true,
+                                 'partLabel' => 'Volume 1, Summer' }],
+            'sourceId' => 'sul:sourceId' }
+        )
+        expect(repository_object.head_version.description).to eq(
+          { 'title' => [{ 'parallelValue' => [{ 'structuredValue' => [{ 'type' => 'main title',
+                                                                        'value' => 'Main Title' }] }] }] }
+        )
       end
     end
 
@@ -102,8 +110,10 @@ RSpec.describe Migrators::MoveDigitalSerials do
                                                                                            'catalogRecordId' => 'a1234',
                                                                                            'refresh' => false }],
                                                                       'sourceId' => 'sul:sourceId' })
-        expect(repository_object.head_version.description).to eq({ 'title' => [{ 'structuredValue' => [{ 'type' => 'main title',
-                                                                                                         'value' => 'Main Title' }] }] })
+        expect(repository_object.head_version.description).to eq(
+          { 'title' => [{ 'structuredValue' => [{ 'type' => 'main title',
+                                                  'value' => 'Main Title' }] }] }
+        )
       end
     end
 
@@ -125,15 +135,17 @@ RSpec.describe Migrators::MoveDigitalSerials do
       it 'does not delete the title parts' do
         migrator.migrate
 
-        expect(repository_object.head_version.description).to eq({ 'title' => [{ 'structuredValue' => [{ 'type' => 'main title',
-                                                                                                         'value' => 'Main Title' },
-                                                                                                       { 'type' => 'part number',
-                                                                                                         'value' => 'Volume 1' },
-                                                                                                       { 'type' => 'part name',
-                                                                                                         'value' => 'Spring' }] }],
-                                                                   'note' => [{ 'type' => 'date/sequential designation', 'value' => '2023.01' },
-                                                                              { 'type' => 'abstract',
-                                                                                'value' => 'An abstract' }] })
+        expect(repository_object.head_version.description).to eq(
+          { 'title' => [{ 'structuredValue' => [{ 'type' => 'main title',
+                                                  'value' => 'Main Title' },
+                                                { 'type' => 'part number',
+                                                  'value' => 'Volume 1' },
+                                                { 'type' => 'part name',
+                                                  'value' => 'Spring' }] }],
+            'note' => [{ 'type' => 'date/sequential designation', 'value' => '2023.01' },
+                       { 'type' => 'abstract',
+                         'value' => 'An abstract' }] }
+        )
       end
     end
 
@@ -183,28 +195,36 @@ RSpec.describe Migrators::MoveDigitalSerials do
 
       it 'migrates both the last closed version and head version' do
         migrator.migrate
-        expect(repository_object.head_version.identification).to eq({ 'catalogLinks' => [{ 'catalog' => 'folio',
-                                                                                           'catalogRecordId' => 'a1234',
-                                                                                           'refresh' => true,
-                                                                                           'partLabel' => 'Volume 1, Spring',
-                                                                                           'sortKey' => '2023.01' }],
-                                                                      'sourceId' => 'sul:sourceId' })
-        expect(repository_object.head_version.description).to eq({ 'title' => [{ 'structuredValue' => [{ 'type' => 'main title',
-                                                                                                         'value' => 'Main Title' }] }],
-                                                                   'note' => [{
-                                                                     'type' => 'abstract', 'value' => 'An abstract'
-                                                                   }] })
-        expect(repository_object.last_closed_version.identification).to eq({ 'catalogLinks' => [{ 'catalog' => 'folio',
-                                                                                                  'catalogRecordId' => 'a1234',
-                                                                                                  'refresh' => true,
-                                                                                                  'partLabel' => 'Volume 1, Winter',
-                                                                                                  'sortKey' => '2020.01' }],
-                                                                             'sourceId' => 'sul:sourceId' })
-        expect(repository_object.last_closed_version.description).to eq({ 'title' => [{ 'structuredValue' => [{ 'type' => 'main title',
-                                                                                                                'value' => 'Main Title' }] }],
-                                                                          'note' => [{
-                                                                            'type' => 'abstract', 'value' => 'An abstract'
-                                                                          }] })
+        expect(repository_object.head_version.identification).to eq(
+          { 'catalogLinks' => [{ 'catalog' => 'folio',
+                                 'catalogRecordId' => 'a1234',
+                                 'refresh' => true,
+                                 'partLabel' => 'Volume 1, Spring',
+                                 'sortKey' => '2023.01' }],
+            'sourceId' => 'sul:sourceId' }
+        )
+        expect(repository_object.head_version.description).to eq(
+          { 'title' => [{ 'structuredValue' => [{ 'type' => 'main title',
+                                                  'value' => 'Main Title' }] }],
+            'note' => [{
+              'type' => 'abstract', 'value' => 'An abstract'
+            }] }
+        )
+        expect(repository_object.last_closed_version.identification).to eq(
+          { 'catalogLinks' => [{ 'catalog' => 'folio',
+                                 'catalogRecordId' => 'a1234',
+                                 'refresh' => true,
+                                 'partLabel' => 'Volume 1, Winter',
+                                 'sortKey' => '2020.01' }],
+            'sourceId' => 'sul:sourceId' }
+        )
+        expect(repository_object.last_closed_version.description).to eq(
+          { 'title' => [{ 'structuredValue' => [{ 'type' => 'main title',
+                                                  'value' => 'Main Title' }] }],
+            'note' => [{
+              'type' => 'abstract', 'value' => 'An abstract'
+            }] }
+        )
       end
     end
   end
