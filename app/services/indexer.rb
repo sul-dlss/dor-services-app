@@ -14,7 +14,9 @@ class Indexer
     solr.add(solr_doc)
     # This logging is to assist with https://github.com/sul-dlss/dor-services-app/issues/5231
     # It is capturing that a Solr document is being committed and the order relative to other commits.
-    Rails.logger.info("[Indexing] Committing #{cocina_object.externalIdentifier} with trace_id=#{trace_id}")
+    if Settings.indexer.logging
+      Rails.logger.info("[Indexing] Committing #{cocina_object.externalIdentifier} with trace_id=#{trace_id}")
+    end
     solr.commit
   end
 
@@ -41,7 +43,9 @@ class Indexer
   def self.trace_id_for(druid:)
     source = Kernel.caller_locations(2, 1).first.to_s.delete_prefix("#{Rails.root}/") # rubocop:disable Rails/FilePath
     SecureRandom.uuid.tap do |trace_id|
-      Rails.logger.info("[Indexing] Reindexing #{druid} from #{source} with trace_id=#{trace_id}")
+      if Settings.indexer.logging
+        Rails.logger.info("[Indexing] Reindexing #{druid} from #{source} with trace_id=#{trace_id}")
+      end
     end
   end
 end
