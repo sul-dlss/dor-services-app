@@ -58,7 +58,7 @@ namespace :missing_druids do
 
       batch_end_time = Time.zone.now
       batch_run_seconds = (batch_end_time - batch_start_time).round(3)
-      puts "#{Time.zone.now}\t#{index + 1}\tIndexed #{Settings.rolling_indexer.batch_size} documents in #{batch_run_seconds}\t"
+      puts "#{Time.zone.now}\t#{index + 1}\tIndexed #{Settings.rolling_indexer.batch_size} documents in #{batch_run_seconds}\t" # rubocop:disable Layout/LineLength
     end
   end
 end
