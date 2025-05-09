@@ -14,7 +14,7 @@ module Migrators
       DRUIDS.include?(repository_object.external_identifier)
     end
 
-    def migrate
+    def migrate # rubocop:disable Metrics/AbcSize
       # This migration is meant to run in commit mode, which uses autosave on a repository object's versions.
       # Since only the versions association has autosave at this time,
       # we can't use the head_version or last_closed_version associations here
