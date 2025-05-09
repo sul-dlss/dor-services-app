@@ -4,5 +4,3 @@ server 'dor-services-app-prod-a.stanford.edu', user: 'dor_services', roles: %w[w
 server 'dor-services-app-prod-b.stanford.edu', user: 'dor_services', roles: %w[web app]
 server 'dor-services-worker-prod-a.stanford.edu', user: 'dor_services', roles: %w[app worker scheduler]
 server 'dor-services-worker-prod-b.stanford.edu', user: 'dor_services', roles: %w[app worker rolling_indexer]
-
-Capistrano::OneTimeKey.generate_one_time_key!
