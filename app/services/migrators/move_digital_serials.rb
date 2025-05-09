@@ -2,6 +2,7 @@
 
 module Migrators
   # Used to move digital serials data from description to identification.catalogLinks
+  # Run using commit mode: RAILS_ENV=production bin/migrate-cocina Migrators::MoveDigitalSerials --mode commit
   class MoveDigitalSerials < Base
     # A migrator may provide a list of druids to be migrated (optional).
     def self.druids
@@ -13,11 +14,14 @@ module Migrators
       DRUIDS.include?(repository_object.external_identifier)
     end
 
-    def migrate
-      versions = [repository_object.head_version]
+    def migrate # rubocop:disable Metrics/AbcSize
+      # This migration is meant to run in commit mode, which uses autosave on a repository object's versions.
+      # Since only the versions association has autosave at this time,
+      # we can't use the head_version or last_closed_version associations here
+      versions = [repository_object.versions.find(repository_object.head_version_id)]
 
       if repository_object.open? && repository_object.last_closed_version.present?
-        versions << repository_object.last_closed_version
+        versions << repository_object.versions.find(repository_object.last_closed_version_id)
       end
 
       versions.each do |version|
@@ -54,7 +58,7 @@ module Migrators
         end
       end
 
-      # only update refresh if partLabel or sortKey exists
+      # only update refresh if a partLabel or sortKey created
       return unless catalog_link['partLabel'] || catalog_link['sortKey']
 
       catalog_link['refresh'] = true
