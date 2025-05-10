@@ -156,3 +156,6 @@ rolling_indexer:
   pause_for_solr: 61
   # milliseconds
   commitWithin: 500
+
+indexer:
+  logging: false
