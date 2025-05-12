@@ -161,7 +161,7 @@ GEM
     deep_merge (1.2.2)
     deprecation (1.1.0)
       activesupport
-    diff-lcs (1.6.1)
+    diff-lcs (1.6.2)
     diffy (3.4.3)
     dlss-capistrano (5.3.0)
       bcrypt_pbkdf
@@ -249,7 +249,7 @@ GEM
       activesupport (>= 6.1)
     graphiql-rails (1.10.4)
       railties
-    graphql (2.5.5)
+    graphql (2.5.6)
       base64
       fiber-storage
       logger
@@ -395,7 +395,7 @@ GEM
       activesupport (>= 7.0.0)
       rack
       railties (>= 7.0.0)
-    psych (5.2.4)
+    psych (5.2.5)
       date
       stringio
     public_suffix (6.0.2)
@@ -409,7 +409,7 @@ GEM
     rack-console (1.4.1)
       rack (~> 3.0)
       rack-test
-    rack-session (2.1.0)
+    rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
     rack-test (2.2.0)
@@ -469,7 +469,7 @@ GEM
     rspec-expectations (3.13.4)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-mocks (3.13.3)
+    rspec-mocks (3.13.4)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-rails (8.0.0)
@@ -525,7 +525,7 @@ GEM
     securerandom (0.4.1)
     serverengine (2.1.1)
       sigdump (~> 0.2.2)
-    set (1.1.1)
+    set (1.1.2)
     sidekiq (7.3.9)
       base64
       connection_pool (>= 2.3.0)
