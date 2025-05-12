@@ -14,18 +14,15 @@ module Migrators
       DRUIDS.include?(repository_object.external_identifier)
     end
 
-    def migrate # rubocop:disable Metrics/AbcSize
+    def migrate
       # This migration is meant to run in commit mode, which uses autosave on a repository object's versions.
       # Since only the versions association has autosave at this time,
       # we can't use the head_version or last_closed_version associations here
-      versions = [repository_object.versions.find(repository_object.head_version_id)]
-
-      if repository_object.open? && repository_object.last_closed_version.present?
-        versions << repository_object.versions.find(repository_object.last_closed_version_id)
-      end
-
-      versions.each do |version|
-        migrate_version(version)
+      repository_object.versions.each do |version|
+        if version == repository_object.head_version ||
+           (version == repository_object.last_closed_version && repository_object.open?)
+          migrate_version(version)
+        end
       end
     end
 
