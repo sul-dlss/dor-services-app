@@ -27,10 +27,10 @@ namespace :missing_druids do
   task index_unindexed_objects: :environment do
     solr_conn = RSolr.connect(timeout: 120, open_timeout: 120, url: Settings.solr.url)
 
-    druids = File.readlines('missing_druids.txt').map(&:chomp)
+    druids = File.readlines('missing_druids.txt', chomp: true)
 
     batches = druids.each_slice(Settings.rolling_indexer.batch_size)
-    batches.each_with_index do |batch, index|
+    batches.each_with_index(1) do |batch, index|
       batch_start_time = Time.zone.now
       solr_docs = Parallel.filter_map(batch, in_processes: Settings.rolling_indexer.num_parallel_processes) do |druid|
         cocina_object = CocinaObjectStore.find(druid)
@@ -50,7 +50,7 @@ namespace :missing_druids do
 
       batch_end_time = Time.zone.now
       batch_run_seconds = (batch_end_time - batch_start_time).round(3)
-      puts "#{Time.zone.now}\t#{index + 1}\tIndexed #{Settings.rolling_indexer.batch_size} documents in #{batch_run_seconds}\t" # rubocop:disable Layout/LineLength
+      puts "#{Time.zone.now}\t#{index}\tIndexed #{Settings.rolling_indexer.batch_size} documents in #{batch_run_seconds}\t" # rubocop:disable Layout/LineLength
     end
   end
 end
