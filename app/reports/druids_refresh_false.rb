@@ -34,12 +34,12 @@ class DruidsRefreshFalse
         row['catalog_record_id'],
         row['druid'],
         row['object_type'],
-        row['label'],
-        row['structured_title'],
-        row['title'],
-        collection_name,
+        "\"#{row['label']}\"",
+        "\"#{row['structured_title']&.delete('\n')}\"",
+        "\"#{row['title']}\"",
+        "\"#{collection_name}\"",
         collection_druid
-      ]
+      ].join(',')
     end
   end
 end
