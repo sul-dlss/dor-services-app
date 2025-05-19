@@ -216,8 +216,8 @@ RAILS_ENV=production bundle exec rake missing_druids:index_unindexed_objects
 `bin/migrate-cocina` provides a framework for data migrations and bulk remediations. It supports optional versioning and publishing of objects after migration.
 
 ```sh
-Usage: bin/migrate-cocina MIGRATION_CLASS [options]
-        --mode [MODE]                Migration mode (dryrun, migrate, verify). Default is dryrun
+Usage: RAILS_ENV=production bin/migrate-cocina MIGRATION_CLASS [options]
+        --mode [MODE]                Migration mode (commit, dryrun, migrate, verify). Default is dryrun
     -p, --processes PROCESSES        Number of processes. Default is 4.
     -s, --sample SAMPLE              Sample size per type, otherwise all objects.
     -h, --help                       Displays help.
@@ -227,7 +227,7 @@ The process for performing a migration/remediation is:
 
 1. Implement a Migrator (`app/services/migrators/`). See `Migrators::Base` and `Migrators::Exemplar` for the requirements of a Migrator class. Migrators should be unit tested.
 2. Perform a dry run: `bin/migrate-cocina Migrators::Exemplar --mode dryrun` and inspect `migrate-cocina.csv` for any errors.  This is a way to change the cocina and validate the new objects without saving the updated cocina or publishing or versioning.
-3. Perform migration/remediation: `bin/migrate-cocina Migrators::Exemplar --mode migrate` and inspect `migrate-cocina.csv` for any errors.
+3. Perform migration/remediation: `bin/migrate-cocina Migrators::Exemplar --mode migrate` and inspect `migrate-cocina.csv` for any errors. Commit mode can be used instead of `migrate` when you only want to migrate existing cocina and not open/close versions or create new versions. 
 4. Perform verification: `bin/migrate-cocina Migrators::Exemplar --mode verify` and inspect `migrate-cocina.csv` for any errors.  (An error here means that an object matching `.migrate?` has been found ... which is presumably NOT desired after migration.)
 
 Additional notes:

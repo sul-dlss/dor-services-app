@@ -21,7 +21,7 @@ options = { processes: 4, mode: :dryrun, sample: nil }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/migrate-cocina MIGRATION_CLASS [options]'
   option_parser.on('--mode [MODE]', %i[commit dryrun migrate verify],
-                   'Migration mode (commit dryrun, migrate, verify). Default is dryrun')
+                   'Migration mode (commit, dryrun, migrate, verify). Default is dryrun')
   option_parser.on('-pPROCESSES', '--processes PROCESSES', Integer,
                    "Number of processes. Default is #{options[:processes]}.")
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size per type, otherwise all objects.')

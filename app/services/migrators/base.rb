@@ -2,6 +2,7 @@
 
 module Migrators
   # Base migrator.
+  # Depends on logic in bin/migrate-cocina which may also open/close versions, validate cocina, and save objects.
   class Base
     # Return an array of druids to be migrated, or nil if all druids should be migrated.
     def self.druids
