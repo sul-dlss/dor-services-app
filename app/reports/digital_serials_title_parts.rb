@@ -20,9 +20,8 @@ class DigitalSerialsTitleParts
   def report
     raise "Input file missing: #{filename}" unless File.exist?(filename)
 
-    puts 'druid,catalogRecordId,part_names,part_numbers,part_label'
-    File.foreach(filename) do |bare_druid|
-      druid = "druid:#{bare_druid}"
+    puts 'druid,catalogRecordId,part_names,part_numbers,part_label,sort_key'
+    File.foreach(filename, chomp: true) do |druid|
       @cocina_object = CocinaObjectStore.find(druid)
       catalog_record_id = @cocina_object.identification.catalogLinks.find { |link| link.catalog == 'folio' }&.catalogRecordId
       @title = @cocina_object.description.title.first
@@ -45,12 +44,15 @@ class DigitalSerialsTitleParts
       part_names = structured_part_names + parallel_part_names
       part_numbers = structured_part_numbers + parallel_part_numbers
 
+      sort_key = @cocina_object.description.note.find { |note| note.type == 'date/sequential designation' }&.value
+
       line = [
         druid,
         catalog_record_id,
         "\"#{part_names.join(';')}\"",
         "\"#{part_numbers.join(';')}\"",
-        "\"#{part_label}\""
+        "\"#{part_label}\"",
+        "\"#{sort_key}\""
       ].join(',')
 
       puts "#{line}\n"
@@ -91,7 +93,7 @@ class DigitalSerialsTitleParts
       end
     end
 
-    part_parts.with_index do |part, index|
+    part_parts.map.with_index do |part, index|
       # if the part is not the first one, check the previous part type to determine the delimiter
       delimiter = if index.positive? && part_parts[index - 1].type == 'part number'
                     ', '
