@@ -82,8 +82,9 @@ class DigitalSerialsTitleParts
     # Need to check both structuredValue on title and in parallelValues
     structured_values = []
     structured_values << @title.structuredValue if @title.structuredValue.present?
-    @title.parallelValue.each do |parallel_value|
-      structured_values << parallel_value.structuredValue if parallel_value.structuredValue.present?
+    # should only check the first value in parallelValue, and for a structuredValue
+    if @title.parallelValue.present? && @title.parallelValue.first.structuredValue.present?
+      structured_values << @title.parallelValue.first.structuredValue
     end
 
     part_parts = []
