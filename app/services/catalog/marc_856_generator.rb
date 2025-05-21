@@ -182,42 +182,19 @@ module Catalog
     end
 
     def part_label
-      @part_label ||= part_label_from_catalog_links || part_label_from_title
+      @part_label ||= part_label_from_catalog_links
     end
 
     def part_label_from_catalog_links
       cocina_object.identification&.catalogLinks&.find { |link| link.catalog == DEFAULT_CATALOG }&.partLabel
     end
 
-    def part_label_from_title # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
-      title_info = cocina_object.description.title.first
-      # Need to check both structuredValue on title_info and in parallelValues
-      structured_values = []
-      structured_values << title_info.structuredValue if title_info.structuredValue.present?
-      title_info.parallelValue.each do |parallel_value|
-        structured_values << parallel_value.structuredValue if parallel_value.structuredValue.present?
-      end
-
-      part_parts = []
-      structured_values.each do |structured_value|
-        structured_value.each do |part|
-          part_parts << part if part_types.include?(part.type)
-        end
-      end
-
-      part_parts.filter_map(&:value).join(parts_delimiter(part_parts))
-    end
-
     def part_sort
-      @part_sort ||= part_sort_from_catalog_links || part_sort_from_note
+      @part_sort ||= part_sort_from_catalog_links
     end
 
     def part_sort_from_catalog_links
       cocina_object.identification&.catalogLinks&.find { |link| link.catalog == DEFAULT_CATALOG }&.sortKey
-    end
-
-    def part_sort_from_note
-      cocina_object.description.note.find { |note| note.type == 'date/sequential designation' }&.value
     end
   end
 end
