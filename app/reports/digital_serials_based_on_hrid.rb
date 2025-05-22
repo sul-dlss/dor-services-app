@@ -38,11 +38,11 @@ class DigitalSerialsBasedOnHrid
       [
         row['druid'],
         collection_druid,
-        "\"#{collection_name}\"",
+        collection_name,
         row['catalog_record_id'],
         row['refresh'],
         hrid_counts[row['catalog_record_id']]
-      ].join(',')
+      ].to_csv
     end
   end
 end

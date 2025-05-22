@@ -26,7 +26,7 @@ class MemberOrderCounts
   def self.report
     puts 'druid,member_order_count'
     ActiveRecord::Base.connection.execute(SQL).each do |row|
-      puts "#{row['external_identifier']},#{row['count']}"
+      puts [row['external_identifier'], row['count']].to_csv
     end
   end
 end

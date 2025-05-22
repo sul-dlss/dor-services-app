@@ -41,7 +41,7 @@ class InvalidLocationUris
 
     result.to_a.map do |row|
       [row['external_identifier'], row['catalogRecordId'], row['collection_id'], row['uri'], row['code'],
-       "\"#{row['value']}\""].join(',')
+       row['value']].to_csv
     end
   end
 end

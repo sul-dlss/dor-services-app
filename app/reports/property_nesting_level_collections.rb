@@ -35,8 +35,8 @@ class PropertyNestingLevelCollections
       [
         collection_druid,
         row['catalogRecordId'],
-        "\"#{collection_name}\""
-      ].join(',')
+        collection_name
+      ].to_csv
     end
   end
 end

@@ -29,7 +29,7 @@ class GeoMapCoordinates
     puts "item_druid,collection_druid\n"
 
     ActiveRecord::Base.connection.execute(SQL).each do |row|
-      [row['external_identifier'], row['collection_id']].join(',')
+      puts [row['external_identifier'], row['collection_id']].to_csv
     end
   end
 end

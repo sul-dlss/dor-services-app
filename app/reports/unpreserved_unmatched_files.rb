@@ -19,7 +19,7 @@ class UnpreservedUnmatchedFiles
   def self.report
     puts 'druid,files'
     ActiveRecord::Base.connection.execute(SQL).each do |row|
-      puts "#{row['external_identifier']},#{row['filenames']}"
+      puts [row['external_identifier'], row['filenames']].to_csv
     end
   end
 end

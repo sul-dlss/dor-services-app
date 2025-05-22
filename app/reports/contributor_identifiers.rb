@@ -15,7 +15,7 @@ class ContributorIdentifiers
 
       head_version.description.fetch('contributor').map do |contributor|
         contributor['identifier'].map do |identifier|
-          puts "#{druid},#{collection},#{catalog_record_id},#{identifier['value']}\n"
+          puts [druid, collection, catalog_record_id, identifier['value']].to_csv
         end
       end
     end

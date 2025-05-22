@@ -21,7 +21,7 @@ class LatestReleaseTags
 
     sql_result_rows = ActiveRecord::Base.connection.execute(SQL)
     sql_result_rows.each do |row|
-      puts "#{row['druid']},#{row['released_to']},#{row['what']},#{row['release']},#{row['object_type']}"
+      puts [row['druid'], row['released_to'], row['what'], row['release'], row['object_type']].to_csv
     end
   end
 end

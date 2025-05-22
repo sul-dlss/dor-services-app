@@ -20,7 +20,7 @@ class RelatedResourceTypes
     rows(SQL)
 
     @types.each do |value, count|
-      puts "#{value},#{count}"
+      puts [value, count].to_csv
     end
   end
 

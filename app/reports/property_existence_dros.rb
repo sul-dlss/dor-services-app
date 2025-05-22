@@ -43,8 +43,8 @@ class PropertyExistenceDros
         row['item_druid'],
         row['catalogRecordId'],
         collection_druid,
-        "\"#{collection_name}\""
-      ].join(',')
+        collection_name
+      ].to_csv
     end
   end
 end

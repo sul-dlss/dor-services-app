@@ -44,10 +44,10 @@ class DescendantSourceCodeNoUri
       [
         row['item_druid'],
         collection_druid,
-        "\"#{collection_name}\"",
+        collection_name,
         row['name_value'],
         row['source_code']
-      ].join(',')
+      ].to_csv
     end
   end
 end
