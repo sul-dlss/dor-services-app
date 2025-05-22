@@ -36,7 +36,7 @@ class PropertyEventsWithDisplayLabel
         collection_name,
         row['catalogrecordid'],
         display_labels
-      ].join(',')
+      ].to_csv
     end
   end
 end

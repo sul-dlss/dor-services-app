@@ -33,7 +33,7 @@ class CatalogLinksPreviousFolioOnly
         row['item_druid'],
         folios,
         previous_folios
-      ].join(',')
+      ].to_csv
     end
   end
 end

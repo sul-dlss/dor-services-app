@@ -172,9 +172,9 @@ class InvalidSubjectSourceCodes
           id,
           rows.first['catalogRecordId'],
           collection_druid,
-          "\"#{collection_name}\"",
+          collection_name,
           keep_values.join(';')
-        ].join(',')
+        ].to_csv
       end
   end
 end

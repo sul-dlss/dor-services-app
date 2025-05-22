@@ -28,7 +28,7 @@ class ShelvedNotPublished
         next unless val == true
         next unless JSON.parse(row['publish'])[key] == false
 
-        puts "#{row['external_identifier']},#{row['admin_policy']},#{row['content_type']}"
+        puts [row['external_identifier'], row['admin_policy'], row['content_type']].to_csv
       end
     end
   end

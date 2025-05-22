@@ -37,7 +37,7 @@ class InvalidLanguageUris
     grouped = result.to_a.group_by { |row| row['external_identifier'] }
     grouped.map do |id, rows|
       contrib = rows.pluck('contrib').join(';')
-      [id, rows.first['catalogRecordId'], rows.first['collection_id'], contrib].join(',')
+      [id, rows.first['catalogRecordId'], rows.first['collection_id'], contrib].to_csv
     end
   end
 end

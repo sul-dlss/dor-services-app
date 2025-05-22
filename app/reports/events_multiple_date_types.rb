@@ -51,9 +51,9 @@ class EventsMultipleDateTypes
           id,
           rows.first['catalogRecordId'],
           collection_druid,
-          "\"#{collection_name}\"",
+          collection_name,
           event_date_types.join(';')
-        ].join(',')
+        ].to_csv
       end
   end
 

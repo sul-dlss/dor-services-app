@@ -33,7 +33,7 @@ class CatalogRecordIdsWithColons
         row['item_druid'],
         collection_druid,
         catalog_record_ids
-      ].join(',')
+      ].to_csv
     end
   end
 end

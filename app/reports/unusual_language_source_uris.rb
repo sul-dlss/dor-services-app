@@ -35,7 +35,7 @@ class UnusualLanguageSourceUris
     grouped = result.to_a.group_by { |row| row['external_identifier'] }
     grouped.map do |id, rows|
       value = rows.pluck('value').join(';')
-      [id, rows.first['catalogRecordId'], rows.first['collection_id'], value].join(',')
+      [id, rows.first['catalogRecordId'], rows.first['collection_id'], value].to_csv
     end
   end
 end

@@ -46,14 +46,14 @@ class DigitalSerialsTitleParts
 
       sort_key = @cocina_object.description.note.find { |note| note.type == 'date/sequential designation' }&.value
 
-      line = [
+      puts [
         druid,
         catalog_record_id,
-        "\"#{part_names.join(';')}\"",
-        "\"#{part_numbers.join(';')}\"",
-        "\"#{part_label}\"",
-        "\"#{sort_key}\""
-      ].join(',')
+        part_names.join(';'),
+        part_numbers.join(';'),
+        part_label,
+        sort_key
+      ].to_csv
 
       puts "#{line}\n"
     rescue StandardError => e

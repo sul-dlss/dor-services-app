@@ -41,9 +41,9 @@ class PropertyMultipleEvents
         [
           rows.first['purl'],
           rows.first['label'],
-          "\"#{collection_name}\"",
+          collection_name,
           rows.first['apo']
-        ].join(',')
+        ].to_csv
       end
   end
 end

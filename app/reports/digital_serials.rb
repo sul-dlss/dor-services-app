@@ -37,10 +37,10 @@ class DigitalSerials
       [
         row['druid'],
         collection_druid,
-        "\"#{collection_name}\"",
+        collection_name,
         row['catalog_record_id'],
         row['refresh']
-      ].join(',')
+      ].to_csv
     end
   end
 end

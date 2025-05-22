@@ -26,7 +26,7 @@ class ApoCatalogRecordId
            link.refresh]
         end
       end.flatten
-      puts ([druid] + catalog_record_ids).join(',') if catalog_record_ids.size.positive?
+      puts ([druid] + catalog_record_ids).to_csv if catalog_record_ids.size.positive?
     end
   end
 end

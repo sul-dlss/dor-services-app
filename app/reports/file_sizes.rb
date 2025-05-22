@@ -30,7 +30,7 @@ class FileSizes
     sql = "#{SQL} LIMIT #{limit}"
     puts 'druid,size_bytes'
     ActiveRecord::Base.connection.execute(sql).each do |row|
-      puts "#{row['external_identifier']},#{row['size_bytes'].to_i}"
+      puts [row['external_identifier'], row['size_bytes'].to_i].to_csv
     end
   end
 end

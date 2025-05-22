@@ -28,7 +28,7 @@ class FileCounts
     sql = "#{SQL} LIMIT #{limit}"
     puts 'druid,content_type,file_count'
     ActiveRecord::Base.connection.execute(sql).each do |row|
-      puts "#{row['external_identifier']},#{row['content_type']},#{row['count']}"
+      puts [row['external_identifier'], row['content_type'], row['count']].to_csv
     end
   end
 end

@@ -56,9 +56,9 @@ class InvalidEdtfDates
           id,
           rows.first['catalogRecordId'],
           collection_druid,
-          "\"#{collection_name}\"",
+          collection_name,
           invalid_values.join(';')
-        ].join(',')
+        ].to_csv
       end
   end
 

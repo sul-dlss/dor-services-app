@@ -46,9 +46,9 @@ class InvalidSubjectNonSourceUris
           id,
           rows.first['catalogRecordId'],
           collection_druid,
-          "\"#{collection_name}\"",
+          collection_name,
           rows.pluck('invalid_values').join(';')
-        ].join(',')
+        ].to_csv
       end
   end
 end

@@ -31,7 +31,7 @@ class PreservationVersions
     end.flatten(1).compact
 
     puts %w[druid version preservation_version].join(',')
-    results.each { |result| puts result.join(',') }
+    results.each { |result| puts result.to_csv }
   end
 
   def tty_progress_bar(count)

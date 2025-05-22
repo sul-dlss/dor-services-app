@@ -9,7 +9,7 @@ class VersionList
     puts %w[druid version description].join(',')
 
     ObjectVersion.find_each do |object_version|
-      puts [object_version.druid, object_version.version, object_version.description].join(',')
+      puts [object_version.druid, object_version.version, object_version.description].to_csv
     end
   end
 end
