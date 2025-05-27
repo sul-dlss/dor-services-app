@@ -22,6 +22,22 @@ RSpec.describe Cocina::ToDatacite::RelatedResource do
     end
   end
 
+  context 'when related resource has unmapped values' do
+    let(:related_resource) { { contributor: [{ name: [value: 'A. Author'] }] } }
+
+    it 'returns nil' do
+      expect(attributes).to be_nil
+    end
+  end
+
+  context 'when related resource only has type' do
+    let(:related_resource) { { type: 'has version' } }
+
+    it 'returns nil' do
+      expect(attributes).to be_nil
+    end
+  end
+
   context 'when related resource has a preferred citation' do
     let(:related_resource) do
       {
@@ -82,6 +98,27 @@ RSpec.describe Cocina::ToDatacite::RelatedResource do
         relationType: 'References',
         relatedItemIdentifier: 'https://example.com/resource',
         relatedItemIdentifierType: 'URL'
+      )
+    end
+  end
+
+  context 'when related resource has a type' do
+    let(:related_resource) do
+      {
+        type: 'derived from',
+        title: [
+          {
+            value: 'A paper'
+          }
+        ]
+      }
+    end
+
+    it 'returns related item attributes with mapped type' do
+      expect(attributes).to eq(
+        relatedItemType: 'Other',
+        relationType: 'IsDerivedFrom',
+        titles: [{ title: 'A paper' }]
       )
     end
   end

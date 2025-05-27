@@ -5,6 +5,22 @@ module Cocina
     # Transform the Cocina::Models::Description relatedResource attributes to the DataCite relatedItem attributes
     #  see https://support.datacite.org/reference/dois-2#put_dois-id
     class RelatedResource
+      RELATION_TYPE_MAP = {
+        'supplement to' => 'IsSupplementTo',
+        'supplemented by' => 'IsSupplementedBy',
+        'referenced by' => 'IsReferencedBy',
+        'references' => 'References',
+        'derived from' => 'IsDerivedFrom',
+        'source of' => 'IsSourceOf',
+        'version of record' => 'IsVersionOf',
+        'identical to' => 'IsIdenticalTo',
+        'has version' => 'HasVersion',
+        'preceded by' => 'Continues',
+        'succeeded by' => 'IsContinuedBy',
+        'part of' => 'IsPartOf',
+        'has part' => 'HasPart'
+      }.freeze
+
       # @param [Cocina::Models::RelatedResource] related_resource
       # @return [Hash] Hash of DataCite relatedItem attributes, conforming to the expectations of HTTP PUT
       # request to DataCite or nil if blank
@@ -25,7 +41,7 @@ module Cocina
 
         {
           relatedItemType: 'Other',
-          relationType: 'References'
+          relationType: relation_type
         }.tap do |attribs|
           attribs[:titles] = [title: related_item_title] if related_item_title
           if related_item_identifier_url
@@ -39,10 +55,14 @@ module Cocina
 
       attr_reader :related_resource
 
+      def relation_type
+        RELATION_TYPE_MAP.fetch(related_resource.type, 'References')
+      end
+
       def related_resource_blank?
         return true if related_resource.blank?
 
-        related_resource_hash = related_resource.to_h
+        related_resource_hash = related_resource.to_h.slice(:note, :title, :access)
         related_resource_hash.blank? || related_resource_hash.each_value.all?(&:blank?)
       end
 
