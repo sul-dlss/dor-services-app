@@ -46,11 +46,8 @@ module Cocina
           rightsList: rights_list,
           types: types_attributes,
           publicationYear: publication_year,
-          publisher: 'Stanford Digital Repository'
-          # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported
-          # in the ReST API v2.
-          # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
-          # relatedItems: related_item
+          publisher: 'Stanford Digital Repository',
+          relatedItems: related_items
         }.merge(creator_contributor_funder_attributes).compact
       end
 
@@ -87,11 +84,11 @@ module Cocina
         Identifier.identifier_attributes(description)
       end
 
-      # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the ReST API v2.
-      # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
-      # def related_items
-      #   RelatedResource.related_item_attributes(cocina_item.description)
-      # end
+      def related_items
+        Array(description&.relatedResource).filter_map do |related_resource|
+          RelatedResource.related_item_attributes(related_resource)
+        end
+      end
 
       def rights_list
         DroAccess.rights_list_attributes(access)
