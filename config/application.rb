@@ -14,7 +14,7 @@ require 'action_controller/railtie'
 # require "action_text/engine"
 require 'action_view/railtie'
 # require "action_cable/engine"
-# require 'rails/test_unit/railtie'
+# require "rails/test_unit/railtie"
 require 'active_support'
 
 # Require the gems listed in Gemfile, including any gems
@@ -44,7 +44,7 @@ module DorServices
   # The main application class for the Dor Services application.
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.2
+    config.load_defaults 8.0
 
     accept_proc = proc { |request| request.path.start_with?('/v1') }
     config.middleware.use(
