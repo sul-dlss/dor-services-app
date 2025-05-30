@@ -54,7 +54,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
               alternateIdentifier: purl,
               alternateIdentifierType: 'PURL'
             }
-          ]
+          ],
+          relatedItems: []
         }
       )
     end
@@ -110,7 +111,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
               alternateIdentifier: purl,
               alternateIdentifierType: 'PURL'
             }
-          ]
+          ],
+          relatedItems: []
         }
       )
     end
@@ -286,7 +288,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                         type: 'preferred citation'
                                       }
                                     ]
-                                  }
+                                  },
+                                  {} # Blank will be removed.
                                 ],
                                 subject: [
                                   {
@@ -371,20 +374,17 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           ],
           publicationYear: '2011',
           publisher: 'Stanford Digital Repository',
-          # NOTE: Per email from DataCite support on 7/21/2021, relatedItem is not currently supported in the
-          # ReST API v2.
-          # Support will be added for the entire DataCite MetadataKernel 4.4 schema in v3 of the ReST API.
-          # relatedItems: [
-          #   {
-          #     relatedItemType: 'Other',
-          #     relationType: 'References',
-          #     titles: [
-          #       {
-          #         title: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. yadda yadda.'
-          #       }
-          #     ]
-          #   }
-          # ],
+          relatedItems: [
+            {
+              relatedItemType: 'Other',
+              relationType: 'References',
+              titles: [
+                {
+                  title: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. yadda yadda.'
+                }
+              ]
+            }
+          ],
           rightsList: [
             {
               rights: 'https://creativecommons.org/publicdomain/mark/1.0/'
