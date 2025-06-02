@@ -222,7 +222,7 @@ GEM
       nokogiri (>= 1.4.3)
     erb (5.0.1)
     erubi (1.13.1)
-    factory_bot (6.5.2)
+    factory_bot (6.5.3)
       activesupport (>= 6.1.0)
     factory_bot_rails (6.4.4)
       factory_bot (~> 6.5)
