@@ -48,5 +48,21 @@ RSpec.describe 'Add and retrieve events' do
         expect(json[1]['event_type']).to eq 'publish'
       end
     end
+
+    context 'when events are limited by type' do
+      before do
+        create(:event, druid:, event_type: 'publish')
+        create(:event, druid:, event_type: 'unpublish')
+      end
+
+      it 'returns event of that type' do
+        get "/v1/objects/#{druid}/events?event_types[]=unpublish&event_types[]=foo",
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status(:ok)
+        json = response.parsed_body
+        expect(json.length).to eq 1
+        expect(json[0]['event_type']).to eq 'unpublish'
+      end
+    end
   end
 end

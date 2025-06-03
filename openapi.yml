@@ -677,6 +677,14 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/Druid"
+        - name: event_types
+          in: query
+          description: Filter events by type
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
     post:
       tags:
         - events
