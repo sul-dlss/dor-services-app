@@ -11,19 +11,21 @@ class UpdateObjectService
   # @param [Cocina::Models::DRO|Collection|AdminPolicy|DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata] cocina_object # rubocop:disable Layout/LineLength
   # @param [boolean] skip_lock do not perform an optimistic lock check
   # @param [boolean] skip_open_check do not check that the object has an open version
+  # @param [Hash] event_data additional data to include in the update event
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
   # @raise [CocinaObjectNotFoundError] raised if the cocina object does not already exist in the datastore.
   # @raise [StateLockError] raised if optimistic lock failed.
   # @raise [StandardError] raised if the object does not have an open version
   # @return [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] normalized cocina object
-  def self.update(cocina_object, skip_lock: false, skip_open_check: false)
-    new(cocina_object:, skip_lock:, skip_open_check:).update
+  def self.update(cocina_object, skip_lock: false, skip_open_check: false, event_data: {})
+    new(cocina_object:, skip_lock:, skip_open_check:, event_data:).update
   end
 
-  def initialize(cocina_object:, skip_lock:, skip_open_check:)
+  def initialize(cocina_object:, skip_lock:, skip_open_check:, event_data:)
     @cocina_object = cocina_object
     @skip_lock = skip_lock
     @skip_open_check = skip_open_check
+    @event_data = event_data
   end
 
   def update # rubocop:disable Metrics/AbcSize
@@ -36,7 +38,7 @@ class UpdateObjectService
     updated_cocina_object_with_metadata = persist!
 
     EventFactory.create(druid:, event_type: 'update',
-                        data: { success: true, request: cocina_object_without_metadata.to_h })
+                        data: event_data.merge({ success: true, request: cocina_object_without_metadata.to_h }))
 
     Indexer.reindex_later(druid:)
 
@@ -51,7 +53,7 @@ class UpdateObjectService
 
   private
 
-  attr_reader :cocina_object, :skip_lock, :skip_open_check
+  attr_reader :cocina_object, :skip_lock, :skip_open_check, :event_data
 
   delegate :version, to: :cocina_object
 

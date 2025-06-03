@@ -4,7 +4,8 @@ require 'rails_helper'
 
 RSpec.describe UpdateObjectService do
   include Dry::Monads[:result]
-  let(:store) { described_class.new(cocina_object:, skip_lock: true, skip_open_check: false) }
+  let(:store) { described_class.new(cocina_object:, skip_lock: true, skip_open_check: false, event_data:) }
+  let(:event_data) { { who: 'test_user', description: 'updating stuff' } }
   let(:open) { true }
   let(:druid) { 'druid:zr174jb7823' }
   let!(:repository_object) do
@@ -16,6 +17,7 @@ RSpec.describe UpdateObjectService do
       allow(Cocina::ObjectValidator).to receive(:validate)
       allow(VersionService).to receive(:open?).and_return(open)
       allow(Indexer).to receive(:reindex_later)
+      allow(EventFactory).to receive(:create)
     end
 
     context 'when object is a DRO' do
@@ -38,14 +40,19 @@ RSpec.describe UpdateObjectService do
                                   })
         end
 
-        it 'saves to datastore' do
+        it 'saves to datastore and sends event data to EventFactory' do
           expect(store.update).to be_a Cocina::Models::DROWithMetadata
           expect(repository_object.reload.head_version.label).to eq 'Changed Test DRO'
+          expect(EventFactory).to have_received(:create).with(
+            druid:,
+            event_type: 'update',
+            data: { success: true, request: cocina_object.to_h }.merge(event_data)
+          )
         end
       end
 
       context 'when checking lock succeeds' do
-        let(:store) { described_class.new(cocina_object:, skip_lock: false, skip_open_check: false) }
+        let(:store) { described_class.new(cocina_object:, skip_lock: false, skip_open_check: false, event_data:) }
 
         let(:lock) { "#{druid}=#{repository_object.lock}=#{repository_object.head_version.lock}" }
 
@@ -63,7 +70,7 @@ RSpec.describe UpdateObjectService do
       end
 
       context 'when checking lock fails' do
-        let(:store) { described_class.new(cocina_object:, skip_lock: false, skip_open_check: false) }
+        let(:store) { described_class.new(cocina_object:, skip_lock: false, skip_open_check: false, event_data:) }
         let(:lock) { '64e8320d19d62ddb73c501276c5655cf' }
 
         let(:cocina_object) do
@@ -80,7 +87,7 @@ RSpec.describe UpdateObjectService do
 
       context 'when version is not open' do
         let(:open) { false }
-        let(:store) { described_class.new(cocina_object:, skip_lock: false, skip_open_check: false) }
+        let(:store) { described_class.new(cocina_object:, skip_lock: false, skip_open_check: false, event_data:) }
 
         let(:lock) { "#{druid}=0" }
 
@@ -100,7 +107,7 @@ RSpec.describe UpdateObjectService do
 
       context 'when version is not open but skipping open check' do
         let(:open) { false }
-        let(:store) { described_class.new(cocina_object:, skip_lock: false, skip_open_check: true) }
+        let(:store) { described_class.new(cocina_object:, skip_lock: false, skip_open_check: true, event_data:) }
 
         let(:lock) { "#{druid}=#{repository_object.lock}=#{repository_object.head_version.lock}" }
 
