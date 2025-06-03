@@ -37,8 +37,8 @@ class UpdateObjectService
 
     updated_cocina_object_with_metadata = persist!
 
-    data = { success: true, request: cocina_object_without_metadata.to_h }.merge(event_data)
-    EventFactory.create(druid:, event_type: 'update', data:)
+    EventFactory.create(druid:, event_type: 'update',
+                        data: event_data.merge({ success: true, request: cocina_object_without_metadata.to_h }))
 
     Indexer.reindex_later(druid:)
 
