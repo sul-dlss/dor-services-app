@@ -44,7 +44,8 @@ class ObjectsController < ApplicationController
   end
 
   def update # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-    cocina_object = Cocina::Models.build(params.except(:action, :controller, :id).to_unsafe_h)
+    cocina_object = Cocina::Models.build(params.except(:action, :controller, :id, :event_data).to_unsafe_h)
+    event_data = params[:event_data] || {}
 
     # Ensure the id in the path matches the id in the post body.
     if params[:id] != cocina_object.externalIdentifier
@@ -55,9 +56,9 @@ class ObjectsController < ApplicationController
     # ETag / optimistic locking is optional.
     etag = from_etag(request.headers['If-Match'])
     updated_cocina_object = if etag
-                              UpdateObjectService.update(Cocina::Models.with_metadata(cocina_object, etag))
+                              UpdateObjectService.update(Cocina::Models.with_metadata(cocina_object, etag), event_data:)
                             else
-                              UpdateObjectService.update(cocina_object, skip_lock: true)
+                              UpdateObjectService.update(cocina_object, skip_lock: true, event_data:)
                             end
 
     add_headers(updated_cocina_object)
