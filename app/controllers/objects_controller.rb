@@ -45,7 +45,7 @@ class ObjectsController < ApplicationController
 
   def update # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     cocina_object = Cocina::Models.build(params.except(:action, :controller, :id, :event_data).to_unsafe_h)
-    event_data = params[:event_data] || {}
+    event_data = params[:event_data].blank? ? {} : JSON.parse(params[:event_data]).with_indifferent_access
 
     # Ensure the id in the path matches the id in the post body.
     if params[:id] != cocina_object.externalIdentifier
