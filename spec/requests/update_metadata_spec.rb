@@ -196,12 +196,27 @@ RSpec.describe 'Update object' do
       }
     end
 
-    it 'returns the updated object' do
-      patch("/v1/objects/#{druid}",
-            params: data,
-            headers:)
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include('Not a title')
+    context 'when no description or who are provided' do
+      it 'returns the updated object' do
+        patch("/v1/objects/#{druid}",
+              params: data,
+              headers:)
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('Not a title')
+      end
+    end
+
+    context 'when who and description provided' do
+      let(:user_name) { 'test_user' }
+      let(:event_description) { 'updating stuff' }
+
+      it 'returns the updated object' do
+        patch("/v1/objects/#{druid}?event_description=#{event_description}&user_name=#{user_name}",
+              params: data,
+              headers:)
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('Not a title')
+      end
     end
   end
 

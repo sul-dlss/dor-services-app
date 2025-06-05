@@ -13,7 +13,7 @@ class MetadataRefreshController < ApplicationController
                             message: "#{@cocina_object.externalIdentifier} has no catalog links marked as refreshable")
     end
 
-    UpdateObjectService.update(@cocina_object.new(description: result.value!.description_props))
+    UpdateObjectService.update(cocina_object: @cocina_object.new(description: result.value!.description_props))
   rescue Catalog::MarcService::CatalogRecordNotFoundError => e
     json_api_error(status: :bad_request, title: 'Not found in catalog', message: e.message)
   rescue Catalog::MarcService::MarcServiceError => e

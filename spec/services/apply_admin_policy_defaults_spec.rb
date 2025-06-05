@@ -95,7 +95,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         it 'copies APO accessTemplate to item access' do
           expect(UpdateObjectService).to have_received(:update)
             .once
-            .with(cocina_object_with(access: default_access))
+            .with(cocina_object: cocina_object_with(access: default_access))
         end
       end
 
@@ -111,7 +111,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         it 'copies APO accessTemplate to item access' do
           expect(UpdateObjectService).to have_received(:update)
             .once
-            .with(cocina_object_with(access: default_access))
+            .with(cocina_object: cocina_object_with(access: default_access))
         end
       end
     end
@@ -137,7 +137,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         it 'maps to world collection access' do
           expect(UpdateObjectService).to have_received(:update)
             .once
-            .with(cocina_object_with(access: expected_access))
+            .with(cocina_object: cocina_object_with(access: expected_access))
         end
       end
 
@@ -158,7 +158,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         it 'maps to world collection access' do
           expect(UpdateObjectService).to have_received(:update)
             .once
-            .with(cocina_object_with(access: expected_access))
+            .with(cocina_object: cocina_object_with(access: expected_access))
         end
       end
 
@@ -179,7 +179,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         it 'maps to world collection access' do
           expect(UpdateObjectService).to have_received(:update)
             .once
-            .with(cocina_object_with(access: expected_access))
+            .with(cocina_object: cocina_object_with(access: expected_access))
         end
       end
 
@@ -199,7 +199,7 @@ RSpec.describe ApplyAdminPolicyDefaults do
         it 'maps to dark collection access' do
           expect(UpdateObjectService).to have_received(:update)
             .once
-            .with(cocina_object_with(access: expected_access))
+            .with(cocina_object: cocina_object_with(access: expected_access))
         end
       end
     end
@@ -279,7 +279,8 @@ RSpec.describe ApplyAdminPolicyDefaults do
         it 'copies APO accessTemplate to item access' do
           expect(UpdateObjectService).to have_received(:update)
             .once
-            .with(cocina_object_with(access: default_access, structural: { contains: [file_set_with_default_access] }))
+            .with(cocina_object: cocina_object_with(access: default_access,
+                                                    structural: { contains: [file_set_with_default_access] }))
         end
       end
 
@@ -325,7 +326,8 @@ RSpec.describe ApplyAdminPolicyDefaults do
         it 'copies APO accessTemplate to item access' do
           expect(UpdateObjectService).to have_received(:update)
             .once
-            .with(cocina_object_with(access: default_access, structural: { contains: [file_set_with_custom_access] }))
+            .with(cocina_object: cocina_object_with(access: default_access,
+                                                    structural: { contains: [file_set_with_custom_access] }))
         end
       end
     end

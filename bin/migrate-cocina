@@ -95,7 +95,8 @@ def perform_migrate(migrator_class:, obj:, mode:)
   ## Note: because we are now storing the cocina for every version we cannot remediate cocina breaking changes for a
   # particular cocina version here.
   if mode == :migrate
-    updated_cocina_object = UpdateObjectService.update(updated_cocina_object, skip_open_check: !migrator.version?)
+    updated_cocina_object = UpdateObjectService.update(cocina_object: updated_cocina_object,
+                                                       skip_open_check: !migrator.version?)
     Publish::MetadataTransferService.publish(druid: obj.external_identifier) if migrator.publish?
     unless updated_cocina_object.version == current_object_version
       close_version(cocina_object: updated_cocina_object,

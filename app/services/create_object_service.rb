@@ -11,6 +11,7 @@
 class CreateObjectService
   # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object # rubocop:disable Layout/LineLength
   # @param [boolean] assign_doi
+  # @param [string] who the sunetid of the user performing the update
   # @param [#call] id_minter assigns identifiers. You can provide your own minter if you want to use a specific druid
   # for an item.
   # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata] # rubocop:disable Layout/LineLength
@@ -19,8 +20,8 @@ class CreateObjectService
   # @raise [Catalog::MarcService::MarcServiceError::CatalogResponseError] if other error occurred refreshing
   # descMetadata from catalog source
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
-  def self.create(cocina_request_object, assign_doi: false, id_minter: -> { SuriService.mint_id })
-    new(id_minter:).create(cocina_request_object, assign_doi:)
+  def self.create(cocina_request_object, assign_doi: false, who: nil, id_minter: -> { SuriService.mint_id })
+    new(id_minter:).create(cocina_request_object, assign_doi:, who:)
   end
 
   def initialize(id_minter: -> { SuriService.mint_id })
@@ -29,7 +30,7 @@ class CreateObjectService
 
   # @raise Catalog::MarcService::MarcServiceError
   # @raise [Cocina::ValidationError] if externalIdentifier or sourceId not unique
-  def create(cocina_request_object, assign_doi: false) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+  def create(cocina_request_object, assign_doi: false, who: nil) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     ensure_ur_admin_policy_exists(cocina_request_object)
     Cocina::ObjectValidator.validate(cocina_request_object)
     updated_cocina_request_object = merge_access_for(cocina_request_object)
@@ -42,7 +43,7 @@ class CreateObjectService
 
     add_project_tag(druid, cocina_request_object)
 
-    EventFactory.create(druid:, event_type: 'registration', data: cocina_object.to_h)
+    EventFactory.create(druid:, event_type: 'registration', data: { who:, request: cocina_object.to_h })
 
     # Broadcast this to a topic
     Notifications::ObjectCreated.publish(model: cocina_object_with_metadata)

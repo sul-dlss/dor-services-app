@@ -38,7 +38,7 @@ class ConstituentService
 
     updated_virtual_object = ResetContentMetadataService.reset(cocina_item: updated_virtual_object, constituent_druids:)
 
-    UpdateObjectService.update(updated_virtual_object)
+    UpdateObjectService.update(cocina_object: updated_virtual_object)
 
     VersionService.close(druid: updated_virtual_object.externalIdentifier, version: updated_virtual_object.version)
 
