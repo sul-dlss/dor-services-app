@@ -36,7 +36,7 @@ class ApplyAdminPolicyDefaults
   end
 
   def apply
-    UpdateObjectService.update(updated_cocina_object)
+    UpdateObjectService.update(cocina_object: updated_cocina_object)
   end
 
   private

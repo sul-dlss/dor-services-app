@@ -126,7 +126,7 @@ RSpec.describe EmbargoReleaseService do
 
     before do
       # This allows getting back the cocina object that was saved.
-      allow(UpdateObjectService).to receive(:update) { |cocina_object| cocina_object }
+      allow(UpdateObjectService).to receive(:update) { |cocina_object:, **| cocina_object }
     end
 
     context 'when embargo access is world' do

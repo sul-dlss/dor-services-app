@@ -956,7 +956,7 @@ paths:
           description: ID of the version
           required: true
           schema:
-            type: string            
+            type: string
   "/v1/objects/{object_id}/user_versions":
     get:
       tags:
@@ -1045,7 +1045,7 @@ paths:
           description: Version of user version
           required: true
           schema:
-            type: integer           
+            type: integer
       requestBody:
         description: user version to update
         content:
@@ -1138,8 +1138,16 @@ paths:
       parameters:
         - in: query
           name: assign_doi
+          description: If a doi should be assigned to the object
           schema:
             type: boolean
+        - in: query
+          name: who
+          description: The sunetid of the person making the change
+          required: false
+          schema:
+            type: string
+            default: nil
       requestBody:
         required: true
         content:
@@ -1253,7 +1261,7 @@ paths:
       tags:
         - versions
       summary: Finds versions for multiple objects.
-      description: |- 
+      description: |-
         This endpoint is used to find the versions for multiple objects. The request body should be an array of druids.
 
         The response will be an object with the druids as keys and the version status as values.
@@ -1301,6 +1309,20 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/Druid"
+        - name: description
+          in: query
+          description: A description of the change being made to the object
+          required: false
+          schema:
+            type: string
+            default: nil
+        - name: who
+          in: query
+          description: The sunetid of the person making the change
+          required: false
+          schema:
+            type: string
+            default: nil
       requestBody:
         required: true
         content:

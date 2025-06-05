@@ -5,27 +5,29 @@
 #   sending a rabbitMQ notification
 #   logging an event
 class UpdateObjectService
+  def self.update(...)
+    new(...).update
+  end
+
   # Normalizes, validates, and updates a Cocina object in the datastore.
   # Since normalization is performed, the Cocina object that is returned may differ from the Cocina object that
   # is provided.
   # @param [Cocina::Models::DRO|Collection|AdminPolicy|DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata] cocina_object # rubocop:disable Layout/LineLength
   # @param [boolean] skip_lock do not perform an optimistic lock check
   # @param [boolean] skip_open_check do not check that the object has an open version
-  # @param [Hash] event_data additional data to include in the update event
+  # @param [string] who the sunetid of the user performing the update
+  # @param [string] description a description of the update
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
   # @raise [CocinaObjectNotFoundError] raised if the cocina object does not already exist in the datastore.
   # @raise [StateLockError] raised if optimistic lock failed.
   # @raise [StandardError] raised if the object does not have an open version
   # @return [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] normalized cocina object
-  def self.update(cocina_object, skip_lock: false, skip_open_check: false, event_data: {})
-    new(cocina_object:, skip_lock:, skip_open_check:, event_data:).update
-  end
-
-  def initialize(cocina_object:, skip_lock:, skip_open_check:, event_data:)
+  def initialize(cocina_object:, skip_lock: false, skip_open_check: false, description: nil, who: nil)
     @cocina_object = cocina_object
     @skip_lock = skip_lock
     @skip_open_check = skip_open_check
-    @event_data = event_data
+    @description = description
+    @who = who
   end
 
   def update # rubocop:disable Metrics/AbcSize
@@ -38,7 +40,7 @@ class UpdateObjectService
     updated_cocina_object_with_metadata = persist!
 
     EventFactory.create(druid:, event_type: 'update',
-                        data: event_data.merge({ success: true, request: cocina_object_without_metadata.to_h }))
+                        data: { who:, description:, success: true, request: cocina_object_without_metadata.to_h })
 
     Indexer.reindex_later(druid:)
 
@@ -47,13 +49,14 @@ class UpdateObjectService
     updated_cocina_object_with_metadata
   rescue Cocina::ValidationError => e
     EventFactory.create(druid:, event_type: 'update',
-                        data: { success: false, error: e.message, request: cocina_object_without_metadata.to_h })
+                        data: { who:, description:, success: false, error: e.message,
+                                request: cocina_object_without_metadata.to_h })
     raise
   end
 
   private
 
-  attr_reader :cocina_object, :skip_lock, :skip_open_check, :event_data
+  attr_reader :cocina_object, :skip_lock, :skip_open_check, :who, :description
 
   delegate :version, to: :cocina_object
 

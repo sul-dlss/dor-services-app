@@ -22,8 +22,9 @@ class ObjectsController < ApplicationController
                             message: 'Registration is temporarily disabled')
     end
 
-    model_request = Cocina::Models.build_request(params.except(:action, :controller, :assign_doi).to_unsafe_h)
-    cocina_object = CreateObjectService.create(model_request, assign_doi: params[:assign_doi])
+    model_request = Cocina::Models.build_request(params.except(:action, :controller, :assign_doi,
+                                                               :event_who).to_unsafe_h)
+    cocina_object = CreateObjectService.create(model_request, assign_doi: params[:assign_doi], who: params[:event_who])
 
     add_headers(cocina_object)
     render status: :created, location: object_path(cocina_object.externalIdentifier),
@@ -44,8 +45,10 @@ class ObjectsController < ApplicationController
   end
 
   def update # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-    cocina_object = Cocina::Models.build(params.except(:action, :controller, :id, :event_data).to_unsafe_h)
-    event_data = params[:event_data].blank? ? {} : JSON.parse(params[:event_data]).with_indifferent_access
+    cocina_object = Cocina::Models.build(params.except(:action, :controller, :id, :event_description,
+                                                       :event_who).to_unsafe_h)
+    description = params[:event_description]
+    who = params[:event_who]
 
     # Ensure the id in the path matches the id in the post body.
     if params[:id] != cocina_object.externalIdentifier
@@ -56,9 +59,11 @@ class ObjectsController < ApplicationController
     # ETag / optimistic locking is optional.
     etag = from_etag(request.headers['If-Match'])
     updated_cocina_object = if etag
-                              UpdateObjectService.update(Cocina::Models.with_metadata(cocina_object, etag), event_data:)
+                              UpdateObjectService.update(
+                                cocina_object: Cocina::Models.with_metadata(cocina_object, etag), description:, who:
+                              )
                             else
-                              UpdateObjectService.update(cocina_object, skip_lock: true, event_data:)
+                              UpdateObjectService.update(cocina_object:, skip_lock: true, description:, who:)
                             end
 
     add_headers(updated_cocina_object)

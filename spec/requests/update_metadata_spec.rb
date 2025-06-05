@@ -188,7 +188,7 @@ RSpec.describe 'Update object' do
     end
   end
 
-  context 'when title changes and event data is provided' do
+  context 'when title changes' do
     let(:description) do
       {
         title: [{ value: 'Not a title' }],
@@ -196,11 +196,7 @@ RSpec.describe 'Update object' do
       }
     end
 
-    context 'when event_data is blank' do
-      let(:event_data) do
-        {}
-      end
-
+    context 'when no description or who are provided' do
       it 'returns the updated object' do
         patch("/v1/objects/#{druid}",
               params: data,
@@ -210,13 +206,12 @@ RSpec.describe 'Update object' do
       end
     end
 
-    context 'when some actual event data is provided' do
-      let(:event_data) do
-        { who: 'test_user', description: 'updating stuff' }
-      end
+    context 'when who and description provided' do
+      let(:event_who) { 'test_user' }
+      let(:event_description) { 'updating stuff' }
 
       it 'returns the updated object' do
-        patch("/v1/objects/#{druid}?event_data=#{event_data.to_json}",
+        patch("/v1/objects/#{druid}?event_description=#{event_description}&event_who=#{event_who}",
               params: data,
               headers:)
         expect(response).to have_http_status(:ok)
