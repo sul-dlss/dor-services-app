@@ -207,11 +207,11 @@ RSpec.describe 'Update object' do
     end
 
     context 'when who and description provided' do
-      let(:event_who) { 'test_user' }
+      let(:user_name) { 'test_user' }
       let(:event_description) { 'updating stuff' }
 
       it 'returns the updated object' do
-        patch("/v1/objects/#{druid}?event_description=#{event_description}&event_who=#{event_who}",
+        patch("/v1/objects/#{druid}?event_description=#{event_description}&user_name=#{user_name}",
               params: data,
               headers:)
         expect(response).to have_http_status(:ok)

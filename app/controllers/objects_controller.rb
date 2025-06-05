@@ -23,8 +23,8 @@ class ObjectsController < ApplicationController
     end
 
     model_request = Cocina::Models.build_request(params.except(:action, :controller, :assign_doi,
-                                                               :event_who).to_unsafe_h)
-    cocina_object = CreateObjectService.create(model_request, assign_doi: params[:assign_doi], who: params[:event_who])
+                                                               :user_name).to_unsafe_h)
+    cocina_object = CreateObjectService.create(model_request, assign_doi: params[:assign_doi], who: params[:user_name])
 
     add_headers(cocina_object)
     render status: :created, location: object_path(cocina_object.externalIdentifier),
@@ -46,9 +46,9 @@ class ObjectsController < ApplicationController
 
   def update # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     cocina_object = Cocina::Models.build(params.except(:action, :controller, :id, :event_description,
-                                                       :event_who).to_unsafe_h)
+                                                       :user_name).to_unsafe_h)
     description = params[:event_description]
-    who = params[:event_who]
+    who = params[:user_name]
 
     # Ensure the id in the path matches the id in the post body.
     if params[:id] != cocina_object.externalIdentifier

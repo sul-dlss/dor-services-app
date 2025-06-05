@@ -43,6 +43,16 @@ RSpec.describe CreateObjectService do
         expect(EventFactory).to have_received(:create).with(druid:, event_type: 'registration', data: Hash)
         expect(Catalog::MarcService).not_to have_received(:new)
       end
+
+      context 'when a user_name is provided' do
+        let(:who) { 'test_user' }
+
+        it 'adds the user_name to the event' do
+          store.create(requested_cocina_object, who:)
+          expect(EventFactory).to have_received(:create).with(druid:, event_type: 'registration',
+                                                              data: { who:, request: Hash })
+        end
+      end
     end
 
     context 'when a Collection' do
