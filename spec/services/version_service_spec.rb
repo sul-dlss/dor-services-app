@@ -44,9 +44,10 @@ RSpec.describe VersionService do
         expect(workflow_client).to have_received(:create_workflow_by_name)
           .with(druid, 'versioningWF', version: '2', lane_id: nil, context: nil)
 
-        expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'sunetid' },
-                                                            druid:,
-                                                            event_type: 'version_open')
+        expect(EventFactory).to have_received(:create)
+          .with(data: { version: '2', who: 'sunetid', description: 'same as it ever was' },
+                druid:,
+                event_type: 'version_open')
 
         expect(Indexer).to have_received(:reindex_later).with(druid:)
         expect(repository_object.reload.opened_version.version).to eq 2
@@ -121,9 +122,10 @@ RSpec.describe VersionService do
         expect(workflow_client).to have_received(:create_workflow_by_name)
           .with(druid, 'versioningWF', version: '3', lane_id: nil, context: nil)
 
-        expect(EventFactory).to have_received(:create).with(data: { version: '3', who: 'sunetid' },
-                                                            druid:,
-                                                            event_type: 'version_open')
+        expect(EventFactory).to have_received(:create)
+          .with(data: { version: '3', who: 'sunetid', description: 'same as it ever was' },
+                druid:,
+                event_type: 'version_open')
 
         expect(Indexer).to have_received(:reindex_later).with(druid:)
         expect(repository_object.reload.opened_version.version).to eq 3
@@ -280,9 +282,10 @@ RSpec.describe VersionService do
           expect(repository_object.reload.last_closed_version).to be_present
           expect(repository_object.last_closed_version.version_description).to eq('closing text')
 
-          expect(EventFactory).to have_received(:create).with(data: { version: '2', who: 'jcoyne' },
-                                                              druid:,
-                                                              event_type: 'version_close')
+          expect(EventFactory).to have_received(:create)
+            .with(data: { version: '2', who: 'jcoyne', description: 'closing text' },
+                  druid:,
+                  event_type: 'version_close')
 
           expect(workflow_client).to have_received(:create_workflow_by_name)
             .with(druid, 'accessionWF', version: '2', lane_id: nil, context: nil)
