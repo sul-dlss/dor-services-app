@@ -79,7 +79,8 @@ class VersionService
 
     new_version = repository_object.opened_version.version
     WorkflowService.create(druid:, workflow_name: 'versioningWF', version: new_version.to_s)
-    EventFactory.create(druid:, event_type: 'version_open', data: { who: opening_user_name, version: new_version.to_s })
+    EventFactory.create(druid:, event_type: 'version_open',
+                        data: { who: opening_user_name, version: new_version.to_s, description: })
     # Reloading to get correct lock value.
     repository_object.reload.to_cocina_with_metadata
   end
@@ -142,7 +143,9 @@ class VersionService
     repository_object.close_version!(description:)
     WorkflowService.create(druid:, workflow_name: 'accessionWF', version: version.to_s) if start_accession
 
-    EventFactory.create(druid:, event_type: 'version_close', data: { who: user_name, version: version.to_s })
+    EventFactory.create(druid:, event_type: 'version_close',
+                        data: { who: user_name, version: version.to_s,
+                                description: repository_object.last_closed_version.version_description })
 
     # Accessioning will perform the publishing, so don't publish here
     update_user_version(user_version_mode:, repository_object:, publish: !start_accession)
