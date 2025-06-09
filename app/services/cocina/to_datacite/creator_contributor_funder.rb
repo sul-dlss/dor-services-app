@@ -54,13 +54,10 @@ module Cocina
         end
       end
 
-      def cocina_contributors # rubocop:disable Metrics/AbcSize
+      def cocina_contributors
         @cocina_contributors ||= Array(cocina_desc.contributor).select do |cocina_contributor|
-          !datacite_creator?(cocina_contributor) && !datacite_funder?(cocina_contributor)
-        end +
-                                 Array(cocina_desc.event).select do |cocina_event|
-                                   cocina_event.type == 'publication'
-                                 end.flat_map { |cocina_event| Array(cocina_event.contributor) } # rubocop:disable Style/MultilineBlockChain
+          datacite_publisher?(cocina_contributor)
+        end
       end
 
       def cocina_funders
@@ -70,11 +67,15 @@ module Cocina
       end
 
       def datacite_creator?(cocina_contributor)
-        Array(cocina_contributor.note).none? { |note| note.type == 'citation status' && note.value == 'false' }
+        !datacite_funder?(cocina_contributor) && !datacite_publisher?(cocina_contributor)
       end
 
       def datacite_funder?(cocina_contributor)
         marc_relator(cocina_contributor) == 'funder'
+      end
+
+      def datacite_publisher?(cocina_contributor)
+        marc_relator(cocina_contributor) == 'publisher'
       end
 
       def datacite_creators

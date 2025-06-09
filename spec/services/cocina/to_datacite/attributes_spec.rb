@@ -330,22 +330,14 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           ],
           creators: [
             {
-              name: 'National Institute of Health',
-              nameType: 'Organizational'
-            }
-          ],
-          contributors: [
-            {
               name: 'Stanford, Jane',
               givenName: 'Jane',
               familyName: 'Stanford',
-              nameType: 'Personal',
-              contributorType: 'Other'
+              nameType: 'Personal'
             },
             {
               name: 'Stanford University',
               nameType: 'Organizational',
-              contributorType: 'Other',
               nameIdentifiers: [
                 {
                   nameIdentifier: 'https://ror.org/00f54p054',
@@ -354,6 +346,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
               ]
             }
           ],
+          contributors: [],
           fundingReferences: [
             {
               funderName: 'National Institute of Health'
