@@ -71,7 +71,7 @@ class PreservationIngestService
 
   # @param [Pathname] metadata_dir the location of the metadata directory in the workspace
   # @param [Integer] expected the version identifer expected to be used in the versionMetadata
-  def verify_version_metadata(metadata_dir, expected)
+  def verify_version_metadata(metadata_dir, expected) # rubocop:disable Naming/PredicateMethod
     vmfile = metadata_dir.join('versionMetadata.xml')
     verify_version_id(vmfile, expected, vmfile_version_id(vmfile))
     true
@@ -80,7 +80,7 @@ class PreservationIngestService
   # @param [Pathname] pathname The location of the file containing a version number
   # @param [Integer] expected The version number that should be in the file
   # @param [Integer] found The version number that is actually in the file
-  def verify_version_id(pathname, expected, found)
+  def verify_version_id(pathname, expected, found) # rubocop:disable Naming/PredicateMethod
     unless expected == found
       raise VersionMismatchError,
             "Version mismatch in #{pathname}, expected #{expected}, found #{found}"

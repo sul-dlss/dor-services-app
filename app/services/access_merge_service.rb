@@ -14,14 +14,14 @@ class AccessMergeService
     @apo_object = apo_object
   end
 
-  def merge # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
+  def merge # rubocop:disable Metrics/AbcSize
     # Admin policy may not have default access.
     if default_access.nil?
       # access is optional on a request, so may be nil.
       return cocina_object.access || access_class.new
     end
 
-    props = cocina_object.access.to_h || {}
+    props = cocina_object.access.to_h
 
     # Note for below: For cocina, an omitted value will not have a key in the hash.
 

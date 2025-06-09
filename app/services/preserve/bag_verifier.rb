@@ -28,7 +28,7 @@ module Preserve
 
     attr_reader :directory
 
-    def verify
+    def verify # rubocop:disable Naming/PredicateMethod
       verify_pathname(directory)
       REQUIRED_FILES.each do |path|
         verify_pathname(directory.join(path))
@@ -38,7 +38,7 @@ module Preserve
 
     # @param [Pathname] pathname The file whose existence should be verified
     # @return [Boolean] true if file exists, raises exception if not
-    def verify_pathname(pathname)
+    def verify_pathname(pathname) # rubocop:disable Naming/PredicateMethod
       raise "#{pathname.basename} not found at #{pathname}" unless pathname.exist?
 
       true
