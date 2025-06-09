@@ -208,7 +208,7 @@ Lint/TopLevelReturnWithArgument:
 Lint/UnreachableLoop:
   Enabled: true
 
-Naming/PredicateName:
+Naming/PredicatePrefix:
   ForbiddenPrefixes:
     - is_
 
@@ -852,4 +852,21 @@ Performance/ZipWithoutBlock: # new in 1.24
 Rails/MultipleRoutePaths: # new in 2.29
   Enabled: true
 Rails/StrongParametersExpect: # new in 2.29
+  Enabled: true
+
+Lint/UselessDefaultValueArgument: # new in 1.76
+  Enabled: true
+Lint/UselessOr: # new in 1.76
+  Enabled: true
+Naming/PredicateMethod: # new in 1.76
+  Enabled: true
+Style/EmptyStringInsideInterpolation: # new in 1.76
+  Enabled: true
+Style/HashFetchChain: # new in 1.75
+  Enabled: true
+Style/ItBlockParameter: # new in 1.75
+  Enabled: true
+Style/RedundantArrayFlatten: # new in 1.76
+  Enabled: true
+RSpec/IncludeExamples: # new in 3.6
   Enabled: true

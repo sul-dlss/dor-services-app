@@ -41,7 +41,7 @@ class RedisLock
   # @param [String] key the key to lock
   # @param [Integer] lock_timeout the number of seconds before the lock expires
   # @return [Boolean] true if the lock can be acquired
-  def self.with_lock(key:, lock_timeout:)
+  def self.with_lock(key:, lock_timeout:) # rubocop:disable Naming/PredicateMethod
     return false unless lock(key: key, lock_timeout:)
 
     begin
