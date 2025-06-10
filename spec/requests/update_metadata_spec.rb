@@ -13,16 +13,15 @@ RSpec.describe 'Update object' do
   let(:modified) { DateTime.now }
   let(:label) { 'This is my label' }
   let(:title) { 'This is my title' }
-  let(:current_collection_druid) { 'druid:xx888xx7777' }
-  let(:new_collection_druid) { 'druid:bb111bb2222' }
-  let(:updated_collection_druid) { current_collection_druid } # for most tests, collection stays the same
+  let(:current_collection_druid) { 'druid:xx888xx7777' } # the collection the item is in
+  let(:updated_collection_druid) { current_collection_druid } # the collection them item will be updated to
 
   let(:structural) do
     {
       hasMemberOrders: [
         { viewingDirection: 'right-to-left' }
       ],
-      isMemberOf: [current_collection_druid.to_s]
+      isMemberOf: [current_collection_druid]
     }
   end
   let(:view) { 'world' }
@@ -102,8 +101,6 @@ RSpec.describe 'Update object' do
       before do
         create(:repository_object, :collection, :with_repository_object_version,
                external_identifier: current_collection_druid)
-        create(:repository_object, :collection, :with_repository_object_version,
-               external_identifier: new_collection_druid)
         item.head_version.structural['isMemberOf'] = [current_collection_druid]
         item.head_version.save!
       end
@@ -262,7 +259,7 @@ RSpec.describe 'Update object' do
           let(:file1_id) { 'https://cocina.sul.stanford.edu/file/123-456-789' }
           let(:structural) do
             {
-              isMemberOf: [current_collection_druid.to_s],
+              isMemberOf: [current_collection_druid],
               contains: [
                 {
                   type: Cocina::Models::FileSetType.file,
@@ -593,7 +590,7 @@ RSpec.describe 'Update object' do
                       type: Cocina::Models::ObjectType.book).new(
                         identification: { sourceId: 'googlebooks:999999' },
                         structural: {
-                          isMemberOf: [current_collection_druid.to_s],
+                          isMemberOf: [current_collection_druid],
                           hasMemberOrders: [
                             { viewingDirection: 'right-to-left' }
                           ]
@@ -646,8 +643,17 @@ RSpec.describe 'Update object' do
       end
 
       context 'when a dro is moved from one collection to another' do
+        let(:new_collection_druid) { 'druid:bb111bb2222' }
         # this simulates moving from one collection to another
         let(:updated_collection_druid) { new_collection_druid }
+        let(:new_collection) do
+          create(:repository_object, :collection, :with_repository_object_version,
+                 external_identifier: new_collection_druid)
+        end
+
+        before do
+          new_collection.head_version.update(label: 'New Collection')
+        end
 
         it 'sends a collection changed event' do
           patch("/v1/objects/#{druid}",
@@ -655,7 +661,7 @@ RSpec.describe 'Update object' do
                 headers:)
           expect(response).to have_http_status(:ok)
           description = "Moved from Test Collection (#{current_collection_druid}) " \
-                        "to Test Collection (#{new_collection_druid})"
+                        "to New Collection (#{new_collection_druid})"
           expect(EventFactory).to have_received(:create).with(druid:, event_type: 'collection_changed',
                                                               data: { who: nil, description:, success: true })
         end
