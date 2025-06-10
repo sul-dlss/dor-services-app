@@ -118,13 +118,22 @@ FactoryBot.define do
   end
 
   trait :collection_repository_object_version do
-    label { 'Test Collection' }
+    transient do
+      title { 'Test Collection' }
+    end
+    label { title }
     content_type { Cocina::Models::ObjectType.collection }
     administrative do
       { hasAdminPolicy: 'druid:hy787xj5878' }
     end
     access do
       { view: 'world' }
+    end
+    description do
+      {
+        title: [{ value: title }],
+        purl: "https://purl.stanford.edu/#{external_identifier.delete_prefix('druid:')}"
+      }
     end
     structural { nil }
   end

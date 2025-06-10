@@ -13,6 +13,7 @@ RSpec.describe 'Update object' do
   let(:modified) { DateTime.now }
   let(:label) { 'This is my label' }
   let(:title) { 'This is my title' }
+  let(:who) { 'test_user' }
   let(:current_collection_druid) { 'druid:xx888xx7777' } # the collection the item is in
   let(:updated_collection_druid) { current_collection_druid } # the collection them item will be updated to
 
@@ -50,6 +51,7 @@ RSpec.describe 'Update object' do
   let(:data) do
     <<~JSON
       {
+        "user_name": "#{who}",
         "cocinaVersion": "#{Cocina::Models::VERSION}",
         "externalIdentifier": "#{druid}",
         "type":"#{content_type}",
@@ -110,7 +112,7 @@ RSpec.describe 'Update object' do
               params: data,
               headers:)
         expect(response).to have_http_status(:ok)
-        expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
+        expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data).except('user_name')))
         expect(response.headers['Last-Modified']).to end_with 'GMT'
         expect(response.headers['X-Created-At']).to end_with 'GMT'
         expect(response.headers['ETag']).to match(%r{W/".+"})
@@ -118,7 +120,7 @@ RSpec.describe 'Update object' do
         expect(item.reload.head_version.to_cocina.to_json).to equal_cocina_model(expected)
         expect(Cocina::ObjectValidator).to have_received(:validate)
 
-        expect(EventFactory).to have_received(:create).with(druid:, data: hash_including(:request, success: true),
+        expect(EventFactory).to have_received(:create).with(druid:, data: hash_including(:request, who:, success: true),
                                                             event_type: 'update')
       end
 
@@ -646,13 +648,10 @@ RSpec.describe 'Update object' do
         let(:new_collection_druid) { 'druid:bb111bb2222' }
         # this simulates moving from one collection to another
         let(:updated_collection_druid) { new_collection_druid }
-        let(:new_collection) do
-          create(:repository_object, :collection, :with_repository_object_version,
-                 external_identifier: new_collection_druid)
-        end
 
         before do
-          new_collection.head_version.update(label: 'New Collection')
+          create(:repository_object_version, :with_repository_object, :collection_repository_object_version,
+                 title: 'New Collection', external_identifier: new_collection_druid)
         end
 
         it 'sends a collection changed event' do
@@ -663,7 +662,7 @@ RSpec.describe 'Update object' do
           description = "Moved from Test Collection (#{current_collection_druid}) " \
                         "to New Collection (#{new_collection_druid})"
           expect(EventFactory).to have_received(:create).with(druid:, event_type: 'collection_changed',
-                                                              data: { who: nil, description: })
+                                                              data: { who:, description: })
         end
       end
 
@@ -715,7 +714,7 @@ RSpec.describe 'Update object' do
           expect(response).to have_http_status(:ok)
           description = "Moved from None () to Test Collection (#{current_collection_druid})"
           expect(EventFactory).to have_received(:create).with(druid:, event_type: 'collection_changed',
-                                                              data: { who: nil, description: })
+                                                              data: { who:, description: })
         end
       end
     end

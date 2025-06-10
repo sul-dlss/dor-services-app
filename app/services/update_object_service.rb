@@ -80,8 +80,7 @@ class UpdateObjectService
 
   def need_to_update_members?
     cocina_object.collection? &&
-      Cocina::Models::Builders::TitleBuilder.build(CocinaObjectStore.find(druid).description.title) !=
-        Cocina::Models::Builders::TitleBuilder.build(cocina_object.description.title)
+      object_title(druid) != Cocina::Models::Builders::TitleBuilder.build(cocina_object.description.title)
   end
 
   def collection_changed?
@@ -103,9 +102,9 @@ class UpdateObjectService
     new_collection_druid = (new_collections - previous_collections).first
     previous_collection_druid = (previous_collections - new_collections).first
 
-    collection_changed_description = "Moved from #{object_label(previous_collection_druid)} " \
+    collection_changed_description = "Moved from #{object_title(previous_collection_druid)} " \
                                      "(#{previous_collection_druid}) " \
-                                     "to #{object_label(new_collection_druid)} (#{new_collection_druid})"
+                                     "to #{object_title(new_collection_druid)} (#{new_collection_druid})"
 
     EventFactory.create(druid:, event_type: 'collection_changed',
                         data: { who:, description: collection_changed_description })
@@ -121,10 +120,10 @@ class UpdateObjectService
     cocina_object.structural.isMemberOf || []
   end
 
-  def object_label(druid)
+  def object_title(druid)
     return 'None' unless druid
 
-    CocinaObjectStore.find(druid).label
+    Cocina::Models::Builders::TitleBuilder.build(CocinaObjectStore.find(druid).description.title)
   end
 
   def persist! # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
