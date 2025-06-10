@@ -88,36 +88,44 @@ class UpdateObjectService
     # ignore for anything except DROs
     return false unless cocina_object.dro?
 
-    # these are arrays of collection druids
-    current_collections = previous_cocina_object.structural.isMemberOf
-    new_collections = cocina_object.structural.isMemberOf
-    current_collections.sort != new_collections.sort # ignore ordering of druids
+    # these are arrays of collection druids, convert to set to ignore ordering
+    previous_collections.to_set != new_collections.to_set
   end
 
-  # rubocop:disable Metrics/AbcSize
   def send_collection_changed_event
     # Note for simplicty in the description, this assumes that only one collection was changed
-    # and just records the first.  This is the most likely scenario, even though given that
+    # and records the first.  This is the most likely scenario, even though, given that
     # an object can be in multiple collections, it is possible for it to be moved from
     # multiple collections to multiple new collections.
-    old_collections = previous_cocina_object.structural.isMemberOf || []
-    new_collections = cocina_object.structural.isMemberOf || []
 
-    # in theory, these could be nil if we are moving from no collection to a collection
+    # In theory, these could be nil if we are moving from no collection to a collection
     # or removing from a single collection
-    new_collection_druid = (new_collections - old_collections).first
-    old_collection_druid = (old_collections - new_collections).first
+    new_collection_druid = (new_collections - previous_collections).first
+    previous_collection_druid = (previous_collections - new_collections).first
 
-    new_collection_title = new_collection_druid ? CocinaObjectStore.find(new_collection_druid).label : 'None'
-    old_collection_title = old_collection_druid ? CocinaObjectStore.find(old_collection_druid).label : 'None'
-
-    collection_changed_description = "Moved from #{old_collection_title} (#{old_collection_druid}) " \
-                                     "to #{new_collection_title} (#{new_collection_druid})"
+    collection_changed_description = "Moved from #{object_label(previous_collection_druid)} " \
+                                     "(#{previous_collection_druid}) " \
+                                     "to #{object_label(new_collection_druid)} (#{new_collection_druid})"
 
     EventFactory.create(druid:, event_type: 'collection_changed',
-                        data: { who:, description: collection_changed_description, success: true })
+                        data: { who:, description: collection_changed_description })
   end
-  # rubocop:enable Metrics/AbcSize
+
+  # array of collections druids the object is currently in
+  def previous_collections
+    previous_cocina_object.structural.isMemberOf || []
+  end
+
+  # array of collection druids the object will be updated to
+  def new_collections
+    cocina_object.structural.isMemberOf || []
+  end
+
+  def object_label(druid)
+    return 'None' unless druid
+
+    CocinaObjectStore.find(druid).label
+  end
 
   def persist! # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     cocina_object_with_metadata = nil

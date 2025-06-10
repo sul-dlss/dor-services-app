@@ -663,7 +663,7 @@ RSpec.describe 'Update object' do
           description = "Moved from Test Collection (#{current_collection_druid}) " \
                         "to New Collection (#{new_collection_druid})"
           expect(EventFactory).to have_received(:create).with(druid:, event_type: 'collection_changed',
-                                                              data: { who: nil, description:, success: true })
+                                                              data: { who: nil, description: })
         end
       end
 
@@ -698,7 +698,7 @@ RSpec.describe 'Update object' do
           expect(response).to have_http_status(:ok)
           description = "Moved from Test Collection (#{current_collection_druid}) to None ()"
           expect(EventFactory).to have_received(:create).with(druid:, event_type: 'collection_changed',
-                                                              data: { who: nil, description:, success: true })
+                                                              data: { who: nil, description: })
         end
       end
 
@@ -715,7 +715,7 @@ RSpec.describe 'Update object' do
           expect(response).to have_http_status(:ok)
           description = "Moved from None () to Test Collection (#{current_collection_druid})"
           expect(EventFactory).to have_received(:create).with(druid:, event_type: 'collection_changed',
-                                                              data: { who: nil, description:, success: true })
+                                                              data: { who: nil, description: })
         end
       end
     end
