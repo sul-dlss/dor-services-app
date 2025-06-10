@@ -108,8 +108,8 @@ class UpdateObjectService
     new_collection_druid = (new_collections - old_collections).first
     old_collection_druid = (old_collections - new_collections).first
 
-    new_collection_title = new_collection_druid ? CocinaObjectStore.find(new_collection_druid).label : ''
-    old_collection_title = old_collection_druid ? CocinaObjectStore.find(old_collection_druid).label : ''
+    new_collection_title = new_collection_druid ? CocinaObjectStore.find(new_collection_druid).label : 'None'
+    old_collection_title = old_collection_druid ? CocinaObjectStore.find(old_collection_druid).label : 'None'
 
     collection_changed_description = "Moved from #{old_collection_title} (#{old_collection_druid}) " \
                                      "to #{new_collection_title} (#{new_collection_druid})"

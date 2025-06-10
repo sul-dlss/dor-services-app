@@ -666,6 +666,58 @@ RSpec.describe 'Update object' do
                                                               data: { who: nil, description:, success: true })
         end
       end
+
+      context 'when a dro is removed from a collection' do
+        let(:data) do
+          <<~JSON
+            {
+              "cocinaVersion": "#{Cocina::Models::VERSION}",
+              "externalIdentifier": "#{druid}",
+              "type":"#{content_type}",
+              "label":"#{label}","version":1,
+              "access":{
+                "view":"#{view}",
+                "download":"#{view}",
+                "copyright":"All rights reserved unless otherwise indicated.",
+                "useAndReproductionStatement":"Property rights reside with the repository..."
+              },
+              "administrative":{"hasAdminPolicy":"#{apo_druid}"},
+              "description":#{description.to_json},
+              "identification":#{identification.to_json},
+              "structural":{
+                "hasMemberOrders":[{"viewingDirection":"right-to-left"}]
+              }
+            }
+          JSON
+        end
+
+        it 'sends a collection changed event' do
+          patch("/v1/objects/#{druid}",
+                params: data,
+                headers:)
+          expect(response).to have_http_status(:ok)
+          description = "Moved from Test Collection (#{current_collection_druid}) to None ()"
+          expect(EventFactory).to have_received(:create).with(druid:, event_type: 'collection_changed',
+                                                              data: { who: nil, description:, success: true })
+        end
+      end
+
+      context 'when a dro is added to a collection' do
+        before do
+          item.head_version.structural['isMemberOf'] = []
+          item.head_version.save!
+        end
+
+        it 'sends a collection changed event' do
+          patch("/v1/objects/#{druid}",
+                params: data,
+                headers:)
+          expect(response).to have_http_status(:ok)
+          description = "Moved from None () to Test Collection (#{current_collection_druid})"
+          expect(EventFactory).to have_received(:create).with(druid:, event_type: 'collection_changed',
+                                                              data: { who: nil, description:, success: true })
+        end
+      end
     end
 
     context 'when invalid' do
