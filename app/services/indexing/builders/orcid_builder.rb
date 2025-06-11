@@ -20,28 +20,12 @@ module Indexing
       end
 
       def build
-        contributors.filter_map { |contributor| orcidid(contributor) }
+        contributors.filter_map { |contributor| SulOrcidClient::CocinaSupport.orcidid(contributor) }
       end
 
       private
 
       attr_reader :contributors
-
-      # @param [Cocina::Models::Contributor] contributor to check
-      # @return [String, nil] orcid id including host if present
-      def orcidid(contributor) # rubocop:disable Metrics/AbcSize
-        identifier = contributor.identifier.find { |id| id.type == 'ORCID' }
-        return unless identifier
-
-        # some records have the full ORCID URI in the data, just return it if so, e.g. druid:gf852zt8324
-        return identifier.uri if identifier.uri
-        return identifier.value if identifier.value.start_with?('https://orcid.org/')
-
-        # some records have just the ORCIDID without the URL prefix, add it if so, e.g. druid:tp865ng1792
-        return URI.join('https://orcid.org/', identifier.value).to_s if identifier.source.uri.blank?
-
-        URI.join(identifier.source.uri, identifier.value).to_s
-      end
     end
   end
 end
