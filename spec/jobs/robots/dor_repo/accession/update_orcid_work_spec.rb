@@ -108,9 +108,19 @@ RSpec.describe Robots::DorRepo::Accession::UpdateOrcidWork, type: :robot do
       build(:dro, id: druid, admin_policy_id: Settings.graveyard_admin_policy.druid)
     end
 
-    it 'skips the object' do
-      expect(perform.status).to eq 'skipped'
-      expect(perform.note).to eq 'Object belongs to the SDR graveyard APO'
+    let!(:ar_orcid_work) do
+      OrcidWork.create(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X',
+                       druid: 'druid:bc234fg5678', put_code: '45678', md5: 'd41d8cd98f00b204e9800998ecf8427e')
+    end
+
+    it 'deletes orcid work and AR orcid work' do
+      perform
+      expect { ar_orcid_work.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      expect(mais_orcid_client).to have_received(:fetch_orcid_user)
+        .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X')
+      expect(orcid_client).to have_received(:delete_work)
+        .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X',
+              token: 'FAKE-294e-4bc8-8afd-96315b06ae04', put_code: '45678')
     end
   end
 

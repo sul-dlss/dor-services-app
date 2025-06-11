@@ -14,19 +14,20 @@ module Robots
             return LyberCore::ReturnState.new(status: :skipped,
                                               note: 'Orcid works are not supported on non-Item objects')
           end
+
           if cocina_object.administrative.hasAdminPolicy == Settings.graveyard_admin_policy.druid
-            return LyberCore::ReturnState.new(status: :skipped,
-                                              note: 'Object belongs to the SDR graveyard APO')
+            delete_all_orcid_works
+            return
           end
 
           create_or_update_orcid_works
-          delete_orcid_works
+          delete_removed_orcid_works
         end
 
         private
 
         def create_or_update_orcid_works
-          orcid_users.each do |orcid_user|
+          all_orcid_users.each do |orcid_user|
             ar_orcid_work = OrcidWork.find_by(orcidid: orcid_user.orcidid, druid:)
             if ar_orcid_work.nil?
               create(orcid_user)
@@ -38,8 +39,24 @@ module Robots
           end
         end
 
-        def delete_orcid_works
-          delete_orcid_users.each do |orcid_user|
+        def delete_all_orcid_works
+          delete_ar_orcid_works = OrcidWork.where(druid:)
+
+          orcid_users = orcid_users_with_update(orcid_ids: delete_ar_orcid_works.map(&:orcidid))
+          delete_orcid_works(orcid_users: orcid_users)
+        end
+
+        def delete_removed_orcid_works
+          delete_ar_orcid_works = OrcidWork.where(druid:)
+          orcid_ids = all_orcid_users.map(&:orcidid)
+          delete_ar_orcid_works = delete_ar_orcid_works.where.not(orcidid: orcid_ids) if orcid_ids.present?
+
+          orcid_users_to_delete = orcid_users_with_update(orcid_ids: delete_ar_orcid_works.map(&:orcidid))
+          delete_orcid_works(orcid_users: orcid_users_to_delete)
+        end
+
+        def delete_orcid_works(orcid_users:)
+          orcid_users.each do |orcid_user|
             ar_orcid_work = OrcidWork.find_by(orcidid: orcid_user.orcidid, druid:)
 
             Rails.logger.info("Deleting Orcid work for #{druid} / #{orcid_user.orcidid}")
@@ -68,32 +85,22 @@ module Robots
           )
         end
 
-        def orcid_users
-          @orcid_users ||= begin
+        def all_orcid_users
+          @all_orcid_users ||= begin
             all_orcid_ids = cocina_object.description.contributor.filter_map do |contributor|
               SulOrcidClient::CocinaSupport.orcidid(contributor)
             end
 
-            all_orcid_users = all_orcid_ids.filter_map do |orcid_id|
-              mais_orcid_client.fetch_orcid_user(orcidid: orcid_id)
-            end
-
-            all_orcid_users.select(&:update?)
+            orcid_users_with_update(orcid_ids: all_orcid_ids)
           end
         end
 
-        def delete_orcid_users
-          @delete_orcid_users ||= begin
-            delete_ar_orcid_works = OrcidWork.where(druid:)
-            orcid_ids = orcid_users.map(&:orcidid)
-            delete_ar_orcid_works = delete_ar_orcid_works.where.not(orcidid: orcid_ids) if orcid_ids.present?
-
-            delete_orcid_users = delete_ar_orcid_works.filter_map do |ar_orcid_work|
-              mais_orcid_client.fetch_orcid_user(orcidid: ar_orcid_work.orcidid)
-            end
-
-            delete_orcid_users.select(&:update?)
+        def orcid_users_with_update(orcid_ids:)
+          orcid_users = orcid_ids.filter_map do |orcid_id|
+            mais_orcid_client.fetch_orcid_user(orcidid: orcid_id)
           end
+
+          orcid_users.select(&:update?)
         end
 
         def work
