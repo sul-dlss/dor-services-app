@@ -70,9 +70,11 @@ module Robots
 
         def orcid_users
           @orcid_users ||= begin
-            cited_orcid_ids = SulOrcidClient::CocinaSupport.cited_orcidids(cocina_object.description)
+            all_orcid_ids = cocina_object.description.contributor.filter_map do |contributor|
+              SulOrcidClient::CocinaSupport.orcidid(contributor)
+            end
 
-            all_orcid_users = cited_orcid_ids.filter_map do |orcid_id|
+            all_orcid_users = all_orcid_ids.filter_map do |orcid_id|
               mais_orcid_client.fetch_orcid_user(orcidid: orcid_id)
             end
 

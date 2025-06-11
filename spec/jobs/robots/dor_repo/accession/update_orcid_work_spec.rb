@@ -220,28 +220,4 @@ RSpec.describe Robots::DorRepo::Accession::UpdateOrcidWork, type: :robot do
       expect(orcid_client).not_to have_received(:update_work)
     end
   end
-
-  # context 'when the object is not exportable' do
-  #   let(:exportable) { false }
-
-  #   it 'raises an error' do
-  #     expect { perform }.to raise_error(RuntimeError, /Item requested a DOI be updated, but it doesn't meet all the
-  #     preconditions/)
-  #     expect(Cocina::ToDatacite::Attributes).to have_received(:exportable?).with(object)
-  #   end
-  # end
-
-  # context 'when Datacite returns an error' do
-  #   let(:datacite_response_status) { 500 }
-
-  #   it 'raises an error' do
-  #     expect { perform }.to raise_error(RuntimeError, /Error connecting to datacite/)
-  #   end
-  # end
-
-  # context 'with no errors' do
-  #   it 'succeeds' do
-  #     expect { perform }.not_to raise_error
-  #   end
-  # end
 end
