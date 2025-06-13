@@ -70,6 +70,7 @@ class CleanupService
   def cleanup_by_druid
     cleanup_workspace_content(Settings.cleanup.local_workspace_root)
     cleanup_workspace_content(Settings.cleanup.local_assembly_root)
+    cleanup_workspace_content(Settings.cleanup.local_staging_root)
     cleanup_export
   end
 
