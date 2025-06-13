@@ -230,6 +230,7 @@ RSpec.describe CleanupService do
     let(:workspace_dir) { File.join(fixture_dir, 'workspace') }
     let(:export_dir) { File.join(fixture_dir, 'export') }
     let(:assembly_dir) { File.join(fixture_dir, 'assembly') }
+    let(:staging_dir) { File.join(fixture_dir, 'staging') }
 
     let(:druid1) { 'druid:cd456ef7890' }
     let(:druid2) { 'druid:cd456gh1234' }
@@ -239,13 +240,15 @@ RSpec.describe CleanupService do
       allow(Settings.cleanup).to receive_messages(
         local_workspace_root: workspace_dir,
         local_export_home: export_dir,
-        local_assembly_root: assembly_dir
+        local_assembly_root: assembly_dir,
+        local_staging_root: staging_dir
       )
 
       FileUtils.mkdir fixture_dir
       FileUtils.mkdir workspace_dir
       FileUtils.mkdir export_dir
       FileUtils.mkdir assembly_dir
+      FileUtils.mkdir staging_dir
     end
 
     after do
@@ -256,62 +259,71 @@ RSpec.describe CleanupService do
       File.write(File.join(path, 'tempfile'), 'junk')
     end
 
-    describe '.cleanup_by_druid' do
-      it 'correctly prunes directories' do
-        dr1_wspace = DruidTools::Druid.new(druid1, workspace_dir)
-        dr2_wspace = DruidTools::Druid.new(druid2, workspace_dir)
-        dr1_assembly = DruidTools::Druid.new(druid1, assembly_dir)
-        dr2_assembly = DruidTools::Druid.new(druid2, assembly_dir)
+    it 'correctly prunes directories' do
+      dr1_wspace = DruidTools::Druid.new(druid1, workspace_dir)
+      dr2_wspace = DruidTools::Druid.new(druid2, workspace_dir)
+      dr1_assembly = DruidTools::Druid.new(druid1, assembly_dir)
+      dr2_assembly = DruidTools::Druid.new(druid2, assembly_dir)
+      dr1_staging = DruidTools::Druid.new(druid1, staging_dir)
+      dr2_staging = DruidTools::Druid.new(druid2, staging_dir)
 
-        dr1_wspace.mkdir
-        dr2_wspace.mkdir
-        dr1_assembly.mkdir
-        dr2_assembly.mkdir
+      dr1_wspace.mkdir
+      dr2_wspace.mkdir
+      dr1_assembly.mkdir
+      dr2_assembly.mkdir
+      dr1_staging.mkdir
+      dr2_staging.mkdir
 
-        # Add some 'content'
-        create_tempfile dr1_wspace.path
-        create_tempfile dr2_assembly.path
+      # Add some 'content'
+      create_tempfile dr1_wspace.path
+      create_tempfile dr2_assembly.path
+      create_tempfile dr1_staging.path
 
-        # Setup the export content, remove 'druid:' prefix for bag and export/workspace dir
-        dr1 = druid1.split(':').last
-        export_prefix = File.join(export_dir, dr1)
+      # Setup the export content, remove 'druid:' prefix for bag and export/workspace dir
+      dr1 = druid1.split(':').last
+      export_prefix = File.join(export_dir, dr1)
 
-        # Create {export_dir}/druid1
-        #        {export_dir}/druid1/tempfile
-        #        {export_dir}/druid1.tar
-        FileUtils.mkdir export_prefix
-        create_tempfile export_prefix
-        File.write("#{export_prefix}.tar", 'fake tar junk')
+      # Create {export_dir}/druid1
+      #        {export_dir}/druid1/tempfile
+      #        {export_dir}/druid1.tar
+      FileUtils.mkdir export_prefix
+      create_tempfile export_prefix
+      File.write("#{export_prefix}.tar", 'fake tar junk')
 
-        expect(File).to exist(dr1_wspace.path)
-        expect(File).to exist(dr1_assembly.path)
+      expect(File).to exist(dr1_wspace.path)
+      expect(File).to exist(dr1_assembly.path)
+      expect(File).to exist(dr1_staging.path)
 
-        # druid1 cleaned up, including files
-        described_class.cleanup_by_druid druid1
-        expect(File).not_to exist(dr1_wspace.path)
-        expect(File).not_to exist(dr1_assembly.path)
-        expect(File).not_to exist(export_prefix)
-        expect(File).not_to exist("#{export_prefix}.tar")
+      # druid1 cleaned up, including files
+      described_class.cleanup_by_druid druid1
+      expect(File).not_to exist(dr1_wspace.path)
+      expect(File).not_to exist(dr1_assembly.path)
+      expect(File).not_to exist(dr1_staging.path)
+      expect(File).not_to exist(export_prefix)
+      expect(File).not_to exist("#{export_prefix}.tar")
 
-        # But not druid2
-        expect(File).to exist(dr2_wspace.path)
-        expect(File).to exist(dr2_assembly.path)
+      # But not druid2
+      expect(File).to exist(dr2_wspace.path)
+      expect(File).to exist(dr2_assembly.path)
+      expect(File).to exist(dr2_staging.path)
+      expect(File).to exist(File.join(assembly_dir, 'cd'))
 
-        described_class.cleanup_by_druid druid2
-        expect(File).not_to exist(dr2_wspace.path)
-        expect(File).not_to exist(dr2_assembly.path)
+      described_class.cleanup_by_druid druid2
+      expect(File).not_to exist(dr2_wspace.path)
+      expect(File).not_to exist(dr2_assembly.path)
+      expect(File).not_to exist(dr2_staging.path)
 
-        # Empty common parent directories pruned
-        expect(File).not_to exist(File.join(workspace_dir, 'cd'))
-      end
+      # Empty common parent directories pruned
+      expect(File).not_to exist(File.join(workspace_dir, 'cd'))
+      expect(File).not_to exist(File.join(assembly_dir, 'cd'))
+    end
 
-      it 'cleans up without assembly content' do
-        dr1_wspace = DruidTools::Druid.new(druid1, workspace_dir)
-        dr1_wspace.mkdir
+    it 'cleans up without assembly or staging content' do
+      dr1_wspace = DruidTools::Druid.new(druid1, workspace_dir)
+      dr1_wspace.mkdir
 
-        described_class.cleanup_by_druid druid1
-        expect(File).not_to exist(dr1_wspace.path)
-      end
+      described_class.cleanup_by_druid druid1
+      expect(File).not_to exist(dr1_wspace.path)
     end
   end
 end

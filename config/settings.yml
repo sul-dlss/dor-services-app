@@ -82,6 +82,7 @@ technical_metadata:
 cleanup:
   local_workspace_root: '/dor/workspace'
   local_assembly_root: '/dor/assembly'
+  local_staging_root: '/sdr-deposit-staging'
   local_export_home: '/dor/export'
   local_backup_path: '/dor/stopped'
 
