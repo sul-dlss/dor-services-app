@@ -161,7 +161,7 @@ GEM
     deprecation (1.1.0)
       activesupport
     diff-lcs (1.6.2)
-    diffy (3.4.3)
+    diffy (3.4.4)
     dlss-capistrano (5.3.0)
       bcrypt_pbkdf
       capistrano (~> 3.0)
@@ -221,11 +221,11 @@ GEM
       nokogiri (>= 1.4.3)
     erb (5.0.1)
     erubi (1.13.1)
-    factory_bot (6.5.3)
+    factory_bot (6.5.4)
       activesupport (>= 6.1.0)
-    factory_bot_rails (6.4.4)
+    factory_bot_rails (6.5.0)
       factory_bot (~> 6.5)
-      railties (>= 5.0.0)
+      railties (>= 6.1.0)
     faraday (2.13.1)
       faraday-net_http (>= 2.0, < 3.5)
       json
@@ -233,7 +233,7 @@ GEM
     faraday-cookie_jar (0.0.7)
       faraday (>= 0.8.0)
       http-cookie (~> 1.0.0)
-    faraday-net_http (3.4.0)
+    faraday-net_http (3.4.1)
       net-http (>= 0.5.0)
     faraday-retry (2.3.1)
       faraday (~> 2.0)
@@ -277,7 +277,7 @@ GEM
     json_schema (0.21.0)
     jsonpath (1.1.5)
       multi_json
-    jwt (2.10.1)
+    jwt (3.0.0)
       base64
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
