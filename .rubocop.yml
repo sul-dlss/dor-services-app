@@ -69,6 +69,7 @@ Metrics/MethodLength:
   Exclude:
     - "bin/*"
     - "app/reports/**/*"
+    - "db/**/*"
 
 Metrics/PerceivedComplexity:
   Exclude:
@@ -126,6 +127,7 @@ RSpec/SubjectStub:
 Style/Documentation:
   Exclude:
     - "app/graphql/**/*"
+    - "db/**/*"
 
 Style/RedundantStringEscape:
   Enabled: true

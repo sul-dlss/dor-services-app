@@ -41,6 +41,7 @@ set :log_level, :info
 # set :pty, true
 
 # Default value for :linked_files is []
+# db config is set by env variables, not managed by puppet.
 # set :linked_files, %w{config/database.yml}
 
 # Default value for linked_dirs is []
@@ -53,7 +54,6 @@ set :log_level, :info
 # set :keep_releases, 5
 
 set :linked_dirs, %w[log tmp/pids tmp/cache tmp/sockets vendor/bundle config/certs config/settings]
-set :linked_files, %w[config/database.yml]
 
 # Namespace crontab entries by application and stage
 set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }

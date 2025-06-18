@@ -5,17 +5,40 @@ default: &default
   password: "<%= ENV.fetch('DATABASE_PASSWORD', 'sekret') %>"
   host: "<%= ENV.fetch('DATABASE_HOSTNAME', 'localhost') %>"
   port: "<%= ENV.fetch('DATABASE_PORT', 5432) %>"
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 10 } %>
   timeout: 5000
 
+workflow_default: &workflow_default
+  adapter: postgresql
+  encoding: unicode
+  username: "<%= ENV.fetch('WORKFLOW_DATABASE_USERNAME', 'postgres') %>"
+  password: "<%= ENV.fetch('WORKFLOW_DATABASE_PASSWORD', 'sekret') %>"
+  host: "<%= ENV.fetch('WORKFLOW_DATABASE_HOSTNAME', 'localhost') %>"
+  port: "<%= ENV.fetch('WORKFLOW_DATABASE_PORT', 5432) %>"
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+  migrations_paths: 'db/workflow_migrate'
+
 development:
-  <<: *default
-  database: "<%= ENV.fetch('DATABASE_NAME', 'dor_services_development') %>"
+  primary:
+    <<: *default
+    database: "<%= ENV.fetch('DATABASE_NAME', 'dor_services_development') %>"
+  workflow:
+    <<: *workflow_default
+    database: "<%= ENV.fetch('WORKFLOW_DATABASE_NAME', 'workflow_development') %>"
 
 test:
-  <<: *default
-  database: "<%= ENV.fetch('DATABASE_NAME', 'dor_services_test') %>"
+  primary:
+    <<: *default
+    database: "<%= ENV.fetch('DATABASE_NAME', 'dor_services_test') %>"
+  workflow:
+    <<: *workflow_default
+    database: "<%= ENV.fetch('WORKFLOW_DATABASE_NAME', 'workflow_test') %>"
 
 production:
-  <<: *default
-  database: "<%= ENV.fetch('DATABASE_NAME', 'dor_services_production') %>"
+  primary:
+    <<: *default
+    database: "<%= ENV.fetch('DATABASE_NAME', 'dor_services_production') %>"
+  workflow:
+    <<: *workflow_default
+    database: "<%= ENV.fetch('WORKFLOW_DATABASE_NAME', 'workflow_production') %>"

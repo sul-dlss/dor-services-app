@@ -11,7 +11,6 @@ services:
     depends_on:
       - solr
       - suri
-      - workflow
       - redis
       - workers
       - db
@@ -31,7 +30,6 @@ services:
       SETTINGS__REDIS_URL: redis://redis:6379/
       SETTINGS__SOLR__URL: http://solr:8983/solr/dorservices
       SETTINGS__SURI__URL: http://suri:3000
-      SETTINGS__WORKFLOW__URL: http://workflow:3000
   workers:
     build:
       context: .
@@ -50,7 +48,6 @@ services:
       SETTINGS__REDIS_URL: redis://redis:6379/
       SETTINGS__SOLR__URL: http://solr:8983/solr/dorservices
       SETTINGS__SURI__URL: http://suri:3000
-      SETTINGS__WORKFLOW__URL: http://workflow:3000
       # We don't actually use this anywhere but the rails server needs it in production env
       SECRET_KEY_BASE: 1
   redis:
@@ -77,20 +74,6 @@ services:
       DATABASE_PASSWORD: sekret
       DATABASE_HOSTNAME: db
       DATABASE_PORT: 5432
-  workflow:
-    image: suldlss/workflow-server:latest
-    platform: linux/amd64
-    depends_on:
-      - db
-    ports:
-      - 3001:3000
-    environment:
-      DATABASE_NAME: workflow-server
-      DATABASE_USERNAME: postgres
-      DATABASE_PASSWORD: sekret
-      DATABASE_HOSTNAME: db
-      DATABASE_PORT: 5432
-      SETTINGS__REDIS__HOSTNAME: redis
   db:
     image: postgres:13
     ports:
