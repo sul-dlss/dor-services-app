@@ -44,7 +44,7 @@ module Indexing
       # @return [Cocina::Models::Event, nil] event with date of type desired_date_type and the event has matching type
       def self.date_and_event_type_match(events, desired_date_type)
         events.find do |event|
-          next unless event_type_matches(event, desired_date_type)
+          next unless event_type_matches?(event, desired_date_type)
 
           event_dates = Array(event.date) + Array(event.parallelEvent&.map(&:date))
           event_dates.flatten.compact.find do |date|
@@ -57,7 +57,7 @@ module Indexing
       # @return [Cocina::Models::Event, nil] event with type of desired_date_type and a date field without a type
       def self.event_type_matches_but_no_date_type(events, desired_date_type)
         events.find do |event|
-          next unless event_type_matches(event, desired_date_type)
+          next unless event_type_matches?(event, desired_date_type)
 
           event_dates = Array(event.date) + Array(event.parallelEvent&.map(&:date))
           event_dates.flatten.compact.find do |date|
@@ -79,13 +79,13 @@ module Indexing
       private_class_method :event_has_date_type
 
       # @return [Boolean] true if event type matches or parallelEvent type matches the param
-      def self.event_type_matches(event, desired_type)
+      def self.event_type_matches?(event, desired_type)
         return true if event.type == desired_type
 
         matching_event = event.parallelEvent&.find { |parallel_event| parallel_event.type == desired_type }
         matching_event.present?
       end
-      private_class_method :event_type_matches
+      private_class_method :event_type_matches?
 
       # @param [Cocina::Models::DescriptiveValue] a date object from an event
       # @return [String, nil] type from date object
