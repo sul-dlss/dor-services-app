@@ -36,6 +36,8 @@ tags:
     description: Operations about files
   - name: workspaces
     description: Operations about workspaces
+  - name: workflows
+    description: Operations about workflows
 paths:
   /v1/about:
     get:
@@ -130,13 +132,8 @@ paths:
             $ref: "#/components/schemas/Druid"
         - name: lane-id
           in: query
-          description: Lane for prioritizing the work
           schema:
-            type: string
-            enum:
-              - "default"
-              - "low"
-            default: "default"
+            $ref: "#/components/schemas/LaneId"
   "/v1/objects/{id}/accession":
     post:
       tags:
@@ -647,13 +644,8 @@ paths:
           example: releaseWF
         - name: lane-id
           in: query
-          description: Lane for prioritizing the work
           schema:
-            type: string
-            enum:
-              - "default"
-              - "low"
-            default: "default"
+            $ref: "#/components/schemas/LaneId"
   "/v1/objects/{object_id}/events":
     get:
       tags:
@@ -1450,6 +1442,352 @@ paths:
           required: false
           schema:
             type: string
+  "/v1/workflow_templates":
+      get:
+        tags:
+          - workflows
+        summary: List all workflow templates
+        operationId: "workflow_templates#index"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    type: string
+  "/v1/objects/{object_id}/lifecycles":
+    get:
+      tags:
+        - workflows
+      summary: List the lifecycles for this object
+      operationId: "workflow_lifecycles#index"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/xml:
+              schema:
+                type: string
+                example: |
+                  <lifecycle objectId="druid:ct011cv6501">
+                    <milestone date="2010-04-27T11:34:17-0700">registered</milestone>
+                    <milestone date="2010-04-29T10:12:51-0700">inprocess</milestone>
+                    <milestone date="2010-06-15T16:08:58-0700">released</milestone>
+                  </lifecycle>
+        "404":
+          description: Object not found
+          content:
+            text/plain:
+              schema:
+                type: string
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"
+        - name: version
+          in: query
+          description: The version of the object to get the lifecycles for
+          required: false
+          schema:
+            type: integer
+        - name: active-only
+          in: query
+          description: If true, only return lifecycles that are currently active
+          required: false
+          schema:
+            type: boolean
+            default: false
+  "/v1/objects/{object_id}/workflows":
+    get:
+      tags:
+        - workflows
+      summary: List the workflows for this object
+      operationId: "workflows#index"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/xml:
+              schema:
+                type: string
+        "404":
+          description: Object not found
+          content:
+            text/plain:
+              schema:
+                type: string
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"       
+  "/v1/objects/{object_id}/workflow/{workflow}":
+    get:
+      tags:
+        - workflows
+      summary: Get the status for a workflow for this object.
+      operationId: "workflow#show"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/xml:
+              schema:
+                type: string
+        "404":
+          description: Object or workflow not found
+          content:
+            text/plain:
+              schema:
+                type: string
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"
+        - name: workflow
+          in: path
+          description: Name of the workflow to create
+          required: true
+          schema:
+            type: string      
+    post:
+      tags:
+        - workflows
+      summary: Create a new workflow for this object
+      operationId: "workflow#create"
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"
+        - name: workflow
+          in: path
+          description: Name of the workflow to create
+          required: true
+          schema:
+            type: string
+            enum:
+              # From Hydrus ETD
+              - etdSubmitWF
+              # From Argo
+              - gisAssemblyWF
+              # From GIS Robots, Argo
+              - gisDeliveryWF
+              # From Argo
+              - goobiWF
+              # From PresCat
+              - preservationAuditWF
+              # From H3, SDR API
+              - registrationWF
+              # From Argro
+              - releaseWF
+              # From Argo
+              - wasCrawlDisseminationWF
+              - wasCrawlPreassemblyWF
+              # From WAS Registrar, Argo
+              - wasSeedPreassemblyWF
+        - name: version
+          in: query
+          description: The version of the object to create the workflow for
+          required: true
+          schema:
+            type: integer
+        - name: lane-id
+          in: query
+          schema:
+            $ref: "#/components/schemas/LaneId"
+      requestBody:
+        description: Context for the workflow.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  type: object
+                  additionalProperties: true
+  "/v1/objects/{object_id}/workflow/{workflow}/skip_all":
+    post:
+      tags:
+        - workflows
+      summary: Skip all processes in a workflow for this object.
+      operationId: "workflow#skip_all"
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"
+        - name: workflow
+          in: path
+          description: Name of the workflow to create
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Skipped all processes
+        "404":
+          description: Object or workflow not found
+          content:
+            text/plain:
+              schema:
+                type: string
+      requestBody:
+        content:
+          application/xml:
+            schema:
+              type: object
+              xml:
+                name: skip_all
+              properties:
+                name:
+                  type: string
+                  enum:
+                    - skip-all
+                  xml:
+                    attribute: true
+                status:
+                  type: string
+                  enum:
+                    - skipped
+                note:
+                  type: string
+                  xml:
+                    attribute: true
+              required:
+                - name
+                - status
+                - note
+  "/v1/objects/{object_id}/workflow/{workflow}/process/{process}":
+    put:
+      tags:
+        - workflows
+      summary: Update a workflow process (step) for this object.
+      operationId: "workflow_processes#update"
+      responses:
+        "204":
+          description: Updated
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Object, workflow, or process not found
+          content:
+            text/plain:
+              schema:
+                type: string
+        "409":
+          description: Expected current status does not match the actual status
+          content:
+            text/plain:
+              schema:
+                type: string
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"
+        - name: workflow
+          in: path
+          description: Name of the workflow to update
+          required: true
+          schema:
+            type: string            
+        - name: process
+          in: path
+          description: Name of the workflow step to update (e.g. "shelve")
+          required: true
+          schema:
+            type: string
+        - name: current-status
+          in: query
+          description: The expected current status of the process (e.g. "waiting", "completed")
+          schema:
+            type: string
+            enum:
+              - waiting
+              - completed
+              - error
+              - queued
+              - skipped
+              - started
+              - retrying
+      requestBody:
+        required: true
+        content:
+          application/xml:
+            schema:
+              type: object
+              xml:
+                name: process
+              properties:
+                name:
+                  type: string
+                  xml:
+                    attribute: true
+                status:
+                  type: string
+                  enum:
+                    - waiting
+                    - completed
+                    - error
+                    - queued
+                    - skipped
+                    - started
+                    - retrying
+                  xml:
+                    attribute: true
+                elapsed:
+                  type: string
+                  xml:
+                    attribute: true
+                lifecycle:
+                  type: string
+                  xml:
+                    attribute: true
+                note:
+                  type: string
+                  xml:
+                    attribute: true
+                errorText:
+                  type: string
+                  xml:
+                    attribute: true
+                errorMessage:
+                  type: string
+                  xml:
+                    attribute: true
+              required:
+                - name
+                - status
 components:
   schemas:
     Access:
@@ -3367,6 +3705,13 @@ components:
       # environments and deployed environments that use Apache & Passenger
       pattern: '^.+(\+(?:%3A|:)\+.+)+$'
       example: "Foo+%3A+Bar+%3A+Baz"
+    LaneId:
+      description: Lane for prioritizing the work
+      type: string
+      enum:
+        - "default"
+        - "low"
+      default: "default"
     UserVersion:
       type: object
       description: "Information about a user version."
