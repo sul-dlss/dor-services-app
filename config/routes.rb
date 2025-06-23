@@ -81,5 +81,7 @@ Rails.application.routes.draw do
 
       resources :release_tags, only: %i[create index]
     end
+
+    resources :workflow_templates, only: %i[index]
   end
 end

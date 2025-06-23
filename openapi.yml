@@ -36,6 +36,8 @@ tags:
     description: Operations about files
   - name: workspaces
     description: Operations about workspaces
+  - name: workflows
+    description: Operations about workflows    
 paths:
   /v1/about:
     get:
@@ -1450,6 +1452,21 @@ paths:
           required: false
           schema:
             type: string
+  "/v1/workflow_templates":
+    get:
+      tags:
+        - workflows
+      summary: List all workflow templates
+      operationId: "workflow_templates#index"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
 components:
   schemas:
     Access:
