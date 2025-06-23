@@ -80,6 +80,8 @@ Rails.application.routes.draw do
       end
 
       resources :release_tags, only: %i[create index]
+
+      resources :lifecycles, only: %i[index], controller: 'workflow_lifecycles'
     end
 
     resources :workflow_templates, only: %i[index]
