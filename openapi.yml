@@ -2796,6 +2796,49 @@ components:
         type:
           description: The relationship of the related resource to the described resource.
           type: string
+        dataCiteRelationType:
+          description: The DataCite relationType describing the relationship from the related resource to the described resource.
+            See https://datacite-metadata-schema.readthedocs.io/en/4.6/appendices/appendix-1/relationType
+          type: string
+          enum:
+            - 'IsCitedBy'
+            - 'Cites'
+            - 'IsSupplementTo'
+            - 'IsSupplementedBy'
+            - 'IsContinuedBy'
+            - 'Continues'
+            - 'Describes'
+            - 'IsDescribedBy'
+            - 'HasMetadata'
+            - 'IsMetadataFor'
+            - 'HasVersion'
+            - 'IsVersionOf'
+            - 'IsNewVersionOf'
+            - 'IsPreviousVersionOf'
+            - 'IsPartOf'
+            - 'HasPart'
+            - 'IsPublishedIn'
+            - 'IsReferencedBy'
+            - 'References'
+            - 'IsDocumentedBy'
+            - 'Documents'
+            - 'IsCompiledBy'
+            - 'Compiles'
+            - 'IsVariantFormOf'
+            - 'IsOriginalFormOf'
+            - 'IsIdenticalTo'
+            - 'IsReviewedBy'
+            - 'Reviews'
+            - 'IsDerivedFrom'
+            - 'IsSourceOf'
+            - 'IsRequiredBy'
+            - 'Requires'
+            - 'Obsoletes'
+            - 'IsObsoletedBy'
+            - 'IsCollectedBy'
+            - 'Collects'
+            - 'IsTranslationOf'
+            - 'HasTranslation'
         status:
           description: Status of the related resource relative to other related resources.
           type: string
