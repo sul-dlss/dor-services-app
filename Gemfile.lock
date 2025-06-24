@@ -178,7 +178,7 @@ GEM
       faraday (~> 2.0)
       faraday-retry
       zeitwerk (~> 2.1)
-    dor-workflow-client (7.7.0)
+    dor-workflow-client (7.8.0)
       activesupport (>= 7.0.0)
       deprecation (>= 0.99.0)
       faraday (~> 2.0)
@@ -628,7 +628,7 @@ DEPENDENCIES
   debug
   diffy
   dlss-capistrano
-  dor-workflow-client (~> 7.6)
+  dor-workflow-client (~> 7.8)
   druid-tools (~> 2.2)
   dry-monads
   edtf (~> 3.0)

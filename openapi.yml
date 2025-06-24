@@ -1467,6 +1467,51 @@ paths:
                 type: array
                 items:
                   type: string
+  "/v1/objects/{object_id}/lifecycles":
+    get:
+      tags:
+        - workflows
+      summary: List the lifecycles for this object
+      operationId: "workflow_lifecycles#index"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/xml:
+              schema:
+                type: string
+                example: |
+                  <lifecycle objectId="druid:ct011cv6501">
+                    <milestone date="2010-04-27T11:34:17-0700">registered</milestone>
+                    <milestone date="2010-04-29T10:12:51-0700">inprocess</milestone>
+                    <milestone date="2010-06-15T16:08:58-0700">released</milestone>
+                  </lifecycle>
+        "404":
+          description: Object not found
+          content:
+            text/plain:
+              schema:
+                type: string
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"
+        - name: version
+          in: query
+          description: The version of the object to get the lifecycles for
+          required: false
+          schema:
+            type: integer
+        - name: active-only
+          in: query
+          description: If true, only return lifecycles that are currently active
+          required: false
+          schema:
+            type: boolean
+            default: false                  
 components:
   schemas:
     Access:
