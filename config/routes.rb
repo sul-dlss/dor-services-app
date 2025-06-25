@@ -81,7 +81,7 @@ Rails.application.routes.draw do
 
       resources :release_tags, only: %i[create index]
 
-      resources :workflows, only: %i[index], controller: 'workflows'
+      resources :workflows, only: %i[index show], controller: 'workflows', param: :workflow
 
       resources :lifecycles, only: %i[index], controller: 'workflow_lifecycles'
     end

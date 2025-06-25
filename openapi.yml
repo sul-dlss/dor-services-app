@@ -1537,7 +1537,39 @@ paths:
           description: ID of object
           required: true
           schema:
-            $ref: "#/components/schemas/Druid"                    
+            $ref: "#/components/schemas/Druid"
+  "/v1/objects/{object_id}/workflows/{workflow}":
+    get:
+      tags:
+        - workflows
+      summary: Get the status for a workflow for this object.
+      operationId: "workflow#show"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/xml:
+              schema:
+                type: string
+        "404":
+          description: Object or workflow not found
+          content:
+            text/plain:
+              schema:
+                type: string
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"
+        - name: workflow
+          in: path
+          description: Name of the workflow
+          required: true
+          schema:
+            type: string            
 components:
   schemas:
     Access:
