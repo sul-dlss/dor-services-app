@@ -1607,6 +1607,39 @@ paths:
                 context:
                   type: object
                   additionalProperties: true            
+  "/v1/objects/{object_id}/workflows/{workflow}/skip_all":
+    post:
+      tags:
+        - workflows
+      summary: Skip all processes in a workflow for this object.
+      operationId: "workflow#skip_all"
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"
+        - name: workflow
+          in: path
+          description: Name of the workflow to skip
+          required: true
+          schema:
+            type: string
+        - name: note
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Skipped all processes
+        "404":
+          description: Object or workflow not found
+          content:
+            text/plain:
+              schema:
+                type: string
 components:
   schemas:
     Access:

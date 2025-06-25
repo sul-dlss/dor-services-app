@@ -83,6 +83,7 @@ Rails.application.routes.draw do
 
       resources :workflows, only: %i[index show], controller: 'workflows', param: :workflow do
         member do
+          post 'skip_all', to: 'workflows#skip_all'
           post '', to: 'workflows#create'
         end
       end

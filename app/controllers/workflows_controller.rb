@@ -18,4 +18,10 @@ class WorkflowsController < WorkflowApplicationController
 
     head :created
   end
+
+  def skip_all
+    workflow_client.skip_all(druid: params[:object_id], workflow: params[:workflow], note: params[:note])
+
+    head :no_content
+  end
 end
