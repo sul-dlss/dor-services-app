@@ -1511,7 +1511,33 @@ paths:
           required: false
           schema:
             type: boolean
-            default: false                  
+            default: false
+  "/v1/objects/{object_id}/workflows":
+    get:
+      tags:
+        - workflows
+      summary: List the workflows for this object
+      operationId: "workflows#index"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/xml:
+              schema:
+                type: string
+        "404":
+          description: Object not found
+          content:
+            text/plain:
+              schema:
+                type: string
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"                    
 components:
   schemas:
     Access:
