@@ -94,11 +94,11 @@ class WorkflowStateService
     workflow_response.incomplete_processes_for(version:).any? { |step| step.name != process }
   end
 
-  def all_workflows
-    @all_workflows ||= workflow_client.all_workflows(pid: druid)
+  def workflow_for(workflow_name:)
+    workflow_service.workflow(workflow_name:)
   end
 
-  def workflow_for(workflow_name:)
-    all_workflows.workflows.find { |workflow| workflow.workflow_name == workflow_name }
+  def workflow_service
+    @workflow_service ||= WorkflowService.new(druid:)
   end
 end
