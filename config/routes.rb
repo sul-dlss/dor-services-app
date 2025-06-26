@@ -81,11 +81,13 @@ Rails.application.routes.draw do
 
       resources :release_tags, only: %i[create index]
 
-      resources :workflows, only: %i[index show], controller: 'workflows', param: :workflow do
+      resources :workflows, only: %i[index show], controller: 'workflows' do
         member do
           post 'skip_all', to: 'workflows#skip_all'
           post '', to: 'workflows#create'
         end
+
+        resources :processes, only: %i[update], controller: 'workflow_processes'
       end
 
       resources :lifecycles, only: %i[index], controller: 'workflow_lifecycles'
