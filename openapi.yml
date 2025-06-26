@@ -132,13 +132,8 @@ paths:
             $ref: "#/components/schemas/Druid"
         - name: lane-id
           in: query
-          description: Lane for prioritizing the work
           schema:
-            type: string
-            enum:
-              - "default"
-              - "low"
-            default: "default"
+            $ref: "#/components/schemas/LaneId"
   "/v1/objects/{id}/accession":
     post:
       tags:
@@ -649,13 +644,8 @@ paths:
           example: releaseWF
         - name: lane-id
           in: query
-          description: Lane for prioritizing the work
           schema:
-            type: string
-            enum:
-              - "default"
-              - "low"
-            default: "default"
+            $ref: "#/components/schemas/LaneId"
   "/v1/objects/{object_id}/events":
     get:
       tags:
@@ -1569,7 +1559,54 @@ paths:
           description: Name of the workflow
           required: true
           schema:
+            type: string
+    post:
+      tags:
+        - workflows
+      summary: Create a new workflow for this object
+      operationId: "workflow#create"
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"
+        - name: workflow
+          in: path
+          description: Name of the workflow to create
+          required: true
+          schema:
             type: string            
+        - name: version
+          in: query
+          description: The version of the object to create the workflow for
+          required: true
+          schema:
+            type: integer
+        - name: lane-id
+          in: query
+          schema:
+            $ref: "#/components/schemas/LaneId"
+      requestBody:
+        description: Context for the workflow.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  type: object
+                  additionalProperties: true            
 components:
   schemas:
     Access:
@@ -3530,6 +3567,13 @@ components:
       # environments and deployed environments that use Apache & Passenger
       pattern: '^.+(\+(?:%3A|:)\+.+)+$'
       example: "Foo+%3A+Bar+%3A+Baz"
+    LaneId:
+      description: Lane for prioritizing the work
+      type: string
+      enum:
+        - "default"
+        - "low"
+      default: "default"
     UserVersion:
       type: object
       description: "Information about a user version."
