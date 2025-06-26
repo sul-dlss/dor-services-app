@@ -2,6 +2,11 @@
 
 # Controller for workflow processes
 class WorkflowProcessesController < WorkflowApplicationController
+  def show
+    status = workflow_client.workflow_status(druid:, workflow:, process: workflow_process)
+    render json: { status: }
+  end
+
   def update # rubocop:disable Metrics/AbcSize
     if status == 'error'
       workflow_client.update_error_status(druid:, workflow:, process: workflow_process, error_msg: params[:error_msg],

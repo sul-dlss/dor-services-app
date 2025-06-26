@@ -87,7 +87,7 @@ Rails.application.routes.draw do
           post '', to: 'workflows#create'
         end
 
-        resources :processes, only: %i[update], controller: 'workflow_processes'
+        resources :processes, only: %i[show update], controller: 'workflow_processes'
       end
 
       resources :lifecycles, only: %i[index], controller: 'workflow_lifecycles'
