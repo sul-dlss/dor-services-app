@@ -1479,9 +1479,9 @@ paths:
         "404":
           description: Object not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
       parameters:
         - name: object_id
           in: path
@@ -1518,9 +1518,9 @@ paths:
         "404":
           description: Object not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
       parameters:
         - name: object_id
           in: path
@@ -1544,9 +1544,9 @@ paths:
         "404":
           description: Object or workflow not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
       parameters:
         - name: object_id
           in: path
@@ -1637,9 +1637,80 @@ paths:
         "404":
           description: Object or workflow not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
+  "/v1/objects/{object_id}/workflows/{workflow}/processes/{process}":
+    put:
+      tags:
+        - workflows
+      summary: Update a workflow process (step) for this object.
+      operationId: "workflow_processes#update"
+      responses:
+        "204":
+          description: Updated
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Object, workflow, or process not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Expected current status does not match the actual status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"
+        - name: workflow
+          in: path
+          description: Name of the workflow to update
+          required: true
+          schema:
+            type: string            
+        - name: process
+          in: path
+          description: Name of the workflow step to update (e.g. "shelve")
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  # description: The new status of the process
+                  $ref: "#/components/schemas/WorkflowProcessStatus"
+                current_status:
+                  # description: The expected current status of the process
+                  $ref: "#/components/schemas/WorkflowProcessStatus"
+                elapsed:
+                  type: number
+                lifecycle:
+                  type: string
+                note:
+                  type: string
+                error_text:
+                  type: string
+                error_message:
+                  type: string
+              required:
+                - status                
 components:
   schemas:
     Access:
@@ -3758,6 +3829,16 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Druid"
+    WorkflowProcessStatus:
+      type: string
+      enum:
+        - waiting
+        - completed
+        - error
+        - queued
+        - skipped
+        - started
+        - retrying
   securitySchemes:
     bearerAuth:
       type: http
