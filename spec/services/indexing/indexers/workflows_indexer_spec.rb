@@ -111,13 +111,13 @@ RSpec.describe Indexing::Indexers::WorkflowsIndexer do
         { 'name' => 'start-accession' }
       ] }
     end
-    let(:workflow_client) { instance_double(Dor::Workflow::Client, workflow_routes:) }
-    let(:workflow_routes) do
-      instance_double(Dor::Workflow::Client::WorkflowRoutes,
-                      all_workflows: Dor::Workflow::Response::Workflows.new(xml:))
-    end
+
+    let(:workflow_client) { instance_double(Dor::Workflow::Client) }
 
     before do
+      allow(WorkflowService).to receive(:workflows).with(druid: 'druid:ab123cd4567').and_return(
+        Dor::Workflow::Response::Workflows.new(xml:).workflows
+      )
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
       allow(workflow_client).to receive(:workflow_template).with('accessionWF').and_return(accession_json)
       allow(workflow_client).to receive(:workflow_template).with('assemblyWF').and_return(assembly_json)

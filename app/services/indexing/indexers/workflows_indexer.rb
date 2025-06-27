@@ -22,18 +22,9 @@ module Indexing
 
       private
 
-      # @return [Array<Workflow::Response::Workflow>]
+      # @return [Array<Workflow::Response::Workflows>]
       def workflows
-        all_workflows.workflows
-      end
-
-      # @return [Workflow::Response::Workflows]
-      def all_workflows
-        @all_workflows ||= workflow_client.workflow_routes.all_workflows pid: id
-      end
-
-      def workflow_client
-        @workflow_client ||= WorkflowClientFactory.build
+        WorkflowService.workflows(druid: id)
       end
     end
   end

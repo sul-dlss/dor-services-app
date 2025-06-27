@@ -8,9 +8,11 @@ RSpec.describe WorkflowStateService do
   let(:druid) { 'druid:xz456jk0987' }
   let(:version) { 1 }
   let(:workflow_client) { instance_double(Dor::Workflow::Client) }
+  let(:workflow_service) { instance_double(WorkflowService) }
 
   before do
     allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
+    allow(WorkflowService).to receive(:new).and_return(workflow_service)
   end
 
   describe '.accessioned?' do
@@ -40,14 +42,10 @@ RSpec.describe WorkflowStateService do
     let(:accession_wf_response) do
       instance_double(Dor::Workflow::Response::Workflow, active_for?: false, workflow_name: 'accessionWF')
     end
-    let(:other_wf_response) { instance_double(Dor::Workflow::Response::Workflow, workflow_name: 'otherWF') }
-    let(:wf_responses) do
-      instance_double(Dor::Workflow::Response::Workflows, workflows: [other_wf_response, accession_wf_response])
-    end
     let(:process) { instance_double(Dor::Workflow::Response::Process, name: process_name) }
 
     before do
-      allow(workflow_client).to receive(:all_workflows).with(pid: druid).and_return(wf_responses)
+      allow(workflow_service).to receive(:workflow).and_return(accession_wf_response)
     end
 
     context 'when there is an active accessioningWF with a non-ignored step' do
@@ -62,7 +60,7 @@ RSpec.describe WorkflowStateService do
 
       it 'returns true' do
         expect(workflow_state).to be_accessioning
-        expect(workflow_client).to have_received(:all_workflows).with(pid: druid)
+        expect(workflow_service).to have_received(:workflow).with(workflow_name: 'accessionWF')
       end
     end
 
@@ -82,10 +80,6 @@ RSpec.describe WorkflowStateService do
     end
 
     context 'when there is not an active accessioningWF' do
-      before do
-        allow(workflow_client).to receive(:all_workflows).with(pid: druid).and_return(wf_responses)
-      end
-
       it 'returns false' do
         expect(workflow_state).not_to be_accessioning
       end
@@ -123,7 +117,17 @@ RSpec.describe WorkflowStateService do
     let(:process) { instance_double(Dor::Workflow::Response::Process, name: 'arbitrary') }
 
     before do
-      allow(workflow_client).to receive(:all_workflows).with(pid: druid).and_return(workflow_responses)
+      allow(workflow_service).to receive(:workflow).with(workflow_name: 'assemblyWF').and_return(assembly_wf_response)
+      allow(workflow_service).to receive(:workflow).with(workflow_name: 'wasCrawlPreassemblyWF')
+                                                   .and_return(was_crawl_preassembly_wf_response)
+      allow(workflow_service).to receive(:workflow).with(workflow_name: 'wasSeedPreassemblyWF')
+                                                   .and_return(was_seed_preassembly_wf_response)
+      allow(workflow_service).to receive(:workflow).with(workflow_name: 'gisDeliveryWF')
+                                                   .and_return(gis_delivery_wf_response)
+      allow(workflow_service).to receive(:workflow).with(workflow_name: 'gisAssemblyWF')
+                                                   .and_return(gis_assembly_wf_response)
+      allow(workflow_service).to receive(:workflow).with(workflow_name: 'ocrWF').and_return(ocr_wf_response)
+      allow(workflow_service).to receive(:workflow).with(workflow_name: 'speechToTextWF').and_return(stt_wf_response)
     end
 
     context 'when there is an active assemblyWF' do

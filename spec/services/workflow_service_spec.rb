@@ -10,6 +10,59 @@ RSpec.describe WorkflowService do
     allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
   end
 
+  describe '#workflows' do
+    let(:workflows_response) { instance_double(Dor::Workflow::Response::Workflows, workflows: workflows) }
+    let(:workflows) { [instance_double(Dor::Workflow::Response::Workflow)] }
+
+    before do
+      allow(workflow_client).to receive(:all_workflows).with(pid: druid).and_return(workflows_response)
+    end
+
+    it 'returns workflows' do
+      expect(described_class.workflows(druid:)).to eq workflows
+      expect(workflow_client).to have_received(:all_workflows).with(pid: druid)
+    end
+  end
+
+  describe '#workflows_xml' do
+    let(:workflows_response) { instance_double(Dor::Workflow::Response::Workflows, xml: workflows_xml) }
+    let(:workflows_xml) { instance_double(Nokogiri::XML::Document) }
+
+    before do
+      allow(workflow_client).to receive(:all_workflows).with(pid: druid).and_return(workflows_response)
+    end
+
+    it 'returns workflows xml' do
+      expect(described_class.workflows_xml(druid:)).to eq workflows_xml
+      expect(workflow_client).to have_received(:all_workflows).with(pid: druid)
+    end
+  end
+
+  describe '#workflow' do
+    let(:workflows) do
+      instance_double(Dor::Workflow::Response::Workflows, workflows: [accessioning_workflow, was_workflow])
+    end
+    let(:was_workflow) { instance_double(Dor::Workflow::Response::Workflow, workflow_name: 'wasCrawlPreassemblyWF') }
+    let(:accessioning_workflow) { instance_double(Dor::Workflow::Response::Workflow, workflow_name: 'accessioningWF') }
+
+    before do
+      allow(workflow_client).to receive(:all_workflows).with(pid: druid).and_return(workflows)
+    end
+
+    context 'when the workflow exists' do
+      it 'returns the workflow' do
+        expect(described_class.workflow(druid:, workflow_name: 'wasCrawlPreassemblyWF')).to eq was_workflow
+        expect(workflow_client).to have_received(:all_workflows).with(pid: druid)
+      end
+    end
+
+    context 'when the workflow does not exist' do
+      it 'returns false' do
+        expect(described_class.workflow(druid:, workflow_name: 'anotherWF')).to be_nil
+      end
+    end
+  end
+
   describe '#workflow?' do
     let(:workflows) do
       instance_double(Dor::Workflow::Response::Workflows, workflows: [accessioning_workflow, was_workflow])
