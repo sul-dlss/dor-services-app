@@ -134,11 +134,13 @@ RSpec.describe EmbargoReleaseService do
         Cocina::Models::DROAccess.new({
                                         view: 'citation-only',
                                         download: 'none',
+                                        useAndReproductionStatement: 'Free!',
                                         embargo: {
                                           releaseDate: DateTime.parse('2029-02-28'),
                                           view: 'world',
                                           download: 'world',
-                                          useAndReproductionStatement: 'Free!'
+                                          # use and reproduction statement should not be moved.
+                                          useAndReproductionStatement: 'Ignore me'
                                         }
                                       }).to_h
       end
@@ -167,11 +169,11 @@ RSpec.describe EmbargoReleaseService do
         Cocina::Models::DROAccess.new({
                                         view: 'citation-only',
                                         download: 'none',
+                                        useAndReproductionStatement: 'Free!',
                                         embargo: {
                                           releaseDate: DateTime.parse('2029-02-28'),
                                           view: 'citation-only',
-                                          download: 'none',
-                                          useAndReproductionStatement: 'Free!'
+                                          download: 'none'
                                         }
                                       }).to_h
       end
@@ -204,11 +206,11 @@ RSpec.describe EmbargoReleaseService do
         Cocina::Models::DROAccess.new({
                                         view: 'citation-only',
                                         download: 'none',
+                                        useAndReproductionStatement: 'Free!',
                                         embargo: {
                                           releaseDate: DateTime.parse('2029-02-28'),
                                           view: 'citation-only',
-                                          download: 'none',
-                                          useAndReproductionStatement: 'Free!'
+                                          download: 'none'
                                         }
                                       }).to_h
       end

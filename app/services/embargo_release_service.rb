@@ -67,9 +67,8 @@ class EmbargoReleaseService
   def access_props_for(cocina_object)
     # Copy access > embargo > useAndReproductionStatement, view, download, location, controlledDigitalLending
     # to access > Remove access > embargo
-    access_props = cocina_object.access.to_h.except(:view, :download, :location, :controlledDigitalLending,
-                                                    :useAndReproductionStatement)
-    access_props.merge!(access_props[:embargo].except(:releaseDate))
+    access_props = cocina_object.access.to_h.except(:view, :download, :location, :controlledDigitalLending)
+    access_props.merge!(access_props[:embargo].except(:releaseDate, :useAndReproductionStatement))
     # Remove embargo
     access_props.delete(:embargo)
     access_props
