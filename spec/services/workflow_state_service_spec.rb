@@ -7,29 +7,27 @@ RSpec.describe WorkflowStateService do
 
   let(:druid) { 'druid:xz456jk0987' }
   let(:version) { 1 }
-  let(:workflow_client) { instance_double(Dor::Workflow::Client) }
   let(:workflow_service) { instance_double(WorkflowService) }
 
   before do
-    allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
     allow(WorkflowService).to receive(:new).and_return(workflow_service)
   end
 
   describe '.accessioned?' do
     context 'when the object is accessioned' do
       before do
-        allow(workflow_client).to receive(:lifecycle).and_return(Time.current)
+        allow(WorkflowLifecycleService).to receive(:milestone?).and_return(true)
       end
 
       it 'returns true' do
         expect(workflow_state).to be_accessioned
-        expect(workflow_client).to have_received(:lifecycle).with(druid:, milestone_name: 'accessioned')
+        expect(WorkflowLifecycleService).to have_received(:milestone?).with(druid: druid, milestone_name: 'accessioned')
       end
     end
 
     context 'when the object is not accessioned' do
       before do
-        allow(workflow_client).to receive(:lifecycle).and_return(nil)
+        allow(WorkflowLifecycleService).to receive(:milestone?).and_return(false)
       end
 
       it 'returns false' do
