@@ -3,8 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Show workflow' do
-  let(:workflow_client) { instance_double(Dor::Workflow::Client, workflow: workflow) }
-
   let(:druid) { 'druid:mw971zk1113' }
 
   let(:workflow) { instance_double(Dor::Workflow::Response::Workflow, xml: ng_xml) }
@@ -18,7 +16,7 @@ RSpec.describe 'Show workflow' do
   end
 
   before do
-    allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
+    allow(WorkflowService).to receive(:workflow).and_return(workflow)
   end
 
   context 'when successful' do
@@ -27,13 +25,13 @@ RSpec.describe 'Show workflow' do
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(Nokogiri::XML(response.parsed_body).to_s).to match(ng_xml.to_s)
-      expect(workflow_client).to have_received(:workflow).with(pid: druid, workflow_name: 'accessionWF')
+      expect(WorkflowService).to have_received(:workflow).with(druid:, workflow_name: 'accessionWF')
     end
   end
 
   context 'when the druid is not found' do
     before do
-      allow(workflow_client).to receive(:workflow)
+      allow(WorkflowService).to receive(:workflow)
         .and_raise(Dor::MissingWorkflowException.new('HTTP status 404 Not Found'))
     end
 
@@ -46,8 +44,8 @@ RSpec.describe 'Show workflow' do
 
   context 'when some other HTTP error' do
     before do
-      allow(workflow_client).to receive(:workflow)
-        .and_raise(Dor::WorkflowException.new('HTTP status 400 Bad Request'))
+      allow(WorkflowService).to receive(:workflow)
+        .and_raise(WorkflowService::Exception.new(status: 400))
     end
 
     it 'returns an HTTP error' do
@@ -59,8 +57,8 @@ RSpec.describe 'Show workflow' do
 
   context 'when some other error' do
     before do
-      allow(workflow_client).to receive(:workflow)
-        .and_raise(Dor::WorkflowException.new('Faraday connection error'))
+      allow(WorkflowService).to receive(:workflow)
+        .and_raise(WorkflowService::Exception.new('Faraday connection error'))
     end
 
     it 'returns an 500 error' do

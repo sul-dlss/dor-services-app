@@ -7,7 +7,7 @@ class WorkflowsController < WorkflowApplicationController
   end
 
   def show
-    render xml: workflow_client.workflow(pid: druid, workflow_name: workflow).xml
+    render xml: WorkflowService.workflow(druid:, workflow_name: workflow).xml
   end
 
   def create
