@@ -7,20 +7,20 @@ class WorkflowsController < WorkflowApplicationController
   end
 
   def show
-    render xml: workflow_client.workflow(pid: druid, workflow_name: workflow).xml
+    render xml: WorkflowService.workflow(druid:, workflow_name:).xml
   end
 
   def create
-    workflow_client.create_workflow_by_name(druid, workflow,
-                                            version: params[:version],
-                                            lane_id: params[:'lane-id'] || 'default',
-                                            context: params[:context]&.to_unsafe_hash)
+    WorkflowService.create(druid:, workflow_name:,
+                           version: params[:version],
+                           context: params[:context]&.to_unsafe_hash,
+                           lane_id: params[:'lane-id'] || 'default')
 
     head :created
   end
 
   def skip_all
-    workflow_client.skip_all(druid:, workflow:, note: params[:note])
+    WorkflowService.skip_all(druid:, workflow_name:, note: params[:note])
 
     head :no_content
   end
@@ -31,7 +31,7 @@ class WorkflowsController < WorkflowApplicationController
     params[:object_id]
   end
 
-  def workflow
+  def workflow_name
     params[:id]
   end
 end

@@ -130,4 +130,16 @@ RSpec.describe WorkflowService do
       expect(workflow_client).to have_received(:delete_all_workflows).with(pid: druid)
     end
   end
+
+  describe '#skip_all' do
+    before do
+      allow(workflow_client).to receive(:skip_all)
+    end
+
+    it 'skips all steps in a workflow' do
+      described_class.skip_all(druid:, workflow_name: 'wasCrawlPreassemblyWF', note: 'Skipping all steps')
+      expect(workflow_client).to have_received(:skip_all).with(druid:, workflow: 'wasCrawlPreassemblyWF',
+                                                               note: 'Skipping all steps')
+    end
+  end
 end

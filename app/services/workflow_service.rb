@@ -47,6 +47,10 @@ class WorkflowService
     new(...).workflows_xml
   end
 
+  def self.skip_all(druid:, workflow_name:, note: nil)
+    new(druid:).skip_all(workflow_name:, note:)
+  end
+
   def initialize(druid:)
     @druid = druid
   end
@@ -98,6 +102,13 @@ class WorkflowService
   # @param [String] druid the druid of the object
   def delete_all
     workflow_client.delete_all_workflows(pid: druid)
+  end
+
+  # Skips all processes in a workflow.
+  # @param [String] workflow_name the name of the workflow to skip
+  # @param [String] note an optional note to add to the skip action
+  def skip_all(workflow_name:, note: nil)
+    workflow_client.skip_all(druid:, workflow: workflow_name, note:)
   end
 
   private

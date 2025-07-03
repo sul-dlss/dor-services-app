@@ -56,21 +56,17 @@ class WorkflowStateService
 
   # @return [Boolean] true if the object has previously been accessioned.
   def accessioned?
-    @accessioned ||= workflow_client.lifecycle(druid:, milestone_name: 'accessioned') ? true : false
+    @accessioned ||= WorkflowLifecycleService.milestone?(druid:, milestone_name: 'accessioned')
   end
 
   # @return [Boolean] true if the object has previously been published for the version.
   def published?
-    @published ||= workflow_client.lifecycle(druid:, milestone_name: 'published', version:).present?
+    @published ||= WorkflowLifecycleService.milestone?(druid:, milestone_name: 'published', version:)
   end
 
   private
 
   attr_reader :druid, :version
-
-  def workflow_client
-    @workflow_client ||= WorkflowClientFactory.build
-  end
 
   # @return [Boolean] true if there is a workflow for the current version and it has incomplete steps.
   def active_workflow?(workflow:)
