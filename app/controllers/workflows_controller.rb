@@ -11,10 +11,10 @@ class WorkflowsController < WorkflowApplicationController
   end
 
   def create
-    workflow_client.create_workflow_by_name(druid, workflow,
-                                            version: params[:version],
-                                            lane_id: params[:'lane-id'] || 'default',
-                                            context: params[:context]&.to_unsafe_hash)
+    WorkflowService.create(druid:, workflow_name: workflow,
+                           version: params[:version],
+                           context: params[:context]&.to_unsafe_hash,
+                           lane_id: params[:'lane-id'] || 'default')
 
     head :created
   end
