@@ -709,6 +709,12 @@ paths:
       responses:
         "200":
           description: OK
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
       parameters:
         - name: object_id
           in: path
@@ -750,6 +756,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VersionStatus"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
       parameters:
         - name: object_id
           in: path

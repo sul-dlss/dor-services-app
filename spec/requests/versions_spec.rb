@@ -28,6 +28,20 @@ RSpec.describe 'Operations regarding object versions' do
 
       expect(response.body).to eq('1')
     end
+
+    context 'when the object is not found' do
+      before do
+        allow(CocinaObjectStore).to receive(:version).and_raise(CocinaObjectStore::CocinaObjectNotFoundError,
+                                                                'Object not found')
+      end
+
+      it 'returns a not found error' do
+        get '/v1/objects/druid:mx123qw2323/versions/current',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status :not_found
+        expect(response.body).to eq('{"errors":[{"status":"404","title":"Not Found","detail":"Object not found"}]}')
+      end
+    end
   end
 
   describe 'POST /versions' do
@@ -213,6 +227,20 @@ RSpec.describe 'Operations regarding object versions' do
                                                                       discardable: true,
                                                                       versionDescription: 'Best version ever'
                                                                     })
+    end
+
+    context 'when the object is not found' do
+      before do
+        allow(VersionService).to receive(:new).and_raise(CocinaObjectStore::CocinaObjectNotFoundError,
+                                                         'Object not found')
+      end
+
+      it 'returns a not found error' do
+        get '/v1/objects/druid:mx123qw2323/versions/status',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status :not_found
+        expect(response.body).to eq('{"errors":[{"status":"404","title":"Not Found","detail":"Object not found"}]}')
+      end
     end
   end
 

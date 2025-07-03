@@ -11,6 +11,10 @@ class VersionsController < ApplicationController
     render build_error('No content for this version', e, status: :bad_request)
   end
 
+  rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
+    json_api_error(status: :not_found, message: e.message)
+  end
+
   def index
     render json: { versions: repository_object_version_content(find_repository_object.versions) }
   end
