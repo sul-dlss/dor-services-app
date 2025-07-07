@@ -20,7 +20,7 @@ gem 'moab-versioning', '~> 6.0', require: 'moab/stanford'
 gem 'preservation-client', '~> 7.0'
 gem 'purl_fetcher-client', '~> 2.1'
 gem 'stanford-mods' # for indexing
-gem 'sul_orcid_client', '~> 0.3'
+gem 'sul_orcid_client', '~> 0.6'
 
 source 'https://gems.contribsys.com/' do
   gem 'sidekiq-pro'
