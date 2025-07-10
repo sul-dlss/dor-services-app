@@ -93,6 +93,6 @@ Rails.application.routes.draw do
       resources :lifecycles, only: %i[index], controller: 'workflow_lifecycles'
     end
 
-    resources :workflow_templates, only: %i[index]
+    resources :workflow_templates, only: %i[index show]
   end
 end
