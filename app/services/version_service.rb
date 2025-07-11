@@ -233,10 +233,6 @@ class VersionService
 
   delegate :assembling?, :accessioning?, to: :workflow_state_service
 
-  def workflow_client
-    @workflow_client ||= WorkflowClientFactory.build
-  end
-
   def workflow_state_service
     @workflow_state_service ||= WorkflowStateService.new(druid:, version:)
   end
