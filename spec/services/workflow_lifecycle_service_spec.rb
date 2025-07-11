@@ -49,4 +49,22 @@ RSpec.describe WorkflowLifecycleService do
       end
     end
   end
+
+  describe '#milestones' do
+    subject(:milestones) { described_class.milestones(druid: druid) }
+
+    let(:xml) do
+      <<~XML
+        <?xml version="1.0" encoding="UTF-8"?>
+        <lifecycle objectId="druid:gv054hp4128">
+          <milestone date="2012-01-26T21:06:54-0800" version="2">published</milestone>
+        </lifecycle>
+      XML
+    end
+
+    it 'includes the version in with the milestones' do
+      expect(milestones.first[:milestone]).to eq('published')
+      expect(milestones.first[:version]).to eq('2')
+    end
+  end
 end
