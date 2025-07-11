@@ -10,6 +10,10 @@ class WorkflowLifecycleService
     new(druid: druid, version: version, active_only: active_only).milestone?(milestone_name: milestone_name)
   end
 
+  def self.milestones(...)
+    new(...).milestones
+  end
+
   # @param [String] druid object id
   # @param [Number] version (nil) the version to query for
   # @param [Boolean] active_only if true, return only lifecycle steps for versions that have all processes complete
@@ -28,6 +32,13 @@ class WorkflowLifecycleService
   # @return [Boolean] true if the object has the milestone
   def milestone?(milestone_name:)
     lifecycle_xml.at_xpath("//lifecycle/milestone[text() = '#{milestone_name}']").present?
+  end
+
+  # @return [Array<Hash>]
+  def milestones
+    lifecycle_xml.xpath('//lifecycle/milestone').collect do |node|
+      { milestone: node.text, at: Time.zone.parse(node['date']), version: node['version'] }
+    end
   end
 
   private
