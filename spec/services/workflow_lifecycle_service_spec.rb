@@ -26,7 +26,7 @@ RSpec.describe WorkflowLifecycleService do
     it 'returns the lifecycle XML' do
       expect(described_class.lifecycle_xml(druid:, version: 3, active_only: true)).to eq ng_xml
 
-      expect(workflow_client).to have_received(:query_lifecycle).with(druid:, version: 3, active_only: true)
+      expect(workflow_client).to have_received(:query_lifecycle).with(druid, version: 3, active_only: true)
     end
   end
 
@@ -36,7 +36,7 @@ RSpec.describe WorkflowLifecycleService do
         expect(described_class.milestone?(druid:, version: 3, active_only: true, milestone_name: 'published'))
           .to be true
 
-        expect(workflow_client).to have_received(:query_lifecycle).with(druid:, version: 3, active_only: true)
+        expect(workflow_client).to have_received(:query_lifecycle).with(druid, version: 3, active_only: true)
       end
     end
 
@@ -45,7 +45,7 @@ RSpec.describe WorkflowLifecycleService do
         expect(described_class.milestone?(druid:, milestone_name: 'accessioned'))
           .to be false
 
-        expect(workflow_client).to have_received(:query_lifecycle).with(druid:, version: nil, active_only: false)
+        expect(workflow_client).to have_received(:query_lifecycle).with(druid, version: nil, active_only: false)
       end
     end
   end

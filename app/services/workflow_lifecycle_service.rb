@@ -21,7 +21,7 @@ class WorkflowLifecycleService
 
   # @return [Nokogiri::XML::Document] the XML document representing the lifecycle of the object
   def lifecycle_xml
-    workflow_client.query_lifecycle(druid: druid, version: version, active_only: active_only)
+    workflow_client.query_lifecycle(druid, version: version, active_only: active_only)
   end
 
   # @param [String] milestone_name the name of the milestone
