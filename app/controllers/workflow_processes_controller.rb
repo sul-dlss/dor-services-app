@@ -4,10 +4,10 @@
 class WorkflowProcessesController < WorkflowApplicationController
   def update # rubocop:disable Metrics/AbcSize
     if status == 'error'
-      workflow_client.update_error_status(druid:, workflow:, process: workflow_process, error_msg: params[:error_msg],
-                                          error_text: params[:error_text])
+      WorkflowProcessService.update_error(druid:, workflow_name:, process: workflow_process,
+                                          error_msg: params[:error_msg], error_text: params[:error_text])
     else
-      workflow_client.update_status(druid:, workflow:, process: workflow_process, status:,
+      WorkflowProcessService.update(druid:, workflow_name:, process: workflow_process, status:,
                                     elapsed: params[:elapsed] || 0, lifecycle: params[:lifecycle], note: params[:note],
                                     current_status: params[:current_status])
     end
@@ -21,7 +21,7 @@ class WorkflowProcessesController < WorkflowApplicationController
     params[:object_id]
   end
 
-  def workflow
+  def workflow_name
     params[:workflow_id]
   end
 
