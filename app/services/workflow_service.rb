@@ -19,6 +19,13 @@ class WorkflowService
     end
   end
 
+  # Exception raised when there is a conflict in the workflow state.
+  class ConflictException < Exception
+    def initialize(message = nil)
+      super(message || 'Conflict occurred', status: 409)
+    end
+  end
+
   def self.create(druid:, workflow_name:, version:, context: nil, lane_id: nil)
     new(druid:).create(workflow_name:, version:, context:, lane_id:)
   end

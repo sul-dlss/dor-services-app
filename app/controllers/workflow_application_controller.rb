@@ -17,10 +17,4 @@ class WorkflowApplicationController < ApplicationController
   rescue_from(WorkflowService::Exception) do |e|
     json_api_error(status: e.status, message: e.message)
   end
-
-  private
-
-  def workflow_client
-    @workflow_client ||= WorkflowClientFactory.build
-  end
 end
