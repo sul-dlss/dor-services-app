@@ -3,12 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe 'List workflow templates' do
-  let(:workflow_client) { instance_double(Dor::Workflow::Client, workflow_templates: templates) }
-
   let(:templates) { ['assemblyWF', 'registrationWF'] }
 
   before do
-    allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
+    allow(WorkflowTemplateService).to receive(:templates).and_return(templates)
   end
 
   it 'returns the templates' do

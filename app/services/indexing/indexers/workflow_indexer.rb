@@ -31,7 +31,7 @@ module Indexing
 
       def definition_process_names
         @definition_process_names ||= begin
-          definition = workflow_client.workflow_template(workflow_name)
+          definition = WorkflowTemplateService.template(workflow_name: workflow_name)
           definition['processes'].pluck('name')
         end
       end
@@ -44,10 +44,6 @@ module Indexing
 
       def workflow_status
         workflow.complete? ? 'completed' : 'active'
-      end
-
-      def workflow_client
-        @workflow_client ||= WorkflowClientFactory.build
       end
     end
   end

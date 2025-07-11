@@ -3,13 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe 'Get workflow template' do
-  let(:workflow_client) { instance_double(Dor::Workflow::Client, workflow_template: template) }
   let(:template) do
     '{"processes":[{"name":"start-assembly"},{"name":"content-metadata-create"}]}'
   end
 
   before do
-    allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
+    allow(WorkflowTemplateService).to receive(:template).with(workflow_name: 'whateverWF').and_return(template)
   end
 
   it 'returns the named template' do
