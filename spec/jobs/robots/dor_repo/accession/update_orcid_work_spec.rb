@@ -153,6 +153,16 @@ RSpec.describe Robots::DorRepo::Accession::UpdateOrcidWork, type: :robot do
         .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X', work:,
               token: 'FAKE-294e-4bc8-8afd-96315b06ae04', put_code: '45678')
     end
+
+    context 'when the work is not found in Orcid' do
+      before do
+        allow(orcid_client).to receive(:update_work).and_raise(StandardError.new('ORCID.org API returned 404'))
+      end
+
+      it 'ignores' do
+        expect { perform }.not_to(change(ar_orcid_work, :reload))
+      end
+    end
   end
 
   context 'when deleting a work' do
@@ -173,6 +183,21 @@ RSpec.describe Robots::DorRepo::Accession::UpdateOrcidWork, type: :robot do
       expect(orcid_client).to have_received(:delete_work)
         .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X',
               token: 'FAKE-294e-4bc8-8afd-96315b06ae04', put_code: '45678')
+    end
+
+    context 'when the work is not found in Orcid' do
+      before do
+        allow(orcid_client).to receive(:delete_work).and_raise(StandardError.new('ORCID.org API returned 404'))
+      end
+
+      it 'deletes the AR orcid work' do
+        expect { perform }.to change(OrcidWork, :count).by(-1)
+        expect(mais_orcid_client).to have_received(:fetch_orcid_user)
+          .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X')
+        expect(orcid_client).to have_received(:delete_work)
+          .with(orcidid: 'https://sandbox.orcid.org/0000-0003-3437-349X',
+                token: 'FAKE-294e-4bc8-8afd-96315b06ae04', put_code: '45678')
+      end
     end
   end
 

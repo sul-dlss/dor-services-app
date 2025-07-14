@@ -59,10 +59,7 @@ module Robots
           orcid_users.each do |orcid_user|
             ar_orcid_work = OrcidWork.find_by(orcidid: orcid_user.orcidid, druid:)
 
-            Rails.logger.info("Deleting Orcid work for #{druid} / #{orcid_user.orcidid}")
-            orcid_client.delete_work(orcidid: orcid_user.orcidid, token: orcid_user.access_token,
-                                     put_code: ar_orcid_work.put_code)
-            ar_orcid_work.destroy
+            delete(orcid_user, ar_orcid_work)
           end
         end
 
@@ -123,6 +120,25 @@ module Robots
           orcid_client.update_work(orcidid: orcid_user.orcidid, work:, token: orcid_user.access_token,
                                    put_code: ar_orcid_work.put_code)
           ar_orcid_work.update(md5:)
+        rescue StandardError => e
+          # Ignoring when the work is not found. This can happen if the work was deleted in Orcid.
+          raise unless not_found?(e)
+        end
+
+        def delete(orcid_user, ar_orcid_work)
+          Rails.logger.info("Deleting Orcid work for #{druid} / #{orcid_user.orcidid}")
+          begin
+            orcid_client.delete_work(orcidid: orcid_user.orcidid, token: orcid_user.access_token,
+                                     put_code: ar_orcid_work.put_code)
+          rescue StandardError => e
+            # Ignoring when the work is not found. This can happen if the work was deleted in Orcid.
+            raise unless not_found?(e)
+          end
+          ar_orcid_work.destroy
+        end
+
+        def not_found?(error)
+          error.message.include?('ORCID.org API returned 404')
         end
       end
     end
