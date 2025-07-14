@@ -81,13 +81,17 @@ class WorkflowService
   # @raise [WorkflowService::NotFoundException] if the object is not found
   def workflow?(workflow_name:)
     workflow(workflow_name:).present?
+  rescue NotFoundException
+    false
   end
 
   # @param [String] workflow_name the name of the workflow to check
-  # @return [Dor::Workflow::Response::Workflow,nil]
-  # @raise [WorkflowService::NotFoundException] if the object is not found
+  # @return [Dor::Workflow::Response::Workflow]
+  # @raise [WorkflowService::NotFoundException] if the workflow is not found
   def workflow(workflow_name:)
-    workflows.find { |workflow| workflow.workflow_name == workflow_name }
+    workflow_client.workflow(pid: druid, workflow_name:)
+  rescue Dor::MissingWorkflowException
+    raise NotFoundException, "Workflow '#{workflow_name}' not found for object '#{druid}'"
   end
 
   # @param [String] workflow_name the name of the workflow to create
