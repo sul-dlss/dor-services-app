@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<workflow-def id="hydrusAssemblyWF">
+  <process lifecycle="registered" name="start-deposit" status="completed" skip-queue="true">
+    <label>Initiate assembly of the hydrus object</label>
+  </process>
+  <process name="submit" skip-queue="true">
+    <prereq>start-deposit</prereq>
+    <label>Start hydrus deposit</label>
+  </process>
+  <process name="approve" skip-queue="true">
+    <prereq>submit</prereq>
+    <label>Hydrus object approval</label>
+  </process>
+  <process name="start-assembly" skip-queue="true">
+    <prereq>submit</prereq>
+    <label>Start assemblyWF</label>
+  </process>
+</workflow-def>

@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+
+<workflow-def id="dpgImageWF" repository="dor">
+  <process lifecycle="registered" name="initiate" status="completed">
+    <label>Object Registered</label>
+  </process>
+  <process name="tracking_db" status="waiting">
+    <label>Add to DPG tracking database</label>
+    <prereq>initiate</prereq>
+  </process>
+  <process lifecycle="scanned" name="scan" status="waiting">
+    <label>Scan</label>
+    <prereq>tracking_db</prereq>
+  </process>
+  <process name="completeness" status="waiting">
+    <label>Completeness Check</label>
+    <prereq>scan</prereq>
+  </process>
+  <process name="postprocessing" status="waiting">
+    <label>Postprocessing</label>
+    <prereq>scan</prereq>
+  </process>
+  <process lifecycle="imageqced" name="imageqc" status="waiting">
+    <label>Image QC</label>
+    <prereq>scan</prereq>
+  </process>
+  <process lifecycle="imported" name="import_files" status="waiting">
+    <label>Import Files</label>
+    <prereq>imageqc</prereq>
+  </process>
+  <process name="md5_gen" status="waiting">
+    <label>Generate MD5 Checksums</label>
+    <prereq>import_files</prereq>
+  </process>
+  <process name="copy_to_assembly" status="waiting">
+    <label>Transfer to Assembly Workspace</label>
+    <prereq>md5_gen</prereq>
+  </process>
+  <process name="md5_verify_assembly" status="waiting">
+    <label>Verify MD5 Checksums</label>
+    <prereq>copy_to_assembly</prereq>
+  </process>
+  <process name="delete_scratch" status="waiting">
+    <label>Delete files from DPG scratch space</label>
+    <prereq>md5_verify_assembly</prereq>
+  </process>
+  <process lifecycle="digitized" name="digitized" status="waiting">
+    <label>Digitization Complete</label>
+    <prereq>delete_scratch</prereq>
+  </process>
+</workflow-def>

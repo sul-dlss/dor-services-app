@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<workflow-def id="captionWF">
+  <process name="start-caption">
+    <label>Initiate captioning for the object</label>
+  </process>
+  <process name="caption-create">
+    <prereq>start-caption</prereq>
+    <label>Generate captions for the audio/video content in the object (if requested and possible)</label>
+  </process>
+  <process name="end-caption">
+    <prereq>caption-create</prereq>
+    <label>Complete captioning tasks for the object</label>
+  </process>
+</workflow-def>

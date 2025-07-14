@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<workflow-def id="goobiWF">
+  <process lifecycle="registered" name="register" status="completed">
+    <label>Register an object</label>
+  </process>
+  <process name="start" skip-queue="true" status="completed">
+    <label>Initiate goobi workflow for the object</label>
+  </process>
+  <process name="goobi-notify">
+    <prereq>start</prereq>
+    <label>Notify goobi of object registration</label>
+  </process>
+</workflow-def>

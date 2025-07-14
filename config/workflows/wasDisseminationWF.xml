@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<workflow-def id="wasDisseminationWF">
+  <process name="start" skip-queue="true" status="completed">
+    <label>Initiate was DisseminationWF of the object</label>
+  </process>
+  <process name="start-special-dissemination">
+    <prereq>start</prereq>
+    <label>Choose the suitable disseminationWF based on the object type</label>
+  </process>
+</workflow-def>

@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<workflow-def id="sdrIngestWF" repository="sdr">
+  <process name="start-ingest" status="completed">
+    <label>Initiate deposit</label>
+  </process>
+  <process name="register-sdr">
+    <label>Verify status of accession workflow</label>
+    <prereq>start-ingest</prereq>
+  </process>
+  <process name="transfer-object">
+    <label>Transfer contents from DOR</label>
+    <prereq>register-sdr</prereq>
+  </process>
+  <process name="validate-bag">
+    <label>Verify the bagit bag structure</label>
+    <prereq>transfer-object</prereq>
+  </process>
+  <process name="verify-agreement">
+    <label>Verify that the governing APO object has been previously ingested</label>
+    <prereq>validate-bag</prereq>
+  </process>
+  <process name="complete-deposit">
+    <label>Store the object on disk in the Moab structure</label>
+    <prereq>verify-agreement</prereq>
+  </process>
+  <process name="update-catalog" skip-queue="true" status="skipped">
+    <label>Insert data in archive catalog for object and version</label>
+    <prereq>complete-deposit</prereq>
+  </process>
+  <process name="create-replica" skip-queue="true" status="skipped">
+    <label>Create the replica tarfile</label>
+    <prereq>update-catalog</prereq>
+  </process>
+  <process name="ingest-cleanup">
+    <label>Clean up workspace, route back to accession workflow</label>
+    <prereq>create-replica</prereq>
+    <prereq>complete-deposit</prereq>
+  </process>
+</workflow-def>

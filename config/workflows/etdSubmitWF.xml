@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<workflow-def id="etdSubmitWF">
+  <process lifecycle="registered" name="register-object" skip-queue="true" status="completed">
+    <label>Register object in DOR</label>
+  </process>
+  <process name="submit" skip-queue="true">
+    <label>Student submits completed ETD</label>
+  </process>
+  <process name="reader-approval" skip-queue="true">
+    <label>Faculty reader(s) have approved (signal from PeopleSoft)</label>
+  </process>
+  <process name="registrar-approval" skip-queue="true">
+    <label>Final Registrar approval (signal from PeopleSoft)</label>
+  </process>
+  <process name="submit-marc" skip-queue="true">
+    <label>Create stub MARC record for catalog and write it to catalog/ILS.</label>
+    <prereq>registrar-approval</prereq>
+  </process>
+  <process name="check-marc" skip-queue="true">
+    <label>Confirms that MARC record has been loaded into catalog/ILS; if so, updates identityMetadata with catalog record ID and ETD agreement.</label>
+    <prereq>submit-marc</prereq>
+  </process>
+  <process name="catalog-status" skip-queue="true">
+    <label>Check to see if cataloging is done in catalog/ILS; run via cron</label>
+    <prereq>check-marc</prereq>
+  </process>
+  <process name="other-metadata" skip-queue="true">
+    <label>Update descMetadata from catalog, generate content metadata, rights metadata, create a tag.</label>
+    <prereq>catalog-status</prereq>
+  </process>
+  <process name="start-accession" skip-queue="true">
+    <label>Transfer control to Common Accessioning</label>
+    <prereq>other-metadata</prereq>
+  </process>
+  <process name="binder-transfer" skip-queue="true" status="skipped">
+    <label>No longer used.  (Transfer PDF to binder drop off directory for bound physical copy)</label>
+  </process>
+</workflow-def>

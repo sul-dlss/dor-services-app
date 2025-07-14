@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<workflow-def id="wasCrawlPreassemblyWF">
+  <process name="start">
+    <label>Initiate WAS Crawl Preassembly WF of the object</label>
+  </process>
+  <process name="build-was-crawl-druid-tree">
+    <prereq>start</prereq>
+    <label>Build druid-tree and copy the files</label>
+  </process>
+  <process name="end-was-crawl-preassembly">
+    <prereq>build-was-crawl-druid-tree</prereq>
+    <label>End of the WAS Crawl preassembly</label>
+  </process>
+</workflow-def>

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<workflow-def id="registrationWF">
+  <process lifecycle="registered" name="register" status="completed">
+    <label>Register an object</label>
+  </process>
+</workflow-def>

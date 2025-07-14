@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<workflow-def id="googleScannedBookWF" repository="dor">
+  <process batch-limit="1000" lifecycle="inprocess" name="register-object">
+    <label>Register new objects in DOR</label>
+  </process>
+  <process batch-limit="10" name="google-convert">
+    <prereq>register-object</prereq>
+    <label>Request GRIN items to be converted for download</label>
+  </process>
+  <process batch-limit="300" name="google-download">
+    <prereq>register-object</prereq>
+    <label>Download content from Google</label>
+  </process>
+  <process batch-limit="1000" name="process-content">
+    <prereq>google-download</prereq>
+    <label>Process content, create tech/rights/provenance/content metadata</label>
+  </process>
+  <process batch-limit="1000" name="sdr-ingest-transfer">
+    <prereq>process-content</prereq>
+    <label>Prepare bagit transfer package, push to SDR-Stage</label>
+  </process>
+  <process batch-limit="300" name="sdr-ingest-deposit">
+    <prereq>sdr-ingest-transfer</prereq>
+    <label>Call from SDR on completed ingest</label>
+  </process>
+  <process batch-limit="1000" lifecycle="released" name="shelve">
+    <prereq>process-content</prereq>
+    <label>Shelve contents in the Digital Stacks</label>
+  </process>
+  <process batch-limit="300" lifecycle="accessioned" name="cleanup">
+    <prereq>sdr-ingest-deposit</prereq>
+    <prereq>shelve</prereq>
+    <label>Cleanup workspace; make room for more</label>
+  </process>
+  <process batch-limit="300" lifecycle="archived" name="sdr-ingest-archive">
+    <prereq>sdr-ingest-transfer</prereq>
+    <label>Call from SDR on completed archiving</label>
+  </process>
+</workflow-def>

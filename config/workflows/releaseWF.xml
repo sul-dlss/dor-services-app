@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<workflow-def id="releaseWF">
+  <process name="start" skip-queue="true" status="completed">
+    <label>Initiate item release of the object</label>
+  </process>
+  <process name="release-members">
+    <prereq>start</prereq>
+    <label>Determine which items to release</label>
+  </process>
+  <process name="release-publish" queue-limit="50">
+    <prereq>release-members</prereq>
+    <label>Determines which items to republish</label>
+  </process>
+  <process name="update-marc">
+    <prereq>release-publish</prereq>
+    <label>Generates catalog record with PURL URI</label>
+  </process>
+</workflow-def>

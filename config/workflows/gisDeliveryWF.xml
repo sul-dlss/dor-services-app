@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<workflow-def id="gisDeliveryWF">
+  <process name="start-gis-delivery-workflow" status="completed">
+    <label>Initiate delivery workflow for the object</label>
+  </process>
+  <process name="load-vector">
+    <prereq>start-gis-delivery-workflow</prereq>
+    <label>Load vector data into PostGIS database</label>
+  </process>
+  <process name="load-raster">
+    <prereq>load-vector</prereq>
+    <label>Load raster into GeoTIFF data store</label>
+  </process>
+  <process name="load-geoserver">
+    <prereq>load-raster</prereq>
+    <label>Load layers into GeoServer</label>
+  </process>
+  <process name="reset-geowebcache">
+    <prereq>load-geoserver</prereq>
+    <label>Reset GeoWebCache for the layer</label>
+  </process>
+  <process name="finish-gis-delivery-workflow">
+    <prereq>reset-geowebcache</prereq>
+    <label>Finalize delivery workflow for the object</label>
+  </process>
+  <process name="metadata-cleanup">
+    <prereq>finish-gis-delivery-workflow</prereq>
+    <label>Clean up staged object metadata</label>
+  </process>
+  <process name="start-accession-workflow">
+    <prereq>metadata-cleanup</prereq>
+    <label>Initiate accession workflow for the object</label>
+  </process>
+</workflow-def>
