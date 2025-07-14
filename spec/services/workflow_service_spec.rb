@@ -39,49 +39,51 @@ RSpec.describe WorkflowService do
   end
 
   describe '#workflow' do
-    let(:workflows) do
-      instance_double(Dor::Workflow::Response::Workflows, workflows: [accessioning_workflow, was_workflow])
-    end
-    let(:was_workflow) { instance_double(Dor::Workflow::Response::Workflow, workflow_name: 'wasCrawlPreassemblyWF') }
-    let(:accessioning_workflow) { instance_double(Dor::Workflow::Response::Workflow, workflow_name: 'accessioningWF') }
-
-    before do
-      allow(workflow_client).to receive(:all_workflows).with(pid: druid).and_return(workflows)
-    end
-
     context 'when the workflow exists' do
+      let(:was_workflow) { instance_double(Dor::Workflow::Response::Workflow, workflow_name: 'wasCrawlPreassemblyWF') }
+
+      before do
+        allow(workflow_client).to receive(:workflow)
+          .with(pid: druid, workflow_name: 'wasCrawlPreassemblyWF').and_return(was_workflow)
+      end
+
       it 'returns the workflow' do
         expect(described_class.workflow(druid:, workflow_name: 'wasCrawlPreassemblyWF')).to eq was_workflow
-        expect(workflow_client).to have_received(:all_workflows).with(pid: druid)
       end
     end
 
     context 'when the workflow does not exist' do
-      it 'returns false' do
-        expect(described_class.workflow(druid:, workflow_name: 'anotherWF')).to be_nil
+      before do
+        allow(workflow_client).to receive(:workflow)
+          .with(pid: druid, workflow_name: 'anotherWF').and_raise(Dor::MissingWorkflowException)
+      end
+
+      it 'raises NotFoundException' do
+        expect { described_class.workflow(druid:, workflow_name: 'anotherWF') }.to raise_error(WorkflowService::NotFoundException)
       end
     end
   end
 
   describe '#workflow?' do
-    let(:workflows) do
-      instance_double(Dor::Workflow::Response::Workflows, workflows: [accessioning_workflow, was_workflow])
-    end
     let(:was_workflow) { instance_double(Dor::Workflow::Response::Workflow, workflow_name: 'wasCrawlPreassemblyWF') }
-    let(:accessioning_workflow) { instance_double(Dor::Workflow::Response::Workflow, workflow_name: 'accessioningWF') }
 
     before do
-      allow(workflow_client).to receive(:all_workflows).with(pid: druid).and_return(workflows)
+      allow(workflow_client).to receive(:workflow)
+        .with(pid: druid, workflow_name: 'wasCrawlPreassemblyWF').and_return(was_workflow)
     end
 
     context 'when the workflow exists' do
       it 'returns true' do
         expect(described_class.workflow?(druid:, workflow_name: 'wasCrawlPreassemblyWF')).to be true
-        expect(workflow_client).to have_received(:all_workflows).with(pid: druid)
       end
     end
 
     context 'when the workflow does not exist' do
+      before do
+        allow(workflow_client).to receive(:workflow)
+          .with(pid: druid, workflow_name: 'anotherWF').and_raise(Dor::MissingWorkflowException)
+      end
+
       it 'returns false' do
         expect(described_class.workflow?(druid:, workflow_name: 'anotherWF')).to be false
       end
