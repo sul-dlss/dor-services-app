@@ -77,7 +77,7 @@ RSpec.describe 'Start Accession or Re-accession an object (with versioning)' do
     end
 
     context 'with context' do
-      let(:workflow_context) { { 'requireOCR' => true } }
+      let(:workflow_context) { { 'requireOCR' => true, 'ocrLanguages' => ['Russian'] } }
 
       it 'sends workflow context' do
         post "/v1/objects/#{druid}/accession?#{params.to_query}",
