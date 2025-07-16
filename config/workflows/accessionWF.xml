@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<workflow-def id="accessionWF">
+  <process lifecycle="submitted" name="start-accession">
+    <label>Start Accessioning</label>
+  </process>
+  <process batch-limit="1000" error-limit="10" name="stage">
+    <label>Copies files (when present) from staging</label>
+    <prereq>start-accession</prereq>
+  </process>
+  <process batch-limit="1000" error-limit="10" name="technical-metadata">
+    <label>Creates the technical metadata by calling technical-metadata-service, only for item objects with files</label>
+    <prereq>stage</prereq>
+  </process>
+  <process batch-limit="1" error-limit="5" name="shelve">
+    <label>Shelve content in Digital Stacks</label>
+    <prereq>stage</prereq>
+  </process>
+  <process batch-limit="100" error-limit="10" lifecycle="published" name="publish">
+    <label>Sends metadata to PURL (but it may be updated by releaseWF)</label>
+    <prereq>shelve</prereq>
+  </process>
+  <process batch-limit="100" error-limit="10" name="update-doi">
+    <label>Update DOI Metadata</label>
+    <prereq>publish</prereq>
+  </process>
+  <process batch-limit="100" error-limit="10" name="update-orcid-work">
+    <label>Update ORCID work</label>
+    <prereq>publish</prereq>
+  </process>
+  <process batch-limit="1" error-limit="5" name="sdr-ingest-transfer">
+    <label>Initiate Ingest into Preservation</label>
+    <prereq>publish</prereq>
+  </process>
+  <process batch-limit="1" error-limit="5" lifecycle="deposited" name="sdr-ingest-received" skip-queue="true">
+    <label>Signal from SDR that object has been received</label>
+  </process>
+  <process batch-limit="1" error-limit="5" name="reset-workspace">
+    <label>Reset workspace by renaming the druid-tree to a versioned directory</label>
+    <prereq>technical-metadata</prereq>
+    <prereq>sdr-ingest-received</prereq>
+    <prereq>publish</prereq>
+    <prereq>shelve</prereq>
+  </process>
+  <process batch-limit="1" error-limit="5" lifecycle="accessioned" name="end-accession">
+    <label>Start text extraction workflows as needed</label>
+    <prereq>update-doi</prereq>
+    <prereq>update-orcid-work</prereq>
+    <prereq>reset-workspace</prereq>
+  </process>
+</workflow-def>

@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<workflow-def id="swIndexWF" repository="dor">
+  <!-- This isn't a real wf, it's just here for indexing -->
+</workflow-def>

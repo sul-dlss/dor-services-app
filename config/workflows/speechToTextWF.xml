@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<workflow-def id="speechToTextWF">
+  <process name="start-stt">
+    <label>Initiate speech to text for the object</label>
+  </process>
+  <process name="fetch-files">
+    <prereq>start-stt</prereq>
+    <label>Copy files for speech to text from Preservation to cloud</label>
+  </process>
+  <process name="stt-create">
+    <prereq>fetch-files</prereq>
+    <label>Wait for Whisper to generate STT for files</label>
+  </process>
+  <process name="stage-files">
+    <prereq>stt-create</prereq>
+    <label>Move new STT files to workspace</label>
+  </process>
+  <process name="process-files">
+    <prereq>stage-files</prereq>
+    <label>Process speech to text files to remove problematic phrases</label>
+  </process>
+  <process name="update-cocina">
+    <prereq>process-files</prereq>
+    <label>Add new STT files to cocina structural with correct attributes</label>
+  </process>
+  <process name="stt-workspace-cleanup">
+    <prereq>update-cocina</prereq>
+    <label>Cleanup empty folders from STT workspace</label>
+  </process>
+  <process name="end-stt">
+    <prereq>stt-workspace-cleanup</prereq>
+    <label>Complete STT tasks for the object</label>
+  </process>
+</workflow-def>

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<workflow-def id="ocrWF">
+  <process name="start-ocr">
+    <label>Initiate OCR for the object</label>
+  </process>
+  <process name="fetch-files">
+    <prereq>start-ocr</prereq>
+    <label>Copy files for OCR from Preservation</label>
+  </process>
+  <process name="xml-ticket-create">
+    <prereq>fetch-files</prereq>
+    <label>Create the XML ticket for ABBYY</label>
+  </process>
+  <process name="ocr-create">
+    <prereq>xml-ticket-create</prereq>
+    <label>Wait for ABBYY to generate OCR for files</label>
+  </process>
+  <process name="split-ocr-xml">
+    <prereq>ocr-create</prereq>
+    <label>Split full document OCR XML into page level OCR XML</label>
+  </process>
+  <process name="stage-files">
+    <prereq>split-ocr-xml</prereq>
+    <label>Move new OCR files to workspace</label>
+  </process>
+  <process name="update-cocina">
+    <prereq>stage-files</prereq>
+    <label>Add new OCR files to cocina structural with correct attributes</label>
+  </process>
+  <process name="ocr-workspace-cleanup">
+    <prereq>update-cocina</prereq>
+    <label>Cleanup empty folders from OCR/ABBYY workspace</label>
+  </process>
+  <process name="end-ocr">
+    <prereq>ocr-workspace-cleanup</prereq>
+    <label>Complete OCR tasks for the object</label>
+  </process>
+</workflow-def>

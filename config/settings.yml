@@ -4,6 +4,7 @@ enabled_features:
   create_ur_admin_policy: false
   datacite_update: false
   orcid_update: true
+  local_wf: false
 
 # Ur Admin Policy
 ur_admin_policy:

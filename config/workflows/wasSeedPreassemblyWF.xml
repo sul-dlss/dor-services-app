@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<workflow-def id="wasSeedPreassemblyWF">
+  <process name="start">
+    <label>Initiate WAS Seed Preassembly WF of the object</label>
+  </process>
+  <process name="desc-metadata-generator">
+    <prereq>start</prereq>
+    <label>Generate desc metadata</label>
+  </process>
+  <process name="thumbnail-generator">
+    <prereq>desc-metadata-generator</prereq>
+    <label>Generate thumbnail for the seed URI</label>
+  </process>
+  <process name="content-metadata-generator">
+    <prereq>thumbnail-generator</prereq>
+    <label>Generate content metadata</label>
+  </process>
+  <process name="end-was-seed-preassembly">
+    <prereq>content-metadata-generator</prereq>
+    <label>End of the WAS Seed preassembly</label>
+  </process>
+</workflow-def>

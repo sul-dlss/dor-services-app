@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<workflow-def id="gisAssemblyWF">
+  <process name="start-gis-assembly-workflow">
+    <label>Initiate assembly workflow for the object</label>
+  </process>
+  <process name="register-druid" status="completed">
+    <prereq>start-gis-assembly-workflow</prereq>
+    <label>Ensure proper registration of druid, source ID, and label</label>
+  </process>
+  <process name="extract-iso19139-metadata">
+    <prereq>register-druid</prereq>
+    <label>Transform ISO 19139 metadata from ArcCatalog metadata</label>
+  </process>
+  <process name="extract-iso19110-metadata">
+    <prereq>extract-iso19139-metadata</prereq>
+    <label>Transform ISO 19110 metadata from ArcCatalog metadata</label>
+  </process>
+  <process name="extract-fgdc-metadata">
+    <prereq>extract-iso19110-metadata</prereq>
+    <label>Transform FGDC metadata from ArcCatalog metadata</label>
+  </process>
+  <process name="generate-tag">
+    <prereq>extract-fgdc-metadata</prereq>
+    <label>Add Geo tag to object</label>
+  </process>
+  <process name="generate-descriptive">
+    <prereq>generate-tag</prereq>
+    <label>Convert ISO19139 into cocina descriptive</label>
+  </process>
+  <process name="assign-placenames">
+    <prereq>generate-descriptive</prereq>
+    <label>Insert linked data into MODS record from gazetteer</label>
+  </process>
+  <process name="extract-boundingbox">
+    <prereq>assign-placenames</prereq>
+    <label>Extract bounding box from data for cocina descriptive</label>
+  </process>
+  <process name="generate-structural">
+    <prereq>extract-boundingbox</prereq>
+    <label>Generate cocina structural</label>
+  </process>
+  <process name="finish-gis-assembly-workflow">
+    <prereq>generate-structural</prereq>
+    <label>Finalize assembly workflow to prepare for assembly/delivery/discovery</label>
+  </process>
+  <process name="start-delivery-workflow">
+    <prereq>finish-gis-assembly-workflow</prereq>
+    <label>Initiate gisDelivery workflow for the object</label>
+  </process>
+</workflow-def>

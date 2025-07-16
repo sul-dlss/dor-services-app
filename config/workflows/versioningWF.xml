@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<workflow-def id="versioningWF">
+  <process lifecycle="opened" name="start-version" status="completed">
+    <label>Initiate new version of the object</label>
+  </process>
+</workflow-def>

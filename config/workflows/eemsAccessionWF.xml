@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<workflow-def id="eemsAccessionWF" repository="dor">
+  <process batch-limit="5" error-limit="5" lifecycle="registered" name="register-object" status="completed">
+    <label>Register new objects in DOR</label>
+  </process>
+  <process batch-limit="5" error-limit="5" lifecycle="inprocess" name="submit-tech-services">
+    <prereq>register-object</prereq>
+    <label>Submit to Tech Services</label>
+  </process>
+  <process batch-limit="5" error-limit="5" name="eems-transfer">
+    <prereq>submit-tech-services</prereq>
+    <label>Transfer content to workspace</label>
+  </process>
+  <process batch-limit="100" error-limit="5" name="submit-marc">
+    <prereq>eems-transfer</prereq>
+    <label>Send stub MARC record to catalog</label>
+  </process>
+  <process batch-limit="100" error-limit="5" name="check-marc">
+    <prereq>submit-marc</prereq>
+    <label>Check for creation of MARC record</label>
+  </process>
+  <process batch-limit="100" error-limit="5" name="catalog-status">
+    <prereq>check-marc</prereq>
+    <label>Monitor status of MARC record for completion</label>
+  </process>
+  <process batch-limit="1000" error-limit="10" name="other-metadata">
+    <prereq>catalog-status</prereq>
+    <label>Other metadata</label>
+  </process>
+  <process batch-limit="1" error-limit="5" name="start-accession">
+    <prereq>other-metadata</prereq>
+    <label>Start common-accessioning</label>
+  </process>
+</workflow-def>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<workflow-def id="wasCrawlDisseminationWF">
+  <process name="start" status="completed">
+    <label>Initiate was crawl disseminationWF of the object</label>
+  </process>
+  <process name="warc-extractor">
+    <prereq>start</prereq>
+    <label>Extracts WARC files from WACZ files</label>
+  </process>
+  <process name="cdxj-generator">
+    <prereq>warc-extractor</prereq>
+    <label>Generate CDXJ files for WARCs</label>
+  </process>
+  <process name="cdxj-merge">
+    <prereq>cdxj-generator</prereq>
+    <label>Merge new CDX into existing pywb CDX file</label>
+  </process>
+</workflow-def>
