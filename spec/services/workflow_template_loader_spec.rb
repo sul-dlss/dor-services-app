@@ -11,7 +11,7 @@ RSpec.describe WorkflowTemplateLoader do
     let(:workflow_filepath) { loader.workflow_filepath }
 
     it 'finds filepath' do
-      expect(workflow_filepath).to eq("config/workflows/#{workflow_name}.xml")
+      expect(workflow_filepath).to eq(Rails.root.join("config/workflows/#{workflow_name}.xml").to_s)
     end
   end
 
