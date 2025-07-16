@@ -25,7 +25,18 @@ class WorkflowLifecycleService
 
   # @return [Nokogiri::XML::Document] the XML document representing the lifecycle of the object
   def lifecycle_xml
-    workflow_client.query_lifecycle(druid, version: version, active_only: active_only)
+    if Settings.enabled_features.local_wf
+      builder = Nokogiri::XML::Builder.new do |xml|
+        xml.lifecycle(objectId: druid) do
+          workflow_steps.each do |step|
+            step.as_milestone(xml)
+          end
+        end
+      end
+      builder.doc
+    else
+      workflow_client.query_lifecycle(druid, version: version, active_only: active_only)
+    end
   end
 
   # @param [String] milestone_name the name of the milestone
@@ -47,5 +58,18 @@ class WorkflowLifecycleService
 
   def workflow_client
     @workflow_client ||= WorkflowClientFactory.build
+  end
+
+  def workflow_steps
+    steps = WorkflowStep.where(druid:)
+
+    return steps.lifecycle.complete unless active_only
+
+    # Active means that it's of the current version, and that all the steps in
+    # the current version haven't been completed yet.
+    steps = steps.for_version(version)
+    return [] unless steps.incomplete.any?
+
+    steps.lifecycle
   end
 end
