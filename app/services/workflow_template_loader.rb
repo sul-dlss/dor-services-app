@@ -3,7 +3,8 @@
 ##
 # Loading workflow templates
 class WorkflowTemplateLoader
-  WORKFLOWS_DIR = 'config/workflows'
+  WORKFLOWS_DIR = Rails.root.join('config/workflows').freeze
+
   # Loads a workflow template from file
   # @param [String] workflow_name name/id of workflow, e.g., accessionWF
   # @return [String or nil] the workflow as a string or nil if not found

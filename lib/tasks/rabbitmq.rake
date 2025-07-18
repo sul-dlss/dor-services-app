@@ -18,13 +18,6 @@ namespace :rabbitmq do
     queue = channel.queue('dsa.create-event', durable: true)
     queue.bind(exchange, routing_key: '#')
 
-    # These messages look like this: { druid: step.druid, action: 'workflow updated' }
-    # and they have a routing key like this: 'end-accession.completed')
-    # So if the volume here is too high, we can filter the routing keys to *.errored and end-accession.*
-    exchange = channel.topic('sdr.workflow')
-    queue = channel.queue('dor.indexing-by-druid', durable: true)
-    queue.bind(exchange, routing_key: '#')
-
     conn.close
   end
 end
