@@ -2063,6 +2063,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DescriptiveValue"
+        affiliation:
+          description: Institutional or other affiliation associated with a contributor.
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptiveValue"
         note:
           description: Other information associated with the contributor.
           type: array
