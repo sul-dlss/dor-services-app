@@ -78,20 +78,29 @@ class WorkflowService
 
   # @param [String] workflow_name the name of the workflow to check
   # @return [boolean] returns true if the object has the workflow for any version
-  # @raise [WorkflowService::NotFoundException] if the object is not found
   def workflow?(workflow_name:)
     workflow(workflow_name:).present?
-  rescue NotFoundException
-    false
   end
 
   # @param [String] workflow_name the name of the workflow to check
   # @return [Dor::Workflow::Response::Workflow]
-  # @raise [WorkflowService::NotFoundException] if the workflow is not found
   def workflow(workflow_name:)
-    workflow_client.workflow(pid: druid, workflow_name:)
-  rescue Dor::MissingWorkflowException
-    raise NotFoundException, "Workflow '#{workflow_name}' not found for object '#{druid}'"
+    if Settings.enabled_features.local_wf
+      steps = WorkflowStep.where(
+        druid:,
+        workflow: workflow_name
+      ).order(:workflow, created_at: :asc)
+      xml = Nokogiri::XML::Builder.new do |xml|
+        xml.workflow(id: workflow_name, objectId: druid) do
+          steps.each do |step|
+            xml.process(**step.attributes_for_process)
+          end
+        end
+      end.to_xml
+      Dor::Services::Response::Workflow.new(xml:)
+    else
+      workflow_client.workflow(pid: druid, workflow_name:)
+    end
   end
 
   # @param [String] workflow_name the name of the workflow to create
