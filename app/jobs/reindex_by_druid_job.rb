@@ -3,7 +3,7 @@
 # Reindexes an object given a druid.
 # This worker will connect to "dor.indexing-by-druid" queue. This queue is populated when
 # the workflow service makes new RabbitMQ messages on the sdr.workflow exchange.
-# @see https://github.com/sul-dlss/dor_indexing_app/blob/8546e8aabb76d506fe3f5f5ea43ae499a442d75f/lib/tasks/rabbitmq.rake#L20-L21
+# @see https://github.com/sul-dlss/dor-services-app/blob/144676b9dbe4f2c0ea3687b3267343e504fac35b/lib/tasks/rabbitmq.rake#L24-L25
 class ReindexByDruidJob
   include Sneakers::Worker
 
