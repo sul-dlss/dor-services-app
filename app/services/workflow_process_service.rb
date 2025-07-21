@@ -30,24 +30,36 @@ class WorkflowProcessService
   # @raise [WorkflowService::NotFoundException] if the workflow step is not found.
   def update(status:, elapsed: 0, lifecycle: nil, note: nil, # rubocop:disable Metrics/AbcSize
              current_status: nil)
-    workflow_client.update_status(druid:, workflow: workflow_name, process:, status:, elapsed:,
-                                  lifecycle:, note:, current_status:)
-  rescue Dor::MissingWorkflowException
-    raise WorkflowService::NotFoundException, "Process #{process} not found in #{workflow_name} for #{druid}"
-  rescue Dor::WorkflowException => e
-    raise WorkflowService::Exception, e unless e.message.include?('HTTP status 409')
+    if Settings.enabled_features.local_wf
+      update_status(status:, elapsed:, lifecycle:, note:, current_status:)
+    else
+      begin
+        workflow_client.update_status(druid:, workflow: workflow_name, process:, status:, elapsed:,
+                                      lifecycle:, note:, current_status:)
+      rescue Dor::MissingWorkflowException
+        raise WorkflowService::NotFoundException, "Process #{process} not found in #{workflow_name} for #{druid}"
+      rescue Dor::WorkflowException => e
+        raise WorkflowService::Exception, e unless e.message.include?('HTTP status 409')
 
-    raise WorkflowService::ConflictException,
-          "Process #{process} in workflow #{workflow_name} for #{druid} has a conflict: #{e.message}"
+        raise WorkflowService::ConflictException,
+              "Process #{process} in workflow #{workflow_name} for #{druid} has a conflict: #{e.message}"
+      end
+    end
   end
 
   # Updates the status of one step in a workflow to error.
   # @param [String] error_msg The error message.  Ideally, this is a brief message describing the error
   # @param [String] error_text A slot to hold more information about the error, like a full stacktrace
   def update_error(error_msg:, error_text: nil)
-    workflow_client.update_error_status(druid:, workflow: workflow_name, process:, error_msg:, error_text:)
-  rescue Dor::MissingWorkflowException
-    raise WorkflowService::NotFoundException, "Process #{process} not found in #{workflow_name} for #{druid}"
+    if Settings.enabled_features.local_wf
+      update_status(status: 'error', error_msg:, error_text:)
+    else
+      begin
+        workflow_client.update_error_status(druid:, workflow: workflow_name, process:, error_msg:, error_text:)
+      rescue Dor::MissingWorkflowException
+        raise WorkflowService::NotFoundException, "Process #{process} not found in #{workflow_name} for #{druid}"
+      end
+    end
   end
 
   private
@@ -56,5 +68,70 @@ class WorkflowProcessService
 
   def workflow_client
     @workflow_client ||= WorkflowClientFactory.build
+  end
+
+  def update_status(status:, elapsed: 0, lifecycle: nil, note: nil, # rubocop:disable Metrics/ParameterLists
+                    current_status: nil, error_msg: nil, error_text: nil)
+    parser = ProcessParser.new(status:, elapsed:, lifecycle:, note:,
+                               error_msg:, error_txt: error_text, use_default_lane_id: false)
+
+    step = find_step_for_process
+
+    check_step_exists!(step)
+    check_current_status!(step, current_status)
+
+    # We need this transaction to be committed before we kick off indexing/next steps
+    # or they could find the data to be in an outdated state.
+    WorkflowStep.transaction do
+      step.update(parser.to_h)
+    end
+
+    # Enqueue next steps
+    NextStepService.enqueue_next_steps(step:)
+
+    if last_accession_step?(step)
+      # https://github.com/sul-dlss/argo/issues/3817
+      # Theory is that many commits to solr are not being executed in the correct order, resulting in
+      # older data being indexed last.  This is an attempt to force a delay when indexing the very
+      # last step of the accessionWF.
+      sleep 1
+
+      # In theory, notifications should be sent for every step.
+      # However, currently consumers only care about the end-accession step.
+      Notifications::WorkflowStepUpdated.publish(step:)
+    end
+
+    Indexer.reindex_later(druid: druid)
+  end
+
+  def find_step_for_process
+    query = WorkflowStep.where(druid:,
+                               workflow: workflow_name,
+                               process: process)
+                        .order(version: :desc)
+    # Validate uniqueness until https://github.com/sul-dlss/workflow-server-rails/pull/40 is in place
+    if query.size != query.pluck(:version).uniq.size
+      raise "Duplicate workflow step for #{druid} #{workflow_name} #{process}"
+    end
+
+    query.first
+  end
+
+  def last_accession_step?(step)
+    step.workflow == 'accessionWF' && step.process == 'end-accession' && step.status == 'completed'
+  end
+
+  def check_step_exists!(step)
+    return unless step.nil?
+
+    raise WorkflowService::NotFoundException, "Process #{process} not found in #{workflow_name} for #{druid}"
+  end
+
+  def check_current_status!(step, current_status)
+    return unless current_status.present? && step.status != current_status
+
+    raise WorkflowService::ConflictException,
+          "Process #{process} in workflow #{workflow_name} for #{druid} has a conflict: " \
+          "expected status #{current_status}, but found #{step.status}"
   end
 end
