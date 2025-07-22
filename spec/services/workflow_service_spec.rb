@@ -117,15 +117,31 @@ RSpec.describe WorkflowService do
     let(:context) { { 'key' => 'value' } }
     let(:lane_id) { 'low' }
 
-    before do
-      allow(workflow_client).to receive(:create_workflow_by_name).with(druid, workflow_name, version:, context:,
-                                                                                             lane_id:)
+    context 'when local workflow feature is enabled' do
+      before do
+        allow(Settings.enabled_features).to receive(:local_wf).and_return(true)
+        allow(NextStepService).to receive(:enqueue_next_steps)
+      end
+
+      it 'creates a workflow' do
+        expect do
+          described_class.create(druid:, workflow_name:, version:, context:, lane_id:)
+        end.to change(WorkflowStep, :count).by(3)
+        expect(NextStepService).to have_received(:enqueue_next_steps).once
+      end
     end
 
-    it 'creates a workflow' do
-      described_class.create(druid:, workflow_name:, version:, context:, lane_id:)
-      expect(workflow_client).to have_received(:create_workflow_by_name).with(druid, workflow_name, version:, context:,
-                                                                                                    lane_id:)
+    context 'when local workflow feature is not enabled' do
+      before do
+        allow(workflow_client).to receive(:create_workflow_by_name)
+          .with(druid, workflow_name, version:, context:, lane_id:)
+      end
+
+      it 'creates a workflow' do
+        described_class.create(druid:, workflow_name:, version:, context:, lane_id:)
+        expect(workflow_client).to have_received(:create_workflow_by_name)
+          .with(druid, workflow_name, version:, context:, lane_id:)
+      end
     end
   end
 

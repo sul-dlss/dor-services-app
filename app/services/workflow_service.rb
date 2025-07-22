@@ -108,7 +108,26 @@ class WorkflowService
   # @param [Hash] context
   # @param [String] lane_id
   def create(workflow_name:, version:, context: nil, lane_id: nil)
-    workflow_client.create_workflow_by_name(druid, workflow_name, version:, context:, lane_id:)
+    if Settings.enabled_features.local_wf
+      template = WorkflowTemplateLoader.load_as_xml(workflow_name)
+      raise WorkflowService::Exception, 'Unknown workflow' if template.nil?
+
+      initial_workflow = WorkflowTransformer.initial_workflow(template, lane_id)
+      initial_parser = InitialWorkflowParser.new(initial_workflow)
+
+      WorkflowCreator.new(
+        workflow_id: initial_parser.workflow_id,
+        processes: initial_parser.processes,
+        version: Version.new(
+          druid:,
+          version:,
+          context:
+        )
+      ).create_workflow_steps
+
+    else
+      workflow_client.create_workflow_by_name(druid, workflow_name, version:, context:, lane_id:)
+    end
   end
 
   # Deletes a single workflow.
