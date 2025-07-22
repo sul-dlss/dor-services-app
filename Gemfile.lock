@@ -628,6 +628,7 @@ DEPENDENCIES
   debug
   diffy
   dlss-capistrano
+  dor-services-client
   dor-workflow-client (~> 7.8)
   druid-tools (~> 2.2)
   dry-monads

@@ -1581,12 +1581,6 @@ paths:
             application/xml:
               schema:
                 type: string
-        "404":
-          description: Object or workflow not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
       parameters:
         - name: object_id
           in: path

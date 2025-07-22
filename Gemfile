@@ -8,6 +8,7 @@ gem 'rails', '~> 8.0.0'
 # DLSS/domain-specific dependencies
 gem 'cocina-models', '~> 0.105.0'
 gem 'datacite', '~> 0.6'
+gem 'dor-services-client' # Used for Dor::Services::Response::* classes
 gem 'dor-workflow-client', '~> 7.8'
 gem 'druid-tools', '~> 2.2'
 gem 'folio_client', '~> 0.8'
