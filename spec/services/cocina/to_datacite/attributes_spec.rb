@@ -185,6 +185,81 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                         }
                                       }
                                     ],
+                                    affiliation: [
+                                      {
+                                        structuredValue: [
+                                          {
+                                            value: 'Stanford University',
+                                            identifier: [
+                                              {
+                                                uri: 'https://ror.org/00f54p054',
+                                                type: 'ROR',
+                                                source: {
+                                                  code: 'ror'
+                                                }
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            value: 'Woods Institute for the Environment'
+                                          }
+                                        ]
+                                      }
+                                    ],
+                                    note: [
+                                      {
+                                        type: 'citation status',
+                                        value: 'false'
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    name: [
+                                      {
+                                        structuredValue: [
+                                          {
+                                            value: 'John',
+                                            type: 'forename'
+                                          },
+                                          {
+                                            value: 'Stanford',
+                                            type: 'surname'
+                                          }
+                                        ]
+                                      }
+                                    ],
+                                    type: 'person',
+                                    role: [
+                                      {
+                                        value: 'Author',
+                                        source: {
+                                          value: 'H2 contributor role terms'
+                                        }
+                                      },
+                                      {
+                                        value: 'author',
+                                        code: 'aut',
+                                        uri: 'http://id.loc.gov/vocabulary/relators/aut',
+                                        source: {
+                                          code: 'marcrelator',
+                                          uri: 'http://id.loc.gov/vocabulary/relators/'
+                                        }
+                                      }
+                                    ],
+                                    affiliation: [
+                                      {
+                                        value: 'Stanford University',
+                                        identifier: [
+                                          {
+                                            uri: 'https://ror.org/00f54p054',
+                                            type: 'ROR',
+                                            source: {
+                                              code: 'ror'
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    ],
                                     note: [
                                       {
                                         type: 'citation status',
@@ -333,7 +408,29 @@ RSpec.describe Cocina::ToDatacite::Attributes do
               name: 'Stanford, Jane',
               givenName: 'Jane',
               familyName: 'Stanford',
-              nameType: 'Personal'
+              nameType: 'Personal',
+              affiliation: [
+                {
+                  affiliationIdentifier: 'https://ror.org/00f54p054',
+                  affiliationIdentifierScheme: 'ROR',
+                  name: 'Stanford University',
+                  schemeUri: 'https://ror.org/'
+                }
+              ]
+            },
+            {
+              name: 'Stanford, John',
+              givenName: 'John',
+              familyName: 'Stanford',
+              nameType: 'Personal',
+              affiliation: [
+                {
+                  affiliationIdentifier: 'https://ror.org/00f54p054',
+                  affiliationIdentifierScheme: 'ROR',
+                  name: 'Stanford University',
+                  schemeUri: 'https://ror.org/'
+                }
+              ]
             },
             {
               name: 'Stanford University',
