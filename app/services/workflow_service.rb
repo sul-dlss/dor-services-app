@@ -131,16 +131,27 @@ class WorkflowService
   end
 
   # Deletes a single workflow.
-  # @param [String] workflow_name the name of the workflow to create
-  # @param [String] version the version of the workflow to create
+  # @param [String] workflow_name the name of the workflow to delete
+  # @param [String] version the version of the workflow to delete
   def delete(workflow_name:, version:)
-    workflow_client.delete_workflow(druid:, workflow: workflow_name, version:)
+    if Settings.enabled_features.local_wf
+      version_obj = Version.new(
+        druid:,
+        version:
+      )
+      version_obj.workflow_steps(workflow_name).destroy_all
+    else
+      workflow_client.delete_workflow(druid:, workflow: workflow_name, version:)
+    end
   end
 
   # Deletes all workflows for the object.
-  # @param [String] druid the druid of the object
   def delete_all
-    workflow_client.delete_all_workflows(pid: druid)
+    if Settings.enabled_features.local_wf
+      WorkflowStep.where(druid:).destroy_all
+    else
+      workflow_client.delete_all_workflows(pid: druid)
+    end
   end
 
   # Skips all processes in a workflow.

@@ -146,27 +146,67 @@ RSpec.describe WorkflowService do
   end
 
   describe '#delete' do
-    let(:workflow_name) { 'wasCrawlPreassemblyWF' }
+    let(:workflow_name) { 'accessionWF' }
     let(:version) { 1 }
 
-    before do
-      allow(workflow_client).to receive(:delete_workflow).with(druid:, workflow: workflow_name, version:)
+    context 'when local workflow feature is enabled' do
+      let!(:step) { create(:workflow_step, druid:, workflow: workflow_name, version: 1) }
+
+      before do
+        allow(Settings.enabled_features).to receive(:local_wf).and_return(true)
+        # Different version
+        create(:workflow_step, druid:, workflow: workflow_name, version: 2)
+      end
+
+      it 'deletes the workflow steps for the specified version' do
+        expect { described_class.delete(druid:, workflow_name:, version:) }.to change(WorkflowStep, :count).by(-1)
+        expect(WorkflowStep.exists?(step.id)).to be false
+      end
     end
 
-    it 'deletes a workflow' do
-      described_class.delete(druid:, workflow_name:, version:)
-      expect(workflow_client).to have_received(:delete_workflow).with(druid:, workflow: workflow_name, version:)
+    context 'when local workflow feature is not enabled' do
+      before do
+        allow(workflow_client).to receive(:delete_workflow).with(druid:, workflow: workflow_name, version:)
+      end
+
+      it 'deletes a workflow' do
+        described_class.delete(druid:, workflow_name:, version:)
+        expect(workflow_client).to have_received(:delete_workflow).with(druid:, workflow: workflow_name, version:)
+      end
     end
   end
 
   describe '#delete_all' do
-    before do
-      allow(workflow_client).to receive(:delete_all_workflows).with(pid: druid)
+    context 'when local workflow feature is enabled' do
+      let!(:step) { create(:workflow_step, druid:, version: 1) }
+      let!(:step_with_different_version) { create(:workflow_step, druid:, version: 2) }
+      let!(:step_with_different_workflow) do
+        create(:workflow_step, druid:, workflow: 'wasCrawlPreassemblyWF', version: 1, process: 'start')
+      end
+      let!(:step_with_different_druid) { create(:workflow_step, druid: 'druid:jp974nv2747', version: 1) }
+
+      before do
+        allow(Settings.enabled_features).to receive(:local_wf).and_return(true)
+      end
+
+      it 'deletes all workflow steps for the druid' do
+        expect { described_class.delete_all(druid:) }.to change(WorkflowStep, :count).by(-3)
+        expect(WorkflowStep.exists?(step.id)).to be false
+        expect(WorkflowStep.exists?(step_with_different_version.id)).to be false
+        expect(WorkflowStep.exists?(step_with_different_workflow.id)).to be false
+        expect(WorkflowStep.exists?(step_with_different_druid.id)).to be true # Different druid should not be deleted
+      end
     end
 
-    it 'deletes all workflows' do
-      described_class.delete_all(druid:)
-      expect(workflow_client).to have_received(:delete_all_workflows).with(pid: druid)
+    context 'when local workflow feature is not enabled' do
+      before do
+        allow(workflow_client).to receive(:delete_all_workflows).with(pid: druid)
+      end
+
+      it 'deletes all workflows' do
+        described_class.delete_all(druid:)
+        expect(workflow_client).to have_received(:delete_all_workflows).with(pid: druid)
+      end
     end
   end
 
