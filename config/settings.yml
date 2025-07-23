@@ -128,8 +128,9 @@ sidekiq:
                          # see https://github.com/sidekiq/sidekiq/wiki/Monitoring#monitoring-queue-latency
 
 honeybadger_checkins:
-  embargo_release: foo
-  missing_druids: bar
+  embargo_release: ~
+  missing_druids: ~
+  workflow_monitor: ~
 
 orcid:
   client_id: ~

@@ -33,6 +33,9 @@ env 'RAILS_LOG_LEVEL', 'warn'
 job_type :rake_hb,
          'cd :path && :environment_variable=:environment bundle exec rake --silent ":task" :output && curl --silent https://api.honeybadger.io/v1/check_in/:check_in'
 
+job_type :runner_hb,
+         "cd :path && bin/rails runner -e :environment ':task' :output && curl --silent https://api.honeybadger.io/v1/check_in/:check_in"
+
 # Suppress warnings to avoid unnecessary cron emails.
 env 'RUBYOPT', '-W0'
 
@@ -45,4 +48,9 @@ end
 every :day, at: '8:35pm' do
   set :check_in, Settings.honeybadger_checkins.missing_druids
   rake_hb 'missing_druids:unindexed_objects'
+end
+
+every 6.hours do
+  set :check_in, Settings.honeybadger_checkins.workflow_monitor
+  runner_hb 'WorkflowMonitor.monitor'
 end
