@@ -88,20 +88,6 @@ class WorkflowProcessService
 
     # Enqueue next steps
     NextStepService.enqueue_next_steps(step:)
-
-    if last_accession_step?(step)
-      # https://github.com/sul-dlss/argo/issues/3817
-      # Theory is that many commits to solr are not being executed in the correct order, resulting in
-      # older data being indexed last.  This is an attempt to force a delay when indexing the very
-      # last step of the accessionWF.
-      sleep 1
-
-      # In theory, notifications should be sent for every step.
-      # However, currently consumers only care about the end-accession step.
-      Notifications::WorkflowStepUpdated.publish(step:)
-    end
-
-    Indexer.reindex_later(druid: druid)
   end
 
   def find_step_for_process
@@ -115,10 +101,6 @@ class WorkflowProcessService
     end
 
     query.first
-  end
-
-  def last_accession_step?(step)
-    step.workflow == 'accessionWF' && step.process == 'end-accession' && step.status == 'completed'
   end
 
   def check_step_exists!(step)

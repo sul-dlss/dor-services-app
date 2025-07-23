@@ -48,10 +48,6 @@ class WorkflowCreator
 
     # Enqueue next steps
     NextStepService.enqueue_next_steps(step: first_step)
-
-    # In theory, notifications should be sent for every step.
-    # However, currently consumers only care about the end-accession step so not sending here.
-    # Notifications::WorkflowStepUpdated.publish(step: first_step)
   end
 
   def workflow_attributes(process)
