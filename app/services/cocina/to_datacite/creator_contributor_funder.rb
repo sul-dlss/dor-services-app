@@ -114,7 +114,8 @@ module Cocina
           givenName: forename.value,
           familyName: surname.value,
           nameType: 'Personal',
-          nameIdentifiers: name_identifiers(cocina_contributor).presence
+          nameIdentifiers: name_identifiers(cocina_contributor).presence,
+          affiliation: affiliations(cocina_contributor).presence
         }.compact
       end
 
@@ -133,6 +134,22 @@ module Cocina
             nameIdentifier: identifier.value || identifier.uri,
             nameIdentifierScheme: identifier.type,
             schemeURI: identifier.source.uri
+          }.compact
+        end
+      end
+
+      def affiliations(cocina_contributor)
+        Array(cocina_contributor.affiliation).map do |affiliation|
+          institution = affiliation.structuredValue.find { |descriptive_value| descriptive_value.identifier.present? }
+          institution ||= affiliation # if no structured value with identifier, use the affiliation itself
+          identifier = institution.identifier.find { |id| id.type == 'ROR' }
+          next unless identifier&.uri
+
+          {
+            affiliationIdentifier: identifier.uri,
+            affiliationIdentifierScheme: 'ROR',
+            name: institution.value,
+            schemeUri: 'https://ror.org/'
           }.compact
         end
       end
