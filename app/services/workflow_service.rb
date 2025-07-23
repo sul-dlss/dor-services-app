@@ -63,17 +63,34 @@ class WorkflowService
   end
 
   # Returns all workflows for the object.
-  # @return [Array<Dor::Workflow::Response::Workflow>]
-  # @raise [WorkflowService::NotFoundException] if the object is not found
+  # @return [Array<Dor::Services::Response::Workflow>]
   def workflows
-    @workflows ||= workflow_client.all_workflows(pid: druid).workflows
+    @workflows ||= if Settings.enabled_features.local_wf
+                     Dor::Services::Response::Workflows.new(xml: workflows_xml).workflows
+                   else
+                     workflow_client.all_workflows(pid: druid).workflows
+                   end
   end
 
   # Returns all workflows for the object as XML.
   # @return [Nokogiri::XML::Document]
-  # @raise [WorkflowService::NotFoundException] if the object is not found
-  def workflows_xml
-    @workflows_xml ||= workflow_client.all_workflows(pid: druid).xml
+  def workflows_xml # rubocop:disable Metrics/AbcSize
+    @workflows_xml ||= if Settings.enabled_features.local_wf
+                         workflow_steps = WorkflowStep.where(druid:)
+                                                      .order(:workflow, created_at: :asc)
+                                                      .group_by(&:workflow)
+
+                         xml = Nokogiri::XML::Builder.new do |builder|
+                           builder.workflows(objectId: druid) do
+                             workflow_steps.each do |workflow_name, steps|
+                               build_workflow(builder:, workflow_name:, steps:)
+                             end
+                           end
+                         end.to_xml
+                         Nokogiri::XML(xml)
+                       else
+                         workflow_client.all_workflows(pid: druid).xml
+                       end
   end
 
   # @param [String] workflow_name the name of the workflow to check
@@ -90,12 +107,8 @@ class WorkflowService
         druid:,
         workflow: workflow_name
       ).order(:workflow, created_at: :asc)
-      xml = Nokogiri::XML::Builder.new do |xml|
-        xml.workflow(id: workflow_name, objectId: druid) do
-          steps.each do |step|
-            xml.process(**step.attributes_for_process)
-          end
-        end
+      xml = Nokogiri::XML::Builder.new do |builder|
+        build_workflow(builder:, workflow_name:, steps:)
       end.to_xml
       Dor::Services::Response::Workflow.new(xml:)
     else
@@ -176,5 +189,13 @@ class WorkflowService
 
   def workflow_client
     @workflow_client ||= WorkflowClientFactory.build
+  end
+
+  def build_workflow(builder:, workflow_name:, steps:)
+    builder.workflow(id: workflow_name, objectId: druid) do
+      steps.each do |step|
+        builder.process(**step.attributes_for_process)
+      end
+    end
   end
 end

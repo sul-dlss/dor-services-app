@@ -11,30 +11,88 @@ RSpec.describe WorkflowService do
   end
 
   describe '#workflows' do
-    let(:workflows_response) { instance_double(Dor::Workflow::Response::Workflows, workflows: workflows) }
-    let(:workflows) { [instance_double(Dor::Workflow::Response::Workflow)] }
+    context 'when local workflow feature is enabled' do
+      subject(:workflows) { described_class.workflows(druid:) }
 
-    before do
-      allow(workflow_client).to receive(:all_workflows).with(pid: druid).and_return(workflows_response)
+      let(:xml) do
+        <<~XML
+          <?xml version="1.0"?>
+          <workflow id="accessionWF" objectId="druid:bb033gt0615">
+            <process version="1" note="" lifecycle="" laneId="default" elapsed="" attempts="0" datetime="2025-07-22T21:35:36+00:00" context="{&quot;requireOCR&quot;:true,&quot;requireTranscript&quot;:true}" status="waiting" name="start-accession"/>
+          </workflow>
+        XML
+      end
+
+      before do
+        allow(Settings.enabled_features).to receive(:local_wf).and_return(true)
+        create(:workflow_step, :with_ocr_context, druid:, updated_at: '2025-07-22T21:35:36+00:00', status: 'waiting')
+      end
+
+      it 'returns workflows' do
+        expect(workflows).to be_a(Array)
+        expect(workflows.size).to eq 1
+        expect(workflows.first).to be_a(Dor::Services::Response::Workflow)
+        expect(workflows.first.xml).to be_equivalent_to xml
+      end
     end
 
-    it 'returns workflows' do
-      expect(described_class.workflows(druid:)).to eq workflows
-      expect(workflow_client).to have_received(:all_workflows).with(pid: druid)
+    context 'when local workflow feature is not enabled' do
+      let(:workflows_response) { instance_double(Dor::Workflow::Response::Workflows, workflows: workflows) }
+      let(:workflows) { [instance_double(Dor::Workflow::Response::Workflow)] }
+
+      before do
+        allow(workflow_client).to receive(:all_workflows).with(pid: druid).and_return(workflows_response)
+      end
+
+      it 'returns workflows' do
+        expect(described_class.workflows(druid:)).to eq workflows
+        expect(workflow_client).to have_received(:all_workflows).with(pid: druid)
+      end
     end
   end
 
   describe '#workflows_xml' do
-    let(:workflows_response) { instance_double(Dor::Workflow::Response::Workflows, xml: workflows_xml) }
-    let(:workflows_xml) { instance_double(Nokogiri::XML::Document) }
+    context 'when local workflow feature is enabled' do
+      let(:xml) do
+        <<~XML
+          <?xml version="1.0"?>
+          <workflows objectId="druid:bb033gt0615">
+            <workflow id="accessionWF" objectId="druid:bb033gt0615">
+             <process version="2" note="" lifecycle="" laneId="default" elapsed="" attempts="0" datetime="2025-07-22T21:35:36+00:00" context="{&quot;requireOCR&quot;:true,&quot;requireTranscript&quot;:true}" status="waiting" name="start-accession"/>
+             <process version="1" note="" lifecycle="" laneId="default" elapsed="" attempts="0" datetime="2025-07-22T21:35:36+00:00" context="{&quot;requireOCR&quot;:true,&quot;requireTranscript&quot;:true}" status="waiting" name="start-accession"/>
+           </workflow>
+           <workflow id="wasCrawlPreassemblyWF" objectId="druid:bb033gt0615">
+             <process version="1" note="" lifecycle="" laneId="default" elapsed="" attempts="0" datetime="2025-07-22T21:35:36+00:00" context="{&quot;requireOCR&quot;:true,&quot;requireTranscript&quot;:true}" status="waiting" name="start"/>
+           </workflow>
+          </workflows>
+        XML
+      end
 
-    before do
-      allow(workflow_client).to receive(:all_workflows).with(pid: druid).and_return(workflows_response)
+      before do
+        allow(Settings.enabled_features).to receive(:local_wf).and_return(true)
+        create(:workflow_step, :with_ocr_context, druid:, updated_at: '2025-07-22T21:35:36+00:00', version: 2)
+        create(:workflow_step, :with_ocr_context, druid:, updated_at: '2025-07-22T21:35:36+00:00', status: 'waiting')
+        create(:workflow_step, druid:, updated_at: '2025-07-22T21:35:36+00:00', process: 'start',
+                               workflow: 'wasCrawlPreassemblyWF')
+      end
+
+      it 'returns workflows XML' do
+        expect(described_class.workflows_xml(druid:)).to be_equivalent_to xml
+      end
     end
 
-    it 'returns workflows xml' do
-      expect(described_class.workflows_xml(druid:)).to eq workflows_xml
-      expect(workflow_client).to have_received(:all_workflows).with(pid: druid)
+    context 'when local workflow feature is not enabled' do
+      let(:workflows_response) { instance_double(Dor::Workflow::Response::Workflows, xml: workflows_xml) }
+      let(:workflows_xml) { instance_double(Nokogiri::XML::Document) }
+
+      before do
+        allow(workflow_client).to receive(:all_workflows).with(pid: druid).and_return(workflows_response)
+      end
+
+      it 'returns workflows xml' do
+        expect(described_class.workflows_xml(druid:)).to eq workflows_xml
+        expect(workflow_client).to have_received(:all_workflows).with(pid: druid)
+      end
     end
   end
 
