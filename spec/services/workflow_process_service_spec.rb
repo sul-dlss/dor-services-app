@@ -57,8 +57,6 @@ RSpec.describe WorkflowProcessService do
     context 'when local workflow feature is enabled' do
       before do
         allow(Settings.enabled_features).to receive(:local_wf).and_return(true)
-        allow(Indexer).to receive(:reindex_later)
-        allow(Notifications::WorkflowStepUpdated).to receive(:publish)
         allow(NextStepService).to receive(:enqueue_next_steps)
       end
 
@@ -82,8 +80,6 @@ RSpec.describe WorkflowProcessService do
             .and(not_change { step.lifecycle })
 
           expect(NextStepService).to have_received(:enqueue_next_steps).with(step:)
-          expect(Indexer).to have_received(:reindex_later).with(druid: step.druid)
-          expect(Notifications::WorkflowStepUpdated).not_to have_received(:publish)
         end
       end
 
@@ -108,27 +104,6 @@ RSpec.describe WorkflowProcessService do
             described_class.update(druid: druid, workflow_name: 'hydrusAssemblyWF', process: 'submit',
                                    status: 'completed')
           end.to raise_error(WorkflowService::NotFoundException)
-        end
-      end
-
-      context 'when last step in accessionWF' do
-        let(:step) do
-          create(:workflow_step, process: 'end-accession', workflow: 'accessionWF')
-        end
-
-        before do
-          allow_any_instance_of(described_class).to receive(:sleep) # rubocop:disable RSpec/AnyInstance
-        end
-
-        it 'sends a notification' do
-          expect do
-            described_class.update(druid: step.druid, workflow_name: step.workflow, process: step.process,
-                                   status: 'completed')
-          end
-            .to change { step.reload.status }.from('waiting').to('completed')
-
-          expect(Indexer).to have_received(:reindex_later).with(druid: step.druid)
-          expect(Notifications::WorkflowStepUpdated).to have_received(:publish).with(step: step)
         end
       end
 
@@ -203,7 +178,6 @@ RSpec.describe WorkflowProcessService do
     context 'when local workflow feature is enabled' do
       before do
         allow(Settings.enabled_features).to receive(:local_wf).and_return(true)
-        allow(Indexer).to receive(:reindex_later)
         allow(NextStepService).to receive(:enqueue_next_steps)
       end
 
@@ -218,7 +192,6 @@ RSpec.describe WorkflowProcessService do
           .and change(step, :error_msg).to('failed to do the thing')
           .and change(step, :error_txt).to('box1.foo.edu')
         expect(NextStepService).to have_received(:enqueue_next_steps).with(step:)
-        expect(Indexer).to have_received(:reindex_later).with(druid: step.druid)
       end
     end
   end

@@ -16,7 +16,21 @@ class NextStepService
   # @param [WorkflowStep] step
   # @return [ActiveRecord::Relation] a list of WorkflowSteps that have been enqueued
   def enqueue_next_steps(step:)
-    find_next(step:)
+    next_steps = find_next(step:)
+    if last_accession_step?(step)
+      # https://github.com/sul-dlss/argo/issues/3817
+      # Theory is that many commits to solr are not being executed in the correct order, resulting in
+      # older data being indexed last.  This is an attempt to force a delay when indexing the very
+      # last step of the accessionWF.
+      sleep 1
+
+      # In theory, notifications should be sent for every step.
+      # However, currently consumers only care about the end-accession step.
+      Notifications::WorkflowStepUpdated.publish(step:)
+    end
+
+    Indexer.reindex_later(druid: step.druid)
+    next_steps
   end
 
   private
@@ -57,5 +71,9 @@ class NextStepService
 
     parser = WorkflowTemplateParser.new(doc)
     parser.processes.index_by(&:name)
+  end
+
+  def last_accession_step?(step)
+    step.workflow == 'accessionWF' && step.process == 'end-accession' && step.status == 'completed'
   end
 end
