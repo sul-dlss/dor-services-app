@@ -211,14 +211,46 @@ RSpec.describe WorkflowService do
   end
 
   describe '#skip_all' do
-    before do
-      allow(workflow_client).to receive(:skip_all)
+    context 'when local workflow feature is enabled' do
+      before do
+        allow(Settings.enabled_features).to receive(:local_wf).and_return(true)
+      end
+
+      let!(:step) { create(:workflow_step, druid:, status: 'waiting', active_version: true, version: 2) }
+      let!(:another_step) do
+        create(:workflow_step, process: 'end-accession', druid:, status: 'waiting', active_version: true, version: 2)
+      end
+      let!(:step_not_current_version) do
+        create(:workflow_step, druid:, status: 'waiting', active_version: false, version: 1)
+      end
+      let!(:step_with_different_workflow) do
+        create(:workflow_step, druid:, workflow: 'wasCrawlPreassemblyWF', process: 'start', status: 'waiting',
+                               active_version: true, version: 2)
+      end
+
+      it 'skips all steps in a workflow' do
+        expect { described_class.skip_all(druid:, workflow_name: 'accessionWF', note: 'Skipping all steps') }
+          .to change { step.reload.status }
+          .from('waiting').to('skipped')
+          .and change(step, :note)
+          .to('Skipping all steps')
+          .and change { another_step.reload.status }
+          .from('waiting').to('skipped')
+          .and(not_change { step_not_current_version.reload.status })
+          .and(not_change { step_with_different_workflow.reload.status })
+      end
     end
 
-    it 'skips all steps in a workflow' do
-      described_class.skip_all(druid:, workflow_name: 'wasCrawlPreassemblyWF', note: 'Skipping all steps')
-      expect(workflow_client).to have_received(:skip_all).with(druid:, workflow: 'wasCrawlPreassemblyWF',
-                                                               note: 'Skipping all steps')
+    context 'when local workflow feature is not enabled' do
+      before do
+        allow(workflow_client).to receive(:skip_all)
+      end
+
+      it 'skips all steps in a workflow' do
+        described_class.skip_all(druid:, workflow_name: 'wasCrawlPreassemblyWF', note: 'Skipping all steps')
+        expect(workflow_client).to have_received(:skip_all).with(druid:, workflow: 'wasCrawlPreassemblyWF',
+                                                                 note: 'Skipping all steps')
+      end
     end
   end
 end

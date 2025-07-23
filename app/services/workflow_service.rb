@@ -158,7 +158,16 @@ class WorkflowService
   # @param [String] workflow_name the name of the workflow to skip
   # @param [String] note an optional note to add to the skip action
   def skip_all(workflow_name:, note: nil)
-    workflow_client.skip_all(druid:, workflow: workflow_name, note:)
+    if Settings.enabled_features.local_wf
+      steps = WorkflowStep.where(druid:, active_version: true, workflow: workflow_name)
+      WorkflowStep.transaction do
+        steps.each do |step|
+          step.update(status: 'skipped', note:)
+        end
+      end
+    else
+      workflow_client.skip_all(druid:, workflow: workflow_name, note:)
+    end
   end
 
   private
