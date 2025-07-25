@@ -2,7 +2,7 @@
 
 namespace :workflow do
   desc 'Update a workflow step'
-  task :step, %i[druid workflow process version status] => :environment do |_task, args|
+  task :step, %i[druid workflow process status] => :environment do |_task, args|
     # This initializes rabbit, which is needed since rake task isn't run in Phusion Passenger.
     RabbitFactory.start_global
 
@@ -10,7 +10,7 @@ namespace :workflow do
       druid: args[:druid],
       workflow: args[:workflow],
       process: args[:process],
-      version: args[:version]
+      active_version: true
     )
 
     raise 'Workflow step does not already exist' if step.nil?
