@@ -174,6 +174,44 @@ There also must be a sidekiq process to handle the DSA robot queues. For example
   - accessionWF_low_dsa
 ```
 
+## Workflows
+The previous independent Rails-based workflow service has been [merged into Dor Services App](https://github.com/sul-dlss-labs/engineering-design-adrs/blob/main/0023-merge-workflow-service.md), and access to it's methods are provided by dor-services-client. The workflow database and robot queues continue to be separate from DSA (meaning that there are separate Postgres and Redis servers for workflow; DSA uses [Rail's multi-database support](https://guides.rubyonrails.org/active_record_multiple_databases.html) and [separate Sidekiq configuration](https://github.com/sul-dlss/dor-services-app/blob/main/config/initializers/sidekiq.rb)).
+
+The workflows are defined by xml templates which are stored in [config/workflows](https://github.com/sul-dlss/dor-services-app/tree/main/config/workflows).  The templates define a dependency graph. When all prerequisites for a step are complete, the step is marked as "queued" and a corresponding job is pushed into Sidekiq.  Some steps are are marked `skip-queue="true"` which means they are merely logged events and do not kick off a Sidekiq process.
+
+
+### Sidekiq Jobs
+
+When a workflow step is set to done, the service calculates which workflow steps
+are ready to be worked on and enqueues Sidekiq jobs for them.  The queues are named
+for the workflow and priority.  For example:
+
+```
+accessionWF_high
+accessionWF_default
+accessionWF_low
+assemblyWF_high
+assemblyWF_default
+assemblyWF_low
+disseminationWF_high
+disseminationWF_default
+disseminationWF_low
+...
+```
+
+#### Workflow Variables
+
+If a workflow or workflows for a particular object require data to be persisted and available between steps, workflow variables can be set.
+These are per object/version pair and thus available to any step in any workflow for a given version of an object once set.
+
+These data are not persisted in Cocina, and are not preserved or available outside of the workflow API, so they should only be used to persist information used during workflow processing.
+
+To use, pass in a "context" parameter as JSON in the body of the request when creating a workflow. The json can contain any number of key/value pairs of context.
+
+This context will then be returned as JSON in each `process` block of the XML response containing workflow data for use in processing.
+
+This can be used if a user selects an option in Pre-assembly or Argo that needs to be passed through the accessioning pipeline, such as if OCR or captioning is required.  The value is set when creating the workflow, and then available to each robot which needs it.
+
 ## Other tools
 
 ### Running Reports
