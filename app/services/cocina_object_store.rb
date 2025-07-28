@@ -102,7 +102,7 @@ class CocinaObjectStore
   end
 
   def version(druid)
-    RepositoryObject.find_by!(external_identifier: druid).head_version.version
+    RepositoryObject.joins(:head_version).select(:version).find_by!(external_identifier: druid).version
   rescue ActiveRecord::RecordNotFound
     raise CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid)
   end

@@ -79,7 +79,6 @@ class WorkflowService
                          workflow_steps = WorkflowStep.where(druid:)
                                                       .order(:workflow, created_at: :asc)
                                                       .group_by(&:workflow)
-
                          xml = Nokogiri::XML::Builder.new do |builder|
                            builder.workflows(objectId: druid) do
                              workflow_steps.each do |workflow_name, steps|
@@ -106,7 +105,7 @@ class WorkflowService
       steps = WorkflowStep.where(
         druid:,
         workflow: workflow_name
-      ).order(:workflow, created_at: :asc)
+      ).left_outer_joins(:version_context).order(:workflow, created_at: :asc)
       xml = Nokogiri::XML::Builder.new do |builder|
         build_workflow(builder:, workflow_name:, steps:)
       end.to_xml

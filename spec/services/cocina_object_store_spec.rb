@@ -61,10 +61,15 @@ RSpec.describe CocinaObjectStore do
     end
 
     context 'when object is found in datastore' do
-      let(:repository_object) { create(:repository_object, :with_repository_object_version, version: 5) }
+      let!(:repository_object) { create(:repository_object, :with_repository_object_version, version: 5) }
 
       it 'returns version' do
         expect(store.version(repository_object.external_identifier)).to eq(5)
+      end
+
+      it 'makes a database query' do
+        expect { store.version(repository_object.external_identifier) }
+          .to make_database_queries(count: 1)
       end
     end
   end
