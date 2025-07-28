@@ -29,6 +29,14 @@ module Cocina
         new(related_resource).related_item_attributes
       end
 
+      # @param [Cocina::Models::RelatedResource] related_resource
+      # @return [Hash] Hash of DataCite relatedIdentifier attributes, conforming to the expectations of HTTP PUT
+      # request to DataCite or nil if blank
+      #  see https://support.datacite.org/reference/dois-2#put_dois-id
+      def self.related_identifier_attributes(related_resource)
+        new(related_resource).related_identifier_attributes
+      end
+
       def initialize(related_resource)
         @related_resource = related_resource
       end
@@ -56,6 +64,28 @@ module Cocina
         end
       end
 
+      # @return [Hash,nil] Array of DataCite relatedIdentifier attributes, conforming to the expectations of HTTP PUT
+      # request to DataCite or nil if blank
+      #  see https://support.datacite.org/reference/dois-2#put_dois-id
+      def related_identifier_attributes
+        return if related_identifier_blank?
+
+        {
+          resourceTypeGeneral: 'Other',
+          relationType: relation_type
+        }.tap do |attribs|
+          if related_item_identifier_url
+            attribs[:relatedIdentifier] = related_item_identifier_url
+            attribs[:relatedIdentifierType] = 'URL'
+          end
+
+          if related_item_doi
+            attribs[:relatedIdentifier] = related_item_doi
+            attribs[:relatedIdentifierType] = 'DOI'
+          end
+        end
+      end
+
       private
 
       attr_reader :related_resource
@@ -68,6 +98,13 @@ module Cocina
         return true if related_resource.blank?
 
         related_resource_hash = related_resource.to_h.slice(:note, :title, :access, :identifier)
+        related_resource_hash.blank? || related_resource_hash.each_value.all?(&:blank?)
+      end
+
+      def related_identifier_blank?
+        return true if related_resource.blank?
+
+        related_resource_hash = related_resource.to_h.slice(:access, :identifier)
         related_resource_hash.blank? || related_resource_hash.each_value.all?(&:blank?)
       end
 

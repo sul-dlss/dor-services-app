@@ -55,7 +55,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
               alternateIdentifierType: 'PURL'
             }
           ],
-          relatedItems: []
+          relatedItems: [],
+          relatedIdentifiers: []
         }
       )
     end
@@ -112,7 +113,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
               alternateIdentifierType: 'PURL'
             }
           ],
-          relatedItems: []
+          relatedItems: [],
+          relatedIdentifiers: []
         }
       )
     end
@@ -494,6 +496,14 @@ RSpec.describe Cocina::ToDatacite::Attributes do
               ],
               relatedItemIdentifier: 'https://doi.org/10.1234/example.doi',
               relatedItemIdentifierType: 'DOI'
+            }
+          ],
+          relatedIdentifiers: [
+            {
+              resourceTypeGeneral: 'Other',
+              relationType: 'IsReferencedBy',
+              relatedIdentifier: 'https://doi.org/10.1234/example.doi',
+              relatedIdentifierType: 'DOI'
             }
           ],
           rightsList: [

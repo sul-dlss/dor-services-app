@@ -136,6 +136,9 @@ RSpec.describe Cocina::ToDatacite::RelatedResource do
         ]
       }
     end
+    let(:related_identifier_attributes) do
+      described_class.related_identifier_attributes(Cocina::Models::RelatedResource.new(related_resource))
+    end
 
     it 'returns related item attributes with mapped type' do
       expect(attributes).to eq(
@@ -144,6 +147,12 @@ RSpec.describe Cocina::ToDatacite::RelatedResource do
         titles: [{ title: 'https://doi.org/10.1234/example.doi' }],
         relatedItemIdentifier: 'https://doi.org/10.1234/example.doi',
         relatedItemIdentifierType: 'DOI'
+      )
+      expect(related_identifier_attributes).to eq(
+        resourceTypeGeneral: 'Other',
+        relationType: 'IsReferencedBy',
+        relatedIdentifier: 'https://doi.org/10.1234/example.doi',
+        relatedIdentifierType: 'DOI'
       )
     end
   end
