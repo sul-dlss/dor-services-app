@@ -122,4 +122,29 @@ RSpec.describe Cocina::ToDatacite::RelatedResource do
       )
     end
   end
+
+  context 'when related resource is a link to a DOI' do
+    let(:related_resource) do
+      {
+        type: 'referenced by',
+        dataCiteRelationType: 'IsReferencedBy',
+        identifier: [
+          {
+            type: 'doi',
+            uri: 'https://doi.org/10.1234/example.doi'
+          }
+        ]
+      }
+    end
+
+    it 'returns related item attributes with mapped type' do
+      expect(attributes).to eq(
+        relatedItemType: 'Other',
+        relationType: 'IsReferencedBy',
+        titles: [{ title: 'https://doi.org/10.1234/example.doi' }],
+        relatedItemIdentifier: 'https://doi.org/10.1234/example.doi',
+        relatedItemIdentifierType: 'DOI'
+      )
+    end
+  end
 end

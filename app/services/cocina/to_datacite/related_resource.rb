@@ -48,6 +48,11 @@ module Cocina
             attribs[:relatedItemIdentifier] = related_item_identifier_url
             attribs[:relatedItemIdentifierType] = 'URL'
           end
+
+          if related_item_doi
+            attribs[:relatedItemIdentifier] = related_item_doi
+            attribs[:relatedItemIdentifierType] = 'DOI'
+          end
         end
       end
 
@@ -62,12 +67,12 @@ module Cocina
       def related_resource_blank?
         return true if related_resource.blank?
 
-        related_resource_hash = related_resource.to_h.slice(:note, :title, :access)
+        related_resource_hash = related_resource.to_h.slice(:note, :title, :access, :identifier)
         related_resource_hash.blank? || related_resource_hash.each_value.all?(&:blank?)
       end
 
       def related_item_title
-        @related_item_title ||= preferred_citation || other_title
+        @related_item_title ||= preferred_citation || other_title || related_item_doi
       end
 
       # example cocina relatedResource:
@@ -97,6 +102,12 @@ module Cocina
         Array(related_resource.title).find do |title|
           title.value.present?
         end&.value
+      end
+
+      def related_item_doi
+        Array(related_resource.identifier).find do |identifier|
+          identifier.type == 'doi' && identifier.uri.present?
+        end&.uri
       end
 
       # example cocina relatedResource:

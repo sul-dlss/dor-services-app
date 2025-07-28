@@ -364,6 +364,16 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                       }
                                     ]
                                   },
+                                  {
+                                    type: 'referenced by',
+                                    dataCiteRelationType: 'IsReferencedBy',
+                                    identifier: [
+                                      {
+                                        type: 'doi',
+                                        uri: 'https://doi.org/10.1234/example.doi'
+                                      }
+                                    ]
+                                  },
                                   {} # Blank will be removed.
                                 ],
                                 subject: [
@@ -473,6 +483,17 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                   title: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. yadda yadda.'
                 }
               ]
+            },
+            {
+              relatedItemType: 'Other',
+              relationType: 'IsReferencedBy',
+              titles: [
+                {
+                  title: 'https://doi.org/10.1234/example.doi'
+                }
+              ],
+              relatedItemIdentifier: 'https://doi.org/10.1234/example.doi',
+              relatedItemIdentifierType: 'DOI'
             }
           ],
           rightsList: [
