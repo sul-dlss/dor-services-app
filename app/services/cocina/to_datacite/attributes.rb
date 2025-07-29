@@ -47,7 +47,8 @@ module Cocina
           types: types_attributes,
           publicationYear: publication_year,
           publisher: 'Stanford Digital Repository',
-          relatedItems: related_items
+          relatedItems: related_items,
+          relatedIdentifiers: related_identifiers
         }.merge(creator_contributor_funder_attributes).compact
       end
 
@@ -87,6 +88,12 @@ module Cocina
       def related_items
         Array(description&.relatedResource).filter_map do |related_resource|
           RelatedResource.related_item_attributes(related_resource)
+        end
+      end
+
+      def related_identifiers
+        Array(description&.relatedResource).filter_map do |related_resource|
+          RelatedResource.related_identifier_attributes(related_resource)
         end
       end
 
