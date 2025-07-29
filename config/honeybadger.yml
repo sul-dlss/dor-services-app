@@ -6,3 +6,5 @@ request:
 exceptions:
   ignore:
     - 'ReindexJob::DeadLockError'
+insights:
+  enabled: false
