@@ -11,10 +11,6 @@ class WorkflowStateService
     new(...).accessioned?
   end
 
-  def self.published?(...)
-    new(...).published?
-  end
-
   def initialize(druid:, version:)
     @druid = druid
     @version = version
@@ -22,26 +18,28 @@ class WorkflowStateService
 
   # Checks if the latest version has any assembly workflows with incomplete steps.
   # @return [Boolean] true if object is currently being assembled
-  def assembling? # rubocop:disable Metrics/CyclomaticComplexity
-    # Omitting the last step for these workflows since the last step is closing the version.
-    # Without this the version can't be closed.
-    # The exception is GIS workflows.
-    # gisAssemblyWF kicks off the gisDeliveryWF, the last step of which is closing the version.
-    # For these purposes, we'll be considering gisDeliveryWF as an assemblyWF.
-    @assembling ||= active_workflow_except_step?(workflow: 'assemblyWF', process: 'accessioning-initiate') ||
-                    active_workflow_except_step?(workflow: 'wasCrawlPreassemblyWF',
-                                                 process: 'end-was-crawl-preassembly') ||
-                    active_workflow_except_step?(workflow: 'wasSeedPreassemblyWF',
-                                                 process: 'end-was-seed-preassembly') ||
-                    active_workflow_except_step?(workflow: 'gisDeliveryWF', process: 'start-accession-workflow') ||
-                    active_workflow_except_step?(workflow: 'ocrWF', process: 'end-ocr') ||
-                    active_workflow_except_step?(workflow: 'speechToTextWF', process: 'end-stt') ||
-                    active_workflow?(workflow: 'gisAssemblyWF')
+  def assembling? # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
+    @assembling ||= if Settings.enabled_features.local_wf
+                      workflow_state_batch_service.assembling_druids.include?(druid)
+                    else
+                      # Omitting the last step for these workflows since the last step is closing the version.
+                      # Without this the version can't be closed.
+                      # The exception is GIS workflows.
+                      # gisAssemblyWF kicks off the gisDeliveryWF, the last step of which is closing the version.
+                      # For these purposes, we'll be considering gisDeliveryWF as an assemblyWF.
+                      active_workflow_except_step?(workflow: 'assemblyWF',
+                                                   process: 'accessioning-initiate') ||
+                        active_workflow_except_step?(workflow: 'wasCrawlPreassemblyWF',
+                                                     process: 'end-was-crawl-preassembly') ||
+                        active_workflow_except_step?(workflow: 'wasSeedPreassemblyWF',
+                                                     process: 'end-was-seed-preassembly') ||
+                        active_workflow_except_step?(workflow: 'gisDeliveryWF',
+                                                     process: 'start-accession-workflow') ||
+                        active_workflow_except_step?(workflow: 'ocrWF', process: 'end-ocr') ||
+                        active_workflow_except_step?(workflow: 'speechToTextWF', process: 'end-stt') ||
+                        active_workflow?(workflow: 'gisAssemblyWF')
+                    end
   end
-
-  # The following methods were extracted from VersionService.
-  # As such, they may not represent the current best practice for determining workflow state
-  # and will probably be subject to further refactoring or removal.
 
   # Checks if the active (latest) version has any incomplete workflow steps in accessionWF (other than end-accession).
   # We allow end-accession to be incomplete, because we want to be able to open a new version from other workflows,
@@ -51,22 +49,29 @@ class WorkflowStateService
   # because it will not complete the `sdr-ingest-received` step, which will cause this to return true as well.
   # @return [Boolean] true if object is currently being accessioned or is failing an audit
   def accessioning?
-    @accessioning ||= active_workflow_except_step?(workflow: 'accessionWF', process: 'end-accession')
+    @accessioning ||= if Settings.enabled_features.local_wf
+                        workflow_state_batch_service.accessioning_druids.include?(druid)
+                      else
+                        active_workflow_except_step?(workflow: 'accessionWF', process: 'end-accession')
+                      end
   end
 
   # @return [Boolean] true if the object has previously been accessioned.
   def accessioned?
-    @accessioned ||= WorkflowLifecycleService.milestone?(druid:, milestone_name: 'accessioned')
-  end
-
-  # @return [Boolean] true if the object has previously been published for the version.
-  def published?
-    @published ||= WorkflowLifecycleService.milestone?(druid:, milestone_name: 'published', version:)
+    @accessioned ||= if Settings.enabled_features.local_wf
+                       workflow_state_batch_service.accessioned_druids.include?(druid)
+                     else
+                       WorkflowLifecycleService.milestone?(druid:, milestone_name: 'accessioned')
+                     end
   end
 
   private
 
   attr_reader :druid, :version
+
+  def workflow_state_batch_service
+    @workflow_state_batch_service ||= WorkflowStateBatchService.new(druids: [druid])
+  end
 
   # @return [Boolean] true if there is a workflow for the current version and it has incomplete steps.
   def active_workflow?(workflow:)

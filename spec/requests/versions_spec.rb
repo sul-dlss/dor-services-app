@@ -279,11 +279,6 @@ RSpec.describe 'Operations regarding object versions' do
       end
 
       context 'when the object is not found' do
-        # before do
-        #   allow(VersionBatchStatusService).to receive(:new).and_raise(CocinaObjectStore::CocinaObjectNotFoundError,
-        #                                                               'Object not found')
-        # end
-
         it 'returns a not found error' do
           get '/v1/objects/druid:mx123qw2323/versions/status',
               headers: { 'Authorization' => "Bearer #{jwt}" }
@@ -364,11 +359,9 @@ RSpec.describe 'Operations regarding object versions' do
           .with(druid: druids[1], version: 2,
                 workflow_state_service: workflow_state_service2).and_return(version_service2)
         allow(WorkflowStateService).to receive(:new)
-          .with(druid: druids[0],
-                version: 1).and_return(workflow_state_service1)
+          .with(druid: druids[0], version: 1).and_return(workflow_state_service1)
         allow(WorkflowStateService).to receive(:new)
-          .with(druid: druids[1],
-                version: 2).and_return(workflow_state_service2)
+          .with(druid: druids[1], version: 2).and_return(workflow_state_service2)
       end
 
       it 'returns the version status for the provided druids' do

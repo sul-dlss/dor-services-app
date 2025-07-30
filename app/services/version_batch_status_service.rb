@@ -73,35 +73,18 @@ class VersionBatchStatusService
   # rubocop:enable Metrics/MethodLength, Layout/LineLength
 
   def accessioning_druids
-    @accessioning_druids ||= WorkflowStep.where(druid: druids, active_version: true, workflow: 'accessionWF')
-                                         .incomplete
-                                         .select(:druid).distinct.pluck(:druid)
+    @accessioning_druids ||= workflow_state_batch_service.accessioning_druids
   end
 
   def accessioned_druids
-    @accessioned_druids ||= WorkflowStep.where(druid: druids, lifecycle: 'accessioned')
-                                        .complete
-                                        .select(:druid).distinct.pluck(:druid)
+    @accessioned_druids ||= workflow_state_batch_service.accessioned_druids
   end
 
-  # rubocop:disable Rails/WhereNotWithMultipleConditions, Metrics/AbcSize
   def assembling_druids
     # For any of the assembly workflows, are they are incomplete workflow steps for the active version,
     # ignoring certain final steps that might not be complete yet.
-    @assembling_druids ||= WorkflowStep
-                           .where(druid: druids, active_version: true,
-                                  workflow: %w[assemblyWF wasCrawlPreassemblyWF wasSeedPreassemblyWF
-                                               gisDeliveryWF ocrWF speechToTextWF gisAssemblyWF])
-                           .incomplete
-                           .where.not(workflow: 'assemblyWF', process: 'accessioning-initiate')
-                           .where.not(workflow: 'wasCrawlPreassemblyWF', process: 'end-was-crawl-preassembly')
-                           .where.not(workflow: 'wasSeedPreassemblyWF', process: 'end-was-seed-preassembly')
-                           .where.not(workflow: 'gisDeliveryWF', process: 'start-accession-workflow')
-                           .where.not(workflow: 'ocrWF', process: 'end-ocr')
-                           .where.not(workflow: 'speechToTextWF', process: 'end-stt')
-                           .select(:druid).distinct.pluck(:druid)
+    @assembling_druids ||= workflow_state_batch_service.assembling_druids
   end
-  # rubocop:enable Rails/WhereNotWithMultipleConditions, Metrics/AbcSize
 
   def status_for(druid)
     repository_object = repository_object_map[druid]
@@ -131,5 +114,9 @@ class VersionBatchStatusService
       accessioned: accessioned_druids.include?(druid),
       assembling: assembling_druids.include?(druid)
     )
+  end
+
+  def workflow_state_batch_service
+    @workflow_state_batch_service ||= WorkflowStateBatchService.new(druids:)
   end
 end
