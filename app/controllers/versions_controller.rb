@@ -56,18 +56,26 @@ class VersionsController < ApplicationController
   end
 
   def status
-    render json: status_for(druid: params[:object_id], version: @version)
+    if Settings.enabled_features.local_wf
+      render json: VersionBatchStatusService.call_single(druid: params[:object_id])
+    else
+      render json: status_for(druid: params[:object_id], version: @version)
+    end
   end
 
   def batch_status
     druids = params.require([:externalIdentifiers]).first
-    statuses = druids.filter_map do |druid|
-      version = CocinaObjectStore.version(druid)
-      [druid, status_for(druid: druid, version: version)]
-    rescue CocinaObjectStore::CocinaObjectNotFoundError
-      nil
+    if Settings.enabled_features.local_wf
+      render json: VersionBatchStatusService.call(druids:)
+    else
+      statuses = druids.filter_map do |druid|
+        version = CocinaObjectStore.version(druid)
+        [druid, status_for(druid: druid, version: version)]
+      rescue CocinaObjectStore::CocinaObjectNotFoundError
+        nil
+      end
+      render json: statuses.to_h
     end
-    render json: statuses.to_h
   end
 
   def solr

@@ -8,7 +8,7 @@
 # For versioning operations, see VersionService.
 # For persistence, see CreateObjectService and UpdateObjectService.
 # For destroying, see DeleteService.
-class RepositoryObject < ApplicationRecord
+class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
   self.locking_column = 'lock'
 
   class VersionAlreadyOpened < StandardError; end
@@ -43,6 +43,62 @@ class RepositoryObject < ApplicationRecord
 
   def head_user_version
     @head_user_version ||= user_versions.maximum(:version)
+  end
+
+  # These methods allow for pre-populating via a join. (See VersionBatchStatuService for example.)
+  # If they are not pre-populated, they will be retrieved lazily.
+  def opened_version_version_description
+    # Check if the attribute was pre-loaded via select
+    if has_attribute?('opened_version_version_description')
+      self['opened_version_version_description']
+    else
+      opened_version&.version_description
+    end
+  end
+
+  def opened_version_version
+    # Check if the attribute was pre-loaded via select
+    if has_attribute?('opened_version_version')
+      self['opened_version_version']
+    else
+      opened_version&.version
+    end
+  end
+
+  def last_closed_version_version_description
+    # Check if the attribute was pre-loaded via select
+    if has_attribute?('last_closed_version_version_description')
+      self['last_closed_version_version_description']
+    else
+      last_closed_version&.version_description
+    end
+  end
+
+  def last_closed_version_version
+    # Check if the attribute was pre-loaded via select
+    if has_attribute?('last_closed_version_version')
+      self['last_closed_version_version']
+    else
+      last_closed_version&.version
+    end
+  end
+
+  def head_version_version_description
+    # Check if the attribute was pre-loaded via select
+    if has_attribute?('head_version_version_description')
+      self['head_version_version_description']
+    else
+      head_version&.version_description
+    end
+  end
+
+  def head_version_version
+    # Check if the attribute was pre-loaded via select
+    if has_attribute?('head_version_version')
+      self['head_version_version']
+    else
+      head_version&.version
+    end
   end
 
   # NOTE: This block uses metaprogramming to create the equivalent of scopes that query the RepositoryObjectVersion
@@ -158,11 +214,11 @@ class RepositoryObject < ApplicationRecord
   end
 
   def open?
-    head_version == opened_version
+    head_version_id == opened_version_id
   end
 
   def closed?
-    head_version == last_closed_version
+    head_version_id == last_closed_version_id
   end
 
   # When a collection object is published, publish the collection members that:

@@ -398,4 +398,63 @@ RSpec.describe RepositoryObject do
       end
     end
   end
+
+  describe 'pre-populated attributes' do
+    let(:druid) { 'druid:bc868mh7756' }
+
+    before do
+      repository_object = create(:repository_object, external_identifier: druid)
+      repository_object.close_version!(description: 'Best first version ever')
+      repository_object.open_version!(description: 'Best second version ever')
+    end
+
+    context 'when not pre-populated (i.e., lazy loading)' do
+      it 'lazily loads the pre-populated attributes' do
+        repository_object = described_class.find_by(external_identifier: druid)
+        expect { repository_object.head_version_version_description }.to make_database_queries(count: 1)
+        expect(repository_object.head_version_version_description).to eq('Best second version ever')
+        expect(repository_object.head_version_version).to eq(2)
+        expect { repository_object.opened_version_version_description }.to make_database_queries(count: 1)
+        expect(repository_object.opened_version_version_description).to eq('Best second version ever')
+        expect(repository_object.opened_version_version).to eq(2)
+        expect { repository_object.last_closed_version_version_description }.to make_database_queries(count: 1)
+        expect(repository_object.last_closed_version_version_description).to eq('Best first version ever')
+        expect(repository_object.last_closed_version_version).to eq(1)
+      end
+    end
+
+    context 'when pre-populated' do
+      # rubocop:disable Layout/LineLength
+      it 'uses the pre-populated attributes' do
+        repository_object = described_class
+                            .joins('INNER JOIN repository_object_versions AS head_version ON repository_objects.head_version_id = head_version.id')
+                            .joins('LEFT OUTER JOIN repository_object_versions AS opened_version ON repository_objects.opened_version_id = opened_version.id')
+                            .joins('LEFT OUTER JOIN repository_object_versions AS last_closed_version ON repository_objects.last_closed_version_id = last_closed_version.id')
+                            .select(
+                              'repository_objects.external_identifier',
+                              'repository_objects.id',
+                              'repository_objects.head_version_id',
+                              'repository_objects.opened_version_id',
+                              'repository_objects.last_closed_version_id',
+                              'opened_version.version AS opened_version_version',
+                              'opened_version.version_description AS opened_version_version_description',
+                              'last_closed_version.version AS last_closed_version_version',
+                              'last_closed_version.version_description AS last_closed_version_version_description',
+                              'head_version.version AS head_version_version',
+                              'head_version.version_description AS head_version_version_description'
+                            )
+                            .find_by(external_identifier: druid)
+        expect { repository_object.head_version_version_description }.not_to make_database_queries
+        expect(repository_object.head_version_version_description).to eq('Best second version ever')
+        expect(repository_object.head_version_version).to eq(2)
+        expect { repository_object.opened_version_version_description }.not_to make_database_queries
+        expect(repository_object.opened_version_version_description).to eq('Best second version ever')
+        expect(repository_object.opened_version_version).to eq(2)
+        expect { repository_object.last_closed_version_version_description }.not_to make_database_queries
+        expect(repository_object.last_closed_version_version_description).to eq('Best first version ever')
+        expect(repository_object.last_closed_version_version).to eq(1)
+      end
+    end
+    # rubocop:enable Layout/LineLength
+  end
 end

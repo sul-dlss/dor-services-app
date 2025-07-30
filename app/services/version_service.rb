@@ -24,10 +24,7 @@ class VersionService
 
   def self.close(druid:, version:, description: nil, user_name: nil, start_accession: true, # rubocop:disable Metrics/ParameterLists
                  user_version_mode: DEFAULT_USER_VERSION_MODE)
-    new(druid:, version:).close(description:,
-                                user_name:,
-                                start_accession:,
-                                user_version_mode:)
+    new(druid:, version:).close(description:, user_name:, start_accession:, user_version_mode:)
   end
 
   def self.can_close?(...)
@@ -49,10 +46,12 @@ class VersionService
   # @param [String] druid of the item
   # @param [Integer] version of the item
   # @param [WorkflowStateService] workflow_state_service
-  def initialize(druid:, version:, workflow_state_service: nil)
+  # @param [RepositoryObject] repository_object optional object to check against, otherwise it will be fetched
+  def initialize(druid:, version:, workflow_state_service: nil, repository_object: nil)
     @druid = druid
     @version = version
     @workflow_state_service = workflow_state_service
+    @repository_object = repository_object
   end
 
   # Increments the version number and initializes versioningWF for the object
@@ -67,9 +66,7 @@ class VersionService
     raise ArgumentError, 'description is required to open a new version' if description.blank?
 
     ensure_openable!(assume_accessioned:)
-    repository_object = RepositoryObject.includes(:head_version)
-                                        .find_by!(external_identifier: cocina_object.externalIdentifier)
-    check_version!(current_version: repository_object.head_version.version) unless from_version
+    check_version!(current_version: repository_object.head_version_version) unless from_version
 
     from_repository_object_version = from_version ? repository_object.versions.find_by!(version: from_version) : nil
 
@@ -85,22 +82,20 @@ class VersionService
     repository_object.reload.to_cocina_with_metadata
   end
 
-  # @param [String] druid of the item
-  # @param [Integer] version of the item
   # @raise [CocinaObjectNotFoundError] if the object is not found
   # @raise [VersioningError] if the version does not match the head version
   def open?
-    @open ||=  begin
-      repo_obj = RepositoryObject.includes(:head_version).find_by(external_identifier: druid)
-
-      raise CocinaObjectNotFoundError, "Couldn't find object with 'external_identifier'=#{druid}" unless repo_obj
-
-      if version != repo_obj.head_version.version
-        raise VersioningError,
-              "Version #{version} does not match head version #{repo_obj.head_version.version}"
+    @open ||= begin
+      unless repository_object
+        raise CocinaObjectNotFoundError, "Couldn't find object with 'external_identifier'=#{druid}"
       end
 
-      repo_obj.open?
+      if version != repository_object.head_version_version
+        raise VersioningError,
+              "Version #{version} does not match head version #{repository_object.head_version_version}"
+      end
+
+      repository_object.open?
     end
   end
 
@@ -138,8 +133,6 @@ class VersionService
 
     ensure_closeable!
 
-    repository_object = RepositoryObject.find_by!(external_identifier: druid)
-
     repository_object.close_version!(description:)
     WorkflowService.create(druid:, workflow_name: 'accessionWF', version: version.to_s) if start_accession
 
@@ -173,7 +166,7 @@ class VersionService
     # The accessioned milestone is the last step of the accessionWF.
     # During local development, we need a way to open a new version even if the object has not been accessioned.
     raise(VersionService::VersioningError, 'Object net yet accessioned') unless
-        assume_accessioned || workflow_state_service.accessioned?
+        assume_accessioned || accessioned?
     # Raised when the current version has any incomplete wf steps and there is a versionWF.
     # The open milestone is part of the versioningWF.
     raise VersionService::VersioningError, 'Object already opened for versioning' if open?
@@ -198,7 +191,6 @@ class VersionService
   # @raise [VersionService::VersioningError] if the version cannot be discarded
   def discard
     ensure_discardable!
-    repository_object = RepositoryObject.find_by!(external_identifier: druid)
     repository_object.discard_open_version!
     EventFactory.create(druid: druid, event_type: 'version_discard', data: { version: version })
   end
@@ -216,8 +208,7 @@ class VersionService
   # @return [Void]
   # @raise [VersionService::VersioningError] if the version cannot be discarded
   def ensure_discardable!
-    repository_object = RepositoryObject.includes(:head_version).find_by!(external_identifier: druid)
-    unless repository_object.head_version.version == version
+    unless repository_object.head_version_version == version
       raise VersionService::VersioningError,
             'Only the head version can be discarded'
     end
@@ -231,7 +222,7 @@ class VersionService
 
   private
 
-  delegate :assembling?, :accessioning?, to: :workflow_state_service
+  delegate :assembling?, :accessioning?, :accessioned?, to: :workflow_state_service
 
   def workflow_state_service
     @workflow_state_service ||= WorkflowStateService.new(druid:, version:)
@@ -297,6 +288,10 @@ class VersionService
     return unless cocina_object.access.view == 'dark'
 
     UserVersionService.permanently_withdraw_previous_user_versions(druid:)
+  end
+
+  def repository_object
+    @repository_object ||= RepositoryObject.includes(:head_version).find_by(external_identifier: druid)
   end
 end
 # rubocop:enable Metrics/ClassLength

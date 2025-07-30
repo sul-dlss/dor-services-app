@@ -2,6 +2,13 @@
 
 # Models a process that occurred for a digital object. Basically a log entry.
 class WorkflowStep < WorkflowApplicationRecord
+  belongs_to :version_context, optional: true, foreign_key: %i[druid version], primary_key: %i[druid version],
+                               inverse_of: :workflow_steps
+
+  def context
+    version_context&.values
+  end
+
   validates_with DruidValidator
   validates :workflow, presence: true
   validates :process, presence: true
@@ -40,12 +47,6 @@ class WorkflowStep < WorkflowApplicationRecord
     return unless completed?
 
     self.completed_at ||= Time.zone.now
-  end
-
-  # any associated version context for this step (if it exists)
-  # note: same for any workflow/step for a given druid/version combination
-  def context
-    VersionContext.find_by(druid:, version:)&.values
   end
 
   ##
