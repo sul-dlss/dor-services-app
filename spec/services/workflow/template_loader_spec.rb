@@ -31,26 +31,15 @@ RSpec.describe Workflow::TemplateLoader do
     end
   end
 
-  describe '#load' do
-    context 'when file exists' do
-      it 'returns file as string' do
-        expect(loader.load).to start_with('<?xml')
-      end
-    end
-
-    context 'when file does not exist' do
-      let(:workflow_name) { 'xassemblyWF' }
-
-      it 'returns nil' do
-        expect(loader.load).to be_nil
-      end
-    end
-  end
-
   describe '#load_as_xml' do
     context 'when file exists' do
       it 'returns file as XML' do
         expect(loader.load_as_xml).to be_a(Nokogiri::XML::Document)
+        # Loading against does not reread the file
+        allow(File).to receive(:read).and_call_original
+        expect(loader.load_as_xml).to be_a(Nokogiri::XML::Document)
+        expect(described_class.load_as_xml(workflow_name)).to be_a(Nokogiri::XML::Document)
+        expect(File).not_to have_received(:read)
       end
     end
 

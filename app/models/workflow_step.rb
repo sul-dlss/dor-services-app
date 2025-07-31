@@ -79,7 +79,7 @@ class WorkflowStep < WorkflowApplicationRecord
   def valid_process_for_workflow?
     return false unless valid_workflow?
 
-    wtp = Workflow::TemplateParser.new(Workflow::TemplateLoader.new(workflow).load_as_xml)
+    wtp = Workflow::TemplateParser.new(Workflow::TemplateLoader.load_as_xml(workflow))
     wtp.processes.map(&:name).include? process
   end
 
