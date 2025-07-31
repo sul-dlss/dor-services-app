@@ -7,7 +7,7 @@ RSpec.describe Robots::DorRepo::Accession::SdrIngestTransfer, type: :robot do
 
   let(:druid) { 'druid:zz000zz0001' }
   let(:robot) { described_class.new }
-  let(:workflow_service) { instance_double(Dor::Workflow::Client) }
+  let(:workflow) { instance_double(Dor::Workflow::Response::Workflow, process_for_recent_version: process) }
   let(:process) { instance_double(Dor::Workflow::Response::Process, lane_id: 'low') }
   let(:object) { build(:dro, id: druid) }
 
@@ -15,8 +15,8 @@ RSpec.describe Robots::DorRepo::Accession::SdrIngestTransfer, type: :robot do
     allow(CocinaObjectStore).to receive(:find).with(druid).and_return(object)
     allow(PreservationIngestService).to receive(:transfer)
     allow(Workflow::Service).to receive(:create)
-    allow(Dor::Workflow::Client).to receive(:new).and_return(workflow_service)
-    allow(workflow_service).to receive(:process).and_return(process)
+    allow(Workflow::Service).to receive(:workflow).with(druid:,
+                                                        workflow_name: 'accessionWF').and_return(workflow)
   end
 
   it 'preserves the object' do
