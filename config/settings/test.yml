@@ -2,6 +2,3 @@ catalog:
   folio:
     max_lookup_tries: 3
     sleep_seconds: 0
-
-enabled_features:
-  local_wf: false

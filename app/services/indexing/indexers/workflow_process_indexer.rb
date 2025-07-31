@@ -13,7 +13,7 @@ module Indexing
 
       # @param [WorkflowSolrDocument] solr_doc
       # @param [String] workflow_name
-      # @param [Dor::Workflow::Response::Process] process containing data for a process in a workflow for an object
+      # @param [Dor::Services::Response::Process] process containing data for a process in a workflow for an object
       def initialize(solr_doc:, workflow_name:, process:)
         @solr_doc = solr_doc
         @workflow_name = workflow_name

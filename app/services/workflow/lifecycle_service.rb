@@ -31,18 +31,14 @@ module Workflow
 
     # @return [Nokogiri::XML::Document] the XML document representing the lifecycle of the object
     def lifecycle_xml
-      if Settings.enabled_features.local_wf
-        builder = Nokogiri::XML::Builder.new do |xml|
-          xml.lifecycle(objectId: druid) do
-            workflow_steps.each do |step|
-              step.as_milestone(xml)
-            end
+      builder = Nokogiri::XML::Builder.new do |xml|
+        xml.lifecycle(objectId: druid) do
+          workflow_steps.each do |step|
+            step.as_milestone(xml)
           end
         end
-        builder.doc
-      else
-        workflow_client.query_lifecycle(druid, version: version, active_only: active_only)
       end
+      builder.doc
     end
 
     # @param [String] milestone_name the name of the milestone
@@ -61,10 +57,6 @@ module Workflow
     private
 
     attr_reader :druid, :version, :active_only
-
-    def workflow_client
-      @workflow_client ||= WorkflowClientFactory.build
-    end
 
     def workflow_steps
       steps = WorkflowStep.where(druid:)

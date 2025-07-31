@@ -56,26 +56,12 @@ class VersionsController < ApplicationController
   end
 
   def status
-    if Settings.enabled_features.local_wf
-      render json: VersionBatchStatusService.call_single(druid: params[:object_id])
-    else
-      render json: status_for(druid: params[:object_id], version: @version)
-    end
+    render json: VersionBatchStatusService.call_single(druid: params[:object_id])
   end
 
   def batch_status
     druids = params.require([:externalIdentifiers]).first
-    if Settings.enabled_features.local_wf
-      render json: VersionBatchStatusService.call(druids:)
-    else
-      statuses = druids.filter_map do |druid|
-        version = CocinaObjectStore.version(druid)
-        [druid, status_for(druid: druid, version: version)]
-      rescue CocinaObjectStore::CocinaObjectNotFoundError
-        nil
-      end
-      render json: statuses.to_h
-    end
+    render json: VersionBatchStatusService.call(druids:)
   end
 
   def solr
@@ -149,23 +135,5 @@ class VersionsController < ApplicationController
 
   def load_repository_object_version
     @repository_object_version = find_repository_object.versions.find_by!(version: params[:id])
-  end
-
-  def status_for(druid:, version:)
-    workflow_state_service = Workflow::StateService.new(druid:, version:)
-    version_service = VersionService.new(druid:, version:, workflow_state_service:)
-    repository_object = RepositoryObject.find_by!(external_identifier: druid)
-    version_description = repository_object.versions.select(:version_description).find_by!(version:).version_description
-
-    {
-      versionId: version,
-      open: version_service.open?,
-      openable: version_service.can_open?(check_preservation: false),
-      assembling: workflow_state_service.assembling?,
-      accessioning: workflow_state_service.accessioning?,
-      closeable: version_service.can_close?,
-      discardable: version_service.can_discard?,
-      versionDescription: version_description
-    }
   end
 end

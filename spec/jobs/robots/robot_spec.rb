@@ -42,8 +42,8 @@ RSpec.describe Robots::Robot do
       described_class.new(workflow_name: 'testWF', process: 'test-step', druid: 'druid:gv054hp4128')
     end
 
-    let(:workflow_response) { instance_double(Dor::Workflow::Response::Workflow, process_for_recent_version: process_response) }
-    let(:process_response) { instance_double(Dor::Workflow::Response::Process, name: 'test-step', status: 'waiting', lane_id: 'low', context: { foo: 'bar' }) }
+    let(:workflow_response) { instance_double(Dor::Services::Response::Workflow, process_for_recent_version: process_response) }
+    let(:process_response) { instance_double(Dor::Services::Response::Process, name: 'test-step', status: 'waiting', lane_id: 'low', context: { foo: 'bar' }) }
 
     before do
       allow(Workflow::Service).to receive(:workflow).and_return(workflow_response)

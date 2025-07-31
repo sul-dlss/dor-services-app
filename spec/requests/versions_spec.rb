@@ -202,89 +202,40 @@ RSpec.describe 'Operations regarding object versions' do
   end
 
   describe 'GET /versions/status' do
-    context 'when local workflows are not enabled' do
-      let(:version_service) do
-        instance_double(VersionService, can_open?: false, can_close?: true, open?: true, can_discard?: true)
+    let(:druid) { 'druid:mx123qw2323' }
+
+    context 'when the object is found' do
+      let(:status) do
+        {
+          versionId: 1,
+          open: true,
+          openable: false,
+          assembling: true,
+          accessioning: false,
+          closeable: true,
+          discardable: true,
+          versionDescription: 'Best version ever'
+        }
       end
-      let(:workflow_state_service) { instance_double(Workflow::StateService, assembling?: true, accessioning?: false) }
 
       before do
-        allow(VersionService).to receive(:new).and_return(version_service)
-        allow(Workflow::StateService).to receive(:new).and_return(workflow_state_service)
-        create(:repository_object_version, :with_repository_object, external_identifier: druid, version: 1)
+        allow(VersionBatchStatusService).to receive(:call_single).with(druid: druid).and_return(status)
       end
 
-      it 'returns the version status for an object' do
-        get '/v1/objects/druid:mx123qw2323/versions/status',
+      it 'returns the version status for the provided druids' do
+        get "/v1/objects/#{druid}/versions/status",
             headers: { 'Authorization' => "Bearer #{jwt}" }
 
-        expect(response.parsed_body.with_indifferent_access).to match({
-                                                                        versionId: 1,
-                                                                        open: true,
-                                                                        openable: false,
-                                                                        assembling: true,
-                                                                        accessioning: false,
-                                                                        closeable: true,
-                                                                        discardable: true,
-                                                                        versionDescription: 'Best version ever'
-                                                                      })
-      end
-
-      context 'when the object is not found' do
-        before do
-          allow(VersionService).to receive(:new).and_raise(CocinaObjectStore::CocinaObjectNotFoundError,
-                                                           'Object not found')
-        end
-
-        it 'returns a not found error' do
-          get '/v1/objects/druid:mx123qw2323/versions/status',
-              headers: { 'Authorization' => "Bearer #{jwt}" }
-          expect(response).to have_http_status :not_found
-          expect(response.body).to eq('{"errors":[{"status":"404","title":"Not Found","detail":"Object not found"}]}')
-        end
+        expect(response.parsed_body.with_indifferent_access).to match(status)
       end
     end
 
-    context 'when local workflows are enabled' do
-      let(:druid) { 'druid:mx123qw2323' }
-
-      before do
-        allow(Settings.enabled_features).to receive(:local_wf).and_return(true)
-      end
-
-      context 'when the object is found' do
-        let(:status) do
-          {
-            versionId: 1,
-            open: true,
-            openable: false,
-            assembling: true,
-            accessioning: false,
-            closeable: true,
-            discardable: true,
-            versionDescription: 'Best version ever'
-          }
-        end
-
-        before do
-          allow(VersionBatchStatusService).to receive(:call_single).with(druid: druid).and_return(status)
-        end
-
-        it 'returns the version status for the provided druids' do
-          get "/v1/objects/#{druid}/versions/status",
-              headers: { 'Authorization' => "Bearer #{jwt}" }
-
-          expect(response.parsed_body.with_indifferent_access).to match(status)
-        end
-      end
-
-      context 'when the object is not found' do
-        it 'returns a not found error' do
-          get '/v1/objects/druid:mx123qw2323/versions/status',
-              headers: { 'Authorization' => "Bearer #{jwt}" }
-          expect(response).to have_http_status :not_found
-          expect(response.body).to eq('{"errors":[{"status":"404","title":"Not Found","detail":"Object not found"}]}')
-        end
+    context 'when the object is not found' do
+      it 'returns a not found error' do
+        get '/v1/objects/druid:mx123qw2323/versions/status',
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status :not_found
+        expect(response.body).to eq('{"errors":[{"status":"404","title":"Not Found","detail":"Object not found"}]}')
       end
     end
   end
@@ -292,104 +243,41 @@ RSpec.describe 'Operations regarding object versions' do
   describe 'POST /versions/status' do
     let(:druids) { ['druid:mx123qw2323', 'druid:fp165nz4391', 'druid:bm077td6448'] }
 
-    context 'when local workflows are enabled' do
-      let(:statuses) do
-        {
-          'druid:mx123qw2323' => {
-            versionId: 1,
-            open: true,
-            openable: false,
-            assembling: true,
-            accessioning: false,
-            closeable: true,
-            discardable: true,
-            versionDescription: 'Best version ever'
-          },
-          'druid:fp165nz4391' => {
-            versionId: 2,
-            open: false,
-            openable: true,
-            assembling: false,
-            accessioning: true,
-            closeable: false,
-            discardable: false,
-            versionDescription: 'Best version ever'
-          }
+    let(:statuses) do
+      {
+        'druid:mx123qw2323' => {
+          versionId: 1,
+          open: true,
+          openable: false,
+          assembling: true,
+          accessioning: false,
+          closeable: true,
+          discardable: true,
+          versionDescription: 'Best version ever'
+        },
+        'druid:fp165nz4391' => {
+          versionId: 2,
+          open: false,
+          openable: true,
+          assembling: false,
+          accessioning: true,
+          closeable: false,
+          discardable: false,
+          versionDescription: 'Best version ever'
         }
-      end
-
-      before do
-        allow(Settings.enabled_features).to receive(:local_wf).and_return(true)
-        allow(VersionBatchStatusService).to receive(:call).with(druids:).and_return(statuses)
-      end
-
-      it 'returns the version status for the provided druids' do
-        post '/v1/objects/versions/status',
-             params: { externalIdentifiers: druids }.to_json,
-             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-
-        expect(response.parsed_body.with_indifferent_access).to match statuses
-      end
+      }
     end
 
-    context 'when local workflows are not enabled' do
-      let(:version_service1) do
-        instance_double(VersionService, can_open?: false, can_close?: true, open?: true, can_discard?: true)
-      end
-      let(:version_service2) do
-        instance_double(VersionService, can_open?: true, can_close?: false, open?: false, can_discard?: false)
-      end
-      let(:workflow_state_service1) { instance_double(Workflow::StateService, assembling?: true, accessioning?: false) }
-      let(:workflow_state_service2) { instance_double(Workflow::StateService, assembling?: false, accessioning?: true) }
+    before do
+      allow(VersionBatchStatusService).to receive(:call).with(druids:).and_return(statuses)
+    end
 
-      before do
-        create(:repository_object_version, :with_repository_object, external_identifier: druids[0], version: 1)
-        create(:repository_object_version, :with_repository_object, external_identifier: druids[1], version: 2)
-        allow(CocinaObjectStore).to receive(:version)
-          .with(druids[0]).and_return(1)
-        allow(CocinaObjectStore).to receive(:version)
-          .with(druids[1]).and_return(2)
-        allow(CocinaObjectStore).to receive(:version)
-          .with(druids[2]).and_raise(CocinaObjectStore::CocinaObjectNotFoundError)
+    it 'returns the version status for the provided druids' do
+      post '/v1/objects/versions/status',
+           params: { externalIdentifiers: druids }.to_json,
+           headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
 
-        allow(VersionService).to receive(:new)
-          .with(druid: druids[0], version: 1,
-                workflow_state_service: workflow_state_service1).and_return(version_service1)
-        allow(VersionService).to receive(:new)
-          .with(druid: druids[1], version: 2,
-                workflow_state_service: workflow_state_service2).and_return(version_service2)
-        allow(Workflow::StateService).to receive(:new)
-          .with(druid: druids[0], version: 1).and_return(workflow_state_service1)
-        allow(Workflow::StateService).to receive(:new)
-          .with(druid: druids[1], version: 2).and_return(workflow_state_service2)
-      end
-
-      it 'returns the version status for the provided druids' do
-        post '/v1/objects/versions/status',
-             params: { externalIdentifiers: druids }.to_json,
-             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-
-        expect(response.parsed_body.with_indifferent_access).to match('druid:mx123qw2323' => {
-                                                                        versionId: 1,
-                                                                        open: true,
-                                                                        openable: false,
-                                                                        assembling: true,
-                                                                        accessioning: false,
-                                                                        closeable: true,
-                                                                        discardable: true,
-                                                                        versionDescription: 'Best version ever'
-                                                                      },
-                                                                      'druid:fp165nz4391' => {
-                                                                        versionId: 2,
-                                                                        open: false,
-                                                                        openable: true,
-                                                                        assembling: false,
-                                                                        accessioning: true,
-                                                                        closeable: false,
-                                                                        discardable: false,
-                                                                        versionDescription: 'Best version ever'
-                                                                      })
-      end
+      expect(response.parsed_body.with_indifferent_access).to match statuses
     end
   end
 end

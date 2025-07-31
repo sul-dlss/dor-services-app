@@ -112,18 +112,20 @@ RSpec.describe Indexing::Indexers::WorkflowsIndexer do
       ] }
     end
 
-    let(:workflow_client) { instance_double(Dor::Workflow::Client) }
-
     before do
       allow(Workflow::Service).to receive(:workflows).with(druid: 'druid:ab123cd4567').and_return(
-        Dor::Workflow::Response::Workflows.new(xml:).workflows
+        Dor::Services::Response::Workflows.new(xml: Nokogiri::XML(xml)).workflows
       )
-      allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
-      allow(workflow_client).to receive(:workflow_template).with('accessionWF').and_return(accession_json)
-      allow(workflow_client).to receive(:workflow_template).with('assemblyWF').and_return(assembly_json)
-      allow(workflow_client).to receive(:workflow_template).with('disseminationWF').and_return(dissemination_json)
-      allow(workflow_client).to receive(:workflow_template).with('hydrusAssemblyWF').and_return(hydrus_json)
-      allow(workflow_client).to receive(:workflow_template).with('versioningWF').and_return(versioning_json)
+      allow(Workflow::TemplateService).to receive(:template)
+        .with(workflow_name: 'accessionWF').and_return(accession_json)
+      allow(Workflow::TemplateService).to receive(:template)
+        .with(workflow_name: 'assemblyWF').and_return(assembly_json)
+      allow(Workflow::TemplateService).to receive(:template)
+        .with(workflow_name: 'disseminationWF').and_return(dissemination_json)
+      allow(Workflow::TemplateService).to receive(:template)
+        .with(workflow_name: 'hydrusAssemblyWF').and_return(hydrus_json)
+      allow(Workflow::TemplateService).to receive(:template)
+        .with(workflow_name: 'versioningWF').and_return(versioning_json)
     end
 
     describe 'workflow_status_ssim' do
