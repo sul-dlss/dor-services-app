@@ -21,7 +21,7 @@ RSpec.describe 'List workflow lifecycles' do
   let(:templates) { ['assemblyWF', 'registrationWF'] }
 
   before do
-    allow(WorkflowLifecycleService).to receive(:lifecycle_xml).and_return(ng_xml)
+    allow(Workflow::LifecycleService).to receive(:lifecycle_xml).and_return(ng_xml)
   end
 
   context 'when no params are provided' do
@@ -30,7 +30,7 @@ RSpec.describe 'List workflow lifecycles' do
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(Nokogiri::XML(response.parsed_body).to_s).to match(ng_xml.to_s)
-      expect(WorkflowLifecycleService).to have_received(:lifecycle_xml)
+      expect(Workflow::LifecycleService).to have_received(:lifecycle_xml)
         .with(druid: druid, version: nil, active_only: false)
     end
   end
@@ -42,7 +42,7 @@ RSpec.describe 'List workflow lifecycles' do
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(Nokogiri::XML(response.parsed_body).to_s).to match(ng_xml.to_s)
-      expect(WorkflowLifecycleService).to have_received(:lifecycle_xml)
+      expect(Workflow::LifecycleService).to have_received(:lifecycle_xml)
         .with(druid: druid, version: 2, active_only: true)
     end
   end

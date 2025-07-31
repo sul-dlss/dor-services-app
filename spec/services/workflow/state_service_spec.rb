@@ -2,19 +2,19 @@
 
 require 'rails_helper'
 
-RSpec.describe WorkflowStateService do
+RSpec.describe Workflow::StateService do
   subject(:workflow_state) { described_class.new(druid:, version: nil) }
 
   let(:druid) { 'druid:xz456jk0987' }
   let(:workflow_state_batch_service) do
-    instance_double(WorkflowStateBatchService, accessioned_druids:, accessioning_druids:, assembling_druids:)
+    instance_double(Workflow::StateBatchService, accessioned_druids:, accessioning_druids:, assembling_druids:)
   end
   let(:accessioned_druids) { [] }
   let(:accessioning_druids) { [] }
   let(:assembling_druids) { [] }
 
   before do
-    allow(WorkflowStateBatchService).to receive(:new).and_return(workflow_state_batch_service)
+    allow(Workflow::StateBatchService).to receive(:new).and_return(workflow_state_batch_service)
   end
 
   describe '.accessioned?' do
@@ -41,19 +41,19 @@ RSpec.describe WorkflowStateService do
     context 'when local workflow is not enabled' do
       context 'when the object is accessioned' do
         before do
-          allow(WorkflowLifecycleService).to receive(:milestone?).and_return(true)
+          allow(Workflow::LifecycleService).to receive(:milestone?).and_return(true)
         end
 
         it 'returns true' do
           expect(workflow_state).to be_accessioned
-          expect(WorkflowLifecycleService).to have_received(:milestone?).with(druid: druid,
-                                                                              milestone_name: 'accessioned')
+          expect(Workflow::LifecycleService).to have_received(:milestone?).with(druid: druid,
+                                                                                milestone_name: 'accessioned')
         end
       end
 
       context 'when the object is not accessioned' do
         before do
-          allow(WorkflowLifecycleService).to receive(:milestone?).and_return(false)
+          allow(Workflow::LifecycleService).to receive(:milestone?).and_return(false)
         end
 
         it 'returns false' do
@@ -89,10 +89,10 @@ RSpec.describe WorkflowStateService do
         instance_double(Dor::Workflow::Response::Workflow, active_for?: false, workflow_name: 'accessionWF')
       end
       let(:process) { instance_double(Dor::Workflow::Response::Process, name: process_name) }
-      let(:workflow_service) { instance_double(WorkflowService) }
+      let(:workflow_service) { instance_double(Workflow::Service) }
 
       before do
-        allow(WorkflowService).to receive(:new).and_return(workflow_service)
+        allow(Workflow::Service).to receive(:new).and_return(workflow_service)
         allow(workflow_service).to receive(:workflow).and_return(accession_wf_response)
       end
 
@@ -185,10 +185,10 @@ RSpec.describe WorkflowStateService do
                         ])
       end
       let(:process) { instance_double(Dor::Workflow::Response::Process, name: 'arbitrary') }
-      let(:workflow_service) { instance_double(WorkflowService) }
+      let(:workflow_service) { instance_double(Workflow::Service) }
 
       before do
-        allow(WorkflowService).to receive(:new).and_return(workflow_service)
+        allow(Workflow::Service).to receive(:new).and_return(workflow_service)
         allow(workflow_service).to receive(:workflow).with(workflow_name: 'assemblyWF').and_return(assembly_wf_response)
         allow(workflow_service).to receive(:workflow).with(workflow_name: 'wasCrawlPreassemblyWF')
                                                      .and_return(was_crawl_preassembly_wf_response)

@@ -25,7 +25,7 @@ module Robots
 
         def was_crawl?
           # The presence of the wasCrawlPreassemblyWF workflow indicates that this is a crawl.
-          WorkflowService.workflow?(druid:, workflow_name: 'wasCrawlPreassemblyWF')
+          Workflow::Service.workflow?(druid:, workflow_name: 'wasCrawlPreassemblyWF')
         end
       end
     end

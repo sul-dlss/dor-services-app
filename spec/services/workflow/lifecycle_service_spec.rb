@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe WorkflowLifecycleService do
+RSpec.describe Workflow::LifecycleService do
   let(:ng_xml) { Nokogiri::XML(xml) }
   let(:xml) do
     <<~XML

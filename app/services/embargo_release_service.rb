@@ -28,7 +28,7 @@ class EmbargoReleaseService
   end
 
   def release # rubocop:disable Metrics/AbcSize
-    return unless WorkflowStateService.accessioned?(druid:, version:)
+    return unless Workflow::StateService.accessioned?(druid:, version:)
 
     return unless VersionService.can_open?(druid:, version: version)
 

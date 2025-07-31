@@ -23,18 +23,18 @@ RSpec.describe VersionBatchStatusService do
       accessioning_repository_object_version.repository_object.close_version!(description: 'Best version ever')
       # This object has an assembly workflow that is sufficiently completed.
       allow(QueueService).to receive(:enqueue)
-      WorkflowService.create(druid: accessioning_druid, workflow_name: 'assemblyWF', version: 2)
+      Workflow::Service.create(druid: accessioning_druid, workflow_name: 'assemblyWF', version: 2)
       steps = WorkflowStep.where(druid: accessioning_druid, active_version: true,
                                  workflow: 'assemblyWF').order(:id).to_a
       steps.pop # Skip the last step.
       steps.each { |step| step.update(status: 'completed') }
       # This object has a completed accessioning workflow.
-      WorkflowService.create(druid: accessioning_druid, workflow_name: 'accessionWF', version: 1)
+      Workflow::Service.create(druid: accessioning_druid, workflow_name: 'accessionWF', version: 1)
       steps = WorkflowStep.where(druid: accessioning_druid, active_version: true, workflow: 'accessionWF')
       steps.each { |step| step.update(status: 'completed', active_version: false) }
 
       # This object has an active accessioning workflow that is in progress.
-      WorkflowService.create(druid: accessioning_druid, workflow_name: 'accessionWF', version: 2)
+      Workflow::Service.create(druid: accessioning_druid, workflow_name: 'accessionWF', version: 2)
       step = WorkflowStep.where(druid: accessioning_druid, active_version: true, workflow: 'accessionWF').first
       step.update!(status: 'started')
     end

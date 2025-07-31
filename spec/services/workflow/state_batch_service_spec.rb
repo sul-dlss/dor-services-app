@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 # rubocop:disable Rails/SkipsModelValidations
-RSpec.describe WorkflowStateBatchService do
+RSpec.describe Workflow::StateBatchService do
   before do
     allow(Settings.enabled_features).to receive(:local_wf).and_return(true)
     allow(QueueService).to receive(:enqueue)
@@ -22,15 +22,15 @@ RSpec.describe WorkflowStateBatchService do
 
     before do
       # accessioned
-      WorkflowService.create(druid: accessioned_druid, workflow_name: 'accessionWF', version: 1)
+      Workflow::Service.create(druid: accessioned_druid, workflow_name: 'accessionWF', version: 1)
       WorkflowStep.where(druid: accessioned_druid, active_version: true,
                          workflow: 'accessionWF').update_all(status: 'completed')
       # accessioning (with some steps completed)
-      WorkflowService.create(druid: accessioning_druid, workflow_name: 'accessionWF', version: 1)
+      Workflow::Service.create(druid: accessioning_druid, workflow_name: 'accessionWF', version: 1)
       WorkflowStep.where(druid: accessioning_druid, active_version: true,
                          workflow: 'accessionWF').order(:id).limit(4).update_all(status: 'completed')
       # accessioning with all completed except the last step
-      WorkflowService.create(druid: accessioning_druid_with_ignored_step, workflow_name: 'accessionWF', version: 1)
+      Workflow::Service.create(druid: accessioning_druid_with_ignored_step, workflow_name: 'accessionWF', version: 1)
       WorkflowStep.where(druid: accessioning_druid_with_ignored_step, active_version: true,
                          workflow: 'accessionWF').where.not(process: 'end-accession').update_all(status: 'completed')
     end
@@ -100,93 +100,94 @@ RSpec.describe WorkflowStateBatchService do
 
     before do
       # assembling
-      WorkflowService.create(druid: assembling_druid, workflow_name: 'assemblyWF', version: 1)
+      Workflow::Service.create(druid: assembling_druid, workflow_name: 'assemblyWF', version: 1)
       WorkflowStep.where(druid: assembling_druid, active_version: true,
                          workflow: 'assemblyWF').order(:id).limit(4).update_all(status: 'completed')
       # assembled
-      WorkflowService.create(druid: assembled_druid, workflow_name: 'assemblyWF', version: 1)
+      Workflow::Service.create(druid: assembled_druid, workflow_name: 'assemblyWF', version: 1)
       WorkflowStep.where(druid: assembled_druid, active_version: true,
                          workflow: 'assemblyWF').update_all(status: 'completed')
       # assembling with all completed except the last step
-      WorkflowService.create(druid: assembling_druid_with_ignored_step, workflow_name: 'assemblyWF', version: 1)
+      Workflow::Service.create(druid: assembling_druid_with_ignored_step, workflow_name: 'assemblyWF', version: 1)
       WorkflowStep.where(druid: assembling_druid_with_ignored_step, active_version: true,
                          workflow: 'assemblyWF').where.not(process: 'accessioning-initiate')
                   .update_all(status: 'completed')
 
       # wasCrawlPreassemblyWF assembling
-      WorkflowService.create(druid: was_crawl_preassembling_druid, workflow_name: 'wasCrawlPreassemblyWF', version: 1)
+      Workflow::Service.create(druid: was_crawl_preassembling_druid, workflow_name: 'wasCrawlPreassemblyWF', version: 1)
       # wasCrawlPreassemblyWF assembled
-      WorkflowService.create(druid: was_crawl_preassembled_druid, workflow_name: 'wasCrawlPreassemblyWF', version: 1)
+      Workflow::Service.create(druid: was_crawl_preassembled_druid, workflow_name: 'wasCrawlPreassemblyWF', version: 1)
       WorkflowStep.where(druid: was_crawl_preassembled_druid, active_version: true,
                          workflow: 'wasCrawlPreassemblyWF').update_all(status: 'completed')
       # wasCrawlPreassemblyWF assembling with all completed except the last step
-      WorkflowService.create(druid: was_crawl_preassembling_druid_with_ignored_step,
-                             workflow_name: 'wasCrawlPreassemblyWF', version: 1)
+      Workflow::Service.create(druid: was_crawl_preassembling_druid_with_ignored_step,
+                               workflow_name: 'wasCrawlPreassemblyWF', version: 1)
       WorkflowStep.where(druid: was_crawl_preassembling_druid_with_ignored_step, active_version: true,
                          workflow: 'wasCrawlPreassemblyWF').where.not(process: 'end-was-crawl-preassembly')
                   .update_all(status: 'completed')
 
       # wasSeedPreassemblyWF assembling
-      WorkflowService.create(druid: was_seed_preassembling_druid, workflow_name: 'wasSeedPreassemblyWF', version: 1)
+      Workflow::Service.create(druid: was_seed_preassembling_druid, workflow_name: 'wasSeedPreassemblyWF', version: 1)
       # wasSeedPreassemblyWF assembled
-      WorkflowService.create(druid: was_seed_preassembled_druid, workflow_name: 'wasSeedPreassemblyWF', version: 1)
+      Workflow::Service.create(druid: was_seed_preassembled_druid, workflow_name: 'wasSeedPreassemblyWF', version: 1)
       WorkflowStep.where(druid: was_seed_preassembled_druid, active_version: true,
                          workflow: 'wasSeedPreassemblyWF').update_all(status: 'completed')
       # wasSeedPreassemblyWF assembling with all completed except the last step
-      WorkflowService.create(druid: was_seed_preassembling_druid_with_ignored_step,
-                             workflow_name: 'wasSeedPreassemblyWF', version: 1)
+      Workflow::Service.create(druid: was_seed_preassembling_druid_with_ignored_step,
+                               workflow_name: 'wasSeedPreassemblyWF', version: 1)
       WorkflowStep.where(druid: was_seed_preassembling_druid_with_ignored_step, active_version: true,
                          workflow: 'wasSeedPreassemblyWF').where.not(process: 'end-was-seed-preassembly')
                   .update_all(status: 'completed')
 
       # gisDeliveryWF delivering
-      WorkflowService.create(druid: gis_delivering_druid, workflow_name: 'gisDeliveryWF', version: 1)
+      Workflow::Service.create(druid: gis_delivering_druid, workflow_name: 'gisDeliveryWF', version: 1)
       WorkflowStep.where(druid: gis_delivering_druid, active_version: true,
                          workflow: 'gisDeliveryWF').order(:id).limit(2).update_all(status: 'completed')
       # gisDeliveryWF delivered
-      WorkflowService.create(druid: gis_delivered_druid, workflow_name: 'gisDeliveryWF', version: 1)
+      Workflow::Service.create(druid: gis_delivered_druid, workflow_name: 'gisDeliveryWF', version: 1)
       WorkflowStep.where(druid: gis_delivered_druid, active_version: true,
                          workflow: 'gisDeliveryWF').update_all(status: 'completed')
       # gisDeliveryWF delivering with all completed except the last step
-      WorkflowService.create(druid: gis_delivering_druid_with_ignored_step, workflow_name: 'gisDeliveryWF', version: 1)
+      Workflow::Service.create(druid: gis_delivering_druid_with_ignored_step, workflow_name: 'gisDeliveryWF',
+                               version: 1)
       WorkflowStep.where(druid: gis_delivering_druid_with_ignored_step, active_version: true,
                          workflow: 'gisDeliveryWF').where.not(process: 'start-accession-workflow')
                   .update_all(status: 'completed')
 
       # ocrWF ocring
-      WorkflowService.create(druid: ocring_druid, workflow_name: 'ocrWF', version: 1)
+      Workflow::Service.create(druid: ocring_druid, workflow_name: 'ocrWF', version: 1)
       WorkflowStep.where(druid: ocring_druid, active_version: true,
                          workflow: 'ocrWF').order(:id).limit(2).update_all(status: 'completed')
       # ocrWF ocred
-      WorkflowService.create(druid: ocred_druid, workflow_name: 'ocrWF', version: 1)
+      Workflow::Service.create(druid: ocred_druid, workflow_name: 'ocrWF', version: 1)
       WorkflowStep.where(druid: ocred_druid, active_version: true,
                          workflow: 'ocrWF').update_all(status: 'completed')
       # ocrWF ocring with all completed except the last step
-      WorkflowService.create(druid: ocring_druid_with_ignored_step, workflow_name: 'ocrWF', version: 1)
+      Workflow::Service.create(druid: ocring_druid_with_ignored_step, workflow_name: 'ocrWF', version: 1)
       WorkflowStep.where(druid: ocring_druid_with_ignored_step, active_version: true,
                          workflow: 'ocrWF').where.not(process: 'end-ocr')
                   .update_all(status: 'completed')
 
       # speechToTextWF stting
-      WorkflowService.create(druid: stting_druid, workflow_name: 'speechToTextWF', version: 1)
+      Workflow::Service.create(druid: stting_druid, workflow_name: 'speechToTextWF', version: 1)
       WorkflowStep.where(druid: stting_druid, active_version: true,
                          workflow: 'speechToTextWF').order(:id).limit(2).update_all(status: 'completed')
       # speechToTextWF stted
-      WorkflowService.create(druid: stted_druid, workflow_name: 'speechToTextWF', version: 1)
+      Workflow::Service.create(druid: stted_druid, workflow_name: 'speechToTextWF', version: 1)
       WorkflowStep.where(druid: stted_druid, active_version: true,
                          workflow: 'speechToTextWF').update_all(status: 'completed')
       # speechToTextWF stting with all completed except the last step
-      WorkflowService.create(druid: stting_druid_with_ignored_step, workflow_name: 'speechToTextWF', version: 1)
+      Workflow::Service.create(druid: stting_druid_with_ignored_step, workflow_name: 'speechToTextWF', version: 1)
       WorkflowStep.where(druid: stting_druid_with_ignored_step, active_version: true,
                          workflow: 'speechToTextWF').where.not(process: 'end-stt')
                   .update_all(status: 'completed')
 
       # gisAssemblyWF assembling
-      WorkflowService.create(druid: gis_assembling_druid, workflow_name: 'gisAssemblyWF', version: 1)
+      Workflow::Service.create(druid: gis_assembling_druid, workflow_name: 'gisAssemblyWF', version: 1)
       WorkflowStep.where(druid: gis_assembling_druid, active_version: true,
                          workflow: 'gisAssemblyWF').order(:id).limit(4).update_all(status: 'completed')
       # gisAssemblyWF assembled
-      WorkflowService.create(druid: gis_assembled_druid, workflow_name: 'gisAssemblyWF', version: 1)
+      Workflow::Service.create(druid: gis_assembled_druid, workflow_name: 'gisAssemblyWF', version: 1)
       WorkflowStep.where(druid: gis_assembled_druid, active_version: true,
                          workflow: 'gisAssemblyWF').update_all(status: 'completed')
     end

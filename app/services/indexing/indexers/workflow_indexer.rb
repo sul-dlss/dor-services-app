@@ -31,7 +31,7 @@ module Indexing
 
       def definition_process_names
         @definition_process_names ||= begin
-          definition = WorkflowTemplateService.template(workflow_name: workflow_name)
+          definition = Workflow::TemplateService.template(workflow_name: workflow_name)
           definition['processes'].pluck('name')
         end
       end

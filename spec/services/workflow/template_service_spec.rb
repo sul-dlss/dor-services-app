@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe WorkflowTemplateService do
+RSpec.describe Workflow::TemplateService do
   let(:workflow_client) { instance_double(Dor::Workflow::Client) }
 
   before do
@@ -30,7 +30,7 @@ RSpec.describe WorkflowTemplateService do
 
         it 'raises an error if the template is not found' do
           expect { described_class.template(workflow_name: 'non_existent') }
-            .to raise_error(WorkflowService::NotFoundException, "Workflow template 'non_existent' not found")
+            .to raise_error(Workflow::Service::NotFoundException, "Workflow template 'non_existent' not found")
         end
       end
     end
@@ -65,7 +65,7 @@ RSpec.describe WorkflowTemplateService do
       context 'when the template does not exist' do
         it 'raises' do
           expect { described_class.template(workflow_name: 'non_existent') }
-            .to raise_error(WorkflowService::NotFoundException, "Workflow template 'non_existent' not found")
+            .to raise_error(Workflow::Service::NotFoundException, "Workflow template 'non_existent' not found")
         end
       end
     end

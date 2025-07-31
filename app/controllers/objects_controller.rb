@@ -114,8 +114,8 @@ class ObjectsController < ApplicationController
     end
 
     # initialize workflow
-    WorkflowService.create(druid: @cocina_object.externalIdentifier, workflow_name: workflow,
-                           version: updated_cocina_object.version.to_s, context: workflow_context)
+    Workflow::Service.create(druid: @cocina_object.externalIdentifier, workflow_name: workflow,
+                             version: updated_cocina_object.version.to_s, context: workflow_context)
     head :created
   end
 

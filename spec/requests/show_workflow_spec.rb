@@ -16,7 +16,7 @@ RSpec.describe 'Show workflow' do
   end
 
   before do
-    allow(WorkflowService).to receive(:workflow).and_return(workflow)
+    allow(Workflow::Service).to receive(:workflow).and_return(workflow)
   end
 
   context 'when successful' do
@@ -25,13 +25,13 @@ RSpec.describe 'Show workflow' do
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(Nokogiri::XML(response.parsed_body).to_s).to match(ng_xml.to_s)
-      expect(WorkflowService).to have_received(:workflow).with(druid:, workflow_name: 'accessionWF')
+      expect(Workflow::Service).to have_received(:workflow).with(druid:, workflow_name: 'accessionWF')
     end
   end
 
   context 'when the druid is not found' do
     before do
-      allow(WorkflowService).to receive(:workflow)
+      allow(Workflow::Service).to receive(:workflow)
         .and_raise(Dor::MissingWorkflowException.new('HTTP status 404 Not Found'))
     end
 
@@ -44,8 +44,8 @@ RSpec.describe 'Show workflow' do
 
   context 'when some other HTTP error' do
     before do
-      allow(WorkflowService).to receive(:workflow)
-        .and_raise(WorkflowService::Exception.new(status: 400))
+      allow(Workflow::Service).to receive(:workflow)
+        .and_raise(Workflow::Service::Exception.new(status: 400))
     end
 
     it 'returns an HTTP error' do
@@ -57,8 +57,8 @@ RSpec.describe 'Show workflow' do
 
   context 'when some other error' do
     before do
-      allow(WorkflowService).to receive(:workflow)
-        .and_raise(WorkflowService::Exception.new('Faraday connection error'))
+      allow(Workflow::Service).to receive(:workflow)
+        .and_raise(Workflow::Service::Exception.new('Faraday connection error'))
     end
 
     it 'returns an 500 error' do

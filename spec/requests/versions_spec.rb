@@ -206,11 +206,11 @@ RSpec.describe 'Operations regarding object versions' do
       let(:version_service) do
         instance_double(VersionService, can_open?: false, can_close?: true, open?: true, can_discard?: true)
       end
-      let(:workflow_state_service) { instance_double(WorkflowStateService, assembling?: true, accessioning?: false) }
+      let(:workflow_state_service) { instance_double(Workflow::StateService, assembling?: true, accessioning?: false) }
 
       before do
         allow(VersionService).to receive(:new).and_return(version_service)
-        allow(WorkflowStateService).to receive(:new).and_return(workflow_state_service)
+        allow(Workflow::StateService).to receive(:new).and_return(workflow_state_service)
         create(:repository_object_version, :with_repository_object, external_identifier: druid, version: 1)
       end
 
@@ -339,8 +339,8 @@ RSpec.describe 'Operations regarding object versions' do
       let(:version_service2) do
         instance_double(VersionService, can_open?: true, can_close?: false, open?: false, can_discard?: false)
       end
-      let(:workflow_state_service1) { instance_double(WorkflowStateService, assembling?: true, accessioning?: false) }
-      let(:workflow_state_service2) { instance_double(WorkflowStateService, assembling?: false, accessioning?: true) }
+      let(:workflow_state_service1) { instance_double(Workflow::StateService, assembling?: true, accessioning?: false) }
+      let(:workflow_state_service2) { instance_double(Workflow::StateService, assembling?: false, accessioning?: true) }
 
       before do
         create(:repository_object_version, :with_repository_object, external_identifier: druids[0], version: 1)
@@ -358,9 +358,9 @@ RSpec.describe 'Operations regarding object versions' do
         allow(VersionService).to receive(:new)
           .with(druid: druids[1], version: 2,
                 workflow_state_service: workflow_state_service2).and_return(version_service2)
-        allow(WorkflowStateService).to receive(:new)
+        allow(Workflow::StateService).to receive(:new)
           .with(druid: druids[0], version: 1).and_return(workflow_state_service1)
-        allow(WorkflowStateService).to receive(:new)
+        allow(Workflow::StateService).to receive(:new)
           .with(druid: druids[1], version: 2).and_return(workflow_state_service2)
       end
 

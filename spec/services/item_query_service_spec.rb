@@ -19,7 +19,7 @@ RSpec.describe ItemQueryService do
   before do
     allow(CocinaObjectStore).to receive(:find).with(druid).and_return(cocina_object_with_metadata)
     allow(VersionService).to receive(:open?).and_return(true)
-    allow(WorkflowStateService).to receive(:accessioned?).and_return(true)
+    allow(Workflow::StateService).to receive(:accessioned?).and_return(true)
   end
 
   describe '.find_combinable_item' do
@@ -280,7 +280,7 @@ RSpec.describe ItemQueryService do
   describe '.check_accessioned' do
     context 'when item has been accessioned' do
       before do
-        allow(WorkflowStateService).to receive(:accessioned?).and_return(true)
+        allow(Workflow::StateService).to receive(:accessioned?).and_return(true)
       end
 
       it 'raises an error' do
@@ -290,7 +290,7 @@ RSpec.describe ItemQueryService do
 
     context 'when item has not been accessioned' do
       before do
-        allow(WorkflowStateService).to receive(:accessioned?).and_return(false)
+        allow(Workflow::StateService).to receive(:accessioned?).and_return(false)
       end
 
       it 'raises an error' do

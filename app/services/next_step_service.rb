@@ -66,10 +66,10 @@ class NextStepService
 
   # @return [Hash<Process>]
   def load_workflow(workflow)
-    doc = WorkflowTemplateLoader.load_as_xml(workflow)
+    doc = Workflow::TemplateLoader.load_as_xml(workflow)
     raise "Workflow #{workflow} not found" if doc.nil?
 
-    parser = WorkflowTemplateParser.new(doc)
+    parser = Workflow::TemplateParser.new(doc)
     parser.processes.index_by(&:name)
   end
 

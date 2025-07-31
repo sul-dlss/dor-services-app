@@ -8,7 +8,7 @@ RSpec.describe 'Get workflow template' do
   end
 
   before do
-    allow(WorkflowTemplateService).to receive(:template).with(workflow_name: 'whateverWF').and_return(template)
+    allow(Workflow::TemplateService).to receive(:template).with(workflow_name: 'whateverWF').and_return(template)
   end
 
   it 'returns the named template' do

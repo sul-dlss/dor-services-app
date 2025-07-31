@@ -52,5 +52,5 @@ end
 
 every 6.hours do
   set :check_in, Settings.honeybadger_checkins.workflow_monitor
-  runner_hb 'WorkflowMonitor.monitor'
+  runner_hb 'Workflow::Monitor.monitor'
 end

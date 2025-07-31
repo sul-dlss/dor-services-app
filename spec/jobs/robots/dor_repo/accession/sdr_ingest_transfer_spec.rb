@@ -14,7 +14,7 @@ RSpec.describe Robots::DorRepo::Accession::SdrIngestTransfer, type: :robot do
   before do
     allow(CocinaObjectStore).to receive(:find).with(druid).and_return(object)
     allow(PreservationIngestService).to receive(:transfer)
-    allow(WorkflowService).to receive(:create)
+    allow(Workflow::Service).to receive(:create)
     allow(Dor::Workflow::Client).to receive(:new).and_return(workflow_service)
     allow(workflow_service).to receive(:process).and_return(process)
   end
@@ -22,7 +22,7 @@ RSpec.describe Robots::DorRepo::Accession::SdrIngestTransfer, type: :robot do
   it 'preserves the object' do
     expect(perform).to be_nil # no return state defaults to completed.
     expect(PreservationIngestService).to have_received(:transfer).with(object)
-    expect(WorkflowService).to have_received(:create).with(druid:, workflow_name: 'preservationIngestWF',
-                                                           version: object.version, lane_id: 'low')
+    expect(Workflow::Service).to have_received(:create).with(druid:, workflow_name: 'preservationIngestWF',
+                                                             version: object.version, lane_id: 'low')
   end
 end

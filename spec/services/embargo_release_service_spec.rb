@@ -22,7 +22,7 @@ RSpec.describe EmbargoReleaseService do
       allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
       allow(VersionService).to receive_messages(can_open?: can_open?, open: open_cocina_object)
       allow(VersionService).to receive(:close)
-      allow(WorkflowStateService).to receive(:accessioned?).and_return(accessioned?)
+      allow(Workflow::StateService).to receive(:accessioned?).and_return(accessioned?)
       allow(service).to receive(:release_cocina_object).and_return(released_cocina_object)
       allow(Rails.logger).to receive(:warn)
       allow(Notifications::EmbargoLifted).to receive(:publish)
@@ -36,7 +36,7 @@ RSpec.describe EmbargoReleaseService do
 
       it 'skips' do
         service.release
-        expect(WorkflowStateService).to have_received(:accessioned?).with(druid:, version: 1)
+        expect(Workflow::StateService).to have_received(:accessioned?).with(druid:, version: 1)
         expect(VersionService).not_to have_received(:can_open?)
       end
     end

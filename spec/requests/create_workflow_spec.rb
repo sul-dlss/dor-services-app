@@ -6,14 +6,14 @@ RSpec.describe 'Creating a workflow' do
   let(:druid) { 'druid:mx123qw2323' }
 
   before do
-    allow(WorkflowService).to receive(:create)
+    allow(Workflow::Service).to receive(:create)
   end
 
   it 'creates a workflow' do
     post '/v1/objects/druid:mx123qw2323/workflows/etdSubmitWF?version=1',
          headers: { 'Authorization' => "Bearer #{jwt}" }
     expect(response).to have_http_status(:created)
-    expect(WorkflowService).to have_received(:create)
+    expect(Workflow::Service).to have_received(:create)
       .with(druid:, workflow_name: 'etdSubmitWF', version: 1, lane_id: 'default', context: nil)
   end
 
@@ -26,7 +26,7 @@ RSpec.describe 'Creating a workflow' do
            params: { context: context },
            as: :json
       expect(response).to have_http_status(:created)
-      expect(WorkflowService).to have_received(:create)
+      expect(Workflow::Service).to have_received(:create)
         .with(druid:, workflow_name: 'etdSubmitWF', version: 1, lane_id: 'low', context:)
     end
   end

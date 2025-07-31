@@ -2,7 +2,7 @@
 
 # Service for retrieving the version status of a batch of objects.
 class VersionBatchStatusService
-  # This isn't a WorkflowStateService, but it acts like one.
+  # This isn't a Workflow::StateService, but it acts like one.
   DummyWorkflowStateService = Struct.new('DummyWorkflowStateService', :accessioning, :accessioned, :assembling) do
     def accessioning?
       accessioning
@@ -117,6 +117,6 @@ class VersionBatchStatusService
   end
 
   def workflow_state_batch_service
-    @workflow_state_batch_service ||= WorkflowStateBatchService.new(druids:)
+    @workflow_state_batch_service ||= Workflow::StateBatchService.new(druids:)
   end
 end

@@ -13,7 +13,7 @@ RSpec.describe Robots::DorRepo::Accession::Shelve, type: :robot do
 
   before do
     allow(CocinaObjectStore).to receive(:find).with(druid).and_return(object)
-    allow(WorkflowService).to receive(:workflow?).and_return(crawl?)
+    allow(Workflow::Service).to receive(:workflow?).and_return(crawl?)
     allow(WasShelvingService).to receive(:shelve)
     allow(EventFactory).to receive(:create)
   end

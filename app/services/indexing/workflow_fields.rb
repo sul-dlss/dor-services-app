@@ -114,7 +114,7 @@ module Indexing
       end
 
       def milestones
-        @milestones ||= WorkflowLifecycleService.milestones(druid: druid)
+        @milestones ||= Workflow::LifecycleService.milestones(druid: druid)
       end
 
       private

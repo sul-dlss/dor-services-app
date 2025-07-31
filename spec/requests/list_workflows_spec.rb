@@ -18,7 +18,7 @@ RSpec.describe 'List workflows' do
   end
 
   before do
-    allow(WorkflowService).to receive(:workflows_xml).and_return(ng_xml)
+    allow(Workflow::Service).to receive(:workflows_xml).and_return(ng_xml)
   end
 
   context 'when successful' do
@@ -27,14 +27,14 @@ RSpec.describe 'List workflows' do
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(Nokogiri::XML(response.parsed_body).to_s).to match(ng_xml.to_s)
-      expect(WorkflowService).to have_received(:workflows_xml).with(druid:)
+      expect(Workflow::Service).to have_received(:workflows_xml).with(druid:)
     end
   end
 
   context 'when the druid is not found' do
     before do
-      allow(WorkflowService).to receive(:workflows_xml)
-        .and_raise(WorkflowService::NotFoundException)
+      allow(Workflow::Service).to receive(:workflows_xml)
+        .and_raise(Workflow::Service::NotFoundException)
     end
 
     it 'returns a 404 error' do
@@ -46,8 +46,8 @@ RSpec.describe 'List workflows' do
 
   context 'when some other HTTP error' do
     before do
-      allow(WorkflowService).to receive(:workflows_xml)
-        .and_raise(WorkflowService::Exception.new('HTTP status 400 Bad Request', status: 400))
+      allow(Workflow::Service).to receive(:workflows_xml)
+        .and_raise(Workflow::Service::Exception.new('HTTP status 400 Bad Request', status: 400))
     end
 
     it 'returns an HTTP error' do
@@ -59,8 +59,8 @@ RSpec.describe 'List workflows' do
 
   context 'when some other error' do
     before do
-      allow(WorkflowService).to receive(:workflows_xml)
-        .and_raise(WorkflowService::Exception.new('Faraday connection error'))
+      allow(Workflow::Service).to receive(:workflows_xml)
+        .and_raise(Workflow::Service::Exception.new('Faraday connection error'))
     end
 
     it 'returns an 500 error' do
@@ -77,7 +77,7 @@ RSpec.describe 'List workflows' do
 
     before do
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
-      allow(WorkflowService).to receive(:workflows_xml).and_call_original
+      allow(Workflow::Service).to receive(:workflows_xml).and_call_original
     end
 
     context 'when some other HTTP error' do

@@ -76,7 +76,7 @@ class ItemQueryService
   # @raise [UncombinableItemError] if the item is dark, citation_only, or not modifiable
   def self.check_accessioned(druid)
     new(id: druid).item do |item|
-      unless WorkflowStateService.accessioned?(
+      unless Workflow::StateService.accessioned?(
         druid: item.externalIdentifier, version: item.version
       )
         raise UncombinableItemError,
