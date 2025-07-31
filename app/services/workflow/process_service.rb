@@ -29,38 +29,16 @@ module Workflow
     # @param [String] current_status Compare the current status to this value and raise if mismatch.
     # @raise [Workflow::Service::ConflictException] if the current status does not match the passed in current_status.
     # @raise [Workflow::Service::NotFoundException] if the workflow step is not found.
-    def update(status:, elapsed: 0, lifecycle: nil, note: nil, # rubocop:disable Metrics/AbcSize
+    def update(status:, elapsed: 0, lifecycle: nil, note: nil,
                current_status: nil)
-      if Settings.enabled_features.local_wf
-        update_status(status:, elapsed:, lifecycle:, note:, current_status:)
-      else
-        begin
-          workflow_client.update_status(druid:, workflow: workflow_name, process:, status:, elapsed:,
-                                        lifecycle:, note:, current_status:)
-        rescue Dor::MissingWorkflowException
-          raise Workflow::Service::NotFoundException, "Process #{process} not found in #{workflow_name} for #{druid}"
-        rescue Dor::WorkflowException => e
-          raise Workflow::Service::Exception, e unless e.message.include?('HTTP status 409')
-
-          raise Workflow::Service::ConflictException,
-                "Process #{process} in workflow #{workflow_name} for #{druid} has a conflict: #{e.message}"
-        end
-      end
+      update_status(status:, elapsed:, lifecycle:, note:, current_status:)
     end
 
     # Updates the status of one step in a workflow to error.
     # @param [String] error_msg The error message.  Ideally, this is a brief message describing the error
     # @param [String] error_text A slot to hold more information about the error, like a full stacktrace
     def update_error(error_msg:, error_text: nil)
-      if Settings.enabled_features.local_wf
-        update_status(status: 'error', error_msg:, error_text:)
-      else
-        begin
-          workflow_client.update_error_status(druid:, workflow: workflow_name, process:, error_msg:, error_text:)
-        rescue Dor::MissingWorkflowException
-          raise Workflow::Service::NotFoundException, "Process #{process} not found in #{workflow_name} for #{druid}"
-        end
-      end
+      update_status(status: 'error', error_msg:, error_text:)
     end
 
     private

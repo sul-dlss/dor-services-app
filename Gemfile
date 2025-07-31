@@ -9,11 +9,10 @@ gem 'rails', '~> 8.0.0'
 gem 'cocina-models', '~> 0.105.0'
 gem 'datacite', '~> 0.6'
 gem 'dor-services-client' # Used for Dor::Services::Response::* classes
-gem 'dor-workflow-client', '~> 7.8'
 gem 'druid-tools', '~> 2.2'
 gem 'folio_client', '~> 0.8'
 gem 'graphql'
-gem 'lyber-core', '~> 7.7' # For robots
+gem 'lyber-core', '~> 8.0' # For robots
 gem 'mais_orcid_client', '>= 1.0'
 gem 'marc'
 gem 'marc-vocab', '~> 0.3.0' # for indexing

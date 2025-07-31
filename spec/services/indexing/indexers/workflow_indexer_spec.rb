@@ -2,12 +2,9 @@
 
 require 'rails_helper'
 RSpec.describe Indexing::Indexers::WorkflowIndexer do
-  let(:document) { Dor::Workflow::Response::Workflow.new(xml:) }
+  let(:document) { Dor::Services::Response::Workflow.new(xml:) }
   let(:indexer) { described_class.new(workflow: document) }
 
-  let(:workflow_client) do
-    instance_double(Dor::Workflow::Client, workflow_template: JSON.parse(workflow_template_json))
-  end
   let(:workflow_template_json) do
     '{"processes":[{"name":"hello"},{"name":"goodbye"},{"name":"technical-metadata"},{"name":"some-other-step"}]}'
   end
@@ -19,7 +16,7 @@ RSpec.describe Indexing::Indexers::WorkflowIndexer do
   # rubocop:enable RSpec/IndexedLet
 
   before do
-    allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
+    allow(Workflow::TemplateService).to receive(:template).and_return(JSON.parse(workflow_template_json))
   end
 
   describe '#to_solr' do
