@@ -45,7 +45,7 @@ class VersionService
 
   # @param [String] druid of the item
   # @param [Integer] version of the item
-  # @param [WorkflowStateService] workflow_state_service
+  # @param [Workflow::StateService] workflow_state_service
   # @param [RepositoryObject] repository_object optional object to check against, otherwise it will be fetched
   def initialize(druid:, version:, workflow_state_service: nil, repository_object: nil)
     @druid = druid
@@ -75,7 +75,7 @@ class VersionService
     Indexer.reindex_later(druid: cocina_object.externalIdentifier)
 
     new_version = repository_object.opened_version.version
-    WorkflowService.create(druid:, workflow_name: 'versioningWF', version: new_version.to_s)
+    Workflow::Service.create(druid:, workflow_name: 'versioningWF', version: new_version.to_s)
     EventFactory.create(druid:, event_type: 'version_open',
                         data: { who: opening_user_name, version: new_version.to_s, description: })
     # Reloading to get correct lock value.
@@ -134,7 +134,7 @@ class VersionService
     ensure_closeable!
 
     repository_object.close_version!(description:)
-    WorkflowService.create(druid:, workflow_name: 'accessionWF', version: version.to_s) if start_accession
+    Workflow::Service.create(druid:, workflow_name: 'accessionWF', version: version.to_s) if start_accession
 
     EventFactory.create(druid:, event_type: 'version_close',
                         data: { who: user_name, version: version.to_s,
@@ -225,7 +225,7 @@ class VersionService
   delegate :assembling?, :accessioning?, :accessioned?, to: :workflow_state_service
 
   def workflow_state_service
-    @workflow_state_service ||= WorkflowStateService.new(druid:, version:)
+    @workflow_state_service ||= Workflow::StateService.new(druid:, version:)
   end
 
   def ensure_closeable!

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe WorkflowService do
+RSpec.describe Workflow::Service do
   let(:druid) { 'druid:bb033gt0615' }
   let(:workflow_client) { instance_double(Dor::Workflow::Client) }
 

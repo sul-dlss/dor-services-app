@@ -191,14 +191,14 @@ RSpec.describe CleanupService do
     let(:version) { 1 }
 
     before do
-      allow(WorkflowService).to receive(:delete)
+      allow(Workflow::Service).to receive(:delete)
     end
 
     it 'calls workflow client to delete each accessioning workflow' do
       described_class.delete_accessioning_workflows(druid, version)
-      expect(WorkflowService).to have_received(:delete).once.with(druid:, workflow_name: 'accessionWF', version:)
-      expect(WorkflowService).to have_received(:delete).once.with(druid:, workflow_name: 'assemblyWF', version:)
-      expect(WorkflowService).to have_received(:delete).once.with(druid:, workflow_name: 'versioningWF', version:)
+      expect(Workflow::Service).to have_received(:delete).once.with(druid:, workflow_name: 'accessionWF', version:)
+      expect(Workflow::Service).to have_received(:delete).once.with(druid:, workflow_name: 'assemblyWF', version:)
+      expect(Workflow::Service).to have_received(:delete).once.with(druid:, workflow_name: 'versioningWF', version:)
     end
   end
 

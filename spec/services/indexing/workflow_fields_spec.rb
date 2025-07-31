@@ -90,7 +90,7 @@ RSpec.describe Indexing::WorkflowFields do
     let(:version) { '2' }
 
     before do
-      allow_any_instance_of(WorkflowLifecycleService).to receive(:lifecycle_xml).and_return(Nokogiri::XML(xml)) # rubocop:disable RSpec/AnyInstance
+      allow_any_instance_of(Workflow::LifecycleService).to receive(:lifecycle_xml).and_return(Nokogiri::XML(xml)) # rubocop:disable RSpec/AnyInstance
     end
 
     describe '#display' do

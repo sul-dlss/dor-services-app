@@ -10,10 +10,10 @@ RSpec.describe VersionService do
   end
   let(:cocina_object) { repository_object.to_cocina_with_metadata }
   let(:version) { 1 }
-  let(:workflow_state_service) { instance_double(WorkflowStateService) }
+  let(:workflow_state_service) { instance_double(Workflow::StateService) }
 
   before do
-    allow(WorkflowStateService).to receive(:new).and_return(workflow_state_service)
+    allow(Workflow::StateService).to receive(:new).and_return(workflow_state_service)
     allow(Indexer).to receive(:reindex_later)
     allow(EventFactory).to receive(:create).and_return(true)
   end
@@ -28,7 +28,7 @@ RSpec.describe VersionService do
 
     before do
       allow(Preservation::Client.objects).to receive(:current_version).and_return(1)
-      allow(WorkflowService).to receive(:create)
+      allow(Workflow::Service).to receive(:create)
       allow(workflow_state_service).to receive_messages(accessioned?: true, accessioning?: false)
     end
 
@@ -37,7 +37,7 @@ RSpec.describe VersionService do
         expect(open).to be_a(Cocina::Models::DROWithMetadata)
         expect(workflow_state_service).to have_received(:accessioned?)
         expect(workflow_state_service).to have_received(:accessioning?)
-        expect(WorkflowService).to have_received(:create).with(druid:, workflow_name: 'versioningWF', version: '2')
+        expect(Workflow::Service).to have_received(:create).with(druid:, workflow_name: 'versioningWF', version: '2')
 
         expect(EventFactory).to have_received(:create)
           .with(data: { version: '2', who: 'sunetid', description: 'same as it ever was' },
@@ -114,7 +114,7 @@ RSpec.describe VersionService do
         expect(open.label).not_to eq 'New version label'
         expect(workflow_state_service).to have_received(:accessioned?)
         expect(workflow_state_service).to have_received(:accessioning?)
-        expect(WorkflowService).to have_received(:create).with(druid:, workflow_name: 'versioningWF', version: '3')
+        expect(Workflow::Service).to have_received(:create).with(druid:, workflow_name: 'versioningWF', version: '3')
 
         expect(EventFactory).to have_received(:create)
           .with(data: { version: '3', who: 'sunetid', description: 'same as it ever was' },
@@ -249,7 +249,7 @@ RSpec.describe VersionService do
     before do
       repository_object.save!
       repository_object.head_version.update!(version: 2, version_description: 'A Second Version')
-      allow(WorkflowService).to receive(:create)
+      allow(Workflow::Service).to receive(:create)
       allow(UserVersionService).to receive(:permanently_withdraw_previous_user_versions)
     end
 
@@ -269,7 +269,7 @@ RSpec.describe VersionService do
                   druid:,
                   event_type: 'version_close')
 
-          expect(WorkflowService).to have_received(:create).with(druid:, workflow_name: 'accessionWF', version: '2')
+          expect(Workflow::Service).to have_received(:create).with(druid:, workflow_name: 'accessionWF', version: '2')
 
           expect(repository_object.last_closed_version.user_versions.count).to eq 0
         end
@@ -451,7 +451,7 @@ RSpec.describe VersionService do
         close
         expect(repository_object.reload.last_closed_version).to be_present
 
-        expect(WorkflowService).not_to have_received(:create)
+        expect(Workflow::Service).not_to have_received(:create)
       end
     end
 
@@ -501,7 +501,7 @@ RSpec.describe VersionService do
         close
         expect(repository_object.reload.last_closed_version).to be_present
         expect(workflow_state_service).to have_received(:assembling?)
-        expect(WorkflowService).to have_received(:create).with(druid:, workflow_name: 'accessionWF', version: '2')
+        expect(Workflow::Service).to have_received(:create).with(druid:, workflow_name: 'accessionWF', version: '2')
       end
     end
 
@@ -516,7 +516,7 @@ RSpec.describe VersionService do
         close
         expect(repository_object.reload.last_closed_version).to be_present
         expect(repository_object.last_closed_version.version_description).to eq 'A Second Version'
-        expect(WorkflowService).to have_received(:create).with(druid:, workflow_name: 'accessionWF', version: '2')
+        expect(Workflow::Service).to have_received(:create).with(druid:, workflow_name: 'accessionWF', version: '2')
       end
     end
 

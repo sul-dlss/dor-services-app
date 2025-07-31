@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe WorkflowProcessService do
+RSpec.describe Workflow::ProcessService do
   let(:workflow_client) { instance_double(Dor::Workflow::Client, update_status: true, update_error_status: true) }
   let(:druid) { 'druid:bb033gt0615' }
   let(:workflow_name) { 'accessionWF' }
@@ -36,7 +36,7 @@ RSpec.describe WorkflowProcessService do
         it 'raises a NotFoundException' do
           expect do
             described_class.update(druid:, workflow_name:, process:, status: 'completed')
-          end.to raise_error(WorkflowService::NotFoundException,
+          end.to raise_error(Workflow::Service::NotFoundException,
                              'Process publish not found in accessionWF for druid:bb033gt0615')
         end
       end
@@ -49,7 +49,7 @@ RSpec.describe WorkflowProcessService do
         it 'raises a ConflictException' do
           expect do
             described_class.update(druid:, workflow_name:, process:, status: 'completed')
-          end.to raise_error(WorkflowService::ConflictException)
+          end.to raise_error(Workflow::Service::ConflictException)
         end
       end
     end
@@ -103,7 +103,7 @@ RSpec.describe WorkflowProcessService do
           expect do
             described_class.update(druid: druid, workflow_name: 'hydrusAssemblyWF', process: 'submit',
                                    status: 'completed')
-          end.to raise_error(WorkflowService::NotFoundException)
+          end.to raise_error(Workflow::Service::NotFoundException)
         end
       end
 
@@ -115,7 +115,7 @@ RSpec.describe WorkflowProcessService do
             described_class.update(druid: step.druid, workflow_name: step.workflow, process: step.process,
                                    status: 'completed', current_status: 'not-waiting')
           end
-            .to raise_error(WorkflowService::ConflictException)
+            .to raise_error(Workflow::Service::ConflictException)
         end
       end
 
@@ -169,7 +169,7 @@ RSpec.describe WorkflowProcessService do
         it 'raises a NotFoundException' do
           expect do
             described_class.update_error(druid:, workflow_name:, process:, error_msg: 'An error occurred')
-          end.to raise_error(WorkflowService::NotFoundException,
+          end.to raise_error(Workflow::Service::NotFoundException,
                              'Process publish not found in accessionWF for druid:bb033gt0615')
         end
       end

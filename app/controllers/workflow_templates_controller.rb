@@ -3,10 +3,10 @@
 # Controller for workflow templates
 class WorkflowTemplatesController < WorkflowApplicationController
   def index
-    render json: WorkflowTemplateService.templates
+    render json: Workflow::TemplateService.templates
   end
 
   def show
-    render json: WorkflowTemplateService.template(workflow_name: params[:id])
+    render json: Workflow::TemplateService.template(workflow_name: params[:id])
   end
 end

@@ -6,8 +6,8 @@ RSpec.describe 'Update a workflow process' do
   let(:druid) { 'druid:mx123qw2323' }
 
   before do
-    allow(WorkflowProcessService).to receive(:update)
-    allow(WorkflowProcessService).to receive(:update_error)
+    allow(Workflow::ProcessService).to receive(:update)
+    allow(Workflow::ProcessService).to receive(:update_error)
   end
 
   context 'when updating status' do
@@ -17,7 +17,7 @@ RSpec.describe 'Update a workflow process' do
           params: { status: 'completed' },
           as: :json
       expect(response).to have_http_status(:no_content)
-      expect(WorkflowProcessService).to have_received(:update)
+      expect(Workflow::ProcessService).to have_received(:update)
         .with(druid:, workflow_name: 'accessionWF', process: 'shelve', status: 'completed', elapsed:  0,
               lifecycle: nil, note: nil, current_status: nil)
     end
@@ -31,7 +31,7 @@ RSpec.describe 'Update a workflow process' do
                     current_status: 'started' },
           as: :json
       expect(response).to have_http_status(:no_content)
-      expect(WorkflowProcessService).to have_received(:update)
+      expect(Workflow::ProcessService).to have_received(:update)
         .with(druid:, workflow_name: 'accessionWF', process: 'shelve', status: 'completed', elapsed:  5.1,
               lifecycle: 'accession', note: 'Test note', current_status: 'started')
     end
@@ -44,7 +44,7 @@ RSpec.describe 'Update a workflow process' do
           params: { status: 'error', error_msg: 'Something went wrong', error_text: 'Detailed error message' },
           as: :json
       expect(response).to have_http_status(:no_content)
-      expect(WorkflowProcessService).to have_received(:update_error)
+      expect(Workflow::ProcessService).to have_received(:update_error)
         .with(druid:, workflow_name: 'accessionWF', process: 'shelve', error_msg: 'Something went wrong',
               error_text: 'Detailed error message')
     end
@@ -52,7 +52,7 @@ RSpec.describe 'Update a workflow process' do
 
   context 'when current status mismatch' do
     before do
-      allow(WorkflowProcessService).to receive(:update).and_raise(WorkflowService::ConflictException)
+      allow(Workflow::ProcessService).to receive(:update).and_raise(Workflow::Service::ConflictException)
     end
 
     it 'returns a conflict' do

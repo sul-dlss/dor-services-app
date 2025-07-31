@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe WorkflowTemplateLoader do
+RSpec.describe Workflow::TemplateLoader do
   let(:loader) { described_class.new(workflow_name) }
 
   let(:workflow_name) { 'assemblyWF' }

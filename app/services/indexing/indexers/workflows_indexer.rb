@@ -24,7 +24,7 @@ module Indexing
 
       # @return [Array<Workflow::Response::Workflows>]
       def workflows
-        WorkflowService.workflows(druid: id)
+        Workflow::Service.workflows(druid: id)
       end
     end
   end

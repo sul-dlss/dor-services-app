@@ -11,7 +11,7 @@ RSpec.describe DeleteService do
 
   before do
     allow(EventFactory).to receive(:create).and_return(nil)
-    allow(WorkflowService).to receive(:delete_all)
+    allow(Workflow::Service).to receive(:delete_all)
   end
 
   describe '#destroy' do
@@ -36,7 +36,7 @@ RSpec.describe DeleteService do
   describe '#remove_active_workflows' do
     it 'calls the workflow client' do
       service.send(:remove_active_workflows)
-      expect(WorkflowService).to have_received(:delete_all).with(druid:)
+      expect(Workflow::Service).to have_received(:delete_all).with(druid:)
     end
   end
 

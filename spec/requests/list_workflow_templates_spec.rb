@@ -6,7 +6,7 @@ RSpec.describe 'List workflow templates' do
   let(:templates) { ['assemblyWF', 'registrationWF'] }
 
   before do
-    allow(WorkflowTemplateService).to receive(:templates).and_return(templates)
+    allow(Workflow::TemplateService).to receive(:templates).and_return(templates)
   end
 
   it 'returns the templates' do

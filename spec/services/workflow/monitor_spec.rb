@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe WorkflowMonitor do
+RSpec.describe Workflow::Monitor do
   before do
     allow(Honeybadger).to receive(:notify)
 

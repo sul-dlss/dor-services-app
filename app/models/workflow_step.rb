@@ -70,7 +70,7 @@ class WorkflowStep < WorkflowApplicationRecord
   # check if the named workflow has a current definition
   # @return [boolean]
   def valid_workflow?
-    WorkflowTemplateLoader.new(workflow).exists?
+    Workflow::TemplateLoader.new(workflow).exists?
   end
 
   ##
@@ -79,7 +79,7 @@ class WorkflowStep < WorkflowApplicationRecord
   def valid_process_for_workflow?
     return false unless valid_workflow?
 
-    wtp = WorkflowTemplateParser.new(WorkflowTemplateLoader.new(workflow).load_as_xml)
+    wtp = Workflow::TemplateParser.new(Workflow::TemplateLoader.new(workflow).load_as_xml)
     wtp.processes.map(&:name).include? process
   end
 

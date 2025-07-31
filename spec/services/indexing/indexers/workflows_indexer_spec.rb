@@ -115,7 +115,7 @@ RSpec.describe Indexing::Indexers::WorkflowsIndexer do
     let(:workflow_client) { instance_double(Dor::Workflow::Client) }
 
     before do
-      allow(WorkflowService).to receive(:workflows).with(druid: 'druid:ab123cd4567').and_return(
+      allow(Workflow::Service).to receive(:workflows).with(druid: 'druid:ab123cd4567').and_return(
         Dor::Workflow::Response::Workflows.new(xml:).workflows
       )
       allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)

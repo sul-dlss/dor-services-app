@@ -38,8 +38,8 @@ namespace :seed do
 
     CreateObjectService.create(cocina_request_object, id_minter: -> { druid })
 
-    WorkflowService.create(druid:, workflow_name: 'registrationWF', version: 1)
-    WorkflowService.create(druid:, workflow_name: 'accessionWF', version: 1)
+    Workflow::Service.create(druid:, workflow_name: 'registrationWF', version: 1)
+    Workflow::Service.create(druid:, workflow_name: 'accessionWF', version: 1)
 
     puts "Seeded #{druid}"
   end
@@ -58,7 +58,7 @@ namespace :seed do
 
           value[:tags].map { |tag| AdministrativeTags.create(identifier: druid, tags: tag) }
 
-          WorkflowService.create(druid:, workflow_name: value[:workflow], version: value[:model][:version])
+          Workflow::Service.create(druid:, workflow_name: value[:workflow], version: value[:model][:version])
         rescue Cocina::ValidationError => e
           puts "#{druid} is invalid: #{e}"
         rescue ActiveRecord::RecordNotUnique
