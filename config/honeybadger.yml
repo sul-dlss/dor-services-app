@@ -6,5 +6,9 @@ request:
 exceptions:
   ignore:
     - 'ReindexJob::DeadLockError'
+stage:
+  exceptions:
+    ignore:
+      - 'PreservationIngestService::VersionMismatchError'      
 insights:
   enabled: false
