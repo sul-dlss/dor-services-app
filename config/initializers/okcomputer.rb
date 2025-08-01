@@ -40,7 +40,9 @@ class TablesHaveDataCheck < OkComputer::Check
       BackgroundJobResult,
       TagLabel,
       Event,
-      AdministrativeTag
+      AdministrativeTag,
+      RepositoryObject,
+      WorkflowStep
     ].map { |klass| table_check(klass) }.join(' ')
     mark_message msg
   end
@@ -98,8 +100,7 @@ end
 
 if Settings.rabbitmq.enabled
   OkComputer::Registry.register 'rabbit-queues',
-                                RabbitQueueExistsCheck.new(['dsa.create-event',
-                                                            'dor.indexing-by-druid'])
+                                RabbitQueueExistsCheck.new(['dsa.create-event'])
 end
 
 OkComputer.make_optional %w[external-folio]
