@@ -4,7 +4,6 @@ enabled_features:
   create_ur_admin_policy: false
   datacite_update: false
   orcid_update: true
-  local_wf: true
 
 # Ur Admin Policy
 ur_admin_policy:
@@ -28,13 +27,6 @@ stacks:
 # Suri
 suri:
   url: 'https://suri.example.com'
-
-# Workflow
-workflow:
-  url: 'https://workflow.example.com/workflow'
-  logfile: 'log/workflow_service.log'
-  shift_age: 'weekly'
-  timeout: 60
 
 version_service:
   # Turn sync_with_preservation to false in a testing environment where you don't

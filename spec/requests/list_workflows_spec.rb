@@ -69,41 +69,4 @@ RSpec.describe 'List workflows' do
       expect(response).to have_http_status(:server_error)
     end
   end
-
-  # This can be removed once the workflow client has been removed.
-  describe 'testing workflow client error handling' do
-    let(:workflows) { instance_double(Dor::Workflow::Response::Workflows, xml: ng_xml) }
-    let(:workflow_client) { instance_double(Dor::Workflow::Client, all_workflows: workflows) }
-
-    before do
-      allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
-      allow(Workflow::Service).to receive(:workflows_xml).and_call_original
-    end
-
-    context 'when some other HTTP error' do
-      before do
-        allow(workflow_client).to receive(:all_workflows)
-          .and_raise(Dor::WorkflowException.new('HTTP status 400 Bad Request'))
-      end
-
-      it 'returns an HTTP error' do
-        get "/v1/objects/#{druid}/workflows",
-            headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response).to have_http_status(:bad_request)
-      end
-    end
-
-    context 'when some other error' do
-      before do
-        allow(workflow_client).to receive(:all_workflows)
-          .and_raise(Dor::WorkflowException.new('Faraday connection error'))
-      end
-
-      it 'returns an 500 error' do
-        get "/v1/objects/#{druid}/workflows",
-            headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response).to have_http_status(:server_error)
-      end
-    end
-  end
 end

@@ -3,10 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe VersionBatchStatusService do
-  before do
-    allow(Settings.enabled_features).to receive(:local_wf).and_return(true)
-  end
-
   describe '.call' do
     subject(:statuses) { described_class.call(druids: [open_druid, accessioning_druid, missing_druid]) }
 

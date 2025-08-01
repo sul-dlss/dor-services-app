@@ -5,7 +5,6 @@ require 'rails_helper'
 # rubocop:disable Rails/SkipsModelValidations
 RSpec.describe Workflow::StateBatchService do
   before do
-    allow(Settings.enabled_features).to receive(:local_wf).and_return(true)
     allow(QueueService).to receive(:enqueue)
   end
 

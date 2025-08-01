@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'Show workflow' do
   let(:druid) { 'druid:mw971zk1113' }
 
-  let(:workflow) { instance_double(Dor::Workflow::Response::Workflow, xml: ng_xml) }
+  let(:workflow) { instance_double(Dor::Services::Response::Workflow, xml: ng_xml) }
   let(:ng_xml) { Nokogiri::XML(xml) }
   let(:xml) do
     <<~XML
@@ -32,7 +32,7 @@ RSpec.describe 'Show workflow' do
   context 'when the druid is not found' do
     before do
       allow(Workflow::Service).to receive(:workflow)
-        .and_raise(Dor::MissingWorkflowException.new('HTTP status 404 Not Found'))
+        .and_raise(Workflow::Service::NotFoundException.new('HTTP status 404 Not Found'))
     end
 
     it 'returns a 404 error' do

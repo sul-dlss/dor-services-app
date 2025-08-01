@@ -29,14 +29,9 @@ RSpec.describe Indexing::Indexers::CompositeIndexer do
 
   describe 'to_solr' do
     let(:status) do
-      instance_double(Dor::Workflow::Client::Status, milestones: {}, display: 'bad')
+      instance_double(Dor::Services::Client::Status, milestones: {}, display: 'bad')
     end
-    let(:workflow_client) { instance_double(Dor::Workflow::Client, status:) }
     let(:doc) { indexer.new(id: druid, cocina: cocina_item).to_solr }
-
-    before do
-      allow(WorkflowClientFactory).to receive(:build).and_return(workflow_client)
-    end
 
     it 'calls each of the provided indexers and combines the results' do
       expect(doc).to eq(

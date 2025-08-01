@@ -7,8 +7,8 @@ RSpec.describe Robots::DorRepo::Accession::SdrIngestTransfer, type: :robot do
 
   let(:druid) { 'druid:zz000zz0001' }
   let(:robot) { described_class.new }
-  let(:workflow) { instance_double(Dor::Workflow::Response::Workflow, process_for_recent_version: process) }
-  let(:process) { instance_double(Dor::Workflow::Response::Process, lane_id: 'low') }
+  let(:workflow) { instance_double(Dor::Services::Response::Workflow, process_for_recent_version: process) }
+  let(:process) { instance_double(Dor::Services::Response::Process, lane_id: 'low') }
   let(:object) { build(:dro, id: druid) }
 
   before do

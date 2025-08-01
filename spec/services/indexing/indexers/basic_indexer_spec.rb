@@ -23,7 +23,7 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
     let(:indexer) do
       Indexing::Indexers::CompositeIndexer.new(
         described_class
-      ).new(id: 'druid:ab123cd4567', cocina:, workflow_client: instance_double(Dor::Workflow::Client), trace_id:)
+      ).new(id: 'druid:ab123cd4567', cocina:, workflow_client: instance_double(Dor::Services::Client), trace_id:)
     end
     let(:doc) { indexer.to_solr }
     let(:trace_id) { 'abc123' }
