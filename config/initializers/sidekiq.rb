@@ -21,3 +21,5 @@ end
 ROBOT_SIDEKIQ_CLIENT = Sidekiq::Client.new(
   pool: ConnectionPool.new { Redis.new(url: Settings.robots_redis_url) }
 )
+
+Sidekiq::Client.reliable_push! unless Rails.env.test?
