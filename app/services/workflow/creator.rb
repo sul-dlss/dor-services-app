@@ -47,7 +47,7 @@ module Workflow
                                         process: processes.first.process)
 
       # Enqueue next steps
-      NextStepService.enqueue_next_steps(step: first_step)
+      Workflow::NextStepService.enqueue_next_steps(step: first_step)
     end
 
     def workflow_attributes(process)

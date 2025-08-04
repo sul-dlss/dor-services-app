@@ -19,6 +19,6 @@ namespace :workflow do
     puts("Setting #{args[:process]} to #{args[:status]}")
 
     # Enqueue next steps
-    NextStepService.enqueue_next_steps(step:)
+    Workflow::NextStepService.enqueue_next_steps(step:)
   end
 end

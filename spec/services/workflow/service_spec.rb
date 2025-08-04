@@ -178,14 +178,14 @@ RSpec.describe Workflow::Service do
     context 'when local workflow feature is enabled' do
       before do
         allow(Settings.enabled_features).to receive(:local_wf).and_return(true)
-        allow(NextStepService).to receive(:enqueue_next_steps)
+        allow(Workflow::NextStepService).to receive(:enqueue_next_steps)
       end
 
       it 'creates a workflow' do
         expect do
           described_class.create(druid:, workflow_name:, version:, context:, lane_id:)
         end.to change(WorkflowStep, :count).by(3)
-        expect(NextStepService).to have_received(:enqueue_next_steps).once
+        expect(Workflow::NextStepService).to have_received(:enqueue_next_steps).once
       end
     end
 

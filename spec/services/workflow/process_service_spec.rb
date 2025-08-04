@@ -57,7 +57,7 @@ RSpec.describe Workflow::ProcessService do
     context 'when local workflow feature is enabled' do
       before do
         allow(Settings.enabled_features).to receive(:local_wf).and_return(true)
-        allow(NextStepService).to receive(:enqueue_next_steps)
+        allow(Workflow::NextStepService).to receive(:enqueue_next_steps)
       end
 
       context 'when success after an error' do
@@ -79,7 +79,7 @@ RSpec.describe Workflow::ProcessService do
             .and change(step, :error_txt).to(nil)
             .and(not_change { step.lifecycle })
 
-          expect(NextStepService).to have_received(:enqueue_next_steps).with(step:)
+          expect(Workflow::NextStepService).to have_received(:enqueue_next_steps).with(step:)
         end
       end
 
@@ -141,7 +141,7 @@ RSpec.describe Workflow::ProcessService do
           end.to change { version2_step.reload.status }.from('error').to('completed')
                                                        .and not_change { version1_step.reload.status }.from('error')
 
-          expect(NextStepService).to have_received(:enqueue_next_steps).with(step: version2_step)
+          expect(Workflow::NextStepService).to have_received(:enqueue_next_steps).with(step: version2_step)
         end
       end
     end
@@ -178,7 +178,7 @@ RSpec.describe Workflow::ProcessService do
     context 'when local workflow feature is enabled' do
       before do
         allow(Settings.enabled_features).to receive(:local_wf).and_return(true)
-        allow(NextStepService).to receive(:enqueue_next_steps)
+        allow(Workflow::NextStepService).to receive(:enqueue_next_steps)
       end
 
       let(:step) { create(:workflow_step) }
@@ -191,7 +191,7 @@ RSpec.describe Workflow::ProcessService do
           .to change { step.reload.status }.from('waiting').to('error')
           .and change(step, :error_msg).to('failed to do the thing')
           .and change(step, :error_txt).to('box1.foo.edu')
-        expect(NextStepService).to have_received(:enqueue_next_steps).with(step:)
+        expect(Workflow::NextStepService).to have_received(:enqueue_next_steps).with(step:)
       end
     end
   end

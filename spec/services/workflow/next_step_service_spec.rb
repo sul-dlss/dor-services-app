@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe NextStepService do
+RSpec.describe Workflow::NextStepService do
   describe '.enqueue_next_steps' do
     subject(:next_steps) { described_class.enqueue_next_steps(step:) }
 
@@ -93,6 +93,21 @@ RSpec.describe NextStepService do
       end
 
       it "returns no statuses (they're all skip-queue)" do
+        expect(next_steps).to eq []
+      end
+    end
+
+    context 'when an error' do
+      let(:step) do
+        create(:workflow_step,
+               process: 'start-accession',
+               version: 1,
+               status: 'error',
+               active_version: true)
+      end
+
+      it 'does not enqueue any steps' do
+        expect { next_steps }.not_to(change { step.reload.status })
         expect(next_steps).to eq []
       end
     end

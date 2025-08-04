@@ -88,7 +88,7 @@ module Workflow
       end
 
       # Enqueue next steps
-      NextStepService.enqueue_next_steps(step:)
+      Workflow::NextStepService.enqueue_next_steps(step:)
     end
 
     def find_step_for_process
