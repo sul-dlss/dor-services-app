@@ -97,7 +97,8 @@ RSpec.describe Cocina::ToDatacite::RelatedResource do
         relatedItemType: 'Other',
         relationType: 'References',
         relatedItemIdentifier: 'https://example.com/resource',
-        relatedItemIdentifierType: 'URL'
+        relatedItemIdentifierType: 'URL',
+        titles: [{ title: 'https://example.com/resource' }]
       )
     end
   end
