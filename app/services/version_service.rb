@@ -134,7 +134,6 @@ class VersionService
     ensure_closeable!
 
     repository_object.close_version!(description:)
-    Workflow::Service.create(druid:, workflow_name: 'accessionWF', version: version.to_s) if start_accession
 
     EventFactory.create(druid:, event_type: 'version_close',
                         data: { who: user_name, version: version.to_s,
@@ -143,6 +142,8 @@ class VersionService
     # Accessioning will perform the publishing, so don't publish here
     update_user_version(user_version_mode:, repository_object:, publish: !start_accession)
     update_previous_user_versions(repository_object:)
+
+    Workflow::Service.create(druid:, workflow_name: 'accessionWF', version: version.to_s) if start_accession
   end
 
   # Determines whether a version can be closed for an object.
