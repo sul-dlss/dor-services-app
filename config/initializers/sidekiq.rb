@@ -19,7 +19,7 @@ end
 
 # Custom Sidekiq client for robots
 ROBOT_SIDEKIQ_CLIENT = Sidekiq::Client.new(
-  pool: ConnectionPool.new { Redis.new(url: Settings.robots_redis_url) }
+  pool: ConnectionPool.new { Redis.new(url: Settings.robots_redis_url, timeout: 5) }
 )
 
-Sidekiq::Client.reliable_push! unless Rails.env.test?
+ROBOT_SIDEKIQ_CLIENT.reliable_push! unless Rails.env.test?
