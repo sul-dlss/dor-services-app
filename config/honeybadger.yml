@@ -9,6 +9,7 @@ exceptions:
 stage:
   exceptions:
     ignore:
+      - 'ReindexJob::DeadLockError'
       - 'PreservationIngestService::VersionMismatchError'      
 insights:
   enabled: false
