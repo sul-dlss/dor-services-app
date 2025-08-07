@@ -7,7 +7,14 @@ class ReindexJob < ApplicationJob
   queue_as :default
 
   # ~3 seconds, ~18 seconds, ~83 seconds. If this fails, Sidekiq retries are not used.
-  retry_on DeadLockError, attempts: 3, wait: :polynomially_longer, queue: :low
+  retry_on DeadLockError, attempts: 3, wait: :polynomially_longer, queue: :low do |job, _error|
+    # Only notify Honeybadger when we're giving up
+    Honeybadger.notify('ReindexJob::DeadLockError out of retries', context: {
+                         druid: job.arguments.first[:druid],
+                         trace_id: job.arguments.first[:trace_id],
+                         attempts: job.executions
+                       })
+  end
   sidekiq_options retry: false
 
   # @param [String] druid
