@@ -56,7 +56,7 @@ RSpec.describe QueueService do
       end
     end
 
-    context 'when .psuh returns nil' do
+    context 'when .push returns nil' do
       before do
         allow(ROBOT_SIDEKIQ_CLIENT).to receive(:push).and_return(nil)
       end
@@ -65,6 +65,36 @@ RSpec.describe QueueService do
 
       it 'raises' do
         expect { service.enqueue }.to raise_error(/Enqueueing/)
+      end
+    end
+
+    context 'when Redis::CannotConnectError is raised' do
+      before do
+        allow(ROBOT_SIDEKIQ_CLIENT).to receive(:push).and_raise(Redis::CannotConnectError)
+        allow(service).to receive(:sleep)
+      end
+
+      let(:step) { create(:workflow_step, workflow: 'assemblyWF', process: 'jp2-create') }
+
+      it 'tries up to 4 times' do
+        expect { service.enqueue }.to raise_error(Redis::CannotConnectError)
+        expect(ROBOT_SIDEKIQ_CLIENT).to have_received(:push).exactly(4).times
+      end
+    end
+
+    context 'when Redis::CannotConnectError is raised once' do
+      before do
+        allow(ROBOT_SIDEKIQ_CLIENT).to receive(:push).and_invoke(
+          ->(*) { raise Redis::CannotConnectError, 'Connection refused' }, ->(*) { '123' }
+        )
+        allow(service).to receive(:sleep)
+      end
+
+      let(:step) { create(:workflow_step, workflow: 'assemblyWF', process: 'jp2-create') }
+
+      it 'retries and then succeeds' do
+        service.enqueue
+        expect(ROBOT_SIDEKIQ_CLIENT).to have_received(:push).exactly(2).times
       end
     end
   end
