@@ -23,7 +23,6 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                             },
                             structural: {})
   end
-
   let(:druid) { 'druid:bb666bb1234' }
   let(:doi) { "10.25740/#{druid.split(':').last}" }
   let(:purl) { "https://purl.stanford.edu/#{druid.split(':').last}" }
@@ -524,6 +523,279 @@ RSpec.describe Cocina::ToDatacite::Attributes do
             resourceTypeGeneral: 'Dataset',
             resourceType: ''
           }
+        }
+      )
+    end
+  end
+
+  context 'with an ETD-like object' do
+    let(:cocina_item) do
+      Cocina::Models::DRO.new(externalIdentifier: druid,
+                              type: Cocina::Models::ObjectType.object,
+                              label:,
+                              version: 1,
+                              description: {
+                                contributor: [
+                                  {
+                                    name: [
+                                      {
+                                        value: 'Doe, John'
+                                      }
+                                    ],
+                                    type: 'person',
+                                    status: 'primary',
+                                    role: [
+                                      {
+                                        value: 'author'
+                                      }
+                                    ]
+                                  }
+                                ],
+                                form: [
+                                  {
+                                    value: 'bibliography',
+                                    type: 'genre',
+                                    source: {
+                                      code: 'marcgt'
+                                    }
+                                  },
+                                  {
+                                    value: 'text',
+                                    type: 'genre',
+                                    source: {
+                                      code: 'rdacontent'
+                                    }
+                                  },
+                                  {
+                                    value: 'text',
+                                    type: 'resource type',
+                                    source: {
+                                      value: 'MODS resource types'
+                                    }
+                                  },
+                                  {
+                                    value: 'electronic resource',
+                                    type: 'form',
+                                    source: {
+                                      code: 'marccategory'
+                                    }
+                                  },
+                                  {
+                                    value: 'remote',
+                                    type: 'form',
+                                    source: {
+                                      code: 'marcsmd'
+                                    }
+                                  },
+                                  {
+                                    value: 'electronic resource',
+                                    type: 'form',
+                                    source: {
+                                      code: 'gmd'
+                                    }
+                                  },
+                                  {
+                                    value: 'unmediated',
+                                    type: 'media',
+                                    source: {
+                                      code: 'rdamedia'
+                                    }
+                                  },
+                                  {
+                                    value: 'volume',
+                                    type: 'carrier',
+                                    source: {
+                                      code: 'rdacarrier'
+                                    }
+                                  },
+                                  {
+                                    value: '1 online resource (v, 90 pages)',
+                                    type: 'extent'
+                                  }
+                                ],
+                                identifier: [
+                                  {
+                                    value: doi,
+                                    type: 'DOI'
+                                  },
+                                  {
+                                    value: '9781470470258 (online)',
+                                    type: 'ISBN',
+                                    source: {
+                                      code: 'isbn'
+                                    }
+                                  }
+                                ],
+                                note: [
+                                  {
+                                    type: 'abstract',
+                                    value: 'My paper is about dolphins.'
+                                  }
+                                ],
+                                purl:,
+                                subject: [
+                                  {
+                                    value: 'Gaussian processes',
+                                    type: 'topic',
+                                    source: {
+                                      code: 'lcsh'
+                                    }
+                                  },
+                                  {
+                                    value: 'Kernel functions',
+                                    type: 'topic',
+                                    source: {
+                                      code: 'lcsh'
+                                    }
+                                  },
+                                  {
+                                    value: 'Inequalities (Mathematics)',
+                                    type: 'topic',
+                                    source: {
+                                      code: 'lcsh'
+                                    }
+                                  },
+                                  {
+                                    value: 'Integral operators',
+                                    type: 'topic',
+                                    source: {
+                                      code: 'lcsh'
+                                    }
+                                  },
+                                  {
+                                    value: 'Real functions -- Inequalities -- Inequalities for sums, ' \
+                                           'series and integrals',
+                                    type: 'topic',
+                                    source: {
+                                      code: 'msc'
+                                    }
+                                  },
+                                  {
+                                    value: 'Operator theory -- Integral, integro-differential, ' \
+                                           'and pseudodifferential operators -- Integral operators',
+                                    type: 'topic',
+                                    source: {
+                                      code: 'msc'
+                                    }
+                                  },
+                                  {
+                                    value: 'QA274.4 .B37 2022',
+                                    type: 'classification',
+                                    source: {
+                                      code: 'lcc'
+                                    }
+                                  },
+                                  {
+                                    value: '519.2/3',
+                                    type: 'classification',
+                                    source: {
+                                      code: 'ddc',
+                                      version: '23/eng20220825'
+                                    }
+                                  },
+                                  {
+                                    value: '26D15 47G10',
+                                    type: 'classification',
+                                    source: {
+                                      code: 'msc'
+                                    }
+                                  }
+                                ],
+                                title: [{ value: title, status: 'primary' }]
+                              },
+                              identification: {
+                                sourceId: 'dissertation:943952712',
+                                doi:,
+                                catalogLinks: [
+                                  {
+                                    catalog: 'folio',
+                                    refresh: true,
+                                    catalogRecordId: 'in00000132218'
+                                  }
+                                ]
+                              },
+                              access: {
+                                license: 'https://creativecommons.org/publicdomain/mark/1.0/'
+                              },
+                              administrative: {
+                                hasAdminPolicy: apo_druid
+                              },
+                              structural: {})
+    end
+
+    it 'populates the attributes hash correctly' do
+      expect(attributes).to eq(
+        {
+          event: 'publish',
+          url: 'https://purl.stanford.edu/bb666bb1234',
+          alternateIdentifiers: [
+            {
+              alternateIdentifier: purl,
+              alternateIdentifierType: 'PURL'
+            }
+          ],
+          creators: [
+            {
+              name: 'Doe, John',
+              creatorName: 'Doe, John',
+              nameType: 'Personal'
+            }
+          ],
+          contributors: [],
+          fundingReferences: [],
+          dates: [],
+          descriptions: [
+            {
+              description: 'My paper is about dolphins.',
+              descriptionType: 'Abstract'
+            }
+          ],
+          identifiers: [
+            {
+              identifier: doi,
+              identifierType: 'DOI'
+            }
+          ],
+          publicationYear: '2011',
+          publisher: 'Stanford Digital Repository',
+          relatedItems: [],
+          relatedIdentifiers: [],
+          rightsList: [
+            {
+              rights: 'https://creativecommons.org/publicdomain/mark/1.0/'
+            }
+          ],
+          subjects: [
+            {
+              subject: 'Gaussian processes'
+            },
+            {
+              subject: 'Kernel functions'
+            },
+            {
+              subject: 'Inequalities (Mathematics)'
+            },
+            {
+              subject: 'Integral operators'
+            },
+            {
+              subject: 'Real functions -- Inequalities -- Inequalities for sums, series and integrals'
+            },
+            {
+              subject: 'Operator theory -- Integral, integro-differential, ' \
+                       'and pseudodifferential operators -- Integral operators'
+            },
+            {
+              subject: 'QA274.4 .B37 2022'
+            },
+            {
+              subject: '519.2/3'
+            },
+            {
+              subject: '26D15 47G10'
+            }
+          ],
+          titles: [{ title: }]
         }
       )
     end

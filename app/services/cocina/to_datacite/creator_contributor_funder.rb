@@ -107,16 +107,25 @@ module Cocina
       end
 
       def personal_name(cocina_contributor) # rubocop:disable Metrics/AbcSize
-        forename = cocina_contributor.name.first.structuredValue.find { |part| part.type == 'forename' }
-        surname = cocina_contributor.name.first.structuredValue.find { |part| part.type == 'surname' }
         {
-          name: "#{surname.value}, #{forename.value}",
-          givenName: forename.value,
-          familyName: surname.value,
           nameType: 'Personal',
           nameIdentifiers: name_identifiers(cocina_contributor).presence,
           affiliation: affiliations(cocina_contributor).presence
-        }.compact
+        }.tap do |name_hash|
+          # NOTE: This is needed for ETDs, for which we do not receive structured
+          #       contributor names from Axess for ETD readers
+          if cocina_contributor.name.first.structuredValue.empty?
+            name_hash[:creatorName] = name_hash[:name] = cocina_contributor.name.first.value
+          else
+            forename = cocina_contributor.name.first.structuredValue.find { |part| part.type == 'forename' }
+            surname = cocina_contributor.name.first.structuredValue.find { |part| part.type == 'surname' }
+
+            name_hash[:name] = "#{surname.value}, #{forename.value}"
+            name_hash[:givenName] = forename.value
+            name_hash[:familyName] = surname.value
+          end
+        end
+          .compact
       end
 
       def organizational_name(cocina_contributor)
