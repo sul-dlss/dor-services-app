@@ -12,7 +12,7 @@ RSpec.describe 'background job result' do
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to have_http_status(:not_found)
       expect(body[:errors].first[:title]).to eq('not found')
-      expect(body[:errors].first[:detail]).to eq('Couldn\'t find BackgroundJobResult with \'id\'=0')
+      expect(body[:errors].first[:detail]).to eq('Couldn\'t find BackgroundJobResult with \'id\'="0"')
     end
   end
 
