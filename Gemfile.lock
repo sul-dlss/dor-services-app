@@ -182,13 +182,6 @@ GEM
       faraday-retry
       nokogiri
       zeitwerk (~> 2.1)
-    dor-workflow-client (7.8.0)
-      activesupport (>= 7.0.0)
-      deprecation (>= 0.99.0)
-      faraday (~> 2.0)
-      faraday-retry (~> 2.0)
-      nokogiri (~> 1.6)
-      zeitwerk (~> 2.1)
     drb (2.2.3)
     druid-tools (2.2.1)
       deprecation
@@ -294,11 +287,10 @@ GEM
     loofah (2.24.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
-    lyber-core (7.7.0)
+    lyber-core (8.0.1)
       activesupport
       config
       dor-services-client
-      dor-workflow-client (>= 7.6)
       druid-tools
       honeybadger
       sidekiq (~> 7.0)
@@ -640,7 +632,6 @@ DEPENDENCIES
   diffy
   dlss-capistrano
   dor-services-client
-  dor-workflow-client (~> 7.8)
   druid-tools (~> 2.2)
   dry-monads
   edtf (~> 3.0)
@@ -656,7 +647,7 @@ DEPENDENCIES
   jsonpath (~> 1.1)
   jwt
   lograge
-  lyber-core (~> 7.7)
+  lyber-core (~> 8.0)
   mais_orcid_client (>= 1.0)
   marc
   marc-vocab (~> 0.3.0)
