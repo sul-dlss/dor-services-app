@@ -19,8 +19,11 @@ class ExternalIdentifierUris
         AND ro.object_type = 'dro'
     ) Q1
     WHERE
-      external_id NOT LIKE 'http%'
-      OR external_id LIKE 'http%http%';
+      external_id IS NOT NULL
+      AND (
+        external_id NOT LIKE 'http%' 
+        OR external_id LIKE 'http%http%'
+      );
   SQL
 
   def self.report
