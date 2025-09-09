@@ -47,43 +47,41 @@ module Cocina
       def related_item_attributes
         return if related_resource_blank?
 
-        {
-          relatedItemType: 'Other',
-          relationType: relation_type
-        }.tap do |attribs|
-          attribs[:titles] = [title: related_item_title] if related_item_title
-          if related_item_identifier_url
-            attribs[:relatedItemIdentifier] = related_item_identifier_url
-            attribs[:relatedItemIdentifierType] = 'URL'
-          end
+        titles = related_item_title ? [title: related_item_title] : []
+        id, type = unpack_related_uri_and_type
 
-          if related_item_doi
-            attribs[:relatedItemIdentifier] = related_item_doi
-            attribs[:relatedItemIdentifierType] = 'DOI'
-          end
+        if id && type
+          {
+            relatedItemType: 'Other',
+            titles: titles,
+            relationType: relation_type,
+            relatedItemIdentifier: id,
+            relatedItemIdentifierType: type
+          }
+        else
+          {
+            relatedItemType: 'Other',
+            titles: titles,
+            relationType: relation_type
+          }
         end
       end
 
       # @return [Hash,nil] Array of DataCite relatedIdentifier attributes, conforming to the expectations of HTTP PUT
-      # request to DataCite or nil if blank
+      # request to DataCite or nil if blank or the identifier lacks a URI or Type
       #  see https://support.datacite.org/reference/dois-2#put_dois-id
       def related_identifier_attributes
         return if related_identifier_blank?
 
+        id, type = unpack_related_uri_and_type
+        return unless id && type
+
         {
           resourceTypeGeneral: 'Other',
-          relationType: relation_type
-        }.tap do |attribs|
-          if related_item_identifier_url
-            attribs[:relatedIdentifier] = related_item_identifier_url
-            attribs[:relatedIdentifierType] = 'URL'
-          end
-
-          if related_item_doi
-            attribs[:relatedIdentifier] = related_item_doi
-            attribs[:relatedIdentifierType] = 'DOI'
-          end
-        end
+          relationType: relation_type,
+          relatedIdentifier: id,
+          relatedIdentifierType: type
+        }
       end
 
       private
@@ -109,32 +107,17 @@ module Cocina
       end
 
       def related_item_title
-        @related_item_title ||= preferred_citation || other_title || related_item_doi || related_item_identifier_url
+        @related_item_title ||= preferred_citation || other_title \
+          || related_item_doi || related_item_arxiv || related_item_pmid \
+          || related_item_identifier_url
       end
 
-      # example cocina relatedResource:
-      #   {
-      #     note: [
-      #       {
-      #         value: 'Stanford University (Stanford, CA.). (2020). yadda yadda',
-      #         type: 'preferred citation'
-      #       }
-      #     ]
-      #   }
       def preferred_citation
         Array(related_resource.note).find do |note|
           note.type == 'preferred citation' && note.value.present?
         end&.value
       end
 
-      # example cocina relatedResource:
-      #   {
-      #     title: [
-      #       {
-      #         value: 'A paper'
-      #       }
-      #     ]
-      #   }
       def other_title
         Array(related_resource.title).find do |title|
           title.value.present?
@@ -147,20 +130,34 @@ module Cocina
         end&.uri
       end
 
-      # example cocina relatedResource:
-      #   {
-      #     access: {
-      #       url: [
-      #         {
-      #           value: 'https://www.example.com/paper.html'
-      #         }
-      #       ]
-      #     }
-      #   }
+      def related_item_arxiv
+        Array(related_resource.identifier).find do |identifier|
+          identifier.type == 'arxiv' && identifier.uri.present?
+        end&.uri
+      end
+
+      def related_item_pmid
+        Array(related_resource.identifier).find do |identifier|
+          identifier.type == 'pmid' && identifier.uri.present?
+        end&.uri
+      end
+
       def related_item_identifier_url
         @related_item_identifier_url ||= Array(related_resource.access&.url).find do |url|
           url.value.present?
         end&.value
+      end
+
+      def unpack_related_uri_and_type
+        if related_item_doi
+          [related_item_doi, 'DOI']
+        elsif related_item_arxiv
+          [related_item_arxiv, 'arXiv']
+        elsif related_item_pmid
+          [related_item_pmid, 'PMID']
+        elsif related_item_identifier_url
+          [related_item_identifier_url, 'URL']
+        end
       end
     end
   end

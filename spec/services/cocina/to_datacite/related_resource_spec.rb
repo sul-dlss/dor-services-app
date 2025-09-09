@@ -157,4 +157,72 @@ RSpec.describe Cocina::ToDatacite::RelatedResource do
       )
     end
   end
+
+  context 'when related resource is a link to arXiv' do
+    let(:related_resource) do
+      {
+        type: 'referenced by',
+        dataCiteRelationType: 'IsReferencedBy',
+        identifier: [
+          {
+            type: 'arxiv',
+            uri: 'https://arxiv.org/abs/2402.17945'
+          }
+        ]
+      }
+    end
+    let(:related_identifier_attributes) do
+      described_class.related_identifier_attributes(Cocina::Models::RelatedResource.new(related_resource))
+    end
+
+    it 'returns related item attributes with mapped type' do
+      expect(attributes).to eq(
+        relatedItemType: 'Other',
+        relationType: 'IsReferencedBy',
+        titles: [{ title: 'https://arxiv.org/abs/2402.17945' }],
+        relatedItemIdentifier: 'https://arxiv.org/abs/2402.17945',
+        relatedItemIdentifierType: 'arXiv'
+      )
+      expect(related_identifier_attributes).to eq(
+        resourceTypeGeneral: 'Other',
+        relationType: 'IsReferencedBy',
+        relatedIdentifier: 'https://arxiv.org/abs/2402.17945',
+        relatedIdentifierType: 'arXiv'
+      )
+    end
+  end
+
+  context 'when related resource is a link to pubmed' do
+    let(:related_resource) do
+      {
+        type: 'referenced by',
+        dataCiteRelationType: 'IsReferencedBy',
+        identifier: [
+          {
+            type: 'pmid',
+            uri: 'https://pubmed.ncbi.nlm.nih.gov/31060017/'
+          }
+        ]
+      }
+    end
+    let(:related_identifier_attributes) do
+      described_class.related_identifier_attributes(Cocina::Models::RelatedResource.new(related_resource))
+    end
+
+    it 'returns related item attributes with mapped type' do
+      expect(attributes).to eq(
+        relatedItemType: 'Other',
+        relationType: 'IsReferencedBy',
+        titles: [{ title: 'https://pubmed.ncbi.nlm.nih.gov/31060017/' }],
+        relatedItemIdentifier: 'https://pubmed.ncbi.nlm.nih.gov/31060017/',
+        relatedItemIdentifierType: 'PMID'
+      )
+      expect(related_identifier_attributes).to eq(
+        resourceTypeGeneral: 'Other',
+        relationType: 'IsReferencedBy',
+        relatedIdentifier: 'https://pubmed.ncbi.nlm.nih.gov/31060017/',
+        relatedIdentifierType: 'PMID'
+      )
+    end
+  end
 end
