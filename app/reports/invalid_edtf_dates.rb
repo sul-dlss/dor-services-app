@@ -88,6 +88,8 @@ class InvalidEdtfDates
   end
 
   def self.valid_edtf?(date_value)
+    return false if date_value == 'XXXX' # https://github.com/inukshuk/edtf-ruby/issues/41
+
     # edtf! raises error if it can't parse it
     Date.edtf!(date_value) ? true : false
   rescue ArgumentError
