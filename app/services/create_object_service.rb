@@ -138,7 +138,8 @@ class CreateObjectService
 
     # Add externalIdentifiers to structural
     Array(props.dig(:structural, :contains)).each do |fileset_props|
-      fileset_id = fileset_props[:externalIdentifier] || Cocina::IdGenerator.generate_or_existing_fileset_id(druid:)
+      fileset_id = Cocina::IdGenerator.generate_or_existing_fileset_id(druid:,
+                                                                       resource_id: fileset_props[:externalIdentifier])
       fileset_props[:externalIdentifier] = fileset_id
       Array(fileset_props.dig(:structural, :contains)).each do |file_props|
         file_id = file_props[:externalIdentifier] ||
