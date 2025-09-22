@@ -26,7 +26,7 @@ module Catalog
       raise FolioClient::ResourceNotFound if folio_instance_hrid.blank?
 
       # fetch the record from folio
-      marc = MARC::Record.new_from_hash(FolioClient.fetch_marc_hash(instance_hrid: folio_instance_hrid))
+      marc = MARC::Record.new_from_hash(normalized_marc_hash)
       # build up new mutated record
       updated_marc = MARC::Record.new
       updated_marc.leader = marc.leader
@@ -39,6 +39,28 @@ module Catalog
       # explicitly inject FOLIO into the 003 field
       updated_marc.fields << MARC::ControlField.new('003', 'FOLIO')
       updated_marc
+    end
+
+    private
+
+    def normalized_marc_hash # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
+      FolioClient.fetch_marc_hash(instance_hrid: folio_instance_hrid).tap do |record_hash|
+        # Only normalize if abstracts present
+        abstracts = record_hash.fetch('fields').select do |field|
+          field.key?('520') && field.dig('520', 'ind1') == '3' && field.dig('520', 'subfields').any? do |subfield|
+            subfield.key?('a')
+          end
+        end
+        next if abstracts.blank?
+
+        abstracts.each do |abstract|
+          abstract.dig('520', 'subfields').each do |subfield|
+            next unless subfield['a'].match?('{dollar}')
+
+            subfield['a'] = subfield['a'].dup.gsub('{dollar}', '$')
+          end
+        end
+      end
     end
   end
 end
