@@ -43,6 +43,10 @@ RSpec.describe Catalog::FolioReader do
             'subfields' =>
             [{ 'a' =>
               "Edited from a recently discovered ms. Closely parallels Gruetzmacher's free arrangement of the Violoncello concerto, G. 482." }] } }, # rubocop:disable Layout/LineLength
+        { '520' =>
+          { 'ind1' => '3',
+            'ind2' => ' ',
+            'subfields' => [{ 'a' => 'Excellent ab{dollar}tract' }] } },
         { '596' => { 'ind1' => ' ', 'ind2' => ' ', 'subfields' => [{ 'a' => '31' }] } },
         { '650' => { 'ind1' => ' ', 'ind2' => '0', 'subfields' => [{ 'a' => 'Sonatas (Cello and harpsichord)' }] } },
         { '700' =>
@@ -88,6 +92,9 @@ RSpec.describe Catalog::FolioReader do
           # the 001 and 003 fields have been changed
           expect(folio_reader_marc_result['001'].value).to eq instance_hrid # used to be a bogus value
           expect(folio_reader_marc_result['003'].value).to eq 'FOLIO' # used to be SIRSI
+
+          # the 520 abstracts have replaced escaped dollar signs with literals
+          expect(folio_reader_marc_result['520']['a']).to eq('Excellent ab$tract')
 
           # these stay the same
           expect(folio_reader_marc_result['100']['a']).to eq('Boccherini, Luigi,')
