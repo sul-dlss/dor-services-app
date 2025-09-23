@@ -13,9 +13,6 @@ Sidekiq.configure_server do |config|
   end
 end
 
-# The redis instance is also set in ApplicationJob.
-# This is because we were encountering issues with active jobs
-# getting enqueued to the wrong Redis instance.
 Sidekiq.configure_client do |config|
   config.redis = { url: Settings.redis_url }
 end

@@ -29,10 +29,14 @@ class Indexer
 
   # @param [string] druid
   def self.reindex_later(druid:, trace_id: nil)
-    ReindexJob.perform_later(
-      druid:,
-      trace_id: trace_id || trace_id_for(druid:)
-    )
+    # Note that there is an issue whereby active jobs are getting enqueued to the robot redis instance.
+    # See https://github.com/sidekiq/sidekiq/issues/6817
+    Sidekiq::Client.via(REDIS) do
+      ReindexJob.perform_later(
+        druid:,
+        trace_id: trace_id || trace_id_for(druid:)
+      )
+    end
   end
 
   def self.solr
