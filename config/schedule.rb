@@ -45,7 +45,7 @@ every :day, at: '2:16am' do
 end
 
 # Run this an on off minute to avoid Google Books every 15 minutes
-every :day, at: '8:35pm' do
+every :day, at: '6:35am' do
   set :check_in, Settings.honeybadger_checkins.missing_druids
   rake_hb 'missing_druids:unindexed_objects'
 end
@@ -53,4 +53,8 @@ end
 every 6.hours do
   set :check_in, Settings.honeybadger_checkins.workflow_monitor
   runner_hb 'Workflow::Monitor.monitor'
+end
+
+every :sunday, at: '8:00pm' do
+  rake_hb 'indexer:reindex_jobs'
 end
