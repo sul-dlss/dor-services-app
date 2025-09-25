@@ -107,6 +107,7 @@ namespace :rolling_indexer do
   end
 end
 
+# TODO: Fully remove rolling_indexer from deploy. See https://github.com/sul-dlss/dor-services-app/issues/5517
 after 'deploy:starting', 'rolling_indexer:stop'
-after 'deploy:published', 'rolling_indexer:start'
+# after 'deploy:published', 'rolling_indexer:start'
 after 'deploy:failed', 'rolling_indexer:restart'
