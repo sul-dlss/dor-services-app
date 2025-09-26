@@ -6,8 +6,9 @@ module Indexing
     class WorkflowsIndexer
       attr_reader :id
 
-      def initialize(id:, **)
+      def initialize(id:, workflows: nil, **)
         @id = id
+        @workflows = workflows
       end
 
       # @return [Hash] the partial solr document for workflows concerns
@@ -24,7 +25,7 @@ module Indexing
 
       # @return [Array<Workflow::Response::Workflows>]
       def workflows
-        Workflow::Service.workflows(druid: id)
+        @workflows ||= Workflow::Service.workflows(druid: id)
       end
     end
   end

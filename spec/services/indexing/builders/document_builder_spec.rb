@@ -99,6 +99,7 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
                 id: String,
                 administrative_tags: [],
                 parent_collections: [],
+                workflows: nil,
                 trace_id:)
         expect(Honeybadger).to have_received(:notify)
           .with('Bad association found on druid:xx999xx9999. druid:bc999df2323 could not be found')
