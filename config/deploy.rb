@@ -108,5 +108,6 @@ namespace :rolling_indexer do
 end
 
 after 'deploy:starting', 'rolling_indexer:stop'
-after 'deploy:published', 'rolling_indexer:start'
+# Temporarily disabling while trying reindexing via BatchReindexJob.
+# after 'deploy:published', 'rolling_indexer:start'
 after 'deploy:failed', 'rolling_indexer:restart'
