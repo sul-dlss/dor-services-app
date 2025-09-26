@@ -56,8 +56,9 @@ module Indexing
         @@parent_collections = {} # rubocop:disable Style/ClassVars
       end
 
-      def initialize(model:, trace_id: SecureRandom.uuid)
+      def initialize(model:, workflows: nil, trace_id: SecureRandom.uuid)
         @model = model
+        @workflows = workflows
         @trace_id = trace_id
       end
 
@@ -65,6 +66,7 @@ module Indexing
       def for
         indexer_for_type(model.type).new(id:,
                                          cocina: model,
+                                         workflows:,
                                          parent_collections:,
                                          administrative_tags:,
                                          trace_id:)
@@ -79,7 +81,7 @@ module Indexing
 
       private
 
-      attr_reader :model, :workflow_client, :trace_id
+      attr_reader :model, :workflow_client, :trace_id, :workflows
 
       def id
         model.externalIdentifier
