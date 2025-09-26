@@ -56,7 +56,7 @@ module Cocina
 
       def cocina_contributors
         @cocina_contributors ||= Array(cocina_desc.contributor).select do |cocina_contributor|
-          datacite_publisher?(cocina_contributor)
+          datacite_contributor?(cocina_contributor)
         end
       end
 
@@ -67,15 +67,15 @@ module Cocina
       end
 
       def datacite_creator?(cocina_contributor)
-        !datacite_funder?(cocina_contributor) && !datacite_publisher?(cocina_contributor)
+        !datacite_funder?(cocina_contributor) && !datacite_contributor?(cocina_contributor)
       end
 
       def datacite_funder?(cocina_contributor)
         marc_relator(cocina_contributor) == 'funder'
       end
 
-      def datacite_publisher?(cocina_contributor)
-        marc_relator(cocina_contributor) == 'publisher'
+      def datacite_contributor?(cocina_contributor)
+        marc_relator(cocina_contributor) == 'publisher' || degree_committee_member?(cocina_contributor)
       end
 
       def datacite_creators
@@ -115,7 +115,9 @@ module Cocina
           # NOTE: This is needed for ETDs, for which we do not receive structured
           #       contributor names from Axess for ETD readers
           if cocina_contributor.name.first.structuredValue.empty?
-            name_hash[:creatorName] = name_hash[:name] = cocina_contributor.name.first.value
+            name_hash[:name] = cocina_contributor.name.first.value
+          elsif (name = cocina_contributor.name.first.structuredValue.find { |part| part.type == 'name' }).present?
+            name_hash[:name] = name.value
           else
             forename = cocina_contributor.name.first.structuredValue.find { |part| part.type == 'forename' }
             surname = cocina_contributor.name.first.structuredValue.find { |part| part.type == 'surname' }
@@ -170,6 +172,29 @@ module Cocina
         end
 
         DATACITE_ORGANIZATION_CONTRIBUTOR_TYPES.fetch(marc_relator(cocina_contributor), 'Other')
+      end
+
+      # NOTE: This is how ETDs map to Cocina by way of MARC21 to MODS, where the
+      #       700$e and 700$4 subfields cannot be interpreted as pertaining to
+      #       the same role, so the Cocina winds up expressing this as two
+      #       roles, e.g.:
+      #
+      #   role: [
+      #     {
+      #       value: "degree committee member",
+      #     },
+      #     {
+      #       code: "ths",
+      #       source: {
+      #         code: "marcrelator",
+      #       },
+      #     }
+      #   ]
+      def degree_committee_member?(cocina_contributor)
+        cocina_contributor.role.any? { |contrib_role| contrib_role.value == 'degree committee member' } &&
+          cocina_contributor.role.any? do |contrib_role|
+            contrib_role.code == 'ths' && contrib_role.source.code == 'marcrelator'
+          end
       end
 
       def marc_relator(cocina_contributor)

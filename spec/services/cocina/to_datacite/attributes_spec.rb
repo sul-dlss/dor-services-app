@@ -549,6 +549,34 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                         value: 'author'
                                       }
                                     ]
+                                  },
+                                  {
+                                    name: [
+                                      {
+                                        structuredValue: [
+                                          {
+                                            value: 'Doe, Jane L.',
+                                            type: 'name'
+                                          },
+                                          {
+                                            value: '1946-',
+                                            type: 'life dates'
+                                          }
+                                        ]
+                                      }
+                                    ],
+                                    type: 'person',
+                                    role: [
+                                      {
+                                        value: 'degree committee member'
+                                      },
+                                      {
+                                        code: 'ths',
+                                        source: {
+                                          code: 'marcrelator'
+                                        }
+                                      }
+                                    ]
                                   }
                                 ],
                                 form: [
@@ -737,11 +765,16 @@ RSpec.describe Cocina::ToDatacite::Attributes do
           creators: [
             {
               name: 'Doe, John',
-              creatorName: 'Doe, John',
               nameType: 'Personal'
             }
           ],
-          contributors: [],
+          contributors: [
+            {
+              nameType: 'Personal',
+              name: 'Doe, Jane L.',
+              contributorType: 'Other'
+            }
+          ],
           fundingReferences: [],
           dates: [],
           descriptions: [
