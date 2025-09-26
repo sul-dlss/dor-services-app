@@ -5,7 +5,8 @@ RSpec.describe Indexing::Indexers::WorkflowsIndexer do
   let(:indexer) { described_class.new(id: 'druid:ab123cd4567') }
 
   describe '#to_solr' do
-    let(:solr_doc) { indexer.to_solr }
+    subject(:solr_doc) { indexer.to_solr }
+
     let(:xml) do
       <<~XML
         <workflows objectId="druid:ab123cd4567">
@@ -128,13 +129,170 @@ RSpec.describe Indexing::Indexers::WorkflowsIndexer do
         .with(workflow_name: 'versioningWF').and_return(versioning_json)
     end
 
-    describe 'workflow_status_ssim' do
-      let(:doc) { solr_doc['workflow_status_ssim'] }
+    # WORKFLOW_SOLR = 'wf_ssim'
+    # # field that indexes workflow name, process status then process name
+    # WORKFLOW_WPS_SOLR = 'wf_wps_ssim'
+    # WORKFLOW_WPS_SOLR_DV = 'wf_wps_ssimdv'
+    # # field that indexes workflow name, process name then process status
+    # WORKFLOW_WSP_SOLR = 'wf_wsp_ssim'
+    # WORKFLOW_WSP_SOLR_DV = 'wf_wsp_ssimdv'
+    # # field that indexes process status, workflowname then process name
+    # WORKFLOW_SWP_SOLR = 'wf_swp_ssim'
+    # WORKFLOW_SWP_SOLR_DV = 'wf_swp_ssimdv'
+    # WORKFLOW_ERROR_SOLR = 'wf_error_ssim'
 
-      it 'returns document' do
-        expect(doc).to eq ['accessionWF|completed|0', 'assemblyWF|active|1', 'disseminationWF|completed|0',
-                           'hydrusAssemblyWF|completed|0', 'versioningWF|completed|0']
-      end
+    it 'returns document' do
+      expect(solr_doc['workflow_status_ssim']).to eq ['accessionWF|completed|0',
+                                                      'assemblyWF|active|1',
+                                                      'disseminationWF|completed|0',
+                                                      'hydrusAssemblyWF|completed|0',
+                                                      'versioningWF|completed|0']
+      expected_wps = ['accessionWF',
+                      'accessionWF:start-accession',
+                      'accessionWF:start-accession:completed',
+                      'accessionWF:descriptive-metadata',
+                      'accessionWF:descriptive-metadata:completed',
+                      'accessionWF:rights-metadata',
+                      'accessionWF:rights-metadata:completed',
+                      'accessionWF:content-metadata',
+                      'accessionWF:content-metadata:completed',
+                      'accessionWF:technical-metadata',
+                      'accessionWF:technical-metadata:completed',
+                      'accessionWF:remediate-object',
+                      'accessionWF:remediate-object:completed',
+                      'accessionWF:shelve',
+                      'accessionWF:shelve:completed',
+                      'accessionWF:publish',
+                      'accessionWF:publish:completed',
+                      'accessionWF:provenance-metadata',
+                      'accessionWF:provenance-metadata:completed',
+                      'accessionWF:sdr-ingest-transfer',
+                      'accessionWF:sdr-ingest-transfer:completed',
+                      'accessionWF:sdr-ingest-received',
+                      'accessionWF:sdr-ingest-received:completed',
+                      'accessionWF:reset-workspace',
+                      'accessionWF:reset-workspace:completed',
+                      'accessionWF:end-accession',
+                      'accessionWF:end-accession:completed',
+                      'assemblyWF',
+                      'assemblyWF:start-assembly',
+                      'assemblyWF:start-assembly:completed',
+                      'assemblyWF:content-metadata-create',
+                      'assemblyWF:content-metadata-create:skipped',
+                      'assemblyWF:jp2-create',
+                      'assemblyWF:jp2-create:error',
+                      'assemblyWF:checksum-compute',
+                      'assemblyWF:checksum-compute:queued',
+                      'assemblyWF:exif-collect',
+                      'assemblyWF:exif-collect:queued',
+                      'assemblyWF:accessioning-initiate',
+                      'assemblyWF:accessioning-initiate:queued',
+                      'disseminationWF',
+                      'disseminationWF:cleanup',
+                      'disseminationWF:cleanup:completed',
+                      'hydrusAssemblyWF',
+                      'hydrusAssemblyWF:start-deposit',
+                      'hydrusAssemblyWF:start-deposit:completed',
+                      'hydrusAssemblyWF:submit',
+                      'hydrusAssemblyWF:submit:completed',
+                      'hydrusAssemblyWF:approve',
+                      'hydrusAssemblyWF:approve:completed',
+                      'hydrusAssemblyWF:start-assembly',
+                      'hydrusAssemblyWF:start-assembly:completed',
+                      'versioningWF',
+                      'versioningWF:start-version',
+                      'versioningWF:start-version:completed',
+                      'versioningWF:submit-version',
+                      'versioningWF:submit-version:completed',
+                      'versioningWF:start-accession',
+                      'versioningWF:start-accession:completed']
+      expect(solr_doc['wf_wps_ssim']).to eq expected_wps
+      expect(solr_doc['wf_wps_ssimdv']).to eq expected_wps
+
+      expected_wsp = ['accessionWF',
+                      'accessionWF:completed',
+                      'accessionWF:completed:start-accession',
+                      'accessionWF:completed:descriptive-metadata',
+                      'accessionWF:completed:rights-metadata',
+                      'accessionWF:completed:content-metadata',
+                      'accessionWF:completed:technical-metadata',
+                      'accessionWF:completed:remediate-object',
+                      'accessionWF:completed:shelve',
+                      'accessionWF:completed:publish',
+                      'accessionWF:completed:provenance-metadata',
+                      'accessionWF:completed:sdr-ingest-transfer',
+                      'accessionWF:completed:sdr-ingest-received',
+                      'accessionWF:completed:reset-workspace',
+                      'accessionWF:completed:end-accession',
+                      'assemblyWF',
+                      'assemblyWF:completed',
+                      'assemblyWF:completed:start-assembly',
+                      'assemblyWF:skipped',
+                      'assemblyWF:skipped:content-metadata-create',
+                      'assemblyWF:error',
+                      'assemblyWF:error:jp2-create',
+                      'assemblyWF:queued',
+                      'assemblyWF:queued:checksum-compute',
+                      'assemblyWF:queued:exif-collect',
+                      'assemblyWF:queued:accessioning-initiate',
+                      'disseminationWF',
+                      'disseminationWF:completed',
+                      'disseminationWF:completed:cleanup',
+                      'hydrusAssemblyWF',
+                      'hydrusAssemblyWF:completed',
+                      'hydrusAssemblyWF:completed:start-deposit',
+                      'hydrusAssemblyWF:completed:submit',
+                      'hydrusAssemblyWF:completed:approve',
+                      'hydrusAssemblyWF:completed:start-assembly',
+                      'versioningWF',
+                      'versioningWF:completed',
+                      'versioningWF:completed:start-version',
+                      'versioningWF:completed:submit-version',
+                      'versioningWF:completed:start-accession']
+      expect(solr_doc['wf_wsp_ssim']).to eq expected_wsp
+      expect(solr_doc['wf_wsp_ssimdv']).to eq expected_wsp
+
+      expected_swp = ['completed',
+                      'completed:accessionWF',
+                      'completed:accessionWF:start-accession',
+                      'completed:accessionWF:descriptive-metadata',
+                      'completed:accessionWF:rights-metadata',
+                      'completed:accessionWF:content-metadata',
+                      'completed:accessionWF:technical-metadata',
+                      'completed:accessionWF:remediate-object',
+                      'completed:accessionWF:shelve',
+                      'completed:accessionWF:publish',
+                      'completed:accessionWF:provenance-metadata',
+                      'completed:accessionWF:sdr-ingest-transfer',
+                      'completed:accessionWF:sdr-ingest-received',
+                      'completed:accessionWF:reset-workspace',
+                      'completed:accessionWF:end-accession',
+                      'completed:assemblyWF',
+                      'completed:assemblyWF:start-assembly',
+                      'skipped',
+                      'skipped:assemblyWF',
+                      'skipped:assemblyWF:content-metadata-create',
+                      'error',
+                      'error:assemblyWF',
+                      'error:assemblyWF:jp2-create',
+                      'queued',
+                      'queued:assemblyWF',
+                      'queued:assemblyWF:checksum-compute',
+                      'queued:assemblyWF:exif-collect',
+                      'queued:assemblyWF:accessioning-initiate',
+                      'completed:disseminationWF',
+                      'completed:disseminationWF:cleanup',
+                      'completed:hydrusAssemblyWF',
+                      'completed:hydrusAssemblyWF:start-deposit',
+                      'completed:hydrusAssemblyWF:submit',
+                      'completed:hydrusAssemblyWF:approve',
+                      'completed:hydrusAssemblyWF:start-assembly',
+                      'completed:versioningWF',
+                      'completed:versioningWF:start-version',
+                      'completed:versioningWF:submit-version',
+                      'completed:versioningWF:start-accession']
+      expect(solr_doc['wf_swp_ssim']).to eq expected_swp
+      expect(solr_doc['wf_swp_ssimdv']).to eq expected_swp
     end
   end
 end
