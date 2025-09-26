@@ -7,9 +7,11 @@ class BatchReindexJob < ApplicationJob
   def perform(druids)
     start_time = Time.zone.now
     solr_docs = []
+    workflows_map = Workflow::BatchService.workflows(druids:)
     RepositoryObject.includes(:head_version).where(external_identifier: druids).find_each do |repository_object|
       solr_docs << Indexing::Builders::DocumentBuilder.for(
         model: repository_object.head_version.to_cocina_with_metadata,
+        workflows: workflows_map[repository_object.external_identifier],
         trace_id: Indexer.trace_id_for(druid: repository_object.external_identifier)
       ).to_solr
     end
