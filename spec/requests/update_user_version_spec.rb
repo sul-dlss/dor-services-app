@@ -54,7 +54,7 @@ RSpec.describe 'Update user version' do
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' },
             params: { version: 2 }.to_json
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       # .parsed_body won't work here because content-type is application/vnd.api+json
       expect(JSON.parse(response.body)).to eq({ errors: [ # rubocop:disable Rails/ResponseParsedBody
         { status: '422', title: 'Unprocessable Content', detail: 'RepositoryObjectVersion not closed' }

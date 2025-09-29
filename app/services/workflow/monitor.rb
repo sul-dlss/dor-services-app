@@ -22,7 +22,7 @@ module Workflow
                           .order(:druid, :version)
                           .limit(1000)
 
-      return if steps.count.zero?
+      return if steps.none?
 
       Honeybadger.notify('Workflow step(s) has been running for more than 48 hours. Perhaps there is a problem.',
                          context: context_from(steps))
@@ -33,7 +33,7 @@ module Workflow
                            .where(WorkflowStep.arel_table[:updated_at].lt(24.hours.ago))
                            .order(:druid, :version)
                            .limit(1000)
-      return if queued.count.zero?
+      return if queued.none?
 
       Honeybadger.notify('Workflow step(s) have been queued for more than 24 hours. Perhaps there is a ' \
                          'problem with the robots.', context: context_from(queued))
