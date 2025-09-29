@@ -35,7 +35,7 @@ DOR Services App is a Rails app.
 
 ### Background Jobs
 
-Dor Services App uses Sidekiq to process background jobs, which requires Redis. You can either install this locally, if running services locally, or run it via `docker-compose`. To spin up Sidekiq, run:
+Dor Services App uses Sidekiq to process background jobs. To spin up Sidekiq, run:
 
 ```shell
 bundle exec sidekiq # use -d option to daemonize/run in the background
@@ -50,7 +50,7 @@ Note that the application has a web UI for monitoring Sidekiq activity at `/queu
 First, ensure the database container is spun up:
 
 ```shell
-docker compose up db # use -d to daemonize/run in background
+docker compose up # use -d to daemonize/run in background
 ```
 
 And if you haven't yet prepared the test database, run:
@@ -66,35 +66,6 @@ To run the tests:
 To run rubocop:
 
   `bundle exec rubocop`
-
-## Console and Development Server
-
-### Using Docker
-
-First, you'll need both Docker and docker-compose installed.
-
-Run dor-services-app and its dependencies using:
-
-```shell
-docker compose up -d
-```
-
-#### Update Docker image
-
-```shell
-docker build -t suldlss/dor-services-app:latest .
-docker push suldlss/dor-services-app:latest
-```
-
-### Without Docker
-
-To spin up a local rails console:
-
-  `bundle exec rails c`
-
-To spin up a local development server:
-
-  `bundle exec rails s`
 
 ## Setup RabbitMQ
 You must set up the durable rabbitmq queues that bind to the exchange where workflow messages are published.

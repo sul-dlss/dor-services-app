@@ -1,79 +1,8 @@
 services:
-  web:
-    build:
-      context: .
-      args:
-        BUNDLE_GEMS__CONTRIBSYS__COM: "${BUNDLE_GEMS__CONTRIBSYS__COM}"
-    volumes:
-      - ./:/app
-    working_dir: /app
-    platform: linux/amd64
-    depends_on:
-      - solr
-      - suri
-      - redis
-      - workers
-      - db
-    ports:
-      - 3000:3000
-    environment:
-      DATABASE_NAME: dor_services
-      DATABASE_USERNAME: postgres
-      DATABASE_PASSWORD: sekret
-      DATABASE_HOSTNAME: db
-      DATABASE_PORT: 5432
-      RAILS_LOG_TO_STDOUT: 'true'
-      REDIS_URL: redis://redis:6379/
-      # We don't actually use this anywhere but the rails server needs it in production env
-      SECRET_KEY_BASE: 1
-      SOLR_URL: http://solr:8983/solr/dorservices
-      SETTINGS__REDIS_URL: redis://redis:6379/
-      SETTINGS__SOLR__URL: http://solr:8983/solr/dorservices
-      SETTINGS__SURI__URL: http://suri:3000
-  workers:
-    build:
-      context: .
-      args:
-        BUNDLE_GEMS__CONTRIBSYS__COM: "${BUNDLE_GEMS__CONTRIBSYS__COM}"
-    volumes:
-      - ./:/app
-    working_dir: /app
-    platform: linux/amd64
-    command: bundle exec sidekiq
-    depends_on:
-      - redis
-    environment:
-      REDIS_URL: redis://redis:6379/
-      SOLR_URL: http://solr:8983/solr/dorservices
-      SETTINGS__REDIS_URL: redis://redis:6379/
-      SETTINGS__SOLR__URL: http://solr:8983/solr/dorservices
-      SETTINGS__SURI__URL: http://suri:3000
-      # We don't actually use this anywhere but the rails server needs it in production env
-      SECRET_KEY_BASE: 1
   redis:
     image: redis
     ports:
       - 6379:6379
-  solr:
-    image: solr:8.11.2
-    volumes:
-      - ./solr_conf/conf/:/myconfig
-    command: solr-create -c dorservices -d /myconfig
-    ports:
-      - 8984:8983
-  suri:
-    image: suldlss/suri-rails:latest
-    platform: linux/amd64
-    ports:
-      - 3002:3000
-    depends_on:
-      - db
-    environment:
-      DATABASE_NAME: suri
-      DATABASE_USERNAME: postgres
-      DATABASE_PASSWORD: sekret
-      DATABASE_HOSTNAME: db
-      DATABASE_PORT: 5432
   db:
     image: postgres:13
     ports:
