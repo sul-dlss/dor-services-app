@@ -34,10 +34,20 @@ class BatchReindexJob < ApplicationJob
     @workflows_map ||= Workflow::BatchService.workflows(druids:)
   end
 
+  def release_tags_map
+    @release_tags_map ||= {}.tap do |map|
+      ReleaseTag.where(druid: druids).find_each do |tag|
+        map[tag.druid] ||= []
+        map[tag.druid] << tag.to_cocina
+      end
+    end
+  end
+
   def build_solr_doc(repository_object:)
     Indexing::Builders::DocumentBuilder.for(
       model: repository_object.head_version.to_cocina_with_metadata,
       workflows: workflows_map[repository_object.external_identifier],
+      release_tags: release_tags_map[repository_object.external_identifier] || [],
       trace_id: Indexer.trace_id_for(druid: repository_object.external_identifier)
     ).to_solr
   end

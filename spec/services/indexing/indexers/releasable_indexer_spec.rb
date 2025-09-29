@@ -16,7 +16,12 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
   end
 
   describe 'to_solr' do
-    let(:doc) { described_class.new(cocina:, parent_collections:, parent_collections_release_tags:).to_solr }
+    let(:doc) do
+      described_class.new(cocina:, parent_collections:, parent_collections_release_tags:,
+                          release_tags: provided_release_tags).to_solr
+    end
+
+    let(:provided_release_tags) { release_tags }
 
     context 'with no parent collection' do
       let(:parent_collections) { [] }
@@ -63,6 +68,24 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
         end
       end
 
+      context 'when release tags are provided' do
+        let(:provided_release_tags) do
+          [
+            Dor::ReleaseTag.new(to: 'Searchworks', release: true, date: '2021-05-12T21:05:21.000+00:00', what: 'self')
+          ]
+        end
+
+        it 'indexes release tags' do
+          # rubocop:disable Style/StringHashKeys
+          expect(doc).to eq(
+            'released_to_ssim' => ['Searchworks'],
+            'released_to_searchworks_dttsi' => '2021-05-12T21:05:21Z'
+          )
+          # rubocop:enable Style/StringHashKeys
+          expect(ReleaseTagService).not_to have_received(:item_tags)
+        end
+      end
+
       context 'when releaseTags are not present' do
         let(:release_tags) { [] }
 
@@ -96,11 +119,6 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
       let(:parent_collections_release_tags) do
         { collection_druid => collection_release_tags }
       end
-
-      # before do
-      #   allow(ReleaseTagService).to receive(:item_tags).with(cocina_object: collection)
-      #                                                  .and_return(collection_release_tags)
-      # end
 
       context 'when the parent collection has self releaseTags' do
         let(:release_tags) { [] }
