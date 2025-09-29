@@ -8,24 +8,19 @@ RSpec.describe Workflow::Service do
   describe '#workflows' do
     subject(:workflows) { described_class.workflows(druid:) }
 
-    let(:xml) do
-      <<~XML
-        <?xml version="1.0"?>
-        <workflow id="accessionWF" objectId="druid:bb033gt0615">
-          <process version="1" note="" lifecycle="" laneId="default" elapsed="" attempts="0" datetime="2025-07-22T21:35:36+00:00" context="{&quot;requireOCR&quot;:true,&quot;requireTranscript&quot;:true}" status="waiting" name="start-accession"/>
-        </workflow>
-      XML
-    end
-
-    before do
-      create(:workflow_step, :with_ocr_context, druid:, updated_at: '2025-07-22T21:35:36+00:00', status: 'waiting')
+    let!(:steps) do
+      [
+        create(:workflow_step, :with_ocr_context, druid:, updated_at: '2025-07-22T21:35:36+00:00', status: 'waiting')
+      ]
     end
 
     it 'returns workflows' do
       expect(workflows).to be_a(Array)
       expect(workflows.size).to eq 1
-      expect(workflows.first).to be_a(Dor::Services::Response::Workflow)
-      expect(workflows.first.xml).to be_equivalent_to xml
+      workflow = workflows.first
+      expect(workflow).to be_a(Workflow::WorkflowResponse)
+      expect(workflow.workflow_name).to eq 'accessionWF'
+      expect(workflow.steps).to eq steps
     end
   end
 

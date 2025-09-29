@@ -37,7 +37,7 @@ module Indexing
       end
 
       def processes
-        @processes ||= definition_process_names.map do |process_name|
+        @processes ||= definition_process_names.filter_map do |process_name|
           workflow.process_for_recent_version(name: process_name)
         end
       end

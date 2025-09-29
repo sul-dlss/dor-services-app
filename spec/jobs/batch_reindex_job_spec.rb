@@ -26,7 +26,7 @@ RSpec.describe BatchReindexJob do
     expect(Indexing::Builders::DocumentBuilder).to have_received(:for).once.with(
       model: repository_object.head_version.to_cocina_with_metadata,
       trace_id: String,
-      workflows: [an_instance_of(Dor::Services::Response::Workflow)]
+      workflows: [an_instance_of(Workflow::WorkflowResponse)]
     )
   end
 end
