@@ -4,7 +4,7 @@ module Indexing
   module Indexers
     # Indexes the druid, metadata sources, and the apo titles
     class IdentifiableIndexer
-      attr_reader :cocina, :cocina_finder
+      attr_reader :cocina
 
       CURRENT_CATALOG_TYPE = 'folio'
 
