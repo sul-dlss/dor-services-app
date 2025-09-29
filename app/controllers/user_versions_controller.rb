@@ -6,7 +6,7 @@ class UserVersionsController < ApplicationController
   before_action :find_user_version, only: %i[show update solr]
 
   rescue_from UserVersionService::UserVersioningError do |e|
-    json_api_error(status: :unprocessable_entity, message: e.message)
+    json_api_error(status: :unprocessable_content, message: e.message)
   end
 
   def index
