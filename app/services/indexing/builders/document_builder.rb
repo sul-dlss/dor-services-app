@@ -56,9 +56,10 @@ module Indexing
         @@parent_collections = {} # rubocop:disable Style/ClassVars
       end
 
-      def initialize(model:, workflows: nil, trace_id: SecureRandom.uuid)
+      def initialize(model:, workflows: nil, release_tags: nil, trace_id: SecureRandom.uuid)
         @model = model
         @workflows = workflows
+        @release_tags = release_tags
         @trace_id = trace_id
       end
 
@@ -69,6 +70,7 @@ module Indexing
                                          workflows:,
                                          parent_collections:,
                                          administrative_tags:,
+                                         release_tags:,
                                          trace_id:)
       rescue StandardError => e
         Honeybadger.notify('[DATA ERROR] Unexpected indexing exception',
@@ -81,7 +83,7 @@ module Indexing
 
       private
 
-      attr_reader :model, :workflow_client, :trace_id, :workflows
+      attr_reader :model, :workflow_client, :trace_id, :workflows, :release_tags
 
       def id
         model.externalIdentifier

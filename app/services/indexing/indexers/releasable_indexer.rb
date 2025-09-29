@@ -6,9 +6,10 @@ module Indexing
     class ReleasableIndexer
       attr_reader :cocina, :parent_collections
 
-      def initialize(cocina:, parent_collections:, **)
+      def initialize(cocina:, parent_collections:, release_tags: nil, **)
         @cocina = cocina
         @parent_collections = parent_collections
+        @release_tags = release_tags
       end
 
       # @return [Hash] the partial solr document for releasable concerns
@@ -58,9 +59,12 @@ module Indexing
         end
       end
 
+      def release_tags
+        @release_tags ||= ReleaseTagService.item_tags(cocina_object: cocina)
+      end
+
       def tags_from_item
-        ReleaseTagService.item_tags(cocina_object: cocina)
-                         .group_by(&:to).transform_values do |releases_for_project|
+        release_tags.group_by(&:to).transform_values do |releases_for_project|
           releases_for_project.max_by(&:date)
         end
       end
