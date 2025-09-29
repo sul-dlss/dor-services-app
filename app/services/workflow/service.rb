@@ -64,27 +64,25 @@ module Workflow
     end
 
     # Returns all workflows for the object.
-    # @return [Array<Dor::Services::Response::Workflow>]
+    # @return [Array<Workflow::WorkflowResponse>]
     def workflows
-      @workflows ||= Dor::Services::Response::Workflows.new(xml: workflows_xml).workflows
+      @workflows ||= workflow_steps_by_workflow.map do |workflow_name, steps|
+        Workflow::WorkflowResponse.new(druid:, workflow_name:, steps:)
+      end
     end
 
     # Returns all workflows for the object as XML.
+    # Note: The API still uses XML to represent workflows. (Dor::Services::Response::Workflow)
+    # Internally, DSA uses Workflow::WorkflowResponse.
     # @return [Nokogiri::XML::Document]
     def workflows_xml
-      @workflows_xml ||= begin
-        workflow_steps = WorkflowStep.where(druid:)
-                                     .order(:workflow, created_at: :asc)
-                                     .group_by(&:workflow)
-        xml = Nokogiri::XML::Builder.new do |builder|
-          builder.workflows(objectId: druid) do
-            workflow_steps.each do |workflow_name, steps|
-              build_workflow(builder:, workflow_name:, steps:)
-            end
+      @workflows_xml ||= Nokogiri::XML::Builder.new do |builder|
+        builder.workflows(objectId: druid) do
+          workflow_steps_by_workflow.each do |workflow_name, steps|
+            build_workflow(builder:, workflow_name:, steps:)
           end
-        end.to_xml
-        Nokogiri::XML(xml)
-      end
+        end
+      end.doc
     end
 
     # @param [String] workflow_name the name of the workflow to check
@@ -166,6 +164,12 @@ module Workflow
           builder.process(**step.attributes_for_process)
         end
       end
+    end
+
+    def workflow_steps_by_workflow
+      WorkflowStep.where(druid:)
+                  .order(:workflow, created_at: :asc)
+                  .group_by(&:workflow)
     end
   end
 end

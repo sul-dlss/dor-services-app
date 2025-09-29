@@ -25,21 +25,8 @@ module Workflow
 
     def build_workflows(druid:, steps:)
       steps_by_workflow = steps.group_by(&:workflow)
-      xml = Nokogiri::XML::Builder.new do |builder|
-        builder.workflows(objectId: druid) do
-          steps_by_workflow.each do |workflow_name, steps|
-            build_workflow(builder:, workflow_name:, steps:, druid:)
-          end
-        end
-      end.to_xml
-      Dor::Services::Response::Workflows.new(xml: Nokogiri::XML(xml)).workflows
-    end
-
-    def build_workflow(builder:, workflow_name:, steps:, druid:)
-      builder.workflow(id: workflow_name, objectId: druid) do
-        steps.each do |step|
-          builder.process(**step.attributes_for_process)
-        end
+      steps_by_workflow.map do |workflow_name, steps|
+        Workflow::WorkflowResponse.new(druid:, workflow_name:, steps:)
       end
     end
   end
