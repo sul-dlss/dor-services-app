@@ -181,36 +181,6 @@ RSpec.describe WorkflowStep do
     end
   end
 
-  describe '#milestone_date' do
-    it 'returns created_at if completed_at is nil' do
-      expect(step.completed_at).to be_nil
-      expect(step.milestone_date).to eq step.created_at.to_time.iso8601
-    end
-
-    it 'sets completed_at date and returns it as the milestone_date' do
-      expect(step.completed_at).to be_nil
-      step.status = 'completed'
-      step.save
-      expect(step.completed_at).not_to be_nil
-      expect(step.milestone_date).to eq step.completed_at.to_time.iso8601
-    end
-  end
-
-  describe '#as_milestone' do
-    subject(:parsed_xml) { Nokogiri::XML(builder.to_xml) }
-
-    let!(:builder) do
-      Nokogiri::XML::Builder.new do |xml|
-        step.as_milestone(xml)
-      end
-    end
-
-    it 'serializes a Workflow as a milestone' do
-      expect(parsed_xml.at_xpath('//milestone')).to include ['date', //], ['version', /1/]
-      expect(parsed_xml.at_xpath('//milestone').content).to eq 'submitted'
-    end
-  end
-
   describe '#attributes_for_process' do
     it 'includes the expected values' do
       expect(step.attributes_for_process).to include(

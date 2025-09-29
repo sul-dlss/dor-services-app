@@ -130,7 +130,17 @@ RSpec.describe Workflow::LifecycleService do
     subject(:service) { described_class.new(druid: druid, version: 3, active_only: true) }
 
     before do
-      allow(service).to receive(:lifecycle_xml).and_return(ng_xml) # rubocop:disable RSpec/SubjectStub
+      # allow(service).to receive(:lifecycle_xml).and_return(ng_xml)
+      create(:workflow_step,
+             druid:,
+             version: 3,
+             process: 'publish',
+             status: 'completed',
+             lifecycle: 'published')
+      create(:workflow_step,
+             druid:,
+             version: 3,
+             process: 'end-accession')
     end
 
     context 'when the milestone exists' do
@@ -153,17 +163,13 @@ RSpec.describe Workflow::LifecycleService do
 
     let(:service) { described_class.new(druid: druid) }
 
-    let(:xml) do
-      <<~XML
-        <?xml version="1.0" encoding="UTF-8"?>
-        <lifecycle objectId="druid:gv054hp4128">
-          <milestone date="2012-01-26T21:06:54-0800" version="2">published</milestone>
-        </lifecycle>
-      XML
-    end
-
     before do
-      allow(service).to receive(:lifecycle_xml).and_return(ng_xml)
+      create(:workflow_step,
+             druid:,
+             version: 2,
+             process: 'publish',
+             status: 'completed',
+             lifecycle: 'published')
     end
 
     it 'includes the version in with the milestones' do

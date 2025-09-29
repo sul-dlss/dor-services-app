@@ -3,15 +3,16 @@
 module Indexing
   # Model for workflow fields
   class WorkflowFields
-    def self.for(druid:, version:)
-      new(druid:, version:).result
+    def self.for(...)
+      new(...).result
     end
 
-    attr_reader :druid, :version
+    attr_reader :druid, :version, :milestones
 
-    def initialize(druid:, version:)
+    def initialize(druid:, version:, milestones: nil)
       @druid = druid
       @version = version
+      @milestones = milestones
     end
 
     # @return [Hash] the partial solr document for processable concerns
@@ -24,20 +25,20 @@ module Indexing
 
     private
 
-    def status_service
-      @status_service ||= Status.new(druid: druid, version: version)
+    def status
+      @status ||= Status.new(druid: druid, version: version, milestones:)
     end
 
     def add_status(solr_doc)
       # This is the status on the Argo show page (e.g. "v4 In accessioning (described, published, deposited)")
-      solr_doc['status_ssi'] = status_service.display
+      solr_doc['status_ssi'] = status.display
 
       # This is used for Argo's "Processing Status" facet
-      solr_doc['processing_status_text_ssi'] = status_service.display_simplified
+      solr_doc['processing_status_text_ssi'] = status.display_simplified
     end
 
     def sortable_milestones
-      status_service.milestones.each_with_object({}) do |milestone, sortable|
+      status.milestones.each_with_object({}) do |milestone, sortable|
         sortable[milestone[:milestone]] ||= []
         sortable[milestone[:milestone]] << milestone[:at].utc.xmlschema
       end
@@ -56,10 +57,6 @@ module Indexing
         solr_doc["#{milestone}_earliest_dttsi"] = dates.first
         solr_doc["#{milestone}_latest_dttsi"] = dates.last
       end
-    end
-
-    def workflow_client
-      @workflow_client ||= WorkflowClientFactory.build
     end
 
     # Determines the status of an object based on the lifecycles
@@ -94,9 +91,11 @@ module Indexing
 
       # @param [String] druid the object identifier
       # @param [String|Integer] version the version identifier
-      def initialize(druid:, version:)
+      # @param [Array<Hash>] milestones an array of milestone hashes
+      def initialize(druid:, version:, milestones: nil)
         @druid = druid
         @version = version.to_s
+        @milestones = milestones
         @status_code, @status_time = status_from_latest_current_milestone
       end
 

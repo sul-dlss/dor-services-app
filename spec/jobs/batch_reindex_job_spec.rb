@@ -18,7 +18,7 @@ RSpec.describe BatchReindexJob do
   before do
     allow(RSolr).to receive(:connect).and_return(conn)
     allow(Indexing::Builders::DocumentBuilder).to receive(:for).and_return(indexer)
-    create(:workflow_step, druid:)
+    create(:workflow_step, druid:, lifecycle: 'accessioned', status: 'completed')
   end
 
   it 'indexes' do
@@ -28,6 +28,7 @@ RSpec.describe BatchReindexJob do
       model: repository_object.head_version.to_cocina_with_metadata,
       trace_id: String,
       workflows: [an_instance_of(Workflow::WorkflowResponse)],
+      milestones: [{ milestone: 'accessioned', at: an_instance_of(ActiveSupport::TimeWithZone), version: '1' }],
       release_tags: [release_tag.to_cocina]
     )
   end
