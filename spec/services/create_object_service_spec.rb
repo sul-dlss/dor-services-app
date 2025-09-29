@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe CreateObjectService do
   include Dry::Monads[:result]
+
   let(:store) { described_class.new }
 
   describe '#create' do

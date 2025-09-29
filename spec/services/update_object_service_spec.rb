@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe UpdateObjectService do
   include Dry::Monads[:result]
+
   let(:store) { described_class.new(cocina_object:, skip_lock: true, skip_open_check: false, who:, description:) }
   let(:who) { 'test_user' }
   let(:description) { 'updating stuff' }

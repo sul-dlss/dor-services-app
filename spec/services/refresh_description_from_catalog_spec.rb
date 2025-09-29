@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe RefreshDescriptionFromCatalog do
   include Dry::Monads[:result]
+
   let(:druid) { 'druid:bc753qt7345' }
   let(:description) do
     {

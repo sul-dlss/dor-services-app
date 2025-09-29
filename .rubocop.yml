@@ -872,3 +872,15 @@ Style/RedundantArrayFlatten: # new in 1.76
   Enabled: true
 RSpec/IncludeExamples: # new in 3.6
   Enabled: true
+
+Gemspec/AttributeAssignment: # new in 1.77
+  Enabled: true
+Layout/EmptyLinesAfterModuleInclusion: # new in 1.79
+  Enabled: true
+Style/CollectionQuerying: # new in 1.77
+  Enabled: true
+Rails/FindByOrAssignmentMemoization: # new in 2.33
+  Enabled: false
+Rails/OrderArguments: # new in 2.33
+  Enabled: true
+

@@ -127,7 +127,7 @@ class AdministrativeTags
       old_label = TagLabel.find_by!(tag: current)
       AdministrativeTag.find_by!(druid: identifier, tag_label: old_label)
                        .update!(tag_label: TagLabel.find_or_create_by!(tag: new))
-      old_label.destroy! if old_label.administrative_tags.count.zero?
+      old_label.destroy! if old_label.administrative_tags.none?
     end
   rescue ActiveRecord::RecordNotUnique
     # This catches the exception triggered by the race condition because find_or_create_by! is not atomic.
@@ -154,7 +154,7 @@ class AdministrativeTags
     ActiveRecord::Base.transaction do
       old_label = TagLabel.find_by!(tag:)
       AdministrativeTag.find_by!(druid: identifier, tag_label: old_label).destroy!
-      old_label.destroy! if old_label.administrative_tags.count.zero?
+      old_label.destroy! if old_label.administrative_tags.none?
     end
   end
 
