@@ -16,10 +16,11 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
   end
 
   describe 'to_solr' do
-    let(:doc) { described_class.new(cocina:, parent_collections:).to_solr }
+    let(:doc) { described_class.new(cocina:, parent_collections:, parent_collections_release_tags:).to_solr }
 
     context 'with no parent collection' do
       let(:parent_collections) { [] }
+      let(:parent_collections_release_tags) { {} }
 
       context 'when multiple releaseTags are present for the same destination' do
         let(:release_tags) do
@@ -92,11 +93,14 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
       end
       let(:collection_druid) { 'druid:bc123fg4567' }
       let(:collection_release_tags) { [] }
-
-      before do
-        allow(ReleaseTagService).to receive(:item_tags).with(cocina_object: collection)
-                                                       .and_return(collection_release_tags)
+      let(:parent_collections_release_tags) do
+        { collection_druid => collection_release_tags }
       end
+
+      # before do
+      #   allow(ReleaseTagService).to receive(:item_tags).with(cocina_object: collection)
+      #                                                  .and_return(collection_release_tags)
+      # end
 
       context 'when the parent collection has self releaseTags' do
         let(:release_tags) { [] }

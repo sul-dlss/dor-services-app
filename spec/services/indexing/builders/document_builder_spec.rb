@@ -67,9 +67,11 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
     context 'with a cached collections' do
       let(:related) { build(:collection) }
       let(:collections) { ['druid:bc999df2323'] }
+      let(:item_tags) { [instance_double(Dor::ReleaseTag)] }
 
       before do
         allow(CocinaObjectStore).to receive(:find).and_return(related)
+        allow(ReleaseTagService).to receive(:item_tags).and_return(item_tags)
         described_class.for(
           model: cocina_with_metadata,
           trace_id:
@@ -78,7 +80,8 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
 
       it 'uses the cached collection' do
         expect(indexer).to be_instance_of Indexing::Indexers::CompositeIndexer::Instance
-        expect(CocinaObjectStore).to have_received(:find).with(collections.first)
+        expect(CocinaObjectStore).to have_received(:find).with(collections.first).once
+        expect(ReleaseTagService).to have_received(:item_tags).with(cocina_object: related).once
       end
     end
 
@@ -99,10 +102,11 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
                 id: String,
                 administrative_tags: [],
                 parent_collections: [],
+                parent_collections_release_tags: {},
                 workflows: nil,
                 trace_id:)
         expect(Honeybadger).to have_received(:notify)
-          .with('Bad association found on druid:xx999xx9999. druid:bc999df2323 could not be found')
+          .with('Bad association found on druid:xx999xx9999. druid:bc999df2323 could not be found').twice
       end
     end
 

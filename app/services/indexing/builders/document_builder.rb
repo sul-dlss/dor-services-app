@@ -47,6 +47,7 @@ module Indexing
       }.freeze
 
       @@parent_collections = {} # rubocop:disable Style/ClassVars
+      @@parent_collections_release_tags = {} # rubocop:disable Style/ClassVars
 
       def self.for(...)
         new(...).for
@@ -54,6 +55,7 @@ module Indexing
 
       def self.reset_parent_collections
         @@parent_collections = {} # rubocop:disable Style/ClassVars
+        @@parent_collections_release_tags = {} # rubocop:disable Style/ClassVars
       end
 
       def initialize(model:, workflows: nil, trace_id: SecureRandom.uuid)
@@ -69,6 +71,7 @@ module Indexing
                                          workflows:,
                                          parent_collections:,
                                          administrative_tags:,
+                                         parent_collections_release_tags:,
                                          trace_id:)
       rescue StandardError => e
         Honeybadger.notify('[DATA ERROR] Unexpected indexing exception',
@@ -100,6 +103,13 @@ module Indexing
           Honeybadger.notify("Bad association found on #{model.externalIdentifier}. #{rel_druid} could not be found")
           # This may happen if the referenced Collection does not exist (bad data)
           nil
+        end
+      end
+
+      def parent_collections_release_tags
+        parent_collections.each_with_object({}) do |collection, hash|
+          @@parent_collections_release_tags[collection.externalIdentifier] ||= ReleaseTagService.item_tags(cocina_object: collection) # rubocop:disable Layout/LineLength
+          hash[collection.externalIdentifier] = @@parent_collections_release_tags[collection.externalIdentifier]
         end
       end
 
