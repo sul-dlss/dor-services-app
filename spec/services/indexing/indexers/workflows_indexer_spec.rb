@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 RSpec.describe Indexing::Indexers::WorkflowsIndexer do
-  let(:indexer) { described_class.new(id: 'druid:ab123cd4567') }
+  let(:indexer) { described_class.new(id: 'druid:ab123cd4567', workflows:) }
 
   describe '#to_solr' do
     let(:solr_doc) { indexer.to_solr }
@@ -112,10 +112,9 @@ RSpec.describe Indexing::Indexers::WorkflowsIndexer do
       ] }
     end
 
+    let(:workflows) { Dor::Services::Response::Workflows.new(xml: Nokogiri::XML(xml)).workflows }
+
     before do
-      allow(Workflow::Service).to receive(:workflows).with(druid: 'druid:ab123cd4567').and_return(
-        Dor::Services::Response::Workflows.new(xml: Nokogiri::XML(xml)).workflows
-      )
       allow(Workflow::TemplateService).to receive(:template)
         .with(workflow_name: 'accessionWF').and_return(accession_json)
       allow(Workflow::TemplateService).to receive(:template)
