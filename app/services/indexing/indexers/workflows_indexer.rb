@@ -6,7 +6,7 @@ module Indexing
     class WorkflowsIndexer
       attr_reader :id
 
-      def initialize(id:, workflows: nil, **)
+      def initialize(id:, workflows:, **)
         @id = id
         @workflows = workflows
       end
@@ -23,10 +23,7 @@ module Indexing
 
       private
 
-      # @return [Array<Workflow::WorkflowResponse>]
-      def workflows
-        @workflows ||= Workflow::Service.workflows(druid: id)
-      end
+      attr_reader :workflows
     end
   end
 end

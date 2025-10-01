@@ -3,9 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe Indexing::WorkflowFields do
-  let(:doc) { described_class.for(druid:, version:) }
+  let(:doc) { described_class.for(druid:, version:, milestones:) }
   let(:druid) { 'druid:ab123cd4567' }
   let(:version) { 4 }
+  let(:milestones) { [] }
 
   context 'with milestones' do
     let(:milestones) do
@@ -65,14 +66,10 @@ RSpec.describe Indexing::WorkflowFields do
 
   describe Indexing::WorkflowFields::Status do
     subject(:instance) do
-      described_class.new(druid:, version: version)
+      described_class.new(druid:, version: version, milestones:)
     end
 
     let(:version) { '2' }
-
-    before do
-      allow(Workflow::LifecycleService).to receive(:milestones).and_return(milestones)
-    end
 
     describe '#display' do
       subject(:status) { instance.display }

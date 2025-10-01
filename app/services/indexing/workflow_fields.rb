@@ -87,7 +87,7 @@ module Indexing
         'opened' => 8
       }.freeze
 
-      attr_reader :status_code
+      attr_reader :status_code, :milestones
 
       # @param [String] druid the object identifier
       # @param [String|Integer] version the version identifier
@@ -110,10 +110,6 @@ module Indexing
 
       def display_simplified
         simplified_status_code(STATUS_CODE_DISP_TXT[status_code])
-      end
-
-      def milestones
-        @milestones ||= Workflow::LifecycleService.milestones(druid: druid)
       end
 
       private

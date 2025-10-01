@@ -4,7 +4,7 @@ module Indexing
   module Indexers
     # Indexes the object's release tags
     class ReleasableIndexer
-      def initialize(cocina:, parent_collections_release_tags: nil, release_tags: nil, **)
+      def initialize(cocina:, parent_collections_release_tags:, release_tags:, **)
         @cocina = cocina
         @parent_collections_release_tags = parent_collections_release_tags
         @release_tags = release_tags
@@ -24,7 +24,7 @@ module Indexing
 
       private
 
-      attr_reader :cocina
+      attr_reader :cocina, :parent_collections_release_tags, :release_tags
 
       def purl_sitemap_release_date
         date_for_tag 'PURL sitemap'
@@ -62,16 +62,6 @@ module Indexing
             result[project] = releases_for_project.max_by(&:date)
           end
         end
-      end
-
-      def parent_collections_release_tags
-        @parent_collections_release_tags ||= collection_druids.index_with do |collection_druid|
-          ReleaseTagService.tags(druid: collection_druid)
-        end
-      end
-
-      def release_tags
-        @release_tags ||= ReleaseTagService.tags(druid: cocina.externalIdentifier)
       end
 
       def tags_from_item
