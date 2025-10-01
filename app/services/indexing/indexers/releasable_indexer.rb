@@ -51,7 +51,7 @@ module Indexing
 
       def tags_from_collection
         parent_collections.each_with_object({}) do |collection, result|
-          ReleaseTagService.item_tags(cocina_object: collection)
+          ReleaseTagService.tags(druid: collection.externalIdentifier)
                            .select { |tag| tag.what == 'collection' }
                            .group_by(&:to).map do |project, releases_for_project|
             result[project] = releases_for_project.max_by(&:date)
@@ -60,7 +60,7 @@ module Indexing
       end
 
       def release_tags
-        @release_tags ||= ReleaseTagService.item_tags(cocina_object: cocina)
+        @release_tags ||= ReleaseTagService.tags(druid: cocina.externalIdentifier)
       end
 
       def tags_from_item
