@@ -53,6 +53,7 @@ Rails.application.routes.draw do
       resource :query, only: [], defaults: { format: :json } do
         collection do
           get 'collections'
+          get 'collections_for_registration'
         end
       end
 

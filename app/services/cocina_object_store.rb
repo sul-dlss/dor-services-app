@@ -67,6 +67,18 @@ class CocinaObjectStore
     end
   end
 
+  # @param [Cocina::Models::AdminPolicy] cocina_item
+  # @param [Boolean] swallow_exceptions (false) should this return a list even if some members aren't found?
+  def self.find_collections_for_registration(cocina_item, swallow_exceptions: false)
+    # collectionsForRegistration may be nil, in which case we want to return an empty array
+    Array(cocina_item.administrative.collectionsForRegistration).filter_map do |collection_id|
+      find(collection_id)
+    rescue CocinaObjectNotFoundError
+      raise unless swallow_exceptions
+    end
+  end
+
+  # Checks if an object exists in the datastore, raising if it does not exist, and retrieves its version.
   # Retrieves the version of a Cocina object from the datastore.
   # @param [String] druid
   # @return [Integer] version
