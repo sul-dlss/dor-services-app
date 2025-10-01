@@ -90,7 +90,7 @@ class ObjectsController < ApplicationController
       cocina_object = CocinaObjectStore.find(druid)
       Cocina::Models.without_metadata(cocina_object)
     end
-    render json: { items: cocina_objects }
+    render json: cocina_objects
   end
 
   # Initialize specified workflow (assemblyWF by default), and also version if needed
