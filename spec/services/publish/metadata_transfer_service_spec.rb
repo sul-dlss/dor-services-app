@@ -25,8 +25,8 @@ RSpec.describe Publish::MetadataTransferService do
       allow(Publish::PublicCocinaService).to receive(:create).and_return(public_cocina)
       allow(Publish::TransferStager).to receive(:copy)
       allow(PurlFetcher::Client::ReleaseTags).to receive(:release)
-      allow(ReleaseTagService).to receive(:for_public_metadata).and_return([searchworks_release_tag,
-                                                                            earthworks_release_tag])
+      allow(PublicMetadataReleaseTagService).to receive(:for_public_metadata).and_return([searchworks_release_tag,
+                                                                                          earthworks_release_tag])
     end
 
     context 'when a collection' do

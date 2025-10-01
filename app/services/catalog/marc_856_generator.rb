@@ -127,7 +127,7 @@ module Catalog
 
       collections.each do |collection_druid|
         collection = CocinaObjectStore.find(collection_druid)
-        next unless ReleaseTagService.released_to_searchworks?(cocina_object: collection)
+        next unless PublicMetadataReleaseTagService.released_to_searchworks?(cocina_object: collection)
 
         catalog_link = collection.identification&.catalogLinks&.find { |link| link.catalog == catalog }
         collection_info << { code: 'x',

@@ -62,13 +62,15 @@ module Catalog
     def update_current_ids(catalog_record_id:) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       response = FolioClient.edit_marc_json(hrid: catalog_record_id) do |marc_json|
         marc_json['fields'].reject! { |field| (field['tag'] == '856') && field['content'].include?(purl_no_protocol) }
-        marc_json['fields'] << marc_856_field if ReleaseTagService.released_to_searchworks?(cocina_object:)
+        if PublicMetadataReleaseTagService.released_to_searchworks?(cocina_object:)
+          marc_json['fields'] << marc_856_field
+        end
       end
 
       validate_quickmarc_response!(response)
 
       retry_lookup do
-        if ReleaseTagService.released_to_searchworks?(cocina_object:)
+        if PublicMetadataReleaseTagService.released_to_searchworks?(cocina_object:)
           unless instance_has_purl?(catalog_record_id:)
             raise StandardError,
                   'No matching PURL found in instance record after update.'

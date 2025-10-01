@@ -51,7 +51,7 @@ module Publish
     end
 
     def release_tags_on_success
-      tags = ReleaseTagService.for_public_metadata(cocina_object: public_cocina)
+      tags = PublicMetadataReleaseTagService.for_public_metadata(cocina_object: public_cocina)
       actions = { index: [], delete: [] }.tap do |releases|
         tags.each do |tag|
           releases[tag.release ? :index : :delete] << tag.to

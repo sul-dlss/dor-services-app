@@ -16,15 +16,15 @@ class ReleaseTagsController < ApplicationController
     end
 
     json = if params[:public]
-             ReleaseTagService.for_public_metadata(cocina_object: @cocina_object)
+             PublicMetadataReleaseTagService.for_public_metadata(cocina_object: @cocina_object)
            else
-             ReleaseTagService.item_tags(cocina_object: @cocina_object)
+             ReleaseTagService.tags(druid: @cocina_object.externalIdentifier)
            end
     render json: json
   end
 
   def create
-    ReleaseTagService.create(cocina_object: @cocina_object, tag: new_tag)
+    ReleaseTagService.create(druid: @cocina_object.externalIdentifier, tag: new_tag)
     head :created
   end
 

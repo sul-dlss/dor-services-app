@@ -12,7 +12,7 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
   let(:release_tags) { [] }
 
   before do
-    allow(ReleaseTagService).to receive(:item_tags).with(cocina_object: cocina).and_return(release_tags)
+    allow(ReleaseTagService).to receive(:tags).with(druid: cocina.externalIdentifier).and_return(release_tags)
   end
 
   describe 'to_solr' do
@@ -80,7 +80,7 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
             'released_to_searchworks_dttsi' => '2021-05-12T21:05:21Z'
           )
           # rubocop:enable Style/StringHashKeys
-          expect(ReleaseTagService).not_to have_received(:item_tags)
+          expect(ReleaseTagService).not_to have_received(:tags)
         end
       end
 
@@ -116,8 +116,8 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
       let(:collection_release_tags) { [] }
 
       before do
-        allow(ReleaseTagService).to receive(:item_tags).with(cocina_object: collection)
-                                                       .and_return(collection_release_tags)
+        allow(ReleaseTagService).to receive(:tags).with(druid: collection_druid)
+                                                  .and_return(collection_release_tags)
       end
 
       context 'when the parent collection has self releaseTags' do
