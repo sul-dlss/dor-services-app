@@ -27,7 +27,6 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
   # rubocop:enable Style/StringHashKeys
 
   before do
-    described_class.reset_parent_collections
     allow(Indexing::WorkflowFields).to receive(:for).and_return({ milestones_ssim: %w[foo bar] })
     allow(Indexing::Indexers::ReleasableIndexer).to receive(:new).and_return(releasable)
     allow(Indexing::Indexers::WorkflowsIndexer).to receive(:new).and_return(workflows)
@@ -64,24 +63,6 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
       end
     end
 
-    context 'with a cached collections' do
-      let(:related) { build(:collection) }
-      let(:collections) { ['druid:bc999df2323'] }
-
-      before do
-        allow(CocinaObjectStore).to receive(:find).and_return(related)
-        described_class.for(
-          model: cocina_with_metadata,
-          trace_id:
-        )
-      end
-
-      it 'uses the cached collection' do
-        expect(indexer).to be_instance_of Indexing::Indexers::CompositeIndexer::Instance
-        expect(CocinaObjectStore).to have_received(:find).with(collections.first)
-      end
-    end
-
     context "with collections that can't be resolved" do
       let(:collections) { ['druid:bc999df2323'] }
 
@@ -99,6 +80,7 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
                 id: String,
                 administrative_tags: [],
                 parent_collections: [],
+                parent_collections_release_tags: nil,
                 workflows: nil,
                 release_tags: nil,
                 milestones: nil,

@@ -46,19 +46,16 @@ module Indexing
         Cocina::Models::ObjectType.collection => COLLECTION_INDEXER
       }.freeze
 
-      @@parent_collections = {} # rubocop:disable Style/ClassVars
-
       def self.for(...)
         new(...).for
       end
 
-      def self.reset_parent_collections
-        @@parent_collections = {} # rubocop:disable Style/ClassVars
-      end
-
-      def initialize(model:, workflows: nil, release_tags: nil, milestones: nil, trace_id: SecureRandom.uuid)
+      def initialize(model:, workflows: nil, parent_collections: nil, parent_collections_release_tags: nil, # rubocop:disable Metrics/ParameterLists
+                     milestones: nil, release_tags: nil, trace_id: SecureRandom.uuid)
         @model = model
         @workflows = workflows
+        @parent_collections = parent_collections
+        @parent_collections_release_tags = parent_collections_release_tags
         @release_tags = release_tags
         @milestones = milestones
         @trace_id = trace_id
@@ -66,10 +63,11 @@ module Indexing
 
       # @param [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Model::AdminPolicyWithMetadata] model # rubocop:disable Layout/LineLength
       def for # rubocop:disable Metrics/AbcSize
-        indexer_for_type(model.type).new(id:,
+        indexer_for_type(model.type).new(id: druid,
                                          cocina: model,
                                          workflows:,
                                          parent_collections:,
+                                         parent_collections_release_tags:,
                                          administrative_tags:,
                                          release_tags:,
                                          milestones:,
@@ -79,15 +77,16 @@ module Indexing
                            tags: 'data_error',
                            error_message: e.message,
                            backtrace: e.backtrace,
-                           context: { druid: id })
+                           context: { druid: })
         raise e
       end
 
       private
 
-      attr_reader :model, :workflow_client, :trace_id, :workflows, :release_tags, :milestones
+      attr_reader :model, :workflow_client, :trace_id, :workflows,
+                  :parent_collections_release_tags, :release_tags, :milestones
 
-      def id
+      def druid
         model.externalIdentifier
       end
 
@@ -95,20 +94,18 @@ module Indexing
         INDEXERS.fetch(type, ITEM_INDEXER)
       end
 
-      def parent_collections
-        return [] unless model.dro?
+      def administrative_tags
+        AdministrativeTags.for(identifier: druid)
+      end
 
-        Array(model.structural&.isMemberOf).filter_map do |rel_druid|
-          @@parent_collections[rel_druid] ||= CocinaObjectStore.find(rel_druid)
+      def parent_collections
+        @parent_collections ||= Array(model.try(:structural)&.isMemberOf).filter_map do |collection_druid|
+          CocinaObjectStore.find(collection_druid)
         rescue CocinaObjectStore::CocinaObjectStoreError
-          Honeybadger.notify("Bad association found on #{model.externalIdentifier}. #{rel_druid} could not be found")
+          Honeybadger.notify("Bad association found on #{druid}. #{collection_druid} could not be found")
           # This may happen if the referenced Collection does not exist (bad data)
           nil
         end
-      end
-
-      def administrative_tags
-        AdministrativeTags.for(identifier: id)
       end
     end
   end
