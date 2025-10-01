@@ -4,11 +4,9 @@ module Indexing
   module Indexers
     # Indexes the object's release tags
     class ReleasableIndexer
-      attr_reader :cocina, :parent_collections
-
-      def initialize(cocina:, parent_collections:, release_tags: nil, **)
+      def initialize(cocina:, parent_collections_release_tags: nil, release_tags: nil, **)
         @cocina = cocina
-        @parent_collections = parent_collections
+        @parent_collections_release_tags = parent_collections_release_tags
         @release_tags = release_tags
       end
 
@@ -25,6 +23,8 @@ module Indexing
       end
 
       private
+
+      attr_reader :cocina
 
       def purl_sitemap_release_date
         date_for_tag 'PURL sitemap'
@@ -49,13 +49,24 @@ module Indexing
         @tags ||= tags_from_collection.merge(tags_from_item).values.select(&:release)
       end
 
+      def collection_druids
+        return [] unless cocina.dro?
+
+        cocina.structural.isMemberOf
+      end
+
       def tags_from_collection
-        parent_collections.each_with_object({}) do |collection, result|
-          ReleaseTagService.tags(druid: collection.externalIdentifier)
-                           .select { |tag| tag.what == 'collection' }
-                           .group_by(&:to).map do |project, releases_for_project|
+        parent_collections_release_tags.values.each_with_object({}) do |collection_tags, result|
+          collection_tags.select { |tag| tag.what == 'collection' }
+                         .group_by(&:to).map do |project, releases_for_project|
             result[project] = releases_for_project.max_by(&:date)
           end
+        end
+      end
+
+      def parent_collections_release_tags
+        @parent_collections_release_tags ||= collection_druids.index_with do |collection_druid|
+          ReleaseTagService.tags(druid: collection_druid)
         end
       end
 

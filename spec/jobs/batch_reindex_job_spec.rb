@@ -8,17 +8,22 @@ RSpec.describe BatchReindexJob do
   end
 
   let(:repository_object) { create(:repository_object, :with_repository_object_version) }
+  let(:collection_repository_object) { create(:repository_object, :with_repository_object_version, :collection) }
   let(:druid) { repository_object.external_identifier }
+  let(:collection_druid) { collection_repository_object.external_identifier }
 
   let(:conn) { instance_double(RSolr::Client, add: nil) }
   let(:indexer) { double(Indexing::Indexers::CompositeIndexer, to_solr: solr_doc) } # rubocop:disable RSpec/VerifiedDoubles
   let(:solr_doc) { { id: repository_object.external_identifier } }
   let!(:release_tag) { create(:release_tag, druid:) }
+  let!(:collection_release_tag) { create(:release_tag, druid: collection_druid) }
 
   before do
     allow(RSolr).to receive(:connect).and_return(conn)
     allow(Indexing::Builders::DocumentBuilder).to receive(:for).and_return(indexer)
     create(:workflow_step, druid:, lifecycle: 'accessioned', status: 'completed')
+    repository_object.head_version.structural['isMemberOf'] = [collection_druid]
+    repository_object.head_version.save!
   end
 
   it 'indexes' do
@@ -28,8 +33,10 @@ RSpec.describe BatchReindexJob do
       model: repository_object.head_version.to_cocina_with_metadata,
       trace_id: String,
       workflows: [an_instance_of(Workflow::WorkflowResponse)],
+      release_tags: [release_tag.to_cocina],
       milestones: [{ milestone: 'accessioned', at: an_instance_of(ActiveSupport::TimeWithZone), version: '1' }],
-      release_tags: [release_tag.to_cocina]
+      parent_collections: [collection_repository_object.head_version.to_cocina_with_metadata],
+      parent_collections_release_tags: [collection_release_tag.to_cocina]
     )
   end
 end
