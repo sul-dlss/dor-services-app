@@ -23,7 +23,7 @@ module Indexing
 
       private
 
-      # @return [Array<Workflow::Response::Workflows>]
+      # @return [Array<Workflow::WorkflowResponse>]
       def workflows
         @workflows ||= Workflow::Service.workflows(druid: id)
       end

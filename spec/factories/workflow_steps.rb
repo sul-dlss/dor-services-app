@@ -16,6 +16,12 @@ FactoryBot.define do
       completed_at { Time.zone.now }
     end
 
+    trait :error do
+      status { 'error' }
+      completed_at { Time.zone.now }
+      error_msg { 'Something went wrong' }
+    end
+
     trait :with_ocr_context do
       after(:create) do |step|
         create(:version_context, druid: step.druid, version: step.version)
