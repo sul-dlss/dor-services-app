@@ -28,6 +28,7 @@ RSpec.describe BatchReindexJob do
       model: repository_object.head_version.to_cocina_with_metadata,
       trace_id: String,
       workflows: [an_instance_of(Workflow::WorkflowResponse)],
+      milestones: [{ milestone: 'accessioned', at: an_instance_of(ActiveSupport::TimeWithZone), version: '1' }],
       release_tags: [release_tag.to_cocina]
     )
   end

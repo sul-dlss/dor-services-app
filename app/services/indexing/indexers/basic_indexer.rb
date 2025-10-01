@@ -4,10 +4,11 @@ module Indexing
   module Indexers
     # Basic indexing for any object
     class BasicIndexer
-      attr_reader :cocina, :workflow_client, :trace_id
+      attr_reader :cocina, :workflow_client, :trace_id, :milestones
 
-      def initialize(cocina:, trace_id:, **)
+      def initialize(cocina:, trace_id:, milestones: nil, **)
         @cocina = cocina
+        @milestones = milestones
         @trace_id = trace_id
         @workflow_client = workflow_client
       end
@@ -30,7 +31,7 @@ module Indexing
 
           # Used so that DSA can generate public XML whereas a constituent can find the virtual object it is part of.
           solr_doc['has_constituents_ssim'] = virtual_object_constituents
-        end.merge(Indexing::WorkflowFields.for(druid: cocina.externalIdentifier, version: cocina.version))
+        end.merge(Indexing::WorkflowFields.for(druid: cocina.externalIdentifier, version: cocina.version, milestones:))
            .transform_keys(&:to_s)
       end
 

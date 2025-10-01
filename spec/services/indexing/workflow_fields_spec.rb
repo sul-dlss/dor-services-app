@@ -8,25 +8,6 @@ RSpec.describe Indexing::WorkflowFields do
   let(:version) { 4 }
 
   context 'with milestones' do
-    let(:dsxml) do
-      '
-    <versionMetadata objectId="druid:ab123cd4567">
-    <version versionId="1" tag="1.0.0">
-    <description>Initial version</description>
-    </version>
-    <version versionId="2" tag="2.0.0">
-    <description>Replacing main PDF</description>
-    </version>
-    <version versionId="3" tag="2.1.0">
-    <description>Fixed title typo</description>
-    </version>
-    <version versionId="4" tag="2.2.0">
-    <description>Another typo</description>
-    </version>
-    </versionMetadata>
-    '
-    end
-
     let(:milestones) do
       [
         { milestone: 'published', at: DateTime.parse('2012-01-26 21:06:54 -0800'), version: '2' },
@@ -90,7 +71,7 @@ RSpec.describe Indexing::WorkflowFields do
     let(:version) { '2' }
 
     before do
-      allow_any_instance_of(Workflow::LifecycleService).to receive(:lifecycle_xml).and_return(Nokogiri::XML(xml)) # rubocop:disable RSpec/AnyInstance
+      allow(Workflow::LifecycleService).to receive(:milestones).and_return(milestones)
     end
 
     describe '#display' do
@@ -98,16 +79,15 @@ RSpec.describe Indexing::WorkflowFields do
 
       describe 'for gv054hp4128' do
         context 'when current version is published, but does not have a version attribute' do
-          let(:xml) do
-            '<?xml version="1.0" encoding="UTF-8"?>
-          <lifecycle objectId="druid:gv054hp4128">
-          <milestone date="2012-11-06T16:19:15-0800" version="2">described</milestone>
-          <milestone date="2012-11-06T16:21:02-0800">opened</milestone>
-          <milestone date="2012-11-06T16:30:03-0800">submitted</milestone>
-          <milestone date="2012-11-06T16:35:00-0800">described</milestone>
-          <milestone date="2012-11-06T16:59:39-0800" version="3">published</milestone>
-          <milestone date="2012-11-06T16:59:39-0800">published</milestone>
-          </lifecycle>'
+          let(:milestones) do
+            [
+              { milestone: 'described', at: DateTime.parse('2012-11-06 16:19:15 -0800'), version: '2' },
+              { milestone: 'opened', at: DateTime.parse('2012-11-06 16:21:02 -0800'), version: nil },
+              { milestone: 'submitted', at: DateTime.parse('2012-11-06 16:30:03 -0800'), version: nil },
+              { milestone: 'described', at: DateTime.parse('2012-11-06 16:35:00 -0800'), version: nil },
+              { milestone: 'published', at: DateTime.parse('2012-11-06 16:59:39 -0800'), version: '3' },
+              { milestone: 'published', at: DateTime.parse('2012-11-06 16:59:39 -0800'), version: nil }
+            ]
           end
 
           let(:version) { '4' }
@@ -118,13 +98,13 @@ RSpec.describe Indexing::WorkflowFields do
         end
 
         context 'when current version matches the attribute in the milestone' do
-          let(:xml) do
-            '<?xml version="1.0" encoding="UTF-8"?>
-          <lifecycle objectId="druid:gv054hp4128">
-          <milestone date="2012-11-06T16:19:15-0800" version="2">described</milestone>
-          <milestone date="2012-11-06T16:59:39-0800" version="3">published</milestone>
-          </lifecycle>'
+          let(:milestones) do
+            [
+              { milestone: 'described', at: DateTime.parse('2012-11-06 16:19:15 -0800'), version: '2' },
+              { milestone: 'published', at: DateTime.parse('2012-11-06 16:59:39 -0800'), version: '3' }
+            ]
           end
+
           let(:version) { '3' }
 
           it 'generates a status string' do
@@ -134,23 +114,22 @@ RSpec.describe Indexing::WorkflowFields do
       end
 
       describe 'for bd504dj1946' do
-        let(:xml) do
-          '<?xml version="1.0"?>
-        <lifecycle objectId="druid:bd504dj1946">
-        <milestone date="2013-04-03T15:01:57-0700">registered</milestone>
-        <milestone date="2013-04-03T16:20:19-0700">digitized</milestone>
-        <milestone date="2013-04-16T14:18:20-0700" version="1">submitted</milestone>
-        <milestone date="2013-04-16T14:32:54-0700" version="1">described</milestone>
-        <milestone date="2013-04-16T14:55:10-0700" version="1">published</milestone>
-        <milestone date="2013-07-21T05:27:23-0700" version="1">deposited</milestone>
-        <milestone date="2013-07-21T05:28:09-0700" version="1">accessioned</milestone>
-        <milestone date="2013-08-15T11:59:16-0700" version="2">opened</milestone>
-        <milestone date="2013-10-01T12:01:07-0700" version="2">submitted</milestone>
-        <milestone date="2013-10-01T12:01:24-0700" version="2">described</milestone>
-        <milestone date="2013-10-01T12:05:38-0700" version="2">published</milestone>
-        <milestone date="2013-10-01T12:10:56-0700" version="2">deposited</milestone>
-        <milestone date="2013-10-01T12:11:10-0700" version="2">accessioned</milestone>
-        </lifecycle>'
+        let(:milestones) do
+          [
+            { milestone: 'registered', at: DateTime.parse('2013-04-03 15:01:57 -0700'), version: nil },
+            { milestone: 'digitized', at: DateTime.parse('2013-04-03 16:20:19 -0700'), version: nil },
+            { milestone: 'submitted', at: DateTime.parse('2013-04-16 14:18:20 -0700'), version: '1' },
+            { milestone: 'described', at: DateTime.parse('2013-04-16 14:32:54 -0700'), version: '1' },
+            { milestone: 'published', at: DateTime.parse('2013-04-16 14:55:10 -0700'), version: '1' },
+            { milestone: 'deposited', at: DateTime.parse('2013-07-21 05:27:23 -0700'), version: '1' },
+            { milestone: 'accessioned', at: DateTime.parse('2013-07-21 05:28:09 -0700'), version: '1' },
+            { milestone: 'opened', at: DateTime.parse('2013-08-15 11:59:16 -0700'), version: '2' },
+            { milestone: 'submitted', at: DateTime.parse('2013-10-01 12:01:07 -0700'), version: '2' },
+            { milestone: 'described', at: DateTime.parse('2013-10-01 12:01:24 -0700'), version: '2' },
+            { milestone: 'published', at: DateTime.parse('2013-10-01 12:05:38 -0700'), version: '2' },
+            { milestone: 'deposited', at: DateTime.parse('2013-10-01 12:10:56 -0700'), version: '2' },
+            { milestone: 'accessioned', at: DateTime.parse('2013-10-01 12:11:10 -0700'), version: '2' }
+          ]
         end
 
         it 'handles a v2 accessioned object' do
@@ -185,23 +164,22 @@ RSpec.describe Indexing::WorkflowFields do
       context 'with an accessioned step with the exact same timestamp as the deposited step' do
         subject(:status) { instance.display(include_time: true) }
 
-        let(:xml) do
-          '<?xml version="1.0"?>
-        <lifecycle objectId="druid:bd504dj1946">
-        <milestone date="2013-04-03T15:01:57-0700">registered</milestone>
-        <milestone date="2013-04-03T16:20:19-0700">digitized</milestone>
-        <milestone date="2013-04-16T14:18:20-0700" version="1">submitted</milestone>
-        <milestone date="2013-04-16T14:32:54-0700" version="1">described</milestone>
-        <milestone date="2013-04-16T14:55:10-0700" version="1">published</milestone>
-        <milestone date="2013-07-21T05:27:23-0700" version="1">deposited</milestone>
-        <milestone date="2013-07-21T05:28:09-0700" version="1">accessioned</milestone>
-        <milestone date="2013-08-15T11:59:16-0700" version="2">opened</milestone>
-        <milestone date="2013-10-01T12:01:07-0700" version="2">submitted</milestone>
-        <milestone date="2013-10-01T12:01:24-0700" version="2">described</milestone>
-        <milestone date="2013-10-01T12:05:38-0700" version="2">published</milestone>
-        <milestone date="2013-10-01T12:10:56-0700" version="2">deposited</milestone>
-        <milestone date="2013-10-01T12:10:56-0700" version="2">accessioned</milestone>
-        </lifecycle>'
+        let(:milestones) do
+          [
+            { milestone: 'registered', at: DateTime.parse('2013-04-03 15:01:57 -0700'), version: nil },
+            { milestone: 'digitized', at: DateTime.parse('2013-04-03 16:20:19 -0700'), version: nil },
+            { milestone: 'submitted', at: DateTime.parse('2013-04-16 14:18:20 -0700'), version: '1' },
+            { milestone: 'described', at: DateTime.parse('2013-04-16 14:32:54 -0700'), version: '1' },
+            { milestone: 'published', at: DateTime.parse('2013-04-16 14:55:10 -0700'), version: '1' },
+            { milestone: 'deposited', at: DateTime.parse('2013-07-21 05:27:23 -0700'), version: '1' },
+            { milestone: 'accessioned', at: DateTime.parse('2013-07-21 05:28:09 -0700'), version: '1' },
+            { milestone: 'opened', at: DateTime.parse('2013-08-15 11:59:16 -0700'), version: '2' },
+            { milestone: 'submitted', at: DateTime.parse('2013-10-01 12:01:07 -0700'), version: '2' },
+            { milestone: 'described', at: DateTime.parse('2013-10-01 12:01:24 -0700'), version: '2' },
+            { milestone: 'published', at: DateTime.parse('2013-10-01 12:05:38 -0700'), version: '2' },
+            { milestone: 'deposited', at: DateTime.parse('2013-10-01 12:10:56 -0700'), version: '2' },
+            { milestone: 'accessioned', at: DateTime.parse('2013-10-01 12:10:56 -0700'), version: '2' }
+          ]
         end
 
         it 'has the correct status of accessioned (v2) object' do
@@ -212,23 +190,22 @@ RSpec.describe Indexing::WorkflowFields do
       context 'with an accessioned step with an ealier timestamp than the deposited step' do
         subject(:status) { instance.display(include_time: true) }
 
-        let(:xml) do
-          '<?xml version="1.0"?>
-        <lifecycle objectId="druid:bd504dj1946">
-        <milestone date="2013-04-03T15:01:57-0700">registered</milestone>
-        <milestone date="2013-04-03T16:20:19-0700">digitized</milestone>
-        <milestone date="2013-04-16T14:18:20-0700" version="1">submitted</milestone>
-        <milestone date="2013-04-16T14:32:54-0700" version="1">described</milestone>
-        <milestone date="2013-04-16T14:55:10-0700" version="1">published</milestone>
-        <milestone date="2013-07-21T05:27:23-0700" version="1">deposited</milestone>
-        <milestone date="2013-07-21T05:28:09-0700" version="1">accessioned</milestone>
-        <milestone date="2013-08-15T11:59:16-0700" version="2">opened</milestone>
-        <milestone date="2013-10-01T12:01:07-0700" version="2">submitted</milestone>
-        <milestone date="2013-10-01T12:01:24-0700" version="2">described</milestone>
-        <milestone date="2013-10-01T12:05:38-0700" version="2">published</milestone>
-        <milestone date="2013-10-01T12:10:56-0700" version="2">deposited</milestone>
-        <milestone date="2013-09-01T12:10:56-0700" version="2">accessioned</milestone>
-        </lifecycle>'
+        let(:milestones) do
+          [
+            { milestone: 'registered', at: DateTime.parse('2013-04-03 15:01:57 -0700'), version: nil },
+            { milestone: 'digitized', at: DateTime.parse('2013-04-03 16:20:19 -0700'), version: nil },
+            { milestone: 'submitted', at: DateTime.parse('2013-04-16 14:18:20 -0700'), version: '1' },
+            { milestone: 'described', at: DateTime.parse('2013-04-16 14:32:54 -0700'), version: '1' },
+            { milestone: 'published', at: DateTime.parse('2013-04-16 14:55:10 -0700'), version: '1' },
+            { milestone: 'deposited', at: DateTime.parse('2013-07-21 05:27:23 -0700'), version: '1' },
+            { milestone: 'accessioned', at: DateTime.parse('2013-07-21 05:28:09 -0700'), version: '1' },
+            { milestone: 'opened', at: DateTime.parse('2013-08-15 11:59:16 -0700'), version: '2' },
+            { milestone: 'submitted', at: DateTime.parse('2013-10-01 12:01:07 -0700'), version: '2' },
+            { milestone: 'described', at: DateTime.parse('2013-10-01 12:01:24 -0700'), version: '2' },
+            { milestone: 'published', at: DateTime.parse('2013-10-01 12:05:38 -0700'), version: '2' },
+            { milestone: 'deposited', at: DateTime.parse('2013-10-01 12:10:56 -0700'), version: '2' },
+            { milestone: 'accessioned', at: DateTime.parse('2013-09-01 12:10:56 -0700'), version: '2' }
+          ]
         end
 
         it 'has the correct status of accessioned (v2) object' do
@@ -239,22 +216,21 @@ RSpec.describe Indexing::WorkflowFields do
       context 'with a deposited step for a non-accessioned object' do
         subject(:status) { instance.display(include_time: true) }
 
-        let(:xml) do
-          '<?xml version="1.0"?>
-        <lifecycle objectId="druid:bd504dj1946">
-        <milestone date="2013-04-03T15:01:57-0700">registered</milestone>
-        <milestone date="2013-04-03T16:20:19-0700">digitized</milestone>
-        <milestone date="2013-04-16T14:18:20-0700" version="1">submitted</milestone>
-        <milestone date="2013-04-16T14:32:54-0700" version="1">described</milestone>
-        <milestone date="2013-04-16T14:55:10-0700" version="1">published</milestone>
-        <milestone date="2013-07-21T05:27:23-0700" version="1">deposited</milestone>
-        <milestone date="2013-07-21T05:28:09-0700" version="1">accessioned</milestone>
-        <milestone date="2013-08-15T11:59:16-0700" version="2">opened</milestone>
-        <milestone date="2013-10-01T12:01:07-0700" version="2">submitted</milestone>
-        <milestone date="2013-10-01T12:01:24-0700" version="2">described</milestone>
-        <milestone date="2013-10-01T12:05:38-0700" version="2">published</milestone>
-        <milestone date="2013-10-01T12:10:56-0700" version="2">deposited</milestone>
-        </lifecycle>'
+        let(:milestones) do
+          [
+            { milestone: 'registered', at: DateTime.parse('2013-04-03 15:01:57 -0700'), version: nil },
+            { milestone: 'digitized', at: DateTime.parse('2013-04-03 16:20:19 -0700'), version: nil },
+            { milestone: 'submitted', at: DateTime.parse('2013-04-16 14:18:20 -0700'), version: '1' },
+            { milestone: 'described', at: DateTime.parse('2013-04-16 14:32:54 -0700'), version: '1' },
+            { milestone: 'published', at: DateTime.parse('2013-04-16 14:55:10 -0700'), version: '1' },
+            { milestone: 'deposited', at: DateTime.parse('2013-07-21 05:27:23 -0700'), version: '1' },
+            { milestone: 'accessioned', at: DateTime.parse('2013-07-21 05:28:09 -0700'), version: '1' },
+            { milestone: 'opened', at: DateTime.parse('2013-08-15 11:59:16 -0700'), version: '2' },
+            { milestone: 'submitted', at: DateTime.parse('2013-10-01 12:01:07 -0700'), version: '2' },
+            { milestone: 'described', at: DateTime.parse('2013-10-01 12:01:24 -0700'), version: '2' },
+            { milestone: 'published', at: DateTime.parse('2013-10-01 12:05:38 -0700'), version: '2' },
+            { milestone: 'deposited', at: DateTime.parse('2013-10-01 12:10:56 -0700'), version: '2' }
+          ]
         end
 
         it 'has the correct status of deposited (v2) object' do
@@ -266,16 +242,15 @@ RSpec.describe Indexing::WorkflowFields do
     describe '#display_simplified' do
       subject(:status) { instance.display_simplified }
 
-      let(:xml) do
-        '<?xml version="1.0" encoding="UTF-8"?>
-      <lifecycle objectId="druid:gv054hp4128">
-      <milestone date="2012-11-06T16:19:15-0800" version="2">described</milestone>
-      <milestone date="2012-11-06T16:21:02-0800">opened</milestone>
-      <milestone date="2012-11-06T16:30:03-0800">submitted</milestone>
-      <milestone date="2012-11-06T16:35:00-0800">described</milestone>
-      <milestone date="2012-11-06T16:59:39-0800" version="3">published</milestone>
-      <milestone date="2012-11-06T16:59:39-0800">published</milestone>
-      </lifecycle>'
+      let(:milestones) do
+        [
+          { milestone: 'described', at: DateTime.parse('2012-11-06 16:19:15 -0800'), version: '2' },
+          { milestone: 'opened', at: DateTime.parse('2012-11-06 16:21:02 -0800'), version: nil },
+          { milestone: 'submitted', at: DateTime.parse('2012-11-06 16:30:03 -0800'), version: nil },
+          { milestone: 'described', at: DateTime.parse('2012-11-06 16:35:00 -0800'), version: nil },
+          { milestone: 'published', at: DateTime.parse('2012-11-06 16:59:39 -0800'), version: '3' },
+          { milestone: 'published', at: DateTime.parse('2012-11-06 16:59:39 -0800'), version: nil }
+        ]
       end
 
       it 'generates a status string' do

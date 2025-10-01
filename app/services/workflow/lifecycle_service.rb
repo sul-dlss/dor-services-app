@@ -34,7 +34,9 @@ module Workflow
       builder = Nokogiri::XML::Builder.new do |xml|
         xml.lifecycle(objectId: druid) do
           workflow_steps.each do |step|
-            step.as_milestone(xml)
+            xml.milestone(step.lifecycle,
+                          date: (step.completed_at || step.created_at).to_time.iso8601,
+                          version: step.version)
           end
         end
       end
@@ -44,13 +46,13 @@ module Workflow
     # @param [String] milestone_name the name of the milestone
     # @return [Boolean] true if the object has the milestone
     def milestone?(milestone_name:)
-      lifecycle_xml.at_xpath("//lifecycle/milestone[text() = '#{milestone_name}']").present?
+      workflow_steps.any? { |step| step.lifecycle == milestone_name }
     end
 
     # @return [Array<Hash>]
     def milestones
-      lifecycle_xml.xpath('//lifecycle/milestone').collect do |node|
-        { milestone: node.text, at: Time.zone.parse(node['date']), version: node['version'] }
+      workflow_steps.map do |step|
+        { milestone: step.lifecycle, at: step.completed_at || step.created_at, version: step.version.to_s }
       end
     end
 
