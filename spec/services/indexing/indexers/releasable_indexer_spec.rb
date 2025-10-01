@@ -16,7 +16,11 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
   end
 
   describe 'to_solr' do
-    let(:doc) { described_class.new(cocina:, parent_collections:).to_solr }
+    let(:doc) do
+      described_class.new(cocina:, parent_collections:, release_tags: provided_release_tags).to_solr
+    end
+
+    let(:provided_release_tags) { release_tags }
 
     context 'with no parent collection' do
       let(:parent_collections) { [] }
@@ -59,6 +63,24 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
             'released_to_purl_sitemap_dttsi' => '2023-03-27T10:00:00Z'
           )
           # rubocop:enable Style/StringHashKeys
+        end
+      end
+
+      context 'when release tags are provided' do
+        let(:provided_release_tags) do
+          [
+            Dor::ReleaseTag.new(to: 'Searchworks', release: true, date: '2021-05-12T21:05:21.000+00:00', what: 'self')
+          ]
+        end
+
+        it 'indexes release tags' do
+          # rubocop:disable Style/StringHashKeys
+          expect(doc).to eq(
+            'released_to_ssim' => ['Searchworks'],
+            'released_to_searchworks_dttsi' => '2021-05-12T21:05:21Z'
+          )
+          # rubocop:enable Style/StringHashKeys
+          expect(ReleaseTagService).not_to have_received(:item_tags)
         end
       end
 

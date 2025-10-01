@@ -13,6 +13,7 @@ RSpec.describe BatchReindexJob do
   let(:conn) { instance_double(RSolr::Client, add: nil) }
   let(:indexer) { double(Indexing::Indexers::CompositeIndexer, to_solr: solr_doc) } # rubocop:disable RSpec/VerifiedDoubles
   let(:solr_doc) { { id: repository_object.external_identifier } }
+  let!(:release_tag) { create(:release_tag, druid:) }
 
   before do
     allow(RSolr).to receive(:connect).and_return(conn)
@@ -26,7 +27,8 @@ RSpec.describe BatchReindexJob do
     expect(Indexing::Builders::DocumentBuilder).to have_received(:for).once.with(
       model: repository_object.head_version.to_cocina_with_metadata,
       trace_id: String,
-      workflows: [an_instance_of(Workflow::WorkflowResponse)]
+      workflows: [an_instance_of(Workflow::WorkflowResponse)],
+      release_tags: [release_tag.to_cocina]
     )
   end
 end
