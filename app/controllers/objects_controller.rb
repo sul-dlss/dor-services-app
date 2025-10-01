@@ -84,6 +84,15 @@ class ObjectsController < ApplicationController
     render json: Cocina::Models.without_metadata(cocina_object)
   end
 
+  def find_all
+    druids = params.require([:externalIdentifiers]).first
+    cocina_objects = druids.map do |druid|
+      cocina_object = CocinaObjectStore.find(druid)
+      Cocina::Models.without_metadata(cocina_object)
+    end
+    render json: { items: cocina_objects }
+  end
+
   # Initialize specified workflow (assemblyWF by default), and also version if needed
   # called by pre-assembly and goobi kick off accessioning for a new or existing object
   #

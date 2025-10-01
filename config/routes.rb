@@ -45,6 +45,7 @@ Rails.application.routes.draw do
 
       collection do
         get 'find'
+        post 'find_all'
         post 'versions/status', to: 'versions#batch_status'
       end
 
@@ -53,7 +54,6 @@ Rails.application.routes.draw do
       resource :query, only: [], defaults: { format: :json } do
         collection do
           get 'collections'
-          get 'collections_for_registration'
         end
       end
 
