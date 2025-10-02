@@ -174,7 +174,8 @@ RSpec.describe Indexing::Indexers::ObjectFilesIndexer do
           'content_type_ssimdv' => 'map',
           'content_file_mimetypes_ssim' => ['image/jp2', 'image/gif', 'image/tiff'], # TODO: Remove
           'content_file_mimetypes_ssimdv' => ['image/jp2', 'image/gif', 'image/tiff'],
-          'content_file_roles_ssim' => ['derivative'],
+          'content_file_roles_ssim' => ['derivative'], # TODO: Remove
+          'content_file_roles_ssimdv' => ['derivative'],
           'shelved_content_file_count_itsi' => 1,
           'resource_count_itsi' => 1,
           'content_file_count_itsi' => 4,
