@@ -36,7 +36,8 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
       it 'makes a solr doc' do
         expect(doc).to eq(
           'obj_label_tesim' => 'item label',
-          'current_version_isi' => 4,
+          'current_version_isi' => 4, # TODO: Remove
+          'current_version_ipsidv' => 4,
           'milestones_ssim' => %w[foo bar],
           'has_constituents_ssim' => nil, # TODO: Remove
           'has_constituents_ssimdv' => nil,
@@ -59,7 +60,8 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
       it 'makes a solr doc' do
         expect(doc).to eq(
           'obj_label_tesim' => 'item label',
-          'current_version_isi' => 4,
+          'current_version_isi' => 4, # TODO: Remove
+          'current_version_ipsidv' => 4,
           'milestones_ssim' => %w[foo bar],
           'is_governed_by_ssim' => 'info:fedora/druid:vv888vv8888',
           'is_member_of_collection_ssim' => [],
@@ -82,7 +84,8 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
       it 'makes a solr doc' do
         expect(doc).to eq(
           'obj_label_tesim' => 'item label',
-          'current_version_isi' => 4,
+          'current_version_isi' => 4, # TODO: Remove
+          'current_version_ipsidv' => 4,
           'milestones_ssim' => %w[foo bar],
           'has_constituents_ssim' => ['druid:bb777bb7777', 'druid:dd666dd6666'], # TODO: Remove
           'has_constituents_ssimdv' => ['druid:bb777bb7777', 'druid:dd666dd6666'],
