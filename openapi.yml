@@ -1289,12 +1289,6 @@ paths:
                     - $ref: "#/components/schemas/DRO"
                     - $ref: "#/components/schemas/Collection"
                     - $ref: "#/components/schemas/AdminPolicy"
-        "404":
-          description: Object not found in DOR
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
   /v1/objects/versions/status:
     post:
       tags:
