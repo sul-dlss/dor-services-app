@@ -402,7 +402,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'descriptive_tiv' => all_search_text,
         'descriptive_teiv' => all_search_text,
         'descriptive_text_nostem_i' => all_search_text,
-        'sw_language_ssim' => ['English'],
+        'sw_language_ssim' => ['English'], # TODO: Remove
+        'sw_language_ssimdv' => ['English'],
         'sw_format_ssim' => ['Book'], # TODO: Remove
         'sw_format_ssimdv' => ['Book'],
         'mods_typeOfResource_ssim' => ['text'], # TODO: Remove
