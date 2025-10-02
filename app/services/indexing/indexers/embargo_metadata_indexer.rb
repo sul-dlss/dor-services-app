@@ -17,7 +17,8 @@ module Indexing
           embargo_release_date = embargo_release_date(cocina)
           if embargo_release_date.present?
             solr_doc['embargo_status_ssim'] = ['embargoed']
-            solr_doc['embargo_release_dtsim'] = [embargo_release_date.utc.iso8601]
+            solr_doc['embargo_release_dtsim'] = [embargo_release_date.utc.iso8601] # TODO: Remove
+            solr_doc['embargo_release_dtpsimdv'] = [embargo_release_date.utc.iso8601]
           end
         end
       end
