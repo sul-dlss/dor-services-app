@@ -94,7 +94,7 @@ class BatchReindexJob < ApplicationJob
   end
 
   def parent_collections_release_tags_for(repository_object:)
-    collection_druids_from(repository_object:).flat_map do |collection_druid|
+    collection_druids_from(repository_object:).index_with do |collection_druid|
       release_tags_map.fetch(collection_druid, [])
     end
   end

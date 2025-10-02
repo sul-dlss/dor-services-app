@@ -4,6 +4,9 @@ module Indexing
   module Indexers
     # Indexes the object's release tags
     class ReleasableIndexer
+      # @param [Cocina::Models::DRO, Cocina::Models::Collection] cocina the cocina model to index
+      # @param [Hash{String => Array<ReleaseTag>}] parent_collections_release_tags map of druid to release tags
+      # @param [Array<ReleaseTag>] release_tags the release tags for the object
       def initialize(cocina:, parent_collections_release_tags:, release_tags:, **)
         @cocina = cocina
         @parent_collections_release_tags = parent_collections_release_tags

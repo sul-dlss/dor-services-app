@@ -38,7 +38,7 @@ RSpec.describe BatchReindexJob do
       release_tags: [release_tag.to_cocina],
       milestones: [{ milestone: 'accessioned', at: an_instance_of(ActiveSupport::TimeWithZone), version: '1' }],
       parent_collections: [collection_repository_object.head_version.to_cocina_with_metadata],
-      parent_collections_release_tags: [collection_release_tag.to_cocina]
+      parent_collections_release_tags: { collection_druid => [collection_release_tag.to_cocina] }
     )
   end
 end
