@@ -30,7 +30,8 @@ module Indexing
           solr_doc['is_governed_by_ssim'] = legacy_apo # Argo facet
 
           # Used so that DSA can generate public XML whereas a constituent can find the virtual object it is part of.
-          solr_doc['has_constituents_ssim'] = virtual_object_constituents
+          solr_doc['has_constituents_ssim'] = virtual_object_constituents # TODO: Remove
+          solr_doc['has_constituents_ssimdv'] = virtual_object_constituents
         end.merge(Indexing::WorkflowFields.for(druid: cocina.externalIdentifier, version: cocina.version, milestones:))
            .transform_keys(&:to_s)
       end
