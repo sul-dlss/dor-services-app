@@ -58,7 +58,7 @@ RSpec.describe CocinaObjectStore do
       let(:druids) { ['druid:bc123df4567', 'druid:bc123df4568', 'druid:bc123df4569'] }
 
       it 'returns an empty array' do
-        expect(store.find_all(druids)).to be_empty
+        expect(described_class.find_all(druids)).to be_empty
       end
     end
 
@@ -67,7 +67,7 @@ RSpec.describe CocinaObjectStore do
       let(:druids) { repository_objects.pluck(:external_identifier) }
 
       it 'returns an array' do
-        result = store.find_all(druids)
+        result = described_class.find_all(druids)
         expect(result).to be_an(Array)
         expect(result.length).to eq(3)
         expect(result.map(&:externalIdentifier)).to match_array(druids)
