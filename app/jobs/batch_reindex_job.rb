@@ -82,6 +82,8 @@ class BatchReindexJob < ApplicationJob
   end
 
   def collection_druids_from(repository_object:)
+    return [] unless repository_object.dro?
+
     repository_object.head_version.structural.fetch('isMemberOf', [])
   end
 
