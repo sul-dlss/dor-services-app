@@ -17,7 +17,8 @@ module Indexing
         {
           'use_statement_ssim' => use_statement,
           'copyright_ssim' => copyright,
-          'rights_descriptions_ssim' => 'dark',
+          'rights_descriptions_ssim' => 'dark', # TODO: Remove
+          'rights_descriptions_ssimdv' => 'dark',
           'default_rights_descriptions_ssim' => Cocina::Models::Builders::RightsDescriptionBuilder.build(cocina)
         }
       end
