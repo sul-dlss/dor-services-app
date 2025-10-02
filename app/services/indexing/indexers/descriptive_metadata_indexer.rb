@@ -67,7 +67,8 @@ module Indexing
           'sw_genre_ssimdv' => stanford_mods_record.sw_genre, # SW Genre facet
           'sw_language_ssim' => stanford_mods_record.sw_language_facet, # TODO: Remove
           'sw_language_ssimdv' => stanford_mods_record.sw_language_facet, # SW Language facet
-          'sw_subject_temporal_ssim' => stanford_mods_record.era_facet, # SW Era facet
+          'sw_subject_temporal_ssim' => stanford_mods_record.era_facet, # TODO: Remove
+          'sw_subject_temporal_ssimdv' => stanford_mods_record.era_facet, # SW Era facet
           'sw_subject_geographic_ssim' => subject_geographic, # TODO: Remove
           'sw_subject_geographic_ssimdv' => subject_geographic, # SW Region facet
 

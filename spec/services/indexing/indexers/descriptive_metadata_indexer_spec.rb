@@ -408,7 +408,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'sw_format_ssimdv' => ['Book'],
         'mods_typeOfResource_ssim' => ['text'], # TODO: Remove
         'mods_typeOfResource_ssimdv' => ['text'],
-        'sw_subject_temporal_ssim' => ['1800-1900'],
+        'sw_subject_temporal_ssim' => ['1800-1900'], # TODO: Remove
+        'sw_subject_temporal_ssimdv' => ['1800-1900'],
         'sw_subject_geographic_ssim' => ['Europe'], # TODO: Remove
         'sw_subject_geographic_ssimdv' => ['Europe'],
         'sw_pub_date_facet_ssi' => '1911',
