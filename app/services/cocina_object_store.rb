@@ -97,7 +97,7 @@ class CocinaObjectStore
   # @param [Array] druids to find
   # @return [Array<Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata>] for the head version #rubocop:disable Layout/LineLength
   def find_all(druids)
-    RepositoryObject.where(external_identifier: druids).map do |repo_object|
+    RepositoryObject.includes(:head_version).where(external_identifier: druids).map do |repo_object|
       repo_object.head_version.to_cocina_with_metadata
     end
   end
