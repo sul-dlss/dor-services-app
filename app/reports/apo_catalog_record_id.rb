@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-# Find items that are goverened by the provided APO and then return all CatalogRecordIds and refresh status.
+# Find items that are governed by the provided APO and then return all CatalogRecordIds and refresh status.
 #  https://github.com/sul-dlss/dor-services-app/issues/4373
 # Invoke via:
 # bin/rails r -e production "ApoCatalogRecordId.report('druid:bx911tp9024')"
 class ApoCatalogRecordId
   def self.report(apo_druid)
     puts %w[druid catatalogRecordId refresh].join(',')
-    query = "is_governed_by_ssim:\"info:fedora/#{apo_druid}\"&objectType_ssim:\"item\""
+    query = "is_governed_by_ssim:\"info:fedora/#{apo_druid}\"&objectType_ssimdv:\"item\""
     druids = []
     # borrowed from bin/generate-druid-list
     loop do
