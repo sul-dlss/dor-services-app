@@ -45,6 +45,7 @@ Rails.application.routes.draw do
 
       collection do
         get 'find'
+        post 'find_all'
         post 'versions/status', to: 'versions#batch_status'
       end
 

@@ -1260,6 +1260,35 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /v1/objects/find_all:
+    post:
+      tags:
+        - objects
+      summary: Finds multiple objects
+      operationId: "objects#find_all"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                externalIdentifiers:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Druid"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: "#/components/schemas/DRO"
+                    - $ref: "#/components/schemas/Collection"
+                    - $ref: "#/components/schemas/AdminPolicy"
   /v1/objects/versions/status:
     post:
       tags:

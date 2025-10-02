@@ -32,6 +32,17 @@ class CocinaObjectStore
     new.find(druid)
   end
 
+  # Retrieves a list of Cocina objects from the datastore.
+  # @param [Array<String>] druids
+  # @return [Array<Cocina::Models::DROWithMetadata,
+  #                Cocina::Models::CollectionWithMetadata,
+  #                Cocina::Models::AdminPolicyWithMetadata>] cocina_objects
+  def self.find_all(druids)
+    RepositoryObject.includes(:head_version).where(external_identifier: druids).map do |repo_object|
+      repo_object.head_version.to_cocina_with_metadata
+    end
+  end
+
   # Retrieves a Cocina object from the datastore by sourceID.
   # @param [String] source_id
   # @return [Cocina::Models::DROWithMetadata, Cocina::Models::CollectionWithMetadata] cocina_object
