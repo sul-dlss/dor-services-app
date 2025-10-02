@@ -48,7 +48,8 @@ RSpec.describe Indexing::Indexers::IdentityMetadataIndexer do
 
       it 'has the fields used by argo' do
         expect(doc).to include(
-          'barcode_id_ssim' => ['36105049267078'],
+          'barcode_id_ssim' => ['36105049267078'], # TODO: Remove
+          'barcode_id_ssimdv' => ['36105049267078'],
           'folio_instance_hrid_ssim' => ['a129483625'],
           'identifier_ssim' => ['google:STANFORD_342837261527', 'barcode:36105049267078',
                                 'folio:a129483625'],
@@ -69,7 +70,8 @@ RSpec.describe Indexing::Indexers::IdentityMetadataIndexer do
       # rubocop:disable Style/StringHashKeys
       it 'has the fields used by argo' do
         expect(doc).to include(
-          'barcode_id_ssim' => [],
+          'barcode_id_ssim' => [], # TODO: Remove
+          'barcode_id_ssimdv' => [],
           'identifier_ssim' => ['sul:1234'],
           'identifier_tesim' => ['sul:1234'],
           'objectType_ssim' => ['agreement'],
@@ -104,7 +106,8 @@ RSpec.describe Indexing::Indexers::IdentityMetadataIndexer do
       # rubocop:disable Style/StringHashKeys
       it 'has the fields used by argo' do
         expect(doc).to include(
-          'barcode_id_ssim' => [],
+          'barcode_id_ssim' => [], # TODO: Remove
+          'barcode_id_ssimdv' => [],
           'folio_instance_hrid_ssim' => ['a129483625'],
           'identifier_ssim' => ['google:STANFORD_342837261527', 'folio:a129483625'],
           'identifier_tesim' => ['google:STANFORD_342837261527', 'folio:a129483625'],
