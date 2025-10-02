@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe BatchReindexJob do
   subject(:perform) do
-    described_class.perform_now([druid, 'druid:bc123cd4567'])
+    described_class.perform_now([druid, 'druid:bc123cd4567', collection_druid])
   end
 
   let(:repository_object) { create(:repository_object, :with_repository_object_version) }
@@ -13,14 +13,16 @@ RSpec.describe BatchReindexJob do
   let(:collection_druid) { collection_repository_object.external_identifier }
 
   let(:conn) { instance_double(RSolr::Client, add: nil) }
-  let(:indexer) { double(Indexing::Indexers::CompositeIndexer, to_solr: solr_doc) } # rubocop:disable RSpec/VerifiedDoubles
+  let(:indexer) { double(Indexing::Indexers::CompositeIndexer) } # rubocop:disable RSpec/VerifiedDoubles
   let(:solr_doc) { { id: repository_object.external_identifier } }
+  let(:collection_solr_doc) { { id: collection_repository_object.external_identifier } }
   let!(:release_tag) { create(:release_tag, druid:) }
   let!(:collection_release_tag) { create(:release_tag, druid: collection_druid) }
 
   before do
     allow(RSolr).to receive(:connect).and_return(conn)
     allow(Indexing::Builders::DocumentBuilder).to receive(:for).and_return(indexer)
+    allow(indexer).to receive(:to_solr).and_return(solr_doc, collection_solr_doc)
     create(:workflow_step, druid:, lifecycle: 'accessioned', status: 'completed')
     repository_object.head_version.structural['isMemberOf'] = [collection_druid]
     repository_object.head_version.save!
@@ -28,7 +30,7 @@ RSpec.describe BatchReindexJob do
 
   it 'indexes' do
     perform
-    expect(conn).to have_received(:add).with([solr_doc], add_attributes: { commitWithin: 500 })
+    expect(conn).to have_received(:add).with([solr_doc, collection_solr_doc], add_attributes: { commitWithin: 500 })
     expect(Indexing::Builders::DocumentBuilder).to have_received(:for).once.with(
       model: repository_object.head_version.to_cocina_with_metadata,
       trace_id: String,
@@ -36,7 +38,7 @@ RSpec.describe BatchReindexJob do
       release_tags: [release_tag.to_cocina],
       milestones: [{ milestone: 'accessioned', at: an_instance_of(ActiveSupport::TimeWithZone), version: '1' }],
       parent_collections: [collection_repository_object.head_version.to_cocina_with_metadata],
-      parent_collections_release_tags: [collection_release_tag.to_cocina]
+      parent_collections_release_tags: { collection_druid => [collection_release_tag.to_cocina] }
     )
   end
 end
