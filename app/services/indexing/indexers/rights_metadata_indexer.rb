@@ -36,7 +36,8 @@ module Indexing
         {
           'copyright_ssim' => cocina.access.copyright,
           'use_statement_ssim' => cocina.access.useAndReproductionStatement,
-          'use_license_machine_ssi' => license,
+          'use_license_machine_ssi' => license, # TODO: Remove
+          'use_license_machine_ssidv' => license,
           'rights_descriptions_ssim' => rights_description, # TODO: Remove
           'rights_descriptions_ssimdv' => rights_description
         }.compact

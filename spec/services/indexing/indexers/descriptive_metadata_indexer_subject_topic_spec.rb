@@ -342,7 +342,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects topic parts from complex subjects in parallelValue' do
-        expect(doc).to include('topic_ssim' => ['Cats', 'Homes and haunts', 'Chats', 'Maisons et repaires']) # TODO: Remove
+        # TODO: Remove
+        expect(doc).to include('topic_ssim' => ['Cats', 'Homes and haunts', 'Chats', 'Maisons et repaires'])
         expect(doc).to include('topic_ssimdv' => ['Cats', 'Homes and haunts', 'Chats', 'Maisons et repaires'])
         expect(doc).to include('topic_tesim' => ['Cats', 'Homes and haunts', 'Chats', 'Maisons et repaires'])
       end
@@ -752,7 +753,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'constructs title subjects from parallelValue for topic_ssim' do
-        expect(doc).to include('topic_ssim' => ['The master and Margarita a novel', 'Мастер и Маргарита роман']) # TODO: Remove
+        # TODO: Remove
+        expect(doc).to include('topic_ssim' => ['The master and Margarita a novel', 'Мастер и Маргарита роман'])
         expect(doc).to include('topic_ssimdv' => ['The master and Margarita a novel', 'Мастер и Маргарита роман'])
         expect(doc).not_to include('topic_tesim')
       end
