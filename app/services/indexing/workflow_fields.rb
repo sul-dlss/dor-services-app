@@ -45,7 +45,7 @@ module Indexing
       end
     end
 
-    def add_sortable_milestones(solr_doc)
+    def add_sortable_milestones(solr_doc) # rubocop:disable Metrics/AbcSize
       sortable_milestones.each do |milestone, unordered_dates|
         dates = unordered_dates.sort
         # create the published_dttsi and published_day fields and the like
@@ -55,8 +55,10 @@ module Indexing
         end
         # fields for OAI havester to sort on: _dttsi is trie date +stored +indexed (single valued, i.e. sortable)
         # TODO: we really only need accessioned_earliest and registered_earliest
-        solr_doc["#{milestone}_earliest_dttsi"] = dates.first
-        solr_doc["#{milestone}_latest_dttsi"] = dates.last
+        solr_doc["#{milestone}_earliest_dttsi"] = dates.first # TODO: Remove
+        solr_doc["#{milestone}_latest_dttsi"] = dates.last # TODO: Remove
+        solr_doc["#{milestone}_earliest_dtpsidv"] = dates.first
+        solr_doc["#{milestone}_latest_dtpsidv"] = dates.last
       end
     end
 
