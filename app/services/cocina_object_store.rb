@@ -32,6 +32,15 @@ class CocinaObjectStore
     new.find(druid)
   end
 
+  # Retrieves a list of Cocina objects from the datastore.
+  # @param [Array<String>] druids
+  # @return [Array<Cocina::Models::DROWithMetadata,
+  #                Cocina::Models::CollectionWithMetadata,
+  #                Cocina::Models::AdminPolicyWithMetadata>] cocina_objects
+  def self.find_all(druids)
+    new.find_all(druids)
+  end
+
   # Retrieves a Cocina object from the datastore by sourceID.
   # @param [String] source_id
   # @return [Cocina::Models::DROWithMetadata, Cocina::Models::CollectionWithMetadata] cocina_object
@@ -83,6 +92,14 @@ class CocinaObjectStore
     return bootstrap_ur_admin_policy if bootstrap_ur_admin_policy?(druid)
 
     raise CocinaObjectNotFoundError.new("Couldn't find object with 'external_identifier'=#{druid}", druid)
+  end
+
+  # @param [Array] druids to find
+  # @return [Array<Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata>] for the head version #rubocop:disable Layout/LineLength
+  def find_all(druids)
+    RepositoryObject.where(external_identifier: druids).map do |repo_object|
+      repo_object.head_version.to_cocina_with_metadata
+    end
   end
 
   def find_by_source_id(source_id)

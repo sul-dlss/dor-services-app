@@ -88,12 +88,7 @@ class ObjectsController < ApplicationController
   # Ignores any identifiers that are not found
   def find_all
     druids = params.require([:externalIdentifiers]).first
-    cocina_objects = []
-    druids.each do |druid|
-      cocina_objects << Cocina::Models.without_metadata(CocinaObjectStore.find(druid))
-    rescue CocinaObjectStore::CocinaObjectNotFoundError
-      next
-    end
+    cocina_objects = CocinaObjectStore.find_all(druids).map { |cocina_object| Cocina::Models.without_metadata(cocina_object) }
     render json: cocina_objects
   end
 

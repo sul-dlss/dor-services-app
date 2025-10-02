@@ -53,6 +53,28 @@ RSpec.describe CocinaObjectStore do
     end
   end
 
+  describe '#find_all' do
+    context 'when no objects are found in datastore' do
+      let(:druids) { ['druid:bc123df4567', 'druid:bc123df4568', 'druid:bc123df4569'] }
+
+      it 'returns an empty array' do
+        expect(store.find_all(druids)).to be_empty
+      end
+    end
+
+    context 'when multiple objects are found' do
+      let(:repository_objects) { create_list(:repository_object, 3, :with_repository_object_version) }
+      let(:druids) { repository_objects.pluck(:external_identifier) }
+
+      it 'returns an array' do
+        result = store.find_all(druids)
+        expect(result).to be_an(Array)
+        expect(result.length).to eq(3)
+        expect(result.map(&:externalIdentifier)).to match_array(druids)
+      end
+    end
+  end
+
   describe '#version' do
     context 'when object is not found in datastore' do
       it 'raises' do

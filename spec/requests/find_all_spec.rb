@@ -11,9 +11,7 @@ RSpec.describe 'Find all objects provided a list of druids' do
       let(:cocina_objects_without_metadata) { cocina_objects.map { |cocina_object| Cocina::Models.without_metadata(cocina_object) } }
 
       before do
-        druids.each_with_index do |druid, index|
-          allow(CocinaObjectStore).to receive(:find).with(druid).and_return(cocina_objects[index])
-        end
+        allow(CocinaObjectStore).to receive(:find_all).with(druids).and_return(cocina_objects)
       end
 
       it 'returns a list of all objects' do
@@ -36,10 +34,7 @@ RSpec.describe 'Find all objects provided a list of druids' do
       end
 
       before do
-        allow(CocinaObjectStore).to receive(:find).with(druids[0]).and_return(cocina_objects[0])
-        allow(CocinaObjectStore).to receive(:find).with(druids[1]).and_return(cocina_objects[1])
-        allow(CocinaObjectStore).to receive(:find).with(druids[2]).and_raise(CocinaObjectStore::CocinaObjectNotFoundError,
-                                                                             'Object not found')
+        allow(CocinaObjectStore).to receive(:find_all).with(druids).and_return([cocina_objects[0], cocina_objects[1]])
       end
 
       it 'returns a list of found objects' do
@@ -55,10 +50,7 @@ RSpec.describe 'Find all objects provided a list of druids' do
 
     context 'when all druids are not found' do
       before do
-        druids.each do |druid|
-          allow(CocinaObjectStore).to receive(:find).with(druid).and_raise(CocinaObjectStore::CocinaObjectNotFoundError,
-                                                                           'Object not found')
-        end
+        allow(CocinaObjectStore).to receive(:find_all).with(druids).and_return([])
       end
 
       it 'returns an empty list' do
