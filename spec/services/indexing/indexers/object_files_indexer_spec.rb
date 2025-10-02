@@ -170,7 +170,8 @@ RSpec.describe Indexing::Indexers::ObjectFilesIndexer do
 
       it 'has the fields used by argo' do
         expect(doc).to include(
-          'content_type_ssim' => 'map',
+          'content_type_ssim' => 'map', # TODO: Remove
+          'content_type_ssimdv' => 'map',
           'content_file_mimetypes_ssim' => ['image/jp2', 'image/gif', 'image/tiff'],
           'content_file_roles_ssim' => ['derivative'],
           'shelved_content_file_count_itsi' => 1,
@@ -272,7 +273,8 @@ RSpec.describe Indexing::Indexers::ObjectFilesIndexer do
 
       it 'has the fields used by argo' do
         expect(doc).to include(
-          'content_type_ssim' => 'map',
+          'content_type_ssim' => 'map', # TODO: Remove
+          'content_type_ssimdv' => 'map',
           'content_file_mimetypes_ssim' => [],
           'shelved_content_file_count_itsi' => 0,
           'resource_count_itsi' => 0,
