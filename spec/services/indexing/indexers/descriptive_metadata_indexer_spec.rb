@@ -404,7 +404,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'descriptive_text_nostem_i' => all_search_text,
         'sw_language_ssim' => ['English'],
         'sw_format_ssim' => ['Book'],
-        'mods_typeOfResource_ssim' => ['text'],
+        'mods_typeOfResource_ssim' => ['text'], # TODO: Remove
+        'mods_typeOfResource_ssimdv' => ['text'],
         'sw_subject_temporal_ssim' => ['1800-1900'],
         'sw_subject_geographic_ssim' => ['Europe'],
         'sw_pub_date_facet_ssi' => '1911',

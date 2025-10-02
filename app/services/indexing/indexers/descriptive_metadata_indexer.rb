@@ -59,7 +59,8 @@ module Indexing
 
           # SW facets plus a friend facet
           'sw_format_ssim' => sw_format, # SW Resource Type facet
-          'mods_typeOfResource_ssim' => resource_type, # MODS Resource Type facet
+          'mods_typeOfResource_ssim' => resource_type, # TODO: Remove
+          'mods_typeOfResource_ssimdv' => resource_type, # MODS Resource Type facet
           'sw_genre_ssim' => stanford_mods_record.sw_genre, # SW Genre facet
           'sw_language_ssim' => stanford_mods_record.sw_language_facet, # SW Language facet
           'sw_subject_temporal_ssim' => stanford_mods_record.era_facet, # SW Era facet
