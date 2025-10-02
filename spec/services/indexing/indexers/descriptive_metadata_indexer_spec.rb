@@ -412,7 +412,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'sw_subject_temporal_ssimdv' => ['1800-1900'],
         'sw_subject_geographic_ssim' => ['Europe'], # TODO: Remove
         'sw_subject_geographic_ssimdv' => ['Europe'],
-        'sw_pub_date_facet_ssi' => '1911',
+        'sw_pub_date_facet_ssi' => '1911', # TODO: Remove
+        'sw_pub_date_facet_ssidv' => '1911',
         'author_display_ss' => 'George, Henry, 1839-1897',
         'author_text_nostem_im' => 'George, Henry, 1839-1897',
         'contributor_text_nostem_im' => ['George, Henry, 1839-1897', 'George, Henry, 1862-1916', 'George, Bush',

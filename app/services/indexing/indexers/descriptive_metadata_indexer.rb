@@ -57,7 +57,8 @@ module Indexing
           'originInfo_date_created_tesim' => creation_date,
           'originInfo_publisher_tesim' => publisher_name,
           'originInfo_place_placeTerm_tesim' => event_place, # do we want this?
-          'sw_pub_date_facet_ssi' => stanford_mods_record.pub_year_int.to_s, # SW Date facet
+          'sw_pub_date_facet_ssi' => stanford_mods_record.pub_year_int.to_s, # TODO: Remove
+          'sw_pub_date_facet_ssidv' => stanford_mods_record.pub_year_int.to_s, # SW Date facet
 
           # SW facets plus a friend facet
           'sw_format_ssim' => sw_format, # TODO: Remove
