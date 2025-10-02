@@ -42,7 +42,8 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
           'has_constituents_ssimdv' => nil,
           'is_governed_by_ssim' => 'info:fedora/druid:vv888vv8888',
           'is_member_of_collection_ssim' => ['info:fedora/druid:bb777bb7777', 'info:fedora/druid:dd666dd6666'],
-          'modified_latest_dttsi' => '2021-03-04T23:05:34Z',
+          'modified_latest_dttsi' => '2021-03-04T23:05:34Z', # TODO: Remove
+          'modified_latest_dtpsidv' => '2021-03-04T23:05:34Z',
           'created_at_dttsi' => '2020-01-01T12:00:01Z',
           'id' => 'druid:xx999xx9999',
           'trace_id_ss' => 'abc123'
@@ -64,7 +65,8 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
           'is_member_of_collection_ssim' => [],
           'has_constituents_ssim' => nil, # TODO: Remove
           'has_constituents_ssimdv' => nil,
-          'modified_latest_dttsi' => '2021-03-04T23:05:34Z',
+          'modified_latest_dttsi' => '2021-03-04T23:05:34Z', # TODO: Remove
+          'modified_latest_dtpsidv' => '2021-03-04T23:05:34Z',
           'created_at_dttsi' => '2020-01-01T12:00:01Z',
           'id' => 'druid:xx999xx9999',
           'trace_id_ss' => 'abc123'
@@ -86,7 +88,8 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
           'has_constituents_ssimdv' => ['druid:bb777bb7777', 'druid:dd666dd6666'],
           'is_governed_by_ssim' => 'info:fedora/druid:vv888vv8888',
           'is_member_of_collection_ssim' => [],
-          'modified_latest_dttsi' => '2021-03-04T23:05:34Z',
+          'modified_latest_dttsi' => '2021-03-04T23:05:34Z', # TODO: Remove
+          'modified_latest_dtpsidv' => '2021-03-04T23:05:34Z',
           'created_at_dttsi' => '2020-01-01T12:00:01Z',
           'id' => 'druid:xx999xx9999',
           'trace_id_ss' => 'abc123'

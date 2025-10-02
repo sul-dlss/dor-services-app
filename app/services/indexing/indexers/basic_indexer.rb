@@ -21,7 +21,8 @@ module Indexing
           solr_doc['current_version_isi'] = cocina.version # Argo Facet field "Version"
           solr_doc['obj_label_tesim'] = cocina.label
 
-          solr_doc['modified_latest_dttsi'] = modified_latest
+          solr_doc['modified_latest_dttsi'] = modified_latest # TODO: Remove
+          solr_doc['modified_latest_dtpsidv'] = modified_latest
           solr_doc['created_at_dttsi'] = created_at
 
           # is_member_of_collection_ssim is used by dor-services-app for querying for members of a
