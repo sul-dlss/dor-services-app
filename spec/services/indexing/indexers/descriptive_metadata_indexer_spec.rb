@@ -422,8 +422,10 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'topic_ssim' => %w[Economics cats],
         'topic_tesim' => %w[cats Economics],
         'originInfo_place_placeTerm_tesim' => 'Garden City, N. Y',
-        'contributor_orcids_ssim' => ['https://orcid.org/0000-1111-2222-3333',
-                                      'https://sandbox.orcid.org/1111-2222-3333-4444', 'https://orcid.org/0000-0001-5321-289X']
+        'contributor_orcids_ssim' => ['https://orcid.org/0000-1111-2222-3333', # TODO: Remove
+                                      'https://sandbox.orcid.org/1111-2222-3333-4444', 'https://orcid.org/0000-0001-5321-289X'],
+        'contributor_orcids_ssimdv' => ['https://orcid.org/0000-1111-2222-3333',
+                                        'https://sandbox.orcid.org/1111-2222-3333-4444', 'https://orcid.org/0000-0001-5321-289X']
       )
     end
     # rubocop:enable Style/StringHashKeys

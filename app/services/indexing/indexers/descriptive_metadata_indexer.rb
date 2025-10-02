@@ -45,7 +45,8 @@ module Indexing
           'author_text_nostem_im' => author_primary, # primary author tokenized but not stemmed
           'author_display_ss' => author_primary, # used for author display in Argo
           'contributor_text_nostem_im' => author_all, # author names should be tokenized but not stemmed
-          'contributor_orcids_ssim' => orcids,
+          'contributor_orcids_ssim' => orcids, # TODO: Remove
+          'contributor_orcids_ssimdv' => orcids,
 
           # topic
           'topic_ssim' => stanford_mods_record.topic_facet&.uniq,
