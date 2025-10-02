@@ -408,7 +408,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'mods_typeOfResource_ssim' => ['text'], # TODO: Remove
         'mods_typeOfResource_ssimdv' => ['text'],
         'sw_subject_temporal_ssim' => ['1800-1900'],
-        'sw_subject_geographic_ssim' => ['Europe'],
+        'sw_subject_geographic_ssim' => ['Europe'], # TODO: Remove
+        'sw_subject_geographic_ssimdv' => ['Europe'],
         'sw_pub_date_facet_ssi' => '1911',
         'author_display_ss' => 'George, Henry, 1839-1897',
         'author_text_nostem_im' => 'George, Henry, 1839-1897',
