@@ -34,7 +34,8 @@ module Indexing
       solr_doc['status_ssi'] = status.display
 
       # This is used for Argo's "Processing Status" facet
-      solr_doc['processing_status_text_ssi'] = status.display_simplified
+      solr_doc['processing_status_text_ssi'] = status.display_simplified # TODO: Remove
+      solr_doc['processing_status_text_ssidv'] = status.display_simplified
     end
 
     def sortable_milestones

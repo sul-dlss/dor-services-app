@@ -39,7 +39,8 @@ RSpec.describe Indexing::WorkflowFields do
     it 'includes the semicolon delimited version, an earliest published date and a status' do
       # published date should be the first published date
       expect(doc['status_ssi']).to eq 'v4 In accessioning (described, published)'
-      expect(doc['processing_status_text_ssi']).to eq 'In accessioning'
+      expect(doc['processing_status_text_ssi']).to eq 'In accessioning' # TODO: Remove
+      expect(doc['processing_status_text_ssidv']).to eq 'In accessioning'
       expect(doc).to match a_hash_including('opened_dttsim' => including('2012-11-07T00:21:02Z'))
       expect(doc['published_earliest_dttsi']).to eq('2012-01-27T05:06:54Z')
       expect(doc['published_latest_dttsi']).to eq('2012-11-07T00:59:39Z')
