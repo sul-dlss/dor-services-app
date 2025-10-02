@@ -59,7 +59,8 @@ module Indexing
           'sw_pub_date_facet_ssi' => stanford_mods_record.pub_year_int.to_s, # SW Date facet
 
           # SW facets plus a friend facet
-          'sw_format_ssim' => sw_format, # SW Resource Type facet
+          'sw_format_ssim' => sw_format, # TODO: Remove
+          'sw_format_ssimdv' => sw_format, # SW Resource Type facet
           'mods_typeOfResource_ssim' => resource_type, # TODO: Remove
           'mods_typeOfResource_ssimdv' => resource_type, # MODS Resource Type facet
           'sw_genre_ssim' => stanford_mods_record.sw_genre, # SW Genre facet
