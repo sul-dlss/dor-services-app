@@ -44,7 +44,8 @@ RSpec.describe Indexing::Indexers::CompositeIndexer do
         'nonhydrus_apo_title_ssim' => ['test admin policy'], # TODO: Remove
         'nonhydrus_apo_title_ssimdv' => ['test admin policy'],
         'apo_title_ssim' => ['test admin policy'],
-        'metadata_source_ssim' => ['DOR'],
+        'metadata_source_ssim' => ['DOR'], # TODO: Remove
+        'metadata_source_ssimdv' => ['DOR'],
         'druid_bare_ssi' => 'mx123ms3333',
         'druid_prefixed_ssi' => 'druid:mx123ms3333',
         'topic_ssim' => ['word'],

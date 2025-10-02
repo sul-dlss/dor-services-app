@@ -17,13 +17,13 @@ module Indexing
       @@apo_hash = {} # rubocop:disable Style/ClassVars
 
       # @return [Hash] the partial solr document for identifiable concerns
-      def to_solr
+      def to_solr # rubocop:disable Metrics/AbcSize
         {}.tap do |solr_doc|
           add_apo_titles(solr_doc, cocina.administrative.hasAdminPolicy)
 
           unless cocina.is_a? Cocina::Models::AdminPolicyWithMetadata
-            solr_doc['metadata_source_ssim'] =
-              identity_metadata_sources
+            solr_doc['metadata_source_ssim'] = identity_metadata_sources # TODO: Remove
+            solr_doc['metadata_source_ssimdv'] = identity_metadata_sources
           end
           solr_doc['druid_prefixed_ssi'] = cocina.externalIdentifier
           solr_doc['druid_bare_ssi'] = cocina.externalIdentifier.delete_prefix('druid:')

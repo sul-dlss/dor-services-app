@@ -67,7 +67,8 @@ RSpec.describe Indexing::Indexers::IdentifiableIndexer do
       end
 
       it 'indexes metadata sources' do
-        expect(doc).to match a_hash_including('metadata_source_ssim' => %w[Folio])
+        expect(doc).to match a_hash_including('metadata_source_ssim' => %w[Folio]) # TODO: Remove
+        expect(doc).to match a_hash_including('metadata_source_ssimdv' => %w[Folio])
       end
     end
 
@@ -75,7 +76,8 @@ RSpec.describe Indexing::Indexers::IdentifiableIndexer do
       let(:identification) { { sourceId: 'sul:1234' } }
 
       it 'indexes metadata sources' do
-        expect(doc).to match a_hash_including('metadata_source_ssim' => ['DOR'])
+        expect(doc).to match a_hash_including('metadata_source_ssim' => ['DOR']) # TODO: Remove
+        expect(doc).to match a_hash_including('metadata_source_ssimdv' => ['DOR'])
       end
     end
 
@@ -92,7 +94,8 @@ RSpec.describe Indexing::Indexers::IdentifiableIndexer do
       end
 
       it 'indexes metadata sources' do
-        expect(doc).to match a_hash_including('metadata_source_ssim' => ['DOR'])
+        expect(doc).to match a_hash_including('metadata_source_ssim' => ['DOR']) # TODO: Remove
+        expect(doc).to match a_hash_including('metadata_source_ssimdv' => ['DOR'])
       end
     end
 
@@ -100,7 +103,8 @@ RSpec.describe Indexing::Indexers::IdentifiableIndexer do
       let(:cocina_item) { build(:dro, id: druid, admin_policy_id: apo_id) }
 
       it 'indexes metadata sources' do
-        expect(doc).to match a_hash_including('metadata_source_ssim' => ['DOR'])
+        expect(doc).to match a_hash_including('metadata_source_ssim' => ['DOR']) # TODO: Remove
+        expect(doc).to match a_hash_including('metadata_source_ssimdv' => ['DOR'])
       end
     end
   end
