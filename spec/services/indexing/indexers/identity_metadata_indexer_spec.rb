@@ -57,7 +57,8 @@ RSpec.describe Indexing::Indexers::IdentityMetadataIndexer do
                                  'folio:a129483625'],
           'objectType_ssim' => ['item'],
           'source_id_ssi' => 'google:STANFORD_342837261527',
-          'doi_ssim' => ['10.25740/yr775yn6440']
+          'doi_ssim' => ['10.25740/yr775yn6440'], # TODO: Remove
+          'doi_ssimdv' => ['10.25740/yr775yn6440']
         )
       end
       # rubocop:enable Style/StringHashKeys

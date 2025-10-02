@@ -26,7 +26,8 @@ module Indexing
           'source_id_ssi' => source_id, # for search and display (reports, track_sheet)
           'source_id_text_nostem_i' => source_id, # for search, tokenized per request from accessioneers
           'folio_instance_hrid_ssim' => [folio_instance_hrid].compact,
-          'doi_ssim' => [doi].compact
+          'doi_ssim' => [doi].compact, # TODO: Remove
+          'doi_ssimdv' => [doi].compact
         }
       end
 
