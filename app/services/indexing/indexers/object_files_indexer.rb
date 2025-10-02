@@ -28,7 +28,8 @@ module Indexing
         {
           'content_type_ssim' => type(cocina.type), # TODO: Remove
           'content_type_ssimdv' => type(cocina.type),
-          'content_file_mimetypes_ssim' => files.map(&:hasMimeType).uniq,
+          'content_file_mimetypes_ssim' => files.map(&:hasMimeType).uniq, # TODO: Remove
+          'content_file_mimetypes_ssimdv' => files.map(&:hasMimeType).uniq,
           'content_file_count_itsi' => files.size,
           'shelved_content_file_count_itsi' => shelved_files.size,
           'resource_count_itsi' => file_sets.size,
