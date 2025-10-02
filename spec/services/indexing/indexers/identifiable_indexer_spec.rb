@@ -52,7 +52,8 @@ RSpec.describe Indexing::Indexers::IdentifiableIndexer do
 
       it 'generates apo title fields' do
         expect(doc['apo_title_ssim'].first).to eq apo_id
-        expect(doc['nonhydrus_apo_title_ssim'].first).to eq apo_id
+        expect(doc['nonhydrus_apo_title_ssim'].first).to eq apo_id # TODO: Remove
+        expect(doc['nonhydrus_apo_title_ssimdv'].first).to eq apo_id
       end
     end
 
@@ -61,7 +62,8 @@ RSpec.describe Indexing::Indexers::IdentifiableIndexer do
 
       it 'generates apo title fields' do
         expect(doc['apo_title_ssim'].first).to eq 'collection title'
-        expect(doc['nonhydrus_apo_title_ssim'].first).to eq 'collection title'
+        expect(doc['nonhydrus_apo_title_ssim'].first).to eq 'collection title' # TODO: Remove
+        expect(doc['nonhydrus_apo_title_ssimdv'].first).to eq 'collection title'
       end
 
       it 'indexes metadata sources' do

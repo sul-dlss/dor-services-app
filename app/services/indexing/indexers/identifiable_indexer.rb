@@ -57,15 +57,17 @@ module Indexing
 
       # @param [Hash] solr_doc
       # @param [String] admin_policy_id
-      def add_apo_titles(solr_doc, admin_policy_id)
+      def add_apo_titles(solr_doc, admin_policy_id) # rubocop:disable Metrics/AbcSize
         row = populate_cache(admin_policy_id)
         title = row['related_obj_title']
         if row['is_from_hydrus']
           solr_doc['hydrus_apo_title_ssim'] ||= []
           solr_doc['hydrus_apo_title_ssim'] << title
         else
-          solr_doc['nonhydrus_apo_title_ssim'] ||= []
-          solr_doc['nonhydrus_apo_title_ssim'] << title
+          solr_doc['nonhydrus_apo_title_ssim'] ||= [] # TODO: Remove
+          solr_doc['nonhydrus_apo_title_ssim'] << title # TODO: Remove
+          solr_doc['nonhydrus_apo_title_ssimdv'] ||= []
+          solr_doc['nonhydrus_apo_title_ssimdv'] << title
         end
         solr_doc['apo_title_ssim'] ||= []
         solr_doc['apo_title_ssim'] << title

@@ -41,7 +41,8 @@ RSpec.describe Indexing::Indexers::CompositeIndexer do
         'main_title_tenim' => ['Test item'],
         'full_title_tenim' => ['Test item'],
         'display_title_ss' => 'Test item',
-        'nonhydrus_apo_title_ssim' => ['test admin policy'],
+        'nonhydrus_apo_title_ssim' => ['test admin policy'], # TODO: Remove
+        'nonhydrus_apo_title_ssimdv' => ['test admin policy'],
         'apo_title_ssim' => ['test admin policy'],
         'metadata_source_ssim' => ['DOR'],
         'druid_bare_ssi' => 'mx123ms3333',
