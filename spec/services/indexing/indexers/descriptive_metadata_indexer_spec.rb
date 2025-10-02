@@ -423,7 +423,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'display_title_ss' => 'The complete works of Henry George, Part 1',
         # 'originInfo_date_created_tesim' => '', # not populated by the example; see indexer_spec instead
         'originInfo_publisher_tesim' => 'Doubleday, Page',
-        'topic_ssim' => %w[Economics cats],
+        'topic_ssim' => %w[Economics cats], # TODO: Remove
+        'topic_ssimdv' => %w[Economics cats],
         'topic_tesim' => %w[cats Economics],
         'originInfo_place_placeTerm_tesim' => 'Garden City, N. Y',
         'contributor_orcids_ssim' => ['https://orcid.org/0000-1111-2222-3333', # TODO: Remove

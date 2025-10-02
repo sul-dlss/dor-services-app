@@ -49,7 +49,8 @@ module Indexing
           'contributor_orcids_ssimdv' => orcids,
 
           # topic
-          'topic_ssim' => stanford_mods_record.topic_facet&.uniq,
+          'topic_ssim' => stanford_mods_record.topic_facet&.uniq, # TODO: Remove
+          'topic_ssimdv' => stanford_mods_record.topic_facet&.uniq,
           'topic_tesim' => stemmable_topics,
 
           # publication

@@ -48,7 +48,8 @@ RSpec.describe Indexing::Indexers::CompositeIndexer do
         'metadata_source_ssimdv' => ['DOR'],
         'druid_bare_ssi' => 'mx123ms3333',
         'druid_prefixed_ssi' => 'druid:mx123ms3333',
-        'topic_ssim' => ['word'],
+        'topic_ssim' => ['word'], # TODO: Remove
+        'topic_ssimdv' => ['word'],
         'topic_tesim' => ['word']
       )
       # rubocop:enable Style/StringHashKeys
