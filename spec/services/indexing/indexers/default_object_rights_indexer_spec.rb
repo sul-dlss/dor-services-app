@@ -31,7 +31,8 @@ RSpec.describe Indexing::Indexers::DefaultObjectRightsIndexer do
       expect(doc).to match a_hash_including('use_statement_ssim' =>
         'Rights are owned by Stanford University Libraries.')
       expect(doc).to match a_hash_including('copyright_ssim' => 'Additional copyright info')
-      expect(doc).to match a_hash_including('rights_descriptions_ssim' => 'dark')
+      expect(doc).to match a_hash_including('rights_descriptions_ssim' => 'dark') # TODO: Remove
+      expect(doc).to match a_hash_including('rights_descriptions_ssimdv' => 'dark')
       expect(doc).to match a_hash_including('default_rights_descriptions_ssim' => ['location: spec'])
       # rubocop:enable Style/StringHashKeys
     end

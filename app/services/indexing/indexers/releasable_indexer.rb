@@ -19,9 +19,12 @@ module Indexing
 
         {
           'released_to_ssim' => tags.map(&:to).uniq,
-          'released_to_searchworks_dttsi' => searchworks_release_date,
-          'released_to_earthworks_dttsi' => earthworks_release_date,
-          'released_to_purl_sitemap_dttsi' => purl_sitemap_release_date
+          'released_to_searchworks_dttsi' => searchworks_release_date, # TODO: Remove
+          'released_to_searchworks_dtpsidv' => searchworks_release_date,
+          'released_to_earthworks_dttsi' => earthworks_release_date, # TODO: Remove
+          'released_to_earthworks_dtpsidv' => earthworks_release_date,
+          'released_to_purl_sitemap_dttsi' => purl_sitemap_release_date, # TODO: Remove
+          'released_to_purl_sitemap_dtpsidv' => purl_sitemap_release_date
         }.compact
       end
 

@@ -47,9 +47,12 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
         it 'indexes release tags' do
           expect(doc).to eq(
             'released_to_ssim' => ['Searchworks', 'Earthworks', 'PURL sitemap'],
-            'released_to_earthworks_dttsi' => '2016-11-16T22:52:35Z',
-            'released_to_searchworks_dttsi' => '2021-05-12T21:05:21Z',
-            'released_to_purl_sitemap_dttsi' => '2023-03-27T10:00:00Z'
+            'released_to_earthworks_dttsi' => '2016-11-16T22:52:35Z', # TODO: Remove
+            'released_to_earthworks_dtpsidv' => '2016-11-16T22:52:35Z',
+            'released_to_searchworks_dttsi' => '2021-05-12T21:05:21Z', # TODO: Remove
+            'released_to_searchworks_dtpsidv' => '2021-05-12T21:05:21Z',
+            'released_to_purl_sitemap_dttsi' => '2023-03-27T10:00:00Z', # TODO: Remove
+            'released_to_purl_sitemap_dtpsidv' => '2023-03-27T10:00:00Z'
           )
         end
       end

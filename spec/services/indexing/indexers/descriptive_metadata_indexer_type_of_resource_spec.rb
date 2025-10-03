@@ -14,7 +14,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
     )
   end
 
-  describe 'form mappings from Cocina to Solr mods_typeOfResource_ssim' do
+  describe 'form mappings from Cocina to Solr mods_typeOfResource_ssimdv' do
     context 'when one MODS resource type' do
       let(:description) do
         {
@@ -36,7 +36,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'includes value' do
-        expect(doc).to include('mods_typeOfResource_ssim' => ['text'])
+        expect(doc).to include('mods_typeOfResource_ssim' => ['text']) # TODO: Remove
+        expect(doc).to include('mods_typeOfResource_ssimdv' => ['text'])
       end
     end
 
@@ -68,7 +69,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'includes values' do
-        expect(doc).to include('mods_typeOfResource_ssim' => ['text', 'still image'])
+        expect(doc).to include('mods_typeOfResource_ssim' => ['text', 'still image']) # TODO: Remove
+        expect(doc).to include('mods_typeOfResource_ssimdv' => ['text', 'still image'])
       end
     end
 
@@ -94,7 +96,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'does not include value' do
-        expect(doc).not_to include('mods_typeOfResource_ssim')
+        expect(doc).not_to include('mods_typeOfResource_ssim') # TODO: Remove
+        expect(doc).not_to include('mods_typeOfResource_ssimdv')
       end
     end
 
@@ -120,7 +123,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'does not includes value' do
-        expect(doc).not_to include('mods_typeOfResource_ssim')
+        expect(doc).not_to include('mods_typeOfResource_ssim') # TODO: Remove
+        expect(doc).not_to include('mods_typeOfResource_ssimdv')
       end
     end
 
@@ -142,7 +146,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'does not includes value' do
-        expect(doc).not_to include('mods_typeOfResource_ssim')
+        expect(doc).not_to include('mods_typeOfResource_ssim') # TODO: Remove
+        expect(doc).not_to include('mods_typeOfResource_ssimdv')
       end
     end
 
@@ -166,7 +171,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'includes value' do
-        expect(doc).to include('mods_typeOfResource_ssim' => ['text'])
+        expect(doc).to include('mods_typeOfResource_ssim' => ['text']) # TODO: Remove
+        expect(doc).to include('mods_typeOfResource_ssimdv' => ['text'])
       end
     end
   end

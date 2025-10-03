@@ -402,12 +402,18 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'descriptive_tiv' => all_search_text,
         'descriptive_teiv' => all_search_text,
         'descriptive_text_nostem_i' => all_search_text,
-        'sw_language_ssim' => ['English'],
-        'sw_format_ssim' => ['Book'],
-        'mods_typeOfResource_ssim' => ['text'],
-        'sw_subject_temporal_ssim' => ['1800-1900'],
-        'sw_subject_geographic_ssim' => ['Europe'],
-        'sw_pub_date_facet_ssi' => '1911',
+        'sw_language_ssim' => ['English'], # TODO: Remove
+        'sw_language_ssimdv' => ['English'],
+        'sw_format_ssim' => ['Book'], # TODO: Remove
+        'sw_format_ssimdv' => ['Book'],
+        'mods_typeOfResource_ssim' => ['text'], # TODO: Remove
+        'mods_typeOfResource_ssimdv' => ['text'],
+        'sw_subject_temporal_ssim' => ['1800-1900'], # TODO: Remove
+        'sw_subject_temporal_ssimdv' => ['1800-1900'],
+        'sw_subject_geographic_ssim' => ['Europe'], # TODO: Remove
+        'sw_subject_geographic_ssimdv' => ['Europe'],
+        'sw_pub_date_facet_ssi' => '1911', # TODO: Remove
+        'sw_pub_date_facet_ssidv' => '1911',
         'author_display_ss' => 'George, Henry, 1839-1897',
         'author_text_nostem_im' => 'George, Henry, 1839-1897',
         'contributor_text_nostem_im' => ['George, Henry, 1839-1897', 'George, Henry, 1862-1916', 'George, Bush',
@@ -418,11 +424,14 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'display_title_ss' => 'The complete works of Henry George, Part 1',
         # 'originInfo_date_created_tesim' => '', # not populated by the example; see indexer_spec instead
         'originInfo_publisher_tesim' => 'Doubleday, Page',
-        'topic_ssim' => %w[Economics cats],
+        'topic_ssim' => %w[Economics cats], # TODO: Remove
+        'topic_ssimdv' => %w[Economics cats],
         'topic_tesim' => %w[cats Economics],
         'originInfo_place_placeTerm_tesim' => 'Garden City, N. Y',
-        'contributor_orcids_ssim' => ['https://orcid.org/0000-1111-2222-3333',
-                                      'https://sandbox.orcid.org/1111-2222-3333-4444', 'https://orcid.org/0000-0001-5321-289X']
+        'contributor_orcids_ssim' => ['https://orcid.org/0000-1111-2222-3333', # TODO: Remove
+                                      'https://sandbox.orcid.org/1111-2222-3333-4444', 'https://orcid.org/0000-0001-5321-289X'],
+        'contributor_orcids_ssimdv' => ['https://orcid.org/0000-1111-2222-3333',
+                                        'https://sandbox.orcid.org/1111-2222-3333-4444', 'https://orcid.org/0000-0001-5321-289X']
       )
     end
     # rubocop:enable Style/StringHashKeys

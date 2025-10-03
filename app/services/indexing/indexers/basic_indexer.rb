@@ -18,10 +18,12 @@ module Indexing
         {}.tap do |solr_doc|
           solr_doc[:id] = cocina.externalIdentifier
           solr_doc['trace_id_ss'] = trace_id
-          solr_doc['current_version_isi'] = cocina.version # Argo Facet field "Version"
+          solr_doc['current_version_isi'] = cocina.version # TODO: Remove
+          solr_doc['current_version_ipsidv'] = cocina.version # Argo Facet field "Version"
           solr_doc['obj_label_tesim'] = cocina.label
 
-          solr_doc['modified_latest_dttsi'] = modified_latest
+          solr_doc['modified_latest_dttsi'] = modified_latest # TODO: Remove
+          solr_doc['modified_latest_dtpsidv'] = modified_latest
           solr_doc['created_at_dttsi'] = created_at
 
           # is_member_of_collection_ssim is used by dor-services-app for querying for members of a
@@ -30,7 +32,8 @@ module Indexing
           solr_doc['is_governed_by_ssim'] = legacy_apo # Argo facet
 
           # Used so that DSA can generate public XML whereas a constituent can find the virtual object it is part of.
-          solr_doc['has_constituents_ssim'] = virtual_object_constituents
+          solr_doc['has_constituents_ssim'] = virtual_object_constituents # TODO: Remove
+          solr_doc['has_constituents_ssimdv'] = virtual_object_constituents
         end.merge(Indexing::WorkflowFields.for(druid: cocina.externalIdentifier, version: cocina.version, milestones:))
            .transform_keys(&:to_s)
       end
