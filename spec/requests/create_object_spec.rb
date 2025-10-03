@@ -355,6 +355,123 @@ RSpec.describe 'Create object' do
 
       let(:structural) { { contains: filesets } }
 
+      context 'when identifiers are provided' do
+        let(:expected_structural) do
+          { contains: [
+            {
+              type: Cocina::Models::FileSetType.file,
+              externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/gg777gg7777-123-456-789',
+              label: 'Page 1',
+              version: 1,
+              structural: {
+                contains: [
+                  {
+                    type: Cocina::Models::ObjectType.file,
+                    externalIdentifier: 'druid:123',
+                    label: '00001.html',
+                    filename: '00001.html',
+                    version: 1,
+                    hasMimeType: 'text/html',
+                    languageTag: 'lou-US',
+                    use: 'transcription',
+                    hasMessageDigests: [
+                      {
+                        type: 'sha1', digest: 'cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7'
+                      }, {
+                        type: 'md5', digest: 'e6d52da47a5ade91ae31227b978fb023'
+                      }
+                    ],
+                    access: { view: 'dark' },
+                    administrative: { publish: false, sdrPreserve: true, shelve: false }
+                  }, {
+                    type: Cocina::Models::ObjectType.file,
+                    externalIdentifier: 'https://cocina.sul.stanford.edu/file/123-456',
+                    label: '00001.jp2',
+                    filename: '00001.jp2',
+                    version: 1,
+                    hasMimeType: 'image/jp2', hasMessageDigests: [],
+                    access: { view: 'dark', download: 'none' },
+                    administrative: { publish: false, sdrPreserve: true, shelve: false }
+                  }
+                ]
+              }
+            }, {
+              type: Cocina::Models::FileSetType.file,
+              externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/gg777gg7777-123-456-789',
+              label: 'Page 2', version: 1,
+              structural: {
+                contains: [
+                  {
+                    type: Cocina::Models::ObjectType.file,
+                    externalIdentifier: 'druid:456',
+                    label: '00002.html', filename: '00002.html',
+                    version: 1, hasMimeType: 'text/html',
+                    hasMessageDigests: [],
+                    access: { view: 'dark' },
+                    administrative: { publish: false, sdrPreserve: true, shelve: false }
+                  }, {
+                    type: Cocina::Models::ObjectType.file,
+                    externalIdentifier: 'https://cocina.sul.stanford.edu/file/987-654',
+                    label: '00002.jp2',
+                    filename: '00002.jp2',
+                    version: 1,
+                    hasMimeType: 'image/jp2',
+                    hasMessageDigests: [],
+                    access: { view: 'dark', download: 'none' },
+                    administrative: { publish: false, sdrPreserve: true, shelve: false }
+                  }
+                ]
+              }
+            }
+          ] }
+        end
+
+        let(:filesets) do
+          [
+            {
+              'version' => 1,
+              'type' => Cocina::Models::FileSetType.file,
+              'label' => 'Page 1',
+              'structural' => { 'contains' => [
+                file1.merge(externalIdentifier: 'druid:123'),
+                file2.merge(externalIdentifier: 'https://cocina.sul.stanford.edu/file/123-456')
+              ] }
+            },
+            {
+              'version' => 1,
+              'type' => Cocina::Models::FileSetType.file,
+              'label' => 'Page 2',
+              'structural' => { 'contains' => [
+                file3.merge(externalIdentifier: 'druid:456'),
+                file4.merge(externalIdentifier: 'https://cocina.sul.stanford.edu/file/987-654')
+              ] }
+            }
+          ]
+        end
+
+        before do
+          # This gives every file set the same UUID. In reality, they would be unique.
+          allow(SecureRandom).to receive(:uuid).and_return('123-456-789')
+          allow(Honeybadger).to receive(:notify)
+        end
+
+        it 'creates structure' do
+          post '/v1/objects',
+               params: data,
+               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+          expect(response).to have_http_status(:created)
+          expect(response.body).to equal_cocina_model(expected)
+          expect(response.location).to eq "/v1/objects/#{druid}"
+          expect(Honeybadger).to have_received(:notify)
+            .with('File ID is not in the expected format. It should begin with https://cocina.sul.stanford.edu',
+                  context: { file_id: String, external_identifier: 'druid:gg777gg7777' }).twice
+
+          item = CocinaObjectStore.find(druid)
+          # Metadata persisted correctly.
+          expect(item.structural.contains.map { |fs| fs.structural.contains.size }).to eq [2, 2]
+        end
+      end
+
       context 'when access match' do
         before do
           # This gives every file and file set the same UUID. In reality, they would be unique.

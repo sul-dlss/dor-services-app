@@ -141,10 +141,15 @@ class CreateObjectService
       fileset_id = fileset_props[:externalIdentifier] || Cocina::IdGenerator.generate_or_existing_fileset_id(druid:)
       fileset_props[:externalIdentifier] = fileset_id
       Array(fileset_props.dig(:structural, :contains)).each do |file_props|
+        # NOTE: externalIdentifier is an optional property on a RequestFile
         file_id = file_props[:externalIdentifier] ||
                   Cocina::IdGenerator.generate_or_existing_file_id(druid:,
                                                                    resource_id: fileset_id,
                                                                    file_id: file_props[:filename])
+        unless Cocina::IdGenerator.valid_file_id?(file_id)
+          Honeybadger.notify("File ID is not in the expected format. It should begin with #{Cocina::IdGenerator::ID_NAMESPACE}",
+                             context: { file_id:, external_identifier: druid })
+        end
         file_props[:externalIdentifier] = file_id
       end
     end

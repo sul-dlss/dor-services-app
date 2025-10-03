@@ -257,7 +257,7 @@ RSpec.describe 'Update object' do
         end
         # rubocop:enable Layout/LineLength
 
-        context 'when files are provided' do
+        context 'when files are provided with a mix of valid and invalid identifiers' do
           let(:file1_id) { 'https://cocina.sul.stanford.edu/file/123-456-789' }
           let(:structural) do
             {
@@ -329,8 +329,8 @@ RSpec.describe 'Update object' do
               ]
             }
           end
-          let(:file2_id) { 'https://cocina.sul.stanford.edu/file/223-456-789' }
-          let(:file3_id) { 'https://cocina.sul.stanford.edu/file/323-456-789' }
+          let(:file2_id) { 'druid:223-456-789' }
+          let(:file3_id) { '323-456-789' }
           let(:file4_id) { 'https://cocina.sul.stanford.edu/file/423-456-789' }
 
           let(:file1) do
@@ -480,6 +480,11 @@ RSpec.describe 'Update object' do
           before do
             # This gives every file and file set the same UUID. In reality, they would be unique.
             allow(SecureRandom).to receive(:uuid).and_return('123-456-789')
+            allow(Honeybadger).to receive(:notify)
+            allow(Cocina::ApoExistenceValidator).to receive(:new).and_return(
+              instance_double(Cocina::ApoExistenceValidator, valid?: true)
+            )
+            allow(Cocina::ObjectValidator).to receive(:validate).and_call_original
           end
 
           it 'updates the object with files' do
@@ -491,6 +496,9 @@ RSpec.describe 'Update object' do
             cocina_item = Cocina::Models.without_metadata(CocinaObjectStore.find(druid))
             expect(cocina_item.to_json).to equal_cocina_model(expected)
             expect(cocina_item.structural.contains.map { |fs| fs.structural.contains.size }).to eq [2, 2]
+            expect(Honeybadger).to have_received(:notify)
+                               .with('File ID is not in the expected format. It should begin with https://cocina.sul.stanford.edu',
+                                     context: { file_id: String, external_identifier: druid }).twice
           end
         end
 

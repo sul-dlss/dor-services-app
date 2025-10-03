@@ -6,6 +6,7 @@ RSpec.describe Cocina::ObjectValidator do
   let(:apo_existence_validator) { instance_double(Cocina::ApoExistenceValidator, valid?: true) }
   let(:collection_existence_validator) { instance_double(Cocina::CollectionExistenceValidator, valid?: true) }
   let(:file_hierarchy_validator) { instance_double(Cocina::FileHierarchyValidator, valid?: true) }
+  let(:structural) { instance_double(Cocina::Models::DROStructural, contains: []) }
 
   before do
     allow(Cocina::ApoExistenceValidator).to receive(:new).and_return(apo_existence_validator)
@@ -14,7 +15,7 @@ RSpec.describe Cocina::ObjectValidator do
   end
 
   context 'when a RequestDRO' do
-    let(:cocina_object) { instance_double(Cocina::Models::RequestDRO, dro?: true) }
+    let(:cocina_object) { instance_double(Cocina::Models::RequestDRO, dro?: true, structural:) }
 
     it 'validates' do
       described_class.validate(cocina_object)
@@ -26,7 +27,7 @@ RSpec.describe Cocina::ObjectValidator do
   end
 
   context 'when a DRO' do
-    let(:cocina_object) { instance_double(Cocina::Models::DRO, dro?: true, externalIdentifier: nil) }
+    let(:cocina_object) { instance_double(Cocina::Models::DRO, dro?: true, externalIdentifier: nil, structural:) }
 
     it 'validates' do
       described_class.validate(cocina_object)
