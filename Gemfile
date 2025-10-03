@@ -51,7 +51,7 @@ gem 'redis', '~> 5.0' # used for unique jobs
 gem 'retries' # for Goobi
 gem 'rsolr'
 gem 'ruby-cache', '~> 0.3.0'
-gem 'sidekiq', '~> 7.0'
+gem 'sidekiq', '~> 8.0'
 gem 'sneakers', '~> 2.11'
 gem 'tty-progressbar' # to show progress when running validate-cocina script
 gem 'uuidtools', '~> 2.1.4'
