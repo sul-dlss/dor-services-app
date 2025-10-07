@@ -33,7 +33,6 @@ gem 'committee' # validates Open API spec (OAS)
 gem 'config'
 gem 'connection_pool' # Used for redis
 gem 'csv'
-gem 'daemons' # for rolling indexer
 gem 'dry-monads'
 gem 'edtf', '~> 3.0' # used for metadata reports
 gem 'equivalent-xml' # for diffing MODS
@@ -45,7 +44,7 @@ gem 'jsonpath', '~> 1.1' # used for metadata reports
 gem 'jwt' # json web token
 gem 'lograge'
 gem 'okcomputer'
-gem 'parallel' # used for validating cocina tools and for rolling indexer
+gem 'parallel' # used for validating cocina tools
 gem 'pg'
 gem 'redis', '~> 5.0' # used for unique jobs
 gem 'retries' # for Goobi
