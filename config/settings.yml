@@ -123,6 +123,7 @@ honeybadger_checkins:
   embargo_release: ~
   missing_druids: ~
   workflow_monitor: ~
+  reindex_jobs: ~
 
 orcid:
   client_id: ~
