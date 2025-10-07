@@ -173,7 +173,7 @@ There is information about how to run reports on the sdr-infra VM in the [cocina
 
 ### Generating a list of druids from Solr query
 ```
-$ bin/generate-druid-list 'is_governed_by_ssim:"info:fedora/druid:rp029yq2361"'
+$ bin/generate-druid-list 'governed_by_ssim:"druid:rp029yq2361"'
 ```
 
 The results are written to `druids.txt`.
