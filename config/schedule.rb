@@ -55,7 +55,7 @@ every 6.hours do
   runner_hb 'Workflow::Monitor.monitor'
 end
 
-# TODO: Add HB check-in. See https://github.com/sul-dlss/dor-services-app/issues/5517
 every :friday, at: '8:00pm' do
+  set :check_in, Settings.honeybadger_checkins.reindex_jobs
   rake_hb 'indexer:reindex_jobs'
 end
