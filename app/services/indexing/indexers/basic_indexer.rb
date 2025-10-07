@@ -14,7 +14,7 @@ module Indexing
       end
 
       # @return [Hash] the partial solr document for basic data
-      def to_solr # rubocop:disable Metrics/AbcSize
+      def to_solr # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         {}.tap do |solr_doc|
           solr_doc[:id] = cocina.externalIdentifier
           solr_doc['trace_id_ss'] = trace_id
@@ -26,10 +26,14 @@ module Indexing
           solr_doc['modified_latest_dtpsidv'] = modified_latest
           solr_doc['created_at_dttsi'] = created_at
 
-          # is_member_of_collection_ssim is used by dor-services-app for querying for members of a
+          # member_of_collection_ssim is used by dor-services-app for querying for members of a
           # collection and it is a facet in Argo
+          solr_doc['member_of_collection_ssim'] = collections
+          solr_doc['governed_by_ssim'] = cocina.administrative.hasAdminPolicy
+
+          # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5532
           solr_doc['is_member_of_collection_ssim'] = legacy_collections
-          solr_doc['is_governed_by_ssim'] = legacy_apo # Argo facet
+          solr_doc['is_governed_by_ssim'] = "info:fedora/#{cocina.administrative.hasAdminPolicy}"
 
           # Used so that DSA can generate public XML whereas a constituent can find the virtual object it is part of.
           solr_doc['has_constituents_ssim'] = virtual_object_constituents # TODO: Remove
@@ -46,6 +50,7 @@ module Indexing
         cocina.created.to_datetime.strftime('%FT%TZ')
       end
 
+      # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5532
       def legacy_collections
         case cocina.type
         when Cocina::Models::ObjectType.admin_policy, Cocina::Models::ObjectType.collection
@@ -55,14 +60,16 @@ module Indexing
         end
       end
 
+      def collections
+        return [] unless cocina.dro?
+
+        Array(cocina.structural&.isMemberOf)
+      end
+
       def virtual_object_constituents
         return unless cocina.dro?
 
         Array(cocina.structural&.hasMemberOrders).first&.members
-      end
-
-      def legacy_apo
-        "info:fedora/#{cocina.administrative.hasAdminPolicy}"
       end
     end
   end
