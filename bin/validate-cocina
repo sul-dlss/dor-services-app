@@ -74,8 +74,8 @@ def validate(sample_size, processes)
                      else
                        ''
                      end
-        [repository_object.external_identifier, repository_object_version.version, repository_object.object_type,
-         collection, e.message]
+        [repository_object.external_identifier, repository_object_version.version, repository_object.head_version.version,
+         repository_object.object_type, collection, e.message]
       end
     end
   end.flatten(2)
@@ -84,8 +84,8 @@ end
 results = validate(options[:sample], options[:processes])
 
 CSV.open('validate-cocina.csv', 'w') do |writer|
-  writer << %w[druid version type collection message]
-  results.each do |(druid, version, type, collection, error)|
-    writer << [druid, version, type, collection, error] if error
+  writer << %w[druid version current_version type collection message]
+  results.each do |(druid, version, current_version, type, collection, error)|
+    writer << [druid, version, current_version, type, collection, error] if error
   end
 end
