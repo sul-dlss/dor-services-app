@@ -12,12 +12,14 @@ module Indexing
       end
 
       # @return [Hash] the partial solr document for collection title concerns
-      def to_solr
+      def to_solr # rubocop:disable Metrics/AbcSize
         {}.tap do |solr_doc|
           parent_collections.each do |collection_obj|
             coll_title = Cocina::Models::Builders::TitleBuilder.build(collection_obj.description.title)
             next if coll_title.blank?
 
+            solr_doc['collection_title_ssim'] ||= [] # TODO: Remove
+            solr_doc['collection_title_ssim'] << coll_title # TODO: Remove
             solr_doc['collection_title_ssimdv'] ||= []
             solr_doc['collection_title_ssimdv'] << coll_title
             solr_doc['collection_title_tesim'] ||= []

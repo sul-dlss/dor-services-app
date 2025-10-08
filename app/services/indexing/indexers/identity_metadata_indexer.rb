@@ -11,22 +11,26 @@ module Indexing
       end
 
       # @return [Hash] the partial solr document for identityMetadata
-      def to_solr
+      def to_solr # rubocop:disable Metrics/AbcSize
         if object_type == 'adminPolicy' || cocina_object.identification.blank?
           return {
+            'objectType_ssim' => [object_type], # TODO: Remove
             'objectType_ssimdv' => [object_type]
           }
         end
 
         {
+          'objectType_ssim' => [object_type], # TODO: Remove
           'objectType_ssimdv' => [object_type],
           'identifier_ssim' => prefixed_identifiers, # sourceid, barcode, folio_instance_hrid for display
           'identifier_tesim' => prefixed_identifiers, # ditto ^^, for search, tokenized (can search prefix and value
           # as separate tokens)
+          'barcode_id_ssim' => [barcode].compact, # TODO: Remove
           'barcode_id_ssimdv' => [barcode].compact,
           'source_id_ssi' => source_id, # for search and display (reports, track_sheet)
           'source_id_text_nostem_i' => source_id, # for search, tokenized per request from accessioneers
           'folio_instance_hrid_ssim' => [folio_instance_hrid].compact,
+          'doi_ssim' => [doi].compact, # TODO: Remove
           'doi_ssimdv' => [doi].compact
         }
       end

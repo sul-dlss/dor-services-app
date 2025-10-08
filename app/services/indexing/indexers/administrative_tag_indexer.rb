@@ -15,10 +15,11 @@ module Indexing
       end
 
       # @return [Hash] the partial solr document for administrative tags
-      def to_solr # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
+      def to_solr # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         solr_doc = {
           'tag_ssim' => [],
           'tag_text_unstemmed_im' => [],
+          'exploded_nonproject_tag_ssim' => [], # TODO: Remove
           'exploded_nonproject_tag_ssimdv' => []
         }
         administrative_tags.each do |tag|
@@ -29,6 +30,8 @@ module Indexing
           solr_doc['tag_text_unstemmed_im'] << tag # for Argo search
 
           # exploded tags are for hierarchical facets in Argo
+          # TODO: Remove exploded_nonproject_tag_ssim
+          solr_doc['exploded_nonproject_tag_ssim'] += explode_tag_hierarchy(tag) unless prefix == 'project'
           solr_doc['exploded_nonproject_tag_ssimdv'] += explode_tag_hierarchy(tag) unless prefix == 'project'
 
           next if rest.blank?
@@ -41,6 +44,8 @@ module Indexing
 
           next unless prefix == 'project'
 
+          solr_doc['exploded_project_tag_ssim'] ||= [] # TODO: Remove
+          solr_doc['exploded_project_tag_ssim'] += explode_tag_hierarchy(rest.strip) # TODO: Remove
           solr_doc['exploded_project_tag_ssimdv'] ||= []
           solr_doc['exploded_project_tag_ssimdv'] += explode_tag_hierarchy(rest.strip)
         end

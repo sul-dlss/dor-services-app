@@ -24,14 +24,17 @@ module Indexing
       end
 
       # @return [Hash] the partial solr document for files in the object
-      def to_solr
+      def to_solr # rubocop:disable Metrics/AbcSize
         {
+          'content_type_ssim' => type(cocina.type), # TODO: Remove
           'content_type_ssimdv' => type(cocina.type),
+          'content_file_mimetypes_ssim' => files.map(&:hasMimeType).uniq, # TODO: Remove
           'content_file_mimetypes_ssimdv' => files.map(&:hasMimeType).uniq,
           'content_file_count_itsi' => files.size,
           'shelved_content_file_count_itsi' => shelved_files.size,
           'resource_count_itsi' => file_sets.size,
           'preserved_size_dbtsi' => preserved_size, # double (trie) to support very large sizes
+          'content_file_roles_ssim' => files.filter_map(&:use), # TODO: Remove
           'content_file_roles_ssimdv' => files.filter_map(&:use),
           # first_shelved_image is neither indexed nor multiple
           'first_shelved_image_ss' => first_shelved_image

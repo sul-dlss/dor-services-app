@@ -33,7 +33,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'uses genre value' do
-        expect(doc).to include('sw_genre_ssimdv' => ['photographs'])
+        expect(doc).to include('sw_genre_ssim' => ['photographs'])
       end
     end
 
@@ -59,6 +59,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'uses both genre values' do
+        expect(doc).to include('sw_genre_ssim' => %w[photographs ambrotypes]) # TODO: Remove
         expect(doc).to include('sw_genre_ssimdv' => %w[photographs ambrotypes])
       end
     end
@@ -89,6 +90,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'uses both genre values' do
+        expect(doc).to include('sw_genre_ssim' => %w[photographs фотографии]) # TODO: Remove
         expect(doc).to include('sw_genre_ssimdv' => %w[photographs фотографии])
       end
     end
@@ -112,6 +114,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'retains capitalization in Solr' do
+        expect(doc).to include('sw_genre_ssim' => ['Photographs']) # TODO: Remove
         expect(doc).to include('sw_genre_ssimdv' => ['Photographs'])
       end
     end
@@ -134,6 +137,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'retains capitalization in Solr' do
+        expect(doc).to include('sw_genre_ssim' => ['Thesis', 'Thesis/Dissertation']) # TODO: Remove
         expect(doc).to include('sw_genre_ssimdv' => ['Thesis', 'Thesis/Dissertation'])
       end
     end
@@ -156,6 +160,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'retains capitalization in Solr' do
+        expect(doc).to include('sw_genre_ssim' => ['Conference Publication', 'Conference proceedings']) # TODO: Remove
         expect(doc).to include('sw_genre_ssimdv' => ['Conference Publication', 'Conference proceedings'])
       end
     end
@@ -178,6 +183,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'retains capitalization in Solr' do
+        expect(doc).to include('sw_genre_ssim' => ['Government publication', 'Government document']) # TODO: Remove
         expect(doc).to include('sw_genre_ssimdv' => ['Government publication', 'Government document'])
       end
     end
@@ -200,6 +206,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'retains capitalization in Solr' do
+        expect(doc).to include('sw_genre_ssim' => ['technical report', 'Technical report']) # TODO: Remove
         expect(doc).to include('sw_genre_ssimdv' => ['technical report', 'Technical report'])
       end
     end
@@ -226,6 +233,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'doc does not include sw_genre_ssim' do
+        expect(doc).not_to include('sw_genre_ssim') # TODO: Remove
         expect(doc).not_to include('sw_genre_ssimdv')
       end
     end

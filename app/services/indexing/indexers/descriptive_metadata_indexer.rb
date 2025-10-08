@@ -45,9 +45,11 @@ module Indexing
           'author_text_nostem_im' => author_primary, # primary author tokenized but not stemmed
           'author_display_ss' => author_primary, # used for author display in Argo
           'contributor_text_nostem_im' => author_all, # author names should be tokenized but not stemmed
+          'contributor_orcids_ssim' => orcids, # TODO: Remove
           'contributor_orcids_ssimdv' => orcids,
 
           # topic
+          'topic_ssim' => stanford_mods_record.topic_facet&.uniq, # TODO: Remove
           'topic_ssimdv' => stanford_mods_record.topic_facet&.uniq,
           'topic_tesim' => stemmable_topics,
 
@@ -55,14 +57,21 @@ module Indexing
           'originInfo_date_created_tesim' => creation_date,
           'originInfo_publisher_tesim' => publisher_name,
           'originInfo_place_placeTerm_tesim' => event_place, # do we want this?
+          'sw_pub_date_facet_ssi' => stanford_mods_record.pub_year_int.to_s, # TODO: Remove
           'sw_pub_date_facet_ssidv' => stanford_mods_record.pub_year_int.to_s, # SW Date facet
 
           # SW facets plus a friend facet
+          'sw_format_ssim' => sw_format, # TODO: Remove
           'sw_format_ssimdv' => sw_format, # SW Resource Type facet
+          'mods_typeOfResource_ssim' => resource_type, # TODO: Remove
           'mods_typeOfResource_ssimdv' => resource_type, # MODS Resource Type facet
+          'sw_genre_ssim' => stanford_mods_record.sw_genre, # TODO: Remove
           'sw_genre_ssimdv' => stanford_mods_record.sw_genre, # SW Genre facet
+          'sw_language_ssim' => stanford_mods_record.sw_language_facet, # TODO: Remove
           'sw_language_ssimdv' => stanford_mods_record.sw_language_facet, # SW Language facet
+          'sw_subject_temporal_ssim' => stanford_mods_record.era_facet, # TODO: Remove
           'sw_subject_temporal_ssimdv' => stanford_mods_record.era_facet, # SW Era facet
+          'sw_subject_geographic_ssim' => subject_geographic, # TODO: Remove
           'sw_subject_geographic_ssimdv' => subject_geographic, # SW Region facet
 
           # all the descriptive data that we want to search on, with different flavors for better recall and precision

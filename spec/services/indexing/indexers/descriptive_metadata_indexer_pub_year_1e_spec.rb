@@ -42,6 +42,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects date with status primary' do
+        expect(doc).to include('sw_pub_date_facet_ssi' => '2020') # TODO: Remove
         expect(doc).to include('sw_pub_date_facet_ssidv' => '2020')
       end
     end
@@ -72,6 +73,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects date with type publication' do
+        expect(doc).to include('sw_pub_date_facet_ssi' => '2020') # TODO: Remove
         expect(doc).to include('sw_pub_date_facet_ssidv' => '2020')
       end
     end
@@ -102,6 +104,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects first date with type publication' do
+        expect(doc).to include('sw_pub_date_facet_ssi' => '2019') # TODO: Remove
         expect(doc).to include('sw_pub_date_facet_ssidv' => '2019')
       end
     end
@@ -132,6 +135,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects date with type creation or production' do
+        expect(doc).to include('sw_pub_date_facet_ssi' => '2020') # TODO: Remove
         expect(doc).to include('sw_pub_date_facet_ssidv' => '2020')
       end
     end
@@ -163,6 +167,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects first date with type creation or production' do
+        expect(doc).to include('sw_pub_date_facet_ssi' => '2019') # TODO: Remove
         expect(doc).to include('sw_pub_date_facet_ssidv' => '2019')
       end
     end
@@ -192,6 +197,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects date with type capture' do
+        expect(doc).to include('sw_pub_date_facet_ssi' => '2020') # TODO: Remove
         expect(doc).to include('sw_pub_date_facet_ssidv' => '2020')
       end
     end
@@ -222,6 +228,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects first date with type capture' do
+        expect(doc).to include('sw_pub_date_facet_ssi' => '2019') # TODO: Remove
         expect(doc).to include('sw_pub_date_facet_ssidv' => '2019')
       end
     end
@@ -252,6 +259,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects the earliest date' do
+        expect(doc).to include('sw_pub_date_facet_ssi' => '2019') # TODO: Remove
         expect(doc).to include('sw_pub_date_facet_ssidv' => '2019')
       end
     end

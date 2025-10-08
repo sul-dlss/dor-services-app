@@ -39,14 +39,23 @@ RSpec.describe Indexing::WorkflowFields do
     it 'includes the semicolon delimited version, an earliest published date and a status' do
       # published date should be the first published date
       expect(doc['status_ssi']).to eq 'v4 In accessioning (described, published)'
+      expect(doc['processing_status_text_ssi']).to eq 'In accessioning' # TODO: Remove
       expect(doc['processing_status_text_ssidv']).to eq 'In accessioning'
+      expect(doc).to match a_hash_including('opened_dttsim' => including('2012-11-07T00:21:02Z')) # TODO: Remove
       expect(doc).to match a_hash_including('opened_dtpsimdv' => including('2012-11-07T00:21:02Z'))
+      expect(doc['published_earliest_dttsi']).to eq('2012-01-27T05:06:54Z') # TODO: Remove
       expect(doc['published_earliest_dtpsidv']).to eq('2012-01-27T05:06:54Z')
+      expect(doc['published_latest_dttsi']).to eq('2012-11-07T00:59:39Z') # TODO: Remove
       expect(doc['published_latest_dtpsidv']).to eq('2012-11-07T00:59:39Z')
+      expect(doc['published_dttsim'].first).to eq(doc['published_earliest_dttsi']) # TODO: Remove
+      expect(doc['published_dttsim'].last).to eq(doc['published_latest_dttsi']) # TODO: Remove
+      expect(doc['published_dttsim'].size).to eq(3) # TODO: Remove
       expect(doc['published_dtpsimdv'].first).to eq(doc['published_earliest_dtpsidv'])
       expect(doc['published_dtpsimdv'].last).to eq(doc['published_latest_dtpsidv'])
       expect(doc['published_dtpsimdv'].size).to eq(3) # not 4 because 1 deduplicated value removed!
+      expect(doc['opened_earliest_dttsi']).to eq('2012-10-29T23:30:07Z') # TODO: Remove
       expect(doc['opened_earliest_dtpsidv']).to eq('2012-10-29T23:30:07Z') #  2012-10-29T16:30:07-0700
+      expect(doc['opened_latest_dttsi']).to eq('2012-11-07T00:21:02Z') # TODO: Remove
       expect(doc['opened_latest_dtpsidv']).to eq('2012-11-07T00:21:02Z') #  2012-11-06T16:21:02-0800
     end
 

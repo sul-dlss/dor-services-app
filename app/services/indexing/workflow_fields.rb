@@ -34,6 +34,7 @@ module Indexing
       solr_doc['status_ssi'] = status.display
 
       # This is used for Argo's "Processing Status" facet
+      solr_doc['processing_status_text_ssi'] = status.display_simplified # TODO: Remove
       solr_doc['processing_status_text_ssidv'] = status.display_simplified
     end
 
@@ -44,16 +45,20 @@ module Indexing
       end
     end
 
-    def add_sortable_milestones(solr_doc)
+    def add_sortable_milestones(solr_doc) # rubocop:disable Metrics/AbcSize
       sortable_milestones.each do |milestone, unordered_dates|
         dates = unordered_dates.sort
         # create the published_dttsi and published_day fields and the like
         dates.each do |date|
+          solr_doc["#{milestone}_dttsim"] ||= [] # TODO: Remove
+          solr_doc["#{milestone}_dttsim"] << date unless solr_doc["#{milestone}_dttsim"].include?(date) # TODO: Remove
           solr_doc["#{milestone}_dtpsimdv"] ||= []
           solr_doc["#{milestone}_dtpsimdv"] << date unless solr_doc["#{milestone}_dtpsimdv"].include?(date)
         end
         # fields for OAI havester to sort on: _dttsi is trie date +stored +indexed (single valued, i.e. sortable)
         # TODO: we really only need accessioned_earliest and registered_earliest
+        solr_doc["#{milestone}_earliest_dttsi"] = dates.first # TODO: Remove
+        solr_doc["#{milestone}_latest_dttsi"] = dates.last # TODO: Remove
         solr_doc["#{milestone}_earliest_dtpsidv"] = dates.first
         solr_doc["#{milestone}_latest_dtpsidv"] = dates.last
       end
