@@ -41,6 +41,8 @@ RSpec.describe Indexing::Indexers::CompositeIndexer do
         'main_title_tenim' => ['Test item'],
         'full_title_tenim' => ['Test item'],
         'display_title_ss' => 'Test item',
+        'apo_title_ssimdv' => ['test admin policy'],
+        # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5537
         'nonhydrus_apo_title_ssimdv' => ['test admin policy'],
         'apo_title_ssim' => ['test admin policy'],
         'metadata_source_ssimdv' => ['DOR'],
