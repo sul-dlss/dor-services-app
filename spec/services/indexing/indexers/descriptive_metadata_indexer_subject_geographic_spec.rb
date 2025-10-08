@@ -33,7 +33,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects geographic subject' do
-        expect(doc).to include('sw_subject_geographic_ssim' => ['Europe']) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => ['Europe'])
       end
     end
@@ -60,7 +59,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects geographic subjects' do
-        expect(doc).to include('sw_subject_geographic_ssim' => %w[Europe Africa]) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => %w[Europe Africa])
       end
     end
@@ -91,7 +89,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects geographic subject from complex subject' do
-        expect(doc).to include('sw_subject_geographic_ssim' => ['Europe']) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => ['Europe'])
       end
     end
@@ -121,7 +118,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects geographic subjects from parallelValue' do
-        expect(doc).to include('sw_subject_geographic_ssim' => %w[Russia Россия]) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => %w[Russia Россия])
       end
     end
@@ -168,7 +164,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects geographic subject from complex subject' do
-        expect(doc).to include('sw_subject_geographic_ssim' => %w[Russia Россия]) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => %w[Russia Россия])
       end
     end
@@ -211,7 +206,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'dedupes the value' do
-        expect(doc).to include('sw_subject_geographic_ssim' => ['Europe']) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => ['Europe'])
       end
     end
@@ -240,7 +234,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'maps the code to text' do
-        expect(doc).to include('sw_subject_geographic_ssim' => ['Russia (Federation)']) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => ['Russia (Federation)'])
       end
     end
@@ -273,7 +266,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'maps the code to text' do
-        expect(doc).not_to include('sw_subject_geographic_ssim') # TODO: Remove
         expect(doc).not_to include('sw_subject_geographic_ssimdv')
         # HB notification has been temporarily removed.
         # expect(Honeybadger).to have_received(:notify)
@@ -302,7 +294,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'maps the code to text' do
-        expect(doc).not_to include('sw_subject_geographic_ssim') # TODO: Remove
         expect(doc).not_to include('sw_subject_geographic_ssimdv')
       end
     end
@@ -328,7 +319,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'maps the code to text' do
-        expect(doc).to include('sw_subject_geographic_ssim' => ['Russia (Federation)']) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => ['Russia (Federation)'])
       end
     end
@@ -354,7 +344,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'maps the code to text' do
-        expect(doc).not_to include('sw_subject_geographic_ssim') # TODO: Remove
         expect(doc).not_to include('sw_subject_geographic_ssimdv')
       end
     end
@@ -380,7 +369,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'ignores the code' do
-        expect(doc).not_to include('sw_subject_geographic_ssim') # TODO: Remove
         expect(doc).not_to include('sw_subject_geographic_ssimdv')
       end
     end
@@ -403,7 +391,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'ignores the code' do
-        expect(doc).not_to include('sw_subject_geographic_ssim') # TODO: Remove
         expect(doc).not_to include('sw_subject_geographic_ssimdv')
       end
     end
@@ -430,7 +417,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'includes term once' do
-        expect(doc).to include('sw_subject_geographic_ssim' => ['Russia (Federation)']) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => ['Russia (Federation)'])
       end
     end
@@ -457,7 +443,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'includes both terms' do
-        expect(doc).to include('sw_subject_geographic_ssim' => ['Russia', 'Russia (Federation)']) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => ['Russia', 'Russia (Federation)'])
       end
     end
@@ -494,7 +479,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'constructs the value' do
-        expect(doc).to include('sw_subject_geographic_ssim' => ['North America Canada Vancouver']) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => ['North America Canada Vancouver'])
       end
     end
@@ -518,7 +502,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'drops the punctuation' do
-        expect(doc).to include('sw_subject_geographic_ssim' => ['Europe']) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => ['Europe'])
       end
     end
@@ -549,7 +532,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'drops the punctuation' do
-        expect(doc).to include('sw_subject_geographic_ssim' => ['Europe']) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => ['Europe'])
       end
     end
@@ -579,7 +561,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'drops the punctuation' do
-        expect(doc).to include('sw_subject_geographic_ssim' => %w[Russia Россия]) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => %w[Russia Россия])
       end
     end
@@ -626,7 +607,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'drops the punctuation' do
-        expect(doc).to include('sw_subject_geographic_ssim' => %w[Russia Россия]) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => %w[Russia Россия])
       end
     end
@@ -649,7 +629,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'does not drop the punctuation' do
-        expect(doc).to include('sw_subject_geographic_ssim' => ['Europe.']) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => ['Europe.'])
       end
     end
@@ -676,7 +655,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'drops the punctuation before deduping' do
-        expect(doc).to include('sw_subject_geographic_ssim' => ['Europe']) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => ['Europe'])
       end
     end
@@ -702,7 +680,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'drops the punctuation' do
-        expect(doc).to include('sw_subject_geographic_ssim' => ['Russia (Federation)']) # TODO: Remove
         expect(doc).to include('sw_subject_geographic_ssimdv' => ['Russia (Federation)'])
       end
     end

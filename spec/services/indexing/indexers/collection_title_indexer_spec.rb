@@ -17,7 +17,6 @@ RSpec.describe Indexing::Indexers::CollectionTitleIndexer do
       let(:collections) { [] }
 
       it "doesn't raise an error" do
-        expect(doc['collection_title_ssim']).to be_nil # TODO: Remove
         expect(doc['collection_title_ssimdv']).to be_nil
         expect(doc['collection_title_tesim']).to be_nil
       end
@@ -28,7 +27,6 @@ RSpec.describe Indexing::Indexers::CollectionTitleIndexer do
       let(:collection) { build(:collection, id: collection_druid, title: 'Collection test object') }
 
       it 'generates collection title fields' do
-        expect(doc['collection_title_ssim'].first).to eq 'Collection test object' # TODO: Remove
         expect(doc['collection_title_ssimdv'].first).to eq 'Collection test object'
         expect(doc['collection_title_tesim'].first).to eq 'Collection test object'
       end

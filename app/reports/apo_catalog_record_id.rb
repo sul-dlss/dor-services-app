@@ -7,10 +7,7 @@
 class ApoCatalogRecordId
   def self.report(apo_druid)
     puts %w[druid catatalogRecordId refresh].join(',')
-    # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5532
-    query = "is_governed_by_ssim:\"info:fedora/#{apo_druid}\"&objectType_ssimdv:\"item\""
-    # and replace with:
-    # query = "governed_by_ssim:\"#{apo_druid}\"&objectType_ssimdv:\"item\""
+    query = "governed_by_ssim:\"#{apo_druid}\"&objectType_ssimdv:\"item\""
     druids = []
     # borrowed from bin/generate-druid-list
     loop do

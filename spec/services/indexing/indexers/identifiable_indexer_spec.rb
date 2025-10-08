@@ -52,9 +52,6 @@ RSpec.describe Indexing::Indexers::IdentifiableIndexer do
 
       it 'generates apo title fields' do
         expect(doc['apo_title_ssimdv'].first).to eq apo_id
-        expect(doc['apo_title_ssim'].first).to eq apo_id # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5537
-        expect(doc['nonhydrus_apo_title_ssimdv'].first).to eq apo_id # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5537
-        expect(doc['nonhydrus_apo_title_ssim'].first).to eq apo_id # TODO: Remove
       end
     end
 
@@ -63,13 +60,9 @@ RSpec.describe Indexing::Indexers::IdentifiableIndexer do
 
       it 'generates apo title fields' do
         expect(doc['apo_title_ssimdv'].first).to eq 'collection title'
-        expect(doc['apo_title_ssim'].first).to eq 'collection title' # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5537
-        expect(doc['nonhydrus_apo_title_ssimdv'].first).to eq 'collection title' # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5537
-        expect(doc['nonhydrus_apo_title_ssim'].first).to eq 'collection title' # TODO: Remove
       end
 
       it 'indexes metadata sources' do
-        expect(doc).to match a_hash_including('metadata_source_ssim' => %w[Folio]) # TODO: Remove
         expect(doc).to match a_hash_including('metadata_source_ssimdv' => %w[Folio])
       end
     end
@@ -78,7 +71,6 @@ RSpec.describe Indexing::Indexers::IdentifiableIndexer do
       let(:identification) { { sourceId: 'sul:1234' } }
 
       it 'indexes metadata sources' do
-        expect(doc).to match a_hash_including('metadata_source_ssim' => ['DOR']) # TODO: Remove
         expect(doc).to match a_hash_including('metadata_source_ssimdv' => ['DOR'])
       end
     end
@@ -96,7 +88,6 @@ RSpec.describe Indexing::Indexers::IdentifiableIndexer do
       end
 
       it 'indexes metadata sources' do
-        expect(doc).to match a_hash_including('metadata_source_ssim' => ['DOR']) # TODO: Remove
         expect(doc).to match a_hash_including('metadata_source_ssimdv' => ['DOR'])
       end
     end
@@ -105,7 +96,6 @@ RSpec.describe Indexing::Indexers::IdentifiableIndexer do
       let(:cocina_item) { build(:dro, id: druid, admin_policy_id: apo_id) }
 
       it 'indexes metadata sources' do
-        expect(doc).to match a_hash_including('metadata_source_ssim' => ['DOR']) # TODO: Remove
         expect(doc).to match a_hash_including('metadata_source_ssimdv' => ['DOR'])
       end
     end

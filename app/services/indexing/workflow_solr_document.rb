@@ -6,24 +6,18 @@ module Indexing
     WORKFLOW_SOLR = 'wf_ssim'
     # field that indexes workflow name, process status then process name
     WORKFLOW_WPS_SOLR = 'wf_wps_ssimdv'
-    WORKFLOW_WPS_SOLR_REMOVE = 'wf_wps_ssim' # TODO: Remove
     # field that indexes workflow name, process name then process status
     WORKFLOW_WSP_SOLR = 'wf_wsp_ssimdv'
-    WORKFLOW_WSP_SOLR_REMOVE = 'wf_wsp_ssim' # TODO: Remove
     # field that indexes process status, workflowname then process name
     WORKFLOW_SWP_SOLR = 'wf_swp_ssimdv'
-    WORKFLOW_SWP_SOLR_REMOVE = 'wf_swp_ssim' # TODO: Remove
     WORKFLOW_ERROR_SOLR = 'wf_error_ssim'
     WORKFLOW_STATUS_SOLR = 'workflow_status_ssim'
 
     KEYS_TO_MERGE = [
       WORKFLOW_SOLR,
       WORKFLOW_WPS_SOLR,
-      WORKFLOW_WPS_SOLR_REMOVE,
       WORKFLOW_WSP_SOLR,
-      WORKFLOW_WSP_SOLR_REMOVE,
       WORKFLOW_SWP_SOLR,
-      WORKFLOW_SWP_SOLR_REMOVE,
       WORKFLOW_STATUS_SOLR,
       WORKFLOW_ERROR_SOLR
     ].freeze
@@ -37,8 +31,6 @@ module Indexing
       data[WORKFLOW_SOLR] += [wf_name]
       data[WORKFLOW_WPS_SOLR] += [wf_name]
       data[WORKFLOW_WSP_SOLR] += [wf_name]
-      data[WORKFLOW_WPS_SOLR_REMOVE] += [wf_name]
-      data[WORKFLOW_WSP_SOLR_REMOVE] += [wf_name]
     end
 
     def status=(status)
@@ -52,19 +44,16 @@ module Indexing
     # Add to the field that indexes workflow name, process status then process name
     def add_wps(*messages)
       data[WORKFLOW_WPS_SOLR] += messages
-      data[WORKFLOW_WPS_SOLR_REMOVE] += messages
     end
 
     # Add to the field that indexes workflow name, process name then process status
     def add_wsp(*messages)
       data[WORKFLOW_WSP_SOLR] += messages
-      data[WORKFLOW_WSP_SOLR_REMOVE] += messages
     end
 
     # Add to the field that indexes process status, workflow name then process name
     def add_swp(*messages)
       data[WORKFLOW_SWP_SOLR] += messages
-      data[WORKFLOW_SWP_SOLR_REMOVE] += messages
     end
 
     # Add the processes data_time attribute to the solr document
