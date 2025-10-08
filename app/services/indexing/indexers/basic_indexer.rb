@@ -29,10 +29,6 @@ module Indexing
           solr_doc['member_of_collection_ssim'] = collections
           solr_doc['governed_by_ssim'] = cocina.administrative.hasAdminPolicy
 
-          # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5532
-          solr_doc['is_member_of_collection_ssim'] = legacy_collections
-          solr_doc['is_governed_by_ssim'] = "info:fedora/#{cocina.administrative.hasAdminPolicy}"
-
           # Used so that DSA can generate public XML whereas a constituent can find the virtual object it is part of.
           solr_doc['has_constituents_ssimdv'] = virtual_object_constituents
         end.merge(Indexing::WorkflowFields.for(druid: cocina.externalIdentifier, version: cocina.version, milestones:))
@@ -45,16 +41,6 @@ module Indexing
 
       def created_at
         cocina.created.to_datetime.strftime('%FT%TZ')
-      end
-
-      # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5532
-      def legacy_collections
-        case cocina.type
-        when Cocina::Models::ObjectType.admin_policy, Cocina::Models::ObjectType.collection
-          []
-        else
-          Array(cocina.structural&.isMemberOf).map { |col_id| "info:fedora/#{col_id}" }
-        end
       end
 
       def collections
