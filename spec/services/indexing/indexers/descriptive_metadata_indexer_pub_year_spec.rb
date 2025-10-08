@@ -50,6 +50,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'uses value with status primary' do
+        expect(doc).to include('sw_pub_date_facet_ssi' => '1940') # TODO: Remove
         expect(doc).to include('sw_pub_date_facet_ssidv' => '1940')
       end
 
@@ -89,6 +90,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         end
 
         it 'uses value with status primary' do
+          expect(doc).to include('sw_pub_date_facet_ssi' => '1940') # TODO: Remove
           expect(doc).to include('sw_pub_date_facet_ssidv' => '1940')
         end
       end
@@ -133,6 +135,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         end
 
         it 'uses parallelEvent date status primary with type publication' do
+          expect(doc).to include('sw_pub_date_facet_ssi' => '1999') # TODO: Remove
           expect(doc).to include('sw_pub_date_facet_ssidv' => '1999')
         end
       end
@@ -178,6 +181,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'uses value from type publication' do
+        expect(doc).to include('sw_pub_date_facet_ssi' => '2018') # TODO: Remove
         expect(doc).to include('sw_pub_date_facet_ssidv' => '2018')
       end
 
@@ -230,6 +234,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         end
 
         it 'uses value from first date of structuredValue' do
+          expect(doc).to include('sw_pub_date_facet_ssi' => '1940') # TODO: Remove
           expect(doc).to include('sw_pub_date_facet_ssidv' => '1940')
         end
       end
@@ -298,6 +303,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         end
 
         it 'uses first publication date of parallelValue of type publication' do
+          expect(doc).to include('sw_pub_date_facet_ssi' => '2020') # TODO: Remove
           expect(doc).to include('sw_pub_date_facet_ssidv' => '2020')
         end
       end
@@ -325,6 +331,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'uses first year of 1980-1984' do
+        expect(doc).to include('sw_pub_date_facet_ssi' => '1980') # TODO: Remove
         expect(doc).to include('sw_pub_date_facet_ssidv' => '1980')
       end
 
@@ -362,6 +369,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         end
 
         it 'uses first year of structuredValue' do
+          expect(doc).to include('sw_pub_date_facet_ssi' => '1980') # TODO: Remove
           expect(doc).to include('sw_pub_date_facet_ssidv' => '1980')
         end
       end
@@ -421,6 +429,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         end
 
         it 'uses first publication date of parallelValue' do
+          expect(doc).to include('sw_pub_date_facet_ssi' => '1966') # TODO: Remove
           expect(doc).to include('sw_pub_date_facet_ssidv' => '1966')
         end
       end
@@ -464,6 +473,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'uses creation date' do
+        expect(doc).to include('sw_pub_date_facet_ssi' => '1940') # TODO: Remove
         expect(doc).to include('sw_pub_date_facet_ssidv' => '1940')
       end
 
@@ -503,6 +513,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         end
 
         it 'uses creation date with status primary' do
+          expect(doc).to include('sw_pub_date_facet_ssi' => '1940') # TODO: Remove
           expect(doc).to include('sw_pub_date_facet_ssidv' => '1940')
         end
       end
@@ -547,6 +558,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         end
 
         it 'uses value from parallelEvent date status primary with type publication' do
+          expect(doc).to include('sw_pub_date_facet_ssi' => '1999') # TODO: Remove
           expect(doc).to include('sw_pub_date_facet_ssidv' => '1999')
         end
       end
@@ -592,6 +604,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'uses value with date of type creation from event type of creation' do
+        expect(doc).to include('sw_pub_date_facet_ssi' => '2018') # TODO: Remove
         expect(doc).to include('sw_pub_date_facet_ssidv' => '2018')
       end
 
@@ -644,6 +657,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         end
 
         it 'uses first date of structuredValue of type creation from event of type creation' do
+          expect(doc).to include('sw_pub_date_facet_ssi' => '1940') # TODO: Remove
           expect(doc).to include('sw_pub_date_facet_ssidv' => '1940')
         end
       end
@@ -712,6 +726,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         end
 
         it 'uses first publication date of parallelValue of type publication' do
+          expect(doc).to include('sw_pub_date_facet_ssi' => '2020') # TODO: Remove
           expect(doc).to include('sw_pub_date_facet_ssidv' => '2020')
         end
       end
@@ -739,6 +754,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'uses first year of 1980-1984 from date with type creation' do
+        expect(doc).to include('sw_pub_date_facet_ssi' => '1980') # TODO: Remove
         expect(doc).to include('sw_pub_date_facet_ssidv' => '1980')
       end
 
@@ -776,6 +792,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         end
 
         it 'uses first year of structuredValue for date of type creation' do
+          expect(doc).to include('sw_pub_date_facet_ssi' => '1980') # TODO: Remove
           expect(doc).to include('sw_pub_date_facet_ssidv' => '1980')
         end
       end
@@ -835,6 +852,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         end
 
         it 'uses first publication date of parallelValue' do
+          expect(doc).to include('sw_pub_date_facet_ssi' => '1966') # TODO: Remove
           expect(doc).to include('sw_pub_date_facet_ssidv' => '1966')
         end
       end

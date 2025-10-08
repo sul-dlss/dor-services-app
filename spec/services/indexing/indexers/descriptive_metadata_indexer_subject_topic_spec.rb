@@ -35,6 +35,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects topic from subject' do
+        expect(doc).to include('topic_ssim' => ['Cats']) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => ['Cats'])
         expect(doc).to include('topic_tesim' => ['Cats'])
       end
@@ -62,6 +63,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects topics from multiple subjects' do
+        expect(doc).to include('topic_ssim' => %w[Cats Birds]) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => %w[Cats Birds])
         expect(doc).to include('topic_tesim' => %w[Cats Birds])
       end
@@ -92,6 +94,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects topics from subjects in parallelValue' do
+        expect(doc).to include('topic_ssim' => %w[Cats Chats]) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => %w[Cats Chats])
         expect(doc).to include('topic_tesim' => %w[Cats Chats])
       end
@@ -123,6 +126,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects topic part from complex subject' do
+        expect(doc).to include('topic_ssim' => ['Cats']) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => ['Cats'])
         expect(doc).to include('topic_tesim' => ['Cats'])
       end
@@ -166,6 +170,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects topic parts from multiple complex subjects' do
+        expect(doc).to include('topic_ssim' => %w[Cats Birds]) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => %w[Cats Birds])
         expect(doc).to include('topic_tesim' => %w[Cats Birds])
       end
@@ -197,6 +202,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects topic parts from complex subject' do
+        expect(doc).to include('topic_ssim' => ['Cats', 'Homes and haunts']) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => ['Cats', 'Homes and haunts'])
         expect(doc).to include('topic_tesim' => ['Cats', 'Homes and haunts'])
       end
@@ -240,6 +246,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects topic parts from complex subjects and dedupes' do
+        expect(doc).to include('topic_ssim' => ['Cats', 'Homes and haunts', 'Birds']) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => ['Cats', 'Homes and haunts', 'Birds'])
         expect(doc).to include('topic_tesim' => ['Cats', 'Homes and haunts', 'Birds'])
       end
@@ -287,6 +294,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects topic parts from complex subjects in parallelValue' do
+        expect(doc).to include('topic_ssim' => %w[Cats Chats]) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => %w[Cats Chats])
         expect(doc).to include('topic_tesim' => %w[Cats Chats])
       end
@@ -334,6 +342,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects topic parts from complex subjects in parallelValue' do
+        # TODO: Remove
+        expect(doc).to include('topic_ssim' => ['Cats', 'Homes and haunts', 'Chats', 'Maisons et repaires'])
         expect(doc).to include('topic_ssimdv' => ['Cats', 'Homes and haunts', 'Chats', 'Maisons et repaires'])
         expect(doc).to include('topic_tesim' => ['Cats', 'Homes and haunts', 'Chats', 'Maisons et repaires'])
       end
@@ -358,6 +368,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects name from subject for topic_ssim' do
+        expect(doc).to include('topic_ssim' => ['Sayers, Dorothy L.']) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => ['Sayers, Dorothy L.'])
         expect(doc).not_to include('topic_tesim')
       end
@@ -387,6 +398,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects name from subject for topic_ssim' do
+        expect(doc).to include('topic_ssim' => ['Sayers, Dorothy L.']) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => ['Sayers, Dorothy L.'])
         expect(doc).not_to include('topic_tesim')
       end
@@ -426,6 +438,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'constructs name subject for topic_ssim' do
+        expect(doc).to include('topic_ssim' => ['Sayers, Dorothy, L.']) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => ['Sayers, Dorothy, L.'])
         expect(doc).not_to include('topic_tesim')
       end
@@ -456,6 +469,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects name subjects from parallelValue for topic_ssimdv' do
+        expect(doc).to include('topic_ssim' => %w[SFU СФУ]) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => %w[SFU СФУ])
         expect(doc).not_to include('topic_tesim')
       end
@@ -512,6 +526,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'constructs names from subjects in parallelValue for topic_ssim' do
+        expect(doc).to include('topic_ssim' => ['Sayers, Dorothy, L.', 'Сэйерс, Дороти, Л.']) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => ['Sayers, Dorothy, L.', 'Сэйерс, Дороти, Л.'])
         expect(doc).not_to include('topic_tesim')
       end
@@ -556,6 +571,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'constructs name subject for topic_ssim and selects topic subject' do
+        expect(doc['topic_ssim']).to contain_exactly('Sayers, Dorothy, L.', 'Homes and haunts') # TODO: Remove
         expect(doc['topic_ssimdv']).to contain_exactly('Sayers, Dorothy, L.', 'Homes and haunts')
         expect(doc).to include('topic_tesim' => ['Homes and haunts'])
       end
@@ -587,6 +603,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects name and title subjects for topic_ssim' do
+        expect(doc['topic_ssim']).to contain_exactly('Sayers, Dorothy L.', 'Gaudy night') # TODO: Remove
         expect(doc['topic_ssimdv']).to contain_exactly('Sayers, Dorothy L.', 'Gaudy night')
         expect(doc).not_to include('topic_tesim')
       end
@@ -610,6 +627,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects title subject for topic_ssim' do
+        expect(doc).to include('topic_ssim' => ['Gaudy night']) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => ['Gaudy night'])
         expect(doc).not_to include('topic_tesim')
       end
@@ -655,6 +673,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'constructs title subject for topic_ssim' do
+        expect(doc).to include('topic_ssim' => ['The title with a subtitle part 1 part the first']) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => ['The title with a subtitle part 1 part the first'])
         expect(doc).not_to include('topic_tesim')
       end
@@ -685,6 +704,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects title subjects from parallelValue for topic_ssim' do
+        expect(doc).to include('topic_ssim' => ['The master and Margarita', 'Мастер и Маргарита']) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => ['The master and Margarita', 'Мастер и Маргарита'])
         expect(doc).not_to include('topic_tesim')
       end
@@ -733,6 +753,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'constructs title subjects from parallelValue for topic_ssim' do
+        # TODO: Remove
+        expect(doc).to include('topic_ssim' => ['The master and Margarita a novel', 'Мастер и Маргарита роман'])
         expect(doc).to include('topic_ssimdv' => ['The master and Margarita a novel', 'Мастер и Маргарита роман'])
         expect(doc).not_to include('topic_tesim')
       end
@@ -773,6 +795,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'constructs title subject for topic_ssim' do
+        expect(doc).to include('topic_ssim' => ['The master and Margarita a novel']) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => ['The master and Margarita a novel'])
         expect(doc).not_to include('topic_tesim')
       end
@@ -796,6 +819,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects occupation subject for topic_ssim' do
+        expect(doc).to include('topic_ssim' => ['Calligraphers']) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => ['Calligraphers'])
         expect(doc).not_to include('topic_tesim')
       end
@@ -826,6 +850,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects occupation subjects from parallelValue for topic_ssim' do
+        expect(doc).to include('topic_ssim' => %w[Calligraphers Каллиграфы]) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => %w[Calligraphers Каллиграфы])
         expect(doc).not_to include('topic_tesim')
       end
@@ -850,6 +875,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'strips trailing punctuation from subject for topic_ssimdv' do
+        expect(doc).to include('topic_ssim' => ['Cats']) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => ['Cats'])
         expect(doc).to include('topic_tesim' => ['Cats,'])
       end
@@ -881,6 +907,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'strips trailing punctuation and space from parts of complex subject for topic_ssimdv' do
+        expect(doc).to include('topic_ssim' => ['Cats', 'Homes and haunts']) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => ['Cats', 'Homes and haunts'])
         expect(doc).to include('topic_tesim' => ['Cats \\', 'Homes and haunts ;'])
       end
@@ -911,6 +938,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'strips trailing punctuation from parts of parallelValue for topic_ssimdv' do
+        expect(doc).to include('topic_ssim' => %w[Cats Chats]) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => %w[Cats Chats])
         expect(doc).to include('topic_tesim' => ['Cats,', 'Chats,'])
       end
@@ -958,6 +986,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'strips trailing punctuation from topic parts of complex subject in parallelValue for topic_ssimdv' do
+        expect(doc).to include('topic_ssim' => %w[Cats Chats]) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => %w[Cats Chats])
         expect(doc).to include('topic_tesim' => ['Cats;', 'Chats \\'])
       end
@@ -981,6 +1010,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'does not strip trailing period' do
+        expect(doc).to include('topic_ssim' => ['Cats.']) # TODO: Remove
         expect(doc).to include('topic_ssimdv' => ['Cats.'])
         expect(doc).to include('topic_tesim' => ['Cats.'])
       end

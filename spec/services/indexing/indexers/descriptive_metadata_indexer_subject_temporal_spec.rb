@@ -33,6 +33,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects temporal subject' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century'])
       end
     end
@@ -59,6 +60,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects temporal subjects' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century', '15th century']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century', '15th century'])
       end
     end
@@ -90,6 +92,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects both temporal subjects in range' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century', '15th century']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century', '15th century'])
       end
     end
@@ -115,6 +118,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects temporal subject' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['1400']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['1400'])
       end
     end
@@ -145,6 +149,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects temporal subject from complex subject' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century'])
       end
     end
@@ -180,6 +185,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects temporal subject range from complex subject' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century', '15th century']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century', '15th century'])
       end
     end
@@ -210,6 +216,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects temporal subjects from parallelValue' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century', 'XIVieme siecle']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century', 'XIVieme siecle'])
       end
     end
@@ -257,6 +264,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects temporal subject range from parallelValue' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century', '15th century', 'XIVieme siecle',
+                                                              'XVieme siecle']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century', '15th century', 'XIVieme siecle',
                                                                 'XVieme siecle'])
       end
@@ -304,6 +313,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects temporal subjects from complex subjects' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century', 'XIVieme siecle']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century', 'XIVieme siecle'])
       end
     end
@@ -358,6 +368,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'selects temporal range from complex subjects' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century', '15th century', 'XIVieme siecle',
+                                                              'XVieme siecle']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century', '15th century', 'XIVieme siecle',
                                                                 'XVieme siecle'])
       end
@@ -401,6 +413,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'drops duplicate value' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century', '14th century']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century', '14th century'])
       end
     end
@@ -424,6 +437,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'drops punctuation' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century'])
       end
     end
@@ -455,6 +469,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'drops punctuation' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century', '15th century']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century', '15th century'])
       end
     end
@@ -485,6 +500,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'drops punctuation' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century'])
       end
     end
@@ -520,6 +536,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'drops punctuation' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century', '15th century']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century', '15th century'])
       end
     end
@@ -550,6 +567,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'drops punctuation' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century', 'XIVieme siecle']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century', 'XIVieme siecle'])
       end
     end
@@ -596,6 +614,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'drops punctuation' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century', 'XIVieme siecle']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century', 'XIVieme siecle'])
       end
     end
@@ -650,6 +669,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'drops punctuation' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century', '15th century', 'XIVieme siecle',
+                                                              'XVieme siecle']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century', '15th century', 'XIVieme siecle',
                                                                 'XVieme siecle'])
       end
@@ -673,6 +694,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'does not drop punctuation' do
+        expect(doc).to include('sw_subject_temporal_ssim' => ['14th century.']) # TODO: Remove
         expect(doc).to include('sw_subject_temporal_ssimdv' => ['14th century.'])
       end
     end
