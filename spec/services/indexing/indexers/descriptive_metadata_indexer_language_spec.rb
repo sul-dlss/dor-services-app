@@ -36,7 +36,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'translates code to term' do
-        expect(doc).to include('sw_language_ssim' => ['English']) # TODO: Remove
         expect(doc).to include('sw_language_ssimdv' => ['English'])
       end
     end
@@ -61,7 +60,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'translates code to term' do
-        expect(doc).to include('sw_language_ssim' => ['English']) # TODO: Remove
         expect(doc).to include('sw_language_ssimdv' => ['English'])
       end
     end
@@ -86,7 +84,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'includes language term' do
-        expect(doc).to include('sw_language_ssim' => ['English']) # TODO: Remove
         expect(doc).to include('sw_language_ssimdv' => ['English'])
       end
     end
@@ -111,7 +108,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'does not include a value' do
-        expect(doc).not_to include('sw_language_ssim') # TODO: Remove
         expect(doc).not_to include('sw_language_ssimdv')
       end
     end
@@ -136,7 +132,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'does not include a value' do
-        expect(doc).not_to include('sw_language_ssim') # TODO: Remove
         expect(doc).not_to include('sw_language_ssimdv')
       end
     end
@@ -162,7 +157,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'translates code to term' do
-        expect(doc).to include('sw_language_ssim' => ['English, Old (ca. 450-1100)']) # TODO: Remove
         expect(doc).to include('sw_language_ssimdv' => ['English, Old (ca. 450-1100)'])
       end
     end
@@ -188,7 +182,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'includes text value' do
-        expect(doc).to include('sw_language_ssim' => ['English, Old (ca. 450-1100)']) # TODO: Remove
         expect(doc).to include('sw_language_ssimdv' => ['English, Old (ca. 450-1100)'])
       end
     end
@@ -214,7 +207,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'does not include a value' do
-        expect(doc).not_to include('sw_language_ssim') # TODO: Remove
         expect(doc).not_to include('sw_language_ssimdv')
       end
     end
@@ -240,7 +232,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'translates code to term' do
-        expect(doc).to include('sw_language_ssim' => ['American Sign Language']) # TODO: Remove
         expect(doc).to include('sw_language_ssimdv' => ['American Sign Language'])
       end
     end
@@ -265,7 +256,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'defaults to the searchworks language vocabulary' do
-        expect(doc).to include('sw_language_ssim' => ['English']) # TODO: Remove
         expect(doc).to include('sw_language_ssimdv' => ['English'])
       end
     end
@@ -287,7 +277,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'includes language term' do
-        expect(doc).to include('sw_language_ssim' => ['English']) # TODO: Remove
         expect(doc).to include('sw_language_ssimdv' => ['English'])
       end
     end
@@ -320,7 +309,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'translates language code to term' do
-        expect(doc).to include('sw_language_ssim' => ['English']) # TODO: Remove
         expect(doc).to include('sw_language_ssimdv' => ['English'])
       end
     end
@@ -348,7 +336,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'does not include a value' do
-        expect(doc).not_to include('sw_language_ssim') # TODO: Remove
         expect(doc).not_to include('sw_language_ssimdv')
       end
     end
@@ -395,7 +382,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'translates language code to term and drops duplicate' do
-        expect(doc).to include('sw_language_ssim' => ['Chinese']) # TODO: Remove
         expect(doc).to include('sw_language_ssimdv' => ['Chinese'])
       end
     end
@@ -428,7 +414,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'includes all languages' do
-        expect(doc).to include('sw_language_ssim' => %w[English Russian]) # TODO: Remove
         expect(doc).to include('sw_language_ssimdv' => %w[English Russian])
       end
     end
@@ -454,7 +439,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'translates code to term' do
-        expect(doc).to include('sw_language_ssim' => ['English']) # TODO: Remove
         expect(doc).to include('sw_language_ssimdv' => ['English'])
       end
     end
@@ -480,7 +464,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'translates code to term' do
-        expect(doc).to include('sw_language_ssim' => ['American Sign Language']) # TODO: Remove
         expect(doc).to include('sw_language_ssimdv' => ['American Sign Language'])
       end
     end
@@ -504,7 +487,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'translates code to term' do
-        expect(doc).to include('sw_language_ssim' => ['English']) # TODO: Remove
         expect(doc).to include('sw_language_ssimdv' => ['English'])
       end
     end
@@ -528,7 +510,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'translates code to term' do
-        expect(doc).to include('sw_language_ssim' => ['American Sign Language']) # TODO: Remove
         expect(doc).to include('sw_language_ssimdv' => ['American Sign Language'])
       end
     end

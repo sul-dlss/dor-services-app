@@ -28,10 +28,7 @@ module Indexing
           # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5537
           add_apo_titles(solr_doc, cocina.administrative.hasAdminPolicy)
 
-          unless cocina.admin_policy?
-            solr_doc['metadata_source_ssim'] = identity_metadata_sources # TODO: Remove
-            solr_doc['metadata_source_ssimdv'] = identity_metadata_sources
-          end
+          solr_doc['metadata_source_ssimdv'] = identity_metadata_sources unless cocina.admin_policy?
           solr_doc['druid_prefixed_ssi'] = cocina.externalIdentifier
           solr_doc['druid_bare_ssi'] = cocina.externalIdentifier.delete_prefix('druid:')
         end
@@ -84,15 +81,13 @@ module Indexing
       end
 
       # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5537
-      def add_apo_titles(solr_doc, admin_policy_id) # rubocop:disable Metrics/AbcSize
+      def add_apo_titles(solr_doc, admin_policy_id)
         row = populate_cache(admin_policy_id)
         title = row['related_obj_title']
         if row['is_from_hydrus']
           solr_doc['hydrus_apo_title_ssim'] ||= []
           solr_doc['hydrus_apo_title_ssim'] << title
         else
-          solr_doc['nonhydrus_apo_title_ssim'] ||= [] # TODO: Remove
-          solr_doc['nonhydrus_apo_title_ssim'] << title # TODO: Remove
           solr_doc['nonhydrus_apo_title_ssimdv'] ||= []
           solr_doc['nonhydrus_apo_title_ssimdv'] << title
         end
