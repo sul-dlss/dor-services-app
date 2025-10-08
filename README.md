@@ -165,27 +165,43 @@ This can be used if a user selects an option in Pre-assembly or Argo that needs 
 
 ## Other tools
 
-### Running Reports
+### Run Reports
 
 There is information about how to run reports on the sdr-infra VM in the [cocina-models README](https://github.com/sul-dlss/cocina-models#running-reports-in-dsa).  This approach has two advantages:
 - sdr-infra connects to the DSA database as read-only
 - no resource competition with production DSA processing
 
-### Generating a list of druids from Solr query
-```
+### Generate a list of druids from Solr query
+
+```shell
 $ bin/generate-druid-list 'governed_by_ssim:"druid:rp029yq2361"'
 ```
 
 The results are written to `druids.txt`.
 
-### Removing deleted items from a list of druids
+
+### Remove deleted items from a list of druids
+```shell
 $ bin/clean-druid-list -h
 Usage: bin/clean-druid-list [options]
     -i, --input FILENAME             File containing list of druids (instead of druids.txt).
     -o, --output FILENAME            File to write list of druids (instead of druids.clean.txt).
     -h, --help                       Displays help.
+```
 
 Solr is used to determine if an item still exists.
+
+### Stop accessioning of one or more druids
+
+NOTE: This should only be used in exceptional cases, and with the approval of repository managers.
+
+```shell
+Usage: bin/stop-accessioning [options]
+    -i, --input DRUID_OR_CSV_FILE    Either a single druid or a path to a CSV file with multiple druids
+        --[no-]dry_run               Simulate the run (defaults to FALSE)
+        --[no-]revert_description    Revert desc metadata from prior closed version (defaults to FALSE)
+    -h, --help                       Displays help.
+```
 
 ### Find druids missing from the SOLR index
 
