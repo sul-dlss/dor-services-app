@@ -34,7 +34,6 @@ RSpec.describe Indexing::Indexers::EmbargoMetadataIndexer do
 
       it 'sets both embargo fields in Solr doc' do
         expect(doc).to eq(
-          'embargo_release_dtsim' => ['2024-06-05T22:00:00Z'], # TODO: Remove
           'embargo_release_dtpsimdv' => ['2024-06-05T22:00:00Z'],
           'embargo_status_ssim' => ['embargoed']
         )
@@ -48,7 +47,6 @@ RSpec.describe Indexing::Indexers::EmbargoMetadataIndexer do
       # rubocop:disable Style/StringHashKeys
       it 'Solr doc has embargo fields' do
         expect(doc).to eq(
-          'embargo_release_dtsim' => ['2020-06-05T22:00:00Z'], # TODO: Remove
           'embargo_release_dtpsimdv' => ['2020-06-05T22:00:00Z'],
           'embargo_status_ssim' => ['embargoed']
         )

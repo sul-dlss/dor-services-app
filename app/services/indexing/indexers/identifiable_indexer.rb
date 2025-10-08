@@ -17,12 +17,11 @@ module Indexing
       @@apo_hash = {} # rubocop:disable Style/ClassVars
 
       # @return [Hash] the partial solr document for identifiable concerns
-      def to_solr # rubocop:disable Metrics/AbcSize
+      def to_solr
         {}.tap do |solr_doc|
           add_apo_titles(solr_doc, cocina.administrative.hasAdminPolicy)
 
           unless cocina.is_a? Cocina::Models::AdminPolicyWithMetadata
-            solr_doc['metadata_source_ssim'] = identity_metadata_sources # TODO: Remove
             solr_doc['metadata_source_ssimdv'] = identity_metadata_sources
           end
           solr_doc['druid_prefixed_ssi'] = cocina.externalIdentifier
@@ -57,15 +56,13 @@ module Indexing
 
       # @param [Hash] solr_doc
       # @param [String] admin_policy_id
-      def add_apo_titles(solr_doc, admin_policy_id) # rubocop:disable Metrics/AbcSize
+      def add_apo_titles(solr_doc, admin_policy_id)
         row = populate_cache(admin_policy_id)
         title = row['related_obj_title']
         if row['is_from_hydrus']
           solr_doc['hydrus_apo_title_ssim'] ||= []
           solr_doc['hydrus_apo_title_ssim'] << title
         else
-          solr_doc['nonhydrus_apo_title_ssim'] ||= [] # TODO: Remove
-          solr_doc['nonhydrus_apo_title_ssim'] << title # TODO: Remove
           solr_doc['nonhydrus_apo_title_ssimdv'] ||= []
           solr_doc['nonhydrus_apo_title_ssimdv'] << title
         end

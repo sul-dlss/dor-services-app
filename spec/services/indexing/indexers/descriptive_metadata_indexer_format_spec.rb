@@ -39,7 +39,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Book']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Book'])
       end
     end
@@ -63,7 +62,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on genre' do
-        expect(doc).to include('sw_format_ssim' => ['Dataset']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Dataset'])
       end
     end
@@ -86,7 +84,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Archive/Manuscript']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Archive/Manuscript'])
       end
     end
@@ -109,7 +106,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Map']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Map'])
       end
     end
@@ -132,7 +128,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Archive/Manuscript']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Archive/Manuscript'])
       end
     end
@@ -155,7 +150,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Video']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Video'])
       end
     end
@@ -178,7 +172,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Music score']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Music score'])
       end
     end
@@ -201,7 +194,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Software/Multimedia']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Software/Multimedia'])
       end
     end
@@ -228,7 +220,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on cartographic resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Map']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Map'])
       end
     end
@@ -256,7 +247,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on dataset genre' do
-        expect(doc).to include('sw_format_ssim' => ['Dataset']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Dataset'])
       end
     end
@@ -279,7 +269,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Music recording']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Music recording'])
       end
     end
@@ -302,7 +291,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Sound recording']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Sound recording'])
       end
     end
@@ -325,7 +313,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Sound recording']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Sound recording'])
       end
     end
@@ -348,7 +335,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Image']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Image'])
       end
     end
@@ -381,7 +367,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type and issuance' do
-        expect(doc).to include('sw_format_ssim' => ['Book']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Book'])
       end
     end
@@ -425,7 +410,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type and issuance' do
-        expect(doc).to include('sw_format_ssim' => ['Book']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Book'])
       end
     end
@@ -462,7 +446,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type and issuance' do
-        expect(doc).to include('sw_format_ssim' => ['Book']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Book'])
       end
     end
@@ -489,7 +472,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on manuscript resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Archive/Manuscript']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Archive/Manuscript'])
       end
     end
@@ -522,7 +504,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type and issuance' do
-        expect(doc).to include('sw_format_ssim' => ['Journal/Periodical']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Journal/Periodical'])
       end
     end
@@ -555,7 +536,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type and issuance' do
-        expect(doc).to include('sw_format_ssim' => ['Journal/Periodical']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Journal/Periodical'])
       end
     end
@@ -589,7 +569,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type and frequency' do
-        expect(doc).to include('sw_format_ssim' => ['Journal/Periodical']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Journal/Periodical'])
       end
     end
@@ -633,7 +612,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type and issuance' do
-        expect(doc).to include('sw_format_ssim' => ['Journal/Periodical']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Journal/Periodical'])
       end
     end
@@ -677,7 +655,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type and issuance' do
-        expect(doc).to include('sw_format_ssim' => ['Journal/Periodical']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Journal/Periodical'])
       end
     end
@@ -722,7 +699,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type and frequency' do
-        expect(doc).to include('sw_format_ssim' => ['Journal/Periodical']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Journal/Periodical'])
       end
     end
@@ -762,7 +738,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type and issuance' do
-        expect(doc).to include('sw_format_ssim' => ['Journal/Periodical']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Journal/Periodical'])
       end
     end
@@ -802,7 +777,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type and issuance' do
-        expect(doc).to include('sw_format_ssim' => ['Journal/Periodical']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Journal/Periodical'])
       end
     end
@@ -843,7 +817,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type and frequency' do
-        expect(doc).to include('sw_format_ssim' => ['Journal/Periodical']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Journal/Periodical'])
       end
     end
@@ -871,7 +844,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type and genre' do
-        expect(doc).to include('sw_format_ssim' => ['Archived website']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Archived website'])
       end
     end
@@ -894,7 +866,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'defaults to Book format' do
-        expect(doc).to include('sw_format_ssim' => ['Book']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Book'])
       end
     end
@@ -921,7 +892,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Book']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Book'])
       end
     end
@@ -944,7 +914,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Object']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Object'])
       end
     end
@@ -975,7 +944,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns formats based on all resource types and genres' do
-        expect(doc).to include('sw_format_ssim' => %w[Map Image Dataset]) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => %w[Map Image Dataset])
       end
     end
@@ -998,7 +966,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'does not assign a format' do
-        expect(doc).not_to include('sw_format_ssim') # TODO: Remove
         expect(doc).not_to include('sw_format_ssimdv')
       end
     end
@@ -1020,7 +987,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'does not assign a format' do
-        expect(doc).not_to include('sw_format_ssim') # TODO: Remove
         expect(doc).not_to include('sw_format_ssimdv')
       end
     end
@@ -1047,7 +1013,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format once' do
-        expect(doc).to include('sw_format_ssim' => ['Archive/Manuscript']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Archive/Manuscript'])
       end
     end
@@ -1077,7 +1042,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on mapped resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Music score']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Music score'])
       end
     end
@@ -1107,7 +1071,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns format based on mapped resource type' do
-        expect(doc).to include('sw_format_ssim' => ['Music score']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Music score'])
       end
     end
@@ -1158,7 +1121,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
 
       it 'assigns formats based on resource types' do
-        expect(doc).to include('sw_format_ssim' => ['Sound recording', 'Book']) # TODO: Remove
         expect(doc).to include('sw_format_ssimdv' => ['Sound recording', 'Book'])
       end
     end
