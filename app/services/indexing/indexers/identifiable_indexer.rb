@@ -16,14 +16,19 @@ module Indexing
       ## used for caching apo titles
       @@apo_hash = {} # rubocop:disable Style/ClassVars
 
+      # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5537
+      @@legacy_apo_hash = {} # rubocop:disable Style/ClassVars
+
       # @return [Hash] the partial solr document for identifiable concerns
-      def to_solr
+      def to_solr # rubocop:disable Metrics/AbcSize
         {}.tap do |solr_doc|
+          # Hydrus APOs are excluded since every Hydrus item had its own APO.
+          solr_doc['apo_title_ssimdv'] = [apo_title] unless hydrus_apo?
+
+          # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5537
           add_apo_titles(solr_doc, cocina.administrative.hasAdminPolicy)
 
-          unless cocina.is_a? Cocina::Models::AdminPolicyWithMetadata
-            solr_doc['metadata_source_ssimdv'] = identity_metadata_sources
-          end
+          solr_doc['metadata_source_ssimdv'] = identity_metadata_sources unless cocina.admin_policy?
           solr_doc['druid_prefixed_ssi'] = cocina.externalIdentifier
           solr_doc['druid_bare_ssi'] = cocina.externalIdentifier.delete_prefix('druid:')
         end
@@ -32,6 +37,8 @@ module Indexing
       # Clears out the cache of apos. Used primarily in testing.
       def self.reset_cache!
         @@apo_hash = {} # rubocop:disable Style/ClassVars
+        # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5537
+        @@legacy_apo_hash = {} # rubocop:disable Style/ClassVars
       end
 
       private
@@ -54,8 +61,26 @@ module Indexing
                 .select { |catalog_type| catalog_type == CURRENT_CATALOG_TYPE }
       end
 
-      # @param [Hash] solr_doc
-      # @param [String] admin_policy_id
+      def apo_druid
+        cocina.administrative.hasAdminPolicy
+      end
+
+      # populate cache if necessary
+      def apo_title
+        @@apo_hash[apo_druid] ||= begin
+          apo_obj = CocinaObjectStore.find(apo_druid)
+          Cocina::Models::Builders::TitleBuilder.build(apo_obj.description.title)
+        rescue CocinaObjectStore::CocinaObjectStoreError
+          Honeybadger.notify("Bad association found on #{cocina.externalIdentifier}. #{apo_druid} could not be found")
+          apo_druid
+        end
+      end
+
+      def hydrus_apo?
+        AdministrativeTags.for(identifier: apo_druid).include?('Project : Hydrus')
+      end
+
+      # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5537
       def add_apo_titles(solr_doc, admin_policy_id)
         row = populate_cache(admin_policy_id)
         title = row['related_obj_title']
@@ -70,9 +95,9 @@ module Indexing
         solr_doc['apo_title_ssim'] << title
       end
 
-      # populate cache if necessary
+      # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5537
       def populate_cache(rel_druid)
-        @@apo_hash[rel_druid] ||= begin
+        @@legacy_apo_hash[rel_druid] ||= begin
           related_obj = CocinaObjectStore.find(rel_druid)
           # APOs don't have projects, and since Hydrus is set to be retired, I don't want to
           # add the cocina property. Just check the tags service instead.
@@ -86,6 +111,7 @@ module Indexing
         end
       end
 
+      # TODO: Remove https://github.com/sul-dlss/dor-services-app/issues/5537
       def hydrus_tag?(id)
         AdministrativeTags.for(identifier: id).include?('Project : Hydrus')
       end
