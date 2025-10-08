@@ -10,16 +10,14 @@ class DruidsDataWorkType
       rov.identification ->> 'sourceId' as sourceid,
       jsonb_path_query(rov.description, '$.title[0].value') ->> 0 as title,
       jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_druid,
-      jsonb_path_query(rov.administrative, '$.tags[*] ? (@.type == "Project").value') ->> 0 as project_tag,
-      jsonb_path_query(rov.structural, '$.form.structuredValue[*] ? (@.type == "type").value') ->> 0 as work_type,
-      jsonb_path_query_array(rov.structural, '$.form.structuredValue[*] ? (@.type == "subtype").value') as work_subtypes,
-      jsonb_path_query(rov.structural, '$.form.structuredValue[*] ? (@.type == "content type").value') ->> 0 as content_type
+      jsonb_path_query(rov.description, '$.form.structuredValue[*] ? (@.type == "type").value') ->> 0 as work_type,
+      jsonb_path_query_array(rov.description, '$.form.structuredValue[*] ? (@.type == "subtype").value') as work_subtypes
     FROM repository_objects AS ro, repository_object_versions AS rov
     WHERE ro.head_version_id = rov.id
       AND (
-        jsonb_path_exists(rov.structural, '$.form.structuredValue[*] ? (@.type == "type" && @.value == "Data")')
+        jsonb_path_exists(rov.description, '$.form.structuredValue[*] ? (@.type == "type" && @.value == "Data")')
         OR
-        jsonb_path_exists(rov.structural, '$.form.structuredValue[*] ? (@.type == "subtype" && @.value in ("Data", "Database", "Geospatial data", "Remote sensing imagery", "Tabular data"))')
+        jsonb_path_exists(rov.description, '$.form.structuredValue[*] ? (@.type == "subtype" && (@.value == "Data" || @.value == "Database" || @.value == "Geospatial data" || @.value == "Remote sensing imagery" || @.value == "Tabular data"))')
       );
   SQL
 
@@ -32,20 +30,24 @@ class DruidsDataWorkType
     sql_result_rows = ActiveRecord::Base.connection.execute(sql_query).to_a
 
     sql_result_rows.map do |row|
+      druid = row['druid']
       collection_druid = row['collection_druid']
       collection_title = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
-      work_subtypes = row['work_subtypes']&.join(',') || ''
+      work_subtypes = JSON.parse(row['work_subtypes'] || '[]').join(',')
+      object = RepositoryObject.find_by(external_identifier: druid)
+      content_type = object&.head_version&.content_type
+      project_tags = AdministrativeTag.where(druid:).map { |at| at.tag_label.tag }.join(',')
 
       [
-        row['druid'],
+        druid,
         row['sourceid'],
         row['title'],
         collection_druid,
         collection_title,
-        row['project_tag'],
+        project_tags,
         row['work_type'],
         work_subtypes,
-        row['content_type']
+        content_type
       ].to_csv
     end
   end
