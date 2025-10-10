@@ -41,6 +41,7 @@ Rails.application.routes.draw do
         post 'refresh_metadata', to: 'metadata_refresh#refresh'
         post 'apply_admin_policy_defaults', to: 'admin_policy_defaults#apply'
         post 'reindex'
+        post 'indexable'
       end
 
       collection do
