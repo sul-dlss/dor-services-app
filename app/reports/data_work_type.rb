@@ -2,8 +2,8 @@
 
 # see https://github.com/sul-dlss/dor-services-app/issues/5542
 # Invoke via:
-# bin/rails r -e production "DruidsDataWorkType.report"
-class DruidsDataWorkType
+# bin/rails r -e production "DataWorkType.report"
+class DataWorkType
   # Query for druids where work type is "Data" or work subtype is in the specified list.
   SQL = <<~SQL.squish.freeze
     SELECT ro.external_identifier as druid,
