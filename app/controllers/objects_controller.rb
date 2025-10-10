@@ -150,6 +150,22 @@ class ObjectsController < ApplicationController
     head :no_content
   end
 
+  def indexable
+    cocina_object = Cocina::Models.with_metadata(Cocina::Models.build(params.except(:action,
+                                                                                    :controller,
+                                                                                    :id,
+                                                                                    :event_description,
+                                                                                    :user_name).to_unsafe_h),
+                                                 'temp-lock',
+                                                 created: Time.zone.now,
+                                                 modified: Time.zone.now)
+
+    Indexer.validate_indexable(cocina_object:)
+    head :no_content
+  rescue StandardError => e
+    json_api_error(status: :precondition_failed, message: e.message)
+  end
+
   private
 
   def queue
