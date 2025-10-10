@@ -10,10 +10,10 @@ class DataWorkContributorAffiliation
       rov.identification ->> 'sourceId' as sourceid,
       rov.identification ->> 'doi' as doi,
       jsonb_path_query(rov.description, '$.title[0].value') ->> 0 as title,
-      jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_druid,
+      jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_druid
     FROM repository_objects AS ro, repository_object_versions AS rov
     WHERE ro.head_version_id = rov.id
-      AND jsonb_path_exists(rov.description, '$.contributors[*].note[*] ? (@.type == "contributor")');
+      AND jsonb_path_exists(rov.description, '$.contributor[*].note[*] ? (@.type == "affiliation")');
   SQL
 
   def self.report
@@ -35,7 +35,7 @@ class DataWorkContributorAffiliation
         row['title'],
         collection_druid,
         collection_title,
-        row['doi'],
+        row['doi']
       ].to_csv
     end
   end
