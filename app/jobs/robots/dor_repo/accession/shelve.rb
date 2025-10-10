@@ -24,8 +24,7 @@ module Robots
         end
 
         def was_crawl?
-          # The presence of the wasCrawlPreassemblyWF workflow indicates that this is a crawl.
-          Workflow::Service.workflow?(druid:, workflow_name: 'wasCrawlPreassemblyWF')
+          cocina_object.type == Cocina::Models::ObjectType.webarchive_binary
         end
       end
     end
