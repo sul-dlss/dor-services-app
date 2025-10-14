@@ -194,6 +194,41 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/Druid"
+  "/v1/objects/{id}/indexable":
+    post:
+      tags:
+        - integrations
+      summary: Validate the object for indexing in Solr without actually indexing it
+      description: ""
+      operationId: "objects#indexable"
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            # Note that additionalProperties needs to be set to true to allow id parameter.
+            schema:
+              oneOf:
+                - $ref: "#/components/schemas/DRO"
+                - $ref: "#/components/schemas/Collection"
+                - $ref: "#/components/schemas/AdminPolicy"
+      responses:
+        "204":
+          description: OK
+        "422":
+          description: Index validation has failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
   "/v1/objects/{object_id}/administrative_tags":
     get:
       tags:

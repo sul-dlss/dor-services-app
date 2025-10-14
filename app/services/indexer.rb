@@ -20,6 +20,12 @@ class Indexer
     solr.commit
   end
 
+  def self.validate_descriptive(cocina_object:)
+    return unless Settings.solr.enabled
+
+    Indexing::Indexers::DescriptiveMetadataIndexer.new(cocina: cocina_object).to_solr
+  end
+
   def self.delete(druid:)
     return unless Settings.solr.enabled
 

@@ -150,6 +150,18 @@ class ObjectsController < ApplicationController
     head :no_content
   end
 
+  def indexable
+    cocina_object = Cocina::Models.without_metadata(Cocina::Models.build(params.except(:action,
+                                                                                       :controller,
+                                                                                       :id,
+                                                                                       :event_description,
+                                                                                       :user_name).to_unsafe_h))
+
+    render json: Indexer.validate_descriptive(cocina_object:)
+  rescue StandardError => e
+    json_api_error(status: :unprocessable_content, message: e.message)
+  end
+
   private
 
   def queue
