@@ -118,7 +118,9 @@ RSpec.describe 'Indexable' do
         post("/v1/objects/#{druid}/indexable",
              params: data,
              headers:)
-        expect(response).to have_http_status(:no_content)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to match(druid)
       end
     end
 
@@ -129,7 +131,7 @@ RSpec.describe 'Indexable' do
         post("/v1/objects/#{druid}/indexable",
              params: data,
              headers:)
-        expect(response).to have_http_status(:precondition_failed)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("undefined method 'valueLanguage' for an instance of Array")
       end
     end

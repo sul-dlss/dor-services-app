@@ -160,10 +160,9 @@ class ObjectsController < ApplicationController
                                                  created: Time.zone.now,
                                                  modified: Time.zone.now)
 
-    Indexer.validate_indexable(cocina_object:)
-    head :no_content
+    render json: Indexer.validate_indexable(cocina_object:)
   rescue StandardError => e
-    json_api_error(status: :precondition_failed, message: e.message)
+    json_api_error(status: :unprocessable_content, message: e.message)
   end
 
   private
