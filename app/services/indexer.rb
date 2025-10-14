@@ -20,14 +20,10 @@ class Indexer
     solr.commit
   end
 
-  def self.validate_indexable(cocina_object:, trace_id: nil)
+  def self.validate_descriptive(cocina_object:)
     return unless Settings.solr.enabled
 
-    trace_id ||= trace_id_for(druid: cocina_object.externalIdentifier)
-    Indexing::Builders::DocumentBuilder.for(
-      model: cocina_object,
-      trace_id:
-    ).to_solr
+    Indexing::Indexers::DescriptiveMetadataIndexer.new(cocina: cocina_object).to_solr
   end
 
   def self.delete(druid:)

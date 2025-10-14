@@ -120,14 +120,14 @@ RSpec.describe 'Indexable' do
              headers:)
 
         expect(response).to have_http_status(:ok)
-        expect(response.body).to match(druid)
+        expect(response.body).to match(title)
       end
     end
 
     context 'when the descriptive metadata can not be index' do
       let(:contributor_name_parallel) { [first_parallel_name] }
 
-      it 'returns a 412 - index validation failed' do
+      it 'returns a 422 - index validation failed' do
         post("/v1/objects/#{druid}/indexable",
              params: data,
              headers:)

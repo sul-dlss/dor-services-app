@@ -221,7 +221,7 @@ paths:
       responses:
         "204":
           description: OK
-        "412":
+        "422":
           description: Index validation has failed
           content:
             application/json:
