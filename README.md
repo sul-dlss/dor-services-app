@@ -188,7 +188,7 @@ Custom reports are stored in dor-services-app in the `app/reports` directory.  E
     ```
 1. Change to your directory (if not already there from the previous step) and checkout the correct branch of DSA:
    ```shell
-   cd [SUNETID]\dor-services-app
+   cd [SUNETID]/dor-services-app
    git checkout [BRANCH] # if your report is not merged into main, you can checkout your branch here
    ```
 1. Connect to the desired database by setting the environment variables as shown below.  This must be done each time you SSH back into the box to run a new report.
