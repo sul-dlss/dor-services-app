@@ -201,7 +201,7 @@ Custom reports are stored in dor-services-app in the `app/reports` directory.  E
     ```
 1. Run the report (good idea to do it in a screen or via background process in case you get disconnected):
     ```shell
-    bundle exec bin/rails r -e production "BadIso8601Dates.report" > BadIso8601Dates.csv
+    bin/rails r -e production "BadIso8601Dates.report" > BadIso8601Dates.csv
     ```
 1. When done, you can pull the report to your laptop as needed:
     ```shell
