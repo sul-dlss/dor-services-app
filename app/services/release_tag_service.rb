@@ -9,7 +9,9 @@ class ReleaseTagService
 
   # Creates ReleaseTag model objects.
   # @param [Dor::ReleaseTag] tag
-  def self.create(druid:, tag:)
-    ReleaseTag.from_cocina(druid:, tag:).save!
+  # @param [Cocina::Models::DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata] cocina_object
+  def self.create(tag:, cocina_object:)
+    ReleaseTag.from_cocina(druid: cocina_object.externalIdentifier, tag:).save!
+    Indexer.reindex(cocina_object: cocina_object)
   end
 end

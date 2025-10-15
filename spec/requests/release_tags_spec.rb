@@ -83,17 +83,21 @@ RSpec.describe 'Operations on release tags' do
       build(:dro, id: druid)
     end
 
-    context 'when succeessful' do
-      let(:data) do
-        tag.to_json
-      end
+    let(:data) do
+      tag.to_json
+    end
 
-      it 'creates a tag' do
-        post "/v1/objects/#{druid}/release_tags",
-             headers: auth_headers.merge('Content-Type' => 'application/json'),
-             params: data
-        expect(response).to have_http_status :created
-      end
+    before do
+      allow(ReleaseTagService).to receive(:create)
+    end
+
+    it 'creates a tag' do
+      post "/v1/objects/#{druid}/release_tags",
+           headers: auth_headers.merge('Content-Type' => 'application/json'),
+           params: data
+      expect(response).to have_http_status :created
+      expect(ReleaseTagService).to have_received(:create).with(cocina_object: cocina_object_with_metadata,
+                                                               tag: an_instance_of(Dor::ReleaseTag))
     end
   end
 end

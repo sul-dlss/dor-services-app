@@ -24,7 +24,7 @@ class ReleaseTagsController < ApplicationController
   end
 
   def create
-    ReleaseTagService.create(druid: @cocina_object.externalIdentifier, tag: new_tag)
+    ReleaseTagService.create(cocina_object: @cocina_object, tag: new_tag)
     head :created
   end
 
