@@ -1,49 +1,43 @@
 # frozen_string_literal: true
 
-# Report dro objects with occurences of a property.
-#  it is expected the property is an array, and we are selecting non-empty arrays with '? (@.size() > 0))'
-#  To check for property of type string, or to include empty arrays, remove '? (@.size() > 0))' from JSON_PATH
-
-# Invoke via:
-# bin/rails r -e production "PropertyExistenceDros.report"
+# Report dro objects with occurrences of a property.
+#
+# Invoke via: `bin/rails r -e production PropertyExistenceDros.report`
 class PropertyExistenceDros
-  # NOTE: JSON_PATH may need to be changed, in addition to PROPERTY
+  # This name is misleading: it can be any valid JSON path desired, not just a
+  # single property, e.g. `contributor[*].type`, `groupedValue`,
+  # `relatedResource.**.relatedResource`
+  PROPERTY = 'relatedResource.**.relatedResource'
 
-  # this can be any JSON PATH desired, not just single property, e.g. 'contributor.type'
-  PROPERTY = 'groupedValue' # could also be, e.g. 'contributor.type'
+  # JSON_PATH may need to be changed, in addition to PROPERTY, depending on
+  # whether or not you're dealing with an array-like property. If the value of
+  # PROPERTY is array-like, and you don't care about empties, make sure
+  # JSON_PATH ends with `? (@.size() > 0))`
 
-  # NOTE: checking the size allows checking for only non-empty arrays;  we may have empty arrays, too.
   # NOTE: Prefer strict JSON querying over lax when using the `.**` operator, per
   #       https://www.postgresql.org/docs/14/functions-json.html#STRICT-AND-LAX-MODES
-  JSON_PATH = "strict $.**.#{PROPERTY} ? (@.size() > 0)".freeze # when property is array
+  JSON_PATH = "strict $.**.#{PROPERTY} ? (@.size() > 0)".freeze
 
-  SQL = <<~SQL.squish.freeze
+  SQL_QUERY = <<~SQL.squish.freeze
     SELECT ro.external_identifier as item_druid,
-           jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
-           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id
-           FROM repository_objects AS ro, repository_object_versions AS rov WHERE
-           ro.head_version_id = rov.id
+           jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as folio_instance_hrid,
+           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_druid
+           FROM repository_objects AS ro, repository_object_versions AS rov
+           WHERE ro.head_version_id = rov.id
            AND ro.object_type = 'dro'
            AND jsonb_path_exists(rov.description, '#{JSON_PATH}')
   SQL
 
   def self.report
-    puts "item_druid,catalogRecordId,collection_druid,collection_name,dros with #{PROPERTY}\n"
-    rows(SQL).compact.each { |row| puts row }
-  end
+    puts 'item_druid,collection_druid,folio_instance_hrid'
 
-  def self.rows(sql_query)
-    sql_result_rows = ActiveRecord::Base.connection.execute(sql_query).to_a
+    ActiveRecord::Base.connection.execute(SQL_QUERY).to_a.each do |row|
+      next if row.blank?
 
-    sql_result_rows.map do |row|
-      collection_druid = row['collection_id']
-      collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
-
-      [
+      puts [
         row['item_druid'],
-        row['catalogRecordId'],
-        collection_druid,
-        collection_name
+        row['collection_druid'],
+        row['folio_instance_hrid']
       ].to_csv
     end
   end
