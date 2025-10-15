@@ -167,9 +167,46 @@ This can be used if a user selects an option in Pre-assembly or Argo that needs 
 
 ### Running Reports
 
-There is information about how to run reports on the sdr-infra VM in the [cocina-models README](https://github.com/sul-dlss/cocina-models#running-reports-in-dsa).  This approach has two advantages:
-- sdr-infra connects to the DSA database as read-only
-- no resource competition with production DSA processing
+Custom reports are stored in dor-services-app in the `app/reports` directory.  Examine some of the reports in that folder to see the pattern of how they are structured and run.  Since they need to access to the SDR datastore to run, you can run them on the `sdr-infra` box, which has read-only access to each environment (qa/stage/prod).
+
+1. Connect to the `sdr-infra` box:
+    ```shell
+    ssh sdr-infra
+    ```
+1. Start a shell as the `deploy` user:
+    ```shell
+    # you may or may not need to supply the `-n SUNETID` argument
+    ksu deploy
+    ```
+1. Go to the home directory of the deploy user.  If you have previously run reports, you may have a directory for your username in here.  If not, you will create it:
+    ```shell
+    cd ~
+    ls -al # do you see a folder for your sunet?  if so, go to the next step, if not create it below and then clone DSA
+    mkdir [SUNETID] # make a directory for yourself so you can run reports in isolation from others being run
+    cd [SUNETID]
+    git clone https://github.com/sul-dlss/dor-services-app.git # check out the DSA code
+    ```
+1. Change to your directory (if not already there from the previous step) and checkout the correct branch of DSA:
+   ```shell
+   cd [SUNETID]/dor-services-app
+   git checkout [BRANCH] # if your report is not merged into main, you can checkout your branch here
+   ```
+1. Connect to the desired database by setting the environment variables as shown below.  This must be done each time you SSH back into the box to run a new report.
+   To run a report against production SDR, use the values below.  For stage or QA, replace `PROD` with `STAGE` or `QA` in the HOSTNAME and PASSWORD variables:
+   ```shell
+    export DATABASE_NAME="dor_services"
+    export DATABASE_USERNAME=$DOR_SERVICES_DB_USER
+    export DATABASE_HOSTNAME=$DOR_SERVICES_DB_PROD_HOST
+    export DATABASE_PASSWORD=$DOR_SERVICES_DB_PROD_PWD
+    ```
+1. Run the report (good idea to do it in a screen or via background process in case you get disconnected):
+    ```shell
+    bin/rails r -e production "BadIso8601Dates.report" > BadIso8601Dates.csv
+    ```
+1. When done, you can pull the report to your laptop as needed:
+    ```shell
+    scp sdr-infra:/opt/app/deploy/[SUNETID]/dor-services-app/BadIso8601Dates.csv .
+    ```
 
 ### Generating a list of druids from Solr query
 ```
