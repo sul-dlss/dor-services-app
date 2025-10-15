@@ -216,7 +216,7 @@ The process for performing a migration/remediation is:
 
 1. Implement a Migrator (`app/services/migrators/`). See `Migrators::Base` and `Migrators::Exemplar` for the requirements of a Migrator class. Migrators should be unit tested.
 2. Perform a dry run: `bin/migrate-cocina Migrators::Exemplar --mode dryrun` and inspect `migrate-cocina.csv` for any errors.  This is a way to change the cocina and validate the new objects without saving the updated cocina or publishing or versioning.
-3. Perform migration/remediation: `bin/migrate-cocina Migrators::Exemplar --mode migrate` and inspect `migrate-cocina.csv` for any errors. Commit mode can be used instead of `migrate` when you only want to migrate existing cocina and not open/close versions or create new versions. 
+3. Perform migration/remediation: `bin/migrate-cocina Migrators::Exemplar --mode migrate` and inspect `migrate-cocina.csv` for any errors. Commit mode can be used instead of `migrate` when you only want to migrate existing cocina and not open/close versions or create new versions.
 4. Perform verification: `bin/migrate-cocina Migrators::Exemplar --mode verify` and inspect `migrate-cocina.csv` for any errors.  (An error here means that an object matching `.migrate?` has been found ... which is presumably NOT desired after migration.)
 
 Additional notes:
@@ -232,3 +232,7 @@ Additional notes:
 ### Steps
 
 1. [Reset the database](https://github.com/sul-dlss/DeveloperPlaybook/blob/main/best-practices/db_reset.md)
+
+## Deployment
+
+NOTE: The application is deployed continuously by our on-prem Jenkins service (`sul-ci-prod`) to the staging environment on every merge to `main`. See `Jenkinsfile` for how that is wired up.
