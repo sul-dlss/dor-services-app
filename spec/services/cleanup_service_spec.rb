@@ -61,7 +61,7 @@ RSpec.describe CleanupService do
     end
   end
 
-  describe '.stop_accessioning' do
+  describe '.reset_accessioning' do
     let(:initial_description) do
       {
         'title' => [{ 'value' => 'My first title' }],
@@ -87,7 +87,7 @@ RSpec.describe CleanupService do
       end
 
       it 'discards draft, backups, cleans up content, and deletes workflows' do
-        expect { described_class.stop_accessioning(druid) }.to output.to_stdout
+        expect { described_class.reset_accessioning(druid) }.to output.to_stdout
         expect(repository_object.reload.head_version).to be_closed
         expect(service).to have_received(:backup_content_by_druid).once
         expect(service).to have_received(:cleanup_by_druid).once
@@ -96,7 +96,7 @@ RSpec.describe CleanupService do
 
       context 'with dryrun param set to true' do
         it 'does nothing' do
-          expect { described_class.stop_accessioning(druid, dryrun: true) }.to output.to_stdout
+          expect { described_class.reset_accessioning(druid, dryrun: true) }.to output.to_stdout
           expect(repository_object.reload.head_version).to be_open
           expect(service).not_to have_received(:backup_content_by_druid)
           expect(service).not_to have_received(:cleanup_by_druid)
@@ -112,7 +112,7 @@ RSpec.describe CleanupService do
 
       it 'cleans up without changing repository object' do
         expect do
-          described_class.stop_accessioning(druid)
+          described_class.reset_accessioning(druid)
         end.to output(/Head version \(2\) of object #{druid} cannot be discarded/).to_stdout
         expect(repository_object.reload.head_version).to be_open
         expect(service).to have_received(:backup_content_by_druid).once
@@ -130,7 +130,7 @@ RSpec.describe CleanupService do
       end
 
       it 'cleans up and reopens repository object' do
-        expect { described_class.stop_accessioning(druid) }.to output(/Reopening object #{druid}/).to_stdout
+        expect { described_class.reset_accessioning(druid) }.to output(/Reopening object #{druid}/).to_stdout
         expect(repository_object.reload).to be_open
         expect(repository_object.head_version.description).to eq(bogus_description)
         expect(service).to have_received(:backup_content_by_druid).once
@@ -141,7 +141,7 @@ RSpec.describe CleanupService do
       context 'with revert_description param set to true' do
         it 'discards draft, backups, cleans up content, deletes workflows, and reverts descriptive metadata' do
           expect do
-            described_class.stop_accessioning(druid, revert_description: true)
+            described_class.reset_accessioning(druid, revert_description: true)
           end.to output(/restoring descriptive metadata from prior version: v1/).to_stdout
           expect(repository_object.reload).to be_open
           expect(repository_object.head_version.description).to eq(initial_description)
@@ -158,7 +158,7 @@ RSpec.describe CleanupService do
       end
 
       it 'backups, cleans up content, and delete workflows' do
-        expect { described_class.stop_accessioning(druid) }.to output.to_stdout
+        expect { described_class.reset_accessioning(druid) }.to output.to_stdout
         expect(service).to have_received(:backup_content_by_druid).once
         expect(service).to have_received(:cleanup_by_druid).once
         expect(service).to have_received(:delete_accessioning_workflows).once
@@ -171,7 +171,7 @@ RSpec.describe CleanupService do
       end
 
       it 'raises an exception and stops' do
-        expect { described_class.stop_accessioning('bogus') }.to raise_error StandardError
+        expect { described_class.reset_accessioning('bogus') }.to raise_error StandardError
         expect(service).not_to have_received(:backup_content_by_druid)
         expect(service).not_to have_received(:cleanup_by_druid)
         expect(service).not_to have_received(:delete_accessioning_workflows)
@@ -184,7 +184,7 @@ RSpec.describe CleanupService do
       end
 
       it 'raises an exception and stops' do
-        expect { described_class.stop_accessioning }.to raise_error StandardError
+        expect { described_class.reset_accessioning }.to raise_error StandardError
         expect(service).not_to have_received(:backup_content_by_druid)
         expect(service).not_to have_received(:cleanup_by_druid)
         expect(service).not_to have_received(:delete_accessioning_workflows)

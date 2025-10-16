@@ -4,8 +4,8 @@ require 'pathname'
 
 # Remove all traces of the object's data files from the workspace and export areas
 class CleanupService
-  def self.stop_accessioning(druid, ...)
-    new(druid:).stop_accessioning(...)
+  def self.reset_accessioning(druid, ...)
+    new(druid:).reset_accessioning(...)
   end
 
   def self.cleanup_by_druid(druid)
@@ -31,7 +31,7 @@ class CleanupService
 
   # @param [boolean] dryrun if true, will just display output but not perform actions
   # @param [boolean] revert_description if true, descriptive metadata from the last closed version will be restored
-  def stop_accessioning(dryrun: false, revert_description: false) # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/MethodLength
+  def reset_accessioning(dryrun: false, revert_description: false) # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/MethodLength
     raise "Object #{druid} not found in repository" unless repository_object
 
     @version = repository_object.head_version.version
@@ -70,7 +70,7 @@ class CleanupService
     delete_accessioning_workflows(version:) unless dryrun
 
     # Let user know we are done
-    $stdout.puts "...accessioning stopped complete for #{druid}"
+    $stdout.puts "...accessioning reset for #{druid}"
   end
 
   def cleanup_by_druid
