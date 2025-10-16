@@ -22,7 +22,6 @@ RSpec.describe 'Show solr for an object version' do
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(id: druid)
-      expect(response.parsed_body).to include(rights_descriptions_ssim: ['world', 'dark (file)']) # TODO: Remove
       expect(response.parsed_body).to include(rights_descriptions_ssimdv: ['world', 'dark (file)'])
     end
   end
