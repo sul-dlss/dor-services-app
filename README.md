@@ -228,12 +228,12 @@ Usage: bin/clean-druid-list [options]
 
 Solr is used to determine if an item still exists.
 
-### Stop accessioning of one or more druids
+### Reset accessioning for one or more druids
 
 NOTE: This should only be used in exceptional cases, and with the approval of repository managers.
 
 ```shell
-Usage: bin/stop-accessioning [options]
+Usage: bin/reset-accessioning [options]
     -i, --input DRUID_OR_CSV_FILE    Either a single druid or a path to a CSV file with multiple druids
         --[no-]dry_run               Simulate the run (defaults to FALSE)
         --[no-]revert_description    Revert desc metadata from prior closed version (defaults to FALSE)
