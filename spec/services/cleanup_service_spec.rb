@@ -3,18 +3,15 @@
 require 'rails_helper'
 
 RSpec.describe CleanupService do
-  attr_reader :fixture_dir
-
   let(:service) { described_class.new(druid:) }
-
   let(:fixtures) { Pathname(File.dirname(__FILE__)).join('../fixtures') }
-  let(:druid) { 'druid:aa123bb4567' }
+  let(:druid) { 'druid:bb123df4567' }
   let(:workspace_root_pathname) { Pathname(Settings.cleanup.local_workspace_root) }
   let(:workitem_pathname) { Pathname(DruidTools::Druid.new(druid, workspace_root_pathname.to_s).path) }
   let(:export_pathname) { Pathname(Settings.cleanup.local_export_home) }
   let(:bag_pathname) { export_pathname.join(druid.split(':').last) }
   let(:tarfile_pathname) { export_pathname.join("#{bag_pathname}.tar") }
-  # e.g. tmp/stopped/aa123bb4567/workspace
+  # e.g. tmp/stopped/bb123df4567/workspace
   let(:workspace_backup_path) do
     Pathname(Settings.cleanup.local_backup_path).join(File.basename(workitem_pathname),
                                                       File.basename(workspace_root_pathname))
@@ -28,9 +25,7 @@ RSpec.describe CleanupService do
       local_assembly_root: fixtures.join('assembly').to_s,
       local_backup_path: Rails.root.join('tmp/stopped').to_s
     )
-    workitem_pathname.rmtree if workitem_pathname.exist?
     export_pathname = Pathname(Settings.cleanup.local_export_home)
-    export_pathname.rmtree if export_pathname.exist?
     bag_pathname = export_pathname.join(druid.split(':').last)
     tarfile_pathname = export_pathname.join("#{bag_pathname}.tar")
 
@@ -46,6 +41,7 @@ RSpec.describe CleanupService do
     bag_pathname.rmtree     if bag_pathname.exist?
     tarfile_pathname.rmtree if tarfile_pathname.exist?
     workspace_backup_path.rmtree if workspace_backup_path.exist?
+    workitem_pathname.rmtree if workitem_pathname.exist?
   end
 
   it 'can find the fixtures workspace and export folders' do
@@ -66,9 +62,17 @@ RSpec.describe CleanupService do
   end
 
   describe '.stop_accessioning' do
+    let(:initial_description) do
+      {
+        'title' => [{ 'value' => 'My first title' }],
+        'purl' => "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+      }
+    end
     let(:repository_object) { create(:repository_object, external_identifier: druid) }
 
     before do
+      # Set descriptive metadata on initial version to test metadata reversion later
+      repository_object.head_version.update!(description: initial_description)
       repository_object.close_version!
       repository_object.head_version.update!(cocina_version: Cocina::Models::VERSION)
       repository_object.open_version!(description: 'draft')
@@ -82,7 +86,7 @@ RSpec.describe CleanupService do
         allow(VersionService).to receive_messages(can_open?: false)
       end
 
-      it 'discards draft, backups, cleans up content, and delete workflows' do
+      it 'discards draft, backups, cleans up content, and deletes workflows' do
         expect { described_class.stop_accessioning(druid) }.to output.to_stdout
         expect(repository_object.reload.head_version).to be_closed
         expect(service).to have_received(:backup_content_by_druid).once
@@ -90,7 +94,7 @@ RSpec.describe CleanupService do
         expect(service).to have_received(:delete_accessioning_workflows).once
       end
 
-      context 'when dryrun' do
+      context 'with dryrun param set to true' do
         it 'does nothing' do
           expect { described_class.stop_accessioning(druid, dryrun: true) }.to output.to_stdout
           expect(repository_object.reload.head_version).to be_open
@@ -109,7 +113,7 @@ RSpec.describe CleanupService do
       it 'cleans up without changing repository object' do
         expect do
           described_class.stop_accessioning(druid)
-        end.to output(/Head version of object #{druid} cannot be discarded/).to_stdout
+        end.to output(/Head version \(2\) of object #{druid} cannot be discarded/).to_stdout
         expect(repository_object.reload.head_version).to be_open
         expect(service).to have_received(:backup_content_by_druid).once
         expect(service).to have_received(:cleanup_by_druid).once
@@ -118,16 +122,33 @@ RSpec.describe CleanupService do
     end
 
     context 'when head version can be reopened' do
+      let(:bogus_description) { { 'this' => 'does not validate and should be reverted' } }
+
       before do
+        repository_object.head_version.update!(description: bogus_description)
         repository_object.close_version!
       end
 
       it 'cleans up and reopens repository object' do
         expect { described_class.stop_accessioning(druid) }.to output(/Reopening object #{druid}/).to_stdout
         expect(repository_object.reload).to be_open
+        expect(repository_object.head_version.description).to eq(bogus_description)
         expect(service).to have_received(:backup_content_by_druid).once
         expect(service).to have_received(:cleanup_by_druid).once
         expect(service).to have_received(:delete_accessioning_workflows).once
+      end
+
+      context 'with revert_description param set to true' do
+        it 'discards draft, backups, cleans up content, deletes workflows, and reverts descriptive metadata' do
+          expect do
+            described_class.stop_accessioning(druid, revert_description: true)
+          end.to output(/restoring descriptive metadata from prior version: v1/).to_stdout
+          expect(repository_object.reload).to be_open
+          expect(repository_object.head_version.description).to eq(initial_description)
+          expect(service).to have_received(:backup_content_by_druid).once
+          expect(service).to have_received(:cleanup_by_druid).once
+          expect(service).to have_received(:delete_accessioning_workflows).once
+        end
       end
     end
 
@@ -204,14 +225,14 @@ RSpec.describe CleanupService do
 
   describe '.cleanup_export' do
     before do
-      allow(FileUtils).to receive(:rm_rf)
-      allow(FileUtils).to receive(:rm_f)
+      allow(FileUtils).to receive(:rm_rf).and_call_original
+      allow(FileUtils).to receive(:rm_f).and_call_original
     end
 
     it 'removes the files exported to preservation' do
       service.send(:cleanup_export)
-      expect(FileUtils).to have_received(:rm_rf).once.with(fixtures.join('export/aa123bb4567').to_s)
-      expect(FileUtils).to have_received(:rm_f).once.with(fixtures.join('export/aa123bb4567.tar').to_s)
+      expect(FileUtils).to have_received(:rm_rf).once.with(fixtures.join('export/bb123df4567').to_s)
+      expect(FileUtils).to have_received(:rm_f).once.with(fixtures.join('export/bb123df4567.tar').to_s)
     end
   end
 
@@ -244,15 +265,11 @@ RSpec.describe CleanupService do
         local_staging_root: staging_dir
       )
 
-      FileUtils.mkdir fixture_dir
-      FileUtils.mkdir workspace_dir
-      FileUtils.mkdir export_dir
-      FileUtils.mkdir assembly_dir
-      FileUtils.mkdir staging_dir
-    end
-
-    after do
-      FileUtils.rm_rf fixture_dir
+      FileUtils.mkdir_p fixture_dir
+      FileUtils.mkdir_p workspace_dir
+      FileUtils.mkdir_p export_dir
+      FileUtils.mkdir_p assembly_dir
+      FileUtils.mkdir_p staging_dir
     end
 
     def create_tempfile(path)

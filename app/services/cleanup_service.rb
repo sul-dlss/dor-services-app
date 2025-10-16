@@ -4,8 +4,8 @@ require 'pathname'
 
 # Remove all traces of the object's data files from the workspace and export areas
 class CleanupService
-  def self.stop_accessioning(druid, dryrun: false)
-    new(druid:).stop_accessioning(dryrun:)
+  def self.stop_accessioning(druid, ...)
+    new(druid:).stop_accessioning(...)
   end
 
   def self.cleanup_by_druid(druid)
@@ -30,24 +30,30 @@ class CleanupService
   end
 
   # @param [boolean] dryrun if true, will just display output but not perform actions
-  def stop_accessioning(dryrun: false) # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/MethodLength
+  # @param [boolean] revert_description if true, descriptive metadata from the last closed version will be restored
+  def stop_accessioning(dryrun: false, revert_description: false) # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/MethodLength
     raise "Object #{druid} not found in repository" unless repository_object
 
     @version = repository_object.head_version.version
 
     $stdout.puts '*** DRY RUN - NO ACTIONS WILL BE PERFORMED' if dryrun
-    $stdout.puts "...object found is an item: version #{version}"
-
+    $stdout.puts "...object found is an item: head version #{version}"
     $stdout.puts "...v#{version} of the object has not been sent to preservation"
 
     if repository_object.can_discard_open_version?
-      $stdout.puts "Discarding head version of object #{druid}"
+      $stdout.puts "Discarding opened head version of object #{druid}"
       repository_object.discard_open_version! unless dryrun
     else
-      $stdout.puts "Head version of object #{druid} cannot be discarded"
+      $stdout.puts "Head version (#{version}) of object #{druid} cannot be discarded"
       if repository_object.closed?
-        $stdout.puts "Reopening object #{druid}"
+        $stdout.puts "Reopening object #{druid} for modification"
         repository_object.reopen! unless dryrun
+        # Only revert desc. metadata on a reopened object when requested and when the last closed version has Cocina.
+        if revert_description && repository_object.last_closed_version&.has_cocina?
+          $stdout.puts '...restoring descriptive metadata from prior version: ' \
+                       "v#{repository_object.last_closed_version.version}"
+          repository_object.opened_version.update!(description: repository_object.last_closed_version.description) unless dryrun # rubocop:disable Layout/LineLength
+        end
       end
     end
 

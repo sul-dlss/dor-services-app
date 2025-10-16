@@ -165,7 +165,7 @@ This can be used if a user selects an option in Pre-assembly or Argo that needs 
 
 ## Other tools
 
-### Running Reports
+### Run Reports
 
 Custom reports are stored in dor-services-app in the `app/reports` directory.  Examine some of the reports in that folder to see the pattern of how they are structured and run.  Since they need to access to the SDR datastore to run, you can run them on the `sdr-infra` box, which has read-only access to each environment (qa/stage/prod).
 
@@ -208,21 +208,37 @@ Custom reports are stored in dor-services-app in the `app/reports` directory.  E
     scp sdr-infra:/opt/app/deploy/[SUNETID]/dor-services-app/BadIso8601Dates.csv .
     ```
 
-### Generating a list of druids from Solr query
-```
+### Generate a list of druids from Solr query
+
+```shell
 $ bin/generate-druid-list 'governed_by_ssim:"druid:rp029yq2361"'
 ```
 
 The results are written to `druids.txt`.
 
-### Removing deleted items from a list of druids
+
+### Remove deleted items from a list of druids
+```shell
 $ bin/clean-druid-list -h
 Usage: bin/clean-druid-list [options]
     -i, --input FILENAME             File containing list of druids (instead of druids.txt).
     -o, --output FILENAME            File to write list of druids (instead of druids.clean.txt).
     -h, --help                       Displays help.
+```
 
 Solr is used to determine if an item still exists.
+
+### Stop accessioning of one or more druids
+
+NOTE: This should only be used in exceptional cases, and with the approval of repository managers.
+
+```shell
+Usage: bin/stop-accessioning [options]
+    -i, --input DRUID_OR_CSV_FILE    Either a single druid or a path to a CSV file with multiple druids
+        --[no-]dry_run               Simulate the run (defaults to FALSE)
+        --[no-]revert_description    Revert desc metadata from prior closed version (defaults to FALSE)
+    -h, --help                       Displays help.
+```
 
 ### Find druids missing from the SOLR index
 

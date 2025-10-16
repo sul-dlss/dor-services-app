@@ -1,0 +1,74 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../config/environment'
+require 'optparse'
+
+# Stop accessioning in progress for the supplied druid or multiple druids
+# supplied in a CSV file (one per line, no header)
+#
+# With single druid:
+#
+# $ bin/stop-accessioning --input druid:ab123bc4567 --revert_description
+# $ bin/stop-accessioning --input druid:ab123bc4567 --dry_run
+#
+# With path to CSV file:
+#
+# $ bin/stop-accessioning --input tmp/druids.csv --revert_description
+# $ bin/stop-accessioning --input tmp/druids.csv --dry_run
+
+options = { dry_run: false, revert_description: false }
+
+parser = OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/stop-accessioning [options]'
+  option_parser.on('-i', '--input DRUID_OR_CSV_FILE',
+                   'Either a single druid or a path to a CSV file with multiple druids')
+  option_parser.on('--[no-]dry_run', 'Simulate the run (defaults to FALSE)')
+  option_parser.on('--[no-]revert_description', 'Revert desc metadata from prior closed version (defaults to FALSE)')
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
+end
+
+parser.parse!(into: options)
+
+if options[:input].blank?
+  puts parser
+  exit
+end
+
+mode = options[:input].starts_with?('druid:') ? :druid : :csv_file
+
+$stdout.puts '*** DRY RUN - NO ACTIONS WILL BE PERFORMED' if options[:dry_run]
+
+if mode == :druid
+  $stdout.puts "This will completely stop accessioning for #{options[:druid]}. Are you sure? [y/n]:"
+  raise 'User requested termination of operation' unless $stdin.gets.chomp.downcase == 'y'
+
+  begin
+    CleanupService.stop_accessioning(options[:input],
+                                     dryrun: options[:dry_run],
+                                     revert_description: options[:revert_description])
+  rescue StandardError => e
+    $stdout.puts "Error stopping accessioning for #{options[:input]}: #{e.message} #{e.backtrace.join("\n")}"
+  end
+else
+  raise "CSV file not found: #{options[:input]}" unless File.exist?(options[:input])
+
+  $stdout.puts "This will completely stop accessioning for #{File.foreach(options[:input].count)} " \
+               'objects. Are you sure? [y/n]:'
+  raise 'User requested termination of operation' unless $stdin.gets.chomp.downcase == 'y'
+
+  CSV.foreach(options[:input]) do |row|
+    druid = row.first
+    $stdout.puts '====='
+    $stdout.puts druid
+
+    CleanupService.stop_accessioning(druid,
+                                     dryrun: options[:dry_run],
+                                     revert_description: options[:revert_description])
+  rescue StandardError => e
+    $stdout.puts "Error stopping accessioning for #{druid}: #{e.message} #{e.backtrace.join("\n")}"
+  end
+end
