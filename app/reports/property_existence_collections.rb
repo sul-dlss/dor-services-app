@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Report collection objects with occurences of a property.
+# Report collection objects with occurrences of a property.
 #  it is expected the property is an array, and we are selecting non-empty arrays with '? (@.size() > 0))'
 #  To check for property of type string, or to include empty arrays, remove '? (@.size() > 0))' from JSON_PATH
 

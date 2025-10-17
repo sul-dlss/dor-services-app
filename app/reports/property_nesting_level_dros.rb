@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Report dros with occurences of a property at least N nesting levels in.
+# Report dros with occurrences of a property at least N nesting levels in.
 
 # Invoke via:
 # bin/rails r -e production "PropertyNestingLevelDros.report"
