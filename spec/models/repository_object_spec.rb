@@ -107,17 +107,30 @@ RSpec.describe RepositoryObject do
     end
   end
 
-  describe 'object version scope meta-programming' do
-    subject(:repository_object) { create(:repository_object, **attrs) }
+  describe '.members_of_collection' do
+    let(:druid) { 'druid:xz456jk0987' }
+    let(:opened_version) { create(:repository_object).opened_version }
 
-    before do
-      repository_object.update(head_version: repository_object.versions.first)
-      allow(RepositoryObjectVersion).to receive(:in_virtual_objects).and_return([])
+    it 'returns an empty list' do
+      expect(described_class.currently_members_of_collection(druid)).to eq([])
     end
 
-    it 'sends the query to the repository object version class' do
-      described_class.currently_in_virtual_objects('druid:xz456jk0987')
-      expect(RepositoryObjectVersion).to have_received(:in_virtual_objects).with('druid:xz456jk0987')
+    context 'when object version has a relevant member order' do
+      let(:attrs) do
+        {
+          structural: {
+            isMemberOf: druid
+          }
+        }
+      end
+
+      before do
+        opened_version.update(attrs)
+      end
+
+      it 'returns the expected object version' do
+        expect(described_class.currently_members_of_collection(druid)).to eq([opened_version.repository_object])
+      end
     end
   end
 

@@ -58,7 +58,7 @@ RSpec.describe UserVersion do
 
     context 'when the user version is permanently withdrawn' do
       let(:user_version) do
-        user_version = create(:user_version, repository_object_version:, state: 'permanently_withdrawn')
+        user_version = build_stubbed(:user_version, repository_object_version:, state: 'permanently_withdrawn')
         user_version.state = 'available'
         user_version
       end

@@ -6,19 +6,9 @@
 # bin/rails r -e production "ApoCatalogRecordId.report('druid:bx911tp9024')"
 class ApoCatalogRecordId
   def self.report(apo_druid)
-    puts %w[druid catatalogRecordId refresh].join(',')
-    query = "governed_by_ssim:\"#{apo_druid}\"&objectType_ssimdv:\"item\""
-    druids = []
-    # borrowed from bin/generate-druid-list
-    loop do
-      results = SolrService.query('*:*', fl: 'id', rows: 10_000, fq: query, start: druids.length, sort: 'id asc')
-      break if results.empty?
+    puts %w[druid catatalogRecordId refresh].to_csv
 
-      results.each { |r| druids << r['id'] }
-      sleep(0.5)
-    end
-
-    druids.each do |druid|
+    RepositoryObject.dros.currently_governed_by_admin_policy(apo_druid).each do |druid|
       cocina_object = CocinaObjectStore.find(druid)
       catalog_record_ids = cocina_object.identification.catalogLinks.filter_map do |link|
         if link.catalog == 'folio'
@@ -26,7 +16,7 @@ class ApoCatalogRecordId
            link.refresh]
         end
       end.flatten
-      puts ([druid] + catalog_record_ids).to_csv if catalog_record_ids.size.positive?
+      puts ([druid] + catalog_record_ids).to_csv if catalog_record_ids.any?
     end
   end
 end
