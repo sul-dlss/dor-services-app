@@ -129,6 +129,9 @@ Style/Documentation:
     - "app/graphql/**/*"
     - "db/**/*"
 
+Style/Lambda:
+  EnforcedStyle: literal
+
 Style/RedundantStringEscape:
   Enabled: true
   Exclude:
@@ -883,4 +886,3 @@ Rails/FindByOrAssignmentMemoization: # new in 2.33
   Enabled: false
 Rails/OrderArguments: # new in 2.33
   Enabled: true
-

@@ -52,7 +52,7 @@ namespace :seed do
     results = RegistrationCsvConverter.convert(csv_string: File.read(input_file))
     results.each do |parse_result|
       druid = parse_result[:druid]
-      parse_result[:cocina_request_object].either(lambda { |value|
+      parse_result[:cocina_request_object].either(->(value) {
         begin
           CreateObjectService.create(value[:model], id_minter: -> { druid })
 
