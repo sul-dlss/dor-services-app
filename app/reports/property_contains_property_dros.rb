@@ -7,8 +7,8 @@
 # Invoke via:
 # bin/rails r -e production "PropertyContainsPropertyDros.report"
 class PropertyContainsPropertyDros
-  OUTER_PROPERTY = 'structuredValue'
-  INNER_PROPERTY = 'structuredValue' # filters out empty arrays with ? (@.size() > 0)
+  OUTER_PROPERTY = 'note'
+  INNER_PROPERTY = 'identifier'
 
   # NOTE: {1 TO LAST} is needed if you're looking for a property inside the same property
   #   (e.g. structuredValue inside structuredValue), as .** includes itself
@@ -17,10 +17,11 @@ class PropertyContainsPropertyDros
   #       https://www.postgresql.org/docs/14/functions-json.html#STRICT-AND-LAX-MODES
   JSON_PATH = "strict $.**.#{OUTER_PROPERTY} ? (exists(@.**{1 TO LAST}.#{INNER_PROPERTY} ? (@.size() > 0)))".freeze
 
-  SQL = <<~SQL.squish.freeze
-    SELECT ro.external_identifier as item_druid,
-           jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
-           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_druid
+  SQL_QUERY = <<~SQL.squish.freeze
+    SELECT ro.external_identifier as object_druid,
+           jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as folio_instance_hrid,
+           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_druid,
+           jsonb_path_query(rov.description, '#{JSON_PATH}') ->> 0 as value
            FROM repository_objects AS ro, repository_object_versions AS rov
            WHERE ro.head_version_id = rov.id
            AND ro.object_type = 'dro'
@@ -28,22 +29,25 @@ class PropertyContainsPropertyDros
   SQL
 
   def self.report
-    puts "item_druid,catalogRecordId,collection_druid,collection_name,dros where #{OUTER_PROPERTY} contains #{INNER_PROPERTY}\n"
-    rows(SQL).compact.each { |row| puts row }
-  end
+    puts 'object_druid,collection_druid,folio_instance_hrid,value'
 
-  def self.rows(sql_query)
-    sql_result_rows = ActiveRecord::Base.connection.execute(sql_query).to_a
+    ActiveRecord::Base.connection.execute(SQL_QUERY).to_a.each do |row|
+      next if row.blank?
 
-    sql_result_rows.map do |row|
-      collection_name = RepositoryObject.collections.find_by(external_identifier: row['collection_druid'])&.head_version&.label
-
-      [
-        row['item_druid'],
-        row['catalogRecordId'],
+      puts [
+        row['object_druid'],
         row['collection_druid'],
-        collection_name
+        row['folio_instance_hrid'],
+        deep_compact_blank(JSON.parse(row['value']))
       ].to_csv
     end
+  end
+
+  def self.deep_compact_blank(maybe_enumerable)
+    return maybe_enumerable unless maybe_enumerable.respond_to?(:compact_blank)
+
+    maybe_enumerable
+      .compact_blank
+      .public_send(maybe_enumerable.is_a?(Hash) ? :transform_values : :map) { |value| deep_compact_blank(value) }
   end
 end
