@@ -3,7 +3,7 @@
 module Catalog
   # Creates a hash of identifiers and MARC 856 field data given a cocina object.
   class Marc856Generator
-    # objects goverened by these APOs (ETD and EEMs) will get indicator 2 = 0, else 1
+    # objects governed by these APOs (ETD and EEMs) will get indicator 2 = 0, else 1
     BORN_DIGITAL_APOS = %w[druid:bx911tp9024 druid:jj305hm5259].freeze
     DEFAULT_CATALOG = 'folio'
 
