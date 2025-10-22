@@ -38,7 +38,7 @@ class ItemQueryService
   def self.find_combinable_item(druid)
     new(id: druid).item do |item|
       raise UncombinableItemError, "Item #{item.externalIdentifier} is not an item" unless item.dro?
-      raise UncombinableItemError, "Item #{item.externalIdentifier} is dark" if item.access.view == 'dark'
+      raise UncombinableItemError, "Item #{item.externalIdentifier} is dark" if Cocina::Support.dark?(item)
 
       if item.access.view == 'citation-only'
         raise UncombinableItemError,
