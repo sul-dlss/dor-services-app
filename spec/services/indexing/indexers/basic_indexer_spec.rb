@@ -81,6 +81,7 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
           'current_version_ipsidv' => 4,
           'milestones_ssim' => %w[foo bar],
           'has_constituents_ssimdv' => ['druid:bb777bb7777', 'druid:dd666dd6666'],
+          'constituents_count_ips' => 2,
           'governed_by_ssim' => 'druid:vv888vv8888',
           'member_of_collection_ssim' => [],
           'modified_latest_dtpsidv' => '2021-03-04T23:05:34Z',

@@ -31,6 +31,7 @@ module Indexing
 
           # Used so that DSA can generate public XML whereas a constituent can find the virtual object it is part of.
           solr_doc['has_constituents_ssimdv'] = virtual_object_constituents
+          solr_doc['constituents_count_ips'] = virtual_object_constituents.length if virtual_object_constituents
         end.merge(Indexing::WorkflowFields.for(druid: cocina.externalIdentifier, version: cocina.version, milestones:))
            .transform_keys(&:to_s)
       end
