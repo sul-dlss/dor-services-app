@@ -17,18 +17,15 @@ class MemberService
   def for
     RepositoryObject
       .currently_members_of_collection(druid)
-      .select(:external_identifier, :version, :head_version_id, :opened_version_id, :last_closed_version_id)
-      .then { |members| publishable_members(members) }
-      .map(&:external_identifier)
+      .then { |members| only_publishable? ? members.select(&:publishable?) : members }
+      .pluck(:external_identifier)
   end
 
   private
 
-  attr_reader :druid, :publishable
+  attr_reader :druid
 
-  def publishable_members(members)
-    return members unless publishable
-
-    members.select(&:publishable?)
+  def only_publishable?
+    @publishable
   end
 end

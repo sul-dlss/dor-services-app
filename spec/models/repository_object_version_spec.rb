@@ -190,66 +190,6 @@ RSpec.describe RepositoryObjectVersion do
     end
   end
 
-  describe '.in_virtual_objects' do
-    before do
-      opened_version.update(attrs)
-    end
-
-    let(:druid) { 'druid:xz456jk0987' }
-    let(:opened_version) { create(:repository_object).opened_version }
-
-    it 'returns an empty list' do
-      expect(described_class.in_virtual_objects(druid)).to eq([])
-    end
-
-    context 'when object version has a relevant member order' do
-      let(:attrs) do
-        {
-          structural: {
-            hasMemberOrders: [
-              {
-                members: [
-                  druid
-                ]
-              }
-            ]
-          }
-        }
-      end
-
-      it 'returns the expected object version' do
-        expect(described_class.in_virtual_objects(druid)).to eq([opened_version])
-      end
-    end
-  end
-
-  describe '.members_of_collection' do
-    before do
-      opened_version.update(attrs)
-    end
-
-    let(:druid) { 'druid:xz456jk0987' }
-    let(:opened_version) { create(:repository_object).opened_version }
-
-    it 'returns an empty list' do
-      expect(described_class.members_of_collection(druid)).to eq([])
-    end
-
-    context 'when object version has a relevant member order' do
-      let(:attrs) do
-        {
-          structural: {
-            isMemberOf: druid
-          }
-        }
-      end
-
-      it 'returns the expected object version' do
-        expect(described_class.members_of_collection(druid)).to eq([opened_version])
-      end
-    end
-  end
-
   describe '.to_model_hash' do
     subject(:model_hash) { described_class.to_model_hash(cocina_instance) }
 

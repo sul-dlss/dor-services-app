@@ -11,13 +11,27 @@
 class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
   self.locking_column = 'lock'
 
+  # @param [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] cocina_object a Cocina
+  #   model instance, either a DRO, collection, or APO.
+  def self.create_from(cocina_object:)
+    args = {
+      external_identifier: cocina_object.externalIdentifier,
+      object_type: cocina_object.class.name.demodulize.underscore
+    }
+    args[:source_id] = cocina_object.identification.sourceId if cocina_object.respond_to?(:identification)
+    create!(**args).tap do |repo_obj|
+      repo_obj.update_opened_version_from(cocina_object:)
+    end
+  end
+
   class VersionAlreadyOpened < StandardError; end
   class VersionNotOpened < StandardError; end
   class VersionNotDiscardable < StandardError; end
 
-  has_many :versions, lambda {
-    order(version: :asc)
-  }, class_name: 'RepositoryObjectVersion', dependent: :destroy, inverse_of: 'repository_object', autosave: true
+  has_many :versions, -> { order(version: :asc) }, class_name: 'RepositoryObjectVersion',
+                                                   dependent: :destroy,
+                                                   inverse_of: 'repository_object',
+                                                   autosave: true
   has_many :user_versions, through: :versions
 
   belongs_to :head_version, class_name: 'RepositoryObjectVersion', optional: true
@@ -38,6 +52,38 @@ class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
   scope :collections, -> { where(object_type: 'collection') }
   scope :admin_policies, -> { where(object_type: 'admin_policy') }
   scope :closed, -> { where('last_closed_version_id = head_version_id') }
+  # This scope is given a list of constituent druids and returns an array of
+  # corresponding RepositoryObject instances. Primarily used within the
+  # VirtualObjectService to make sure the druids listed as constituents in a
+  # Cocina object are reflected in the system of record (the DSA database).
+  scope :currently_has_constituents, ->(constituent_druids) {
+    where(external_identifier: constituent_druids)
+      .select(:external_identifier, :last_closed_version_id)
+  }
+  # For a given item druid, return the list of virtual objects of which the
+  # item is a constituent
+  scope :currently_constituent_of, ->(druid) {
+    joins(:head_version)
+      .where("structural #> '{hasMemberOrders,0}' -> 'members' ? :druid", druid:)
+      .select(:external_identifier)
+  }
+  scope :currently_members_of_collection, ->(collection_druid) {
+    joins(:head_version)
+      .where("structural -> 'isMemberOf' ? :druid", druid: collection_druid)
+      .select(:external_identifier, :version, :head_version_id, :opened_version_id, :last_closed_version_id, :id)
+  }
+  scope :currently_governed_by_admin_policy, ->(admin_policy_druid) {
+    joins(:head_version)
+      .where("administrative ->> 'hasAdminPolicy' = :admin_policy_druid", admin_policy_druid:)
+      .select(:external_identifier, :id)
+      .order(:external_identifier)
+  }
+  # Note that this query is slow. Creating a timestamp index on the releaseDate field is not supported by PG.
+  scope :currently_embargoed_and_releaseable, -> {
+    joins(:head_version)
+      .where("(access -> 'embargo' ->> 'releaseDate')::timestamp <= ?", Time.zone.now)
+      .select(:external_identifier, :id)
+  }
 
   delegate :to_cocina, :to_cocina_with_metadata, to: :head_version
 
@@ -98,50 +144,6 @@ class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
       self['head_version_version']
     else
       head_version&.version
-    end
-  end
-
-  # NOTE: This block uses metaprogramming to create the equivalent of scopes that query the RepositoryObjectVersion
-  # table using only rows that are a `current` in the RepositoryObject table
-  #
-  # So it's a more easily extensible version of:
-  #
-  # scope :currently_in_virtual_objects, ->(member_druid) { joins(:head_version).merge(RepositoryObjectVersion
-  # .in_virtual_objects(member_druid)) }
-  # scope :currently_members_of_collection, ->(collection_druid) { joins(:head_version).merge(RepositoryObjectVersion
-  # .members_of_collection(collection_druid)) }
-  class << self
-    def method_missing(method_name, ...)
-      if method_name.to_s =~ /#{current_scope_prefix}(.*)/
-        joins(:head_version).merge(
-          RepositoryObjectVersion.public_send(Regexp.last_match(1).to_sym, ...)
-        )
-      else
-        super
-      end
-    end
-
-    def respond_to_missing?(method_name, include_private = false)
-      method_name.to_s.start_with?(current_scope_prefix) || super
-    end
-
-    # @param [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] cocina_object a Cocina
-    #   model instance, either a DRO, collection, or APO.
-    def create_from(cocina_object:)
-      args = {
-        external_identifier: cocina_object.externalIdentifier,
-        object_type: cocina_object.class.name.demodulize.underscore
-      }
-      args[:source_id] = cocina_object.identification.sourceId if cocina_object.respond_to?(:identification)
-      create!(**args).tap do |repo_obj|
-        repo_obj.update_opened_version_from(cocina_object:)
-      end
-    end
-
-    private
-
-    def current_scope_prefix
-      'currently_'
     end
   end
 
