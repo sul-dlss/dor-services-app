@@ -4,12 +4,13 @@ require 'rails_helper'
 
 RSpec.describe PublicMetadataReleaseTagService do
   let(:cocina_object) do
-    build(:dro, id: druid, collection_ids:)
+    build(:dro, id: druid, collection_ids:).new(access:)
   end
   let(:apo_id) { 'druid:qv648vd4392' }
   let(:collection_druid) { 'druid:xh235dd9059' }
   let(:druid) { 'druid:bb004bn8654' }
   let(:collection_ids) { [] }
+  let(:access) { { view: 'world', download: 'world' } }
 
   describe '.for_public_metadata' do
     subject(:releases) { described_class.for_public_metadata(cocina_object:) }
@@ -138,6 +139,16 @@ RSpec.describe PublicMetadataReleaseTagService do
     context 'when there are non searchworks related release tags' do
       before do
         create(:release_tag, druid:, released_to: 'Revs', release: true)
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context 'when has release tag, but object is dark' do
+      let(:access) { { view: 'dark', download: 'none' } }
+
+      before do
+        create(:release_tag, druid:, released_to: 'Searchworks', release: true)
       end
 
       it { is_expected.to be false }

@@ -11,9 +11,11 @@ class PublicMetadataReleaseTagService
     new(...).for_public_metadata
   end
 
-  def self.released_to_searchworks?(...)
-    new(...).for_public_metadata
-            .find { |tag| tag.to.casecmp?('Searchworks') }&.release || false
+  def self.released_to_searchworks?(cocina_object:)
+    return false if Cocina::Support.dark?(cocina_object)
+
+    new(cocina_object:).for_public_metadata
+                       .find { |tag| tag.to.casecmp?('Searchworks') }&.release || false
   end
 
   def initialize(cocina_object:)
