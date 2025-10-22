@@ -125,14 +125,16 @@ RSpec.describe 'Indexable' do
     end
 
     context 'when the descriptive metadata can not be index' do
-      let(:contributor_name_parallel) { [first_parallel_name] }
+      before do
+        allow(Indexer).to receive(:validate_descriptive).and_raise(StandardError, "that's not valid")
+      end
 
       it 'returns a 422 - index validation failed' do
         post("/v1/objects/#{druid}/indexable",
              params: data,
              headers:)
         expect(response).to have_http_status(:unprocessable_content)
-        expect(response.body).to include("undefined method 'valueLanguage' for an instance of Array")
+        expect(response.body).to include("that's not valid")
       end
     end
   end
