@@ -14,23 +14,19 @@ module Indexing
       end
 
       # @return [Hash] the partial solr document for basic data
-      def to_solr # rubocop:disable Metrics/AbcSize
+      def to_solr # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         {}.tap do |solr_doc|
           solr_doc[:id] = cocina.externalIdentifier
           solr_doc['trace_id_ss'] = trace_id
           solr_doc['current_version_ipsidv'] = cocina.version # Argo Facet field "Version"
           solr_doc['obj_label_tesim'] = cocina.label
           solr_doc['purl_ss'] = Purl.for(druid: cocina.externalIdentifier) if purl?
-
           solr_doc['modified_latest_dtpsidv'] = modified_latest
           solr_doc['created_at_dttsi'] = created_at
-
-          # member_of_collection_ssim is used by dor-services-app for querying for members of a
-          # collection and it is a facet in Argo
           solr_doc['member_of_collection_ssim'] = collections
+          solr_doc['bare_member_of_collection_ssm'] = collections.map { |druid| bare_druid_for(druid) }
           solr_doc['governed_by_ssim'] = cocina.administrative.hasAdminPolicy
-
-          # Used so that DSA can generate public XML whereas a constituent can find the virtual object it is part of.
+          solr_doc['bare_governed_by_ss'] = bare_druid_for(cocina.administrative.hasAdminPolicy)
           solr_doc['has_constituents_ssimdv'] = virtual_object_constituents
           solr_doc['constituents_count_ips'] = virtual_object_constituents.length if virtual_object_constituents
         end.merge(Indexing::WorkflowFields.for(druid: cocina.externalIdentifier, version: cocina.version, milestones:))
@@ -59,6 +55,10 @@ module Indexing
 
       def purl?
         !cocina.admin_policy? && cocina.access.view != 'dark'
+      end
+
+      def bare_druid_for(druid)
+        druid.delete_prefix('druid:')
       end
     end
   end
