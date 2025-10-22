@@ -35,6 +35,7 @@ RSpec.describe Indexing::Indexers::EmbargoMetadataIndexer do
       it 'sets both embargo fields in Solr doc' do
         expect(doc).to eq(
           'embargo_release_dtpsimdv' => ['2024-06-05T22:00:00Z'],
+          'formatted_embargo_release_ss' => '2024-06-05 03:00:00 PM',
           'embargo_status_ssim' => ['embargoed']
         )
       end
@@ -48,6 +49,7 @@ RSpec.describe Indexing::Indexers::EmbargoMetadataIndexer do
       it 'Solr doc has embargo fields' do
         expect(doc).to eq(
           'embargo_release_dtpsimdv' => ['2020-06-05T22:00:00Z'],
+          'formatted_embargo_release_ss' => '2020-06-05 03:00:00 PM',
           'embargo_status_ssim' => ['embargoed']
         )
       end
