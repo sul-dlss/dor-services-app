@@ -53,14 +53,20 @@ module Indexing
       end
 
       def object_type
-        case cocina_object
-        when Cocina::Models::AdminPolicyWithMetadata
-          'adminPolicy'
-        when Cocina::Models::CollectionWithMetadata
-          'collection'
-        else
-          cocina_object.type == Cocina::Models::ObjectType.agreement ? 'agreement' : 'item'
-        end
+        return 'adminPolicy' if cocina_object.admin_policy?
+        return 'collection' if cocina_object.collection?
+        return 'agreement' if agreement?
+        return 'virtual object' if virtual_object?
+
+        'item'
+      end
+
+      def agreement?
+        cocina_object.type == Cocina::Models::ObjectType.agreement
+      end
+
+      def virtual_object?
+        cocina_object.structural&.hasMemberOrders&.first&.members.present?
       end
 
       def prefixed_identifiers
