@@ -3,14 +3,16 @@
 require 'rails_helper'
 RSpec.describe Indexing::Indexers::IdentityMetadataIndexer do
   let(:druid) { 'druid:rt923jk3421' }
-  let(:cocina_object) { build(:dro_with_metadata, type:, id: druid).new(identification:) }
+  let(:cocina_object) { build(:dro_with_metadata, type:, id: druid).new(identification:, structural:) }
   let(:indexer) { described_class.new(cocina: cocina_object) }
+  let(:structural) { {} }
+  let(:identification) { { sourceId: 'sul:1234' } }
+  let(:type) { Cocina::Models::ObjectType.book }
 
   describe '#to_solr' do
     subject(:doc) { indexer.to_solr }
 
     context 'with an item' do
-      let(:type) { Cocina::Models::ObjectType.book }
       let(:identification) do
         {
           sourceId: 'dissertationid:342837261527',
@@ -65,7 +67,6 @@ RSpec.describe Indexing::Indexers::IdentityMetadataIndexer do
 
     context 'with an agreement' do
       let(:type) { Cocina::Models::ObjectType.agreement }
-      let(:identification) { { sourceId: 'sul:1234' } }
 
       # rubocop:disable Style/StringHashKeys
       it 'has the fields used by argo' do
@@ -77,6 +78,18 @@ RSpec.describe Indexing::Indexers::IdentityMetadataIndexer do
           'source_id_ssi' => 'sul:1234',
           'source_id_text_nostem_i' => 'sul:1234',
           'dissertation_id_ss' => nil
+        )
+      end
+      # rubocop:enable Style/StringHashKeys
+    end
+
+    context 'with a virtual object' do
+      let(:structural) { { hasMemberOrders: [{ members: ['druid:mk420bs7601'] }] } }
+
+      # rubocop:disable Style/StringHashKeys
+      it 'sets the object type as virtual object' do
+        expect(doc).to include(
+          'objectType_ssimdv' => ['virtual object']
         )
       end
       # rubocop:enable Style/StringHashKeys
