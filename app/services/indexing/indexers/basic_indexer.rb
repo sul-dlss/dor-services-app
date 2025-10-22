@@ -20,6 +20,7 @@ module Indexing
           solr_doc['trace_id_ss'] = trace_id
           solr_doc['current_version_ipsidv'] = cocina.version # Argo Facet field "Version"
           solr_doc['obj_label_tesim'] = cocina.label
+          solr_doc['purl_ss'] = Purl.for(druid: cocina.externalIdentifier) if purl?
 
           solr_doc['modified_latest_dtpsidv'] = modified_latest
           solr_doc['created_at_dttsi'] = created_at
@@ -53,6 +54,10 @@ module Indexing
         return unless cocina.dro?
 
         Array(cocina.structural&.hasMemberOrders).first&.members
+      end
+
+      def purl?
+        !cocina.admin_policy? && cocina.access.view != 'dark'
       end
     end
   end

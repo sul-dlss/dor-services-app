@@ -10,9 +10,18 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
       admin_policy_id: 'druid:vv888vv8888',
       label: 'item label',
       version: 4
-    ).new(structural:)
+    ).new(structural:, access:)
     Cocina::Models.with_metadata(dro, 'abc123', created: DateTime.parse('Wed, 01 Jan 2020 12:00:01 GMT'),
                                                 modified: DateTime.parse('Thu, 04 Mar 2021 23:05:34 GMT'))
+  end
+
+  let(:structural) { {} }
+
+  let(:access) do
+    {
+      view: 'dark',
+      download: 'none'
+    }
   end
 
   before do
@@ -50,10 +59,6 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
     end
 
     context 'with no collections' do
-      let(:structural) do
-        {}
-      end
-
       it 'makes a solr doc' do
         expect(doc).to eq(
           'obj_label_tesim' => 'item label',
@@ -88,6 +93,40 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
           'id' => 'druid:xx999xx9999',
           'trace_id_ss' => 'abc123'
         )
+      end
+    end
+
+    context 'when the object is dark' do
+      it 'does not include the purl_ss field' do
+        expect(doc.key?('purl_ss')).to be false
+      end
+    end
+
+    context 'when the object is not dark' do
+      let(:access) do
+        {
+          view: 'world',
+          download: 'world'
+        }
+      end
+
+      it 'includes the purl_ss field' do
+        expect(doc['purl_ss']).to eq('https://purl.stanford.edu/xx999xx9999')
+      end
+    end
+
+    context 'when an admin policy' do
+      let(:cocina) do
+        Cocina::Models.with_metadata(
+          build(:admin_policy),
+          'def456',
+          created: DateTime.parse('Wed, 01 Jan 2020 12:00:01 GMT'),
+          modified: DateTime.parse('Thu, 04 Mar 2021 23:05:34 GMT')
+        )
+      end
+
+      it 'does not include the purl_ss field' do
+        expect(doc.key?('purl_ss')).to be false
       end
     end
   end
