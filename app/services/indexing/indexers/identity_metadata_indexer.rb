@@ -11,7 +11,7 @@ module Indexing
       end
 
       # @return [Hash] the partial solr document for identityMetadata
-      def to_solr
+      def to_solr # rubocop:disable Metrics/AbcSize
         if object_type == 'adminPolicy' || cocina_object.identification.blank?
           return {
             'objectType_ssimdv' => [object_type]
@@ -27,7 +27,8 @@ module Indexing
           'source_id_ssi' => source_id, # for search and display (reports, track_sheet)
           'source_id_text_nostem_i' => source_id, # for search, tokenized per request from accessioneers
           'folio_instance_hrid_ssim' => [folio_instance_hrid].compact,
-          'doi_ssimdv' => [doi].compact
+          'doi_ssimdv' => [doi].compact,
+          'dissertation_id_ss' => dissertation_id
         }
       end
 
@@ -68,6 +69,14 @@ module Indexing
           identifiers << "barcode:#{barcode}" if barcode
           identifiers << "folio:#{folio_instance_hrid}" if folio_instance_hrid
         end
+      end
+
+      def dissertation_id
+        @dissertation_id ||= dissertation_source_id? ? source_id.split(':').last : nil
+      end
+
+      def dissertation_source_id?
+        source_id&.include?('dissertationid')
       end
     end
   end

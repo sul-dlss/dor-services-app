@@ -13,7 +13,7 @@ RSpec.describe Indexing::Indexers::IdentityMetadataIndexer do
       let(:type) { Cocina::Models::ObjectType.book }
       let(:identification) do
         {
-          sourceId: 'google:STANFORD_342837261527',
+          sourceId: 'dissertationid:342837261527',
           catalogLinks: [
             {
               catalog: 'symphony',
@@ -50,12 +50,13 @@ RSpec.describe Indexing::Indexers::IdentityMetadataIndexer do
         expect(doc).to include(
           'barcode_id_ssimdv' => ['36105049267078'],
           'folio_instance_hrid_ssim' => ['a129483625'],
-          'identifier_ssim' => ['google:STANFORD_342837261527', 'barcode:36105049267078',
+          'identifier_ssim' => ['dissertationid:342837261527', 'barcode:36105049267078',
                                 'folio:a129483625'],
-          'identifier_tesim' => ['google:STANFORD_342837261527', 'barcode:36105049267078',
+          'identifier_tesim' => ['dissertationid:342837261527', 'barcode:36105049267078',
                                  'folio:a129483625'],
           'objectType_ssimdv' => ['item'],
-          'source_id_ssi' => 'google:STANFORD_342837261527',
+          'source_id_ssi' => 'dissertationid:342837261527',
+          'dissertation_id_ss' => '342837261527',
           'doi_ssimdv' => ['10.25740/yr775yn6440']
         )
       end
@@ -74,7 +75,8 @@ RSpec.describe Indexing::Indexers::IdentityMetadataIndexer do
           'identifier_tesim' => ['sul:1234'],
           'objectType_ssimdv' => ['agreement'],
           'source_id_ssi' => 'sul:1234',
-          'source_id_text_nostem_i' => 'sul:1234'
+          'source_id_text_nostem_i' => 'sul:1234',
+          'dissertation_id_ss' => nil
         )
       end
       # rubocop:enable Style/StringHashKeys
