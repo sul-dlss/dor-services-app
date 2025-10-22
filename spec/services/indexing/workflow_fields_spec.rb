@@ -42,12 +42,16 @@ RSpec.describe Indexing::WorkflowFields do
       expect(doc['processing_status_text_ssidv']).to eq 'In accessioning'
       expect(doc).to match a_hash_including('opened_dtpsimdv' => including('2012-11-07T00:21:02Z'))
       expect(doc['published_earliest_dtpsidv']).to eq('2012-01-27T05:06:54Z')
+      expect(doc['formatted_published_earliest_ss']).to eq('2012-01-26 09:06:54 PM')
       expect(doc['published_latest_dtpsidv']).to eq('2012-11-07T00:59:39Z')
+      expect(doc['formatted_published_latest_ss']).to eq('2012-11-06 04:59:39 PM')
       expect(doc['published_dtpsimdv'].first).to eq(doc['published_earliest_dtpsidv'])
       expect(doc['published_dtpsimdv'].last).to eq(doc['published_latest_dtpsidv'])
       expect(doc['published_dtpsimdv'].size).to eq(3) # not 4 because 1 deduplicated value removed!
       expect(doc['opened_earliest_dtpsidv']).to eq('2012-10-29T23:30:07Z') #  2012-10-29T16:30:07-0700
+      expect(doc['formatted_opened_earliest_ss']).to eq('2012-10-29 04:30:07 PM')
       expect(doc['opened_latest_dtpsidv']).to eq('2012-11-07T00:21:02Z') #  2012-11-06T16:21:02-0800
+      expect(doc['formatted_opened_latest_ss']).to eq('2012-11-06 04:21:02 PM')
     end
 
     context 'when a new version has not been opened' do
