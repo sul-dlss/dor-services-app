@@ -2,7 +2,8 @@
 
 module Cocina
   module ToDatacite
-    # Transform the Cocina::Models::Description form attributes to the DataCite types attributes
+    # Transform the Cocina::Models::Description contributor attributes to the
+    #  DataCite creators, contributors, and funders attributes
     #  see https://support.datacite.org/reference/dois-2#put_dois-id
     class CreatorContributorFunder
       DATACITE_PERSON_CONTRIBUTOR_TYPES = {
