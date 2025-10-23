@@ -16,7 +16,8 @@ RSpec.describe Indexing::Indexers::AdministrativeTagIndexer do
         'Project : Rare Books : Very Old Books',
         'Registered By : blalbrit',
         'DPG : Beautiful Books : Octavo : newpri',
-        'Remediated By : 4.15.4'
+        'Remediated By : 4.15.4',
+        'Ticket : DIGREQ-1234'
       ]
     end
 
@@ -42,7 +43,8 @@ RSpec.describe Indexing::Indexers::AdministrativeTagIndexer do
       # rubocop:disable Style/StringHashKeys
       expect(document).to include(
         'project_tag_ssim' => ['Beautiful Books', 'Rare Books : Very Old Books'],
-        'registered_by_tag_ssim' => ['blalbrit']
+        'registered_by_tag_ssim' => ['blalbrit'],
+        'ticket_tag_ssim' => ['DIGREQ-1234']
       )
       # rubocop:enable Style/StringHashKeys
     end
