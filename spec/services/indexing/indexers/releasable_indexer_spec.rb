@@ -2,9 +2,10 @@
 
 require 'rails_helper'
 RSpec.describe Indexing::Indexers::ReleasableIndexer do
-  let(:cocina) { build(:dro).new(structural: { isMemberOf: collection_druids }) }
+  let(:cocina) { build(:dro).new(structural: { isMemberOf: collection_druids }, access:) }
   let(:collection_druids) { [] }
   let(:release_tags) { [] }
+  let(:access) { { view: 'world', download: 'world' } }
 
   describe 'to_solr' do
     let(:doc) do
@@ -146,6 +147,20 @@ RSpec.describe Indexing::Indexers::ReleasableIndexer do
         it 'has no release tags' do
           expect(doc).not_to include('released_to_ssim')
         end
+      end
+    end
+
+    context 'when item is dark' do
+      let(:release_tags) do
+        [
+          Dor::ReleaseTag.new(to: 'Searchworks', release: true, date: '2021-05-12T21:05:21.000+00:00',
+                              what: 'self')
+        ]
+      end
+      let(:access) { { view: 'dark', download: 'none' } }
+
+      it 'does not index release tags' do
+        expect(doc).to be_empty
       end
     end
   end
