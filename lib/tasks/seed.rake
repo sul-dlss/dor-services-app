@@ -32,7 +32,7 @@ namespace :seed do
 
     cocina_request_object = Cocina::Models.build_request(cocina_params)
 
-    if cocina_request_object.dro? && cocina_request_object.type != Cocina::Models::ObjectType.agreement
+    if cocina_request_object.dro? && !Cocina::Support.agreement?(cocina_request_object)
       raise 'Only Collections and APOs are supported'
     end
 
