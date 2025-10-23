@@ -15,7 +15,7 @@ module Indexing
 
       # @return [Hash] the partial solr document for releasable concerns
       def to_solr
-        return {} if tags.blank?
+        return {} if tags.blank? || Cocina::Support.dark?(cocina)
 
         {
           'released_to_ssim' => tags.map(&:to).uniq,
