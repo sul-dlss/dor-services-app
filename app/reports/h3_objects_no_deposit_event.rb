@@ -15,32 +15,29 @@ class H3ObjectsNoDepositEvent
   # > using the .** accessor only in the strict mode.
   JSONB_PATH = 'strict $.**.event[*] ? (@.type == "deposit")'
   SQL = <<~SQL.squish.freeze
-    SELECT item_druid, collection_druid
-    FROM (
-      SELECT ro.external_identifier as item_druid,
-             jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_druid,
-             rov.administrative ->'hasAdminPolicy' ->> 0 AS admin_policy
-             FROM repository_objects AS ro,
-             repository_object_versions AS rov
-             WHERE
-             ro.head_version_id = rov.id
-             AND ro.object_type = 'dro'
-             AND NOT jsonb_path_exists(rov.description, '#{JSONB_PATH}')
-    ) Q1
-    WHERE admin_policy = 'druid:zw306xn5593'
+    SELECT ro.external_identifier AS item_druid,
+           ro.updated_at AS last_updated,
+           rov.version AS current_version,
+           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_druid
+    FROM repository_object_versions AS rov, ((repository_objects AS ro
+    JOIN administrative_tags ON administrative_tags.druid = ro.external_identifier)
+    JOIN tag_labels ON tag_labels.id = administrative_tags.tag_label_id)
+    WHERE ro.head_version_id = rov.id
+    AND ro.object_type = 'dro'
+    AND tag_labels.tag LIKE 'Project : H3%'
+    AND NOT jsonb_path_exists(rov.description, '#{JSONB_PATH}')
   SQL
 
   def self.report
-    puts "item_druid,collection_druid\n"
-    rows(SQL).compact.each { |row| puts row }
-  end
+    puts 'item_druid,version,updated_at,collection_druid'
 
-  def self.rows(sql_query)
-    sql_result_rows = ActiveRecord::Base.connection.execute(sql_query).to_a
-
-    sql_result_rows.map do |row|
-      [
+    ActiveRecord::Base.connection.execute(SQL).to_a
+                      .sort_by { |row| row['last_updated'] }
+                      .each do |row|
+      puts [
         row['item_druid'],
+        row['current_version'],
+        row['last_updated'],
         row['collection_druid']
       ].to_csv
     end
