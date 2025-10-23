@@ -286,7 +286,7 @@ class VersionService
     return unless repository_object.user_versions.length > 1
 
     cocina_object = repository_object.to_cocina
-    return unless cocina_object.access.view == 'dark'
+    return unless Cocina::Support.dark?(cocina_object)
 
     UserVersionService.permanently_withdraw_previous_user_versions(druid:)
   end
