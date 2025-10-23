@@ -6,5 +6,13 @@ module Cocina
     def self.dark?(cocina_object)
       cocina_object.access.view == 'dark'
     end
+
+    def self.agreement?(cocina_object)
+      cocina_object.type == Cocina::Models::ObjectType.agreement
+    end
+
+    def self.virtual_object?(cocina_object)
+      cocina_object.dro? && cocina_object.structural&.hasMemberOrders&.first&.members.present?
+    end
   end
 end

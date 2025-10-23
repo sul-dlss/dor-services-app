@@ -55,18 +55,10 @@ module Indexing
       def object_type
         return 'adminPolicy' if cocina_object.admin_policy?
         return 'collection' if cocina_object.collection?
-        return 'agreement' if agreement?
-        return 'virtual object' if virtual_object?
+        return 'agreement' if Cocina::Support.agreement?(cocina_object)
+        return 'virtual object' if Cocina::Support.virtual_object?(cocina_object)
 
         'item'
-      end
-
-      def agreement?
-        cocina_object.type == Cocina::Models::ObjectType.agreement
-      end
-
-      def virtual_object?
-        cocina_object.structural&.hasMemberOrders&.first&.members.present?
       end
 
       def prefixed_identifiers
