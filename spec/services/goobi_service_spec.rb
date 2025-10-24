@@ -116,10 +116,10 @@ RSpec.describe GoobiService do
     end
 
     context 'without ocr tag present' do
-      let(:tags) { ['DPG : Workflow : book_workflow & stuff', 'Process : Content Type : Book', 'LAB : MAPS'] }
+      let(:tags) { ['DPG : Workflow : book_workflow & stuff', 'LAB : MAPS'] }
 
       it {
-        expect(result).to eq('<tag name="DPG" value="Workflow : book_workflow &amp; stuff"/><tag name="Process" value="Content Type : Book"/><tag name="LAB" value="MAPS"/>') # rubocop:disable Layout/LineLength
+        expect(result).to eq('<tag name="DPG" value="Workflow : book_workflow &amp; stuff"/><tag name="LAB" value="MAPS"/>') # rubocop:disable Layout/LineLength
       }
     end
 
@@ -144,7 +144,7 @@ RSpec.describe GoobiService do
     end
 
     context 'with a single tag' do
-      let(:tags) { ['DPG : Workflow : book_workflow', 'Process : Content Type : Book (flipbook, ltr)'] }
+      let(:tags) { ['DPG : Workflow : book_workflow', 'LAB : MAPS'] }
 
       it 'returns value parsed from a DPG admin tag' do
         expect(goobi_workflow_name).to eq('book_workflow')
@@ -154,7 +154,7 @@ RSpec.describe GoobiService do
     context 'with multiple tags' do
       let(:tags) do
         ['DPG : Workflow : book_workflow', 'DPG : Workflow : another_workflow',
-         'Process : Content Type : Book (flipbook, ltr)']
+         'LAB : MAPS']
       end
 
       it 'returns value parsed from first DPG admin tag' do
@@ -167,7 +167,7 @@ RSpec.describe GoobiService do
         allow(Honeybadger).to receive(:notify)
       end
 
-      let(:tags) { ['Process : Content Type : Book (flipbook, ltr)'] }
+      let(:tags) { ['LAB : MAPS'] }
 
       it 'returns default value' do
         expect(goobi_workflow_name).to eq(Settings.goobi.default_goobi_workflow_name)
@@ -188,12 +188,11 @@ RSpec.describe GoobiService do
     it 'returns an array of arrays with the tags from the object in the key:value format expected by goobi' do
       allow(AdministrativeTags).to receive(:for)
         .and_return(['DPG : Workflow : book_workflow',
-                     'Process : Content Type : Book (flipbook, ltr)', 'LAB : Map Work'])
-      expect(goobi_tag_list.length).to eq 3
+                     'LAB : Map Work'])
+      expect(goobi_tag_list.length).to eq 2
       goobi_tag_list.each { |goobi_tag| expect(goobi_tag.class).to eq Dor::GoobiTag }
       expect(goobi_tag_list[0]).to have_attributes(name: 'DPG', value: 'Workflow : book_workflow')
-      expect(goobi_tag_list[1]).to have_attributes(name: 'Process', value: 'Content Type : Book (flipbook, ltr)')
-      expect(goobi_tag_list[2]).to have_attributes(name: 'LAB', value: 'Map Work')
+      expect(goobi_tag_list[1]).to have_attributes(name: 'LAB', value: 'Map Work')
     end
 
     it 'returns an empty array when there are no tags' do
@@ -215,7 +214,7 @@ RSpec.describe GoobiService do
 
     it 'returns false if the goobi ocr tag is not present' do
       allow(AdministrativeTags).to receive(:for).and_return(['DPG : Workflow : book_workflow',
-                                                             'Process : Content Type : Book (flipbook, ltr)'])
+                                                             'LAB : MAPS'])
       expect(goobi_ocr_tag_present).to be false
     end
 
@@ -241,7 +240,7 @@ RSpec.describe GoobiService do
 
     context 'when folio enabled' do
       context 'without ocr tag present' do
-        let(:tags) { ['DPG : Workflow : book_workflow & stuff', 'Process : Content Type : Book', 'LAB : MAPS'] }
+        let(:tags) { ['DPG : Workflow : book_workflow & stuff', 'LAB : MAPS'] }
 
         it 'creates the correct xml request with folio instance hrid' do
           expect(xml_request).to be_equivalent_to <<-XML
@@ -261,7 +260,6 @@ RSpec.describe GoobiService do
               <ocr>false</ocr>
               <tags>
                   <tag name="DPG" value="Workflow : book_workflow &amp; stuff"/>
-                  <tag name="Process" value="Content Type : Book"/>
                   <tag name="LAB" value="MAPS"/>
               </tags>
             </stanfordCreationRequest>
@@ -380,12 +378,12 @@ RSpec.describe GoobiService do
 
     it 'returns project name from a valid identityMetadata' do
       allow(AdministrativeTags).to receive(:for).and_return(['Project : Batchelor Maps : Batch 1',
-                                                             'Process : Content Type : Book (flipbook, ltr)'])
+                                                             'LAB : MAPS'])
       expect(project_name).to eq('Batchelor Maps : Batch 1')
     end
 
     it 'returns blank for project name if not in tag' do
-      allow(AdministrativeTags).to receive(:for).and_return(['Process : Content Type : Book (flipbook, ltr)'])
+      allow(AdministrativeTags).to receive(:for).and_return(['LAB : MAPS'])
       expect(project_name).to eq('')
     end
   end

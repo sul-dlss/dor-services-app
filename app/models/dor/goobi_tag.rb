@@ -3,9 +3,9 @@
 module Dor
   # This represents a tag from Argo that we want to pass to Goobi.
   # So the tag from Argo:
-  #   Process : Content Type : Image
+  #   Part1 : Part2 : Part3
   # Is represented as:
-  #   <tag name="Process" value="Content Type : Image"></tag>
+  #   <tag name="Part1" value="Part2 : Part3"></tag>
   class GoobiTag
     attr_accessor :name, :value
 

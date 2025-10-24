@@ -13,7 +13,7 @@ RSpec.describe TagLabel do
     end
 
     context 'with valid values' do
-      ['Registered By : mjgiarlo', 'Process : Content Type : Map'].each do |tag|
+      ['Registered By : mjgiarlo', 'LAB : MAPS'].each do |tag|
         subject(:label) { described_class.new(tag:) }
 
         it { is_expected.to be_valid }
