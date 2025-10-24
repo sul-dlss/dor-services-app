@@ -7,7 +7,6 @@ RSpec.describe 'Administrative tags' do
   let(:item) { build(:dro_with_metadata) }
   let(:tags) do
     [
-      'Process : Content Type : Map',
       'Project : Foo Maps : Batch 1',
       'Registered By : mjgiarlo',
       'Remediated By : 1.2.3'
