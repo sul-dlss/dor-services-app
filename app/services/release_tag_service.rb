@@ -13,5 +13,6 @@ class ReleaseTagService
   def self.create(tag:, cocina_object:)
     ReleaseTag.from_cocina(druid: cocina_object.externalIdentifier, tag:).save!
     Indexer.reindex(cocina_object: cocina_object)
+    Workflow::Service.create(name: 'releaseWF', druid: cocina_object.externalIdentifier, version: cocina_object.version)
   end
 end
