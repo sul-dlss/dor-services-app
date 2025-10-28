@@ -19,7 +19,7 @@ RSpec.describe ReleaseTagService do
     it 'adds another release tag' do
       expect { create_tag }.to change { ReleaseTag.where(druid:).count }.by(1)
       expect(Indexer).to have_received(:reindex).with(cocina_object:)
-      expect(Workflow::Service).to have_received(:create).with(name: 'releaseWF',
+      expect(Workflow::Service).to have_received(:create).with(workflow_name: 'releaseWF',
                                                                druid:, version: 2)
     end
   end
