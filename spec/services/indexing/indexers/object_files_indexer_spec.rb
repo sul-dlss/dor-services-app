@@ -177,7 +177,7 @@ RSpec.describe Indexing::Indexers::ObjectFilesIndexer do
           'resource_count_itsi' => 1,
           'content_file_count_itsi' => 4,
           'first_shelved_image_ss' => 'gw177fc7976_05_0001.jp2',
-          'preserved_size_lpsi' => 168_404_723,
+          'preserved_size_lpsidv' => 168_404_723,
           'preserved_size_dbtsi' => 168_404_723, # TODO: remove https://github.com/sul-dlss/dor-services-app/issues/5604
           'human_preserved_size_ss' => '161 MB'
         )
@@ -264,7 +264,7 @@ RSpec.describe Indexing::Indexers::ObjectFilesIndexer do
 
       it 'ignores the nil sizes without erroring' do
         expect(doc).to include(
-          'preserved_size_lpsi' => 4_128_877,
+          'preserved_size_lpsidv' => 4_128_877,
           'preserved_size_dbtsi' => 4_128_877, # TODO: remove https://github.com/sul-dlss/dor-services-app/issues/5604
           'human_preserved_size_ss' => '3.94 MB'
         )
@@ -281,7 +281,7 @@ RSpec.describe Indexing::Indexers::ObjectFilesIndexer do
           'shelved_content_file_count_itsi' => 0,
           'resource_count_itsi' => 0,
           'content_file_count_itsi' => 0,
-          'preserved_size_lpsi' => 0,
+          'preserved_size_lpsidv' => 0,
           'preserved_size_dbtsi' => 0, # TODO: remove https://github.com/sul-dlss/dor-services-app/issues/5604
           'human_preserved_size_ss' => '0 Bytes'
         )
