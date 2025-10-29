@@ -26,6 +26,7 @@ class QueueService
 
   DSA_ROBOTS = [
     'Robots::DorRepo::Accession::Publish',
+    'Robots::DorRepo::Accession::ReleaseInitiate',
     'Robots::DorRepo::Accession::Shelve',
     'Robots::DorRepo::Accession::ResetWorkspace',
     'Robots::DorRepo::Accession::SdrIngestTransfer',

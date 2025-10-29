@@ -24,7 +24,6 @@ module Publish
       publish_shelve
       check_stacks if public_cocina.dro?
       republish_virtual_object_constituents!
-      release_tags_on_success
     end
 
     private
@@ -48,18 +47,6 @@ module Publish
         PublishJob.set(queue: :publish_low).perform_later(druid: constituent_druid,
                                                           background_job_result: BackgroundJobResult.create)
       end
-    end
-
-    def release_tags_on_success
-      tags = PublicMetadataReleaseTagService.for_public_metadata(cocina_object: public_cocina)
-      actions = { index: [], delete: [] }.tap do |releases|
-        tags.each do |tag|
-          releases[tag.release ? :index : :delete] << tag.to
-        end
-      end
-      # It is important to make this call even if there are no release tags for this object, because purl-fetcher
-      # will automatically add: SearchWorksPreview and ContentSearch
-      PurlFetcher::Client::ReleaseTags.release(druid:, **actions)
     end
 
     ##
