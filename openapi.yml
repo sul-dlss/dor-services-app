@@ -2172,8 +2172,15 @@ components:
     DOI:
       description: Digital Object Identifier (https://www.doi.org)
       oneOf:
-        - $ref: "#/components/schemas/DoiPattern"
-        - $ref: "#/components/schemas/DoiExceptions"
+        - $ref: '#/components/schemas/RepositoryDOI'
+        - $ref: '#/components/schemas/PreregisteredRepositoryDOI'
+        - $ref: '#/components/schemas/LibrariesDOI'
+        - $ref: '#/components/schemas/DOIExceptions'
+    DOIExceptions:
+      type: string
+      description: "The DOI (Digital Object Identifier, https://www.doi.org) pattern for objects in SDR that do not adhere to any of the other DOI patterns in the spec. This is a short list of known exceptions only. Please note that DOIs are *not* case-sensitive, so we allow for uppercase and lowercase letters with these exceptions."
+      pattern: '^10\.25936\/[jJ][mM]709[hH][cC]8700|10\.18735\/4[nN][sS][eE]-8871|10\.18735\/952[xX]-[wW]447|10\.18735\/0[mM][wW]1-[qQ][qQ]72$'
+      example: '10.18735/0mw1-qq72'
     DRO:
       description: Domain-defined abstraction of a 'work'. Digital Repository Objects' abstraction is describable for our domain’s purposes, i.e. for management needs within our system.
       type: object
@@ -2582,17 +2589,6 @@ components:
               $ref: "#/components/schemas/Standard"
               # description: An alphabet or other notation used to represent a
               #   language or other symbolic system of the descriptive element value.
-    DoiExceptions:
-      type: string
-      description: pre-existing Digital Object Identifiers (https://www.doi.org) not matching the pattern (case insensitive)
-      pattern: '^10\.(25740\/([vV][aA]90-[cC][tT]15|[sS][yY][xX][aA]-[mM]256|12[qQ][fF]-5243|65[jJ]8-6114)|25936\/629[tT]-[bB][xX]79)$'
-      example: "10.25740/12qF-5243"
-    DoiPattern:
-      type: string
-      description: Digital Object Identifier (https://www.doi.org) regex pattern
-      # The prod and test prefixes are permitted
-      pattern: '^10\.(25740|80343)\/[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$'
-      example: "10.25740/bc123df4567"
     Druid:
       type: string
       pattern: "^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$"
@@ -2939,6 +2935,11 @@ components:
       description: "BCP 47 language tag: https://www.rfc-editor.org/rfc/rfc4646.txt -- other applications (like media players) expect language codes of this format, see e.g. https://videojs.com/guides/text-tracks/#srclang"
       type: string
       nullable: true
+    LibrariesDOI:
+      type: string
+      description: 'The DOI (Digital Object Identifier, https://www.doi.org) pattern for works registered by Stanford Libraries outside of SDR workflows. Please note that DOIs are *not* case-sensitive so both cases of letters should be permitted.'
+      pattern: '^10\.25936\/[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}$'
+      example: '10.25936/629T-bx79'
     License:
       description: The license governing reuse of the DRO. Should be an IRI for known licenses (i.e. CC, RightsStatement.org URI, etc.).
       type: string
@@ -3067,6 +3068,11 @@ components:
       type: string
       pattern: '^L\d+$'
       example: "L11403803"
+    PreregisteredRepositoryDOI:
+      type: string
+      description: 'The DOI (Digital Object Identifier, https://www.doi.org) pattern for DOIs registered before an SDR object has been registered---i.e., before it has a druid, which is a common pattern as of 2025. Please note that DOIs are *not* case-sensitive so both cases of letters should be permitted.'
+      pattern: '^10\.(25740|80343)\/[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}$'
+      example: '10.80343/12qF-5243'
     Presentation:
       description: Presentation data for the File.
       type: object
@@ -3236,6 +3242,11 @@ components:
           example: Searchworks
         release:
           type: boolean
+    RepositoryDOI:
+      type: string
+      description: "The DOI (Digital Object Identifier, https://www.doi.org) pattern for SDR objects, based on the object's repository identifier. Permits both production and text prefixes to be used to account for objects in different SDR environments. Please note that while DOIs are *not* case-sensitive, we constrain the DOIs we mint for SDR to lowercase for consistency."
+      pattern: '^10\.(25740|80343)\/[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$'
+      example: '10.25740/bc123df4567'
     RequestAdminPolicy:
       description: Same as an AdminPolicy, but doesn't have an externalIdentifier as one will be created
       type: object
