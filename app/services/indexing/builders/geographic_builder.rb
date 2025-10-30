@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# TODO: Remove
 module Indexing
   module Builders
     # Builds the geographic fields for a solr document

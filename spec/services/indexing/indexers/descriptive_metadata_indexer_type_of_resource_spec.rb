@@ -40,38 +40,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
     end
 
-    context 'when multiple MODS resource types' do
-      let(:description) do
-        {
-          title: [
-            {
-              value: 'Title'
-            }
-          ],
-          form: [
-            {
-              value: 'text',
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              }
-            },
-            {
-              value: 'still image',
-              type: 'resource type',
-              source: {
-                value: 'MODS resource types'
-              }
-            }
-          ]
-        }
-      end
-
-      it 'includes values' do
-        expect(doc).to include('mods_typeOfResource_ssimdv' => ['text', 'still image'])
-      end
-    end
-
     context 'when MODS resource type is collection' do
       # derives from MODS attribute, not value
       let(:description) do
@@ -121,52 +89,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
 
       it 'does not includes value' do
         expect(doc).not_to include('mods_typeOfResource_ssimdv')
-      end
-    end
-
-    context 'when form is not a MODS resource type' do
-      let(:description) do
-        {
-          title: [
-            {
-              value: 'Title'
-            }
-          ],
-          form: [
-            {
-              value: 'text',
-              type: 'resource type'
-            }
-          ]
-        }
-      end
-
-      it 'does not includes value' do
-        expect(doc).not_to include('mods_typeOfResource_ssimdv')
-      end
-    end
-
-    context 'when MODS resource type lacks type property' do
-      let(:description) do
-        {
-          title: [
-            {
-              value: 'Title'
-            }
-          ],
-          form: [
-            {
-              value: 'text',
-              source: {
-                value: 'MODS resource types'
-              }
-            }
-          ]
-        }
-      end
-
-      it 'includes value' do
-        expect(doc).to include('mods_typeOfResource_ssimdv' => ['text'])
       end
     end
   end

@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# TODO: Remove this spec.
 RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
   subject(:indexer) { described_class.new(cocina:) }
 
