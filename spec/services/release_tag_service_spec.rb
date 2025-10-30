@@ -22,6 +22,16 @@ RSpec.describe ReleaseTagService do
       expect(Workflow::Service).to have_received(:create).with(workflow_name: 'releaseWF',
                                                                druid:, version: 2)
     end
+
+    context 'when reindex is false' do
+      subject(:create_tag) { described_class.create(cocina_object:, tag:, reindex: false) }
+
+      it 'adds another release tag without reindexing or starting workflow' do
+        expect { create_tag }.to change { ReleaseTag.where(druid:).count }.by(1)
+        expect(Indexer).not_to have_received(:reindex)
+        expect(Workflow::Service).not_to have_received(:create)
+      end
+    end
   end
 
   describe '.tags' do
@@ -33,6 +43,22 @@ RSpec.describe ReleaseTagService do
       expect(releases).to eq [
         release_tag.to_cocina
       ]
+    end
+  end
+
+  describe '.latest_release_tags' do
+    subject(:latest_tags) { described_class.latest_release_tags(druid:) }
+
+    let!(:latest_sw_release_tag) { create(:release_tag, druid:, released_to: 'Searchworks', created_at: 1.day.ago) }
+    let!(:latest_ew_release_tag) { create(:release_tag, druid:, released_to: 'Earthworks', created_at: 1.day.ago) }
+
+    before do
+      create(:release_tag, druid:, released_to: 'Searchworks', created_at: 2.days.ago)
+      create(:release_tag, druid:, released_to: 'Earthworks', created_at: 2.days.ago)
+    end
+
+    it 'returns the latest released tag for each destination' do
+      expect(latest_tags).to contain_exactly(latest_sw_release_tag.to_cocina, latest_ew_release_tag.to_cocina)
     end
   end
 end

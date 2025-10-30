@@ -10,10 +10,22 @@ class ReleaseTagService
   # Creates ReleaseTag model objects.
   # @param [Dor::ReleaseTag] tag
   # @param [Cocina::Models::DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata] cocina_object
-  def self.create(tag:, cocina_object:)
+  # @param [Boolean] reindex whether to reindex and start releaseWF workflow after creating the tag, defaults to true
+  def self.create(tag:, cocina_object:, reindex: true)
     ReleaseTag.from_cocina(druid: cocina_object.externalIdentifier, tag:).save!
+    return unless reindex
+
     Indexer.reindex(cocina_object: cocina_object)
     Workflow::Service.create(workflow_name: 'releaseWF', druid: cocina_object.externalIdentifier,
                              version: cocina_object.version)
+  end
+
+  # Retrieve the latest release tags for each release target for an item
+  # @param [String] druid
+  # @return [Array<Cocina::Models::ReleaseTag>]
+  def self.latest_release_tags(druid:)
+    tags(druid:).pluck(:to).uniq.map do |to|
+      tags(druid:).select { |tag| tag.to == to }.max_by(&:date)
+    end
   end
 end
