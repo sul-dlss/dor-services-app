@@ -9,6 +9,11 @@ class DecommissionService
 
   attr_reader :druid, :description, :sunetid
 
+  # Decommissions an object
+  # @param [String] druid
+  # @param [String] description reason for decommissioning
+  # @param [String] sunetid user performing the decommission
+  # @return [Cocina::Models::DROWithMetadata] updated cocina object
   def self.decommission(druid:, description:, sunetid:)
     new(druid:, description:, sunetid:).decommission
   end
@@ -37,12 +42,16 @@ class DecommissionService
     RepositoryObject.find_by!(external_identifier: druid)
   end
 
+  def cocina_object
+    repository_object.head_version.to_cocina_with_metadata
+  end
+
   def set_decommissioned_tags
     ReleaseTagService.latest_release_tags(druid:).each do |release_tag|
       next unless release_tag.release
 
       ReleaseTagService.create(tag: decommission_tag(release_tag),
-                               cocina_object: repository_object.head_version.to_cocina_with_metadata,
+                               cocina_object:,
                                create_only: true)
     end
 
@@ -56,8 +65,10 @@ class DecommissionService
                              version: repository_object.head_version_version)
   end
 
+  # Updates the cocina object, removing its structural contains and setting appropriate
+  # access (dark) and administrative (graveyard APO) for decommissioning.
+  # @return [Cocina::Models::DROWithMetadata] cocina object updated for decommission
   def decommissioned_cocina_object
-    cocina_object = repository_object.head_version.to_cocina_with_metadata
     structural = Cocina::Models::DROStructural.new(cocina_object.structural&.to_h&.except(:contains))
 
     UpdateObjectService.update(cocina_object: cocina_object.new(access: DECOMMISSION_ACCESS,
@@ -67,6 +78,9 @@ class DecommissionService
                                who: sunetid)
   end
 
+  # Builds a release tag for decommissioning based on an existing release tag
+  # @param [Cocina::Models::ReleaseTag] release_tag
+  # @return [Dor::ReleaseTag] decommission release tag
   def decommission_tag(release_tag)
     Dor::ReleaseTag.new(
       to: release_tag.to,
