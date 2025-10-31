@@ -7,43 +7,34 @@ class DecommissionService
   DECOMMISSION_ACCESS = { view: 'dark', download: 'none' }.freeze
   DECOMMISSION_APO = { hasAdminPolicy: Settings.graveyard_admin_policy.druid }.freeze
 
-  attr_reader :cocina_object, :reason, :sunetid
+  attr_reader :druid, :description, :sunetid
 
-  def self.decommission(cocina_object:, reason:, sunetid:)
-    new(cocina_object:, reason:, sunetid:).decommission
+  def self.decommission(druid:, description:, sunetid:)
+    new(druid:, description:, sunetid:).decommission
   end
 
-  def initialize(cocina_object:, reason:, sunetid:)
-    @cocina_object = cocina_object
-    @reason = reason
+  def initialize(druid:, description:, sunetid:)
+    @druid = druid
+    @description = description
     @sunetid = sunetid
   end
 
   def decommission
-    VersionService.open(cocina_object:,
-                        description: "Decommissioned: #{reason}",
-                        assume_accessioned: true,
-                        opening_user_name: sunetid)
+    repository_object.open_version!(description:)
 
-    updated_cocina_object = UpdateObjectService.update(cocina_object: decommissioned_cocina_object,
-                                                       description: "Decommissioned: #{reason}",
-                                                       who: sunetid)
-
+    updated_cocina_object = decommissioned_cocina_object
     set_decommissioned_tags
     release_workflow
 
-    VersionService.close(druid:,
-                         version: updated_cocina_object.version,
-                         description: "Decommissioned: #{reason}",
-                         user_name: sunetid)
+    repository_object.close_version!(description:)
 
     updated_cocina_object
   end
 
   private
 
-  def druid
-    cocina_object.externalIdentifier
+  def repository_object
+    RepositoryObject.find_by!(external_identifier: druid)
   end
 
   def set_decommissioned_tags
@@ -51,26 +42,29 @@ class DecommissionService
       next unless release_tag.release
 
       ReleaseTagService.create(tag: decommission_tag(release_tag),
-                               cocina_object:,
+                               cocina_object: repository_object.head_version.to_cocina_with_metadata,
                                create_only: true)
     end
 
-    AdministrativeTags.create(identifier: cocina_object.externalIdentifier,
-                              tags: ["Decommissioned : #{reason}"])
+    AdministrativeTags.create(identifier: druid,
+                              tags: ["Decommissioned : #{description}"])
   end
 
   def release_workflow
     Workflow::Service.create(workflow_name: 'releaseWF',
-                             druid: cocina_object.externalIdentifier,
-                             version: cocina_object.version)
+                             druid:,
+                             version: repository_object.head_version_version)
   end
 
   def decommissioned_cocina_object
+    cocina_object = repository_object.head_version.to_cocina_with_metadata
     structural = Cocina::Models::DROStructural.new(cocina_object.structural&.to_h&.except(:contains))
 
-    cocina_object.new(access: DECOMMISSION_ACCESS,
-                      administrative: DECOMMISSION_APO,
-                      structural:)
+    UpdateObjectService.update(cocina_object: cocina_object.new(access: DECOMMISSION_ACCESS,
+                                                                administrative: DECOMMISSION_APO,
+                                                                structural:),
+                               description: "Decommissioned: #{description}",
+                               who: sunetid)
   end
 
   def decommission_tag(release_tag)
