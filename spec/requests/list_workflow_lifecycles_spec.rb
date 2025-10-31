@@ -31,19 +31,19 @@ RSpec.describe 'List workflow lifecycles' do
       expect(response).to be_successful
       expect(Nokogiri::XML(response.parsed_body).to_s).to match(ng_xml.to_s)
       expect(Workflow::LifecycleService).to have_received(:lifecycle_xml)
-        .with(druid: druid, version: nil, active_only: false)
+        .with(druid: druid, version: nil)
     end
   end
 
   context 'when params are provided' do
     it 'returns the lifecycle XML' do
       get "/v1/objects/#{druid}/lifecycles",
-          params: { version: '2', active_only: 'true' },
+          params: { version: '2' },
           headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(Nokogiri::XML(response.parsed_body).to_s).to match(ng_xml.to_s)
       expect(Workflow::LifecycleService).to have_received(:lifecycle_xml)
-        .with(druid: druid, version: 2, active_only: true)
+        .with(druid: druid, version: 2)
     end
   end
 end

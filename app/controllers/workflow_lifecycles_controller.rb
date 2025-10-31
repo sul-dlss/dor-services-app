@@ -3,7 +3,6 @@
 # Controller for workflow lifecycles
 class WorkflowLifecyclesController < WorkflowApplicationController
   def index
-    render xml: Workflow::LifecycleService.lifecycle_xml(druid: params[:object_id], version: params[:version],
-                                                         active_only: params[:active_only] == 'true')
+    render xml: Workflow::LifecycleService.lifecycle_xml(druid: params[:object_id], version: params[:version])
   end
 end
