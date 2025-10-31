@@ -17,6 +17,7 @@ RSpec.describe Workflow::Transformer do
           <process name="technical-metadata" status="waiting"/>
           <process name="shelve" status="waiting"/>
           <process name="publish" status="waiting" lifecycle="published"/>
+          <process name="release-initiate" status="waiting"/>
           <process name="update-doi" status="waiting"/>
           <process name="update-orcid-work" status="waiting"/>
           <process name="sdr-ingest-transfer" status="waiting"/>

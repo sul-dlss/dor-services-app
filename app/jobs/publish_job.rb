@@ -9,7 +9,8 @@ class PublishJob < ApplicationJob
   # @param [Integer,nil] user_version the version of the item to be published. If nil, the latest version will
   #  be published.
   # @param [BackgroundJobResult] background_job_result identifier of a background job result to store status info
-  def perform(druid:, background_job_result:, user_version: nil)
+  # @param [Boolean] release whether to release after publishing
+  def perform(druid:, background_job_result:, user_version: nil, release: false)
     background_job_result.processing!
     cocina_object = CocinaObjectStore.find(druid)
 
@@ -25,6 +26,11 @@ class PublishJob < ApplicationJob
     Publish::MetadataTransferService.publish(druid:, user_version:)
     EventFactory.create(druid:, event_type: 'publishing_complete',
                         data: { background_job_result_id: background_job_result.id })
+
+    if release
+      Workflow::Service.create(druid:, workflow_name: 'releaseWF',
+                               version: cocina_object.version)
+    end
 
     background_job_result.complete!
   end
