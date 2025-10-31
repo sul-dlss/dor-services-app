@@ -10,7 +10,7 @@ class ReleaseTagService
   # Creates ReleaseTag model objects.
   # @param [Dor::ReleaseTag] tag
   # @param [Cocina::Models::DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata] cocina_object
-  # @param [Boolean] reindex whether to reindex and start releaseWF workflow after creating the tag, defaults to true
+  # @param [Boolean] create_only or reindex and releaseWF workflow after creating the tag, defaults to false
   def self.create(tag:, cocina_object:, create_only: false)
     ReleaseTag.from_cocina(druid: cocina_object.externalIdentifier, tag:).save!
     return if create_only

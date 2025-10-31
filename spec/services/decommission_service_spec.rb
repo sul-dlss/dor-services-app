@@ -55,10 +55,9 @@ RSpec.describe DecommissionService do
     )
   end
   let(:collection_druid) { 'druid:bc778pm9866' }
-  let(:graveyard_apo_druid) { 'druid:rm216bn3270' }
   let(:reason) { 'No longer needed' }
   let(:sunetid) { 'awesome_po' }
-  let(:apo_object) { build(:admin_policy, id: graveyard_apo_druid) }
+  let(:apo_object) { build(:admin_policy, id: Settings.graveyard_admin_policy.druid) }
   let(:collection_object) { build(:collection, id: collection_druid) }
   let(:lock) { 'druid:hj185xx2222=4=2' }
 
@@ -77,7 +76,7 @@ RSpec.describe DecommissionService do
                                      contains: [],
                                      isMemberOf: [collection_druid]
                                    },
-                                   administrative: { hasAdminPolicy: graveyard_apo_druid }),
+                                   administrative: { hasAdminPolicy: apo_object.externalIdentifier }),
         updated_lock,
         created:,
         modified:
@@ -86,27 +85,17 @@ RSpec.describe DecommissionService do
     let(:updated_lock) { 'druid:hj185xx2222=5=3' }
     let(:created) { repository_object.reload.created_at.utc }
     let(:modified) { repository_object.reload.updated_at.utc }
-    # let(:unrelease_tag) { Dor::ReleaseTag.new(to: 'Searchworks', what: 'self', who: 'bob', release: false, date: DateTime.now.utc.iso8601) }
-    # let(:release_tag) do
-    #   create(:release_tag, druid:, released_to: 'Searchworks', what: 'self', who: 'bob', release: true,
-    #                        created_at: 1.day.ago.iso8601)
-    # end
-    # let(:unrelease_tag) do
-    #   create(:release_tag, druid:, released_to: 'Searchworks', what: 'self', who: 'bob', release: false,
-    #                        created_at: 1.day.ago.iso8601)
-    # end
 
     before do
       create(:release_tag, druid:, released_to: 'Searchworks', what: 'self', who: 'bob', release: true,
                            created_at: 1.day.ago.iso8601)
       allow(CocinaObjectStore).to receive(:find).with(druid).and_return(cocina_object)
-      allow(CocinaObjectStore).to receive(:find).with(graveyard_apo_druid).and_return(apo_object)
+      allow(CocinaObjectStore).to receive(:find).with(Settings.graveyard_admin_policy.druid).and_return(apo_object)
       allow(CocinaObjectStore).to receive(:find).with(collection_druid).and_return(collection_object)
       allow(Indexer).to receive(:reindex_later)
       allow(VersionService).to receive(:open)
       allow(VersionService).to receive(:close)
       allow(Workflow::Service).to receive(:create)
-      # allow(ReleaseTagService).to receive(:latest_released_tags).and_yield(release_tag)
       allow(ReleaseTagService).to receive(:create)
       allow(AdministrativeTags).to receive(:create)
     end

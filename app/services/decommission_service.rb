@@ -5,7 +5,7 @@ class DecommissionService
   class DecommissionFailed < StandardError; end
 
   DECOMMISSION_ACCESS = { view: 'dark', download: 'none' }.freeze
-  DECOMMISSION_APO = { hasAdminPolicy: 'druid:rm216bn3270' }.freeze
+  DECOMMISSION_APO = { hasAdminPolicy: Settings.graveyard_admin_policy.druid }.freeze
 
   attr_reader :cocina_object, :reason, :sunetid
 
