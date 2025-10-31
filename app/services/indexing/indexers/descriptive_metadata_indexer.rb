@@ -7,6 +7,7 @@ module Indexing
     # Indexes the descriptive metadata
     # rubocop:disable Metrics/ClassLength
     class DescriptiveMetadataIndexer
+      # TODO: Remove
       # See https://github.com/sul-dlss/stanford-mods/blob/master/lib/stanford-mods/searchworks.rb#L244
       FORMAT = {
         'cartographic' => 'Map',
@@ -23,10 +24,11 @@ module Indexing
         'text' => 'Book'
       }.freeze
 
-      attr_reader :cocina, :stanford_mods_record
+      attr_reader :cocina, :stanford_mods_record # TODO: Remove stanford_mods_record
 
       def initialize(cocina:, **)
         @cocina = cocina
+        # TODO: Remove
         mods_ng = Cocina::Models::Mapping::ToMods::Description.transform(cocina.description, cocina.externalIdentifier)
         @stanford_mods_record = Stanford::Mods::Record.new.from_nk_node(mods_ng.root)
       end
@@ -48,22 +50,30 @@ module Indexing
           'contributor_orcids_ssimdv' => orcids,
 
           # topic
-          'topic_ssimdv' => stanford_mods_record.topic_facet&.uniq,
-          'topic_tesim' => stemmable_topics,
+          'subject_topic_other_ssimdv' => cocina_display_record.subject_topics_other,
+          'topic_ssimdv' => stanford_mods_record.topic_facet&.uniq, # TODO: Remove
+          'subject_topic_tesim' => cocina_display_record.subject_topics,
+          'topic_tesim' => stemmable_topics, # TODO: Remove
 
           # publication
           'originInfo_date_created_tesim' => creation_date,
           'originInfo_publisher_tesim' => publisher_name,
           'originInfo_place_placeTerm_tesim' => event_place, # do we want this?
-          'sw_pub_date_facet_ssidv' => stanford_mods_record.pub_year_int.to_s, # SW Date facet
+          'sw_pub_date_facet_ssidv' => stanford_mods_record.pub_year_int.to_s, # TODO: Remove
+          'publication_year_ssidv' => cocina_display_record.pub_year_int&.to_s,
 
           # SW facets plus a friend facet
-          'sw_format_ssimdv' => sw_format, # SW Resource Type facet
+          'sw_format_ssimdv' => sw_format, # TODO: Remove
+          'sw_resource_type_ssimdv' => cocina_display_record.searchworks_resource_types,
           'mods_typeOfResource_ssimdv' => resource_type, # MODS Resource Type facet
-          'sw_genre_ssimdv' => stanford_mods_record.sw_genre, # SW Genre facet
-          'sw_language_ssimdv' => stanford_mods_record.sw_language_facet, # SW Language facet
-          'sw_subject_temporal_ssimdv' => stanford_mods_record.era_facet, # SW Era facet
-          'sw_subject_geographic_ssimdv' => subject_geographic, # SW Region facet
+          'sw_genre_ssimdv' => stanford_mods_record.sw_genre, # TODO: Remove
+          'genre_ssimdv' => cocina_display_record.genres,
+          'sw_language_ssimdv' => stanford_mods_record.sw_language_facet, # TODO: Remove
+          'sw_language_names_ssimdv' => cocina_display_record.searchworks_language_names,
+          'subject_temporal_ssimdv' => cocina_display_record.subject_temporal,
+          'sw_subject_temporal_ssimdv' => stanford_mods_record.era_facet, # TODO: Remove
+          'sw_subject_geographic_ssimdv' => subject_geographic, # TODO: Remove
+          'subject_place_ssimdv' => cocina_display_record.subject_places,
 
           # all the descriptive data that we want to search on, with different flavors for better recall and precision
           'descriptive_tiv' => all_search_text, # ICU tokenized, ICU folded
@@ -74,10 +84,7 @@ module Indexing
 
       private
 
-      def subject_temporal
-        Indexing::Builders::TemporalBuilder.build(subjects)
-      end
-
+      # TODO: Remove
       def subject_geographic
         Indexing::Builders::GeographicBuilder.build(subjects)
       end
@@ -124,14 +131,12 @@ module Indexing
       end
 
       def resource_type
-        @resource_type ||= forms.select do |form|
-          form.source&.value == 'MODS resource types' &&
-            %w[collection manuscript].exclude?(form.value)
-        end.map(&:value)
+        @resource_type ||= cocina_display_record.mods_resource_types - ['collection', 'manuscript']
       end
 
       # rubocop:disable Metrics/CyclomaticComplexity
       # rubocop:disable Metrics/PerceivedComplexity
+      # TODO: Remove
       def sw_format # rubocop:disable Metrics/AbcSize
         return ['Map'] if resource_type?('software, multimedia') && resource_type?('cartographic')
         return ['Dataset'] if resource_type?('software, multimedia') && genre?('dataset')
@@ -153,22 +158,27 @@ module Indexing
 
       # rubocop:enable Metrics/CyclomaticComplexity
       # rubocop:enable Metrics/PerceivedComplexity
+      # TODO: Remove
       def resource_type?(type)
         flat_forms_for('resource type').any? { |form| form.value == type }
       end
 
+      # TODO: Remove
       def genre?(genre)
         flat_forms_for('genre').any? { |form| form.value == genre }
       end
 
+      # TODO: Remove
       def issuance?(issuance)
         flat_event_notes.any? { |note| note.type == 'issuance' && note.value == issuance }
       end
 
+      # TODO: Remove
       def frequency?
         flat_event_notes.any? { |note| note.type == 'frequency' }
       end
 
+      # TODO: Remove
       def flat_forms_for(type)
         forms.flat_map do |form|
           if form.type == type
@@ -179,16 +189,13 @@ module Indexing
         end
       end
 
+      # TODO: Remove
       def flat_event_notes
         @flat_event_notes ||= events.flat_map { |event| flat_event(event) }.flat_map do |event|
           Array(event.note).flat_map do |note|
             flat_value(note)
           end
         end
-      end
-
-      def pub_year
-        Indexing::Selectors::PubYearSelector.build(events)
       end
 
       def creation_date
@@ -207,6 +214,7 @@ module Indexing
         Indexing::Builders::PublisherNameBuilder.build(publish_events)
       end
 
+      # TODO: Remove
       def stemmable_topics
         Indexing::Builders::TopicBuilder.build(Array(cocina.description.subject), filter: 'topic')
       end
@@ -223,10 +231,12 @@ module Indexing
         @events ||= Array(cocina.description.event).compact
       end
 
+      # TODO: Remove
       def flat_event(event)
         event.parallelEvent.presence || Array(event)
       end
 
+      # TODO: Remove
       def flat_value(value)
         value.parallelValue.presence || value.groupedValue.presence || value.structuredValue.presence || Array(value)
       end
@@ -239,6 +249,10 @@ module Indexing
         return [] if cocina.is_a?(Cocina::Models::AdminPolicyWithMetadata)
 
         cocina.identification.catalogLinks
+      end
+
+      def cocina_display_record
+        @cocina_display_record ||= CocinaDisplay::CocinaRecord.new(cocina.to_h.with_indifferent_access)
       end
     end
     # rubocop:enable Metrics/ClassLength

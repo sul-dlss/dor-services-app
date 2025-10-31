@@ -228,6 +228,10 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
           source: {
             value: 'MODS digital origin terms'
           }
+        },
+        {
+          value: 'photographs',
+          type: 'genre'
         }
       ],
       language: [{
@@ -394,7 +398,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
     it 'populates expected fields' do
       all_search_text = 'The complete works of Henry George 4 George, Henry 1839-1897 George, Henry 1862-1916 ' \
                         'George, Bush Wiles, Simon Doubleday, Page [Library ed.] monographic Garden City, N. Y text ' \
-                        'electronic preservation reformatted digital On cover: Complete works of Henry George. Fels ' \
+                        'electronic preservation reformatted digital photographs On cover: Complete works of Henry ' \
+                        'George. Fels ' \
                         'fund. Library edition. I. Progress and poverty.--II. Social problems.--III. The land ' \
                         'question. Property in land. blah blah print 10 v. fronts (v. 1-9) ports. 21 cm. Economics ' \
                         '1800-1900 Economics Europe cats'
@@ -402,12 +407,19 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'descriptive_tiv' => all_search_text,
         'descriptive_teiv' => all_search_text,
         'descriptive_text_nostem_i' => all_search_text,
-        'sw_language_ssimdv' => ['English'],
-        'sw_format_ssimdv' => ['Book'],
+        'sw_language_ssimdv' => ['English'], # TODO: Remove
+        'sw_language_names_ssimdv' => ['English'],
+        'sw_format_ssimdv' => ['Book'], # TODO: Remove
+        'sw_resource_type_ssimdv' => ['Book'],
         'mods_typeOfResource_ssimdv' => ['text'],
-        'sw_subject_temporal_ssimdv' => ['1800-1900'],
-        'sw_subject_geographic_ssimdv' => ['Europe'],
-        'sw_pub_date_facet_ssidv' => '1911',
+        'sw_subject_temporal_ssimdv' => ['1800-1900'], # TODO: Remove
+        'subject_temporal_ssimdv' => ['1800-1900'],
+        'sw_subject_geographic_ssimdv' => ['Europe'], # TODO: Remove
+        'subject_place_ssimdv' => ['Europe'],
+        'genre_ssimdv' => ['Photographs'],
+        'sw_genre_ssimdv' => ['photographs'], # TODO: Remove
+        'sw_pub_date_facet_ssidv' => '1911', # TODO: Remove
+        'publication_year_ssidv' => '1911',
         'author_display_ss' => 'George, Henry, 1839-1897',
         'author_text_nostem_im' => 'George, Henry, 1839-1897',
         'contributor_text_nostem_im' => ['George, Henry, 1839-1897', 'George, Henry, 1862-1916', 'George, Bush',
@@ -418,8 +430,10 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'display_title_ss' => 'The complete works of Henry George, Part 1',
         # 'originInfo_date_created_tesim' => '', # not populated by the example; see indexer_spec instead
         'originInfo_publisher_tesim' => 'Doubleday, Page',
-        'topic_ssimdv' => %w[Economics cats],
-        'topic_tesim' => %w[cats Economics],
+        'subject_topic_other_ssimdv' => %w[Economics cats],
+        'topic_ssimdv' => %w[Economics cats], # TODO: Remove
+        'subject_topic_tesim' => %w[Economics cats],
+        'topic_tesim' => %w[cats Economics], # TODO: Remove
         'originInfo_place_placeTerm_tesim' => 'Garden City, N. Y',
         'contributor_orcids_ssimdv' => ['https://orcid.org/0000-1111-2222-3333',
                                         'https://sandbox.orcid.org/1111-2222-3333-4444', 'https://orcid.org/0000-0001-5321-289X']

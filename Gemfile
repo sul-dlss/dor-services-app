@@ -6,6 +6,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 gem 'rails', '~> 8.0.0'
 
 # DLSS/domain-specific dependencies
+gem 'cocina_display'
 gem 'cocina-models', '~> 0.108.0'
 gem 'datacite', '~> 0.6'
 gem 'dor-services-client' # Used for Dor::Services::Response::* classes
@@ -15,11 +16,11 @@ gem 'graphql'
 gem 'lyber-core', '~> 8.0' # For robots
 gem 'mais_orcid_client', '>= 1.0'
 gem 'marc'
-gem 'marc-vocab', '~> 0.3.0' # for indexing
+gem 'marc-vocab', '~> 0.3.0' # TODO: Remove
 gem 'moab-versioning', '~> 6.0', require: 'moab/stanford'
 gem 'preservation-client', '~> 7.0'
 gem 'purl_fetcher-client', '~> 2.1'
-gem 'stanford-mods' # for indexing
+gem 'stanford-mods' # TODO: Remove
 gem 'sul_orcid_client', '~> 0.6'
 
 source 'https://gems.contribsys.com/' do
