@@ -121,7 +121,7 @@ RSpec.describe DecommissionService do
 
       expect(ReleaseTagService).to have_received(:create).with(tag: an_instance_of(Dor::ReleaseTag),
                                                                cocina_object:,
-                                                               reindex: false)
+                                                               create_only: true)
 
       expect(AdministrativeTags).to have_received(:create).with(identifier: druid,
                                                                 tags: ["Decommissioned : #{reason}"])

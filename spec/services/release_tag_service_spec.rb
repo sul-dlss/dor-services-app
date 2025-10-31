@@ -23,8 +23,8 @@ RSpec.describe ReleaseTagService do
                                                                druid:, version: 2)
     end
 
-    context 'when reindex is false' do
-      subject(:create_tag) { described_class.create(cocina_object:, tag:, reindex: false) }
+    context 'when create_only is true' do
+      subject(:create_tag) { described_class.create(cocina_object:, tag:, create_only: true) }
 
       it 'adds another release tag without reindexing or starting workflow' do
         expect { create_tag }.to change { ReleaseTag.where(druid:).count }.by(1)

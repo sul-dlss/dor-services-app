@@ -25,12 +25,12 @@ class DecommissionService
                         assume_accessioned: true,
                         opening_user_name: sunetid)
 
-    set_decommissioned_tags
-    release_workflow
-
     updated_cocina_object = UpdateObjectService.update(cocina_object: decommissioned_cocina_object,
                                                        description: "Decommissioned: #{reason}",
                                                        who: sunetid)
+
+    set_decommissioned_tags
+    release_workflow
 
     VersionService.close(druid:,
                          version: updated_cocina_object.version,
@@ -52,7 +52,7 @@ class DecommissionService
 
       ReleaseTagService.create(tag: decommission_tag(release_tag),
                                cocina_object:,
-                               reindex: false)
+                               create_only: true)
     end
 
     AdministrativeTags.create(identifier: cocina_object.externalIdentifier,
