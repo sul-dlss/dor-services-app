@@ -32,7 +32,9 @@ class QueueService
     'Robots::DorRepo::Accession::SdrIngestTransfer',
     'Robots::DorRepo::Accession::UpdateDoi',
     'Robots::DorRepo::Accession::UpdateOrcidWork',
-    'Robots::DorRepo::Goobi::GoobiNotify'
+    'Robots::DorRepo::Goobi::GoobiNotify',
+    'Robots::DorRepo::Release::ReleaseMembers',
+    'Robots::DorRepo::Release::ReleasePublish'
   ].freeze
 
   SPECIAL_ROBOTS = {

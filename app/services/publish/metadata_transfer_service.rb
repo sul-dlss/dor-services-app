@@ -13,7 +13,7 @@ module Publish
     end
 
     def initialize(druid:, user_version:)
-      @public_cocina = PublicCocina.new(druid:, user_version:)
+      @publish_item = Publish::Item.new(druid:, user_version:)
     end
 
     # Updates access system with the content and metadata of the object
@@ -31,7 +31,7 @@ module Publish
     attr_reader :workflow
 
     delegate :cocina_object, :druid, :public_cocina, :public_version, :user_version, :discoverable?, :version_date,
-             :must_version?, to: :@public_cocina
+             :must_version?, to: :@publish_item
 
     def republish_collection_members!
       Array.wrap(
@@ -97,56 +97,6 @@ module Publish
         rescue Errno::EEXIST
           retry
         end
-      end
-    end
-
-    # Encapsulates cocina to be published.
-    class PublicCocina
-      def initialize(druid:, user_version:)
-        @druid = druid
-        @user_version = user_version || UserVersionService.latest_user_version(druid:)
-      end
-
-      # @return [Cocina::Models::DRO, Cocina::Models::Collection] the cocina object to publish
-      def cocina_object
-        repository_object_version.to_cocina_with_metadata
-      end
-
-      def public_cocina
-        @public_cocina ||= PublicCocinaService.create(cocina_object)
-      end
-
-      def public_version
-        @public_version ||= user_version || 1
-      end
-
-      def version_date
-        repository_object_version.closed_at
-      end
-
-      def discoverable?
-        cocina_object.access.view != 'dark'
-      end
-
-      def must_version?
-        user_version.present?
-      end
-
-      attr_reader :druid, :user_version
-
-      private
-
-      def repository_object
-        @repository_object ||= RepositoryObject.find_by!(external_identifier: druid)
-      end
-
-      def repository_object_version
-        @repository_object_version ||= if user_version
-                                         object_version = UserVersionService.object_version_for(druid:, user_version:)
-                                         repository_object.versions.find_by!(version: object_version)
-                                       else
-                                         repository_object.last_closed_version
-                                       end
       end
     end
   end
