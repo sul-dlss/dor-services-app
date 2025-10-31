@@ -7,8 +7,8 @@ module Workflow
       new(...).lifecycle_xml
     end
 
-    def self.milestone?(druid:, milestone_name:, version: nil, active_only: false)
-      new(druid: druid, version: version, active_only: active_only).milestone?(milestone_name: milestone_name)
+    def self.milestone?(druid:, milestone_name:, version: nil)
+      new(druid: druid, version: version).milestone?(milestone_name: milestone_name)
     end
 
     def self.milestones(...)
@@ -22,11 +22,9 @@ module Workflow
 
     # @param [String] druid object id
     # @param [Number] version (nil) the version to query for
-    # @param [Boolean] active_only if true, return only lifecycle steps for versions that have all processes complete
-    def initialize(druid:, version: nil, active_only: false)
+    def initialize(druid:, version: nil)
       @druid = druid
       @version = version
-      @active_only = active_only
     end
 
     # @return [Nokogiri::XML::Document] the XML document representing the lifecycle of the object
@@ -62,15 +60,9 @@ module Workflow
 
     def workflow_steps
       steps = WorkflowStep.where(druid:)
+      steps = steps.for_version(version) if version.present?
 
-      return steps.lifecycle.complete unless active_only
-
-      # Active means that it's of the current version, and that all the steps in
-      # the current version haven't been completed yet.
-      steps = steps.for_version(version)
-      return [] unless steps.incomplete.any?
-
-      steps.lifecycle
+      steps.lifecycle.complete
     end
   end
 end

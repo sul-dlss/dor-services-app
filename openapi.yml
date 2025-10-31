@@ -1599,13 +1599,6 @@ paths:
           required: false
           schema:
             type: integer
-        - name: active-only
-          in: query
-          description: If true, only return lifecycles that are currently active
-          required: false
-          schema:
-            type: boolean
-            default: false
   "/v1/objects/{object_id}/workflows":
     get:
       tags:
