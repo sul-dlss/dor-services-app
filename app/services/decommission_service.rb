@@ -56,7 +56,7 @@ class DecommissionService
   end
 
   def set_decommission_release_tags(cocina_object:)
-    ReleaseTagService.latest_release_tags(druid:).each do |release_tag|
+    ReleaseTagService.latest_for(druid:).each do |release_tag|
       next unless release_tag.release
 
       ReleaseTagService.create(tag: decommission_tag(release_tag),

@@ -46,8 +46,8 @@ RSpec.describe ReleaseTagService do
     end
   end
 
-  describe '.latest_release_tags' do
-    subject(:latest_tags) { described_class.latest_release_tags(druid:) }
+  describe '.latest_for' do
+    subject(:latest_tags) { described_class.latest_for(druid:) }
 
     let!(:latest_sw_release_tag) { create(:release_tag, druid:, released_to: 'Searchworks', created_at: 1.day.ago) }
     let!(:latest_ew_release_tag) { create(:release_tag, druid:, released_to: 'Earthworks', created_at: 1.day.ago) }

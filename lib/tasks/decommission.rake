@@ -11,7 +11,7 @@ namespace :decommission do
     sunetid = args[:sunetid]
     description = args[:description]
 
-    DecommissionService.new(druid:, description:, sunetid:).decommission
+    DecommissionService.decommission(druid:, description:, sunetid:)
   rescue Error => e
     puts "Failed to decommission #{args[:druid]}: #{e.message}"
   end
@@ -33,7 +33,7 @@ namespace :decommission do
         sunetid = row['sunetid'] || args[:sunetid]
         description = row['description'] || args[:description]
 
-        DecommissionService.new(druid:, description:, sunetid:).decommission
+        DecommissionService.decommission(druid:, description:, sunetid:)
         log << [druid, 'SUCCESS', 'Decommissioned successfully']
       rescue Error => e
         log << [druid, 'FAILURE', e.message]

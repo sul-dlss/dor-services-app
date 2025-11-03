@@ -23,7 +23,7 @@ class ReleaseTagService
   # Retrieve the latest release tags for each release target for an item
   # @param [String] druid
   # @return [Array<Cocina::Models::ReleaseTag>]
-  def self.latest_release_tags(druid:)
+  def self.latest_for(druid:)
     tags(druid:).pluck(:to).uniq.map do |to|
       tags(druid:).select { |tag| tag.to == to }.max_by(&:date)
     end
