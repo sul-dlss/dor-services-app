@@ -4,14 +4,15 @@ require 'rails_helper'
 
 RSpec.describe PublishJob do
   subject(:perform) do
-    described_class.perform_now(druid:, background_job_result: result)
+    described_class.perform_now(druid:, background_job_result: result, release:)
   end
 
   let(:druid) { 'druid:mk420bs7601' }
   let(:result) { create(:background_job_result) }
-  let(:item) { instance_double(Cocina::Models::DRO, admin_policy?: false) }
+  let(:item) { instance_double(Cocina::Models::DRO, admin_policy?: false, version: 2) }
   let(:valid) { true }
   let(:invalid_filenames) { [] }
+  let(:release) { false }
 
   before do
     allow(CocinaObjectStore).to receive(:find).with(druid).and_return(item)
@@ -38,6 +39,20 @@ RSpec.describe PublishJob do
       expect(EventFactory).to have_received(:create)
 
       expect(result).to have_received(:complete!).once
+    end
+  end
+
+  context 'when releasing' do
+    let(:release) { true }
+
+    before do
+      allow(Workflow::Service).to receive(:create)
+      perform
+    end
+
+    it 'starts a releaseWF' do
+      expect(Workflow::Service).to have_received(:create).with(druid:, workflow_name: 'releaseWF',
+                                                               version: 2)
     end
   end
 

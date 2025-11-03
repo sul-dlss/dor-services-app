@@ -14,9 +14,6 @@ RSpec.describe Publish::MetadataTransferService do
 
     let(:closed_at) { DateTime.new(2001, 2, 3, 4, 5, 6) }
 
-    let(:searchworks_release_tag) { instance_double(Dor::ReleaseTag, to: 'Searchworks', release: true) }
-    let(:earthworks_release_tag) { instance_double(Dor::ReleaseTag, to: 'Earthworks', release: false) }
-
     let(:workspace_content_pathname) { Pathname.new('tmp/dor/workspace/bc/123/df/4567/bc123df4567/content') }
 
     before do
@@ -24,9 +21,6 @@ RSpec.describe Publish::MetadataTransferService do
       allow(PurlFetcher::Client::Publish).to receive(:publish)
       allow(Publish::PublicCocinaService).to receive(:create).and_return(public_cocina)
       allow(Publish::TransferStager).to receive(:copy)
-      allow(PurlFetcher::Client::ReleaseTags).to receive(:release)
-      allow(PublicMetadataReleaseTagService).to receive(:for_public_metadata).and_return([searchworks_release_tag,
-                                                                                          earthworks_release_tag])
     end
 
     context 'when a collection' do
@@ -47,8 +41,6 @@ RSpec.describe Publish::MetadataTransferService do
         expect(PurlFetcher::Client::Publish).to have_received(:publish)
           .with(cocina: public_cocina, file_uploads: {}, version: 1, must_version: false, version_date: closed_at)
         expect(Publish::TransferStager).not_to have_received(:copy)
-        expect(PurlFetcher::Client::ReleaseTags).to have_received(:release)
-          .with(druid:, index: ['Searchworks'], delete: ['Earthworks'])
       end
     end
 
@@ -128,8 +120,6 @@ RSpec.describe Publish::MetadataTransferService do
         expect(PurlFetcher::Client::Publish).to have_received(:publish)
           .with(cocina: public_cocina, file_uploads: { '00001.html' => uuid }, version: 1,
                 must_version: false, version_date: closed_at)
-        expect(PurlFetcher::Client::ReleaseTags).to have_received(:release)
-          .with(druid:, index: ['Searchworks'], delete: ['Earthworks'])
       end
     end
 
@@ -208,8 +198,6 @@ RSpec.describe Publish::MetadataTransferService do
         expect(PurlFetcher::Client::Publish).to have_received(:publish)
           .with(cocina: public_cocina, file_uploads: { '00001.html' => uuid }, version: 2, must_version: true,
                 version_date: closed_at)
-        expect(PurlFetcher::Client::ReleaseTags).to have_received(:release)
-          .with(druid:, index: ['Searchworks'], delete: ['Earthworks'])
       end
     end
 
@@ -266,8 +254,6 @@ RSpec.describe Publish::MetadataTransferService do
         expect(PurlFetcher::Client::Publish).to have_received(:publish)
           .with(cocina: public_cocina, file_uploads: {}, version: 1, must_version: false, version_date: closed_at)
         expect(Publish::TransferStager).not_to have_received(:copy)
-        expect(PurlFetcher::Client::ReleaseTags).to have_received(:release)
-          .with(druid:, index: ['Searchworks'], delete: ['Earthworks'])
       end
     end
 

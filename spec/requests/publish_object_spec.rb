@@ -16,7 +16,7 @@ RSpec.describe 'Publish object' do
     post "/v1/objects/#{druid}/publish", headers: { 'Authorization' => "Bearer #{jwt}" }
 
     expect(job).to have_received(:perform_later)
-      .with(druid:, background_job_result: BackgroundJobResult)
+      .with(druid:, background_job_result: BackgroundJobResult, release: true)
     expect(response).to have_http_status(:created)
   end
 end

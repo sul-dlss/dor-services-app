@@ -26,12 +26,15 @@ class QueueService
 
   DSA_ROBOTS = [
     'Robots::DorRepo::Accession::Publish',
+    'Robots::DorRepo::Accession::ReleaseInitiate',
     'Robots::DorRepo::Accession::Shelve',
     'Robots::DorRepo::Accession::ResetWorkspace',
     'Robots::DorRepo::Accession::SdrIngestTransfer',
     'Robots::DorRepo::Accession::UpdateDoi',
     'Robots::DorRepo::Accession::UpdateOrcidWork',
-    'Robots::DorRepo::Goobi::GoobiNotify'
+    'Robots::DorRepo::Goobi::GoobiNotify',
+    'Robots::DorRepo::Release::ReleaseMembers',
+    'Robots::DorRepo::Release::ReleasePublish'
   ].freeze
 
   SPECIAL_ROBOTS = {
