@@ -31,6 +31,7 @@ RSpec.describe DecommissionService do
         allow(Settings.version_service).to receive(:sync_with_preservation).and_return false
         allow(Indexer).to receive(:reindex_later)
         allow(Workflow::Service).to receive(:create)
+        allow_any_instance_of(Workflow::StateService).to receive(:accessioned?).and_return(true) # rubocop:disable RSpec/AnyInstance
         allow(ReleaseTagService).to receive(:create)
         allow(AdministrativeTags).to receive(:create)
       end
@@ -57,9 +58,22 @@ RSpec.describe DecommissionService do
         create(:repository_object, :with_repository_object_version, external_identifier: druid, version: 1)
       end
 
-      it 'raises an error' do
-        expect { decommission }.to raise_error(VersionService::VersioningError)
-          .with_message('Object already opened for versioning')
+      context 'when it is already opened for versioning' do
+        before do
+          allow_any_instance_of(Workflow::StateService).to receive(:accessioned?).and_return(true) # rubocop:disable RSpec/AnyInstance
+        end
+
+        it 'raises an error' do
+          expect { decommission }.to raise_error(VersionService::VersioningError)
+            .with_message('Object already opened for versioning')
+        end
+      end
+
+      context 'when it is not accessioned' do
+        it 'raises an error' do
+          expect { decommission }.to raise_error(VersionService::VersioningError)
+            .with_message('Object net yet accessioned')
+        end
       end
     end
   end
