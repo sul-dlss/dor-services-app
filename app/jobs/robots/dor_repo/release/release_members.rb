@@ -29,7 +29,7 @@ module Robots
 
         def published?(druid:)
           # This is for the member, not the parent collection.
-          Workflow::LifecycleService.milestone?(druid:, milestone_name: 'published')
+          Publish::Item.new(druid:).published?
         end
 
         # Here's an example of the kinds of tags we're dealing with:

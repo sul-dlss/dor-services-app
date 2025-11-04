@@ -9,10 +9,12 @@ RSpec.describe Robots::DorRepo::Release::ReleaseMembers, type: :robot do
   let(:druid) { 'druid:bb222cc3333' }
 
   let(:release_tags) { [] }
+  let(:publish_item) { instance_double(Publish::Item, published?: true) }
 
   before do
     allow(ReleaseTagService).to receive(:tags).with(druid:).and_return(release_tags)
     allow(CocinaObjectStore).to receive(:find).with(druid).and_return(cocina_model)
+    allow(Publish::Item).to receive(:new).and_return(publish_item)
   end
 
   context 'when the model is an item' do
@@ -106,16 +108,13 @@ RSpec.describe Robots::DorRepo::Release::ReleaseMembers, type: :robot do
 
       before do
         allow(RepositoryObject).to receive(:currently_members_of_collection).with(druid).and_return(members)
-        allow(Workflow::LifecycleService).to receive(:milestone?).and_return(true, true, true, false)
+        allow(publish_item).to receive(:published?).and_return(true, true, true, false)
         allow(Workflow::Service).to receive(:create)
       end
 
       it 'runs for a collection and creates releaseWFs' do
         perform
 
-        expect(Workflow::LifecycleService).to have_received(:milestone?).exactly(4).times
-        expect(Workflow::LifecycleService).to have_received(:milestone?)
-          .with(druid: 'druid:bb001zc5754', milestone_name: 'published')
         expect(Workflow::Service).to have_received(:create).exactly(3).times
         expect(Workflow::Service).to have_received(:create)
           .with(druid: 'druid:bb001zc5754', version: 1, workflow_name: 'releaseWF', lane_id: nil)
@@ -138,16 +137,13 @@ RSpec.describe Robots::DorRepo::Release::ReleaseMembers, type: :robot do
 
       before do
         allow(RepositoryObject).to receive(:currently_members_of_collection).with(druid).and_return(members)
-        allow(Workflow::LifecycleService).to receive(:milestone?).and_return(true, true, true, false)
+        allow(publish_item).to receive(:published?).and_return(true, true, true, false)
         allow(Workflow::Service).to receive(:create)
       end
 
       it 'runs for a collection and creates releaseWFs' do
         perform
 
-        expect(Workflow::LifecycleService).to have_received(:milestone?).exactly(4).times
-        expect(Workflow::LifecycleService).to have_received(:milestone?)
-          .with(druid: 'druid:bb001zc5754', milestone_name: 'published')
         expect(Workflow::Service).to have_received(:create).exactly(3).times
         expect(Workflow::Service).to have_received(:create)
           .with(druid: 'druid:bb001zc5754', version: 1, workflow_name: 'releaseWF', lane_id: nil)
