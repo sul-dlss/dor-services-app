@@ -37,6 +37,13 @@ module Publish
       user_version.present?
     end
 
+    # @return [Boolean] whether the item has been published for the published version
+    def published?
+      return false if repository_object_version.nil?
+
+      Workflow::LifecycleService.milestone?(druid:, milestone_name: 'published', version: version)
+    end
+
     delegate :version, to: :repository_object_version
 
     attr_reader :druid, :user_version
