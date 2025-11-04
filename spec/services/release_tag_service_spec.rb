@@ -10,10 +10,12 @@ RSpec.describe ReleaseTagService do
 
     let(:tag) { Dor::ReleaseTag.new(to: 'Earthworks', what: 'self', who: 'cathy', date: 2.days.ago.iso8601) }
     let(:cocina_object) { instance_double(Cocina::Models::DROWithMetadata, externalIdentifier: druid, version: 2) }
+    let(:publish_item) { instance_double(Publish::Item, published?: true) }
 
     before do
       allow(Indexer).to receive(:reindex)
       allow(Workflow::Service).to receive(:create)
+      allow(Publish::Item).to receive(:new).with(druid:).and_return(publish_item)
     end
 
     it 'adds another release tag' do
@@ -29,6 +31,16 @@ RSpec.describe ReleaseTagService do
       it 'adds another release tag without reindexing or starting workflow' do
         expect { create_tag }.to change { ReleaseTag.where(druid:).count }.by(1)
         expect(Indexer).not_to have_received(:reindex)
+        expect(Workflow::Service).not_to have_received(:create)
+      end
+    end
+
+    context 'when the item has not been published' do
+      let(:publish_item) { instance_double(Publish::Item, published?: false) }
+
+      it 'adds another release tag and reindexes without starting workflow' do
+        expect { create_tag }.to change { ReleaseTag.where(druid:).count }.by(1)
+        expect(Indexer).to have_received(:reindex).with(cocina_object:)
         expect(Workflow::Service).not_to have_received(:create)
       end
     end
