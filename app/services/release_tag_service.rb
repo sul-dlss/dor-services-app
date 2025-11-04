@@ -16,6 +16,8 @@ class ReleaseTagService
     return if create_only
 
     Indexer.reindex(cocina_object: cocina_object)
+    return unless Publish::Item.new(druid: cocina_object.externalIdentifier).published?
+
     Workflow::Service.create(workflow_name: 'releaseWF', druid: cocina_object.externalIdentifier,
                              version: cocina_object.version)
   end
