@@ -1,36 +1,13 @@
 # frozen_string_literal: true
 
-require 'stanford-mods'
-
 module Indexing
   module Indexers
     # Indexes the descriptive metadata
-    # rubocop:disable Metrics/ClassLength
     class DescriptiveMetadataIndexer
-      # TODO: Remove
-      # See https://github.com/sul-dlss/stanford-mods/blob/master/lib/stanford-mods/searchworks.rb#L244
-      FORMAT = {
-        'cartographic' => 'Map',
-        'manuscript' => 'Archive/Manuscript',
-        'mixed material' => 'Archive/Manuscript',
-        'moving image' => 'Video',
-        'notated music' => 'Music score',
-        'software, multimedia' => 'Software/Multimedia',
-        'sound recording-musical' => 'Music recording',
-        'sound recording-nonmusical' => 'Sound recording',
-        'sound recording' => 'Sound recording',
-        'still image' => 'Image',
-        'three dimensional object' => 'Object',
-        'text' => 'Book'
-      }.freeze
-
-      attr_reader :cocina, :stanford_mods_record # TODO: Remove stanford_mods_record
+      attr_reader :cocina
 
       def initialize(cocina:, **)
         @cocina = cocina
-        # TODO: Remove
-        mods_ng = Cocina::Models::Mapping::ToMods::Description.transform(cocina.description, cocina.externalIdentifier)
-        @stanford_mods_record = Stanford::Mods::Record.new.from_nk_node(mods_ng.root)
       end
 
       # @return [Hash] the partial solr document for descriptive metadata
@@ -51,28 +28,20 @@ module Indexing
 
           # topic
           'subject_topic_other_ssimdv' => cocina_display_record.subject_topics_other,
-          'topic_ssimdv' => stanford_mods_record.topic_facet&.uniq, # TODO: Remove
           'subject_topic_tesim' => cocina_display_record.subject_topics,
-          'topic_tesim' => stemmable_topics, # TODO: Remove
 
           # publication
           'originInfo_date_created_tesim' => creation_date,
           'originInfo_publisher_tesim' => publisher_name,
           'originInfo_place_placeTerm_tesim' => event_place, # do we want this?
-          'sw_pub_date_facet_ssidv' => stanford_mods_record.pub_year_int.to_s, # TODO: Remove
           'publication_year_ssidv' => cocina_display_record.pub_year_int&.to_s,
 
           # SW facets plus a friend facet
-          'sw_format_ssimdv' => sw_format, # TODO: Remove
           'sw_resource_type_ssimdv' => cocina_display_record.searchworks_resource_types,
           'mods_typeOfResource_ssimdv' => resource_type, # MODS Resource Type facet
-          'sw_genre_ssimdv' => stanford_mods_record.sw_genre, # TODO: Remove
           'genre_ssimdv' => cocina_display_record.genres,
-          'sw_language_ssimdv' => stanford_mods_record.sw_language_facet, # TODO: Remove
           'sw_language_names_ssimdv' => cocina_display_record.searchworks_language_names,
           'subject_temporal_ssimdv' => cocina_display_record.subject_temporal,
-          'sw_subject_temporal_ssimdv' => stanford_mods_record.era_facet, # TODO: Remove
-          'sw_subject_geographic_ssimdv' => subject_geographic, # TODO: Remove
           'subject_place_ssimdv' => cocina_display_record.subject_places,
 
           # all the descriptive data that we want to search on, with different flavors for better recall and precision
@@ -83,11 +52,6 @@ module Indexing
       end
 
       private
-
-      # TODO: Remove
-      def subject_geographic
-        Indexing::Builders::GeographicBuilder.build(subjects)
-      end
 
       def subjects
         @subjects ||= Array(cocina.description.subject)
@@ -134,70 +98,6 @@ module Indexing
         @resource_type ||= cocina_display_record.mods_resource_types - ['collection', 'manuscript']
       end
 
-      # rubocop:disable Metrics/CyclomaticComplexity
-      # rubocop:disable Metrics/PerceivedComplexity
-      # TODO: Remove
-      def sw_format # rubocop:disable Metrics/AbcSize
-        return ['Map'] if resource_type?('software, multimedia') && resource_type?('cartographic')
-        return ['Dataset'] if resource_type?('software, multimedia') && genre?('dataset')
-        return ['Archived website'] if resource_type?('text') && genre?('archived website')
-        return ['Book'] if resource_type?('text') && issuance?('monographic')
-        if resource_type?('text') && (issuance?('continuing') || issuance?('serial') || frequency?)
-          return ['Journal/Periodical']
-        end
-
-        resource_type_formats = flat_forms_for('resource type').map { |form| FORMAT[form.value&.downcase] }.uniq.compact
-        resource_type_formats.delete('Book') if resource_type_formats.include?('Archive/Manuscript')
-
-        return resource_type_formats if resource_type_formats == ['Book']
-
-        genre_formats = flat_forms_for('genre').map { |form| form.value&.capitalize }.uniq
-
-        (resource_type_formats + genre_formats).presence
-      end
-
-      # rubocop:enable Metrics/CyclomaticComplexity
-      # rubocop:enable Metrics/PerceivedComplexity
-      # TODO: Remove
-      def resource_type?(type)
-        flat_forms_for('resource type').any? { |form| form.value == type }
-      end
-
-      # TODO: Remove
-      def genre?(genre)
-        flat_forms_for('genre').any? { |form| form.value == genre }
-      end
-
-      # TODO: Remove
-      def issuance?(issuance)
-        flat_event_notes.any? { |note| note.type == 'issuance' && note.value == issuance }
-      end
-
-      # TODO: Remove
-      def frequency?
-        flat_event_notes.any? { |note| note.type == 'frequency' }
-      end
-
-      # TODO: Remove
-      def flat_forms_for(type)
-        forms.flat_map do |form|
-          if form.type == type
-            flat_value(form)
-          else
-            flat_value(form).select { |form_value| form_value.type == type }
-          end
-        end
-      end
-
-      # TODO: Remove
-      def flat_event_notes
-        @flat_event_notes ||= events.flat_map { |event| flat_event(event) }.flat_map do |event|
-          Array(event.note).flat_map do |note|
-            flat_value(note)
-          end
-        end
-      end
-
       def creation_date
         @creation_date ||= Indexing::Builders::EventDateBuilder.build(creation_event, 'creation')
       end
@@ -214,11 +114,6 @@ module Indexing
         Indexing::Builders::PublisherNameBuilder.build(publish_events)
       end
 
-      # TODO: Remove
-      def stemmable_topics
-        Indexing::Builders::TopicBuilder.build(Array(cocina.description.subject), filter: 'topic')
-      end
-
       def publication_event
         @publication_event ||= Indexing::Selectors::EventSelector.select(events, 'publication')
       end
@@ -229,16 +124,6 @@ module Indexing
 
       def events
         @events ||= Array(cocina.description.event).compact
-      end
-
-      # TODO: Remove
-      def flat_event(event)
-        event.parallelEvent.presence || Array(event)
-      end
-
-      # TODO: Remove
-      def flat_value(value)
-        value.parallelValue.presence || value.groupedValue.presence || value.structuredValue.presence || Array(value)
       end
 
       def all_search_text
@@ -255,6 +140,5 @@ module Indexing
         @cocina_display_record ||= CocinaDisplay::CocinaRecord.new(cocina.to_h.with_indifferent_access)
       end
     end
-    # rubocop:enable Metrics/ClassLength
   end
 end
