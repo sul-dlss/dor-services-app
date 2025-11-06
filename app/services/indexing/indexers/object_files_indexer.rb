@@ -32,7 +32,6 @@ module Indexing
           'shelved_content_file_count_itsi' => shelved_files.size,
           'resource_count_itsi' => file_sets.size,
           'preserved_size_lpsidv' => preserved_size, # long to support very large sizes
-          'preserved_size_dbtsi' => preserved_size, # TODO: remove https://github.com/sul-dlss/dor-services-app/issues/5604
           'human_preserved_size_ss' => ActiveSupport::NumberHelper.number_to_human_size(preserved_size),
           'content_file_roles_ssimdv' => files.filter_map(&:use),
           'first_shelved_image_ss' => first_shelved_image
