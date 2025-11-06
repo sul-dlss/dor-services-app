@@ -20,6 +20,7 @@ module Indexing
 
           solr_doc['tag_ssim'] << tag # for Argo display and fq
           solr_doc['tag_text_unstemmed_im'] << tag # for Argo search
+          solr_doc['tag_text_unstemmed_sim'] << tag # for advanced search
 
           # exploded tags are for hierarchical facets in Argo
           explode_tag_hierarchy(tag: tag, field: 'exploded_nonproject_tag_ssimdv') if explode_tag?(tag_prefix)
@@ -38,6 +39,7 @@ module Indexing
         @solr_doc ||= {
           'tag_ssim' => [],
           'tag_text_unstemmed_im' => [],
+          'tag_text_unstemmed_sim' => [],
           'exploded_nonproject_tag_ssimdv' => []
         }
       end
@@ -59,6 +61,7 @@ module Indexing
 
         prefix = tag_prefix.downcase.gsub(/\s/, '_')
         (solr_doc["#{prefix}_tag_ssim"] ||= []) << rest
+        (solr_doc["#{prefix}_tag_text_unstemmed_sim"] ||= []) << rest
       end
 
       def explode_tag?(tag_prefix)
