@@ -57,7 +57,7 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
 
       before do
         allow(Honeybadger).to receive(:notify)
-        allow(Cocina::Models::Mapping::ToMods::Description).to receive(:transform).and_raise(TypeError, error_message)
+        allow(Workflow::LifecycleService).to receive(:milestones).and_raise(TypeError, error_message)
       end
 
       it 'logs a data error to honeybadger' do

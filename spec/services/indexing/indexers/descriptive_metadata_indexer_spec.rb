@@ -407,18 +407,12 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'descriptive_tiv' => all_search_text,
         'descriptive_teiv' => all_search_text,
         'descriptive_text_nostem_i' => all_search_text,
-        'sw_language_ssimdv' => ['English'], # TODO: Remove
         'sw_language_names_ssimdv' => ['English'],
-        'sw_format_ssimdv' => ['Book'], # TODO: Remove
         'sw_resource_type_ssimdv' => ['Book'],
         'mods_typeOfResource_ssimdv' => ['text'],
-        'sw_subject_temporal_ssimdv' => ['1800-1900'], # TODO: Remove
         'subject_temporal_ssimdv' => ['1800-1900'],
-        'sw_subject_geographic_ssimdv' => ['Europe'], # TODO: Remove
         'subject_place_ssimdv' => ['Europe'],
         'genre_ssimdv' => ['Photographs'],
-        'sw_genre_ssimdv' => ['photographs'], # TODO: Remove
-        'sw_pub_date_facet_ssidv' => '1911', # TODO: Remove
         'publication_year_ssidv' => '1911',
         'author_display_ss' => 'George, Henry, 1839-1897',
         'author_text_nostem_im' => 'George, Henry, 1839-1897',
@@ -431,9 +425,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         # 'originInfo_date_created_tesim' => '', # not populated by the example; see indexer_spec instead
         'originInfo_publisher_tesim' => 'Doubleday, Page',
         'subject_topic_other_ssimdv' => %w[Economics cats],
-        'topic_ssimdv' => %w[Economics cats], # TODO: Remove
         'subject_topic_tesim' => %w[Economics cats],
-        'topic_tesim' => %w[cats Economics], # TODO: Remove
         'originInfo_place_placeTerm_tesim' => 'Garden City, N. Y',
         'contributor_orcids_ssimdv' => ['https://orcid.org/0000-1111-2222-3333',
                                         'https://sandbox.orcid.org/1111-2222-3333-4444', 'https://orcid.org/0000-0001-5321-289X']

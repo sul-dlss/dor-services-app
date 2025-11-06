@@ -16,11 +16,9 @@ gem 'graphql'
 gem 'lyber-core', '~> 8.0' # For robots
 gem 'mais_orcid_client', '>= 1.0'
 gem 'marc'
-gem 'marc-vocab', '~> 0.3.0' # TODO: Remove
 gem 'moab-versioning', '~> 6.0', require: 'moab/stanford'
 gem 'preservation-client', '~> 7.0'
 gem 'purl_fetcher-client', '~> 2.1'
-gem 'stanford-mods' # TODO: Remove
 gem 'sul_orcid_client', '~> 0.6'
 
 source 'https://gems.contribsys.com/' do
