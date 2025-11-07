@@ -6,6 +6,8 @@ FactoryBot.define do
     external_identifier { generate(:unique_druid) }
     source_id { "sul:#{SecureRandom.uuid}" }
     lock { 1 }
+    created_at { Time.current }
+    updated_at { Time.current }
   end
 
   trait :admin_policy do

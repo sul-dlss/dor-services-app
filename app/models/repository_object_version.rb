@@ -34,9 +34,17 @@ class RepositoryObjectVersion < ApplicationRecord
     end
   end
 
+  # NOTE: Always use the repository object's created_at timestamp, not the
+  #       version's. In practice, this date is indexed and used in Argo to show
+  #       the created date for the object itself; we use the modified date
+  #       to show in Purl when a version was made.
   def to_cocina_with_metadata
-    Cocina::Models.with_metadata(to_cocina, repository_object.external_lock, created: created_at.utc,
-                                                                             modified: updated_at.utc)
+    Cocina::Models.with_metadata(
+      to_cocina,
+      repository_object.external_lock,
+      created: repository_object.created_at.utc,
+      modified: updated_at.utc
+    )
   end
 
   # Legacy RepositoryObjectVersions don't have cocina.

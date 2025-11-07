@@ -16,8 +16,8 @@ RSpec.describe Notifications::ObjectCreated do
   let(:topic) { instance_double(Bunny::Exchange, publish: true) }
 
   let(:model) do
-    create(:repository_object, :with_repository_object_version, object_type) do |repo_obj|
-      repo_obj.head_version.update(created_at:, updated_at:)
+    create(:repository_object, :with_repository_object_version, object_type, created_at:) do |repo_obj|
+      repo_obj.head_version.update(updated_at:)
     end
   end
 
