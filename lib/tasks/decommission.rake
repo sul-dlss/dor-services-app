@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 namespace :decommission do
-  desc 'Decommission items by druid'
+  desc 'Decommission item by druid'
   task :item, %i[druid sunetid description] => :environment do |_t, args|
     if args[:druid].nil? || args[:sunetid].nil? || args[:description].nil?
       raise '*** druid, sunetid, and description are required arguments'
@@ -20,6 +20,7 @@ namespace :decommission do
   # If sunetid and description are not provided in a row, uses the
   # provided arguments as defaults.
   # Logs results to a timestamped CSV in log
+  desc 'Decommission items via CSV'
   task :items, %i[file sunetid description] => :environment do |_t, args|
     raise '*** file is a required argument' if args[:file].nil?
 

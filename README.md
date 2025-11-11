@@ -103,7 +103,7 @@ Cron check-ins are configured in the following locations:
 
 ## Reindexing all objects
 
-A full reindex can be invoked with `bundle exec rake indexer:reindex_jobs`.
+A full reindex can be invoked with `bin/rake indexer:reindex_jobs`.
 
 This will enqueue a number of `BatchReindexJob`s.
 
@@ -163,9 +163,9 @@ This context will then be returned as JSON in each `process` block of the XML re
 
 This can be used if a user selects an option in Pre-assembly or Argo that needs to be passed through the accessioning pipeline, such as if OCR or captioning is required.  The value is set when creating the workflow, and then available to each robot which needs it.
 
-## Other tools
+## Command-Line Tools
 
-### Run Reports
+### Run reports
 
 Custom reports are stored in dor-services-app in the `app/reports` directory.  Examine some of the reports in that folder to see the pattern of how they are structured and run.  Since they need to access to the SDR datastore to run, you can run them on the `sdr-infra` box, which has read-only access to each environment (qa/stage/prod).
 
@@ -240,17 +240,55 @@ Usage: bin/reset-accessioning [options]
     -h, --help                       Displays help.
 ```
 
-### Find druids missing from the SOLR index
+### Find druids missing from the Solr index
 
 Run the missing druid rake task:
 ```
-RAILS_ENV=production bundle exec rake missing_druids:unindexed_objects
+RAILS_ENV=production bin/rake missing_druids:unindexed_objects
 ```
 This produces a `missing_druids.txt` file in the application root.
 
 Missing druids can be indexed with:
 ```
-RAILS_ENV=production bundle exec rake missing_druids:index_unindexed_objects
+RAILS_ENV=production bin/rake missing_druids:index_unindexed_objects
+```
+
+### Decommission one or more items
+
+Either provide a single druid, or a CSV with druids:
+
+```shell
+RAILS_ENV=production bin/rake decommission:item[druid,sunetid,description]
+RAILS_ENV=production bin/rake decommission:items[file,sunetid,description]
+```
+
+### Release all embargoed objects whose embargoes have passed
+
+```shell
+RAILS_ENV=production bin/rake dsa:embargo_release
+```
+
+### Manage object versions
+
+```shell
+# Open a new version from an existing version
+RAILS_ENV=production bin/rake dsa:open_version[druid,description,from_version]
+# Closes a repository object without changing a user version
+RAILS_ENV=production bin/rake dsa:close_version[druid]
+# Move a user version
+RAILS_ENV=production bin/rake dsa:move_user_version[druid,user_version,to_version]
+```
+
+### Register items from CSV
+
+```shell
+RAILS_ENV=production bin/rake seed:register[input_file]
+```
+
+### Update a workflow step
+
+```shell
+RAILS_ENV=production bin/rake workflow:step[druid,workflow,process,status]
 ```
 
 ## Data migrations / bulk remediations
