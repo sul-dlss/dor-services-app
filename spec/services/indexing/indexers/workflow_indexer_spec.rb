@@ -38,6 +38,47 @@ RSpec.describe Indexing::Indexers::WorkflowIndexer do
       it 'creates the workflow_status with workflow repository included, and indicates that workflow is still active' do
         expect(solr_doc['workflow_status_ssim'].first).to eq('accessionWF|active|0')
       end
+
+      it 'creates the wsp, wps, and swp fields' do
+        expect(solr_doc['wf_wps_ssimdv']).to eq(['accessionWF',
+                                                 'accessionWF:technical-metadata',
+                                                 'accessionWF:technical-metadata:waiting'])
+        expect(solr_doc['wf_wsp_ssimdv']).to eq(['accessionWF',
+                                                 'accessionWF:waiting',
+                                                 'accessionWF:waiting:technical-metadata'])
+        expect(solr_doc['wf_swp_ssimdv']).to eq(['waiting',
+                                                 'waiting:accessionWF',
+                                                 'waiting:accessionWF:technical-metadata'])
+      end
+
+      it 'creates the wsp, wps, and swp hierarchical fields' do
+        expect(solr_doc['wf_hierarchical_wps_ssimdv']).to eq(['1|accessionWF|+',
+                                                              '2|accessionWF:technical-metadata|+',
+                                                              '3|accessionWF:technical-metadata:waiting|-'])
+        expect(solr_doc['wf_hierarchical_wsp_ssimdv']).to eq(['1|accessionWF|+',
+                                                              '2|accessionWF:waiting|+',
+                                                              '3|accessionWF:waiting:technical-metadata|-'])
+        expect(solr_doc['wf_hierarchical_swp_ssimdv']).to eq(['1|waiting|+',
+                                                              '2|waiting:accessionWF|+',
+                                                              '3|waiting:accessionWF:technical-metadata|-'])
+      end
+    end
+
+    context 'when a workflow has no processes' do
+      let(:xml) do
+        <<~XML
+          <?xml version="1.0"?>
+          <workflow id="disseminationWF" objectId="druid:bb000kg4251">
+            <process version="1" note="common-accessioning-prod-b.stanford.edu" lifecycle="" laneId="default" elapsed="0.347" attempts="0" datetime="2019-06-26T18:38:04+00:00" context="" status="completed" name="cleanup"/>
+          </workflow>
+        XML
+      end
+
+      it 'creates the wsp, wps, and swp hierarchical fields' do
+        expect(solr_doc['wf_hierarchical_wps_ssimdv']).to eq(['1|disseminationWF|-'])
+        expect(solr_doc['wf_hierarchical_wsp_ssimdv']).to eq(['1|disseminationWF|-'])
+        expect(solr_doc['wf_hierarchical_swp_ssimdv']).to eq([])
+      end
     end
 
     context 'when the template has new steps, but the workflow service indicates all steps are completed' do
