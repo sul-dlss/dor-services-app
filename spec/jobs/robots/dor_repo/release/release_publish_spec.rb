@@ -80,7 +80,7 @@ RSpec.describe Robots::DorRepo::Release::ReleasePublish, type: :robot do
   end
 
   context 'when a registered item (open first version)' do
-    let!(:repository_object) { create(:repository_object, external_identifier: druid) } # rubocop:disable RSpec/LetSetup
+    let!(:repository_object) { create(:repository_object, external_identifier: druid) }
 
     it 'raises' do
       expect { perform }.to raise_error(Robots::DorRepo::Release::ReleasePublish::PublishNotCompleteError)

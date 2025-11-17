@@ -2,7 +2,6 @@
 
 require 'rails_helper'
 
-# rubocop:disable RSpec/LetSetup
 RSpec.describe VersionService do
   let(:druid) { 'druid:xz456jk0987' }
   let!(:repository_object) do
@@ -731,4 +730,3 @@ RSpec.describe VersionService do
     end
   end
 end
-# rubocop:enable RSpec/LetSetup

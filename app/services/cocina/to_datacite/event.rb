@@ -69,7 +69,7 @@ module Cocina
           elsif publication_event_publication_date_value.present? # no embargo
             submitted_date[:date] = publication_event_publication_date_value
           end
-          submitted_date[:dateType] = 'Submitted' if submitted_date.present?
+          submitted_date.presence&.[]=(:dateType, 'Submitted')
         end
       end
 

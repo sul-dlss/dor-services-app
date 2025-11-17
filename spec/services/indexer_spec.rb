@@ -6,7 +6,7 @@ RSpec.describe Indexer do
   let(:cocina_object) { build(:dro_with_metadata, id: druid) }
   let(:druid) { 'druid:bc123df4567' }
 
-  let(:indexer) { double(to_solr: solr_doc) } # rubocop:disable RSpec/VerifiedDoubles
+  let(:indexer) { double(to_solr: solr_doc) }
   let(:solr_doc) { instance_double(Hash) }
   let(:solr) { instance_double(RSolr::Client, add: nil, commit: nil, delete_by_id: nil) }
   let(:trace_id) { 'abc123' }
