@@ -155,7 +155,7 @@ class CreateObjectService
     end
 
     # Remove partOfProject
-    props[:administrative].delete(:partOfProject) if props[:administrative].present?
+    props[:administrative].presence&.delete(:partOfProject)
 
     # These are not required in requests
     props[:structural] = {} if cocina_request_object.dro? && props[:structural].nil?

@@ -886,3 +886,12 @@ Rails/FindByOrAssignmentMemoization: # new in 2.33
   Enabled: false
 Rails/OrderArguments: # new in 2.33
   Enabled: true
+
+Style/ArrayIntersectWithSingleElement: # new in 1.81
+  Enabled: true
+Rails/HttpStatusNameConsistency: # new in 2.34
+  Enabled: true
+Rails/RedirectBackOrTo: # new in 2.34
+  Enabled: true
+RSpec/LeakyLocalVariable: # new in 3.8
+  Enabled: true
