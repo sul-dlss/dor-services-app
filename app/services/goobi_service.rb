@@ -170,10 +170,8 @@ class GoobiService
 
   def title_or_label
     if cocina_obj.description
-      desc_ng_xml = Cocina::Models::Mapping::ToMods::Description.transform(cocina_obj.description,
-                                                                           cocina_obj.externalIdentifier)
-      title_element = ModsUtils.primary_title_info(desc_ng_xml)
-      return title_element.content.strip if title_element.respond_to?(:content) && title_element.content.present?
+      main_title = CocinaDisplay::CocinaRecord.new(cocina_obj.to_h.with_indifferent_access).main_title
+      return main_title if main_title
     end
 
     cocina_obj.label

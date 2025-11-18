@@ -43,7 +43,7 @@ RSpec.describe GoobiService do
   describe '#title_or_label' do
     subject(:title_or_label) { Nokogiri::XML(goobi.send(:xml_request)).xpath('//title').first.content }
 
-    context 'when MODS title is present' do
+    context 'when description is present' do
       let(:description) do
         {
           title: [
