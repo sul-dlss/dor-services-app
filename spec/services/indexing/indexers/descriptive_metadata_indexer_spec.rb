@@ -410,7 +410,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'sw_language_names_ssimdv' => ['English'],
         'sw_resource_type_ssimdv' => ['Book'],
         'mods_typeOfResource_ssimdv' => ['text'],
-        'subject_temporal_ssimdv' => ['1800-1900'],
         'subject_place_ssimdv' => ['Europe'],
         'genre_ssimdv' => ['Photographs'],
         'publication_year_ssidv' => '1911',
