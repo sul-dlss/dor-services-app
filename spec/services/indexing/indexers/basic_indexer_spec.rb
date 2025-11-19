@@ -52,7 +52,6 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
           'bare_governed_by_ss' => 'vv888vv8888',
           'member_of_collection_ssim' => ['druid:bb777bb7777', 'druid:dd666dd6666'],
           'bare_member_of_collection_ssm' => %w[bb777bb7777 dd666dd6666],
-          'modified_latest_dtpsidv' => '2021-03-04T23:05:34Z',
           'created_at_dttsi' => '2020-01-01T12:00:01Z',
           'id' => 'druid:xx999xx9999',
           'trace_id_ss' => 'abc123'
@@ -71,7 +70,6 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
           'member_of_collection_ssim' => [],
           'bare_member_of_collection_ssm' => [],
           'has_constituents_ssimdv' => nil,
-          'modified_latest_dtpsidv' => '2021-03-04T23:05:34Z',
           'created_at_dttsi' => '2020-01-01T12:00:01Z',
           'id' => 'druid:xx999xx9999',
           'trace_id_ss' => 'abc123'
@@ -95,7 +93,6 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
           'bare_governed_by_ss' => 'vv888vv8888',
           'member_of_collection_ssim' => [],
           'bare_member_of_collection_ssm' => [],
-          'modified_latest_dtpsidv' => '2021-03-04T23:05:34Z',
           'created_at_dttsi' => '2020-01-01T12:00:01Z',
           'id' => 'druid:xx999xx9999',
           'trace_id_ss' => 'abc123'

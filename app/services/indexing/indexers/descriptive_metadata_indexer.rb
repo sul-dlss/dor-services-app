@@ -41,7 +41,6 @@ module Indexing
           'mods_typeOfResource_ssimdv' => resource_type, # MODS Resource Type facet
           'genre_ssimdv' => cocina_display_record.genres,
           'sw_language_names_ssimdv' => cocina_display_record.searchworks_language_names,
-          'subject_temporal_ssimdv' => cocina_display_record.subject_temporal,
           'subject_place_ssimdv' => cocina_display_record.subject_places,
 
           # all the descriptive data that we want to search on, with different flavors for better recall and precision

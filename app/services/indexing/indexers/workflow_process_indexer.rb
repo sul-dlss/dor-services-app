@@ -29,14 +29,8 @@ module Indexing
 
         index_error_message
 
-        # workflow name, process status then process name
-        solr_doc.add_wsp("#{workflow_name}:#{status}", "#{workflow_name}:#{status}:#{name}")
-
         # workflow name, process name then process status
         solr_doc.add_wps("#{workflow_name}:#{name}", "#{workflow_name}:#{name}:#{status}")
-
-        # process status, workflowname then process name
-        solr_doc.add_swp(process.status.to_s, "#{status}:#{workflow_name}", "#{status}:#{workflow_name}:#{name}")
       end
 
       private

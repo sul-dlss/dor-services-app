@@ -39,28 +39,16 @@ RSpec.describe Indexing::Indexers::WorkflowIndexer do
         expect(solr_doc['workflow_status_ssim'].first).to eq('accessionWF|active|0')
       end
 
-      it 'creates the wsp, wps, and swp fields' do
+      it 'creates the wps fields' do
         expect(solr_doc['wf_wps_ssimdv']).to eq(['accessionWF',
                                                  'accessionWF:technical-metadata',
                                                  'accessionWF:technical-metadata:waiting'])
-        expect(solr_doc['wf_wsp_ssimdv']).to eq(['accessionWF',
-                                                 'accessionWF:waiting',
-                                                 'accessionWF:waiting:technical-metadata'])
-        expect(solr_doc['wf_swp_ssimdv']).to eq(['waiting',
-                                                 'waiting:accessionWF',
-                                                 'waiting:accessionWF:technical-metadata'])
       end
 
-      it 'creates the wsp, wps, and swp hierarchical fields' do
+      it 'creates the wps hierarchical fields' do
         expect(solr_doc['wf_hierarchical_wps_ssimdv']).to eq(['1|accessionWF|+',
                                                               '2|accessionWF:technical-metadata|+',
                                                               '3|accessionWF:technical-metadata:waiting|-'])
-        expect(solr_doc['wf_hierarchical_wsp_ssimdv']).to eq(['1|accessionWF|+',
-                                                              '2|accessionWF:waiting|+',
-                                                              '3|accessionWF:waiting:technical-metadata|-'])
-        expect(solr_doc['wf_hierarchical_swp_ssimdv']).to eq(['1|waiting|+',
-                                                              '2|waiting:accessionWF|+',
-                                                              '3|waiting:accessionWF:technical-metadata|-'])
       end
     end
 
@@ -74,10 +62,8 @@ RSpec.describe Indexing::Indexers::WorkflowIndexer do
         XML
       end
 
-      it 'creates the wsp, wps, and swp hierarchical fields' do
+      it 'creates the wps hierarchical fields' do
         expect(solr_doc['wf_hierarchical_wps_ssimdv']).to eq(['1|disseminationWF|-'])
-        expect(solr_doc['wf_hierarchical_wsp_ssimdv']).to eq(['1|disseminationWF|-'])
-        expect(solr_doc['wf_hierarchical_swp_ssimdv']).to eq([])
       end
     end
 
