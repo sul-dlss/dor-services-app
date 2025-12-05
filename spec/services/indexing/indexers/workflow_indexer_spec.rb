@@ -52,21 +52,6 @@ RSpec.describe Indexing::Indexers::WorkflowIndexer do
       end
     end
 
-    context 'when a workflow has no processes' do
-      let(:xml) do
-        <<~XML
-          <?xml version="1.0"?>
-          <workflow id="disseminationWF" objectId="druid:bb000kg4251">
-            <process version="1" note="common-accessioning-prod-b.stanford.edu" lifecycle="" laneId="default" elapsed="0.347" attempts="0" datetime="2019-06-26T18:38:04+00:00" context="" status="completed" name="cleanup"/>
-          </workflow>
-        XML
-      end
-
-      it 'creates the wps hierarchical fields' do
-        expect(solr_doc['wf_hierarchical_wps_ssimdv']).to eq(['1|disseminationWF|-'])
-      end
-    end
-
     context 'when the template has new steps, but the workflow service indicates all steps are completed' do
       let(:workflow_template_json) do
         '{"processes":[{"name":"hello"},{"name":"goodbye"},{"name":"technical-metadata"},{"name":"some-other-step"}]}'
@@ -197,6 +182,28 @@ RSpec.describe Indexing::Indexers::WorkflowIndexer do
       it "truncates the error messages to below Solr's limit" do
         # 31 is the leader
         expect(wf_error.first.length).to be < 32_766
+      end
+    end
+
+    context 'when workflow should be skipped' do
+      let(:xml) do
+        <<-XML
+        <?xml version="1.0" encoding="UTF-8"?>
+        <workflow objectId="druid:gv054hp4128" id="hydrusAssemblyWF">
+          <process version="2" lifecycle="submitted" elapsed="0.0" archived="true" attempts="1"
+           datetime="2012-11-06T16:18:24-0800" status="completed" name="start-accession"/>
+          <process version="2" elapsed="0.0" archived="true" attempts="1"
+           datetime="2012-11-06T16:18:58-0800" status="waiting" name="technical-metadata"/>
+        </workflow>
+        XML
+      end
+
+      it 'skips the wps fields' do
+        expect(solr_doc['wf_wps_ssimdv']).to eq([])
+      end
+
+      it 'skips the wps hierarchical fields' do
+        expect(solr_doc['wf_hierarchical_wps_ssimdv']).to eq([])
       end
     end
   end
