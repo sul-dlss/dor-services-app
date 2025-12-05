@@ -10,14 +10,6 @@ module Indexing
     WORKFLOW_ERROR_SOLR = 'wf_error_ssim'
     WORKFLOW_STATUS_SOLR = 'workflow_status_ssim'
 
-    WORKFLOWS_WITHOUT_PROCESSES = %w[
-      disseminationWF
-      sdrAuditWF
-      accession2WF
-      swIndexWF
-      sdrMigrationWF
-    ].freeze
-
     # For hierarchical workflow fields
     # They have the format: [LEVEL]|[WORKFLOW DATA]|[LEAF OR BRANCH]
     # For example: "3|accessionWF:start-accession:completed|-"
@@ -33,17 +25,35 @@ module Indexing
       WORKFLOW_ERROR_SOLR
     ].freeze
 
+    # These are either deprecated or aren't useful to have indexed in the wps field
+    SKIP_WPS_WORKFLOWS = %w[
+      accession2WF
+      sdrMigrationWF
+      dpgImageWF
+      sdrAuditWF
+      swIndexWF
+      googleScannedBookWF
+      eemsAccessionWF
+      gisDiscoveryWF
+      etdSubmitWF
+      hydrusAssemblyWF
+      disseminationWF
+      registrationWF
+      versioningWF
+    ].freeze
+
     def initialize
       @data = empty_document
       yield self if block_given?
     end
 
     def name=(wf_name)
+      @wf_name = wf_name
       data[WORKFLOW_SOLR] += [wf_name]
+      return if skip_wps_workflow?
+
       data[WORKFLOW_WPS_SOLR] += [wf_name]
-      # Some workflows do not have processes, hence should be marked as leaf nodes
-      force_leaf = WORKFLOWS_WITHOUT_PROCESSES.include?(wf_name)
-      data[WORKFLOW_HIERARCHICAL_WPS_SOLR] += [to_hierarchical(wf_name, force_leaf:)]
+      data[WORKFLOW_HIERARCHICAL_WPS_SOLR] += [to_hierarchical(wf_name)]
     end
 
     def status=(status)
@@ -56,6 +66,8 @@ module Indexing
 
     # Add to the field that indexes workflow name, process status then process name
     def add_wps(*messages)
+      return if skip_wps_workflow?
+
       data[WORKFLOW_WPS_SOLR] += messages
       data[WORKFLOW_HIERARCHICAL_WPS_SOLR] += messages.map { |m| to_hierarchical(m) }
     end
@@ -88,16 +100,20 @@ module Indexing
 
     private
 
-    attr_reader :data
+    attr_reader :data, :wf_name
 
     def empty_document
       KEYS_TO_MERGE.index_with { |_k| [] }
     end
 
-    def to_hierarchical(message, force_leaf: false)
+    def to_hierarchical(message)
       level = message.count(':') + 1
-      leaf = force_leaf || (level == 3)
+      leaf = (level == 3)
       [level, message, (leaf ? LEAF : BRANCH)].join(DELIMITER)
+    end
+
+    def skip_wps_workflow?
+      SKIP_WPS_WORKFLOWS.include?(wf_name)
     end
   end
 end
