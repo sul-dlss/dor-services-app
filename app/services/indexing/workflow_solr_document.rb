@@ -113,7 +113,7 @@ module Indexing
     end
 
     def skip_wps_workflow?
-      SKIP_WPS_WORKFLOWS.include?(wf_name)
+      Settings.skip_workflows.include?(wf_name)
     end
   end
 end

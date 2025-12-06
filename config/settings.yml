@@ -140,3 +140,22 @@ mais_orcid:
 
 indexer:
   logging: false
+
+# These are workflows that are either deprecated or are very minimal workflows.
+# They are omitted from indexing in wps field by WorkflowSolrDocument
+# and are not returned by Workflow::TemplateService.templates.
+# Note that some of these workflows are still in use and are still indexed in other fields.
+skip_workflows:
+  -accession2WF
+  -sdrMigrationWF
+  -dpgImageWF
+  -sdrAuditWF
+  -swIndexWF
+  -googleScannedBookWF
+  -eemsAccessionWF
+  -gisDiscoveryWF
+  -etdSubmitWF
+  -hydrusAssemblyWF
+  -disseminationWF
+  -registrationWF
+  -versioningWF

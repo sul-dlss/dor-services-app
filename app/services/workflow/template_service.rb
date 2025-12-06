@@ -15,8 +15,9 @@ module Workflow
     def templates
       @templates ||= begin
         files = Dir.glob("#{Workflow::TemplateLoader::WORKFLOWS_DIR}/*.xml")
-        files.map do |file|
-          file.sub(%r{#{Workflow::TemplateLoader::WORKFLOWS_DIR}/([^/]*).xml}, '\1')
+        files.filter_map do |file|
+          name = file.sub(%r{#{Workflow::TemplateLoader::WORKFLOWS_DIR}/([^/]*).xml}, '\1')
+          name if Settings.skip_workflows.exclude?(name)
         end.sort
       end
     end
