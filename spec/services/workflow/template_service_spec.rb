@@ -38,32 +38,20 @@ RSpec.describe Workflow::TemplateService do
     it 'returns a list of workflow template names' do
       expect(described_class.templates).to eq(
         %w[
-          accession2WF
           accessionWF
           assemblyWF
           captionWF
           digitizationWF
-          disseminationWF
-          dpgImageWF
-          eemsAccessionWF
-          etdSubmitWF
           gisAssemblyWF
           gisDeliveryWF
           goobiWF
-          googleScannedBookWF
-          hydrusAssemblyWF
           ocrWF
           preservationAuditWF
           preservationIngestWF
-          registrationWF
           releaseWF
-          sdrAuditWF
           sdrIngestWF
-          sdrMigrationWF
           sdrRecoveryWF
           speechToTextWF
-          swIndexWF
-          versioningWF
           wasCrawlDisseminationWF
           wasCrawlPreassemblyWF
           wasDisseminationWF
