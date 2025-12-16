@@ -19,8 +19,9 @@ RSpec.describe Robots::DorRepo::Release::UpdateMarc, type: :robot do
 
   it 'updates the MARC record for the object' do
     expect { perform }.not_to raise_error
-    expect(Catalog::UpdateMarc856RecordService).to have_received(:update).with(object,
-                                                                               thumbnail_service: thumbnail_service)
-    expect(ThumbnailService).to have_received(:new).with(object)
+    expect(perform).to have_attributes(status: 'skipped')
+    # expect(Catalog::UpdateMarc856RecordService).to have_received(:update).with(object,
+    #                                                                            thumbnail_service: thumbnail_service)
+    # expect(ThumbnailService).to have_received(:new).with(object)
   end
 end
