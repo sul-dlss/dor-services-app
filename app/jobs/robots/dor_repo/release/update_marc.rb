@@ -10,8 +10,11 @@ module Robots
         end
 
         def perform_work
-          Catalog::UpdateMarc856RecordService.update(cocina_object,
-                                                     thumbnail_service: ThumbnailService.new(cocina_object))
+          # temporarily skip update-marc during winter closure 2025, post-FOLIO update
+          LyberCore::ReturnState.new(status: :skipped,
+                                     note: 'Orcid works are not supported on non-Item objects')
+          # Catalog::UpdateMarc856RecordService.update(cocina_object,
+          #                                            thumbnail_service: ThumbnailService.new(cocina_object))
         end
       end
     end
