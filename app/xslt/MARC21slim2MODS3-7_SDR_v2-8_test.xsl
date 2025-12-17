@@ -5145,10 +5145,13 @@
 				<xsl:call-template name="createClassificationFrom082"/>
 			</xsl:when>
 			<xsl:when test="$sf06a = '084'">
-				<xsl:call-template name="createClassificationFrom080"/>
+				<!-- SUL edit 2025-12-17 issue #5650 -->
+				<!-- <xsl:call-template name="createClassificationFrom080"/> -->
+				<xsl:call-template name="createClassificationFrom084"/>
 			</xsl:when>
 			<xsl:when test="$sf06a = '086'">
-                <!--SUL edit 2025-12-16-->
+                <!-- SUL edit 2025-12-17 issue #5650 -->
+                <!-- <xsl:call-template name="createClassificationFrom082"/> -->
 				<xsl:call-template name="createClassificationFrom086"/>
 			</xsl:when>
 			<xsl:when test="$sf06a = '100'">
