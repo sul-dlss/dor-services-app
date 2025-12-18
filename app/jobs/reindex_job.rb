@@ -4,7 +4,7 @@
 class ReindexJob < ApplicationJob
   class DeadLockError < StandardError; end
 
-  queue_as :default
+  queue_as :low
 
   # ~3 seconds, ~18 seconds, ~83 seconds. If this fails, Sidekiq retries are not used.
   retry_on DeadLockError, attempts: 3, wait: :polynomially_longer, queue: :low
