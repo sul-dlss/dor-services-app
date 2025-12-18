@@ -33,6 +33,20 @@ class Indexer
     solr.commit
   end
 
+  # Reindex now, with fallback to later if a deadlock occurs.
+  def self.reindex_now(druid:, trace_id: nil, fallback_to_later: true)
+    trace_id ||= trace_id_for(druid: druid)
+    ReindexJob.perform_now(
+      druid:,
+      trace_id:
+    )
+  rescue ReindexJob::DeadLockError
+    raise unless fallback_to_later
+
+    Rails.logger.warn("Deadlock reindexing #{druid}, falling back to reindex_later (trace_id: #{trace_id})")
+    reindex_later(druid: druid, trace_id:)
+  end
+
   # @param [string] druid
   def self.reindex_later(druid:, trace_id: nil)
     # Note that there is an issue whereby active jobs are getting enqueued to the robot redis instance.

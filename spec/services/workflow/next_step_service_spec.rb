@@ -9,7 +9,7 @@ RSpec.describe Workflow::NextStepService do
     before do
       allow(QueueService).to receive(:enqueue)
       allow(Notifications::WorkflowStepUpdated).to receive(:publish)
-      allow(Indexer).to receive(:reindex_later)
+      allow(Indexer).to receive(:reindex_now)
       allow_any_instance_of(described_class).to receive(:sleep) # rubocop:disable RSpec/AnyInstance
     end
 
@@ -45,7 +45,7 @@ RSpec.describe Workflow::NextStepService do
         expect(next_steps).to eq [ready]
         expect(QueueService).to have_received(:enqueue).with(ready)
         expect(Notifications::WorkflowStepUpdated).not_to have_received(:publish)
-        expect(Indexer).to have_received(:reindex_later).with(druid: step.druid)
+        expect(Indexer).to have_received(:reindex_now).with(druid: step.druid)
       end
     end
 
@@ -68,7 +68,7 @@ RSpec.describe Workflow::NextStepService do
         expect(next_steps).to eq []
         expect(QueueService).not_to have_received(:enqueue)
         expect(Notifications::WorkflowStepUpdated).to have_received(:publish).with(step:)
-        expect(Indexer).to have_received(:reindex_later).with(druid: step.druid)
+        expect(Indexer).to have_received(:reindex_now).with(druid: step.druid)
       end
     end
 

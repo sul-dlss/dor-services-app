@@ -99,4 +99,41 @@ RSpec.describe Indexer do
       end
     end
   end
+
+  describe '#reindex_now' do
+    before do
+      allow(ReindexJob).to receive(:perform_now)
+    end
+
+    it 'reindexes the object now' do
+      described_class.reindex_now(druid:, trace_id:)
+      expect(ReindexJob).to have_received(:perform_now).with(
+        druid:,
+        trace_id:
+      )
+    end
+
+    context 'when a deadlock occurs' do
+      before do
+        allow(ReindexJob).to receive(:perform_now).and_raise(ReindexJob::DeadLockError)
+        allow(described_class).to receive(:reindex_later)
+      end
+
+      it 'falls back to reindex_later' do
+        described_class.reindex_now(druid:)
+        expect(described_class).to have_received(:reindex_later).with(
+          druid:,
+          trace_id: generated_trace_id
+        )
+      end
+
+      context 'when fallback_to_later is false' do
+        it 'raises the error' do
+          expect do
+            described_class.reindex_now(druid:, fallback_to_later: false)
+          end.to raise_error(ReindexJob::DeadLockError)
+        end
+      end
+    end
+  end
 end
