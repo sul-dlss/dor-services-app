@@ -37,7 +37,7 @@ RSpec.describe 'Refresh metadata' do
             {
               type: 'record origin',
               value: "Converted from MARCXML to MODS version 3.7 using\n\t\t\t\t" \
-                     "MARC21slim2MODS3-7_SDR_v2-8.xsl (SUL 3.7 version 2.8 20251216; LC Revision 1.140\n\t\t\t\t" \
+                     "MARC21slim2MODS3-7_SDR_v2-8.xsl (SUL 3.7 version 2.8 20251217; LC Revision 1.140\n\t\t\t\t" \
                      '20200717)'
             }
           ]
