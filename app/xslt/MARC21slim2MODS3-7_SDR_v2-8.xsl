@@ -3650,11 +3650,11 @@
 				</recordIdentifier>
 			</xsl:for-each>
 			<recordOrigin>Converted from MARCXML to MODS version 3.7 using
-				MARC21slim2MODS3-7_SDR_v2-8.xsl (SUL 3.7 version 2.8 20251216; LC Revision 1.140
+				MARC21slim2MODS3-7_SDR_v2-8.xsl (SUL 3.7 version 2.8 20251217; LC Revision 1.140
 				20200717)</recordOrigin>
-            <!-- SUL edit 20251216
+            <!-- SUL edit 20251217
 			<recordOrigin>Converted from MARCXML to MODS version 3.7 using
-				MARC21slim2MODS3-7_SDR_v2-6.xsl (SUL 3.7 version 2.6 20220603; LC Revision 1.140
+				MARC21slim2MODS3-7_SDR_v2-7.xsl (SUL 3.7 version 2.7 20220901; LC Revision 1.140
 				20200717)</recordOrigin> -->
 			<!-- SUL edit 20220901
 			<recordOrigin>Converted from MARCXML to MODS version 3.7 using
@@ -5145,10 +5145,13 @@
 				<xsl:call-template name="createClassificationFrom082"/>
 			</xsl:when>
 			<xsl:when test="$sf06a = '084'">
-				<xsl:call-template name="createClassificationFrom080"/>
+				<!-- SUL edit 2025-12-17 issue #5650 -->
+				<!-- <xsl:call-template name="createClassificationFrom080"/> -->
+				<xsl:call-template name="createClassificationFrom084"/>
 			</xsl:when>
 			<xsl:when test="$sf06a = '086'">
-                <!--SUL edit 2025-12-16-->
+                <!-- SUL edit 2025-12-17 issue #5650 -->
+                <!-- <xsl:call-template name="createClassificationFrom082"/> -->
 				<xsl:call-template name="createClassificationFrom086"/>
 			</xsl:when>
 			<xsl:when test="$sf06a = '100'">
@@ -7261,20 +7264,26 @@
 			</xsl:call-template>
 		</classification>
 	</xsl:template>
+	<!-- SUL edit 20251217 issue #5650 -->
 	<xsl:template name="createClassificationFrom086">
-		<xsl:for-each select="marc:datafield[@tag = 086][@ind1 = 0]">
+		<!-- <xsl:for-each select="marc:datafield[@tag = 086][@ind1 = 0]"> -->
+		<xsl:if test="@ind1 = '0'">
 			<classification authority="sudocs">
 				<xsl:call-template name="xxx880"/>
 				<xsl:value-of select="marc:subfield[@code = 'a']"/>
 			</classification>
-		</xsl:for-each>
-		<xsl:for-each select="marc:datafield[@tag = 086][@ind1 = 1]">
+		</xsl:if>
+		<!-- </xsl:for-each>
+		<xsl:for-each select="marc:datafield[@tag = 086][@ind1 = 1]"> -->
+		<xsl:if test="@ind1 = '1'">
 			<classification authority="candoc">
 				<xsl:call-template name="xxx880"/>
 				<xsl:value-of select="marc:subfield[@code = 'a']"/>
 			</classification>
-		</xsl:for-each>
-		<xsl:for-each select="marc:datafield[@tag = 086][@ind1 != 1 and @ind1 != 0]">
+		</xsl:if>
+		<!-- </xsl:for-each>
+		<xsl:for-each select="marc:datafield[@tag = 086][@ind1 != 1 and @ind1 != 0]"> -->
+		<xsl:if test="@ind1 != '1' and @ind1 != '0'">
 			<classification>
 				<xsl:call-template name="xxx880"/>
 				<xsl:attribute name="authority">
@@ -7282,8 +7291,10 @@
 				</xsl:attribute>
 				<xsl:value-of select="marc:subfield[@code = 'a']"/>
 			</classification>
-		</xsl:for-each>
+		</xsl:if>
+		<!-- </xsl:for-each> -->
 	</xsl:template>
+	<!-- SUL edit 20251217 issue #5650 -->
 
 	<!-- identifier 020 024 022 028 010 037 UNDO Nov 23 2010 RG SM-->
 
