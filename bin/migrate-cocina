@@ -138,6 +138,6 @@ CSV.open('migrate-cocina.csv', 'w') do |writer|
   writer << %w[id druid result message]
   migrate(migrator_class: migrator_class.constantize, **options)
     .each do |result|
-    writer << result
+      writer << result
   end
 end
