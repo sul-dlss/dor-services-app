@@ -46,16 +46,16 @@ class InvalidFormSourceCodes
       .to_a
       .group_by { |row| row['external_identifier'] }
       .map do |id, rows|
-      collection_druid = rows.first['collection_id']
-      collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
+        collection_druid = rows.first['collection_id']
+        collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
 
-      [
-        id,
-        rows.first['catalogRecordId'],
-        collection_druid,
-        collection_name,
-        rows.pluck('value').join(';')
-      ].to_csv
+        [
+          id,
+          rows.first['catalogRecordId'],
+          collection_druid,
+          collection_name,
+          rows.pluck('value').join(';')
+        ].to_csv
     end
   end
 end
