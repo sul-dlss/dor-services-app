@@ -12,6 +12,10 @@ module Catalog
       new(catkey:, barcode:, folio_instance_hrid:).mods
     end
 
+    def self.marc(catkey: nil, barcode: nil, folio_instance_hrid: nil)
+      new(catkey:, barcode:, folio_instance_hrid:).marc
+    end
+
     def initialize(catkey: nil, barcode: nil, folio_instance_hrid: nil)
       @catkey = catkey
       @barcode = barcode
@@ -39,14 +43,14 @@ module Catalog
     # @raise CatalogResponseError
     # @raise CatalogRecordNotFoundError
     def marcxml_ng
-      @marcxml_ng ||= Nokogiri::XML(marc_record.to_xml.to_s)
+      @marcxml_ng ||= Nokogiri::XML(marc.to_xml.to_s)
     end
 
     # @return [MARC::Record] MARC record
     # @raise CatalogResponseError
     # @raise CatalogRecordNotFoundError
-    def marc_record
-      @marc_record ||= marc_record_from_folio
+    def marc
+      @marc ||= marc_record_from_folio
     end
 
     private

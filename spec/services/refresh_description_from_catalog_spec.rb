@@ -62,6 +62,10 @@ RSpec.describe RefreshDescriptionFromCatalog do
       XML
     end
 
+    before do
+      allow(Settings.enabled_features).to receive(:use_marc).and_return(false)
+    end
+
     context 'when reading from Folio' do
       it 'gets the data from Folio and returns success' do
         expect(refresh.success?).to be(true)
