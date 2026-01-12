@@ -29,13 +29,22 @@ class RefreshDescriptionFromCatalog
     # No identifiers to refresh from.
     return Failure() unless identifiers.any?
 
-    return Failure() if marc_service.mods.nil?
+    if Settings.enabled_features.use_marc
+      return Failure() if marc_service.marc.nil?
 
-    description_props = Cocina::Models::Mapping::FromMods::Description.props(mods: marc_service.mods_ng, druid:,
-                                                                             label: cocina_object.label)
+      description_props = Cocina::Models::Mapping::FromMarc::Description.props(marc: marc_service.marc, druid:,
+                                                                               label: cocina_object.label)
+    else
+      return Failure() if marc_service.mods.nil?
+
+      description_props = Cocina::Models::Mapping::FromMods::Description.props(mods: marc_service.mods_ng, druid:,
+                                                                               label: cocina_object.label)
+    end
+
     return Failure() if description_props.nil?
 
-    Success(Result.new(description_props, marc_service.mods_ng))
+    # No longer returning MODS since CreateObjectService has method to generate a label from the description.title
+    Success(Result.new(description_props))
   end
 
   private
