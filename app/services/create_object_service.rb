@@ -188,6 +188,7 @@ class CreateObjectService
 
   # rubocop:disable Metrics/CyclomaticComplexity
   def title_from_structured_value(structured_value)
+    # Concatenates nonsorting characters with a title part "main title"
     non_sorting = structured_value.find { |part| part[:type] == 'nonsorting characters' }&.dig(:value) || ''
     non_sorting = "#{non_sorting} " unless non_sorting.empty?
     main_title = structured_value.find { |part| part[:type] == 'main title' }&.dig(:value) || ''

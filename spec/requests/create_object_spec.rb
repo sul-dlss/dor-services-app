@@ -155,9 +155,66 @@ RSpec.describe 'Create object' do
         end
       end
 
+      context 'when using MARC and the save is successful' do
+        let(:marc) do
+          { fields: [
+            { '245': {
+              ind1: '1',
+              ind2: '0',
+              subfields: [
+                {
+                  a: 'This is my title /'
+                },
+                {
+                  c: 'by Some Author.'
+                }
+              ]
+            } }
+          ] }.with_indifferent_access
+        end
+        let(:marc_service) do
+          instance_double(Catalog::MarcService, marc:)
+        end
+
+        before do
+          allow(Settings.enabled_features).to receive(:use_marc).and_return(true)
+        end
+
+        it 'registers the object with the registration service' do
+          expect do
+            post '/v1/objects',
+                 params: data,
+                 headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+          end.to change(Event, :count).by(1)
+          expect(response.body).to equal_cocina_model(expected)
+          expect(response).to have_http_status(:created)
+          expect(response.location).to eq "/v1/objects/#{druid}"
+          expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a8888')
+          expect(response.headers['Last-Modified']).to end_with 'GMT'
+          expect(response.headers['X-Created-At']).to end_with 'GMT'
+          expect(response.headers['ETag']).to match(%r{W/".+"})
+        end
+      end
+
       context 'when connecting to catalog fails' do
         before do
           allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogResponseError)
+        end
+
+        it 'draws an error message' do
+          post '/v1/objects',
+               params: data,
+               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+          expect(response.body).to eq '{"errors":[{"status":"502","title":"Catalog connection error",' \
+                                      '"detail":"Unable to read descriptive metadata from the catalog"}]}'
+          expect(response).to have_http_status :bad_gateway
+        end
+      end
+
+      context 'when requesting MARC while connecting to catalog fails' do
+        before do
+          allow(marc_service).to receive(:marc).and_raise(Catalog::MarcService::CatalogResponseError)
+          allow(Settings.enabled_features).to receive(:use_marc).and_return(true)
         end
 
         it 'draws an error message' do
