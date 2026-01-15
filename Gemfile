@@ -7,7 +7,8 @@ gem 'rails', '~> 8.0.0'
 
 # DLSS/domain-specific dependencies
 gem 'cocina_display'
-gem 'cocina-models', '~> 0.108.0'
+gem 'cocina-models', github: 'sul-dlss/cocina-models', branch: 'marc-mapping-setup'
+
 gem 'datacite', '~> 0.6'
 gem 'dor-services-client' # Used for Dor::Services::Response::* classes
 gem 'druid-tools', '~> 2.2'
