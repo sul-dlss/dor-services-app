@@ -97,9 +97,7 @@ class CreateObjectService
     description_props = result.value!.description_props
     # Remove PURL since this is still a request
     description_props.delete(:purl)
-    # TODO: remove ModsUtils since label is now handled here
-    # label = ModsUtils.label(result.value!.mods_ng_xml)
-    label = label_from_title(description_props:)
+    label = label_from_title(description_props[:title])
     cocina_request_object.new(label:, description: description_props)
   end
 
@@ -176,24 +174,7 @@ class CreateObjectService
     AdministrativeTags.create(identifier: druid, tags:)
   end
 
-  def label_from_title(description_props:)
-    # This logic is just a starting point.
-    title = description_props[:title].first
-    if title[:structuredValue].present?
-      title_from_structured_value(title[:structuredValue])
-    else
-      title[:value]
-    end
+  def label_from_title(title)
+    CocinaDisplay::Title.new(title.first.with_indifferent_access).full_title
   end
-
-  # rubocop:disable Metrics/CyclomaticComplexity
-  def title_from_structured_value(structured_value)
-    # Concatenates nonsorting characters with a title part "main title"
-    non_sorting = structured_value.find { |part| part[:type] == 'nonsorting characters' }&.dig(:value) || ''
-    non_sorting = "#{non_sorting} " unless non_sorting.empty?
-    main_title = structured_value.find { |part| part[:type] == 'main title' }&.dig(:value) || ''
-
-    "#{non_sorting}#{main_title}"
-  end
-  # rubocop:enable Metrics/CyclomaticComplexity
 end

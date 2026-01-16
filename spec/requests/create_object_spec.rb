@@ -156,6 +156,21 @@ RSpec.describe 'Create object' do
       end
 
       context 'when using MARC and the save is successful' do
+        let(:expected) do
+          build(:dro, id: druid, label: expected_label, title:, type: Cocina::Models::ObjectType.image, admin_policy_id:)
+            .new(
+              identification: expected_identification,
+              structural: expected_structural,
+              access: {
+                view:,
+                download: 'none',
+                copyright: 'All rights reserved unless otherwise indicated.',
+                useAndReproductionStatement: 'Property rights reside with the repository...'
+              }
+            )
+        end
+        let(:label) { 'Here is my title' }
+        let(:title) { 'Here is my title' }
         let(:marc) do
           { fields: [
             { '245': {
@@ -163,17 +178,35 @@ RSpec.describe 'Create object' do
               ind2: '0',
               subfields: [
                 {
-                  a: 'This is my title /'
+                  a: 'Here is my title /'
                 },
                 {
                   c: 'by Some Author.'
                 }
               ]
             } }
-          ] }.with_indifferent_access
+          ] }.deep_stringify_keys
         end
         let(:marc_service) do
           instance_double(Catalog::MarcService, marc:)
+        end
+        let(:data) do
+          <<~JSON
+            {#{' '}
+              "cocinaVersion":"#{Cocina::Models::VERSION}",
+              "type":"#{Cocina::Models::ObjectType.image}",
+              "label":"#{label}","version":1,
+              "access":{
+                "view":"#{view}",
+                "download":"none",
+                "copyright":"All rights reserved unless otherwise indicated.",
+                "useAndReproductionStatement":"Property rights reside with the repository..."
+              },
+              "administrative":{"hasAdminPolicy":"#{admin_policy_id}","partOfProject":"Google Books"},
+              "description":{"title":[{"value":"#{title}"}]},
+              "identification":#{identification.to_json},
+              "structural":#{structural.to_json}}
+          JSON
         end
 
         before do
