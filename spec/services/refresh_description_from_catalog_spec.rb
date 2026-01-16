@@ -121,6 +121,43 @@ RSpec.describe RefreshDescriptionFromCatalog do
       end
     end
 
+    context 'when refreshing directly from MARC' do
+      let(:marc) do
+        { fields: [
+          { '245': {
+            ind1: '1',
+            ind2: '0',
+            subfields: [
+              {
+                a: 'Gaudy night /'
+              },
+              {
+                c: 'by Dorothy L. Sayers.'
+              }
+            ]
+          } }
+        ] }.with_indifferent_access
+      end
+      let(:marc_service) do
+        instance_double(Catalog::MarcService, marc:)
+      end
+
+      before do
+        allow(Settings.enabled_features).to receive(:use_marc).and_return(true)
+      end
+
+      context 'when reading from Folio' do
+        it 'gets the data from Folio and returns success' do
+          expect(refresh.success?).to be(true)
+          expect(refresh.value!.description_props).to eq({
+                                                           title: [{ value: 'Gaudy night' }],
+                                                           purl: Purl.for(druid:)
+                                                         })
+          expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a123')
+        end
+      end
+    end
+
     context 'when no refreshable identifiers' do
       let(:identification) do
         {
@@ -180,44 +217,6 @@ RSpec.describe RefreshDescriptionFromCatalog do
 
       it 'returns failure' do
         expect(refresh.failure?).to be(true)
-      end
-    end
-
-    context 'when Settings.enabled_features.use_marc is true' do
-      let(:marc) do
-        { fields: [
-          { '245': {
-            ind1: '1',
-            ind2: '0',
-            subfields: [
-              {
-                a: 'Gaudy night /'
-              },
-              {
-                c: 'by Dorothy L. Sayers.'
-              }
-            ]
-          } }
-        ] }.with_indifferent_access
-      end
-
-      let(:marc_service) do
-        instance_double(Catalog::MarcService, marc:)
-      end
-
-      before do
-        allow(Settings.enabled_features).to receive(:use_marc).and_return(true)
-      end
-
-      context 'when reading from Folio' do
-        it 'gets the data from Folio and returns success' do
-          expect(refresh.success?).to be(true)
-          expect(refresh.value!.description_props).to eq({
-                                                           title: [{ value: 'Gaudy night' }],
-                                                           purl: Purl.for(druid:)
-                                                         })
-          expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a123')
-        end
       end
     end
   end

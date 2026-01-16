@@ -60,7 +60,7 @@ RSpec.describe 'Refresh metadata' do
     allow(CocinaObjectStore).to receive(:find).with(apo_druid).and_return(cocina_apo_object)
     allow(UpdateObjectService).to receive(:update).and_return(updated_cocina_object)
     allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
-    allow(marc_service).to receive(:marc).and_return(marc)
+    allow(marc_service).to receive(:marc_record).and_return(marc)
   end
 
   context 'when happy path' do

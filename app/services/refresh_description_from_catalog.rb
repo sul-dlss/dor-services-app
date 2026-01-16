@@ -30,9 +30,10 @@ class RefreshDescriptionFromCatalog
     return Failure() unless identifiers.any?
 
     if Settings.enabled_features.use_marc
-      return Failure() if marc_service.marc.nil?
+      marc = marc_service.marc
+      return Failure() if marc.nil?
 
-      description_props = Cocina::Models::Mapping::FromMarc::Description.props(marc: marc_service.marc, druid:,
+      description_props = Cocina::Models::Mapping::FromMarc::Description.props(marc:, druid:,
                                                                                label: cocina_object.label)
     else
       return Failure() if marc_service.mods.nil?
