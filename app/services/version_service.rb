@@ -167,7 +167,7 @@ class VersionService
     # Raised when the object has never been accessioned.
     # The accessioned milestone is the last step of the accessionWF.
     # During local development, we need a way to open a new version even if the object has not been accessioned.
-    raise(VersionService::VersioningError, 'Object net yet accessioned') unless
+    raise(VersionService::VersioningError, 'Object not yet accessioned') unless
         assume_accessioned || accessioned?
     # Raised when the current version has any incomplete wf steps and there is a versionWF.
     # The open milestone is part of the versioningWF.

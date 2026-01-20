@@ -69,12 +69,12 @@ RSpec.describe VersionService do
 
       before do
         allow(instance).to receive(:ensure_openable!).and_raise(VersionService::VersioningError,
-                                                                'Object net yet accessioned')
+                                                                'Object not yet accessioned')
         allow(described_class).to receive(:new).and_return(instance)
       end
 
       it 'raises an exception' do
-        expect { open }.to raise_error(VersionService::VersioningError, 'Object net yet accessioned')
+        expect { open }.to raise_error(VersionService::VersioningError, 'Object not yet accessioned')
       end
     end
 

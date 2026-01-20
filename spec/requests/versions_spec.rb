@@ -176,13 +176,13 @@ RSpec.describe 'Operations regarding object versions' do
     context 'when opening a version fails' do
       before do
         # Do not test version service side effects in dor-services-app; that is dor-services' responsibility
-        allow(VersionService).to receive(:open).and_raise(VersionService::VersioningError, 'Object net yet accessioned')
+        allow(VersionService).to receive(:open).and_raise(VersionService::VersioningError, 'Object not yet accessioned')
       end
 
       it 'returns an error' do
         post "/v1/objects/druid:mx123qw2323/versions?#{open_params.to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.body).to eq('{"errors":[{"status":"422","title":"Unable to open version","detail":"Object net yet accessioned"}]}') # rubocop:disable Layout/LineLength
+        expect(response.body).to eq('{"errors":[{"status":"422","title":"Unable to open version","detail":"Object not yet accessioned"}]}') # rubocop:disable Layout/LineLength
         expect(response).to have_http_status :unprocessable_content
       end
     end
