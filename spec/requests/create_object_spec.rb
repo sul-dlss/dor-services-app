@@ -157,7 +157,8 @@ RSpec.describe 'Create object' do
 
       context 'when using MARC and the save is successful' do
         let(:expected) do
-          build(:dro, id: druid, label: expected_label, title:, type: Cocina::Models::ObjectType.image, admin_policy_id:)
+          build(:dro, id: druid, label: expected_label, title:, type: Cocina::Models::ObjectType.image,
+                      admin_policy_id:)
             .new(
               identification: expected_identification,
               structural: expected_structural,
