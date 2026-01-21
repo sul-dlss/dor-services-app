@@ -65,8 +65,7 @@ class VersionService
   def open(cocina_object:, description:, assume_accessioned:, opening_user_name: nil, from_version: nil) # rubocop:disable Metrics/AbcSize
     raise ArgumentError, 'description is required to open a new version' if description.blank?
 
-    ensure_openable!(assume_accessioned:)
-    check_version!(current_version: repository_object.head_version_version) unless from_version
+    ensure_openable!(assume_accessioned:, check_preservation_version: !from_version)
 
     from_repository_object_version = from_version ? repository_object.versions.find_by!(version: from_version) : nil
 
@@ -106,8 +105,8 @@ class VersionService
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
   def can_open?(assume_accessioned: false, check_preservation: true)
     @can_open ||= begin
-      ensure_openable!(assume_accessioned:)
-      retrieve_version_from_preservation if check_preservation && Settings.version_service.sync_with_preservation
+      ensure_openable!(assume_accessioned:, check_preservation_version: check_preservation,
+                       check_preservation_status: check_preservation)
       true
     rescue VersionService::VersioningError
       false
@@ -160,13 +159,15 @@ class VersionService
   # Performs checks on whether a new version can be opened for an object
   # @return [Void]
   # @param [Boolean] assume_accessioned If true, does not check whether object has been accessioned.
+  # @param [Boolean] check_preservation_version If true, checks Preservation for the current version.
+  # @param [Boolean] check_preservation_status If true, checks Preservation for the object's preservation status.
   # @raise [VersionService::VersioningError] if the object hasn't been accessioned,
   #    if a version is already opened
-  def ensure_openable!(assume_accessioned:)
+  def ensure_openable!(assume_accessioned:, check_preservation_version: true, check_preservation_status: true) # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
     # Raised when the object has never been accessioned.
     # The accessioned milestone is the last step of the accessionWF.
     # During local development, we need a way to open a new version even if the object has not been accessioned.
-    raise(VersionService::VersioningError, 'Object net yet accessioned') unless
+    raise(VersionService::VersioningError, 'Object not yet accessioned') unless
         assume_accessioned || accessioned?
     # Raised when the current version has any incomplete wf steps and there is a versionWF.
     # The open milestone is part of the versioningWF.
@@ -174,14 +175,26 @@ class VersionService
     # Raised when the current version has any incomplete wf steps and there is an accessionWF.
     # The submitted milestone is part of the accessionWF.
     raise VersionService::VersioningError, 'Object currently being accessioned' if accessioning?
+
+    return unless Settings.version_service.sync_with_preservation
+
+    if check_preservation_version && preservation_object.current_version != repository_object.head_version_version
+      raise VersionService::VersioningError,
+            "Version from Preservation (#{preservation_object.current_version}) out of sync with current version " \
+            "(#{repository_object.head_version_version})."
+    end
+    return unless check_preservation_status && !preservation_object.ok_on_local_storage?
+
+    raise VersionService::VersioningError,
+          'Object has a preservation error so cannot be opened'
   end
 
-  # Performs checks on whether a new version can be opened for an object
-  # @return [Integer] the version from Preservation (SDR) if a version can be opened
-  # @raise [VersionService::VersioningError] if Preservation returns 404 when queried.
+  # Get information about the preserved object from PresCat
+  # @return [Preservation::Client::Object] preserved object info
+  # @raise [VersionService::VersioningError] if preserved object is not found in PresCat
   # @raise [Preservation::Client::Error] if bad response from preservation catalog.
-  def retrieve_version_from_preservation
-    Preservation::Client.objects.current_version(druid)
+  def preservation_object
+    @preservation_object ||= Preservation::Client.objects.object(druid)
   rescue Preservation::Client::NotFoundError
     raise VersionService::VersioningError, 'Preservation (SDR) is not yet answering queries about this object. When ' \
                                            'an object has just been transferred, Preservation isn\'t immediately ' \
@@ -268,18 +281,6 @@ class VersionService
   def move_user_version(repository_object, publish)
     UserVersionService.move(druid:, version: repository_object.last_closed_version.version,
                             user_version: repository_object.head_user_version, publish:)
-  end
-
-  def check_version!(current_version:)
-    return unless Settings.version_service.sync_with_preservation
-
-    preservation_version = retrieve_version_from_preservation
-
-    return if preservation_version == current_version
-
-    raise VersionService::VersioningError,
-          "Version from Preservation is out of sync. Preservation expects #{preservation_version} but current " \
-          "version is #{current_version}"
   end
 
   def update_previous_user_versions(repository_object:)

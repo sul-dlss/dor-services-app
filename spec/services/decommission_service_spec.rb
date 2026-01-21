@@ -72,7 +72,7 @@ RSpec.describe DecommissionService do
       context 'when it is not accessioned' do
         it 'raises an error' do
           expect { decommission }.to raise_error(VersionService::VersioningError)
-            .with_message('Object net yet accessioned')
+            .with_message('Object not yet accessioned')
         end
       end
     end
