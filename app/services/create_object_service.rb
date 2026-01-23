@@ -175,6 +175,6 @@ class CreateObjectService
   end
 
   def label_from_title(title)
-    CocinaDisplay::Title.new(title.first.with_indifferent_access).full_title
+    CocinaDisplay::Title.new(title.first.with_indifferent_access).short_title
   end
 end

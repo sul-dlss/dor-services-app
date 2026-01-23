@@ -193,7 +193,7 @@ RSpec.describe 'Create object' do
         end
         let(:data) do
           <<~JSON
-            {#{' '}
+            {
               "cocinaVersion":"#{Cocina::Models::VERSION}",
               "type":"#{Cocina::Models::ObjectType.image}",
               "label":"#{label}","version":1,
