@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Catalog::MarcService do
-  let(:marc_service) { described_class.new(folio_instance_hrid: 'a123') }
+  let(:marc_service) { described_class.new(folio_instance_hrid: 'a123', barcode: nil) }
   let(:marc_record) do
     MARC::Record.new.tap do |record|
       record << MARC::DataField.new('245', '1', '0', ['a', 'Gaudy night /'], ['c', 'by Dorothy L. Sayers.'])
@@ -35,8 +35,13 @@ RSpec.describe Catalog::MarcService do
   end
 
   describe '#marc' do
+    before do
+      allow(described_class).to receive(:new).and_call_original
+    end
+
     it 'returns MARC data from FOLIO' do
-      expect(marc_service.marc).to eq marc_hash
+      described_class.marc(folio_instance_hrid: 'a123', barcode: nil)
+      expect(described_class).to have_received(:new).with(folio_instance_hrid: 'a123', barcode: nil)
       expect(Catalog::FolioReader).to have_received(:new).with(folio_instance_hrid: 'a123', barcode: nil)
       expect(folio_reader).to have_received(:to_marc)
     end
