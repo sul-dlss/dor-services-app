@@ -8,13 +8,15 @@ module Catalog
     class CatalogRecordNotFoundError < MarcServiceError; end
     class TransformError < MarcServiceError; end
 
-    def self.mods(barcode: nil, folio_instance_hrid: nil)
-      new(barcode:, folio_instance_hrid:).mods
+    # @see #initialize
+    def self.mods(...)
+      new(...).mods
     end
 
+    # @see #initialize
     # @return [Hash] MARC Record as a hash
-    def self.marc(barcode: nil, folio_instance_hrid: nil)
-      new(barcode:, folio_instance_hrid:).marc
+    def self.marc(...)
+      new(...).marc
     end
 
     def initialize(barcode: nil, folio_instance_hrid: nil)
