@@ -97,7 +97,7 @@ class CreateObjectService
     description_props = result.value!.description_props
     # Remove PURL since this is still a request
     description_props.delete(:purl)
-    label = ModsUtils.label(result.value!.mods_ng_xml)
+    label = label_from_title(description_props[:title])
     cocina_request_object.new(label:, description: description_props)
   end
 
@@ -172,5 +172,9 @@ class CreateObjectService
 
     tags = ["Project : #{cocina_request_object.administrative.partOfProject}"]
     AdministrativeTags.create(identifier: druid, tags:)
+  end
+
+  def label_from_title(title)
+    CocinaDisplay::Title.new(title.first.with_indifferent_access).short_title
   end
 end

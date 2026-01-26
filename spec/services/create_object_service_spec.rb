@@ -9,8 +9,6 @@ RSpec.describe CreateObjectService do
 
   describe '#create' do
     let(:druid) { 'druid:bc123df4567' }
-    let(:catalog_links) { [] }
-
     let(:lock) { "#{druid}=0" }
     let(:marc_service) do
       instance_double(Catalog::MarcService, mods:, mods_ng: Nokogiri::XML(mods))
@@ -90,6 +88,73 @@ RSpec.describe CreateObjectService do
         expect(store.create(requested_cocina_object).description.title.first.value).to eq 'The Well-Grounded Rubyist'
         expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a999123')
         expect(marc_service).to have_received(:mods)
+      end
+    end
+
+    context 'when refreshing basic from FOLIO MARC with a refreshable hrid' do
+      let(:requested_cocina_object) { build(:request_dro, folio_instance_hrids: ['a999123']) }
+      let(:marc_service) do
+        instance_double(Catalog::MarcService, marc:)
+      end
+      let(:marc) do
+        { fields: [
+          { '245': {
+            ind1: '1',
+            ind2: '0',
+            subfields: [
+              { a: 'Example Item Title /' },
+              { c: 'Some Author' }
+            ]
+          } }
+        ] }.with_indifferent_access
+      end
+
+      before do
+        allow(Settings.enabled_features).to receive(:use_marc).and_return(true)
+        allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
+      end
+
+      it 'with a basic title it adds to description' do
+        cocina_object = store.create(requested_cocina_object)
+        expect(cocina_object.description.title.first.value).to eq 'Example Item Title'
+        expect(cocina_object.label).to eq 'Example Item Title'
+        expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a999123')
+        expect(marc_service).to have_received(:marc)
+      end
+    end
+
+    context 'when refreshing from FOLIO MARC with a refreshable hrid' do
+      let(:requested_cocina_object) { build(:request_dro, folio_instance_hrids: ['a999123']) }
+      let(:marc_service) do
+        instance_double(Catalog::MarcService, marc:)
+      end
+      let(:marc) do
+        { fields: [
+          { '245': {
+            ind1: '1',
+            ind2: '4',
+            subfields: [
+              { a: 'The well-grounded Rubyist /' },
+              { c: 'by David A. Black and Joseph Leo III.' }
+            ]
+          } }
+        ] }.with_indifferent_access
+      end
+
+      before do
+        allow(Settings.enabled_features).to receive(:use_marc).and_return(true)
+        allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
+      end
+
+      it 'adds to description' do
+        skip 'until Cocina::Models::Mapping::FromMarc::TitleBuilder handles more than a basic title'
+        cocina_object = store.create(requested_cocina_object)
+        expect(cocina_object.description.title.first&.structuredValue&.find do |t|
+          t.type == 'main title'
+        end&.value).to eq 'well-grounded Rubyist'
+        expect(cocina_object.label).to eq 'The well-grounded Rubyist'
+        expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a999123')
+        expect(marc_service).to have_received(:marc)
       end
     end
 

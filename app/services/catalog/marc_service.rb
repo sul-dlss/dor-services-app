@@ -8,12 +8,18 @@ module Catalog
     class CatalogRecordNotFoundError < MarcServiceError; end
     class TransformError < MarcServiceError; end
 
-    def self.mods(catkey: nil, barcode: nil, folio_instance_hrid: nil)
-      new(catkey:, barcode:, folio_instance_hrid:).mods
+    # @see #initialize
+    def self.mods(...)
+      new(...).mods
     end
 
-    def initialize(catkey: nil, barcode: nil, folio_instance_hrid: nil)
-      @catkey = catkey
+    # @see #initialize
+    # @return [Hash] MARC Record as a hash
+    def self.marc(...)
+      new(...).marc
+    end
+
+    def initialize(barcode: nil, folio_instance_hrid: nil)
       @barcode = barcode
       @folio_instance_hrid = folio_instance_hrid
     end
@@ -49,9 +55,16 @@ module Catalog
       @marc_record ||= marc_record_from_folio
     end
 
+    # @return [Hash] MARC record as a hash
+    # @raise CatalogResponseError
+    # @raise CatalogRecordNotFoundError
+    def marc
+      marc_record.to_hash
+    end
+
     private
 
-    attr_reader :catkey, :barcode, :folio_instance_hrid
+    attr_reader :barcode, :folio_instance_hrid
 
     def marc_to_mods_xslt
       @marc_to_mods_xslt ||= Nokogiri::XSLT(File.open(Rails.root.join('app/xslt/MARC21slim2MODS3-7_SDR_v2-8.xsl')))

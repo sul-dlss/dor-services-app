@@ -160,7 +160,7 @@ RSpec.describe 'Refresh metadata' do
       let(:marc_service) { Catalog::MarcService.new(barcode: '1234') }
 
       before do
-        allow(marc_service).to receive(:marc_record).and_return(MARC::Record.new)
+        allow(marc_service).to receive(:marc).and_return(MARC::Record.new)
         allow(Nokogiri).to receive(:XSLT).and_return(xslt)
         allow(xslt).to receive(:transform)
           .and_raise(RuntimeError,
