@@ -17,8 +17,10 @@ RSpec.describe VersionBatchStatusService do
       accessioning_repository_object_version = create(:repository_object_version, :with_repository_object,
                                                       external_identifier: accessioning_druid, version: 2)
       accessioning_repository_object_version.repository_object.close_version!(description: 'Best version ever')
+
       # This object has an assembly workflow that is sufficiently completed.
       allow(QueueService).to receive(:enqueue)
+      allow(Indexer).to receive(:reindex_now)
       Workflow::Service.create(druid: accessioning_druid, workflow_name: 'assemblyWF', version: 2)
       steps = WorkflowStep.where(druid: accessioning_druid, active_version: true,
                                  workflow: 'assemblyWF').order(:id).to_a
