@@ -22,23 +22,23 @@ require 'active_support'
 Bundler.require(*Rails.groups)
 
 # Custom API error class for JSONAPI responses
-class JSONAPIError < Committee::ValidationError
-  def error_body
-    {
-      errors: [
-        { status: id, detail: message }
-      ]
-    }
-  end
+# class JSONAPIError < Committee::ValidationError
+#   def error_body
+#     {
+#       errors: [
+#         { status: id, detail: message }
+#       ]
+#     }
+#   end
 
-  def render
-    [
-      status,
-      { 'Content-Type' => 'application/vnd.api+json' },
-      [JSON.generate(error_body)]
-    ]
-  end
-end
+#   def render
+#     [
+#       status,
+#       { 'Content-Type' => 'application/vnd.api+json' },
+#       [JSON.generate(error_body)]
+#     ]
+#   end
+# end
 
 module DorServices
   # The main application class for the Dor Services application.
@@ -52,7 +52,7 @@ module DorServices
       schema_path: 'openapi.yml',
       strict: true,
       strict_reference_validation: true,
-      error_class: JSONAPIError,
+      # error_class: JSONAPIError,
       accept_request_filter: accept_proc,
       parse_response_by_content_type: false,
       query_hash_key: 'action_dispatch.request.query_parameters',
