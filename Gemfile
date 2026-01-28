@@ -28,7 +28,6 @@ end
 # Ruby general dependencies
 gem 'bootsnap', '>= 1.4.2', require: false
 gem 'bunny', '~> 2.17' # Send messages to RabbitMQ
-gem 'committee' # validates Open API spec (OAS)
 gem 'config'
 gem 'connection_pool' # Used for redis
 gem 'csv'
@@ -40,6 +39,7 @@ gem 'faraday-retry'
 gem 'honeybadger'
 gem 'jbuilder'
 gem 'jsonpath', '~> 1.1' # used for metadata reports
+gem 'json_schemer' # validates OpenAPI schema
 gem 'jwt' # json web token
 gem 'lograge'
 gem 'okcomputer'
