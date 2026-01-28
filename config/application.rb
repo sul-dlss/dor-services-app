@@ -46,30 +46,30 @@ module DorServices
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.0
 
-    accept_proc = proc { |request| request.path.start_with?('/v1') }
-    config.middleware.use(
-      Committee::Middleware::RequestValidation,
-      schema_path: 'openapi.yml',
-      strict: true,
-      strict_reference_validation: true,
-      # error_class: JSONAPIError,
-      accept_request_filter: accept_proc,
-      parse_response_by_content_type: false,
-      query_hash_key: 'action_dispatch.request.query_parameters',
-      parameter_overwrite_by_rails_rule: false
-    )
-    # Ensure we are passing back valid responses when running tests
-    if Rails.env.test?
-      config.middleware.use(
-        Committee::Middleware::ResponseValidation,
-        schema_path: 'openapi.yml',
-        strict_reference_validation: true,
-        parse_response_by_content_type: true,
-        query_hash_key: 'rack.request.query_hash',
-        raise: true,
-        parameter_overwrite_by_rails_rule: false
-      )
-    end
+    # accept_proc = proc { |request| request.path.start_with?('/v1') }
+    # config.middleware.use(
+    #   Committee::Middleware::RequestValidation,
+    #   schema_path: 'openapi.yml',
+    #   strict: true,
+    #   strict_reference_validation: true,
+    #   error_class: JSONAPIError,
+    #   accept_request_filter: accept_proc,
+    #   parse_response_by_content_type: false,
+    #   query_hash_key: 'action_dispatch.request.query_parameters',
+    #   parameter_overwrite_by_rails_rule: false
+    # )
+    # # Ensure we are passing back valid responses when running tests
+    # if Rails.env.test?
+    #   config.middleware.use(
+    #     Committee::Middleware::ResponseValidation,
+    #     schema_path: 'openapi.yml',
+    #     strict_reference_validation: true,
+    #     parse_response_by_content_type: true,
+    #     query_hash_key: 'rack.request.query_hash',
+    #     raise: true,
+    #     parameter_overwrite_by_rails_rule: false
+    #   )
+    # end
 
     config.after_initialize do
       Cocina::Models::Mapping::Purl.base_url = Settings.release.purl_base_url
