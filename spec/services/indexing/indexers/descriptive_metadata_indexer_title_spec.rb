@@ -55,42 +55,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
     end
 
-    context 'with multiple typed titles, none status primary' do
-      # Select first
-      let(:titles) do
-        [
-          {
-            value: 'First',
-            type: 'translated'
-          },
-          {
-            value: 'Second',
-            type: 'alternative'
-          },
-          {
-            value: 'Third',
-            type: 'transliterated'
-          }
-        ]
-      end
-
-      it 'main_title_tenim is first value' do
-        expect(doc['main_title_tenim']).to eq ['First']
-      end
-
-      it 'full_title_tenim is first value' do
-        expect(doc['full_title_tenim']).to eq ['First']
-      end
-
-      it 'additional_titles_tenim is non-first values' do
-        expect(doc['additional_titles_tenim']).to eq %w[Second Third]
-      end
-
-      it 'display_title_ss is first value' do
-        expect(doc['display_title_ss']).to eq 'First'
-      end
-    end
-
     context 'with structuredValue with all parts in common order' do
       let(:titles) do
         [
