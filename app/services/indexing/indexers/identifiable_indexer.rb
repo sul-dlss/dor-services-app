@@ -61,7 +61,8 @@ module Indexing
       def apo_title
         @@apo_hash[apo_druid] ||= begin
           apo_obj = CocinaObjectStore.find(apo_druid)
-          Cocina::Models::Builders::TitleBuilder.build(apo_obj.description.title)
+          cocina_display_record = CocinaDisplay::CocinaRecord.new(apo_obj.as_json)
+          cocina_display_record.primary_title.to_s
         rescue CocinaObjectStore::CocinaObjectStoreError
           Honeybadger.notify("Bad association found on #{cocina.externalIdentifier}. #{apo_druid} could not be found")
           apo_druid
