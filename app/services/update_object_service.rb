@@ -78,9 +78,10 @@ class UpdateObjectService
     raise "Updating repository item #{druid} without an open version"
   end
 
+  # Has the title of the collection changed?
   def need_to_update_members?
     cocina_object.collection? &&
-      object_title(druid) != Cocina::Models::Builders::TitleBuilder.build(cocina_object.description.title)
+      object_title(druid) != CocinaDisplay::CocinaRecord.new(cocina_object.as_json).primary_title.to_s
   end
 
   def collection_changed?
@@ -123,7 +124,7 @@ class UpdateObjectService
   def object_title(druid)
     return 'None' unless druid
 
-    Cocina::Models::Builders::TitleBuilder.build(CocinaObjectStore.find(druid).description.title)
+    CocinaDisplay::CocinaRecord.new(CocinaObjectStore.find(druid).as_json).primary_title.to_s
   end
 
   def persist! # rubocop:disable Metrics/MethodLength, Metrics/AbcSize

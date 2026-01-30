@@ -15,7 +15,8 @@ module Indexing
       def to_solr
         {}.tap do |solr_doc|
           parent_collections.each do |collection_obj|
-            coll_title = Cocina::Models::Builders::TitleBuilder.build(collection_obj.description.title)
+            cocina_display_record = CocinaDisplay::CocinaRecord.new(collection_obj.as_json)
+            coll_title = cocina_display_record.primary_title.to_s
             next if coll_title.blank?
 
             solr_doc['collection_title_ssimdv'] ||= []

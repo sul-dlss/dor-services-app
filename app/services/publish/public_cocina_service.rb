@@ -16,7 +16,8 @@ module Publish
     # remove any file_set that doesn't have at least one published file
     # remove partOfProject (similar to how we remove tags from identityMetadata)
     def build # rubocop:disable Metrics/AbcSize
-      label = Cocina::Models::Builders::TitleBuilder.build(cocina.description.title)
+      cocina_display_record = CocinaDisplay::CocinaRecord.new(cocina.as_json)
+      label = cocina_display_record.primary_title.to_s
       if cocina.dro?
         cocina.new(label:, structural: build_structural, administrative: build_administrative)
       elsif cocina.collection?

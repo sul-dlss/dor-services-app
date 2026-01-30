@@ -130,10 +130,11 @@ module Catalog
         next unless PublicMetadataReleaseTagService.released_to_searchworks?(cocina_object: collection)
 
         catalog_link = collection.identification&.catalogLinks&.find { |link| link.catalog == catalog }
+        cocina_display_record = CocinaDisplay::CocinaRecord.new(collection.as_json)
+        label = cocina_display_record.primary_title.to_s
         collection_info << { code: 'x',
                              value: "collection:#{collection.externalIdentifier.delete_prefix('druid:')}:" \
-                                    "#{catalog_link&.catalogRecordId}:" \
-                                    "#{Cocina::Models::Builders::TitleBuilder.build(collection.description.title)}" }
+                                    "#{catalog_link&.catalogRecordId}:#{label}" }
       end
 
       collection_info
