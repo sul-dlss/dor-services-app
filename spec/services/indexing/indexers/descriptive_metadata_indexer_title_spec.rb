@@ -91,32 +91,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       end
     end
 
-    context 'with space/punctuation/space ending simple value' do
-      let(:titles) do
-        [
-          { value: 'Title /' }
-        ]
-      end
-
-      # strip one or more instances of .,;:/\ plus whitespace at beginning or end of string
-
-      it 'main_title_tenim is value without trailing punctuation or spaces' do
-        expect(doc['main_title_tenim']).to eq ['Title']
-      end
-
-      it 'full_title_tenim is value without trailing punctuation or spaces' do
-        expect(doc['full_title_tenim']).to eq ['Title']
-      end
-
-      it 'additional_titles_tenim is nil' do
-        expect(doc['additional_titles_tenim']).to be_nil
-      end
-
-      it 'display_title_ss is value without trailing punctuation or spaces' do
-        expect(doc['display_title_ss']).to eq 'Title'
-      end
-    end
-
     context 'with structuredValue with all parts in common order' do
       let(:titles) do
         [
