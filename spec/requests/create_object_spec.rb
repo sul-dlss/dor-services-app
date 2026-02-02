@@ -658,12 +658,12 @@ RSpec.describe 'Create object' do
           JSON
             .parse(data)
             .tap do |cocina_hash|
-              cocina_hash['structural']['contains'].map do |fileset|
-                fileset['structural']['contains'].map do |file|
-                  file['access']['view'] = 'world'
-                  file['access']['download'] = 'world'
-                end
+            cocina_hash['structural']['contains'].map do |fileset|
+              fileset['structural']['contains'].map do |file|
+                file['access']['view'] = 'world'
+                file['access']['download'] = 'world'
               end
+            end
           end
             .to_json
         end

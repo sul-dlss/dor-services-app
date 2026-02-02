@@ -36,8 +36,8 @@ class BatchReindexJob < ApplicationJob
       RepositoryObject.includes(:head_version)
                       .where(external_identifier: collection_druids)
                       .find_each do |collection_repository_object|
-                        map[collection_repository_object.external_identifier] =
-                          collection_repository_object.head_version.to_cocina_with_metadata
+        map[collection_repository_object.external_identifier] =
+          collection_repository_object.head_version.to_cocina_with_metadata
       end
     end
   end
