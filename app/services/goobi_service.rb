@@ -170,7 +170,7 @@ class GoobiService
 
   def title_or_label
     if cocina_obj.description
-      main_title = CocinaDisplay::CocinaRecord.new(cocina_obj.to_h.with_indifferent_access).main_title
+      main_title = CocinaDisplay::CocinaRecord.new(cocina_obj.to_h.with_indifferent_access).short_title
       return main_title if main_title
     end
 
