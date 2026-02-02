@@ -34,12 +34,12 @@ class H3ObjectsNoDepositEvent
     ActiveRecord::Base.connection.execute(SQL).to_a
                       .sort_by { |row| row['last_updated'] }
                       .each do |row|
-                        puts [
-                          row['item_druid'],
-                          row['current_version'],
-                          row['last_updated'],
-                          row['collection_druid']
-                        ].to_csv
+      puts [
+        row['item_druid'],
+        row['current_version'],
+        row['last_updated'],
+        row['collection_druid']
+      ].to_csv
     end
   end
 end

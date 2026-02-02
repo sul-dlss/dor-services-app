@@ -23,14 +23,14 @@ class RepositoryObjectVersion < ApplicationRecord
       .to_h
       .except(:externalIdentifier, :version, :cocinaVersion)
       .tap do |object_hash|
-        object_hash[:cocina_version] = Cocina::Models::VERSION # When saving, set to latest cocina version.
-        object_hash[:content_type] = object_hash.delete(:type)
-        case cocina_object
-        when Cocina::Models::DRO
-          object_hash[:geographic] ||= nil
-        when Cocina::Models::AdminPolicy
-          object_hash[:description] ||= nil
-        end
+      object_hash[:cocina_version] = Cocina::Models::VERSION # When saving, set to latest cocina version.
+      object_hash[:content_type] = object_hash.delete(:type)
+      case cocina_object
+      when Cocina::Models::DRO
+        object_hash[:geographic] ||= nil
+      when Cocina::Models::AdminPolicy
+        object_hash[:description] ||= nil
+      end
     end
   end
 
