@@ -28,6 +28,7 @@ coverage/*
 /tls
 # Ignore any input druid list to reports or roundtrip validation
 *druids*.txt
+!app/reports/prod-druids-invalid-uri.txt
 config/settings.local.yml
 results.txt
 /results
