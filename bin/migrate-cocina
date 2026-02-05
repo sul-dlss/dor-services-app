@@ -141,3 +141,5 @@ CSV.open('migrate-cocina.csv', 'w') do |writer|
       writer << result
   end
 end
+
+exit 0
