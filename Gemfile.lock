@@ -111,7 +111,7 @@ GEM
       capistrano-bundler (>= 1.1, < 3)
     capistrano-shared_configs (0.2.2)
     chronic (0.10.2)
-    cocina-models (0.109.0)
+    cocina-models (0.110.1)
       activesupport
       deprecation
       dry-struct (~> 1.0)
@@ -119,9 +119,10 @@ GEM
       edtf
       equivalent-xml
       i18n
+      json_schemer (~> 2.0)
       jsonpath
+      marc (~> 1.3)
       nokogiri
-      openapi_parser (~> 1.0)
       super_diff
       thor
       zeitwerk (~> 2.1)
@@ -132,9 +133,9 @@ GEM
       i18n
       janeway-jsonpath (~> 0.6)
       zeitwerk (~> 2.7)
-    committee (5.0.0)
+    committee (5.6.1)
       json_schema (~> 0.14, >= 0.14.3)
-      openapi_parser (~> 1.0)
+      openapi_parser (~> 2.0)
       rack (>= 1.5)
     concurrent-ruby (1.3.6)
     config (5.6.1)
@@ -172,9 +173,9 @@ GEM
       ed25519
     docile (1.4.1)
     domain_name (0.6.20240107)
-    dor-services-client (15.26.0)
+    dor-services-client (15.27.1)
       activesupport (>= 7.0.0)
-      cocina-models (~> 0.109.0)
+      cocina-models (~> 0.110.1)
       deprecation
       faraday (~> 2.0)
       faraday-retry
@@ -366,7 +367,7 @@ GEM
       version_gem (~> 1.1, >= 1.1.9)
     okcomputer (1.19.1)
       benchmark
-    openapi_parser (1.0.0)
+    openapi_parser (2.3.1)
     optimist (3.2.1)
     ostruct (0.6.3)
     parallel (1.27.0)
@@ -620,7 +621,7 @@ DEPENDENCIES
   capistrano-passenger
   capistrano-rails
   capistrano-shared_configs
-  cocina-models (~> 0.109.0)
+  cocina-models (~> 0.110.1)
   cocina_display
   committee
   config
