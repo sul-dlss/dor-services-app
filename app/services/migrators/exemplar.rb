@@ -26,6 +26,10 @@ module Migrators
       head_rov.description['title'].first['value'] = mark_migrated(head_rov.description['title'].first['value'])
     end
 
+    def updated_head_version_cocina_object
+      head_rov.to_cocina_with_metadata # This validates the cocina object
+    end
+
     private
 
     def mark_migrated(label)
