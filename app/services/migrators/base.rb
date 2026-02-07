@@ -24,6 +24,11 @@ module Migrators
       raise NotImplementedError
     end
 
+    # subclass can override if a different way of referencing the updated version was used
+    def updated_head_version_cocina_object
+      repository_object.head_version.to_cocina_with_metadata # This validates the cocina object
+    end
+
     # A migrator may override the publish? method to return true for some or all migrated SDR objects
     # When true, the migrated object will be published.
     def publish?
