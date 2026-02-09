@@ -37,13 +37,13 @@ class PropertyContainsPropertyCollections
       .execute(sql_query)
       .to_a
       .map do |row|
-      collection_name = RepositoryObject.collections.find_by(external_identifier: row['collection_druid'])&.head_version&.label
+        collection_name = RepositoryObject.collections.find_by(external_identifier: row['collection_druid'])&.head_version&.label
 
-      [
-        row['collection_druid'],
-        row['catalogRecordId'],
-        collection_name
-      ].to_csv
+        [
+          row['collection_druid'],
+          row['catalogRecordId'],
+          collection_name
+        ].to_csv
     end
   end
 end
