@@ -147,11 +147,27 @@ RSpec.describe RefreshDescriptionFromCatalog do
       end
 
       context 'when reading from Folio' do
+        let(:today) { Time.zone.now.strftime('%Y-%m-%d') }
+
         it 'gets the data from Folio and returns success' do
           expect(refresh.success?).to be(true)
           expect(refresh.value!.description_props).to eq({
                                                            title: [{ value: 'Gaudy night' }],
-                                                           purl: Purl.for(druid:)
+                                                           purl: Purl.for(druid:),
+                                                           note: [
+                                                             {
+                                                               value: 'by Dorothy L. Sayers.',
+                                                               type: 'statement of responsibility'
+                                                             }
+                                                           ],
+                                                           adminMetadata: {
+                                                             note: [
+                                                               {
+                                                                 value: "Converted from MARC to Cocina #{today}",
+                                                                 type: 'record origin'
+                                                               }
+                                                             ]
+                                                           }
                                                          })
           expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a123')
         end

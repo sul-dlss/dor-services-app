@@ -85,7 +85,7 @@ RSpec.describe 'Administrative tags' do
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:bad_request)
         expect(response.body)
-          .to eq('{"errors":[{"title":"bad request","detail":"param is missing or the value is empty or invalid: administrative_tags"}]}') # rubocop:disable Layout/LineLength
+          .to eq('{"errors":[{"status":"bad_request","detail":"\"Content-Type\" request header must be set to \"application/json\"."}]}') # rubocop:disable Layout/LineLength
       end
     end
 
@@ -189,7 +189,7 @@ RSpec.describe 'Administrative tags' do
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:bad_request)
         expect(response.body)
-          .to eq('{"errors":[{"title":"bad request","detail":"param is missing or the value is empty or invalid: administrative_tag"}]}') # rubocop:disable Layout/LineLength
+          .to eq('{"errors":[{"status":"bad_request","detail":"\"Content-Type\" request header must be set to \"application/json\"."}]}') # rubocop:disable Layout/LineLength
       end
     end
 

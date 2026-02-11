@@ -170,6 +170,15 @@ RSpec.describe 'Create object' do
               }
             )
         end
+        let(:today) { Time.zone.now.strftime('%Y-%m-%d') }
+
+        let(:expected_description) do
+          expected.description.new(adminMetadata: { note: [{
+                                     value: "Converted from MARC to Cocina #{today}", type: 'record origin'
+                                   }] },
+                                   note: [{ value: 'by Some Author.',
+                                            type: 'statement of responsibility' }])
+        end
         let(:label) { 'Here is my title' }
         let(:title) { 'Here is my title' }
         let(:marc) do
@@ -191,7 +200,7 @@ RSpec.describe 'Create object' do
         let(:marc_service) do
           instance_double(Catalog::MarcService, marc:)
         end
-        let(:data) do
+        let(:request_data) do
           <<~JSON
             {
               "cocinaVersion":"#{Cocina::Models::VERSION}",
@@ -217,10 +226,11 @@ RSpec.describe 'Create object' do
         it 'registers the object with the registration service' do
           expect do
             post '/v1/objects',
-                 params: data,
+                 params: request_data,
                  headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
           end.to change(Event, :count).by(1)
-          expect(response.body).to equal_cocina_model(expected)
+
+          expect(response.body).to equal_cocina_model(expected.new(description: expected_description))
           expect(response).to have_http_status(:created)
           expect(response.location).to eq "/v1/objects/#{druid}"
           expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a8888')
