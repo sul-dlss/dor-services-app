@@ -6,8 +6,11 @@ class ReindexJob < ApplicationJob
 
   queue_as :low
 
-  # ~3 seconds, ~18 seconds, ~83 seconds. If this fails, Sidekiq retries are not used.
-  retry_on DeadLockError, attempts: 3, wait: :polynomially_longer, queue: :low
+  # Retry at ~3 seconds, ~18 seconds, ~83 seconds. If all attempts fail, the error is swallowed not bubbled up.
+  retry_on DeadLockError, attempts: 3, wait: :polynomially_longer, queue: :low do |_job, _error|
+    nil # do nothing
+  end
+  # ActiveJob retries are used instead of Sidekiq retries
   sidekiq_options retry: false
 
   # @param [String] druid
