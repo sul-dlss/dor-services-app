@@ -10,8 +10,8 @@ class ReindexJob < ApplicationJob
   retry_on DeadLockError, attempts: 3, wait: :polynomially_longer, queue: :low do |_job, _error|
     nil # do nothing
   end
-  # ActiveJob retries are used instead of Sidekiq retries
-  sidekiq_options retry: false
+  # ActiveJob retries are used instead of Sidekiq retries. Bump up log level to filter out start/end job logging
+  sidekiq_options retry: false, log_level: :warn
 
   # @param [String] druid
   # @param [String] trace_id the trace id
