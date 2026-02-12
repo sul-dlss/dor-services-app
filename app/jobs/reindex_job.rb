@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 # Reindexes an object.
+#
+# NOTE: INFO-level logging is filtered out when this job runs due to ApplicationJob::IgnoreReindexingLogSubscriber
 class ReindexJob < ApplicationJob
   class DeadLockError < StandardError; end
 

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 # Reindexes a batch of objects.
+#
+# NOTE: INFO-level logging is filtered out when this job runs due to ApplicationJob::IgnoreReindexingLogSubscriber
 class BatchReindexJob < ApplicationJob
   queue_as 'batch_reindex'
 
