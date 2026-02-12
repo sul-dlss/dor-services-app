@@ -28,7 +28,6 @@ end
 # Ruby general dependencies
 gem 'bootsnap', '>= 1.4.2', require: false
 gem 'bunny', '~> 2.17' # Send messages to RabbitMQ
-gem 'committee' # validates Open API spec (OAS)
 gem 'config'
 gem 'connection_pool' # Used for redis
 gem 'csv'

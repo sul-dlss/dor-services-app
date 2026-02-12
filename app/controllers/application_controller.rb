@@ -34,7 +34,36 @@ class ApplicationController < ActionController::API
            }
   end
 
+  def validate_from_openapi
+    errors = spec_errors.to_a
+    raise(Cocina::ValidationError, errors.pluck('error').join('; ')) if errors.any?
+  end
+
   private
+
+  def spec_errors
+    verb = request.method.downcase
+    return if %w[delete get].include?(verb) # no body to verify
+
+    path = json_ref_for_path
+
+    unless request.content_type == 'application/json'
+      raise Cocina::ValidationError,
+            '"Content-Type" request header must be set to "application/json".'
+    end
+
+    schema = YAML.load_file('openapi.yml')
+    document = JSONSchemer.openapi(schema)
+    document.ref("#/paths/#{path}/#{verb}/requestBody/content/application~1json/schema")
+            .validate(JSON.parse(request.body.read))
+  end
+
+  def json_ref_for_path
+    path = CGI.unescape(request.path).tr(' ', '+')
+    path.gsub!(params[:object_id], '%7Bobject_id%7D') if params[:object_id]
+    path.gsub!(params[:id], '%7Bid%7D') if params[:id]
+    path.gsub('/', '~1')
+  end
 
   # Ensure a valid token is present, or renders "401: Not Authorized"
   def check_auth_token
