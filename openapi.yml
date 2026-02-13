@@ -1376,7 +1376,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/Druid"
-        - name: description
+        - name: event_description
           in: query
           description: A description of the change being made to the object
           required: false
