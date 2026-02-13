@@ -46,21 +46,31 @@ class OpenApiValidator
     result = request.query_parameters[spec['name']]
     return unless result
 
-    request.params[spec['name']] &&= case spec.dig('schema', 'type')
-                                     when 'boolean'
-                                       ActiveModel::Type::Boolean.new.cast(result)
-                                     else
-                                       result
-                                     end
+    cast_param_to_type(result, spec)
   end
 
   def validate_path_param(spec) # rubocop:disable Metrics/AbcSize
     result = request.path_parameters[spec['name'].to_sym]
     ref = spec.dig('schema', '$ref')
-    errors = document.ref(ref).validate(result).to_a
-    raise RequestValidationError, errors.join(', ') unless errors.empty?
+    if ref
+      errors = document.ref(ref).validate(result).to_a
+      raise RequestValidationError, errors.join(', ') unless errors.empty?
 
-    request.params[spec['name']] = result
+      request.params[spec['name']] = result
+    else
+      cast_param_to_type(result, spec)
+    end
+  end
+
+  def cast_param_to_type(result, spec)
+    request.params[spec['name']] &&= case spec.dig('schema', 'type')
+                                     when 'boolean'
+                                       ActiveModel::Type::Boolean.new.cast(result)
+                                     when 'integer'
+                                       ActiveModel::Type::Integer.new.cast(result)
+                                     else
+                                       result
+                                     end
   end
 
   def request_openapi_path
@@ -70,9 +80,9 @@ class OpenApiValidator
   end
 
   def json_ref_for_path
-    params = request.path_parameters.except(:controller, :action)
+    params = request.path_parameters.except(:controller, :action, :format)
     path = CGI.unescape(request.path).tr(' ', '+')
-    %i[object_id id].each do |parameter|
+    params.keys.each do |parameter|
       path.gsub!(params[parameter], "%7B#{parameter}%7D") if params[parameter]
     end
     path.gsub('/', '~1')

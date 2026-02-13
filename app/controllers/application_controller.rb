@@ -14,6 +14,7 @@ class ApplicationController < ActionController::API
 
   # Disabling in development so that Graphiql can reach graphql endpoint.
   before_action :check_auth_token, unless: -> { Rails.env.development? }
+  before_action :params_from_openapi
 
   TOKEN_HEADER = 'Authorization'
 

@@ -3,7 +3,6 @@
 # Provides an API for release tags
 class ReleaseTagsController < ApplicationController
   before_action :load_cocina_object, only: %i[index create]
-  before_action :params_from_openapi
 
   rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
     json_api_error(status: :not_found, message: e.message)
