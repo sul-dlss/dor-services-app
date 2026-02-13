@@ -1181,7 +1181,7 @@ paths:
           schema:
             type: boolean
         - in: query
-          name: who
+          name: user_name
           description: The sunetid of the person making the change
           required: false
           schema:
@@ -1382,7 +1382,7 @@ paths:
           required: false
           schema:
             type: string
-        - name: who
+        - name: user_name
           in: query
           description: The sunetid of the person making the change
           required: false
