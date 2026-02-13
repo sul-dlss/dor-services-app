@@ -28,9 +28,18 @@ module Migrators
       return { obj:, status: (migrator.migrate? ? 'ERROR' : 'SUCCESS') } if mode == :verify
       return { obj:, status: 'SKIPPED' } unless migrator.migrate?
 
-      current_object_version = obj.head_version.version
       if migrator.version?
-        obj = open_version(cocina_object: obj, version_description: migrator.version_description, mode:)
+        open_version(cocina_object: obj.head_version.to_cocina_with_metadata,
+                     version_description: migrator.version_description,
+                     mode:)
+
+        # reload before calling the migrator below, because the migrator may
+        # work off this record or its associations, BUT it won't necessarily
+        # use the same ActiveRecord version associations touched by open_version,
+        # since open_version saves explicitly when needed (since it's mode aware),
+        # but the migrator relies on autosave on the parent obj for persistence, which
+        # happens when this migration runner updates it and closes it (in non-dry run modes).
+        obj.reload
       end
 
       migrator.migrate # This is where the actual migration happens
@@ -42,7 +51,7 @@ module Migrators
         updated_cocina_object = UpdateObjectService.update(cocina_object: updated_cocina_object,
                                                            skip_open_check: !migrator.version?)
         Publish::MetadataTransferService.publish(druid: obj.external_identifier) if migrator.publish?
-        unless updated_cocina_object.version == current_object_version
+        if migrator.version?
           close_version(cocina_object: updated_cocina_object,
                         version_description: migrator.version_description)
         end
@@ -61,7 +70,8 @@ module Migrators
     end
 
     private_class_method def self.open_version(cocina_object:, version_description:, mode:)
-      return cocina_object if VersionService.open?(druid: cocina_object.externalIdentifier)
+      return cocina_object if VersionService.open?(druid: cocina_object.externalIdentifier,
+                                                   version: cocina_object.version)
       # Raise an error if the migration is trying to version an object that is not openable
       raise 'Cannot version' unless VersionService.can_open?(druid: cocina_object.externalIdentifier,
                                                              version: cocina_object.version)
