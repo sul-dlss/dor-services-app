@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Migrators
-  # Very basic migrator that will be used to test the migration.
+  # Very basic migrator that will be used to test the cocina migration runner and illustrate usage.
   # See parent class and Migrators::MigrationRunner for more information.
   class Exemplar < Base
     # NOTE: these are QA druids from 2023-02-23

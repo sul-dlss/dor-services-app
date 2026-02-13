@@ -3,14 +3,16 @@
 
 # Migrates cocina objects.
 # Migration is performed by a Migrator class that is provided as an argument.
-# The Migrator class must implement the following methods:
-#   initialize(active_record_object)
-#   migrate? - true if the object should be migrated
-#   migrate - migrates the object and returns the result
-#   version? - true if the object should be versioned
-#   publish? - true if the object should be published
-#   version_description - description for the version (if versioning)
-# See app/services/migrators/exemplar.rb for an example.
+# The Migrator class should be a subclass of or otherwise implement the interface
+# of Migrators::Base.
+# The migration is run by the Migrators::MigrationRunner class. It uses the migrator
+# class to get a list of druids to migrate, and then it uses the migrator class to migrate
+# each individual RepositoryObject from that druid list.
+# MigrationRunner has the generic mechanisms for actions like committing changes to migrated
+# objects, versioning them, and publishing them. _Whether_ each of those actions
+# should happen for a given RepositoryObject is determined by the mode in which MigrationRunner
+# is invoked (see class for allowable modes) and the various boolean methods on the migrator object (e.g.
+# #version? and #publish?).
 
 require_relative '../config/environment'
 require 'optparse'
@@ -26,7 +28,9 @@ parser = OptionParser.new do |option_parser|
                    "Number of processes. Default is #{options[:processes]}.")
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size per type, otherwise all objects.')
   option_parser.on('-h', '--help', 'Displays help.') do
-    puts option_parser
+    additional_hint = 'See comments in this script, Migrators::MigrationRunner, Migrators::Base, and ' \
+                      'Migrators::Exemplar for more details about migrator implementation and migrator modes.'
+    puts "#{option_parser}\n\n**#{additional_hint}**"
     exit
   end
 end

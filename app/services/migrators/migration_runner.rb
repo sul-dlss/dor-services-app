@@ -20,6 +20,11 @@ module Migrators
     # @param [Migrators::Base] migrator_class applied to obj to migrate it
     # @param [RepositoryObject] obj the RepositoryObject to migrate or verify
     # @param [Symbol] mode the mode in which to operate on obj (see MODES and DEFAULT_MODE)
+    # @note If mode is `:migrate`, either the migrator class must return true for `#version?` (so that
+    #  the migration runner opens/closes the object), or the objects to be migrated must already
+    #  be open for versioning, otherwise `UpdateObjectService.update` will throw an error. This is not an
+    #  issue in `:commit` mode, which skips the usual update services and cocina validations in favor of a plain
+    #  ActiveRecord update.
     private_class_method def self.migrate_repository_object(migrator_class:, obj:, mode:) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
       raise ArgumentError("invalid mode #{mode}") unless MODES.include?(mode)
 
