@@ -30,7 +30,9 @@ module Migrators
 
       current_object_version = obj.head_version.version
       if migrator.version?
-        obj = open_version(cocina_object: obj, version_description: migrator.version_description, mode:)
+        open_version(cocina_object: obj.head_version.to_cocina_with_metadata,
+                     version_description: migrator.version_description,
+                     mode:)
       end
 
       migrator.migrate # This is where the actual migration happens
@@ -63,7 +65,8 @@ module Migrators
     end
 
     private_class_method def self.open_version(cocina_object:, version_description:, mode:)
-      return cocina_object if VersionService.open?(druid: cocina_object.externalIdentifier)
+      return cocina_object if VersionService.open?(druid: cocina_object.externalIdentifier,
+                                                   version: cocina_object.version)
       # Raise an error if the migration is trying to version an object that is not openable
       raise 'Cannot version' unless VersionService.can_open?(druid: cocina_object.externalIdentifier,
                                                              version: cocina_object.version)
