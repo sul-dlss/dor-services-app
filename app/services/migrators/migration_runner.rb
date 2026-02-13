@@ -73,7 +73,7 @@ module Migrators
       # This allows us to know if the object can be opened for versioning but not actually open it during a dry run
       return cocina_object if mode == :dryrun
 
-      version_open_params = { description: version_description }
+      version_open_params = { description: version_description, from_version: cocina_object.version }
       VersionService.open(cocina_object:, **version_open_params)
     end
 

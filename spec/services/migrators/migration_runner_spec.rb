@@ -99,5 +99,55 @@ RSpec.describe Migrators::MigrationRunner do
         end
       end
     end
+
+    context 'when the migrator says to version' do
+      let(:migrator_class) { Migrators::ExemplarWithVersioning }
+
+      it 'closes the object' do
+        expect(objects_to_migrate.first.last_closed_version).to be_nil
+        expect(objects_to_migrate.second.last_closed_version).to be_nil
+        expect(objects_to_ignore.first.last_closed_version).to be_nil
+        expect(objects_to_ignore.second.last_closed_version).to be_nil
+
+        described_class.migrate_druid_list(migrator_class:, mode:, druids_slice:)
+
+        expect(
+          RepositoryObject.find_by(external_identifier: migrated_druids[0]).last_closed_version
+        ).not_to be_nil
+        expect(
+          RepositoryObject.find_by(external_identifier: migrated_druids[1]).last_closed_version
+        ).not_to be_nil
+
+        expect(
+          RepositoryObject.find_by(external_identifier: ignored_druids[0]).last_closed_version
+        ).to be_nil
+        expect(
+          RepositoryObject.find_by(external_identifier: ignored_druids[1]).last_closed_version
+        ).to be_nil
+      end
+
+      it 'increments the version' do
+        expect(objects_to_migrate.first.head_version.version).to eq 1
+        expect(objects_to_migrate.second.head_version.version).to eq 1
+        expect(objects_to_ignore.first.head_version.version).to eq 1
+        expect(objects_to_ignore.second.head_version.version).to eq 1
+
+        described_class.migrate_druid_list(migrator_class:, mode:, druids_slice:)
+
+        expect(
+          RepositoryObject.find_by(external_identifier: migrated_druids[0]).head_version.version
+        ).to eq 2
+        expect(
+          RepositoryObject.find_by(external_identifier: migrated_druids[1]).head_version.version
+        ).to eq 2
+
+        expect(
+          RepositoryObject.find_by(external_identifier: ignored_druids[0]).head_version.version
+        ).to eq 1
+        expect(
+          RepositoryObject.find_by(external_identifier: ignored_druids[1]).head_version.version
+        ).to eq 1
+      end
+    end
   end
 end
