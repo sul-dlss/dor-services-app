@@ -1186,7 +1186,6 @@ paths:
           required: false
           schema:
             type: string
-            default: nil
       requestBody:
         required: true
         content:
@@ -1383,14 +1382,12 @@ paths:
           required: false
           schema:
             type: string
-            default: nil
         - name: who
           in: query
           description: The sunetid of the person making the change
           required: false
           schema:
             type: string
-            default: nil
       requestBody:
         required: true
         content:
