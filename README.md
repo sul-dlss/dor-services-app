@@ -305,18 +305,20 @@ Usage: RAILS_ENV=production bin/migrate-cocina MIGRATION_CLASS [options]
 
 The process for performing a migration/remediation is:
 
-1. Implement a Migrator (`app/services/migrators/`). See `Migrators::Base` and `Migrators::Exemplar` for the requirements of a Migrator class. Migrators should be unit tested.
-2. Perform a dry run: `bin/migrate-cocina Migrators::Exemplar --mode dryrun` and inspect `migrate-cocina.csv` for any errors.  This is a way to change the cocina and validate the new objects without saving the updated cocina or publishing or versioning.
-3. Perform migration/remediation: `bin/migrate-cocina Migrators::Exemplar --mode migrate` and inspect `migrate-cocina.csv` for any errors. Commit mode can be used instead of `migrate` when you only want to migrate existing cocina and not open/close versions or create new versions.
-4. Perform verification: `bin/migrate-cocina Migrators::Exemplar --mode verify` and inspect `migrate-cocina.csv` for any errors.  (An error here means that an object matching `.migrate?` has been found ... which is presumably NOT desired after migration.)
+1. Implement a Migrator (`app/services/migrators/`). For the requirements of a Migrator class, see `Migrators::Base` and its subclasses (`Migrators::Exemplar*` are simple examples for illustration; the rest were used for production migrations). Migrators should be unit tested.
+2. Perform a dry run: `bin/migrate-cocina Migrators::Exemplar --mode dryrun` and inspect `migrate-cocina.csv` for any errors.  This is a way to change the cocina and validate the new objects without saving the updated cocina (or publishing or versioning).
+3. Perform migration/remediation: `bin/migrate-cocina Migrators::Exemplar --mode migrate` and inspect `migrate-cocina.csv` for any errors. `commit` mode can be used instead of `migrate` when you only want to migrate existing cocina and not open/close versions or create new versions.
+4. Perform verification: `bin/migrate-cocina Migrators::Exemplar --mode verify` and inspect `migrate-cocina.csv` for any errors.  (An error here means that an object matching `.migrate?` has been found ... which is presumably NOT desired after migration.) _NOTE: some migrations have hardcoded druid lists, which will not work for this feature.  This mode needs the druid list to be dynamically generated based on what remains to be migrated._
 
 Additional notes:
 
 * The dry run and the verification can be performed on `sdr-infra`. See the [existing documentation](https://github.com/sul-dlss/cocina-models#testing-validation-changes) on setting up db connections.
 * The migration/remediation must be performed on the DSA server since it requires a read/write DB connection. (`sdr-infra` has a read-only DB connection.)
 * Migrations are performed on an ActiveRecord object, not a Cocina object. This allows the remediation of invalid items (i.e., items that cannot be instantiated as Cocina objects).
-* Migrations can be performed against all items or just a list provided by the Migrator.
+* Migrations can be performed against all items or just a list provided by the Migrator class.
 * Breaking changes, especially breaking cocina model changes, are going to require additional steps, e.g., stopping SDR processing. The complete process is to be determined.
+* The migration framework iterates over druids, passing a `RepositoryObject` to the migrator class on each iteration. While the framework can open/close versions and/or publish, or just commit to the database without versioning or publishing, it is the responsibility of the migrator class to select `RepositoryObjectVersion`s for update.
+* The migrator class should _NOT_ save migrated versions itself, to allow for dry run and verification modes. It should instead access the versions via an association from `RepositoryObject` that will cause the modified versions to autosave when `RepositoryObject#save` is called by the migration framework.
 
 ## Reset Process (for QA/Stage)
 
