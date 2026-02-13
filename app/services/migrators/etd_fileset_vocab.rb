@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Migrators
+  # @note this was last used prior to the versioning fixes in https://github.com/sul-dlss/dor-services-app/pull/5688,
+  # and may no longer work as expected.
+  #
   # Changes the label and type of old ETD filesets to match what is now used by the ETD app
   # See https://github.com/sul-dlss/dor-services-app/issues/3298 for context
   class EtdFilesetVocab < Base # rubocop:disable Metrics/ClassLength

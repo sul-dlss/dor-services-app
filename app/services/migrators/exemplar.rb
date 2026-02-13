@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Migrators
-  # Very basic migrator that will be used to test the migration.
+  # Very basic migrator that will be used to test the cocina migration runner and illustrate usage.
   # See parent class and Migrators::MigrationRunner for more information.
   class Exemplar < Base
     # NOTE: these are QA druids from 2023-02-23
@@ -10,17 +10,14 @@ module Migrators
       'druid:rd069rk9728'
     ].freeze
 
-    # A migrator may provide a list of druids to be migrated (optional).
     def self.druids
       TEST_DRUIDS
     end
 
-    # A migrator must implement a migrate? method that returns true if the SDR object should be migrated.
     def migrate?
       TEST_DRUIDS.include?(repository_object.external_identifier)
     end
 
-    # A migrator must implement a migrate method that migrates (mutates) the RepositoryObject instance.
     def migrate
       head_rov.label = mark_migrated(head_rov.label)
       head_rov.description['title'].first['value'] = mark_migrated(head_rov.description['title'].first['value'])

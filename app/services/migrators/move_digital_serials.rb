@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Migrators
+  # @note this was last used prior to the versioning fixes in https://github.com/sul-dlss/dor-services-app/pull/5688,
+  # and may no longer work as expected. (though this uses commit mode, for which the logic did not change in that PR)
+  #
   # Used to move digital serials data from description to identification.catalogLinks
   # Run using commit mode: RAILS_ENV=production bin/migrate-cocina Migrators::MoveDigitalSerials --mode commit
   # rubocop:disable Metrics/ClassLength
