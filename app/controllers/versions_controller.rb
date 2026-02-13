@@ -6,6 +6,7 @@ class VersionsController < ApplicationController
   before_action :check_cocina_object_exists, only: %i[index]
   before_action :load_version, only: %i[current close_current destroy_current status]
   before_action :load_repository_object_version, only: %i[show solr]
+  before_action :params_from_openapi
 
   rescue_from RepositoryObjectVersion::NoCocina do |e|
     render build_error('No content for this version', e, status: :bad_request)

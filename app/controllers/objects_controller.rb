@@ -4,6 +4,7 @@
 class ObjectsController < ApplicationController
   before_action :load_cocina_object, only: %i[accession destroy show reindex]
   before_action :check_cocina_object_exists, only: :publish
+  before_action :params_from_openapi
 
   rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
     json_api_error(status: :not_found, message: e.message)
@@ -21,10 +22,11 @@ class ObjectsController < ApplicationController
       return json_api_error(status: :service_unavailable,
                             message: 'Registration is temporarily disabled')
     end
-
     model_request = Cocina::Models.build_request(params.except(:action, :controller, :assign_doi,
                                                                :user_name).to_unsafe_h)
-    cocina_object = CreateObjectService.create(model_request, assign_doi: params[:assign_doi], who: params[:user_name])
+    cocina_object = CreateObjectService.create(model_request,
+                                               assign_doi: params[:assign_doi],
+                                               who: params[:user_name])
 
     add_headers(cocina_object)
     render status: :created, location: object_path(cocina_object.externalIdentifier),
