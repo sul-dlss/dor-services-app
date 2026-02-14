@@ -1,5 +1,13 @@
 # frozen_string_literal: true
 
+# The Migrator class must implement the following methods:
+#   initialize(active_record_object)
+#   migrate? - true if the object should be migrated
+#   migrate - migrates the object and returns the result
+#   version? - true if the object should be versioned
+#   publish? - true if the object should be published
+#   version_description - description for the version (if versioning)
+# See app/services/migrators/exemplar.rb for an example.
 module Migrators
   # Base migrator.
   # Depends on logic in bin/migrate-cocina which may also open/close versions, validate cocina, and save objects.
@@ -9,7 +17,7 @@ module Migrators
       nil
     end
 
-    # @param repository_object - a RepositoryObject instance
+    # @param [RepositoryObject] repository_object - a RepositoryObject instance
     def initialize(repository_object)
       @repository_object = repository_object
     end
@@ -22,6 +30,11 @@ module Migrators
     # A migrator must implement a migrate method that migrates (mutates) the RepositoryObject instance
     def migrate
       raise NotImplementedError
+    end
+
+    # subclass can override if a different way of referencing the updated version was used
+    def updated_cocina_object
+      repository_object.head_version.to_cocina_with_metadata # This validates the cocina object
     end
 
     # A migrator may override the publish? method to return true for some or all migrated SDR objects
