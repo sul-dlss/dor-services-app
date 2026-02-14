@@ -34,7 +34,21 @@ class ApplicationController < ActionController::API
            }
   end
 
+  def validate_from_openapi
+    errors = openapi_validator.validate_body.to_a
+    raise(Cocina::ValidationError, errors.pluck('error').join('; ')) if errors.any?
+  end
+
+  # cast any parameters that are not part of the OpenAPI specification
+  def params_from_openapi
+    openapi_validator.validated_params
+  end
+
   private
+
+  def openapi_validator
+    @openapi_validator ||= OpenApiValidator.new(request)
+  end
 
   # Ensure a valid token is present, or renders "401: Not Authorized"
   def check_auth_token

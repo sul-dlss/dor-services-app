@@ -12,7 +12,7 @@ class WorkflowsController < WorkflowApplicationController
 
   def create
     Workflow::Service.create(druid:, workflow_name:,
-                             version: params[:version],
+                             version: params[:version].to_i,
                              context: params[:context]&.to_unsafe_hash,
                              lane_id: params[:'lane-id'] || 'default')
 
