@@ -345,6 +345,23 @@ RSpec.describe 'Create object' do
           expect(item.identification.doi).to eq('10.25740/gg777gg7777')
         end
       end
+
+      context 'when assign_doi is false' do
+        let(:expected_identification) do
+          {
+            sourceId: 'googlebooks:999999',
+            barcode: '36105036289127'
+          }
+        end
+
+        it 'registers the object without a DOI' do
+          post '/v1/objects?assign_doi=false',
+               params: data,
+               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+          expect(response).to have_http_status(:created)
+          expect(response.body).to equal_cocina_model(expected)
+        end
+      end
     end
 
     context 'when files are provided' do

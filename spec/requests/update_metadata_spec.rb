@@ -758,7 +758,7 @@ RSpec.describe 'Update object' do
               "description":#{description.to_json},
               "identification":#{identification.to_json},
               "structural":{
-                "hasMemberOrders":[{"viewingDirection":"right-to-left"}],
+                "hasMemberOrders":[{"viewingDirection":"right-to-left"}]
               }
             }
           JSON

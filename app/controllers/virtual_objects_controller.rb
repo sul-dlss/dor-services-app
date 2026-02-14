@@ -8,11 +8,14 @@ class VirtualObjectsController < ApplicationController
     CreateVirtualObjectsJob.perform_later(virtual_objects: create_params[:virtual_objects],
                                           background_job_result: result)
     head :created, location: result
+  rescue Cocina::ValidationError => e
+    json_api_error(status: e.status, message: e.message)
   end
 
   private
 
   def create_params
+    validate_from_openapi
     params.to_unsafe_h
   end
 end

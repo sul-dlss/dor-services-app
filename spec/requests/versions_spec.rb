@@ -168,7 +168,7 @@ RSpec.describe 'Operations regarding object versions' do
       it 'returns a bad request error' do
         post "/v1/objects/druid:mx123qw2323/versions?#{incomplete_params.to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response.body).to match('missing required parameters: description')
+        expect(response.body).to match('param is missing or the value is empty or invalid: description')
         expect(response).to have_http_status :bad_request
       end
     end

@@ -85,7 +85,7 @@ RSpec.describe 'Administrative tags' do
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:bad_request)
         expect(response.body)
-          .to eq('{"errors":[{"status":"bad_request","detail":"\"Content-Type\" request header must be set to \"application/json\"."}]}') # rubocop:disable Layout/LineLength
+          .to eq('{"errors":[{"status":"400","title":"Bad Request","detail":"\"Content-Type\" request header must be set to \"application/json\"."}]}') # rubocop:disable Layout/LineLength
       end
     end
 
@@ -96,9 +96,8 @@ RSpec.describe 'Administrative tags' do
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status(:bad_request)
         expect(response.body)
-          .to eq('{"errors":[{"status":"bad_request","detail":' \
-                 '"#/paths/~1v1~1objects~1{object_id}~1administrative_tags/post/requestBody/content/application~1' \
-                 'json/schema missing required parameters: administrative_tags"}]}')
+          .to eq('{"errors":[{"status":"400","title":"Bad Request","detail":' \
+                 '"object at root is missing required properties: administrative_tags"}]}')
       end
     end
 
@@ -109,9 +108,8 @@ RSpec.describe 'Administrative tags' do
              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status(:bad_request)
         expect(response.body)
-          .to eq('{"errors":[{"status":"bad_request","detail":"#/paths/~1v1~1objects~1{object_id}' \
-                 '~1administrative_tags/post/requestBody/content/application~1json/schema' \
-                 '/properties/administrative_tags [] contains fewer than min items"}]}')
+          .to eq('{"errors":[{"status":"400","title":"Bad Request",' \
+                 '"detail":"array size at `/administrative_tags` is less than: 1"}]}')
       end
     end
   end
@@ -189,7 +187,7 @@ RSpec.describe 'Administrative tags' do
             headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:bad_request)
         expect(response.body)
-          .to eq('{"errors":[{"status":"bad_request","detail":"\"Content-Type\" request header must be set to \"application/json\"."}]}') # rubocop:disable Layout/LineLength
+          .to eq('{"errors":[{"status":"400","title":"Bad Request","detail":"\"Content-Type\" request header must be set to \"application/json\"."}]}') # rubocop:disable Layout/LineLength
       end
     end
 
@@ -199,8 +197,8 @@ RSpec.describe 'Administrative tags' do
             params: %( {"foo":"bar"} ),
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status(:bad_request)
-        expect(response.body).to eq('{"errors":[{"status":"bad_request","detail":' \
-                                    '"#/paths/~1v1~1objects~1{object_id}~1administrative_tags~1{id}/put/requestBody/content/application~1json/schema missing required parameters: administrative_tag"}]}') # rubocop:disable Layout/LineLength
+        expect(response.body).to eq('{"errors":[{"status":"400","title":"Bad Request","detail":' \
+                                    '"object at root is missing required properties: administrative_tag"}]}')
       end
     end
 
@@ -211,7 +209,7 @@ RSpec.describe 'Administrative tags' do
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
         expect(response).to have_http_status(:bad_request)
         expect(response.body)
-          .to eq('{"errors":[{"status":"bad_request","detail":"#/components/schemas/AdministrativeTag pattern ^.+( : .+)+$ does not match value: \\"\\", example: Foo : Bar : Baz"}]}') # rubocop:disable Layout/LineLength
+          .to eq('{"errors":[{"status":"400","title":"Bad Request","detail":"string at `/administrative_tag` does not match pattern: ^.+( : .+)+$"}]}') # rubocop:disable Layout/LineLength
       end
     end
 

@@ -21,10 +21,11 @@ class ObjectsController < ApplicationController
       return json_api_error(status: :service_unavailable,
                             message: 'Registration is temporarily disabled')
     end
-
     model_request = Cocina::Models.build_request(params.except(:action, :controller, :assign_doi,
                                                                :user_name).to_unsafe_h)
-    cocina_object = CreateObjectService.create(model_request, assign_doi: params[:assign_doi], who: params[:user_name])
+    cocina_object = CreateObjectService.create(model_request,
+                                               assign_doi: params[:assign_doi],
+                                               who: params[:user_name])
 
     add_headers(cocina_object)
     render status: :created, location: object_path(cocina_object.externalIdentifier),
@@ -70,6 +71,8 @@ class ObjectsController < ApplicationController
     render json: Cocina::Models.without_metadata(updated_cocina_object)
   rescue Cocina::ValidationError => e
     json_api_error(status: e.status, message: e.message)
+  rescue Cocina::Models::ValidationError => e
+    json_api_error(status: 400, message: e.message)
   rescue CocinaObjectStore::StaleLockError => e
     json_api_error(status: :precondition_failed,
                    title: 'ETag mismatch',
