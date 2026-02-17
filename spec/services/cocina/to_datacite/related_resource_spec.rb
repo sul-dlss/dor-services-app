@@ -23,7 +23,7 @@ RSpec.describe Cocina::ToDatacite::RelatedResource do
   end
 
   context 'when related resource has unmapped values' do
-    let(:related_resource) { { contributor: [{ name: [value: 'A. Author'] }] } }
+    let(:related_resource) { { contributor: [{ name: [{ value: 'A. Author' }] }] } }
 
     it 'returns nil' do
       expect(attributes).to be_nil
