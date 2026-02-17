@@ -47,7 +47,7 @@ module Cocina
       def related_item_attributes
         return if related_resource_blank?
 
-        titles = related_item_title ? [title: related_item_title] : []
+        titles = related_item_title ? [{ title: related_item_title }] : []
         id, type = unpack_related_uri_and_type
 
         if id && type
