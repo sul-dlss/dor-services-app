@@ -36,7 +36,7 @@ RSpec.describe 'Batch creation of virtual objects' do
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
       expect(body['errors'][0]['detail'])
-        .to eq('#/paths/~1v1~1virtual_objects/post/requestBody/content/application~1json/schema missing required parameters: virtual_objects') # rubocop:disable Layout/LineLength
+        .to eq('object at root is missing required properties: virtual_objects')
     end
   end
 
@@ -48,7 +48,7 @@ RSpec.describe 'Batch creation of virtual objects' do
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
       expect(body['errors'][0]['detail'])
-        .to eq("#/paths/~1v1~1virtual_objects/post/requestBody/content/application~1json/schema/properties/virtual_objects expected array, but received String: \"#{constituent1_id}\"") # rubocop:disable Layout/LineLength
+        .to eq('value at `/virtual_objects` is not an array')
     end
   end
 
@@ -60,7 +60,7 @@ RSpec.describe 'Batch creation of virtual objects' do
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
       expect(body['errors'][0]['detail'])
-        .to eq('#/paths/~1v1~1virtual_objects/post/requestBody/content/application~1json/schema/properties/virtual_objects [] contains fewer than min items') # rubocop:disable Layout/LineLength
+        .to eq('array size at `/virtual_objects` is less than: 1')
     end
   end
 
@@ -72,7 +72,7 @@ RSpec.describe 'Batch creation of virtual objects' do
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
       expect(body['errors'][0]['detail'])
-        .to eq('#/components/schemas/VirtualObjectRequest missing required parameters: virtual_object_id')
+        .to eq('object at `/virtual_objects/0` is missing required properties: virtual_object_id')
     end
   end
 
@@ -84,7 +84,9 @@ RSpec.describe 'Batch creation of virtual objects' do
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
       expect(body['errors'][0]['detail'])
-        .to eq("#/components/schemas/Druid pattern #{druid_pattern} does not match value: \"\", example: druid:bc123df4567") # rubocop:disable Layout/LineLength
+        .to eq('string at `/virtual_objects/0/virtual_object_id` does not match pattern: ' \
+               '^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$; ' \
+               'object at `/virtual_objects/0` is missing required properties: constituent_ids')
     end
   end
 
@@ -96,7 +98,7 @@ RSpec.describe 'Batch creation of virtual objects' do
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
       expect(body['errors'][0]['detail'])
-        .to eq('#/components/schemas/VirtualObjectRequest missing required parameters: constituent_ids')
+        .to eq('object at `/virtual_objects/0` is missing required properties: constituent_ids')
     end
   end
 
@@ -108,7 +110,7 @@ RSpec.describe 'Batch creation of virtual objects' do
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
       expect(body['errors'][0]['detail'])
-        .to eq('#/components/schemas/VirtualObjectRequest/properties/constituent_ids expected array, but received String: ""') # rubocop:disable Layout/LineLength
+        .to eq('value at `/virtual_objects/0/constituent_ids` is not an array')
     end
   end
 
@@ -132,7 +134,7 @@ RSpec.describe 'Batch creation of virtual objects' do
       expect(CreateVirtualObjectsJob).not_to have_received(:perform_later)
       expect(response).to have_http_status(:bad_request)
       expect(body['errors'][0]['detail'])
-        .to eq("#/components/schemas/Druid pattern #{druid_pattern} does not match value: \"\", example: druid:bc123df4567") # rubocop:disable Layout/LineLength
+        .to eq('string at `/virtual_objects/0/constituent_ids/2` does not match pattern: ^druid:[b-df-hjkmnp-tv-z]{2}[0-9]{3}[b-df-hjkmnp-tv-z]{2}[0-9]{4}$') # rubocop:disable Layout/LineLength
     end
   end
 end
