@@ -10,8 +10,11 @@ RSpec.describe CreateObjectService do
   describe '#create' do
     let(:druid) { 'druid:bc123df4567' }
     let(:lock) { "#{druid}=0" }
+    let(:mods_service) do
+      instance_double(Catalog::ModsService, mods:, mods_ng: Nokogiri::XML(mods))
+    end
     let(:marc_service) do
-      instance_double(Catalog::MarcService, mods:, mods_ng: Nokogiri::XML(mods))
+      instance_double(Catalog::MarcService)
     end
     let(:mods) { nil }
 
@@ -23,6 +26,7 @@ RSpec.describe CreateObjectService do
       allow(store).to receive(:add_project_tag)
       allow(SuriService).to receive(:mint_id).and_return(druid)
       allow(EventFactory).to receive(:create)
+      allow(Catalog::ModsService).to receive(:new).and_return(mods_service)
       allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
     end
 
@@ -87,7 +91,7 @@ RSpec.describe CreateObjectService do
       it 'adds to description' do
         expect(store.create(requested_cocina_object).description.title.first.value).to eq 'The Well-Grounded Rubyist'
         expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a999123')
-        expect(marc_service).to have_received(:mods)
+        expect(mods_service).to have_received(:mods)
       end
     end
 

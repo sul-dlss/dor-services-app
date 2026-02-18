@@ -117,7 +117,7 @@ RSpec.describe 'Refresh metadata' do
 
     context 'when folio instance hrid not found' do
       before do
-        allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogRecordNotFoundError)
+        allow(marc_service).to receive(:marcxml_ng).and_raise(Catalog::MarcService::CatalogRecordNotFoundError)
       end
 
       it 'returns a 400 error' do
@@ -142,8 +142,8 @@ RSpec.describe 'Refresh metadata' do
       end
 
       before do
-        allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogResponseError,
-                                                        'Something went wrong')
+        allow(marc_service).to receive(:marcxml_ng).and_raise(Catalog::MarcService::CatalogResponseError,
+                                                              'Something went wrong')
       end
 
       it 'returns a 500 error' do

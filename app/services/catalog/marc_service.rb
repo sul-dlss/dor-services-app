@@ -6,12 +6,6 @@ module Catalog
     class MarcServiceError < RuntimeError; end
     class CatalogResponseError < MarcServiceError; end
     class CatalogRecordNotFoundError < MarcServiceError; end
-    class TransformError < MarcServiceError; end
-
-    # @see #initialize
-    def self.mods(...)
-      new(...).mods
-    end
 
     # @see #initialize
     # @return [Hash] MARC Record as a hash
@@ -22,23 +16,6 @@ module Catalog
     def initialize(barcode: nil, folio_instance_hrid: nil)
       @barcode = barcode
       @folio_instance_hrid = folio_instance_hrid
-    end
-
-    # @return [String] MODS XML
-    # @raise CatalogResponseError
-    def mods
-      @mods ||= mods_ng.to_xml
-    end
-
-    # @return [Nokogiri::XML::Document] MODS XML
-    # @raise CatalogResponseError
-    # @raise CatalogRecordNotFoundError
-    def mods_ng
-      @mods_ng ||= begin
-        marc_to_mods_xslt.transform(marcxml_ng)
-      rescue RuntimeError => e
-        raise TransformError, "Error transforming MARC to MODS: #{e.message}"
-      end
     end
 
     # @return [Nokogiri::XML::Document] MARCXML XML
@@ -65,10 +42,6 @@ module Catalog
     private
 
     attr_reader :barcode, :folio_instance_hrid
-
-    def marc_to_mods_xslt
-      @marc_to_mods_xslt ||= Nokogiri::XSLT(File.open(Rails.root.join('app/xslt/MARC21slim2MODS3-7_SDR_v2-8.xsl')))
-    end
 
     def marc_record_from_folio
       FolioReader.to_marc(folio_instance_hrid:, barcode:)

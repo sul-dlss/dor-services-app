@@ -16,14 +16,17 @@ RSpec.describe 'Create object' do
 
   let(:data) { item.to_json }
   let(:druid) { 'druid:gg777gg7777' }
-  let(:marc_service) do
-    instance_double(Catalog::MarcService, mods:, mods_ng: Nokogiri::XML(mods))
+  let(:mods_service) do
+    instance_double(Catalog::ModsService, mods:, mods_ng: Nokogiri::XML(mods))
   end
+  let(:marc_service) { instance_double(Catalog::MarcService) }
   let(:mods) { nil }
 
   before do
     allow(SuriService).to receive(:mint_id).and_return(druid)
+    allow(Catalog::ModsService).to receive(:new).and_return(mods_service)
     allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
+
     allow(Indexer).to receive(:reindex)
     repository_object_version = build(:repository_object_version, :admin_policy_repository_object_version,
                                       access_template:, external_identifier: admin_policy_id)
@@ -242,7 +245,7 @@ RSpec.describe 'Create object' do
 
       context 'when connecting to catalog fails' do
         before do
-          allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogResponseError)
+          allow(mods_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogResponseError)
         end
 
         it 'draws an error message' do
@@ -273,7 +276,7 @@ RSpec.describe 'Create object' do
 
       context 'when catalog returns a 404' do
         before do
-          allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogRecordNotFoundError,
+          allow(mods_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogRecordNotFoundError,
                                                           'unable to find folio instance hrid')
         end
 
@@ -289,7 +292,7 @@ RSpec.describe 'Create object' do
 
       context 'when other error refreshing MARC' do
         before do
-          allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::MarcServiceError)
+          allow(mods_service).to receive(:mods).and_raise(Catalog::MarcService::MarcServiceError)
         end
 
         it 'draws an error message' do
