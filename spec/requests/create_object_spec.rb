@@ -173,7 +173,7 @@ RSpec.describe 'Create object' do
               }
             )
         end
-        let(:today) { Time.zone.now.strftime('%Y-%m-%d') }
+        let(:today) { Time.zone.today.iso8601 }
 
         let(:expected_description) do
           expected.description.new(adminMetadata: { note: [{
