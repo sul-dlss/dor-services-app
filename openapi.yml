@@ -1615,7 +1615,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/Druid"
-  "/v1/objects/{object_id}/workflows/{workflow}":
+  "/v1/objects/{object_id}/workflows/{id}":
     get:
       tags:
         - workflows
@@ -1635,7 +1635,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/Druid"
-        - name: workflow
+        - name: id
           in: path
           description: Name of the workflow
           required: true
@@ -1662,7 +1662,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/Druid"
-        - name: workflow
+        - name: id
           in: path
           description: Name of the workflow to create
           required: true
@@ -1688,7 +1688,7 @@ paths:
                 context:
                   type: object
                   additionalProperties: true
-  "/v1/objects/{object_id}/workflows/{workflow}/skip_all":
+  "/v1/objects/{object_id}/workflows/{id}/skip_all":
     post:
       tags:
         - workflows
@@ -1701,7 +1701,7 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/Druid"
-        - name: workflow
+        - name: id
           in: path
           description: Name of the workflow to skip
           required: true
@@ -1721,7 +1721,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-  "/v1/objects/{object_id}/workflows/{workflow}/processes/{process}":
+  "/v1/objects/{object_id}/workflows/{workflow_id}/processes/{id}":
     put:
       tags:
         - workflows
@@ -1755,13 +1755,13 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/Druid"
-        - name: workflow
+        - name: workflow_id
           in: path
           description: Name of the workflow to update
           required: true
           schema:
             type: string
-        - name: process
+        - name: id
           in: path
           description: Name of the workflow step to update (e.g. "shelve")
           required: true
