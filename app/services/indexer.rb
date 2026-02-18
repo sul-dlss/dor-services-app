@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Indexes a Cocina object.
+# Indexes a Cocina object into Solr for use by Argo.
 class Indexer
   # @param [Cocina::Models::DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata]
   def self.reindex(cocina_object:, trace_id: nil)

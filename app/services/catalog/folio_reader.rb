@@ -41,7 +41,7 @@ module Catalog
       updated_marc.fields << MARC::ControlField.new('003', 'FOLIO')
 
       # Cache the MARC, so that we can use it for creating the Argo index without having to fetch it again.
-      MarcCacheEntry.upsert({ folio_hrid: folio_instance_hrid, marc_data: updated_marc.to_hash.to_json }, # rubocop:disable Rails/SkipsModelValidations
+      MarcCacheEntry.upsert({ folio_hrid: folio_instance_hrid, marc_data: updated_marc.to_json_string }, # rubocop:disable Rails/SkipsModelValidations
                             unique_by: :index_marc_cache_entries_on_folio_hrid)
       updated_marc
     end
