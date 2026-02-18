@@ -173,6 +173,7 @@ RSpec.describe 'Create object' do
         let(:today) { Time.zone.now.strftime('%Y-%m-%d') }
 
         let(:expected_description) do
+          debugger
           expected.description.new(adminMetadata: { note: [{
                                      value: "Converted from MARC to Cocina #{today}", type: 'record origin'
                                    }] },
