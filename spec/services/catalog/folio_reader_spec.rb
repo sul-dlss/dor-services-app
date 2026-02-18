@@ -100,6 +100,7 @@ RSpec.describe Catalog::FolioReader do
           expect(folio_reader_marc_result['100']['a']).to eq('Boccherini, Luigi,')
           expect(folio_reader_marc_result['240']['m']).to eq('cello, continuo,')
           expect(folio_reader_marc_result['245']['a']).to eq('Sonata no. 7, in B flat, for violoncello and piano.')
+          expect(MarcCacheEntry.find_by(folio_hrid: 'a666')).to be_present
         end
       end
 
