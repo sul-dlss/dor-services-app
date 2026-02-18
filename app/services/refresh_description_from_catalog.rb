@@ -37,9 +37,9 @@ class RefreshDescriptionFromCatalog
 
       description_props = Cocina::Models::Mapping::FromMarc::Description.props(marc:, druid:)
     else
-      return Failure() if marc_service.mods.nil?
+      return Failure() if mods_service.mods.nil?
 
-      description_props = Cocina::Models::Mapping::FromMods::Description.props(mods: marc_service.mods_ng, druid:,
+      description_props = Cocina::Models::Mapping::FromMods::Description.props(mods: mods_service.mods_ng, druid:,
                                                                                label: cocina_object.label)
     end
 
@@ -56,6 +56,11 @@ class RefreshDescriptionFromCatalog
   # @raises Catalog::MarcService::MarcServiceError
   def marc_service
     @marc_service ||= Catalog::MarcService.new(**identifiers)
+  end
+
+  # @raises Catalog::MarcService::MarcServiceError
+  def mods_service
+    @mods_service ||= Catalog::ModsService.new(marc_service:)
   end
 
   def identifiers

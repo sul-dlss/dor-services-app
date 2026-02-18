@@ -36,11 +36,16 @@ RSpec.describe RefreshDescriptionFromCatalog do
   end
 
   let(:marc_service) do
-    instance_double(Catalog::MarcService, mods:, mods_ng: Nokogiri::XML(mods))
+    instance_double(Catalog::MarcService)
+  end
+
+  let(:mods_service) do
+    instance_double(Catalog::ModsService, mods:, mods_ng: Nokogiri::XML(mods))
   end
 
   before do
     allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
+    allow(Catalog::ModsService).to receive(:new).and_return(mods_service)
   end
 
   describe '#refresh' do
@@ -208,7 +213,7 @@ RSpec.describe RefreshDescriptionFromCatalog do
 
     context 'when fetching metadata fails' do
       before do
-        allow(marc_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogResponseError)
+        allow(mods_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogResponseError)
       end
 
       it 'does not rescue the error' do
@@ -218,7 +223,7 @@ RSpec.describe RefreshDescriptionFromCatalog do
 
     context 'when mods is nil' do
       before do
-        allow(marc_service).to receive(:mods).and_return(nil)
+        allow(mods_service).to receive(:mods).and_return(nil)
       end
 
       it 'returns failure' do

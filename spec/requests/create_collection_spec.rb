@@ -61,12 +61,13 @@ RSpec.describe 'Create object' do
       XML
     end
 
-    let(:marc_service) do
-      instance_double(Catalog::MarcService, mods:, mods_ng: Nokogiri::XML(mods))
+    let(:mods_service) do
+      instance_double(Catalog::ModsService, mods:, mods_ng: Nokogiri::XML(mods))
     end
 
     before do
-      allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
+      allow(Catalog::ModsService).to receive(:new).and_return(mods_service)
+      allow(Catalog::MarcService).to receive(:new)
     end
 
     it 'creates the collection' do
