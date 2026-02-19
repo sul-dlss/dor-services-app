@@ -12,7 +12,7 @@ RSpec.describe Cocina::FromMarc::Event do
     let(:marc) { MARC::Record.new_from_hash(marc_hash) }
 
     context 'with a publication event' do
-      context 'with a single script' do
+      context 'with a single script that has a 260$b' do
         let(:marc_hash) do
           {
             'fields' => [
@@ -41,6 +41,36 @@ RSpec.describe Cocina::FromMarc::Event do
             location: [{ value: 'Basingstoke' }],
             contributor: [{ name: [{ value: 'Macmillan' }], role: [{ value: 'publisher' }] }],
             date: [{ value: '1997', type: 'publication' }]
+          }]
+        end
+      end
+
+      context 'with a single script that has no 260$c' do
+        # a11545514
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '260' => {
+                'ind1' => ' ',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => '[S.l.] :'
+                  },
+                  {
+                    'b' => 'Open Book Publishers, '
+                  }
+                ]
+              } }
+            ]
+          }
+        end
+
+        it 'returns publication event' do
+          expect(build).to eq [{
+            type: 'publication',
+            location: [{ value: '[S.l.]' }],
+            contributor: [{ name: [{ value: 'Open Book Publishers' }], role: [{ value: 'publisher' }] }]
           }]
         end
       end
