@@ -137,15 +137,19 @@ module Cocina
 
       def build_publication(field) # rubocop:disable Metrics/AbcSize
         publication_locations = field.subfields.filter_map { Util.strip_punctuation(it.value) if it.code == 'a' }
-        publisher = field.subfields.find { it.code == 'b' }&.value
+        publisher_name = field.subfields.find { it.code == 'b' }&.value
         publication_date = field.subfields.find { it.code == 'c' }&.value&.delete_suffix('.')
+        if publisher_name
+          contributor = [{ name: [{ value: Util.strip_punctuation(publisher_name) }],
+                           role: [{ value: 'publisher' }] }]
+        end
         date = [{ value: publication_date, type: 'publication' }] if publication_date
         {
           type: 'publication',
           location: publication_locations.map { { value: it } },
-          contributor: [{ name: [{ value: Util.strip_punctuation(publisher) }], role: [{ value: 'publisher' }] }],
+          contributor:,
           date:
-        }.compact
+        }.compact_blank
       end
 
       def manufacture(field) # rubocop:disable Metrics/PerceivedComplexity,Metrics/AbcSize,Metrics/CyclomaticComplexity
