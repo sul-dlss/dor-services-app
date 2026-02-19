@@ -52,5 +52,38 @@ RSpec.describe Cocina::FromMarc::AdminMetadata do
                                  })
       end
     end
+
+    context 'without 040 $a' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '001' => 'in00000144356' },
+            { '008' => '240703c20249999mnuuu         0    0eng d' },
+            { '005' => '20250614160727.3' },
+            { '040' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { 'd' => 'UtOrBLW' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'doesn\'t add a contributor' do
+        expect(build).to include({
+                                   event: [{
+                                     type: 'creation',
+                                     date: [{ value: '240703', encoding: { code: 'marc' } }]
+                                   }, {
+                                     type: 'modification',
+                                     date: [{ value: '20250614', encoding: { code: 'iso8601' } }]
+                                   }],
+                                   identifier: [{ value: 'in00000144356', type: 'FOLIO' }],
+                                   note: [{ value: "Converted from MARC to Cocina #{Time.zone.today.iso8601}",
+                                            type: 'record origin' }]
+                                 })
+      end
+    end
   end
 end

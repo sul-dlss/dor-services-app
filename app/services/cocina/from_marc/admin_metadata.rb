@@ -24,7 +24,7 @@ module Cocina
 
       def contributor
         field = marc['040']
-        return unless field
+        return unless field && field['a']
 
         [{
           type: 'organization',
