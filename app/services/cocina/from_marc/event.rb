@@ -74,12 +74,12 @@ module Cocina
         indicator = MARC_264_INDICATOR2.fetch(field.indicator2)
         return copyright(field) if indicator[:type] == 'copyright notice'
 
-        place = field.subfields.find { it.code == 'a' }&.value
+        location = field.subfields.find { it.code == 'a' }&.value
         contributors = field.subfields.select { it.code == 'b' }.map(&:value)
         date = field.subfields.find { it.code == 'c' }.value.delete_suffix('.')
 
         event = { type: indicator[:type] }.compact_blank
-        event[:place] = [{ value: Util.strip_punctuation(place) }] if place
+        event[:location] = [{ value: Util.strip_punctuation(location) }] if location
         contributor_template = indicator[:role] ? { role: [{ value: indicator[:role] }] } : {}
         if contributors.present?
           event[:contributor] = contributors.map do |contributor|
@@ -136,13 +136,13 @@ module Cocina
       end
 
       def build_publication(field) # rubocop:disable Metrics/AbcSize
-        publication_places = field.subfields.filter_map { Util.strip_punctuation(it.value) if it.code == 'a' }
+        publication_locations = field.subfields.filter_map { Util.strip_punctuation(it.value) if it.code == 'a' }
         publisher = field.subfields.find { it.code == 'b' }&.value
         publication_date = field.subfields.find { it.code == 'c' }.value.delete_suffix('.')
 
         {
           type: 'publication',
-          place: publication_places.map { { value: it } },
+          location: publication_locations.map { { value: it } },
           contributor: [{ name: [{ value: Util.strip_punctuation(publisher) }], role: [{ value: 'publisher' }] }],
           date: [{ value: publication_date, type: 'publication' }]
         }
@@ -151,14 +151,14 @@ module Cocina
       def manufacture(field) # rubocop:disable Metrics/PerceivedComplexity,Metrics/AbcSize,Metrics/CyclomaticComplexity
         return unless field
 
-        manufacture_place = field.subfields.find { |subfield| subfield.code == 'e' }&.value
+        manufacture_location = field.subfields.find { |subfield| subfield.code == 'e' }&.value
         manufacturer = field.subfields.find { |subfield| subfield.code == 'f' }&.value
-        return nil unless manufacture_place || manufacturer
+        return nil unless manufacture_location || manufacturer
 
         manufacture_date = field.subfields.find { |subfield| subfield.code == 'g' }&.value
         {
           type: 'manufacture',
-          place: [{ value: Util.strip_punctuation(manufacture_place) }],
+          location: [{ value: Util.strip_punctuation(manufacture_location) }],
           contributor: [{ name: [{ value: Util.strip_punctuation(manufacturer) }] }],
           date: [{ value: manufacture_date, type: 'manufacture' }]
         }

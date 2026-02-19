@@ -38,7 +38,7 @@ RSpec.describe Cocina::FromMarc::Event do
         it 'returns publication event' do
           expect(build).to eq [{
             type: 'publication',
-            place: [{ value: 'Basingstoke' }],
+            location: [{ value: 'Basingstoke' }],
             contributor: [{ name: [{ value: 'Macmillan' }], role: [{ value: 'publisher' }] }],
             date: [{ value: '1997', type: 'publication' }]
           }]
@@ -98,12 +98,12 @@ RSpec.describe Cocina::FromMarc::Event do
         it 'returns publication event' do
           expect(build).to eq [{
             type: 'publication',
-            place: [{ value: 'New York' }, { value: 'Geneva' }],
+            location: [{ value: 'New York' }, { value: 'Geneva' }],
             contributor: [{ name: [{ value: 'United Nations' }], role: [{ value: 'publisher' }] }],
             date: [{ value: '©2012', type: 'publication' }]
           }, {
             type: 'publication',
-            place: [{ value: 'Нью-Йорк' }, { value: 'Женева' }],
+            location: [{ value: 'Нью-Йорк' }, { value: 'Женева' }],
             contributor: [{ name: [{ value: 'Организация Объединенных Наций' }], role: [{ value: 'publisher' }] }],
             date: [{ value: '2012', type: 'publication' }]
           }]
@@ -146,12 +146,12 @@ RSpec.describe Cocina::FromMarc::Event do
       it 'returns both publication and manufacture events' do
         expect(build).to eq [{
           type: 'publication',
-          place: [{ value: 'London' }],
+          location: [{ value: 'London' }],
           contributor: [{ name: [{ value: 'Arts Council of Great Britain' }], role: [{ value: 'publisher' }] }],
           date: [{ value: '1976', type: 'publication' }]
         }, {
           type: 'manufacture',
-          place: [{ value: '(Twickenham' }],
+          location: [{ value: '(Twickenham' }],
           contributor: [{ name: [{ value: 'CTD Printers' }] }],
           date: [{ value: '1974)', type: 'manufacture' }]
         }]
@@ -212,7 +212,7 @@ RSpec.describe Cocina::FromMarc::Event do
       it 'returns publication event with multiple publishers' do
         expect(build).to eq [{
           type: 'publication',
-          place: [{ value: '[France]' }],
+          location: [{ value: '[France]' }],
           contributor: [
             { name: [{ value: 'Erato' }], role: [{ value: 'publisher' }] },
             { name: [{ value: 'Warner Classics' }], role: [{ value: 'publisher' }] }
@@ -248,7 +248,7 @@ RSpec.describe Cocina::FromMarc::Event do
       it 'returns distribution event' do
         expect(build).to eq [{
           type: 'distribution',
-          place: [{ value: 'Seattle' }],
+          location: [{ value: 'Seattle' }],
           contributor: [{ name: [{ value: 'Iverson Company' }], role: [{ value: 'distributor' }] }],
           date: [{ value: '[2009]', type: 'distribution' }]
         }]
@@ -281,7 +281,7 @@ RSpec.describe Cocina::FromMarc::Event do
       it 'returns manufacture event' do
         expect(build).to eq [{
           type: 'manufacture',
-          place: [{ value: 'Cambridge' }],
+          location: [{ value: 'Cambridge' }],
           contributor: [{ name: [{ value: 'Kinsey Printing Company' }], role: [{ value: 'manufacturer' }] }],
           date: [{ value: '[2010]', type: 'manufacture' }]
         }]
@@ -338,7 +338,7 @@ RSpec.describe Cocina::FromMarc::Event do
 
       it 'returns untyped event' do
         expect(build).to eq [{
-          place: [{ value: 'New York' }],
+          location: [{ value: 'New York' }],
           contributor: [{ name: [{ value: 'Fifty-three studio' }] }],
           date: [{ value: '2018' }]
         }]
@@ -524,13 +524,13 @@ RSpec.describe Cocina::FromMarc::Event do
         expect(build).to eq [
           {
             type: 'publication',
-            place: [{ value: 'Moskva' }],
+            location: [{ value: 'Moskva' }],
             contributor: [{ name: [{ value: 'Izdatelʹstvo "Vesʹ Mir"' }], role: [{ value: 'publisher' }] }],
             date: [{ value: '2019', type: 'publication' }]
           },
           {
             type: 'publication',
-            place: [{ value: 'Москва' }],
+            location: [{ value: 'Москва' }],
             contributor: [{ name: [{ value: 'Издательство "Весь Мир"' }], role: [{ value: 'publisher' }] }],
             date: [{ value: '2019', type: 'publication' }]
           }
