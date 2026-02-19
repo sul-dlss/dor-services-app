@@ -35,7 +35,7 @@ class RefreshDescriptionFromCatalog
 
       marc = MARC::Record.new_from_hash(marc_hash)
 
-      description_props = Cocina::Models::Mapping::FromMarc::Description.props(marc:, druid:)
+      description_props = Cocina::FromMarc::Description.props(marc:, druid:)
     else
       return Failure() if mods_service.mods.nil?
 

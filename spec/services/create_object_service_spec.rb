@@ -151,7 +151,6 @@ RSpec.describe CreateObjectService do
       end
 
       it 'adds to description' do
-        skip 'until Cocina::Models::Mapping::FromMarc::TitleBuilder handles more than a basic title'
         cocina_object = store.create(requested_cocina_object)
         expect(cocina_object.description.title.first&.structuredValue&.find do |t|
           t.type == 'main title'

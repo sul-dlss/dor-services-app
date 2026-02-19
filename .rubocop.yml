@@ -28,6 +28,7 @@ Layout/LineLength:
   Max: 120
   Exclude:
     - "spec/services/cocina/mapping/descriptive/h2_datacite/subject_h2_datacite_spec.rb"
+    - "spec/services/cocina/from_marc/**/*"
     - "app/reports/**/*"
 
 Lint/UnusedMethodArgument:
@@ -64,7 +65,7 @@ Metrics/CyclomaticComplexity:
 
 Metrics/MethodLength:
   CountAsOne:
-    - 'hash'
+    - "hash"
   Max: 15 # default 10
   Exclude:
     - "bin/*"
