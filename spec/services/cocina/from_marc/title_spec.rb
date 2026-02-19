@@ -174,6 +174,40 @@ RSpec.describe Cocina::FromMarc::Title do
       end
     end
 
+    context 'with 245/880 and alternative title (246)' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '245' => { 'ind1' => '0', 'ind2' => '3', 'subfields' => [
+              { '6' => '880-01' },
+              { 'a' => 'al-Yamāmah ' }
+            ] } },
+            { '246' => { 'ind1' => '3', 'ind2' => '1', 'subfields' => [
+              { 'a' => 'Yamama' }
+            ] } },
+            { '880' => { 'ind1' => '0', 'ind2' => '2', 'subfields' => [
+              { '6' => '245-01' },
+              { 'a' => 'اليمامة ' }
+            ] } }
+          ]
+        }
+      end
+
+      it 'returns the title with parallel values' do
+        expect(build).to eq([{ parallelValue:
+                               [{ structuredValue:
+                                  [{ value: 'al-', type: 'nonsorting characters' },
+                                   { value: 'Yamāmah', type: 'main title' }] },
+                                { structuredValue: [{ value: 'ال', type: 'nonsorting characters' }, { value: 'يمامة', type: 'main title' }] }] }])
+        title = [{ parallelValue:
+                               [{ structuredValue:
+                                  [{ value: 'al-', type: 'nonsorting characters' },
+                                   { value: 'Yamāmah', type: 'main title' }] },
+                                { structuredValue: [{ value: 'ال', type: 'nonsorting characters' }, { value: 'يمامة', type: 'main title' }] }] }]
+        expect(CocinaDisplay::Title.new(title.first.with_indifferent_access).display_title).to eq('Yamāmah')
+      end
+    end
+
     context 'with alternative title with display label (246)' do
       let(:marc_hash) do
         {
