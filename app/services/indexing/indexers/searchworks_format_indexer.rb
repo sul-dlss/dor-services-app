@@ -10,6 +10,8 @@ module Indexing
     # Otherwise, if there is no hrid, we'll use this logic:
     # https://github.com/sul-dlss/searchworks_traject_indexer/blob/8994c9ee01d21ded323434ec0ac0407f8f18a310/lib/traject/config/sdr_config.rb#L209-L224
     class SearchworksFormatIndexer # rubocop:disable Metrics/ClassLength
+      include FolioFormatMacros
+
       def self.value(cocina_display_record:)
         new(cocina_display_record:).value
       end
@@ -483,61 +485,22 @@ module Indexing
       # These methods mimic the Traject API
       def to_field(field_name, value = nil)
         if block_given?
-          # debugger
           yield marc_record, @record[field_name]
         elsif value
-          Array(value).each { @record[field_name] << it }
+          value.call(marc_record, @record[field_name], nil)
         end
       end
 
-      def leader?(byte:, value: nil, values: nil)
-        value_at_byte = marc_record&.leader&.[](byte)
-
-        if value
-          value_at_byte == value
-        elsif values
-          values.include?(value_at_byte)
+      def literal(literal)
+        ->(_record, accumulator, _context) do
+          accumulator << literal
         end
       end
 
-      def literal(value)
-        value
-      end
-
+      # Copied from https://github.com/sul-dlss/searchworks_traject_indexer/blob/71873a99b02739cb07fe585e8391bdaa7dbf4dcf/lib/traject/macros/extras.rb#L91
       def literal_multiple(*values)
-        values
-      end
-
-      def condition(test, value)
-        value if test
-      end
-
-      def all_conditions(*tests, value)
-        value if tests.all?
-      end
-
-      def marc_subfield_contains?(tag, subfield:, values: nil, value: nil) # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-        values ||= [value]
-        field = marc_record&.fields&.find { |field| field.tag == tag }
-        field&.subfields&.any? do |sf|
-          sf.code == subfield && values.any? { sf.value.downcase.include?(it.downcase) }
-        end
-      end
-
-      def control_field_byte?(tag, *filters) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
-        field = marc_record.fields&.find { |field| field.tag == tag }
-        return false unless field
-
-        filters.all? do |filter|
-          value_at_byte = field.value.[](filter[:byte])
-          case filter[:value]
-          when String
-            value_at_byte == filter[:value]
-          when Regexp
-            filter[:value].match? value_at_byte
-          else
-            filter[:values]&.any?(value_at_byte)
-          end
+        ->(_record, accumulator, _context) do
+          values.each { |value| accumulator << value }
         end
       end
 
