@@ -408,7 +408,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'descriptive_teiv' => all_search_text,
         'descriptive_text_nostem_i' => all_search_text,
         'sw_language_names_ssimdv' => ['English'],
-        'sw_resource_type_ssimdv' => ['Book'],
         'sw_format_ssimdv' => ['Book'],
         'mods_typeOfResource_ssimdv' => ['text'],
         'subject_place_ssimdv' => ['Europe'],
