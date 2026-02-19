@@ -180,7 +180,7 @@ RSpec.describe Cocina::FromMarc::Title do
           'fields' => [
             { '245' => { 'ind1' => '0', 'ind2' => '3', 'subfields' => [
               { '6' => '880-01' },
-              { 'a' => 'al-Yamāmah ' }
+              { 'a' => 'al-Yamāmah' }
             ] } },
             { '246' => { 'ind1' => '3', 'ind2' => '1', 'subfields' => [
               { 'a' => 'Yamama' }
@@ -193,7 +193,7 @@ RSpec.describe Cocina::FromMarc::Title do
         }
       end
 
-      it 'returns the title with parallel values' do
+      it 'returns the short title with parallel values' do
         expect(build).to eq([{ parallelValue:
                                [{ structuredValue:
                                   [{ value: 'al-', type: 'nonsorting characters' },
@@ -204,7 +204,7 @@ RSpec.describe Cocina::FromMarc::Title do
                                   [{ value: 'al-', type: 'nonsorting characters' },
                                    { value: 'Yamāmah', type: 'main title' }] },
                                 { structuredValue: [{ value: 'ال', type: 'nonsorting characters' }, { value: 'يمامة', type: 'main title' }] }] }]
-        expect(CocinaDisplay::Title.new(title.first.with_indifferent_access).display_title).to eq('Yamāmah')
+        expect(CocinaDisplay::Title.new(title.first.with_indifferent_access).short_title).to eq('al-Yamāmah')
       end
     end
 
