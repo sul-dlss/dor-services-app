@@ -36,8 +36,6 @@ module Indexing
           'originInfo_place_placeTerm_tesim' => event_place, # do we want this?
           'publication_year_ssidv' => cocina_display_record.pub_year_int&.to_s,
 
-          # sw_resource_type_ssimdv is deprecated and will be replaced by sw_format_ssimdv
-          'sw_resource_type_ssimdv' => cocina_display_record.searchworks_resource_types,
           # SW facets plus a friend facet
           'sw_format_ssimdv' => Indexers::SearchworksFormatIndexer.value(cocina_display_record: cocina_display_record),
           'mods_typeOfResource_ssimdv' => resource_type, # MODS Resource Type facet
