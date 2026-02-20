@@ -166,6 +166,27 @@ RSpec.describe Cocina::FromMarc::Identifier do
       end
     end
 
+    context 'with unspecified identifier (024 ind1=8)' do
+      # See  a11460974
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '024' => {
+              'ind1' => '8', 'ind2' => '0',
+              'subfields' => [
+                { 'a' => 'PML 146662.1-82' },
+                { 'z' => 'GNR S-659' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'excludes the identifier' do
+        expect(build).to eq []
+      end
+    end
+
     context 'with DOI (024 ind1=7, $2=doi)' do
       let(:marc_hash) do
         {
