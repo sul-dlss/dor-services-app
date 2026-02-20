@@ -86,13 +86,14 @@ module Cocina
         fields
       end
 
-      def build_corporate(field, primary: false)
+      def build_corporate(field, primary: false) # rubocop:disable Metrics/AbcSize
         contributor = { type: 'organization' }
         name = field.subfields.select { |subfield| %w[a b q d].include? subfield.code }.map(&:value).join(' ')
         contributor[:name] = [{ value: name }]
         id = build_id(field).first
         contributor[:identifier] = [{ uri: id }] if id
-
+        roles = build_roles(field)
+        contributor[:role] = roles if roles.present?
         contributor[:status] = 'primary' if primary
         contributor
       end
