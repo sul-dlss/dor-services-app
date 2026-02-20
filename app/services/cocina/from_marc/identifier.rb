@@ -72,8 +72,7 @@ module Cocina
         if field.indicator1 == '7'
           code = field.subfields.find { it.code == '2' }.value
           code == 'doi' ? { value: parts.join(' '), type: 'DOI' } : { value: parts.join(' '), source: { code: } }
-        else
-          type = OTHER_IDENTIFER_TYPES.fetch(field.indicator1)
+        elsif (type = OTHER_IDENTIFER_TYPES[field.indicator1])
           { value: parts.join(' '), type: }
         end
       end
