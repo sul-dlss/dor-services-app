@@ -25,17 +25,14 @@ module Cocina
 
       def build
         return unless valid?
-        return basic_title if has_245a_without_non_sorting?
 
-        if field245
-          parallel_field = linked_field(field245)
-          return parallel_title(parallel_field) if parallel_field
-        end
+        titles = []
+        titles << main_title
 
-        return alternative_title if alternative_title_field
-        return uniform_title if uniform_title_field
+        titles << alternative_title if alternative_title_field
+        titles << uniform_title if uniform_title_field
 
-        structured_title(field245)
+        titles.flatten.compact
       end
 
       private
@@ -50,6 +47,19 @@ module Cocina
 
       def field245
         @field245 ||= marc['245']
+      end
+
+      def main_title
+        return unless field245
+
+        parallel_field = linked_field(field245)
+        if parallel_field
+          parallel_title(parallel_field)
+        elsif has_245a_without_non_sorting?
+          basic_title
+        else
+          structured_title(field245)
+        end
       end
 
       def has_245a_without_non_sorting?
