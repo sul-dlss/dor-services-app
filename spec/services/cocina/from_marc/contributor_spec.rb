@@ -237,7 +237,7 @@ RSpec.describe Cocina::FromMarc::Contributor do
       end
     end
 
-    context 'with Person contributor (700 ind1=1)' do
+    context 'with Person contributor (700 ind1=1) that has a $c (Titles and other words associated with a name)' do
       let(:marc_hash) do
         {
           'fields' => [
@@ -259,6 +259,54 @@ RSpec.describe Cocina::FromMarc::Contributor do
 
       it 'returns person contributor' do
         expect(build).to eq [{ type: 'person', name: [{ value: 'Street, Stephen (Double bassist).' }] }]
+      end
+    end
+
+    context 'with multiple Person contributors (700 ind1=1)' do
+      # See 11894313
+
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '700' => {
+              'ind1' => '1',
+              'ind2' => ' ',
+              'subfields' => [
+                {
+                  'a' => 'De Crescenzo, Vincenzo,'
+                },
+                {
+                  'd' => '1875-1964,'
+                },
+                {
+                  'e' => 'composer.'
+                }
+              ]
+            } },
+            { '700' => {
+              'ind1' => '1',
+              'ind2' => ' ',
+              'subfields' => [
+                {
+                  'a' => 'Hubbell, Raymond,'
+                },
+                {
+                  'd' => '1879-1954,'
+                },
+                {
+                  'e' => 'composer.'
+                }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns person contributors' do
+        expect(build).to eq [
+          { type: 'person', name: [{ value: 'De Crescenzo, Vincenzo, 1875-1964' }], role: [{ value: 'composer' }] },
+          { type: 'person', name: [{ value: 'Hubbell, Raymond, 1879-1954' }], role: [{ value: 'composer' }] }
+        ]
       end
     end
 

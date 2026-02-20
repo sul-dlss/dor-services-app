@@ -21,11 +21,9 @@ module Cocina
           personal(marc['100'], primary: true),
           corporate(marc['110'], primary: true),
           event(marc['111'], primary: true),
-          personal(marc['700']),
-          corporate(marc['710']),
-          event(marc['711']),
-          personal(marc['720'])
-
+          marc.fields.filter_map { personal(it) if %w[700 720].include?(it.tag) },
+          marc.fields.filter_map { corporate(it) if it.tag == '710' },
+          marc.fields.filter_map { event(it) if it.tag == '711' }
         ].flatten.compact
       end
 
