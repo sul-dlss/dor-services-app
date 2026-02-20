@@ -52,6 +52,9 @@ MODS_ATTRIBUTES = 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd"'
 
+ActionDispatch::RequestEncoder.register_encoder(:jsonapi, response_parser: ->(body) {
+  JSON.parse(body, object_class: ActiveSupport::HashWithIndifferentAccess)
+})
 RSpec.configure do |config|
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and
