@@ -375,17 +375,29 @@ RSpec.describe Cocina::FromMarc::Form do
     end
 
     context 'with genre (655 $a)' do
-      # see a12365535
+      # see a10619029
       let(:marc_hash) do
         {
           'fields' => [
             { '655' => {
               'ind1' => ' ', 'ind2' => '7',
               'subfields' => [
-                { 'a' => 'Excerpts.' },
-                { '2' => 'lcgft' },
-                { '0' => 'http://id.loc.gov/authorities/genreForms/gf2014026097' },
-                { '0' => '(SIRSI)3344823' }
+                { 'a' => 'Geospatial data' },
+                { '2' => 'lcgft' }
+              ]
+            } },
+            { '655' => {
+              'ind1' => ' ', 'ind2' => '7',
+              'subfields' => [
+                { 'a' => 'Geodatabases' },
+                { '2' => 'lcgft' }
+              ]
+            } },
+            { '655' => {
+              'ind1' => ' ', 'ind2' => '7',
+              'subfields' => [
+                { 'a' => 'Geographic information systems data' },
+                { '2' => 'local' }
               ]
             } }
           ]
@@ -393,7 +405,12 @@ RSpec.describe Cocina::FromMarc::Form do
       end
 
       it 'returns genre value with trailing punctuation stripped' do
-        expect(build).to eq([{ value: 'Excerpts.', type: 'genre' }])
+        expect(build).to eq([
+                              { value: 'Geospatial data', type: 'genre' },
+                              { value: 'Geodatabases', type: 'genre' },
+                              { value: 'Geographic information systems data', type: 'genre' }
+
+                            ])
       end
     end
 

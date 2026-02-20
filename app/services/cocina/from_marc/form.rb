@@ -22,9 +22,9 @@ module Cocina
           build_physical_medium(marc['340']),
           build_sound_characteristics(marc['344']),
           build_organization_and_arrangement(marc['351']),
-          build_genre_form(marc['655']),
+          marc.fields.filter_map { build_genre_form(it) if it.tag == '655' },
           build_cartographic(marc['255']),
-          marc.fields.select { it.tag == '336' }.map { build_content_type(it) },
+          marc.fields.filter_map { build_content_type(it) if it.tag == '336' },
           build_resource_types,
           build_dataset_genre
 
