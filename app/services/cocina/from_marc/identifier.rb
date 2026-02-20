@@ -15,7 +15,7 @@ module Cocina
       end
 
       def build
-        [lccn, isbn, issn, other_identifier, publisher_number].compact
+        [lccn, isbn, issn, other_identifier, publisher_number].flatten.compact
       end
 
       OTHER_IDENTIFER_TYPES = {
@@ -78,12 +78,13 @@ module Cocina
       end
 
       def publisher_number
-        field = marc['028']
-        return unless field
+        fields = marc.fields.select { it.tag == '028' }
 
-        parts = values_for(field, %w[a b q])
+        fields.map do |field|
+          parts = values_for(field, %w[a b q])
 
-        { value: parts.join(' '), type: PUBLISHER_NUMBER_TYPES.fetch(field.indicator1) }.compact_blank if parts.any?
+          { value: parts.join(' '), type: PUBLISHER_NUMBER_TYPES.fetch(field.indicator1) }.compact_blank if parts.any?
+        end
       end
 
       def values_for(field, subfields)

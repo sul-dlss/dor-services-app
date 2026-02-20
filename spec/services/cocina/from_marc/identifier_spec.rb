@@ -228,22 +228,50 @@ RSpec.describe Cocina::FromMarc::Identifier do
     end
 
     context 'with issue number (028 ind1=0)' do
+      # See a10778545
       let(:marc_hash) do
         {
           'fields' => [
             { '028' => {
               'ind1' => '0', 'ind2' => '2',
               'subfields' => [
-                { 'a' => '560930' },
-                { 'b' => 'Erato/Warner Classics' }
+                { 'a' => '162' },
+                { 'b' => 'Columbia' }
+              ]
+            } },
+            { '028' => {
+              'ind1' => '0', 'ind2' => '0',
+              'subfields' => [
+                { 'a' => '67962-D' },
+                { 'b' => 'Columbia' }
+              ]
+            } },
+            { '028' => {
+              'ind1' => '0', 'ind2' => '0',
+              'subfields' => [
+                { 'a' => '67963-D' },
+                { 'b' => 'Columbia' }
+              ]
+            } },
+            { '028' => {
+              'ind1' => '0', 'ind2' => '0',
+              'subfields' => [
+                { 'a' => '67964-D' },
+                { 'b' => 'Columbia' }
               ]
             } }
+
           ]
         }
       end
 
-      it 'returns issue number' do
-        expect(build).to eq [{ value: '560930 Erato/Warner Classics', type: 'issue number' }]
+      it 'returns issue numbers' do
+        expect(build).to eq [
+          { value: '162 Columbia', type: 'issue number' },
+          { value: '67962-D Columbia', type: 'issue number' },
+          { value: '67963-D Columbia', type: 'issue number' },
+          { value: '67964-D Columbia', type: 'issue number' }
+        ]
       end
     end
 
