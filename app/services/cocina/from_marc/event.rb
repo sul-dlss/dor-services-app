@@ -21,7 +21,7 @@ module Cocina
           publication_from008,
           publication(marc['260']),
           manufacture(marc['260']),
-          production(marc['264']),
+          marc.fields.filter_map { production(it) if it.tag == '264' },
           edition_statement(marc['250']),
           frequency_statement(marc['310']),
           mode_of_issuance(marc['334'])
