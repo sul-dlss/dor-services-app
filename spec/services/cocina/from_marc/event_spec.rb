@@ -402,6 +402,105 @@ RSpec.describe Cocina::FromMarc::Event do
       end
     end
 
+    context 'with publication, distribution, and copyright events' do
+      # See a10619029
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '264' => {
+              'ind1' => ' ',
+              'ind2' => '1',
+              'subfields' => [
+                {
+                  'a' => '[Oak Ridge, Tenn.] :'
+                },
+                {
+                  'b' => 'Oak Ridge National Laboratory,'
+                },
+                {
+                  'c' => '[2014]'
+                }
+              ]
+            } },
+            { '264' => {
+              'ind1' => ' ',
+              'ind2' => '2',
+              'subfields' => [
+                {
+                  'a' => 'Minneapolis, MN :'
+                },
+                {
+                  'b' => 'East View Information Services, '
+                },
+                {
+                  'c' => '[2014]'
+                }
+              ]
+            } },
+            { '264' => {
+              'ind1' => ' ',
+              'ind2' => '4',
+              'subfields' => [
+                {
+                  'c' => '©2014 '
+                }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns publication event with multiple publishers' do
+        expect(build).to eq [
+          {
+            type: 'publication',
+            location: [{ value: '[Oak Ridge, Tenn.]' }],
+            contributor: [
+              { name: [{ value: 'Oak Ridge National Laboratory' }], role: [{ value: 'publisher' }] }
+            ],
+            date: [{ value: '[2014]', type: 'publication' }]
+          },
+          {
+            type: 'distribution',
+            location: [
+              {
+                value: 'Minneapolis, MN'
+              }
+            ],
+            contributor: [
+              {
+                role: [
+                  {
+                    value: 'distributor'
+                  }
+                ],
+                name: [
+                  {
+                    value: 'East View Information Services'
+                  }
+                ]
+              }
+            ],
+            date: [
+              {
+                value: '[2014]',
+                type: 'distribution'
+              }
+            ]
+          },
+          {
+            type: 'copyright notice',
+            note: [
+              {
+                value: '©2014 ',
+                type: 'copyright statement'
+              }
+            ]
+          }
+        ]
+      end
+    end
+
     context 'with edition event (250)' do
       context 'with multiple subfields' do
         let(:marc_hash) do
