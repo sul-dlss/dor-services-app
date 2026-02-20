@@ -174,6 +174,57 @@ RSpec.describe Cocina::FromMarc::Title do
       end
     end
 
+    context 'with title and alternative title (130, 245, and 246)' do
+      # See 7769901
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '130' => { 'ind1' => '0', 'ind2' => ' ', 'subfields' => [
+              { 'a' => 'Bible.' },
+              { 'l' => 'English' },
+              { 's' => 'Thomson.' },
+              { 'f' => '1808.' }
+            ] } },
+            { '245' => { 'ind1' => '1', 'ind2' => '4', 'subfields' => [
+              { 'a' => 'The Holy Bible,' },
+              { 'b' => 'containing the Old and New Covenant, commonly called the Old and New Testament.' },
+              { 'c' => 'Translated from the Greek by Charles Thomson.' }
+            ] } },
+            { '246' => { 'ind1' => '1', 'ind2' => '8', 'subfields' => [
+              { 'a' => "Thomson's Bible" }
+            ] } }
+          ]
+        }
+      end
+
+      it 'returns the title with parallel values' do
+        expect(build).to eq([{
+                              structuredValue: [
+                                {
+                                  value: 'The',
+                                  type: 'nonsorting characters'
+                                },
+                                {
+                                  value: 'Holy Bible',
+                                  type: 'main title'
+                                },
+                                {
+                                  value: 'containing the Old and New Covenant, commonly called the Old and New Testament.',
+                                  type: 'subtitle'
+                                }
+                              ]
+                            },
+                             {
+                               value: "Thomson's Bible",
+                               type: 'alternative'
+                             },
+                             {
+                               value: 'Bible. English Thomson. 1808.',
+                               type: 'uniform'
+                             }])
+      end
+    end
+
     context 'with alternative title with display label (246)' do
       let(:marc_hash) do
         {
