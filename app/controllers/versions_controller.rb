@@ -22,6 +22,10 @@ class VersionsController < ApplicationController
 
   def show
     render json: @repository_object_version.to_cocina_with_metadata
+  rescue Cocina::Models::ValidationError => e
+    json_api_error(status: :conflict, message: e.message,
+                   title: 'Object is not valid cocina',
+                   meta: { json: @repository_object_version.to_h.as_json })
   end
 
   def create
