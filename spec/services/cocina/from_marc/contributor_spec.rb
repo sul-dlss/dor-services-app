@@ -91,6 +91,38 @@ RSpec.describe Cocina::FromMarc::Contributor do
         end
       end
 
+      context 'with a role' do
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '110' => {
+                'ind1' => '1',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => 'United States.'
+                  },
+                  {
+                    'b' => 'Office of the Inspector General for Tax Administration,'
+                  },
+                  {
+                    'e' => 'issuing body.'
+                  }
+                ]
+              } }
+            ]
+          }
+        end
+
+        it 'returns organization with a role' do
+          expect(build).to eq [{
+            type: 'organization', status: 'primary',
+            name: [{ value: 'United States. Office of the Inspector General for Tax Administration,' }],
+            role: [{ value: 'issuing body' }]
+          }]
+        end
+      end
+
       context 'with multiple scripts (110/880)' do
         # See a3940765
         let(:marc_hash) do
