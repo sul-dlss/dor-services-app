@@ -37,6 +37,8 @@ RSpec.describe Migrators::Exemplar do
 
     it 'updates label and title' do
       migrator.migrate
+      repository_object.save
+      repository_object.reload
       expect(repository_object.head_version.label).to match(/Test DRO - migrated \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/)
       expect(repository_object.head_version.description['title'].first['value'])
         .to match(/Test DRO - migrated \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/)
