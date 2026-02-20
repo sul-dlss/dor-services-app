@@ -29,7 +29,12 @@ RSpec.describe Cocina::FromMarc::Form do
       end
 
       it 'returns extent value' do
-        expect(build).to eq([{ value: '1 accordion-fold book (unpaged) : color illustrations ; 37 cm + 1 volume (xxi, 59 pages : color illustrations ; 24 cm) + 2 SD cards + 1 digital viewer + 1 laser cut printing plate, in 2 clamshell boxes 40 x 28 x 5 cm' }])
+        expect(build).to eq([
+                              {
+                                value: '1 accordion-fold book (unpaged) : color illustrations ; 37 cm + 1 volume (xxi, 59 pages : color illustrations ; 24 cm) + 2 SD cards + 1 digital viewer + 1 laser cut printing plate, in 2 clamshell boxes 40 x 28 x 5 cm',
+                                type: 'extent'
+                              }
+                            ])
       end
     end
 
@@ -52,7 +57,7 @@ RSpec.describe Cocina::FromMarc::Form do
       end
 
       it 'returns extent value with $3' do
-        expect(build).to eq([{ value: 'records 1 box 2 x 4 x 3 1/2 ft.' }])
+        expect(build).to eq([{ value: 'records 1 box 2 x 4 x 3 1/2 ft.', type: 'extent' }])
       end
     end
 

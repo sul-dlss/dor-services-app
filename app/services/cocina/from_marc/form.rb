@@ -18,7 +18,7 @@ module Cocina
       # @return [Array<Hash>] an array of form hashes
       def build # rubocop:disable Metrics/AbcSize
         [
-          [build_simple_form(marc['300'], %w[a b c e f g 3])],
+          [build_extent(marc['300'], %w[a b c e f g 3])],
           build_physical_medium(marc['340']),
           build_sound_characteristics(marc['344']),
           build_organization_and_arrangement(marc['351']),
@@ -53,7 +53,7 @@ module Cocina
 
       private
 
-      def build_simple_form(field, codes)
+      def build_extent(field, codes)
         return unless field
 
         codes = Array(codes)
@@ -65,7 +65,7 @@ module Cocina
         end
         return nil if values.empty?
 
-        { value: values.join(' ') }
+        { value: values.join(' '), type: 'extent' }
       end
 
       def build_physical_medium(field)
