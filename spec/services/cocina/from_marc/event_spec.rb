@@ -821,5 +821,32 @@ RSpec.describe Cocina::FromMarc::Event do
         }]
       end
     end
+
+    context 'with encoded questionable date range (008)' do
+      # See a11696300
+      let(:marc_hash) do
+        {
+          'leader' => '01976njm a2200469Ii 4500',
+          'fields' => [
+            { '008' => '151117q19601965nyumunn n spa d' }
+          ]
+        }
+      end
+
+      it 'returns publication event with qualifed date range' do
+        expect(build).to eq [{
+          type: 'publication',
+          date: [{
+            structuredValue: [
+              { value: '1960', type: 'start' },
+              { value: '1965', type: 'end' }
+            ],
+            type: 'publication',
+            qualifier: 'questionable',
+            encoding: { code: 'marc' }
+          }]
+        }]
+      end
+    end
   end
 end

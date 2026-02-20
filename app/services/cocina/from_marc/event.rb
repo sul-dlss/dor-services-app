@@ -55,6 +55,12 @@ module Cocina
                                       { value: field.value[11..14], type: 'end' }],
                     type:, encoding: { code: 'marc' }
                   }]
+                when 'q'
+                  [{
+                    structuredValue: [{ value: field.value[7..10], type: 'start' },
+                                      { value: field.value[11..14], type: 'end' }],
+                    type:, qualifier: 'questionable', encoding: { code: 'marc' }
+                  }]
                 else
                   [{ value: field.value[7..10], type:, encoding: { code: 'marc' } }]
                 end
