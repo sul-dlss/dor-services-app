@@ -6,6 +6,7 @@ require 'rails_helper'
 RSpec.describe Workflow::StateBatchService do
   before do
     allow(QueueService).to receive(:enqueue)
+    allow(Indexer).to receive(:reindex_now)
   end
 
   describe '.accessioning_druids' do
