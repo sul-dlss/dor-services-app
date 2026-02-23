@@ -350,6 +350,44 @@ RSpec.describe Cocina::FromMarc::Form do
       end
     end
 
+    context 'with multiple (344)' do
+      # see a14334888
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '344' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { 'a' => 'analog' },
+                { '2' => 'rdatr' }
+              ]
+            } },
+            { '344' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { 'c' => '78 rpm' }
+              ]
+            } },
+            { '344' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { 'g' => 'mono' },
+                { '2' => 'rdacpc' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns note with Configuration of playback channels display label' do
+        expect(build).to eq [
+          { note: [{ value: 'analog', displayLabel: 'Type of recording' }] },
+          { note: [{ value: '78 rpm', displayLabel: 'Playing speed' }] },
+          { note: [{ value: 'mono', displayLabel: 'Configuration of playback channels' }] }
+        ]
+      end
+    end
+
     context 'with arrangement (351 $abc3)' do
       # based on a6002746
       let(:marc_hash) do
