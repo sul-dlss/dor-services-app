@@ -1921,7 +1921,6 @@ components:
         - version
     Administrative:
       type: object
-      additionalProperties: false
       properties:
         hasAdminPolicy:
           $ref: "#/components/schemas/Druid"
@@ -1930,7 +1929,6 @@ components:
     AdminPolicyAccessTemplate:
       description: "Provides the template of access settings that is copied to the items governed by an AdminPolicy. This is almost the same as DROAccess, but it provides no defaults and has no embargo."
       type: object
-      additionalProperties: false
       oneOf:
         - $ref: "#/components/schemas/DarkAccess"
         - $ref: "#/components/schemas/CitationOnlyAccess"
@@ -1985,7 +1983,6 @@ components:
         Property model for indicating the parts, aspects, or versions of the resource to which a
         descriptive element is applicable.
       type: object
-      additionalProperties: false
       properties:
         appliesTo:
           type: array
@@ -2272,7 +2269,6 @@ components:
         - structural
     DROAccess:
       type: object
-      additionalProperties: false
       allOf:
         - $ref: "#/components/schemas/Access"
         - type: object
@@ -2334,11 +2330,9 @@ components:
             - false
     Description:
       type: object
-      additionalProperties: false
       allOf:
         - $ref: "#/components/schemas/RequestDescription"
         - type: object
-          additionalProperties: false
           properties:
             purl:
               $ref: "#/components/schemas/Purl"
@@ -2418,15 +2412,11 @@ components:
     DescriptiveBasicValue:
       description: Basic value model for descriptive elements. Can only have one of value, parallelValue, groupedValue, or structuredValue.
       type: object
-      # additionalProperties breaks the validator for allOf, unclear as to why.
-      # additionalProperties: false
       allOf:
         - $ref: "#/components/schemas/DescriptiveStructuredValue"
         - $ref: "#/components/schemas/DescriptiveParallelValue"
         - $ref: "#/components/schemas/DescriptiveGroupedValue"
         - type: object
-          # additionalProperties breaks the validator for DescriptiveValue, unclear as to why.
-          # additionalProperties: false
           properties:
             value:
               description: String or integer value of the descriptive element.
@@ -2497,7 +2487,6 @@ components:
     DescriptiveGroupedValue:
       description: Value model for a set of descriptive elements grouped together in an unstructured way.
       type: object
-      additionalProperties: false
       properties:
         groupedValue:
           type: array
@@ -2548,7 +2537,6 @@ components:
       allOf:
         - $ref: "#/components/schemas/DescriptiveStructuredValue"
         - type: object
-          additionalProperties: false
           properties:
             type:
               description: Description of the event (creation, publication, etc.).
@@ -2587,7 +2575,6 @@ components:
     DescriptiveParallelValue:
       description: Value model for multiple representations of the same information (e.g. in different languages).
       type: object
-      additionalProperties: false
       properties:
         parallelValue:
           type: array
@@ -2596,7 +2583,6 @@ components:
     DescriptiveStructuredValue:
       description: Value model for descriptive elements structured as typed, ordered values.
       type: object
-      additionalProperties: false
       properties:
         structuredValue:
           type: array
@@ -2605,14 +2591,12 @@ components:
     DescriptiveValue:
       description: Default value model for descriptive elements.
       type: object
-      additionalProperties: false
       allOf:
         - $ref: "#/components/schemas/DescriptiveBasicValue"
         - $ref: "#/components/schemas/AppliesTo"
     DescriptiveValueLanguage:
       description: Language of the descriptive element value
       type: object
-      additionalProperties: false
       allOf:
         - $ref: "#/components/schemas/Standard"
         - type: object
@@ -2627,7 +2611,6 @@ components:
       example: "druid:bc123df4567"
     Embargo:
       type: object
-      additionalProperties: false
       allOf:
         - $ref: "#/components/schemas/Access"
         - type: object
@@ -2751,7 +2734,6 @@ components:
     FileAccess:
       description: Access metadata for files
       type: object
-      additionalProperties: false
       oneOf:
         # Being first, makes DarkAccess the default.
         - $ref: "#/components/schemas/DarkAccess"
@@ -2977,6 +2959,7 @@ components:
       type: string
       nullable: true
       enum:
+        - null
         - "https://www.gnu.org/licenses/agpl.txt"
         - "https://www.apache.org/licenses/LICENSE-2.0"
         - "https://opensource.org/licenses/BSD-2-Clause"
@@ -3310,11 +3293,9 @@ components:
         - version
     RequestAdministrative:
       type: object
-      additionalProperties: false
       allOf:
         - $ref: "#/components/schemas/Administrative"
         - type: object
-          additionalProperties: false
           properties:
             partOfProject:
               description: Internal project this resource is a part of. This governs routing of messages about this object.
@@ -3429,7 +3410,6 @@ components:
     RequestDescription:
       description: Description that is included in a request to create a DRO. This is the same as a Description, except excludes PURL.
       type: object
-      additionalProperties: false
       properties:
         title:
           description: Titles of the resource.
@@ -3664,7 +3644,6 @@ components:
         Property model for indicating the encoding, standard, or syntax
         to which a value conforms (e.g. RDA).
       type: object
-      additionalProperties: false
       properties:
         code:
           description: Code representing the standard or encoding.
@@ -3749,7 +3728,6 @@ components:
         - refresh
     Title:
       type: object
-      additionalProperties: false
       allOf:
         - $ref: "#/components/schemas/DescriptiveValue"
         - anyOf:

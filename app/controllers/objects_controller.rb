@@ -4,7 +4,11 @@
 class ObjectsController < ApplicationController
   before_action :load_cocina_object, only: %i[accession destroy show reindex]
   before_action :check_cocina_object_exists, only: :publish
-  before_action :params_from_openapi
+  before_action :validate_from_openapi
+
+  rescue_from(JsonSchemer::Rails::RequestValidationError) do |e|
+    json_api_error(status: :bad_request, message: e.message)
+  end
 
   rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
     json_api_error(status: :not_found, message: e.message)
