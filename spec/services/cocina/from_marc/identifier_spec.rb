@@ -352,7 +352,7 @@ RSpec.describe Cocina::FromMarc::Identifier do
       end
 
       it 'returns videorecording publisher number' do
-        expect(build).to eq [{ value: '440 073 032-9 Deutsche Grammophon (set and guide)' }]
+        expect(build).to eq [{ value: '440 073 032-9 Deutsche Grammophon (set and guide)', type: 'videorecording identifier' }]
       end
     end
   end
