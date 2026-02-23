@@ -93,7 +93,8 @@ module Cocina
       def build_organization_and_arrangement(field)
         return unless field
 
-        { note: [{ value: [field['3'], field['c'], field['a'], field['b']].join(' '), type: 'arrangement' }] }
+        values = [field['3'], field['c'], field['a'], field['b']].compact
+        { note: [{ value: values.join(' '), type: 'arrangement' }] }
       end
 
       def build_genre_form(field)
