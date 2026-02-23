@@ -125,7 +125,7 @@ GEM
       super_diff
       thor
       zeitwerk (~> 2.1)
-    cocina_display (1.8.1)
+    cocina_display (1.8.2)
       activesupport (>= 7)
       edtf (~> 3.2)
       geo_coord (~> 0.2)
@@ -249,7 +249,7 @@ GEM
     hashdiff (1.2.1)
     hashie (5.1.0)
       logger
-    honeybadger (6.3.1)
+    honeybadger (6.4.0)
       logger
       ostruct
     http-cookie (1.1.0)
@@ -365,7 +365,7 @@ GEM
     optimist (3.2.1)
     ostruct (0.6.3)
     parallel (1.27.0)
-    parser (3.3.10.1)
+    parser (3.3.10.2)
       ast (~> 2.4.1)
       racc
     patience_diff (1.2.0)
@@ -472,7 +472,7 @@ GEM
     rspec-mocks (3.13.7)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-rails (8.0.2)
+    rspec-rails (8.0.3)
       actionpack (>= 7.2)
       activesupport (>= 7.2)
       railties (>= 7.2)
@@ -526,7 +526,7 @@ GEM
     serverengine (2.1.1)
       sigdump (~> 0.2.2)
     set (1.1.2)
-    sidekiq (8.1.0)
+    sidekiq (8.1.1)
       connection_pool (>= 3.0.0)
       json (>= 2.16.0)
       logger (>= 1.7.0)
@@ -599,7 +599,7 @@ GEM
     websocket-extensions (0.1.5)
     whenever (1.1.2)
       chronic (>= 0.6.3)
-    zeitwerk (2.7.4)
+    zeitwerk (2.7.5)
 
 PLATFORMS
   aarch64-linux
