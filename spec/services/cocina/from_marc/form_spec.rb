@@ -412,6 +412,27 @@ RSpec.describe Cocina::FromMarc::Form do
       end
     end
 
+    context 'with arrangement (351 $abc3) that only has subfield a' do
+      # based on a10557535
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '351' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { 'a' => 'Materials from 2015 on captured via Archive-It (2,400,000 MB)' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns note with arrangement type' do
+        expect(build).to eq([{ note: [{ type: 'arrangement',
+                                        value: 'Materials from 2015 on captured via Archive-It (2,400,000 MB)' }] }])
+      end
+    end
+
     context 'with genre (655 $a)' do
       # see a10619029
       let(:marc_hash) do
