@@ -215,12 +215,12 @@ RSpec.describe Cocina::FromMarc::Title do
                               ]
                             },
                              {
-                               value: "Thomson's Bible",
-                               type: 'alternative'
-                             },
-                             {
                                value: 'Bible. English Thomson. 1808.',
                                type: 'uniform'
+                             },
+                             {
+                               value: "Thomson's Bible",
+                               type: 'alternative'
                              }])
       end
     end
@@ -247,6 +247,45 @@ RSpec.describe Cocina::FromMarc::Title do
                               {
                                 value: 'Valses nobles et sentimentales : danses, 1905, manuscripts, op. 5, L\'oiseau.',
                                 displayLabel: 'Title should read:',
+                                type: 'alternative'
+                              }
+                            ])
+      end
+    end
+
+    context 'with multiple alternative titles' do
+      # see 10103299
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '246' => { 'ind1' => '3', 'ind2' => ' ',
+                         'subfields' => [
+                           { 'a' => 'California, Nevada, Texaco road map' }
+                         ] } },
+            { '246' => { 'ind1' => '3', 'ind2' => ' ',
+                         'subfields' => [
+                           { 'a' => 'Nevada' }
+                         ] } },
+            { '246' => { 'ind1' => '3', 'ind2' => ' ',
+                         'subfields' => [
+                           { 'a' => 'Texaco road map, western United States' }
+                         ] } }
+          ]
+        }
+      end
+
+      it 'returns the alternative titles' do
+        expect(build).to eq([
+                              {
+                                value: 'California, Nevada, Texaco road map',
+                                type: 'alternative'
+                              },
+                              {
+                                value: 'Nevada',
+                                type: 'alternative'
+                              },
+                              {
+                                value: 'Texaco road map, western United States',
                                 type: 'alternative'
                               }
                             ])
