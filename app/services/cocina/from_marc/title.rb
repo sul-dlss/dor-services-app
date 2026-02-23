@@ -29,8 +29,14 @@ module Cocina
         titles = []
         titles << main_title
 
-        titles << alternative_title if alternative_title_field
-        titles << uniform_title if uniform_title_field
+        titles += marc.fields.filter_map do |field|
+          case field.tag
+          when '246', '740'
+            alternative_title(field)
+          when '240', '130'
+            uniform_title(field)
+          end
+        end.compact
 
         titles.flatten.compact
       end
@@ -67,11 +73,7 @@ module Cocina
           field245.subfields.none? { |subfield| %w[b f g k n p s].include? subfield.code }
       end
 
-      def alternative_title_field
-        @alternative_title_field ||= marc['246'] || marc['740']
-      end
-
-      def alternative_title
+      def alternative_title(alternative_title_field)
         display_label = alternative_title_field.subfields.find { |subfield| subfield.code == 'i' }&.value
         alt_title = [
           {
@@ -87,11 +89,7 @@ module Cocina
         alt_title
       end
 
-      def uniform_title_field
-        @uniform_title_field ||= marc['240'] || marc['130']
-      end
-
-      def uniform_title
+      def uniform_title(uniform_title_field)
         [{
           value: Util.strip_punctuation(uniform_title_field.select do |subfield|
             %w[a d f g k l m n o p r s t].include? subfield.code
