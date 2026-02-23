@@ -4,8 +4,6 @@ orbs:
 workflows:
   build:
     jobs:
-      - ruby-rails/validate-api:
-          name: validate
       - ruby-rails/lint:
           name: lint
           context: dlss
@@ -13,13 +11,16 @@ workflows:
           name: test
           api-only: true
           context: dlss
+          before-test:
+            - run:
+                name: validate openapi
+                command: bin/rails r "exit(1) unless JSONSchemer.valid_schema?(YAML.load_file('openapi.yml'))"
       - ruby-rails/docker-publish:
           context: dlss
           name: publish-latest
           image: suldlss/dor-services-app
           extra_build_args: --build-arg BUNDLE_GEMS__CONTRIBSYS__COM
           requires:
-            - validate
             - lint
             - test
           filters:
