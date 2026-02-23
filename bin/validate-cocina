@@ -53,10 +53,9 @@ def tty_progress_bar(count)
   )
 end
 
-def versions_to_validate(repository_object, latest_versions_only)
+def versions_to_validate(repository_object)
   versions = repository_object.versions.where.not(cocina_version: nil)
-
-  return versions unless latest_versions_only
+  return versions unless options[:latest_versions_only]
 
   # Only include head_version and last_closed_version (if object is open)
   latest_versions = []
@@ -68,7 +67,7 @@ def versions_to_validate(repository_object, latest_versions_only)
   latest_versions
 end
 
-def validate(sample_size, processes, latest_versions_only)
+def validate(sample_size, processes)
   obj_ids = if sample_size
               RepositoryObject.limit(sample_size).ids
             else
@@ -82,7 +81,7 @@ def validate(sample_size, processes, latest_versions_only)
                in_processes: processes,
                finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |slice_obj_ids|
     RepositoryObject.find(slice_obj_ids).map do |repository_object|
-      versions_to_validate(repository_object, latest_versions_only).map do |repository_object_version|
+      versions_to_validate(repository_object).map do |repository_object_version|
         repository_object_version.to_cocina
         [repository_object.external_identifier, repository_object_version.version, nil]
       rescue StandardError => e
@@ -98,7 +97,7 @@ def validate(sample_size, processes, latest_versions_only)
   end.flatten(2)
 end
 
-results = validate(options[:sample], options[:processes], options[:latest_versions_only])
+results = validate(options[:sample], options[:processes])
 
 CSV.open('validate-cocina.csv', 'w') do |writer|
   writer << %w[druid version type collection message]
