@@ -16,18 +16,28 @@ module Cocina
       end
 
       # @return [Array<Hash>] an array of form hashes
-      def build # rubocop:disable Metrics/AbcSize
+      def build # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength
         [
-          [build_extent(marc['300'], %w[a b c e f g 3])],
-          build_physical_medium(marc['340']),
-          build_sound_characteristics(marc['344']),
-          build_organization_and_arrangement(marc['351']),
-          marc.fields.filter_map { build_genre_form(it) if it.tag == '655' },
-          build_cartographic(marc['255']),
-          marc.fields.filter_map { build_content_type(it) if it.tag == '336' },
+          marc.fields.filter_map do |field|
+            case field.tag
+            when '255'
+              build_cartographic(field)
+            when '300'
+              build_extent(field)
+            when '336'
+              build_content_type(field)
+            when '340'
+              build_physical_medium(field)
+            when '344'
+              build_sound_characteristics(field)
+            when '351'
+              build_organization_and_arrangement(field)
+            when '655'
+              build_genre_form(field)
+            end
+          end,
           build_resource_types,
           build_dataset_genre
-
         ].flatten.compact
       end
 
@@ -53,15 +63,11 @@ module Cocina
 
       private
 
-      def build_extent(field, codes)
+      def build_extent(field)
         return unless field
 
-        codes = Array(codes)
-        values = []
-        field.subfields.each do |sf|
-          next if sf.code == '6'
-
-          values << sf.value if codes.include?(sf.code)
+        values = field.subfields.filter_map do |sf|
+          sf.value if %w[a b c e f g 3].include?(sf.code)
         end
         return nil if values.empty?
 
