@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 # Validates cocina model changes by loading each object into cocina to determine if an error is raised.
-# Also, transforms the cocina model to MODS.
 # This should be run on sdr-deploy since it requires using a version of cocina models that is not the latest release.
 # To select the cocina model version to test, adjust the Gemfile.
 # For example, gem 'cocina-models', github: 'sul-dlss/cocina-models', branch: 'test_me'
@@ -15,12 +14,16 @@ Honeybadger.configure do |config|
   config.exceptions.ignore += [Cocina::Models::ValidationError]
 end
 
-options = { processes: 4 }
+options = { processes: 4, latest_versions_only: false }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/validate-cocina [options]'
   option_parser.on('-pPROCESSES', '--processes PROCESSES', Integer,
                    "Number of processes. Default is #{options[:processes]}.")
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size per type, otherwise all objects.')
+  option_parser.on('-l', '--latest-versions-only',
+                   'Only validate the head_version and last_closed_version (when object is open).') do
+    options[:latest_versions_only] = true
+  end
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
     exit
@@ -50,6 +53,20 @@ def tty_progress_bar(count)
   )
 end
 
+def versions_to_validate(repository_object)
+  versions = repository_object.versions.where.not(cocina_version: nil)
+  return versions unless options[:latest_versions_only]
+
+  # Only include head_version and last_closed_version (if object is open)
+  latest_versions = []
+  latest_versions << repository_object.head_version if repository_object.head_version&.cocina_version
+  if repository_object.open? && repository_object.last_closed_version&.cocina_version
+    latest_versions << repository_object.last_closed_version
+  end
+
+  latest_versions
+end
+
 def validate(sample_size, processes)
   obj_ids = if sample_size
               RepositoryObject.limit(sample_size).ids
@@ -64,9 +81,8 @@ def validate(sample_size, processes)
                in_processes: processes,
                finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |slice_obj_ids|
     RepositoryObject.find(slice_obj_ids).map do |repository_object|
-      repository_object.versions.where.not(cocina_version: nil).map do |repository_object_version|
-        cocina_obj = repository_object_version.to_cocina
-        Cocina::Models::Mapping::ToMods::Description.transform(cocina_obj.description, cocina_obj.externalIdentifier)
+      versions_to_validate(repository_object).map do |repository_object_version|
+        repository_object_version.to_cocina
         [repository_object.external_identifier, repository_object_version.version, nil]
       rescue StandardError => e
         collection = if repository_object.object_type == 'dro'
