@@ -1493,6 +1493,43 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/Druid"
+    head:
+      tags:
+        - objects
+      summary: Retrieve the head for object COCINA metadata
+      operationId: "objects#head"
+      responses:
+        "200":
+          description: OK
+          headers:
+            ETag:
+              schema:
+                type: string
+            Last-Modified:
+              schema:
+                type: string
+            X-Created-At:
+              schema:
+                type: string
+        "422":
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "#/components/schemas/Druid"
     delete:
       tags:
         - objects
