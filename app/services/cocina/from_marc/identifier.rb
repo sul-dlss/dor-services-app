@@ -31,7 +31,7 @@ module Cocina
         '1' => 'matrix number',
         '2' => 'music plate',
         '3' => 'music publisher',
-        '4' => nil
+        '4' => 'videorecording identifier'
       }.freeze
 
       private
