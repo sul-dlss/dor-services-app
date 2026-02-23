@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.1.2
 info:
   description: Backend API for the Stanford digital repository
   version: 1.0.0
@@ -2028,8 +2028,7 @@ components:
             - "none"
         location:
           description: Not used for this access type, must be null.
-          type: string
-          nullable: true
+          type: [string, "null"]
           enum:
             - null
         controlledDigitalLending:
@@ -2180,8 +2179,7 @@ components:
             - none
         location:
           description: Not used for this access type, must be null.
-          type: string
-          nullable: true
+          type: [string, "null"]
           enum:
             - null
         controlledDigitalLending:
@@ -2194,8 +2192,7 @@ components:
     Copyright:
       description: The human readable copyright statement that applies
       example: Copyright World Trade Organization
-      type: string
-      nullable: true
+      type: [string, "null"]
     CreatedInFolioIdentifier:
       description: A record identifier created in Folio
       type: string
@@ -2322,8 +2319,7 @@ components:
             - "none"
         location:
           description: Not used for this access type, must be null.
-          type: string
-          nullable: true
+          type: [string, "null"]
           default: null
           enum:
             - null
@@ -2825,8 +2821,7 @@ components:
             $ref: "#/components/schemas/File"
     FileUse:
       description: Use for the File.
-      type: string
-      nullable: true
+      type: [string, "null"]
     FolioCatalogLink:
       description: A linkage between an object and a Folio catalog record
       type: object
@@ -2965,8 +2960,7 @@ components:
           $ref: "#/components/schemas/DescriptiveValueLanguage"
     LanguageTag:
       description: "BCP 47 language tag: https://www.rfc-editor.org/rfc/rfc4646.txt -- other applications (like media players) expect language codes of this format, see e.g. https://videojs.com/guides/text-tracks/#srclang"
-      type: string
-      nullable: true
+      type: [string, "null"]
     LibrariesDOI:
       type: string
       description: "The DOI (Digital Object Identifier, https://www.doi.org) pattern for works registered by Stanford Libraries outside of SDR workflows. Please note that DOIs are *not* case-sensitive so both cases of letters should be permitted."
@@ -2974,8 +2968,7 @@ components:
       example: "10.25936/629T-bx79"
     License:
       description: The license governing reuse of the DRO. Should be an IRI for known licenses (i.e. CC, RightsStatement.org URI, etc.).
-      type: string
-      nullable: true
+      type: [string, "null"]
       enum:
         - "https://www.gnu.org/licenses/agpl.txt"
         - "https://www.apache.org/licenses/LICENSE-2.0"
@@ -3688,8 +3681,7 @@ components:
           $ref: "#/components/schemas/Source"
     StandardBarcode:
       description: The standard barcode associated with a DRO object, prefixed with 36105
-      type: string
-      nullable: true
+      type: [string, "null"]
       pattern: "^36105[0-9]{9}$"
       example: "36105010362304"
     StanfordAccess:
@@ -3707,8 +3699,7 @@ components:
             - stanford
         location:
           description: Not used for this access type, must be null.
-          type: string
-          nullable: true
+          type: [string, "null"]
           enum:
             - null
         controlledDigitalLending:
@@ -3771,8 +3762,7 @@ components:
     UseAndReproductionStatement:
       description: The human readable use and reproduction statement that applies
       example: Property rights reside with the repository. Literary rights reside with the creators of the documents or their heirs. To obtain permission to publish or reproduce, please contact the Public Services Librarian of the Dept. of Special Collections (http://library.stanford.edu/spc).
-      type: string
-      nullable: true
+      type: [string, "null"]
     WorldAccess:
       type: object
       properties:
@@ -3790,8 +3780,7 @@ components:
             - world
         location:
           description: Not used for this access type, must be null.
-          type: string
-          nullable: true
+          type: [string, "null"]
           enum:
             - null
         controlledDigitalLending:
