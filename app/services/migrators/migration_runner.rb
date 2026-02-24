@@ -78,21 +78,20 @@ module Migrators
     private_class_method def self.open_version(cocina_object:, version_description:, mode:)
       return cocina_object if VersionService.open?(druid: cocina_object.externalIdentifier,
                                                    version: cocina_object.version)
+
       # Raise an error if the migration is trying to version an object that is not openable
-      raise 'Cannot version' unless VersionService.can_open?(druid: cocina_object.externalIdentifier,
-                                                             version: cocina_object.version)
-      # This allows us to know if the object can be opened for versioning but not actually open it during a dry run
+      VersionService.ensure_openable!(druid: cocina_object.externalIdentifier, version: cocina_object.version)
+
+      # This allows us to know if the object can be opened for versioning without actually opening it during a dry run
       return cocina_object if mode == :dryrun
 
-      version_open_params = { description: version_description }
-      VersionService.open(cocina_object:, **version_open_params)
+      VersionService.open(cocina_object:, description: version_description)
     end
 
     private_class_method def self.close_version(cocina_object:, version_description:)
-      version_close_params = { description: version_description }
       VersionService.close(druid: cocina_object.externalIdentifier,
                            version: cocina_object.version,
-                           **version_close_params)
+                           description: version_description)
     end
   end
 end

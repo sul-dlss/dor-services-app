@@ -21,14 +21,15 @@ require 'tty-progressbar'
 options = { processes: 4, mode: Migrators::MigrationRunner::DEFAULT_MODE, sample: nil }
 
 parser = OptionParser.new do |option_parser|
+  mode_list_str = Migrators::MigrationRunner::MODES.map(&:to_s).join(', ')
   option_parser.banner = 'Usage: bin/migrate-cocina MIGRATION_CLASS [options]'
   option_parser.on('--mode [MODE]', Migrators::MigrationRunner::MODES,
-                   "Migration mode (#{Migrators::MigrationRunner::MODES.map(&:to_s).join(', ')}). Default is #{Migrators::MigrationRunner::DEFAULT_MODE}")
+                   "Migration mode (#{mode_list_str}). Default is #{options[:mode]}")
   option_parser.on('-pPROCESSES', '--processes PROCESSES', Integer,
                    "Number of processes. Default is #{options[:processes]}.")
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size per type, otherwise all objects.')
   option_parser.on('-h', '--help', 'Displays help.') do
-    additional_hint = 'See comments in this script, Migrators::MigrationRunner, Migrators::Base, and ' \
+    additional_hint = 'See README, comments in this script, Migrators::MigrationRunner, Migrators::Base, and ' \
                       'Migrators::Exemplar for more details about migrator implementation and migrator modes.'
     puts "#{option_parser}\n\n**#{additional_hint}**"
     exit
