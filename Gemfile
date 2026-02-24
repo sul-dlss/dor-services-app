@@ -7,13 +7,13 @@ gem 'rails', '~> 8.0.0'
 
 # DLSS/domain-specific dependencies
 gem 'cocina_display'
-gem 'cocina-models', '~> 0.111.0'
+gem 'cocina-models', '~> 0.112.0'
 gem 'datacite', '~> 0.6'
 gem 'dor-services-client' # Used for Dor::Services::Response::* classes
 gem 'druid-tools', '~> 2.2'
 gem 'folio_client', '~> 0.8'
 gem 'graphql'
-gem 'json_schemer-rails', '~> 0.2.0'
+gem 'json_schemer-rails', '~> 0.3.0'
 gem 'lyber-core', '~> 8.0' # For robots
 gem 'mais_orcid_client', '>= 1.0'
 gem 'marc'
