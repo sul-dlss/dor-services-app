@@ -47,6 +47,36 @@ RSpec.describe Cocina::FromMarc::Identifier do
       end
     end
 
+    context 'with multiple ISBN (020$a)' do
+      # See a11668230
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '020' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { 'a' => '9789873617898' }
+              ]
+            } },
+            { '020' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { 'a' => '9873617892' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns multiple ISBNs' do
+        expect(build).to eq [
+          { value: '9789873617898', type: 'ISBN' },
+          { value: '9873617892', type: 'ISBN' }
+
+        ]
+      end
+    end
+
     context 'with ISSN (022$a)' do
       let(:marc_hash) do
         {
