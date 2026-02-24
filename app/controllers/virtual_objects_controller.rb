@@ -2,20 +2,23 @@
 
 # Create virtual objects
 class VirtualObjectsController < ApplicationController
-  # Create one or more virtual objects represented by JSON (see `#schema` below):
+  before_action :validate_from_openapi
+
+  rescue_from(JsonSchemer::Rails::RequestValidationError) do |e|
+    json_api_error(status: :bad_request, message: e.message)
+  end
+
+  # Create one or more virtual objects represented by JSON
   def create
     result = BackgroundJobResult.create
     CreateVirtualObjectsJob.perform_later(virtual_objects: create_params[:virtual_objects],
                                           background_job_result: result)
     head :created, location: result
-  rescue Cocina::ValidationError => e
-    json_api_error(status: e.status, message: e.message)
   end
 
   private
 
   def create_params
-    validate_from_openapi
     params.to_unsafe_h
   end
 end

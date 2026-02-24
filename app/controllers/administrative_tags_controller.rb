@@ -3,16 +3,14 @@
 # Administrative tags controller (nested resource under objects)
 class AdministrativeTagsController < ApplicationController
   before_action :load_cocina_object, only: %i[create update destroy]
-  before_action :validate
+  before_action :validate_from_openapi
 
   rescue_from(CocinaObjectStore::CocinaObjectNotFoundError) do |e|
     render status: :not_found, plain: e.message
   end
 
-  def validate
-    validate_from_openapi
-  rescue Cocina::ValidationError => e
-    json_api_error(status: e.status, message: e.message)
+  rescue_from(JsonSchemer::Rails::RequestValidationError) do |e|
+    json_api_error(status: :bad_request, message: e.message)
   end
 
   # Show administrative tags for an object
