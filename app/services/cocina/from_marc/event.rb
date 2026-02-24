@@ -80,12 +80,12 @@ module Cocina
         indicator = MARC_264_INDICATOR2.fetch(field.indicator2)
         return copyright(field) if indicator[:type] == 'copyright notice'
 
-        location = field.subfields.find { it.code == 'a' }&.value
+        locations = field.subfields.filter_map { Util.strip_punctuation(it.value) if it.code == 'a' }
         contributors = field.subfields.select { it.code == 'b' }.map(&:value)
         date = field.subfields.find { it.code == 'c' }.value.delete_suffix('.')
 
         event = { type: indicator[:type] }.compact_blank
-        event[:location] = [{ value: Util.strip_punctuation(location) }] if location
+        event[:location] = locations.map { { value: it } } if locations.present?
         contributor_template = indicator[:role] ? { role: [{ value: indicator[:role] }] } : {}
         if contributors.present?
           event[:contributor] = contributors.map do |contributor|

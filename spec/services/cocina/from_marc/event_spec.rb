@@ -279,6 +279,49 @@ RSpec.describe Cocina::FromMarc::Event do
       end
     end
 
+    context 'with publication event with multiple locations (264 ind2=1)' do
+      # see a10551837
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '264' => {
+              'ind1' => ' ',
+              'ind2' => '1',
+              'subfields' => [
+                {
+                  'a' => 'À Paris :'
+                },
+                {
+                  'b' => 'publiée par Naderman ;'
+                },
+                {
+                  'a' => 'À Londres :'
+                },
+                {
+                  'b' => 'par Clementi & Co.,'
+                },
+                {
+                  'c' => '[after 1803]'
+                }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns publication event with multiple publishers' do
+        expect(build).to eq [{
+          type: 'publication',
+          location: [{ value: 'À Paris' }, { value: 'À Londres' }],
+          contributor: [
+            { name: [{ value: 'publiée par Naderman' }], role: [{ value: 'publisher' }] },
+            { name: [{ value: 'par Clementi & Co.' }], role: [{ value: 'publisher' }] }
+          ],
+          date: [{ value: '[after 1803]', type: 'publication' }]
+        }]
+      end
+    end
+
     context 'with distribution event (264 ind2=2)' do
       let(:marc_hash) do
         {
