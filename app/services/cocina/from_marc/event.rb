@@ -121,7 +121,7 @@ module Cocina
       def frequency_statement(field)
         return unless field
 
-        statement = field.subfields.find { %w[a].include? it.code }.value
+        statement = field.subfields.select { %w[a b].include? it.code }.map(&:value).join(' ')
         { type: 'publication', note: [{ value: statement, type: 'frequency' }] }
       end
 
