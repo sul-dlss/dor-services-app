@@ -23,7 +23,7 @@ module Cocina
         result
       end
 
-      def build
+      def build # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
         return unless valid?
 
         titles = []
@@ -31,8 +31,14 @@ module Cocina
 
         titles += marc.fields.filter_map do |field|
           case field.tag
-          when '246', '740'
+          when '246'
             alternative_title(field)
+          when '740'
+            if field.indicator2 == '2'
+              alternative_title(field, type: 'has part')
+            else
+              alternative_title(field)
+            end
           when '240', '130'
             uniform_title(field)
           end
@@ -73,18 +79,18 @@ module Cocina
           field245.subfields.none? { |subfield| %w[b f g k n p s].include? subfield.code }
       end
 
-      def alternative_title(alternative_title_field)
+      def alternative_title(alternative_title_field, type: 'alternative')
         display_label = alternative_title_field.subfields.find { |subfield| subfield.code == 'i' }&.value
         alt_title = [
           {
             value: value_for(alternative_title_field, %w[a b f g k n p s]),
             displayLabel: display_label,
-            type: 'alternative'
+            type:
           }.compact
         ]
 
         if (link = linked_field(alternative_title_field))
-          alt_title << { value: value_for(link, %w[a b f g k n p s]), type: 'alternative' }
+          alt_title << { value: value_for(link, %w[a b f g k n p s]), type: }
         end
         alt_title
       end
