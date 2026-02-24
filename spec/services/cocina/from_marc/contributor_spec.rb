@@ -117,7 +117,7 @@ RSpec.describe Cocina::FromMarc::Contributor do
         it 'returns organization with a role' do
           expect(build).to eq [{
             type: 'organization', status: 'primary',
-            name: [{ value: 'United States. Office of the Inspector General for Tax Administration,' }],
+            name: [{ value: 'United States. Office of the Inspector General for Tax Administration' }],
             role: [{ value: 'issuing body' }]
           }]
         end

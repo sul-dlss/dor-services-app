@@ -88,7 +88,9 @@ module Cocina
 
       def build_corporate(field, primary: false) # rubocop:disable Metrics/AbcSize
         contributor = { type: 'organization' }
-        name = field.subfields.select { |subfield| %w[a b q d].include? subfield.code }.map(&:value).join(' ')
+        name = field.subfields.filter_map do |subfield|
+          subfield.value.delete_suffix(',') if %w[a b q d].include? subfield.code
+        end.join(' ')
         contributor[:name] = [{ value: name }]
         id = build_id(field).first
         contributor[:identifier] = [{ uri: id }] if id
