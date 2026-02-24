@@ -583,7 +583,8 @@ RSpec.describe Cocina::FromMarc::Event do
       end
     end
 
-    context 'with frequency event (310)' do
+    context 'with frequency event (310$ab)' do
+      # see a493225
       let(:marc_hash) do
         {
           'fields' => [
@@ -592,7 +593,10 @@ RSpec.describe Cocina::FromMarc::Event do
               'ind2' => ' ',
               'subfields' => [
                 {
-                  'a' => 'Annual'
+                  'a' => 'Monthly'
+                },
+                {
+                  'b' => '<Apr. 1988->'
                 }
               ]
             } }
@@ -603,7 +607,7 @@ RSpec.describe Cocina::FromMarc::Event do
       it 'returns publication event with frequency note' do
         expect(build).to eq [{
           type: 'publication',
-          note: [{ value: 'Annual', type: 'frequency' }]
+          note: [{ value: 'Monthly <Apr. 1988->', type: 'frequency' }]
         }]
       end
     end
