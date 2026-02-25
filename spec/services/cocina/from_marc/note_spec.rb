@@ -216,7 +216,7 @@ RSpec.describe Cocina::FromMarc::Note do
       end
     end
 
-    context 'with an older dissertation note (502$bcdgo)' do
+    context 'with an older dissertation note (502$a)' do
       # Based on a10059658
       let(:marc_hash) do
         {
