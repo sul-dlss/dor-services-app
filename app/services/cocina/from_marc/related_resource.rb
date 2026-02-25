@@ -16,17 +16,30 @@ module Cocina
       end
 
       # @return [Array<Hash>] an array of relatedResource hashes
-      def build # rubocop:disable Metrics/AbcSize
-        [
-          in_series(marc['490']),
-          marc.fields.select { it.tag == '700' }.map { has_part(it) }.compact,
-          marc.fields.select { it.tag == '700' }.map { related_title(it) }.compact,
-          has_part_corporate(marc['710']),
-          related_to_meeting(marc['711'])
-        ].flatten.compact_blank
+      def build
+        marc.fields.map do |field|
+          case field.tag
+          when '490'
+            in_series(field)
+          when '700'
+            [has_part(field), related_title(field)]
+          when '710'
+            has_part_corporate(field)
+          when '711'
+            related_to_meeting(field)
+          when '856'
+            finding_aid(field)
+          end
+        end.flatten.compact_blank
       end
 
       private
+
+      def finding_aid(field)
+        return unless field && field.indicator2 == '2'
+
+        { access: { url: field['u'], displayLabel: field['3'] } }
+      end
 
       def in_series(field)
         return unless field

@@ -657,5 +657,33 @@ RSpec.describe Cocina::FromMarc::RelatedResource do
         ]
       end
     end
+
+    context 'with a finding aid (856 ind2=2)' do
+      # See a11755361
+      let(:marc_hash) do
+        {
+          'fields' => [
+            {
+              '856' => {
+                'ind1' => '4',
+                'ind2' => '2',
+                'subfields' => [
+                  {
+                    '3' => 'Finding aid available online'
+                  },
+                  {
+                    'u' => 'http://www.oac.cdlib.org/findaid/ark:/13030/c8736x1m'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      end
+
+      it 'returns finding aid' do
+        expect(build).to eq [{ access: { url: 'http://www.oac.cdlib.org/findaid/ark:/13030/c8736x1m', displayLabel: 'Finding aid available online' } }]
+      end
+    end
   end
 end
