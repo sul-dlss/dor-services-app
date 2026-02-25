@@ -18,7 +18,7 @@ module Cocina
       # @return [Hash] a hash that can be mapped to a cocina model
       def build
         field = marc['034']
-        return unless field
+        return unless field && field.subfields.to_set(&:code).superset?(%w[d e f g].to_set)
 
         [{ subject: [
           {
