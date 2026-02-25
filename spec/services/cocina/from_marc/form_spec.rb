@@ -822,5 +822,56 @@ RSpec.describe Cocina::FromMarc::Form do
         ]
       end
     end
+
+    context 'with dissertation note and DOI (502 + 024)' do
+      # Based on in00000870077
+      let(:marc_hash) do
+        {
+          'fields' => [
+            {
+              '024' => {
+                'ind1' => '7',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => '10.25740/sr697mh5815'
+                  },
+                  {
+                    '2' => 'doi'
+                  }
+                ]
+              }
+            },
+            {
+              '502' => {
+                'ind1' => ' ',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'g' => 'Thesis'
+                  },
+                  {
+                    'b' => 'Ph.D.'
+                  },
+                  {
+                    'c' => 'Stanford University'
+                  },
+                  {
+                    'd' => '2026'
+                  },
+                  {
+                    'o' => '1234'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      end
+
+      it 'returns dissertation datacite type' do
+        expect(build).to eq [{ value: 'Dissertation', type: 'resource type', source: { value: 'DataCite resource types' } }]
+      end
+    end
   end
 end
