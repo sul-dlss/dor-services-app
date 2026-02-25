@@ -216,6 +216,34 @@ RSpec.describe Cocina::FromMarc::Note do
       end
     end
 
+    context 'with an older dissertation note (502$bcdgo)' do
+      # Based on a10059658
+      let(:marc_hash) do
+        {
+          'fields' => [
+            {
+              '502' => {
+                'ind1' => ' ',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => 'Thesis (Ph.D.)--Graduate School of Business, Stanford University, 1981.'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      end
+
+      it 'returns notes' do
+        expect(build).to eq [{
+          type: 'thesis',
+          value: 'Thesis (Ph.D.)--Graduate School of Business, Stanford University, 1981.'
+        }]
+      end
+    end
+
     context 'with bibliography note (504$ab)' do
       # Based on in00000144356
       let(:marc_hash) do

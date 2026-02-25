@@ -13,7 +13,7 @@ module Cocina
         '362' => { codes: %w[a z], type: 'date/sequential designation' }, # special: dates_of_publication
         '500' => %w[3 a],
         '501' => ['a'],
-        '502' => { codes: %w[g b c d o], type: 'thesis' },
+        '502' => { codes: %w[a g b c d o], type: 'thesis' },
         '504' => { codes: %w[a b], type: 'bibliography' },
         '505' => { codes: %w[a g r t u], type: 'table of contents' },
         '506' => { codes: %w[3 a b c d e f g q u], type: 'access restriction' },
