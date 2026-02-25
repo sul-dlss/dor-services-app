@@ -37,6 +37,7 @@ module Cocina
             end
           end,
           build_resource_types,
+          build_datacite_dissertation,
           build_dataset_genre
         ].flatten.compact
       end
@@ -125,6 +126,12 @@ module Cocina
         return unless field
 
         { value: field['a'], type: 'genre' }
+      end
+
+      def build_datacite_dissertation
+        return unless marc['502'] && marc['024']&.indicator1 == '7' && marc['024']['2'] == 'doi'
+
+        { value: 'Dissertation', type: 'resource type', source: { value: 'DataCite resource types' } }
       end
 
       def build_dataset_genre
