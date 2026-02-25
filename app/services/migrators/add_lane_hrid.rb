@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Migrators
+  # @note this was last used prior to the versioning fixes in https://github.com/sul-dlss/dor-services-app/pull/5688,
+  # and may no longer work as expected.
+  #
   # Adds Lane HRIDs.
   # See https://github.com/sul-dlss/dor-services-app/issues/4388 for context.
   class AddLaneHrid < Base

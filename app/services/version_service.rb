@@ -35,6 +35,11 @@ class VersionService
     new(...).can_discard?
   end
 
+  def self.ensure_openable!(druid:, version:, assume_accessioned: false, check_preservation_version: true,
+                            check_preservation_status: true)
+    new(druid:, version:).ensure_openable!(assume_accessioned:, check_preservation_version:, check_preservation_status:)
+  end
+
   def self.ensure_discardable!(...)
     new(...).ensure_discardable!
   end
