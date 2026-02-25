@@ -77,7 +77,7 @@ module Cocina
             }
           ],
           contributor: [contributor]
-        }
+        }.compact
       end
 
       def related_title(field)
