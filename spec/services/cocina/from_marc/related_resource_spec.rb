@@ -49,103 +49,148 @@ RSpec.describe Cocina::FromMarc::RelatedResource do
     end
 
     context 'with has part with person contributor (700 ind2=2 with $t)' do
-      # constructed
-      let(:marc_hash) do
-        {
-          'fields' => [
-            {
-              '700' => {
-                'ind1' => '1',
-                'ind2' => '2',
-                'subfields' => [
-                  {
-                    'i' => 'Relationship information:'
-                  },
-                  {
-                    'a' => 'Personal name,'
-                  },
-                  {
-                    'b' => 'numeration,'
-                  },
-                  {
-                    'c' => 'titles associated with name,'
-                  },
-                  {
-                    'd' => 'dates associated with name,'
-                  },
-                  {
-                    'j' => 'attribution qualifier'
-                  },
-                  {
-                    'q' => '(fuller form of name),'
-                  },
-                  {
-                    'e' => 'author.'
-                  },
-                  {
-                    '4' => 'aut'
-                  },
-                  {
-                    'u' => '(affiliation)'
-                  },
-                  {
-                    '1' => 'RWO URI'
-                  },
-                  {
-                    't' => 'Title of a work.'
-                  },
-                  {
-                    'f' => 'Date of a work.'
-                  },
-                  {
-                    'g' => 'Miscellaneous information.'
-                  },
-                  {
-                    'k' => 'Form subheading.'
-                  },
-                  {
-                    'l' => 'Language.'
-                  },
-                  {
-                    'm' => 'Medium of performance,'
-                  },
-                  {
-                    'n' => 'number of part,'
-                  },
-                  {
-                    'p' => 'name of part,'
-                  },
-                  {
-                    'o' => 'arranged statement.'
-                  },
-                  {
-                    'r' => 'Key for music.'
-                  },
-                  {
-                    's' => 'Version.'
-                  }
-                ]
+      context 'with $i' do
+        # constructed
+        let(:marc_hash) do
+          {
+            'fields' => [
+              {
+                '700' => {
+                  'ind1' => '1',
+                  'ind2' => '2',
+                  'subfields' => [
+                    {
+                      'i' => 'Relationship information:'
+                    },
+                    {
+                      'a' => 'Personal name,'
+                    },
+                    {
+                      'b' => 'numeration,'
+                    },
+                    {
+                      'c' => 'titles associated with name,'
+                    },
+                    {
+                      'd' => 'dates associated with name,'
+                    },
+                    {
+                      'j' => 'attribution qualifier'
+                    },
+                    {
+                      'q' => '(fuller form of name),'
+                    },
+                    {
+                      'e' => 'author.'
+                    },
+                    {
+                      '4' => 'aut'
+                    },
+                    {
+                      'u' => '(affiliation)'
+                    },
+                    {
+                      '1' => 'RWO URI'
+                    },
+                    {
+                      't' => 'Title of a work.'
+                    },
+                    {
+                      'f' => 'Date of a work.'
+                    },
+                    {
+                      'g' => 'Miscellaneous information.'
+                    },
+                    {
+                      'k' => 'Form subheading.'
+                    },
+                    {
+                      'l' => 'Language.'
+                    },
+                    {
+                      'm' => 'Medium of performance,'
+                    },
+                    {
+                      'n' => 'number of part,'
+                    },
+                    {
+                      'p' => 'name of part,'
+                    },
+                    {
+                      'o' => 'arranged statement.'
+                    },
+                    {
+                      'r' => 'Key for music.'
+                    },
+                    {
+                      's' => 'Version.'
+                    }
+                  ]
+                }
               }
-            }
-          ]
-        }
+            ]
+          }
+        end
+
+        it 'returns has part with person contributor' do
+          expect(build).to eq [{
+            type: 'has part',
+            displayLabel: 'Relationship information:',
+            title: [{ value: 'Title of a work. Date of a work. Miscellaneous information. Form subheading. Language. Medium of performance, number of part, name of part, arranged statement. Key for music. Version.' }],
+            contributor: [
+              {
+                type: 'person',
+                name: [{ value: 'Personal name, numeration, titles associated with name, dates associated with name, attribution qualifier (fuller form of name)' }],
+                affiliation: [{ value: '(affiliation)' }],
+                role: [{ value: 'author' }],
+                identifier: [{ uri: 'RWO URI' }]
+              }
+            ]
+          }]
+        end
       end
 
-      it 'returns has part with person contributor' do
-        expect(build).to eq [{
-          type: 'has part',
-          displayLabel: 'Relationship information:',
-          title: [{ value: 'Title of a work. Date of a work. Miscellaneous information. Form subheading. Language. Medium of performance, number of part, name of part, arranged statement. Key for music. Version.' }],
-          contributor: [
-            {
-              type: 'person',
-              name: [{ value: 'Personal name, numeration, titles associated with name, dates associated with name, attribution qualifier (fuller form of name)' }],
-              affiliation: [{ value: '(affiliation)' }],
-              role: [{ value: 'author' }],
-              identifier: [{ uri: 'RWO URI' }]
-            }
-          ]
-        }]
+      context 'without $i' do
+        # a10267649
+        let(:marc_hash) do
+          {
+            'fields' => [
+              {
+                '700' => {
+                  'ind1' => '1',
+                  'ind2' => '2',
+                  'subfields' => [
+                    {
+                      'a' => 'Martinez, Marianne,'
+                    },
+                    {
+                      'd' => '1744-1812.'
+                    },
+                    {
+                      't' => 'Symphonies,'
+                    },
+                    {
+                      'r' => 'C Major'
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        end
+
+        it 'returns has part with person contributor and no displayLabel' do
+          expect(build).to eq [{
+            type: 'has part',
+            title: [{ value: 'Symphonies, C Major' }],
+            contributor: [
+              {
+                type: 'person',
+                name: [{ value: 'Martinez, Marianne, 1744-1812.' }]
+              }
+            ]
+          }]
+        end
       end
     end
 
