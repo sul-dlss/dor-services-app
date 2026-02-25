@@ -72,7 +72,7 @@ module Cocina
         expanded = field.subfields.select { |sf| sf.code == '4' }
                                   .map { |role| { value: MARC_RELATORS[role.value] }.compact_blank }
 
-        (field.subfields.select { |sf| sf.code == code }.map { |role| { value: role.value.sub(/.$/, '') } } +
+        (field.subfields.select { |sf| sf.code == code }.map { |role| { value: role.value.sub(/\.|,$/, '') } } +
           expanded).uniq.compact_blank
       end
 
