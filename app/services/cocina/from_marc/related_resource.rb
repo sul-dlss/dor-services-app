@@ -44,7 +44,8 @@ module Cocina
       def in_series(field)
         return unless field
 
-        { type: 'in series', title: [field['3'], field['a'], field['v'], field['l'], field['x']].join(' ') }
+        { type: 'in series',
+          title: [{ value: [field['3'], field['a'], field['v'], field['l'], field['x']].join(' ') }] }
       end
 
       def has_part(field) # rubocop:disable Naming/PredicatePrefix

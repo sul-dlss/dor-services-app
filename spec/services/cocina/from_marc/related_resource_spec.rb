@@ -44,7 +44,7 @@ RSpec.describe Cocina::FromMarc::RelatedResource do
       end
 
       it 'returns in series' do
-        expect(build).to eq [{ type: 'in series', title: '<1981->: Le Masque ; 567 (AB123) 1234-5678' }]
+        expect(build).to eq [{ type: 'in series', title: [{ value: '<1981->: Le Masque ; 567 (AB123) 1234-5678' }] }]
       end
     end
 
