@@ -60,11 +60,17 @@ def versions_to_validate(repository_object, latest_versions_only)
   # Only include head_version and last_closed_version (if object is open)
   latest_versions = []
   latest_versions << repository_object.head_version if repository_object.head_version&.cocina_version
-  if repository_object.open? && repository_object.last_closed_version&.cocina_version
+  if last_closed_version_and_open_for_versioning?(repository_object)
     latest_versions << repository_object.last_closed_version
   end
 
   latest_versions
+end
+
+def last_closed_version_and_open_for_versioning?(repository_object)
+  # True only if the repository object is open and thus the version is not a head_version.
+  # head_version is determined separately.
+  repository_object.open? && repository_object.last_closed_version&.cocina_version
 end
 
 def validate(sample_size, processes, latest_versions_only)
@@ -82,15 +88,22 @@ def validate(sample_size, processes, latest_versions_only)
                finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |slice_obj_ids|
     RepositoryObject.find(slice_obj_ids).map do |repository_object|
       versions_to_validate(repository_object, latest_versions_only).map do |repository_object_version|
+        is_head_version = repository_object_version.head_version_of.present?
+        is_last_closed_version =
+          repository_object_version == last_closed_version_and_open_for_versioning?(repository_object)
+        has_user_version = repository_object_version.user_versions.exists?
         repository_object_version.to_cocina
-        [repository_object.external_identifier, repository_object_version.version, nil]
+
+        [repository_object.external_identifier, repository_object_version.version,
+         is_head_version, is_last_closed_version, has_user_version, repository_object.object_type, nil]
       rescue StandardError => e
         collection = if repository_object.object_type == 'dro'
                        repository_object_version.structural['isMemberOf'].join(' ')
                      else
                        ''
                      end
-        [repository_object.external_identifier, repository_object_version.version, repository_object.object_type,
+        [repository_object.external_identifier, repository_object_version.version,
+         is_head_version, is_last_closed_version, has_user_version, repository_object.object_type,
          collection, e.message]
       end
     end
@@ -100,8 +113,11 @@ end
 results = validate(options[:sample], options[:processes], options[:latest_versions_only])
 
 CSV.open('validate-cocina.csv', 'w') do |writer|
-  writer << %w[druid version type collection message]
-  results.each do |(druid, version, type, collection, error)|
-    writer << [druid, version, type, collection, error] if error
+  writer << %w[druid version head_version last_closed_version_for_open_object user_version type collection message]
+  results.each do |(druid, version, head_version, last_closed_version_for_open_object, user_version, type, collection, error)| # rubocop:disable Layout/LineLength
+    if error
+      writer << [druid, version, head_version, last_closed_version_for_open_object, user_version, type, collection,
+                 error]
+    end
   end
 end
