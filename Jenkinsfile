@@ -12,7 +12,9 @@ pipeline {
       }
 
       when {
-        branch 'main'
+        // Comment this line and uncomment the following to turn continuous deployment off
+        // branch 'main'
+        expression { return null }
       }
 
       steps {
@@ -21,10 +23,14 @@ pipeline {
         sshagent (['sul-devops-team', 'sul-continuous-deployment']){
           sh '''#!/bin/bash -l
           export DEPLOY=1
+          
           # Load RVM
           rvm use 3.4.1@dor-services-app --create
           gem install bundler
-          bundle install --without production
+          
+          bundle config set without production
+          bundle install
+          
           # Deploy it
           bundle exec cap $DEPLOY_ENVIRONMENT deploy
           '''
