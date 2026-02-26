@@ -764,6 +764,51 @@ RSpec.describe Cocina::FromMarc::Event do
       end
     end
 
+    context 'with former frequency event (321$ab)' do
+      # see a11632102
+      let(:marc_hash) do
+        {
+          'fields' => [
+            {
+              '321' => {
+                'ind1' => ' ',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => 'Biweekly,'
+                  },
+                  {
+                    'b' => '1939-June 1946'
+                  }
+                ]
+              }
+            },
+            {
+              '321' => {
+                'ind1' => ' ',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => 'Weekly or biweekly,'
+                  },
+                  {
+                    'b' => 'Dec. 11, 1937-1938'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      end
+
+      it 'returns publication event with frequency note' do
+        expect(build).to eq [{
+          type: 'publication',
+          note: [{ value: 'Biweekly, 1939-June 1946', type: 'frequency' }, { value: 'Weekly or biweekly, Dec. 11, 1937-1938', type: 'frequency' }]
+        }]
+      end
+    end
+
     context 'with issuance event (334)' do
       let(:marc_hash) do
         {
