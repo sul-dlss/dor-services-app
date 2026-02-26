@@ -13,7 +13,7 @@ gem 'dor-services-client' # Used for Dor::Services::Response::* classes
 gem 'druid-tools', '~> 2.2'
 gem 'folio_client', '~> 0.8'
 gem 'graphql'
-gem 'json_schemer-rails', '~> 0.3.0'
+gem 'json_schemer-rails', '~> 0.4.0'
 gem 'lyber-core', '~> 8.0' # For robots
 gem 'mais_orcid_client', '>= 1.0'
 gem 'marc'

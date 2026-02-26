@@ -4,7 +4,7 @@
 class VirtualObjectsController < ApplicationController
   before_action :validate_from_openapi
 
-  rescue_from(JsonSchemer::Rails::RequestValidationError) do |e|
+  rescue_from(JSONSchemer::Rails::RequestValidationError) do |e|
     json_api_error(status: :bad_request, message: e.message)
   end
 

@@ -6,7 +6,7 @@ class ObjectsController < ApplicationController
   before_action :check_cocina_object_exists, only: :publish
   before_action :validate_from_openapi
 
-  rescue_from(JsonSchemer::Rails::RequestValidationError) do |e|
+  rescue_from(JSONSchemer::Rails::RequestValidationError) do |e|
     json_api_error(status: :bad_request, message: e.message)
   end
 

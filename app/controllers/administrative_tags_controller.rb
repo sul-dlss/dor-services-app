@@ -9,7 +9,7 @@ class AdministrativeTagsController < ApplicationController
     render status: :not_found, plain: e.message
   end
 
-  rescue_from(JsonSchemer::Rails::RequestValidationError) do |e|
+  rescue_from(JSONSchemer::Rails::RequestValidationError) do |e|
     json_api_error(status: :bad_request, message: e.message)
   end
 
