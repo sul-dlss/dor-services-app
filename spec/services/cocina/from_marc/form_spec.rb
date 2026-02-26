@@ -589,7 +589,11 @@ RSpec.describe Cocina::FromMarc::Form do
       it 'returns collection' do
         expect(build).to eq [
           { value: 'collection', type: 'resource type', source: { value: 'MODS resource types' } },
-          { value: 'Collection', type: 'resource type', source: { value: 'LC Resource Types Scheme' } }
+          { value: 'Collection', type: 'resource type', source: { value: 'LC Resource Types Scheme' } },
+          { value: 'manuscript', type: 'resource type', source: { value: 'MODS resource types' } },
+          { value: 'mixed material', type: 'resource type', source: { value: 'MODS resource types' } },
+          { value: 'Manuscript', type: 'resource type', source: { value: 'LC Resource Types Scheme' } },
+          { value: 'Mixed material', type: 'resource type', source: { value: 'LC Resource Types Scheme' } }
         ]
       end
     end
