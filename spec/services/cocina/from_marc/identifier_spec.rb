@@ -257,6 +257,35 @@ RSpec.describe Cocina::FromMarc::Identifier do
       end
     end
 
+    context 'with multiple other identifiers (024)' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '024' => {
+              'ind1' => '7', 'ind2' => ' ',
+              'subfields' => [
+                { 'a' => '00191329035450' },
+                { '2' => 'gtin-14' }
+              ]
+            } },
+            { '024' => {
+              'ind1' => '1', 'ind2' => ' ',
+              'subfields' => [
+                { 'a' => '191329035450' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns multiple identifiers with source code' do
+        expect(build).to eq [
+          { value: '00191329035450', source: { code: 'gtin-14' } },
+          { value: '191329035450', type: 'UPC' }
+        ]
+      end
+    end
+
     context 'with issue number (028 ind1=0)' do
       # See a10778545
       let(:marc_hash) do

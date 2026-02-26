@@ -15,11 +15,20 @@ module Cocina
       end
 
       def build
-        [
-          lccn,
-          marc.fields.select { it.tag == '020' }.map { isbn(it) },
-          issn, other_identifier, publisher_number
-        ].flatten.compact
+        marc.fields.filter_map do |field|
+          case field.tag
+          when '010'
+            lccn(field)
+          when '020'
+            isbn(field)
+          when '022'
+            issn(field)
+          when '024'
+            other_identifier(field)
+          when '028'
+            publisher_number(field)
+          end
+        end.flatten.compact
       end
 
       OTHER_IDENTIFER_TYPES = {
@@ -40,10 +49,7 @@ module Cocina
 
       private
 
-      def lccn
-        field = marc['010']
-        return unless field
-
+      def lccn(field)
         parts = values_for(field, %w[a])
         { value: parts.join(' '), type: 'LCCN' } if parts.any?
       end
@@ -54,19 +60,13 @@ module Cocina
         { value: parts.join(' '), type: 'ISBN' } if parts.any?
       end
 
-      def issn
-        field = marc['022']
-        return unless field
-
+      def issn(field)
         parts = values_for(field, %w[a])
 
         { value: parts.join(' '), type: 'ISSN' } if parts.any?
       end
 
-      def other_identifier
-        field = marc['024']
-        return unless field
-
+      def other_identifier(field)
         parts = values_for(field, %w[a d q])
         return unless parts.any?
 
@@ -78,14 +78,10 @@ module Cocina
         end
       end
 
-      def publisher_number
-        fields = marc.fields.select { it.tag == '028' }
+      def publisher_number(field)
+        parts = values_for(field, %w[a b q])
 
-        fields.map do |field|
-          parts = values_for(field, %w[a b q])
-
-          { value: parts.join(' '), type: PUBLISHER_NUMBER_TYPES.fetch(field.indicator1) }.compact_blank if parts.any?
-        end
+        { value: parts.join(' '), type: PUBLISHER_NUMBER_TYPES.fetch(field.indicator1) }.compact_blank if parts.any?
       end
 
       def values_for(field, subfields)
