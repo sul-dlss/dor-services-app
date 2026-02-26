@@ -102,6 +102,78 @@ RSpec.describe Cocina::FromMarc::Event do
         end
       end
 
+      context 'with multiple $b subfields' do
+        # See a10422378
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '260' => {
+                'ind1' => ' ',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => '[Stanford, Calif.] :'
+                  },
+                  {
+                    'b' => 'Stanford Law School ;'
+                  },
+                  {
+                    'a' => '[New York] :'
+                  },
+                  {
+                    'b' => 'NYU School of Law,'
+                  },
+                  {
+                    'c' => 'c2012.'
+                  }
+                ]
+              } }
+            ]
+          }
+        end
+
+        it 'returns publication event' do
+          expect(build).to eq [{
+            type: 'publication',
+            location: [
+              {
+                value: '[Stanford, Calif.]'
+              },
+              {
+                value: '[New York]'
+              }
+            ],
+            contributor: [
+              {
+                name: [
+                  {
+                    value: 'Stanford Law School'
+                  }
+                ],
+                role: [
+                  {
+                    value: 'publisher'
+                  }
+                ]
+              },
+              {
+                name: [
+                  {
+                    value: 'NYU School of Law'
+                  }
+                ],
+                role: [
+                  {
+                    value: 'publisher'
+                  }
+                ]
+              }
+            ],
+            date: [{ value: 'c2012', type: 'publication' }]
+          }]
+        end
+      end
+
       context 'with multiple scripts' do
         let(:marc_hash) do
           {
