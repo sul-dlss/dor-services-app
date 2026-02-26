@@ -473,6 +473,49 @@ RSpec.describe Cocina::FromMarc::RelatedResource do
       end
     end
 
+    context 'with related to with organization contributor (710 ind2!=2)' do
+      # See a10028546
+      let(:marc_hash) do
+        {
+          'fields' => [
+            {
+              '710' => {
+                'ind1' => '1',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => 'Stanford University.'
+                  },
+                  {
+                    'b' => 'Graduate School of Business'
+                  },
+                  {
+                    't' => 'Dissertation.'
+                  },
+                  {
+                    'f' => '1967.'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      end
+
+      it 'returns related resource with organization contributor' do
+        expect(build).to eq [{
+          type: 'related to',
+          title: [{ value: 'Dissertation. 1967.' }],
+          contributor: [
+            {
+              type: 'organization',
+              name: [{ value: 'Stanford University. Graduate School of Business' }]
+            }
+          ]
+        }]
+      end
+    end
+
     context 'with related title with event contributor (711 ind2=2)' do
       # constructed
       let(:marc_hash) do
