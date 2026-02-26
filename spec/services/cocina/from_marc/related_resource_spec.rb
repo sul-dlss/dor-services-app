@@ -746,36 +746,70 @@ RSpec.describe Cocina::FromMarc::RelatedResource do
       end
     end
 
-    context 'with a finding aid (856 ind2=2)' do
-      # See a11755361
-      let(:marc_hash) do
-        {
-          'fields' => [
-            {
-              '856' => {
-                'ind1' => '4',
-                'ind2' => '2',
-                'subfields' => [
-                  {
-                    '3' => 'Finding aid available online'
-                  },
-                  {
-                    'u' => 'http://www.oac.cdlib.org/findaid/ark:/13030/c8736x1m'
-                  }
-                ]
+    context 'with a (856 ind2=2)' do
+      context 'with a $3' do
+        # See a11755361
+        let(:marc_hash) do
+          {
+            'fields' => [
+              {
+                '856' => {
+                  'ind1' => '4',
+                  'ind2' => '2',
+                  'subfields' => [
+                    {
+                      '3' => 'Finding aid available online'
+                    },
+                    {
+                      'u' => 'http://www.oac.cdlib.org/findaid/ark:/13030/c8736x1m'
+                    }
+                  ]
+                }
               }
-            }
+            ]
+          }
+        end
+
+        it 'returns finding aid' do
+          expect(build).to eq [
+            { access:
+              {
+                url: [{ value: 'http://www.oac.cdlib.org/findaid/ark:/13030/c8736x1m', displayLabel: 'Finding aid available online' }]
+              } }
           ]
-        }
+        end
       end
 
-      it 'returns finding aid' do
-        expect(build).to eq [
-          { access:
-            {
-              url: [{ value: 'http://www.oac.cdlib.org/findaid/ark:/13030/c8736x1m', displayLabel: 'Finding aid available online' }]
-            } }
-        ]
+      context 'without a $3' do
+        # See a10775787
+        let(:marc_hash) do
+          {
+            'fields' => [
+              {
+                '856' => {
+                  'ind1' => '4',
+                  'ind2' => '2',
+                  'subfields' => [
+                    { 'u' => 'http://purl.stanford.edu/dt191yg3596' },
+                    { 'x' => 'SDR-PURL' },
+                    { 'x' => 'item' },
+                    { 'x' => 'file:dt191yg3596%2FCSt-015-0686.jp2' },
+                    { 'x' => 'rights:world' }
+                  ]
+                }
+              }
+            ]
+          }
+        end
+
+        it 'returns the resource' do
+          expect(build).to eq [
+            { access:
+              {
+                url: [{ value: 'http://purl.stanford.edu/dt191yg3596' }]
+              } }
+          ]
+        end
       end
     end
   end
