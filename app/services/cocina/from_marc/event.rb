@@ -23,7 +23,7 @@ module Cocina
           manufacture(marc['260']),
           marc.fields.filter_map { production(it) if it.tag == '264' },
           edition_statement(marc['250']),
-          frequency_statement(marc['310']),
+          frequency_statement,
           mode_of_issuance(marc['334'])
         ].flatten.compact
       end
@@ -118,11 +118,14 @@ module Cocina
         { type: 'publication', note: [{ value: statement, type: 'edition' }] }
       end
 
-      def frequency_statement(field)
-        return unless field
-
-        statement = field.subfields.select { %w[a b].include? it.code }.map(&:value).join(' ')
-        { type: 'publication', note: [{ value: statement, type: 'frequency' }] }
+      def frequency_statement
+        notes = marc.fields.filter_map do |field|
+          if %w[310 321].include?(field.tag)
+            statement = field.subfields.select { %w[a b].include? it.code }.map(&:value).join(' ')
+            { value: statement, type: 'frequency' }
+          end
+        end
+        { type: 'publication', note: notes } if notes.present?
       end
 
       def mode_of_issuance(field)
