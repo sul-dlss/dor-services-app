@@ -241,84 +241,121 @@ RSpec.describe Cocina::FromMarc::Event do
     end
 
     context 'with publication event (264 ind2=1)' do
-      let(:marc_hash) do
-        {
-          'fields' => [
-            { '264' => {
-              'ind1' => ' ',
-              'ind2' => '1',
-              'subfields' => [
-                {
-                  'a' => '[France] :'
-                },
-                {
-                  'b' => 'Erato :'
-                },
-                {
-                  'b' => 'Warner Classics,'
-                },
-                {
-                  'c' => '[2017]'
-                }
-              ]
-            } }
-          ]
-        }
+      context 'with multiple publishers' do
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '264' => {
+                'ind1' => ' ',
+                'ind2' => '1',
+                'subfields' => [
+                  {
+                    'a' => '[France] :'
+                  },
+                  {
+                    'b' => 'Erato :'
+                  },
+                  {
+                    'b' => 'Warner Classics,'
+                  },
+                  {
+                    'c' => '[2017]'
+                  }
+                ]
+              } }
+            ]
+          }
+        end
+
+        it 'returns publication event with multiple publishers' do
+          expect(build).to eq [{
+            type: 'publication',
+            location: [{ value: '[France]' }],
+            contributor: [
+              { name: [{ value: 'Erato' }], role: [{ value: 'publisher' }] },
+              { name: [{ value: 'Warner Classics' }], role: [{ value: 'publisher' }] }
+            ],
+            date: [{ value: '[2017]', type: 'publication' }]
+          }]
+        end
       end
 
-      it 'returns publication event with multiple publishers' do
-        expect(build).to eq [{
-          type: 'publication',
-          location: [{ value: '[France]' }],
-          contributor: [
-            { name: [{ value: 'Erato' }], role: [{ value: 'publisher' }] },
-            { name: [{ value: 'Warner Classics' }], role: [{ value: 'publisher' }] }
-          ],
-          date: [{ value: '[2017]', type: 'publication' }]
-        }]
-      end
-    end
+      context 'with multiple locations' do
+        # see a10551837
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '264' => {
+                'ind1' => ' ',
+                'ind2' => '1',
+                'subfields' => [
+                  {
+                    'a' => 'À Paris :'
+                  },
+                  {
+                    'b' => 'publiée par Naderman ;'
+                  },
+                  {
+                    'a' => 'À Londres :'
+                  },
+                  {
+                    'b' => 'par Clementi & Co.,'
+                  },
+                  {
+                    'c' => '[after 1803]'
+                  }
+                ]
+              } }
+            ]
+          }
+        end
 
-    context 'with publication event with multiple locations (264 ind2=1)' do
-      # see a10551837
-      let(:marc_hash) do
-        {
-          'fields' => [
-            { '264' => {
-              'ind1' => ' ',
-              'ind2' => '1',
-              'subfields' => [
-                {
-                  'a' => 'À Paris :'
-                },
-                {
-                  'b' => 'publiée par Naderman ;'
-                },
-                {
-                  'a' => 'À Londres :'
-                },
-                {
-                  'b' => 'par Clementi & Co.,'
-                },
-                {
-                  'c' => '[after 1803]'
-                }
-              ]
-            } }
-          ]
-        }
+        it 'returns publication event with multiple publishers' do
+          expect(build).to eq [{
+            type: 'publication',
+            location: [{ value: 'À Paris' }, { value: 'À Londres' }],
+            contributor: [
+              { name: [{ value: 'publiée par Naderman' }], role: [{ value: 'publisher' }] },
+              { name: [{ value: 'par Clementi & Co.' }], role: [{ value: 'publisher' }] }
+            ],
+            date: [{ value: '[after 1803]', type: 'publication' }]
+          }]
+        end
       end
 
-      it 'returns publication event with multiple publishers' do
-        expect(build).to eq [{
-          type: 'publication',
-          location: [{ value: 'À Paris' }, { value: 'À Londres' }],
-          contributor: [
-            { name: [{ value: 'publiée par Naderman' }], role: [{ value: 'publisher' }] },
-            { name: [{ value: 'par Clementi & Co.' }], role: [{ value: 'publisher' }] }
-          ],
-          date: [{ value: '[after 1803]', type: 'publication' }]
-        }]
+      context 'with no date' do
+        # see a493225
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '264' => {
+                'ind1' => '2',
+                'ind2' => '1',
+                'subfields' => [
+                  {
+                    '3' => '<Apr. 1988->'
+                  },
+                  {
+                    'a' => 'Emeryville, Calif. : '
+                  },
+                  {
+                    'b' => 'Mix Publications, Inc.'
+                  }
+                ]
+              } }
+            ]
+          }
+        end
+
+        it 'returns publication event with multiple publishers' do
+          expect(build).to eq [{
+            type: 'publication',
+            location: [{ value: 'Emeryville, Calif.' }],
+            contributor: [
+              { name: [{ value: 'Mix Publications, Inc.' }], role: [{ value: 'publisher' }] }
+            ]
+          }]
+        end
       end
     end
 

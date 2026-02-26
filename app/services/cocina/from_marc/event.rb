@@ -76,13 +76,13 @@ module Cocina
         fields
       end
 
-      def build_production(field) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
+      def build_production(field) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
         indicator = MARC_264_INDICATOR2.fetch(field.indicator2)
         return copyright(field) if indicator[:type] == 'copyright notice'
 
         locations = field.subfields.filter_map { Util.strip_punctuation(it.value) if it.code == 'a' }
         contributors = field.subfields.select { it.code == 'b' }.map(&:value)
-        date = field.subfields.find { it.code == 'c' }.value.delete_suffix('.')
+        date = field.subfields.find { it.code == 'c' }
 
         event = { type: indicator[:type] }.compact_blank
         event[:location] = locations.map { { value: it } } if locations.present?
@@ -93,7 +93,7 @@ module Cocina
           end
         end
 
-        event[:date] = [{ value: date, type: indicator[:type] }.compact_blank]
+        event[:date] = [{ value: date.value.delete_suffix('.'), type: indicator[:type] }.compact_blank] if date
 
         event
       end
