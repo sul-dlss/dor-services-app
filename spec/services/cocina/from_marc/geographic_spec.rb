@@ -42,5 +42,25 @@ RSpec.describe Cocina::FromMarc::Geographic do
                             }])
       end
     end
+
+    context 'with 034 that doesn\'t have $defg' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '034' => {
+              'ind1' => '0', 'ind2' => ' ',
+              'subfields' => [
+                { 'a' => 'a' },
+                { 'b' => '50000' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns nothing' do
+        expect(build).to be_nil
+      end
+    end
   end
 end
