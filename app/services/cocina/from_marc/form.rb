@@ -146,36 +146,39 @@ module Cocina
         leader06 = marc.leader[6]
         leader07 = marc.leader[7]
 
-        return build_collection_resource_type if leader07 == 'c'
+        types = []
 
-        case leader06
-        when 'a'
-          build_text_resource_type
-        when 'c'
-          build_notated_music_resource_type
-        when 'd'
-          build_manuscript_notated_music_resource_type
-        when 'e'
-          build_cartographic_resource_type
-        when 'f'
-          build_manuscript_cartographic_resource_type
-        when 'g'
-          build_moving_image_resource_type
-        when 'i'
-          build_sound_nonmusical_resource_type
-        when 'j'
-          build_sound_musical_resource_type
-        when 'k'
-          build_still_image_resource_type
-        when 'm'
-          build_software_multimedia_resource_type
-        when 'p'
-          build_manuscript_mixed_material_resource_type
-        when 'r'
-          build_three_dimensional_object_resource_type
-        when 't'
-          build_manuscript_text_resource_type
-        end
+        types << build_collection_resource_type if leader07 == 'c'
+
+        types << case leader06
+                 when 'a'
+                   build_text_resource_type
+                 when 'c'
+                   build_notated_music_resource_type
+                 when 'd'
+                   build_manuscript_notated_music_resource_type
+                 when 'e'
+                   build_cartographic_resource_type
+                 when 'f'
+                   build_manuscript_cartographic_resource_type
+                 when 'g'
+                   build_moving_image_resource_type
+                 when 'i'
+                   build_sound_nonmusical_resource_type
+                 when 'j'
+                   build_sound_musical_resource_type
+                 when 'k'
+                   build_still_image_resource_type
+                 when 'm'
+                   build_software_multimedia_resource_type
+                 when 'p'
+                   build_manuscript_mixed_material_resource_type
+                 when 'r'
+                   build_three_dimensional_object_resource_type
+                 when 't'
+                   build_manuscript_text_resource_type
+                 end
+        types
       end
 
       def build_collection_resource_type
