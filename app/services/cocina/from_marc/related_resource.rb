@@ -16,7 +16,7 @@ module Cocina
       end
 
       # @return [Array<Hash>] an array of relatedResource hashes
-      def build
+      def build # rubocop:disable Metrics/CyclomaticComplexity,Metrics/MethodLength
         marc.fields.map do |field|
           case field.tag
           when '490'
@@ -27,6 +27,8 @@ module Cocina
             [has_part_corporate(field), related_to_corporate(field)]
           when '711'
             related_to_meeting(field)
+          when '740'
+            has_part_title(field)
           when '856'
             finding_aid(field)
           end
@@ -86,6 +88,12 @@ module Cocina
           ],
           contributor: [contributor]
         }.compact
+      end
+
+      def has_part_title(field) # rubocop:disable Naming/PredicatePrefix
+        return unless field.indicator2 == '2'
+
+        { type: 'has part', title: [{ value: field['a'] }] }
       end
 
       def related_title(field)

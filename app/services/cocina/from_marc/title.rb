@@ -23,7 +23,7 @@ module Cocina
         result
       end
 
-      def build # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+      def build
         return unless valid?
 
         titles = []
@@ -34,11 +34,8 @@ module Cocina
           when '246'
             alternative_title(field)
           when '740'
-            if field.indicator2 == '2'
-              alternative_title(field, type: 'has part')
-            else
-              alternative_title(field)
-            end
+
+            alternative_title(field) if field.indicator2 != '2'
           when '240', '130'
             uniform_title(field)
           end
