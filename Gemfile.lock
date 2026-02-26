@@ -273,9 +273,10 @@ GEM
       hana (~> 1.3)
       regexp_parser (~> 2.0)
       simpleidn (~> 0.2)
-    json_schemer-rails (0.3.0)
+    json_schemer-rails (0.4.0)
       json_schemer (~> 2.5)
       railties (~> 8.0)
+      zeitwerk
     jsonpath (1.1.5)
       multi_json
     jwt (3.1.2)
@@ -642,7 +643,7 @@ DEPENDENCIES
   graphql
   honeybadger
   jbuilder
-  json_schemer-rails (~> 0.3.0)
+  json_schemer-rails (~> 0.4.0)
   jsonpath (~> 1.1)
   jwt
   lograge
