@@ -39,34 +39,42 @@ module Cocina
 
       private
 
-      def publication_from008 # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+      def publication_from008
         field = marc['008']
         return unless field
 
         type = %w[d f p t].include?(marc.leader[6]) ? 'creation' : 'publication'
 
-        dates = case field.value[6]
-                when 'm'
-                  [{ value: field.value[7..10], type:, encoding: { code: 'marc' } },
-                   { value: field.value[11..14], type:, encoding: { code: 'marc' } }]
-                when 'c', 'd', 'i', 'k', 'u'
-                  [{
-                    structuredValue: [{ value: field.value[7..10], type: 'start' },
-                                      { value: field.value[11..14], type: 'end' }],
-                    type:, encoding: { code: 'marc' }
-                  }]
-                when 'q'
-                  [{
-                    structuredValue: [{ value: field.value[7..10], type: 'start' },
-                                      { value: field.value[11..14], type: 'end' }],
-                    type:, qualifier: 'questionable', encoding: { code: 'marc' }
-                  }]
-                when 'n'
-                  return nil
-                else
-                  [{ value: field.value[7..10], type:, encoding: { code: 'marc' } }]
-                end
-        { type:, date: dates }
+        date = dates_from008(type, field)
+        { type:, date: } if date
+      end
+
+      def dates_from008(type, field)
+        case field.value[6]
+        when 'm'
+          [{ value: field.value[7..10], type:, encoding: { code: 'marc' } },
+           { value: field.value[11..14], type:, encoding: { code: 'marc' } }]
+        when 'c', 'd', 'i', 'k', 'u'
+          build_range(type, field)
+        when 'q'
+          build_range(type, field, qualifier: 'questionable')
+        when 'n'
+          nil
+        else
+          [{ value: field.value[7..10], type:, encoding: { code: 'marc' } }]
+        end
+      end
+
+      def build_range(type, field, qualifier: nil)
+        start_value = field.value[7..10]
+        end_value = field.value[11..14]
+        return if start_value.blank? || end_value.blank? # Invalid MARC
+
+        [{
+          structuredValue: [{ value: start_value, type: 'start' },
+                            { value: end_value, type: 'end' }],
+          type:, qualifier:, encoding: { code: 'marc' }
+        }.compact]
       end
 
       def production(field)

@@ -1065,5 +1065,21 @@ RSpec.describe Cocina::FromMarc::Event do
         expect(build).to eq []
       end
     end
+
+    context 'with invalid questionable date (008/06 = q)' do
+      # see a11460955
+      let(:marc_hash) do
+        {
+          'leader' => '01976njm a2200469Ii 4500',
+          'fields' => [
+            { '008' => '170308q1835    enkbd     a   o 0   eng d' }
+          ]
+        }
+      end
+
+      it 'returns nothing' do
+        expect(build).to eq []
+      end
+    end
   end
 end
