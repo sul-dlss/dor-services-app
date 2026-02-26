@@ -73,5 +73,52 @@ RSpec.describe Cocina::FromMarc::Access do
                             })
       end
     end
+
+    context 'with multiple 856s where ind2!=2' do
+      # See a10738211
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '856' => {
+              'ind1' => '4', 'ind2' => '0',
+              'subfields' => [
+                { 'u' => 'http://www.cnn.com/interactive/2014/11/us/ferguson-grand-jury-docs/index.html' }
+              ]
+            } },
+            { '856' => {
+              'ind1' => '4', 'ind2' => '0',
+              'subfields' => [
+                { 'u' => 'http://apps.stlpublicradio.org/ferguson-project/evidence.html' }
+              ]
+            } },
+            { '856' => {
+              'ind1' => '4', 'ind2' => '1',
+              'subfields' => [
+                { 'u' => 'http://purl.stanford.edu/yn530ms1593' },
+                { 'x' => 'SDR-PURL' },
+                { 'x' => 'item' },
+                { 'x' => 'collection:cb946pf0135::Government Information State and Local Collection' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns a url and notes' do
+        expect(build).to eq({
+                              url: [
+                                {
+                                  value: 'http://www.cnn.com/interactive/2014/11/us/ferguson-grand-jury-docs/index.html'
+                                },
+                                {
+                                  value: 'http://apps.stlpublicradio.org/ferguson-project/evidence.html'
+                                },
+                                {
+                                  value: 'http://purl.stanford.edu/yn530ms1593'
+                                }
+                              ]
+                            })
+      end
+    end
   end
 end
