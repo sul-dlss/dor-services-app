@@ -39,7 +39,7 @@ module Cocina
 
       private
 
-      def publication_from008 # rubocop:disable Metrics/AbcSize
+      def publication_from008 # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
         field = marc['008']
         return unless field
 
@@ -61,6 +61,8 @@ module Cocina
                                       { value: field.value[11..14], type: 'end' }],
                     type:, qualifier: 'questionable', encoding: { code: 'marc' }
                   }]
+                when 'n'
+                  return nil
                 else
                   [{ value: field.value[7..10], type:, encoding: { code: 'marc' } }]
                 end

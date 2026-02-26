@@ -1049,5 +1049,21 @@ RSpec.describe Cocina::FromMarc::Event do
         }]
       end
     end
+
+    context 'with unknown date (008/06 = n)' do
+      # see a12721687
+      let(:marc_hash) do
+        {
+          'leader' => '01976njm a2200469Ii 4500',
+          'fields' => [
+            { '008' => '180724n eng u' }
+          ]
+        }
+      end
+
+      it 'returns nothing' do
+        expect(build).to eq []
+      end
+    end
   end
 end
