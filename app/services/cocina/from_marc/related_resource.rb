@@ -3,7 +3,7 @@
 module Cocina
   module FromMarc
     # Maps relatedResource information from MARC records to Cocina models.
-    class RelatedResource
+    class RelatedResource # rubocop:disable Metrics/ClassLength
       # @see #initialize
       # @see #build
       def self.build(...)
@@ -24,7 +24,7 @@ module Cocina
           when '700'
             [has_part(field), related_title(field)]
           when '710'
-            has_part_corporate(field)
+            [has_part_corporate(field), related_to_corporate(field)]
           when '711'
             related_to_meeting(field)
           when '856'
@@ -65,6 +65,13 @@ module Cocina
 
         contributor = corporate_contributor(field)
         body_has_part(field, contributor)
+      end
+
+      def related_to_corporate(field)
+        return unless field && field.indicator2 != '2' && field['t']
+
+        contributor = corporate_contributor(field)
+        body_related_to(field, contributor)
       end
 
       def body_has_part(field, contributor)
