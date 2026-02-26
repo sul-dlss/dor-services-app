@@ -770,7 +770,12 @@ RSpec.describe Cocina::FromMarc::RelatedResource do
       end
 
       it 'returns finding aid' do
-        expect(build).to eq [{ access: { url: 'http://www.oac.cdlib.org/findaid/ark:/13030/c8736x1m', displayLabel: 'Finding aid available online' } }]
+        expect(build).to eq [
+          { access:
+            {
+              url: [{ value: 'http://www.oac.cdlib.org/findaid/ark:/13030/c8736x1m', displayLabel: 'Finding aid available online' }]
+            } }
+        ]
       end
     end
   end

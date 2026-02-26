@@ -38,7 +38,7 @@ module Cocina
       def finding_aid(field)
         return unless field && field.indicator2 == '2'
 
-        { access: { url: field['u'], displayLabel: field['3'] } }
+        { access: { url: [{ value: field['u'], displayLabel: field['3'] }] } }
       end
 
       def in_series(field)

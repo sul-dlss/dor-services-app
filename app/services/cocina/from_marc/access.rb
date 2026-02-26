@@ -17,7 +17,8 @@ module Cocina
 
       # @return [Hash] a hash that can be mapped to a cocina model
       def build
-        { url:, physicalLocation: physical_location }.compact_blank
+        urls = marc.fields.filter_map { url(it) if it.tag == '856' }
+        { url: urls, physicalLocation: physical_location }.compact_blank
       end
 
       private
@@ -32,12 +33,11 @@ module Cocina
         }]
       end
 
-      def url
-        field = marc['856']
-        return unless field
+      def url(field)
+        return if field.indicator2 == '2'
 
         notes = field.subfields.select { %(y z).include? it.code }.map { { value: it.value } }
-        [{ displayLabel: field['3'], value: field['u'], note: notes }.compact_blank]
+        { displayLabel: field['3'], value: field['u'], note: notes }.compact_blank
       end
 
       attr_reader :marc
