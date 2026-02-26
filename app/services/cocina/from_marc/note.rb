@@ -76,13 +76,15 @@ module Cocina
         @marc = marc
       end
 
-      def build
+      def build # rubocop:disable Metrics/CyclomaticComplexity
         notes = []
 
         # All note fields including 245 (statement of responsibility), 362 (dates), 500-590 (notes),
         # and 795 (local collection)
         NOTE_FIELDS.each do |tag, config|
           marc.fields(tag).each do |field|
+            next if tag == '590' && field.indicator1 == '0' # Private note
+
             note = build_note_from_field(field, config)
             notes << note if note
 

@@ -2177,6 +2177,31 @@ RSpec.describe Cocina::FromMarc::Note do
       end
     end
 
+    context 'with private local note (590$a ind1=0)' do
+      # See a10194124
+      let(:marc_hash) do
+        {
+          'fields' => [
+            {
+              '590' => {
+                'ind1' => '0',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => 'private note'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      end
+
+      it 'returns nothing' do
+        expect(build).to eq []
+      end
+    end
+
     context 'with local collection note (795$a)' do
       # See a11351916
       let(:marc_hash) do
