@@ -143,12 +143,13 @@ module Cocina
 
       def build_publication(field) # rubocop:disable Metrics/AbcSize
         publication_locations = field.subfields.filter_map { Util.strip_punctuation(it.value) if it.code == 'a' }
-        publisher_name = field.subfields.find { it.code == 'b' }&.value
-        publication_date = field.subfields.find { it.code == 'c' }&.value&.delete_suffix('.')
-        if publisher_name
-          contributor = [{ name: [{ value: Util.strip_punctuation(publisher_name) }],
-                           role: [{ value: 'publisher' }] }]
+        publisher_names = field.subfields.select { it.code == 'b' }.map(&:value)
+        contributor = publisher_names.map do |publisher_name|
+          { name: [{ value: Util.strip_punctuation(publisher_name) }],
+            role: [{ value: 'publisher' }] }
         end
+        publication_date = field.subfields.find { it.code == 'c' }&.value&.delete_suffix('.')
+
         date = [{ value: publication_date, type: 'publication' }] if publication_date
         {
           type: 'publication',
