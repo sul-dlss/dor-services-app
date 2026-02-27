@@ -417,32 +417,6 @@ RSpec.describe Cocina::FromMarc::Title do
       end
     end
 
-    context 'with has part title (740 ind2=2)' do
-      let(:marc_hash) do
-        {
-          'fields' => [
-            { '740' => { 'ind1' => '0', 'ind2' => '2', 'subfields' => [
-              { 'a' => 'Mermaid\'s song.' }
-            ] } },
-            { '740' => { 'ind1' => '0', 'ind2' => '2', 'subfields' => [
-              { 'a' => 'Recollection.' }
-            ] } },
-            { '740' => { 'ind1' => '0', 'ind2' => '2', 'subfields' => [
-              { 'a' => 'Pastoral song.' }
-            ] } }
-          ]
-        }
-      end
-
-      it 'returns the part titles' do
-        expect(build).to eq([
-                              { value: 'Mermaid\'s song.', type: 'has part' },
-                              { value: 'Recollection.', type: 'has part' },
-                              { value: 'Pastoral song.', type: 'has part' }
-                            ])
-      end
-    end
-
     context 'with alternative title with multiple scripts (246/880)' do
       let(:marc_hash) do
         {
