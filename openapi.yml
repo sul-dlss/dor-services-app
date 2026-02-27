@@ -1274,7 +1274,7 @@ paths:
           name: sourceId
           required: true
           schema:
-            $ref: "#/components/schemas/SourceId"
+            $ref:  "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.112.1/schema.json#/$defs/SourceId"
       responses:
         "200":
           description: OK
