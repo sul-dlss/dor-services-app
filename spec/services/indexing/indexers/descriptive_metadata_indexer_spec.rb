@@ -496,7 +496,10 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
                                  'תולדות היהודים בארצות האיסלאם העת החדשה עד אמצע המאה ה־19'],
           'additional_titles_tenim' => ['History of the Jews in the Islamic countries'],
           'display_title_ss' =>
-            'Toldot ha-Yehudim be-artsot ha-Islam : ha-ʻet ha-ḥadashah-ʻad emtsaʻ ha-meʼah ha-19, Part 1'
+            'Toldot ha-Yehudim be-artsot ha-Islam : ha-ʻet ha-ḥadashah-ʻad emtsaʻ ha-meʼah ha-19, Part 1',
+          'sw_format_ssimdv' => [
+            'Software/Multimedia'
+          ]
         )
         # rubocop:enable Style/StringHashKeys
       end
