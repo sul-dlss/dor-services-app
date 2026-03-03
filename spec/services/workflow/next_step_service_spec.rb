@@ -58,13 +58,7 @@ RSpec.describe Workflow::NextStepService do
                active_version: true)
       end
 
-      before do
-        allow(QueueService).to receive(:enqueue)
-        allow(Notifications::WorkflowStepUpdated).to receive(:publish)
-        allow(Indexer).to receive(:reindex_later)
-      end
-
-      it 'returns a list of unblocked statuses' do
+      it 'returns a list of unblocked statuses and publishes a message' do
         expect(next_steps).to eq []
         expect(QueueService).not_to have_received(:enqueue)
         expect(Notifications::WorkflowStepUpdated).to have_received(:publish).with(step:)
@@ -106,9 +100,24 @@ RSpec.describe Workflow::NextStepService do
                active_version: true)
       end
 
-      it 'does not enqueue any steps' do
+      it 'does not enqueue any steps but publishes a message' do
         expect { next_steps }.not_to(change { step.reload.status })
+        expect(Notifications::WorkflowStepUpdated).to have_received(:publish).with(step:)
         expect(next_steps).to eq []
+      end
+    end
+
+    context 'when a step in the middle of a workflow is completed' do
+      let(:step) do
+        create(:workflow_step,
+               process: 'publish',
+               version: 1,
+               status: 'completed',
+               active_version: true)
+      end
+
+      it 'does not publish a message' do
+        expect(Notifications::WorkflowStepUpdated).not_to have_received(:publish)
       end
     end
   end
