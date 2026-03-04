@@ -288,6 +288,7 @@ RSpec.describe Cocina::FromMarc::Event do
     end
 
     context 'with production event (264 ind2=0)' do
+      # see a10106195
       let(:marc_hash) do
         {
           'fields' => [
@@ -296,7 +297,13 @@ RSpec.describe Cocina::FromMarc::Event do
               'ind2' => '0',
               'subfields' => [
                 {
-                  'c' => 'approximately 1905-1930.'
+                  'a' => 'Stanford, Calif. :'
+                },
+                {
+                  'b' => 'Dept. of Statistics, Stanford University,'
+                },
+                {
+                  'c' => '2001.'
                 }
               ]
             } }
@@ -307,7 +314,26 @@ RSpec.describe Cocina::FromMarc::Event do
       it 'returns production event' do
         expect(build).to eq [{
           type: 'production',
-          date: [{ value: 'approximately 1905-1930', type: 'production' }]
+          location: [
+            {
+              value: 'Stanford, Calif.'
+            }
+          ],
+          contributor: [
+            {
+              role: [
+                {
+                  value: 'creator'
+                }
+              ],
+              name: [
+                {
+                  value: 'Dept. of Statistics, Stanford University'
+                }
+              ]
+            }
+          ],
+          date: [{ value: '2001', type: 'production' }]
         }]
       end
     end

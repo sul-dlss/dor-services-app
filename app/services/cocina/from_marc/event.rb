@@ -29,7 +29,7 @@ module Cocina
       end
 
       MARC_264_INDICATOR2 = {
-        '0' => { type: 'production', role: 'producer' },
+        '0' => { type: 'production', role: 'creator' },
         '1' => { type: 'publication', role: 'publisher' },
         '2' => { type: 'distribution', role: 'distributor' },
         '3' => { type: 'manufacture', role: 'manufacturer' },
