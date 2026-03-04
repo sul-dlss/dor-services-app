@@ -20,9 +20,7 @@ RSpec.describe Migrators::RemoveParallelContributor do
     end
     let(:contributor) { [{ 'name' => 'Test Contributor', 'parallelContributor' => [] }] }
     let(:related_resource) do
-      [{ 'title' => 'Test Title', 'contributor' => contributor },
-       { 'title' => 'Test Title 2', 'contributor' => contributor,
-         'relatedResource' => [{ 'title' => 'Nested Test Title', 'contributor' => contributor }] }]
+      [{ 'title' => 'Test Title', 'contributor' => contributor }]
     end
     let(:event) { [{ 'name' => 'Test Event', 'contributor' => contributor }] }
     let(:repository_object_version) do
@@ -40,16 +38,6 @@ RSpec.describe Migrators::RemoveParallelContributor do
       expect(repository_object.versions.last.description['relatedResource']).to eq([{ 'title' => 'Test Title',
                                                                                       'contributor' => [{
                                                                                         'name' => 'Test Contributor'
-                                                                                      }] },
-                                                                                    { 'title' => 'Test Title 2',
-                                                                                      'contributor' => [{
-                                                                                        'name' => 'Test Contributor'
-                                                                                      }],
-                                                                                      'relatedResource' => [{
-                                                                                        'title' => 'Nested Test Title',
-                                                                                        'contributor' => [{
-                                                                                          'name' => 'Test Contributor'
-                                                                                        }]
                                                                                       }] }])
     end
   end

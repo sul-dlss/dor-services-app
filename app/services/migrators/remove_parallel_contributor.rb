@@ -15,7 +15,6 @@ module Migrators
       end
     end
 
-    # rubocop:disable Metrics/CyclomaticComplexity
     def migrate_version(version)
       # Nothing to do if there is no description
       return unless version.description
@@ -27,12 +26,8 @@ module Migrators
       end
       version.description['relatedResource']&.each do |related_resource|
         remove_parallel_contributor(related_resource)
-        related_resource['relatedResource']&.each do |nested_related_resource|
-          remove_parallel_contributor(nested_related_resource)
-        end
       end
     end
-    # rubocop:enable Metrics/CyclomaticComplexity
 
     private
 
