@@ -18,17 +18,15 @@ module Workflow
     # @return [ActiveRecord::Relation] a list of WorkflowSteps that have been enqueued
     def enqueue_next_steps(step:)
       next_steps = find_next(step:)
-      if last_accession_step?(step)
-        # https://github.com/sul-dlss/argo/issues/3817
-        # Theory is that many commits to solr are not being executed in the correct order, resulting in
-        # older data being indexed last.  This is an attempt to force a delay when indexing the very
-        # last step of the accessionWF.
-        sleep 1
 
-        # In theory, notifications should be sent for every step.
-        # However, currently consumers only care about the end-accession step.
-        Notifications::WorkflowStepUpdated.publish(step:)
-      end
+      # https://github.com/sul-dlss/argo/issues/3817
+      # Theory is that many commits to solr are not being executed in the correct order, resulting in
+      # older data being indexed last.  This is an attempt to force a delay when indexing the very
+      # last step of the accessionWF.
+      sleep 1 if last_accession_step?(step)
+
+      # send message to RabbitMQ for accessioning complete/error steps, pre-assembly/H3 consume one or both to update UI
+      Notifications::WorkflowStepUpdated.publish(step:) if step.status == 'error' || last_accession_step?(step)
 
       Indexer.reindex_later(druid: step.druid)
       next_steps
