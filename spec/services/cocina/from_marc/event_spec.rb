@@ -281,7 +281,7 @@ RSpec.describe Cocina::FromMarc::Event do
         }, {
           type: 'manufacture',
           location: [{ value: '(Twickenham' }],
-          contributor: [{ name: [{ value: 'CTD Printers' }] }],
+          contributor: [{ name: [{ value: 'CTD Printers', role: 'manufacturer' }] }],
           date: [{ value: '1974)', type: 'manufacture' }]
         }]
       end
