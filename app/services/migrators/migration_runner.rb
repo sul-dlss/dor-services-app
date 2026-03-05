@@ -51,7 +51,6 @@ module Migrators
       migrator.migrate # This is where the actual migration happens
 
       updated_cocina_object = migrator.updated_head_version_cocina_object
-      Cocina::ObjectValidator.validate(updated_cocina_object)
 
       if mode == :migrate
         updated_cocina_object = UpdateObjectService.update(cocina_object: updated_cocina_object,
