@@ -23,7 +23,7 @@ module Cocina
         result
       end
 
-      def build
+      def build # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength
         return unless valid?
 
         titles = []
@@ -34,12 +34,13 @@ module Cocina
           when '246'
             alternative_title(field)
           when '740'
-
             alternative_title(field) if field.indicator2 != '2'
           when '240', '130'
             uniform_title(field)
+          when '730'
+            uniform_title(field) if field.indicator2 != '2'
           end
-        end.compact
+        end
 
         titles.flatten.compact
       end
@@ -92,10 +93,11 @@ module Cocina
         alt_title
       end
 
+      # For 130/240/730
       def uniform_title(uniform_title_field)
         [{
           value: Util.strip_punctuation(uniform_title_field.select do |subfield|
-            %w[a d f g k l m n o p r s t].include? subfield.code
+            %w[a d f g i k l m n o p r s t].include? subfield.code
           end.map(&:value).join(' ')),
           type: 'uniform'
         }]

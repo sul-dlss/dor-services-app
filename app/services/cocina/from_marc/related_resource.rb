@@ -27,7 +27,7 @@ module Cocina
             [has_part_corporate(field), related_to_corporate(field)]
           when '711'
             related_to_meeting(field)
-          when '740'
+          when '730', '740'
             has_part_title(field)
           when '856'
             finding_aid(field)
@@ -93,7 +93,7 @@ module Cocina
       def has_part_title(field) # rubocop:disable Naming/PredicatePrefix
         return unless field.indicator2 == '2'
 
-        { type: 'has part', title: [{ value: field['a'] }] }
+        { type: 'has part', title: [{ value: field['a'], type: field.tag == '730' ? 'uniform' : nil }.compact] }
       end
 
       def related_title(field)
