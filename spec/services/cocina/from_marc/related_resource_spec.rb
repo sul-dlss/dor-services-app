@@ -813,6 +813,24 @@ RSpec.describe Cocina::FromMarc::RelatedResource do
       end
     end
 
+    context 'with has part uniform title (730 ind2=2)' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '730' => { 'ind1' => '0', 'ind2' => '2', 'subfields' => [
+              { 'a' => 'Drehorgel.' }
+            ] } }
+          ]
+        }
+      end
+
+      it 'returns the part titles' do
+        expect(build).to eq([
+                              { type: 'has part', title: [{ value: 'Drehorgel.', type: 'uniform' }] }
+                            ])
+      end
+    end
+
     context 'with has part title (740 ind2=2)' do
       let(:marc_hash) do
         {

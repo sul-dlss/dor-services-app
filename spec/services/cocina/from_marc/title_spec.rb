@@ -397,6 +397,28 @@ RSpec.describe Cocina::FromMarc::Title do
       end
     end
 
+    context 'with a uniform title (730 ind2 != 2)' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '245' => { 'ind1' => '0', 'ind2' => '0', 'subfields' => [
+              { 'a' => 'Must have a main title' }
+            ] } },
+            { '730' => { 'ind1' => '0', 'ind2' => ' ', 'subfields' => [
+              { 'a' => 'Drehorgel.' }
+            ] } }
+          ]
+        }
+      end
+
+      it 'returns the uniform title' do
+        expect(build).to eq([
+                              { value: 'Must have a main title' },
+                              { value: 'Drehorgel.', type: 'uniform' }
+                            ])
+      end
+    end
+
     context 'with alternative title (740 ind2 blank)' do
       let(:marc_hash) do
         {
