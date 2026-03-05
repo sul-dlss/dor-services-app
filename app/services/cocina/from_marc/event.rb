@@ -183,7 +183,7 @@ module Cocina
         {
           type: 'manufacture',
           location: [{ value: Util.strip_punctuation(manufacture_location) }],
-          contributor: [{ name: [{ value: Util.strip_punctuation(manufacturer) }] }],
+          contributor: [{ name: [{ value: Util.strip_punctuation(manufacturer), role: 'manufacturer' }] }],
           date: [{ value: manufacture_date, type: 'manufacture' }]
         }
       end
