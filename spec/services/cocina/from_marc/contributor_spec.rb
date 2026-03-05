@@ -372,6 +372,35 @@ RSpec.describe Cocina::FromMarc::Contributor do
           }]
         end
       end
+
+      context 'when $t is present' do
+        # see a10152240
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '700' => {
+                'ind1' => '1',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => 'Chikamatsu, Monzaemon,'
+                  },
+                  {
+                    'd' => '1653-1725.'
+                  },
+                  {
+                    't' => 'Koibikyaku Yamato ōrai.'
+                  }
+                ]
+              } }
+            ]
+          }
+        end
+
+        it 'filters it out' do
+          expect(build).to be_empty
+        end
+      end
     end
 
     context 'with Family contributor (700 ind1=3)' do
