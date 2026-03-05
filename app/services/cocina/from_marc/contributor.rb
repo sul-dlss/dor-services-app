@@ -39,6 +39,7 @@ module Cocina
         fields
       end
 
+      # For 100/700/720
       def build_personal(field, primary: false)
         name_type = case field.indicator1
                     when '1', '2'
@@ -76,6 +77,7 @@ module Cocina
           expanded).uniq.compact_blank
       end
 
+      # For 110/710
       def corporate(field, primary: false)
         return if !field || field['t']
 
@@ -86,10 +88,11 @@ module Cocina
         fields
       end
 
+      # For 110/710
       def build_corporate(field, primary: false) # rubocop:disable Metrics/AbcSize
         contributor = { type: 'organization' }
         name = field.subfields.filter_map do |subfield|
-          subfield.value.delete_suffix(',') if %w[a b q d].include? subfield.code
+          subfield.value.delete_suffix(',') if %w[a b c d n].include? subfield.code
         end.join(' ')
         contributor[:name] = [{ value: name }]
         id = build_id(field).first
@@ -100,6 +103,7 @@ module Cocina
         contributor
       end
 
+      # For 111/711
       def event(field, primary: false)
         return if !field || field['t']
 
@@ -110,10 +114,11 @@ module Cocina
         fields
       end
 
+      # For 111/711
       def build_event(field, primary: false)
         contributor = { type: 'event' }
         name = field.subfields.select do |subfield|
-          %w[a n d c].include? subfield.code
+          %w[a c d e n q].include? subfield.code
         end.map(&:value).join(' ').delete_suffix(',')
         contributor[:name] = [{ value: name }]
         roles = build_roles(field, code: 'j')
