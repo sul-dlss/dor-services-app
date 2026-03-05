@@ -30,7 +30,7 @@ module Cocina
       private
 
       def personal(field, primary: false)
-        return unless field
+        return if !field || field['t']
 
         linked_field = Util.linked_field(marc, field)
 
@@ -77,7 +77,7 @@ module Cocina
       end
 
       def corporate(field, primary: false)
-        return unless field
+        return if !field || field['t']
 
         linked_field = Util.linked_field(marc, field)
 
@@ -101,7 +101,7 @@ module Cocina
       end
 
       def event(field, primary: false)
-        return unless field
+        return if !field || field['t']
 
         linked_field = Util.linked_field(marc, field)
 
