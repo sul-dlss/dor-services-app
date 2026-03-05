@@ -616,7 +616,7 @@ RSpec.describe Cocina::FromMarc::RelatedResource do
                 'ind2' => ' ',
                 'subfields' => [
                   {
-                    '6' => '880-01'
+                    '6' => '880-07'
                   },
                   {
                     'a' => 'Asaka, Tanpaku,'
@@ -659,7 +659,7 @@ RSpec.describe Cocina::FromMarc::RelatedResource do
                 'ind2' => ' ',
                 'subfields' => [
                   {
-                    '6' => '880-02'
+                    '6' => '880-08'
                   },
                   {
                     'a' => 'Asaka, Tanpaku,'
