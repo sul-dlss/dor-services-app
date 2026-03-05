@@ -473,6 +473,31 @@ RSpec.describe Cocina::FromMarc::Form do
       end
     end
 
+    context 'with genre (655 $av)' do
+      # see a14228145
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '655' => {
+              'ind1' => ' ', 'ind2' => '7',
+              'subfields' => [
+                { 'a' => 'Engineering drawings' },
+                { 'v' => 'Early works to 1800' },
+                { '2' => 'lcgft' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns genre value with trailing punctuation stripped' do
+        expect(build).to eq([
+                              { value: 'Engineering drawings', type: 'genre' },
+                              { value: 'Early works to 1800', type: 'genre' }
+                            ])
+      end
+    end
+
     context 'with map scale (255 $a)' do
       # see a12836911
       let(:marc_hash) do
