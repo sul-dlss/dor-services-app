@@ -204,7 +204,7 @@ RSpec.describe Cocina::FromMarc::Event do
                   'ind2' => ' ',
                   'subfields' => [
                     {
-                      '6' => '260-04'
+                      '6' => '260-01'
                     },
                     {
                       'a' => 'Нью-Йорк ;'
@@ -886,7 +886,7 @@ RSpec.describe Cocina::FromMarc::Event do
                 'ind2' => '1',
                 'subfields' => [
                   {
-                    '6' => '264-03'
+                    '6' => '264-01'
                   },
                   {
                     'a' => 'Москва :'

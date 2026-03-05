@@ -151,7 +151,7 @@ RSpec.describe Cocina::FromMarc::Contributor do
                   'ind2' => ' ',
                   'subfields' => [
                     {
-                      '6': '110-01//r'
+                      '6' => '110-01//r'
                     },
                     {
                       'a' => 'ادارة التعبئة العامة.'
@@ -217,7 +217,7 @@ RSpec.describe Cocina::FromMarc::Contributor do
                   'ind2' => ' ',
                   'subfields' => [
                     {
-                      '6' => '880-1'
+                      '6' => '880-01'
                     },
                     {
                       'a' => 'Miz͡hnarodna naukovo-praktychna konferent͡sii͡a "Konstantynopolʹsʹkyĭ patriarkhat v istoriï Ukraïny : mynule, suchasne, maĭbutni͡e"'
@@ -452,7 +452,7 @@ RSpec.describe Cocina::FromMarc::Contributor do
                   'ind2' => ' ',
                   'subfields' => [
                     {
-                      '6' => '700-05//r'
+                      '6' => '710-01//r'
                     },
                     {
                       'a' => 'ادارة التعبئة العامة.'
@@ -507,7 +507,7 @@ RSpec.describe Cocina::FromMarc::Contributor do
                   'ind2' => ' ',
                   'subfields' => [
                     {
-                      '6' => '880-1'
+                      '6' => '880-01'
                     },
                     {
                       'a' => 'Miz͡hnarodna naukovo-praktychna konferent͡sii͡a "Konstantynopolʹsʹkyĭ patriarkhat v istoriï Ukraïny : mynule, suchasne, maĭbutni͡e"'
@@ -528,7 +528,7 @@ RSpec.describe Cocina::FromMarc::Contributor do
                   'ind2' => ' ',
                   'subfields' => [
                     {
-                      '6' => '111-01'
+                      '6' => '711-01'
                     },
                     {
                       'a' => 'Міжнародна науково-практична конференція "Константинопольський патріархат в історії України : минуле, сучасне, майбутнє"'
@@ -910,7 +910,7 @@ RSpec.describe Cocina::FromMarc::Contributor do
                 'ind2' => ' ',
                 'subfields' => [
                   {
-                    '6' => '700-05'
+                    '6' => '700-01'
                   },
                   {
                     'a' => 'Лукин, Александр ,'

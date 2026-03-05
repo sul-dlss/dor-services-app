@@ -48,7 +48,7 @@ RSpec.describe Cocina::FromMarc::Note do
                 'ind2' => '0',
                 'subfields' => [
                   {
-                    '6' => '880-01'
+                    '6' => '880-02'
                   },
                   {
                     'c' => 'S.A. Smagina.'
@@ -2274,6 +2274,123 @@ RSpec.describe Cocina::FromMarc::Note do
           },
           {
             value: 'At head of title: Центр изучения кризисного общества. Лаборатория исследований мирового порядка и нового регионализма Национального исследовательского университета "Высшая школа экономики."'
+          }
+        ]
+      end
+    end
+
+    context 'with another note in multiple scripts (500/880)' do
+      # See a11875233
+      let(:marc_hash) do
+        {
+          'fields' => [
+            {
+              '500' => {
+                'ind1' => ' ',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    '6' => '880-08'
+                  },
+                  {
+                    'a' => '"Hi" printed on upper right margin.'
+                  }
+                ]
+              }
+            },
+            {
+              '500' => {
+                'ind1' => ' ',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    '6' => '880-04'
+                  },
+                  {
+                    'a' => 'Sheets individually titled at top margin, e.g. Rōgunton.'
+                  }
+                ]
+              }
+            },
+            {
+              '500' => {
+                'ind1' => ' ',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    '6' => '880-05'
+                  },
+                  {
+                    'a' => 'Each sheet individually numbered, e.g. Kita Shina 1-gō.'
+                  }
+                ]
+              }
+            },
+            {
+              '880' => {
+                'ind1' => ' ',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    '6' => '500-04'
+                  },
+                  {
+                    'a' => 'Sheets individually titled at top margin, e.g. 老軍屯.'
+                  }
+                ]
+              }
+            },
+            {
+              '880' => {
+                'ind1' => ' ',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    '6' => '500-05'
+                  },
+                  {
+                    'a' => 'Each sheet individually numbered, e.g. 北支那 1號.'
+                  }
+                ]
+              }
+            },
+            {
+              '880' => {
+                'ind1' => ' ',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    '6' => '500-08'
+                  },
+                  {
+                    'a' => '"秘" printed on upper right margin.'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      end
+
+      it 'returns notes' do
+        expect(build).to eq [
+          {
+            value: '"Hi" printed on upper right margin.'
+          },
+          {
+            value: '"秘" printed on upper right margin.'
+          },
+          {
+            value: 'Sheets individually titled at top margin, e.g. Rōgunton.'
+          },
+          {
+            value: 'Sheets individually titled at top margin, e.g. 老軍屯.'
+          },
+          {
+            value: 'Each sheet individually numbered, e.g. Kita Shina 1-gō.'
+          },
+          {
+            value: 'Each sheet individually numbered, e.g. 北支那 1號.'
           }
         ]
       end
