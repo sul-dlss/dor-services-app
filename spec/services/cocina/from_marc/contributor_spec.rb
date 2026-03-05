@@ -170,6 +170,69 @@ RSpec.describe Cocina::FromMarc::Contributor do
           ]
         end
       end
+
+      context 'with multiple scripts containing part number (110/880 $n)' do
+        # See a11664068
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '110' => {
+                  'ind1' => '1',
+                  'ind2' => ' ',
+                  'subfields' => [
+                    {
+                      '6' => '880-01'
+                    },
+                    {
+                      'a' => 'Zhongguo gong chan dang.'
+                    },
+                    {
+                      'b' => 'Quan guo dai biao da hui'
+                    },
+                    {
+                      'n' => '(7th :'
+                    },
+                    {
+                      'd' => '1945 :'
+                    },
+                    {
+                      'c' => "Yan'an)"
+                    }
+                  ]
+                },
+                '880' => {
+                  'ind1' => '1',
+                  'ind2' => ' ',
+                  'subfields' => [
+                    {
+                      '6' => '110-01'
+                    },
+                    {
+                      'a' => '中國共产党全國代表大会'
+                    },
+                    {
+                      'c' => '延安'
+                    },
+                    {
+                      'n' => '(7th :'
+                    },
+                    {
+                      'd' => '1945)'
+                    }
+                  ]
+                } }
+            ]
+          }
+        end
+
+        it 'returns organization primary contributor' do
+          expect(build).to eq [
+            { type: 'organization', status: 'primary',
+              name: [{ value: "Zhongguo gong chan dang. Quan guo dai biao da hui (7th : 1945 : Yan'an)" }] },
+            { type: 'organization', name: [{ value: '中國共产党全國代表大会 延安 (7th : 1945)' }] }
+          ]
+        end
+      end
     end
 
     context 'with meeting primary (111)' do
