@@ -9,6 +9,8 @@
 require_relative '../config/environment'
 require 'optparse'
 require 'tty-progressbar'
+require 'tmpdir'
+require 'fileutils'
 
 Honeybadger.configure do |config|
   config.exceptions.ignore += [Cocina::Models::ValidationError]
@@ -73,7 +75,19 @@ def last_closed_version_and_open_for_versioning?(repository_object)
   repository_object.open? && repository_object.last_closed_version&.cocina_version
 end
 
-def validate(sample_size, processes, latest_versions_only)
+# @return [String] path to temporary CSV file
+def write_results_to_temp_file(results, temp_dir, process_index)
+  temp_file = File.join(temp_dir, "results_#{process_index}.csv")
+  CSV.open(temp_file, 'w') do |writer|
+    results.each do |result|
+      writer << result
+    end
+  end
+  temp_file
+end
+
+# @return [Array<String>] paths to temporary CSV files
+def validate(sample_size, processes, latest_versions_only, temp_dir)
   obj_ids = if sample_size
               RepositoryObject.limit(sample_size).ids
             else
@@ -83,10 +97,10 @@ def validate(sample_size, processes, latest_versions_only)
   progress_bar = tty_progress_bar(obj_ids.size)
   progress_bar.start
 
-  Parallel.map(obj_ids.each_slice(100),
+  Parallel.map(obj_ids.each_slice(100).with_index,
                in_processes: processes,
-               finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |slice_obj_ids|
-    RepositoryObject.find(slice_obj_ids).map do |repository_object|
+               finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |slice_obj_ids, index|
+    results = RepositoryObject.find(slice_obj_ids).flat_map do |repository_object|
       versions_to_validate(repository_object, latest_versions_only).map do |repository_object_version|
         is_head_version = repository_object_version.head_version_of.present?
         is_last_closed_version =
@@ -95,7 +109,7 @@ def validate(sample_size, processes, latest_versions_only)
         repository_object_version.to_cocina
 
         [repository_object.external_identifier, repository_object_version.version,
-         is_head_version, is_last_closed_version, has_user_version, repository_object.object_type, nil]
+         is_head_version, is_last_closed_version, has_user_version, repository_object.object_type, '', nil]
       rescue StandardError => e
         collection = if repository_object.object_type == 'dro'
                        repository_object_version.structural['isMemberOf'].join(' ')
@@ -107,17 +121,30 @@ def validate(sample_size, processes, latest_versions_only)
          collection, e.message]
       end
     end
-  end.flatten(2)
+
+    write_results_to_temp_file(results, temp_dir, index)
+  end.compact
 end
 
-results = validate(options[:sample], options[:processes], options[:latest_versions_only])
+# Consolidate all temp files into the final CSV
+def consolidate_temp_files(temp_files, out_file)
+  CSV.open(out_file, 'w') do |writer|
+    writer << %w[druid version head_version last_closed_version_for_open_object user_version type collection message]
 
-CSV.open('validate-cocina.csv', 'w') do |writer|
-  writer << %w[druid version head_version last_closed_version_for_open_object user_version type collection message]
-  results.each do |(druid, version, head_version, last_closed_version_for_open_object, user_version, type, collection, error)| # rubocop:disable Layout/LineLength
-    if error
-      writer << [druid, version, head_version, last_closed_version_for_open_object, user_version, type, collection,
-                 error]
+    temp_files.each do |temp_file|
+      CSV.foreach(temp_file) do |row|
+        # Only write rows with errors (error is the last column)
+        writer << row if row.last
+      end
     end
   end
+end
+
+temp_dir = Dir.mktmpdir('validate-cocina')
+begin
+  temp_files = validate(options[:sample], options[:processes], options[:latest_versions_only], temp_dir)
+
+  consolidate_temp_files(temp_files, 'validate-cocina.csv')
+ensure
+  FileUtils.rm_rf(temp_dir)
 end
