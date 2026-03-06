@@ -66,29 +66,55 @@ def tty_progress_bar(count, mode)
   )
 end
 
-def migrate(migrator_class:, sample:, processes:, mode:)
+# @return [String] path to temporary CSV file
+def write_results_to_temp_file(results, temp_dir, process_index)
+  temp_file = File.join(temp_dir, "results_#{process_index}.csv")
+  CSV.open(temp_file, 'w') do |writer|
+    results.each do |result|
+      writer << result
+    end
+  end
+  temp_file
+end
+
+# @return [Array<String>] paths to temporary CSV files
+def migrate(migrator_class:, sample:, processes:, mode:, temp_dir:)
   druids = Migrators::MigrationRunner.druids_for(migrator_class:, sample:)
 
   progress_bar = tty_progress_bar(druids.length, mode)
   progress_bar.start
 
-  Parallel.map(druids.each_slice(100),
+  Parallel.map(druids.each_slice(100).with_index,
                in_processes: processes,
-               finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |druids_slice|
-    Migrators::MigrationRunner.migrate_druid_list(migrator_class:, mode:, druids_slice:).map do |result|
+               finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |druids_slice, index|
+    results = Migrators::MigrationRunner.migrate_druid_list(migrator_class:, mode:, druids_slice:).map do |result|
       [result[:obj].id, result[:obj].external_identifier, result[:status]].tap do |r|
         r << result[:exception].message if result[:exception].present?
       end
     end
-  end.flatten(1)
+    write_results_to_temp_file(results, temp_dir, index)
+  end.compact
 end
 
-CSV.open('migrate-cocina.csv', 'w') do |writer|
-  writer << %w[id druid result message]
-  migrate(migrator_class: migrator_class.constantize, **options)
-    .each do |result|
-    writer << result
+# Consolidate all temp files into the final CSV
+def consolidate_temp_files(temp_files, out_file)
+  CSV.open(out_file, 'w') do |writer|
+    writer << %w[id druid result message]
+
+    temp_files.each do |temp_file|
+      CSV.foreach(temp_file) do |row|
+        writer << row
+      end
+    end
   end
+end
+
+temp_dir = Dir.mktmpdir('migrate-cocina')
+begin
+  temp_files = migrate(migrator_class: migrator_class.constantize, temp_dir: temp_dir, **options)
+  consolidate_temp_files(temp_files, 'migrate-cocina.csv')
+ensure
+  FileUtils.rm_rf(temp_dir)
 end
 
 exit 0
