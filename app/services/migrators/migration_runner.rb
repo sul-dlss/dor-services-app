@@ -12,6 +12,24 @@ module Migrators
       sample ? druids.take(sample) : druids
     end
 
+    def self.druid_count_for(migrator_class:, sample:)
+      druid_source = druid_source_for(migrator_class:, sample:)
+      druid_source.is_a?(ActiveRecord::Relation) ? druid_source.count : druid_source.size
+    end
+
+    def self.each_druid_slice(migrator_class:, sample:, slice_size:)
+      return enum_for(__method__, migrator_class:, sample:, slice_size:) unless block_given?
+
+      druid_source = druid_source_for(migrator_class:, sample:)
+      if druid_source.is_a?(ActiveRecord::Relation)
+        druid_source.in_batches(of: [slice_size, 1000].max) do |batch|
+          batch.pluck(:external_identifier).each_slice(slice_size) { |slice| yield slice }
+        end
+      else
+        druid_source.each_slice(slice_size) { |slice| yield slice }
+      end
+    end
+
     def self.migrate_druid_list(migrator_class:, mode:, druids_slice:)
       RepositoryObject.where(external_identifier: druids_slice).map do |obj|
         migrate_repository_object(migrator_class:, obj:, mode:)
@@ -98,6 +116,14 @@ module Migrators
       VersionService.close(druid: cocina_object.externalIdentifier,
                            version: cocina_object.version,
                            description: version_description)
+    end
+
+    private_class_method def self.druid_source_for(migrator_class:, sample:)
+      migrator_druids = migrator_class.druids.presence
+      return sample ? migrator_druids.take(sample) : migrator_druids if migrator_druids
+
+      scope = RepositoryObject.order(:id)
+      sample ? scope.limit(sample) : scope
     end
   end
 end

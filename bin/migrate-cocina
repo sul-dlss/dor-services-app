@@ -52,8 +52,9 @@ def num_for_progress_advance(count)
   count / 100
 end
 
-def on_finish(results, progress_bar)
-  progress_bar.advance(results.size)
+def on_finish(result, progress_bar, writer)
+  progress_bar.advance(result[:processed_count])
+  result[:rows].each { |row| writer << row }
 end
 
 def tty_progress_bar(count, mode)
@@ -66,29 +67,28 @@ def tty_progress_bar(count, mode)
   )
 end
 
-def migrate(migrator_class:, sample:, processes:, mode:)
-  druids = Migrators::MigrationRunner.druids_for(migrator_class:, sample:)
+def migrate(migrator_class:, sample:, processes:, mode:, writer:)
+  druid_count = Migrators::MigrationRunner.druid_count_for(migrator_class:, sample:)
 
-  progress_bar = tty_progress_bar(druids.length, mode)
+  progress_bar = tty_progress_bar(druid_count, mode)
   progress_bar.start
 
-  Parallel.map(druids.each_slice(100),
-               in_processes: processes,
-               finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |druids_slice|
-    Migrators::MigrationRunner.migrate_druid_list(migrator_class:, mode:, druids_slice:).map do |result|
-      [result[:obj].id, result[:obj].external_identifier, result[:status]].tap do |r|
-        r << result[:exception].message if result[:exception].present?
+  Parallel.each(Migrators::MigrationRunner.each_druid_slice(migrator_class:, sample:, slice_size: 100),
+                in_processes: processes,
+                finish: ->(_, _, result) { on_finish(result, progress_bar, writer) }) do |druids_slice|
+    rows = Migrators::MigrationRunner.migrate_druid_list(migrator_class:, mode:, druids_slice:).map do |result|
+      [result[:obj].id, result[:obj].external_identifier, result[:status]].tap do |row|
+        row << result[:exception].message if result[:exception].present?
       end
     end
-  end.flatten(1)
+
+    { processed_count: druids_slice.size, rows: }
+  end
 end
 
 CSV.open('migrate-cocina.csv', 'w') do |writer|
   writer << %w[id druid result message]
-  migrate(migrator_class: migrator_class.constantize, **options)
-    .each do |result|
-    writer << result
-  end
+  migrate(migrator_class: migrator_class.constantize, writer:, **options)
 end
 
 exit 0
