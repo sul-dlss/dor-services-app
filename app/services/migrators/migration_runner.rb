@@ -69,7 +69,7 @@ module Migrators
       end
       Rails.logger.info("#{obj.external_identifier} successfully migrated")
       { obj:, status: 'SUCCESS' }
-    rescue Dry::Struct::Error, Cocina::Models::ValidationError, Cocina::ValidationError => e
+    rescue StandardError => e
       Rails.logger.info("#{obj.external_identifier} failed to migrate: #{e.message} -- #{e.backtrace}")
       { obj:, status: 'ERROR', exception: e }
     end
