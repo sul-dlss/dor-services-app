@@ -19,7 +19,7 @@ module Migrators
       # Nothing to do if there is no description
       return unless version.description
 
-      # Remove parallelContributor from all contributors, events contributors, and relatedResource contributors.
+      # Remove parallelContributor from all contributors, event contributors, and relatedResource contributors.
       remove_parallel_contributor(version.description)
       version.description['event']&.each do |event|
         remove_parallel_contributor(event)
