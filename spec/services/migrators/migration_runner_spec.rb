@@ -231,7 +231,7 @@ RSpec.describe Migrators::MigrationRunner do
     context 'when using dryrun mode' do
       let(:mode) { :dryrun }
 
-      context 'when a non-validation error raised during migration' do
+      context 'when an error raised during migration' do
         let(:migrator_class) { Migrators::Exemplar }
         let(:migrator_instance) do
           instance_double(migrator_class, migrate?: true, version?: false, migrate: 'Migrated label')
