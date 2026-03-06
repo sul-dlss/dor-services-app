@@ -39,8 +39,9 @@ def num_for_progress_advance(count)
   count / 100
 end
 
-def on_finish(results, progress_bar)
-  progress_bar.advance(results.size)
+def on_finish(result, progress_bar, writer)
+  progress_bar.advance(result[:object_count])
+  result[:error_rows].each { |error_row| writer << error_row }
 end
 
 def tty_progress_bar(count)
@@ -73,7 +74,7 @@ def last_closed_version_and_open_for_versioning?(repository_object)
   repository_object.open? && repository_object.last_closed_version&.cocina_version
 end
 
-def validate(sample_size, processes, latest_versions_only)
+def validate(sample_size, processes, latest_versions_only, writer)
   obj_ids = if sample_size
               RepositoryObject.limit(sample_size).ids
             else
@@ -83,41 +84,36 @@ def validate(sample_size, processes, latest_versions_only)
   progress_bar = tty_progress_bar(obj_ids.size)
   progress_bar.start
 
-  Parallel.map(obj_ids.each_slice(100),
-               in_processes: processes,
-               finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |slice_obj_ids|
-    RepositoryObject.find(slice_obj_ids).map do |repository_object|
-      versions_to_validate(repository_object, latest_versions_only).map do |repository_object_version|
+  Parallel.each(obj_ids.each_slice(100),
+                in_processes: processes,
+                finish: ->(_, _, result) { on_finish(result, progress_bar, writer) }) do |slice_obj_ids|
+    error_rows = []
+
+    RepositoryObject.find(slice_obj_ids).each do |repository_object|
+      versions_to_validate(repository_object, latest_versions_only).each do |repository_object_version|
         is_head_version = repository_object_version.head_version_of.present?
         is_last_closed_version =
           repository_object_version == last_closed_version_and_open_for_versioning?(repository_object)
         has_user_version = repository_object_version.user_versions.exists?
         repository_object_version.to_cocina
-
-        [repository_object.external_identifier, repository_object_version.version,
-         is_head_version, is_last_closed_version, has_user_version, repository_object.object_type, nil]
       rescue StandardError => e
         collection = if repository_object.object_type == 'dro'
                        repository_object_version.structural['isMemberOf'].join(' ')
                      else
                        ''
                      end
-        [repository_object.external_identifier, repository_object_version.version,
-         is_head_version, is_last_closed_version, has_user_version, repository_object.object_type,
-         collection, e.message]
+
+        error_rows << [repository_object.external_identifier, repository_object_version.version,
+                       is_head_version, is_last_closed_version, has_user_version, repository_object.object_type,
+                       collection, e.message]
       end
     end
-  end.flatten(2)
-end
 
-results = validate(options[:sample], options[:processes], options[:latest_versions_only])
+    { object_count: slice_obj_ids.size, error_rows: }
+  end
+end
 
 CSV.open('validate-cocina.csv', 'w') do |writer|
   writer << %w[druid version head_version last_closed_version_for_open_object user_version type collection message]
-  results.each do |(druid, version, head_version, last_closed_version_for_open_object, user_version, type, collection, error)| # rubocop:disable Layout/LineLength
-    if error
-      writer << [druid, version, head_version, last_closed_version_for_open_object, user_version, type, collection,
-                 error]
-    end
-  end
+  validate(options[:sample], options[:processes], options[:latest_versions_only], writer)
 end
