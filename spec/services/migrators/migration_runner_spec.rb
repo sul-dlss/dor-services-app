@@ -37,6 +37,72 @@ RSpec.describe Migrators::MigrationRunner do
     end
   end
 
+  describe '.druid_count_for' do
+    context 'when migrator supplies druids' do
+      let(:migrator_class) { Migrators::Exemplar }
+
+      it 'counts all supplied druids when sample is nil' do
+        expect(described_class.druid_count_for(migrator_class:, sample: nil)).to eq(migrated_druids.size)
+      end
+
+      it 'counts sampled supplied druids when sample is provided' do
+        expect(described_class.druid_count_for(migrator_class:, sample: 1)).to eq(1)
+      end
+    end
+
+    context 'when migrator does not supply druids' do
+      let(:migrator_class) { Migrators::Base }
+
+      it 'counts all repository objects when sample is nil' do
+        expect(described_class.druid_count_for(migrator_class:, sample: nil)).to eq(RepositoryObject.count)
+      end
+
+      it 'counts sampled repository objects when sample is provided' do
+        expect(described_class.druid_count_for(migrator_class:, sample: 3)).to eq(3)
+      end
+    end
+  end
+
+  describe '.each_druid_slice' do
+    context 'when migrator supplies druids' do
+      let(:migrator_class) { Migrators::Exemplar }
+
+      it 'yields slices for all supplied druids' do
+        slices = []
+        described_class.each_druid_slice(migrator_class:, sample: nil, slice_size: 1) { |slice| slices << slice }
+
+        expect(slices).to eq(migrated_druids.map { |druid| [druid] })
+      end
+
+      it 'yields slices for sampled supplied druids' do
+        slices = []
+        described_class.each_druid_slice(migrator_class:, sample: 1, slice_size: 2) { |slice| slices << slice }
+
+        expect(slices).to eq([[migrated_druids.first]])
+      end
+    end
+
+    context 'when migrator does not supply druids' do
+      let(:migrator_class) { Migrators::Base }
+
+      it 'yields slices from repository objects in id order' do
+        expected_druids = RepositoryObject.order(:id).pluck(:external_identifier)
+        slices = []
+        described_class.each_druid_slice(migrator_class:, sample: nil, slice_size: 2) { |slice| slices << slice }
+
+        expect(slices.flatten).to eq(expected_druids)
+      end
+
+      it 'yields sampled slices from repository objects in id order' do
+        expected_druids = RepositoryObject.order(:id).limit(3).pluck(:external_identifier)
+        slices = []
+        described_class.each_druid_slice(migrator_class:, sample: 3, slice_size: 2) { |slice| slices << slice }
+
+        expect(slices).to eq([expected_druids.first(2), expected_druids.last(1)])
+      end
+    end
+  end
+
   describe '.migrate_druid_list' do
     let(:mode) { :commit }
     let(:druids_slice) { described_class.druids_for(migrator_class:, sample: nil) }
