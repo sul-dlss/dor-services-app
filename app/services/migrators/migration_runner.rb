@@ -72,6 +72,10 @@ module Migrators
     rescue Dry::Struct::Error, Cocina::Models::ValidationError, Cocina::ValidationError => e
       Rails.logger.info("#{obj.external_identifier} failed to migrate: #{e.message} -- #{e.backtrace}")
       { obj:, status: 'ERROR', exception: e }
+    rescue StandardError => e
+      Rails.logger.info("#{obj.external_identifier} failed to migrate for a non-validation error:
+        #{e.message} -- #{e.backtrace}")
+      { obj:, status: 'ERROR', exception: e }
     end
 
     private_class_method def self.open_version(cocina_object:, version_description:, mode:)
