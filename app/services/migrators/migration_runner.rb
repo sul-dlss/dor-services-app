@@ -18,7 +18,7 @@ module Migrators
     end
 
     def self.each_druid_slice(migrator_class:, sample:, slice_size:, &)
-      return enum_for(__method__, migrator_class:, sample:, slice_size:) unless block
+      return enum_for(__method__, migrator_class:, sample:, slice_size:) unless block_given?
 
       druid_source = druid_source_for(migrator_class:, sample:)
       if druid_source.is_a?(ActiveRecord::Relation)
