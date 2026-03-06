@@ -16,6 +16,9 @@ module Migrators
       RepositoryObject.where(external_identifier: druids_slice).map do |obj|
         migrate_repository_object(migrator_class:, obj:, mode:)
       end
+      rescue StandardError => e
+        Rails.logger.info("#{obj.external_identifier} error with migrating objects: #{e.message} -- #{e.backtrace}")
+        { obj:, status: 'ERROR', exception: e }
     end
 
     # @param [Migrators::Base] migrator_class applied to obj to migrate it
@@ -70,6 +73,10 @@ module Migrators
       Rails.logger.info("#{obj.external_identifier} successfully migrated")
       { obj:, status: 'SUCCESS' }
     rescue Dry::Struct::Error, Cocina::Models::ValidationError, Cocina::ValidationError => e
+      Rails.logger.info("#{obj.external_identifier} failed to migrate: #{e.message} -- #{e.backtrace}")
+      { obj:, status: 'ERROR', exception: e }
+    # will this get raised here? Or should we move it up to migrate_druid_list?
+    rescue StandardError => e
       Rails.logger.info("#{obj.external_identifier} failed to migrate: #{e.message} -- #{e.backtrace}")
       { obj:, status: 'ERROR', exception: e }
     end
