@@ -107,10 +107,10 @@ module Cocina
       def build_genre_form(field)
         return unless field
 
-        {
-          value: field['a'],
-          type: 'genre'
-        }
+        [].tap do |genres|
+          genres << { value: field['a'], type: 'genre' } if field['a']
+          genres << { value: field['v'], type: 'genre' } if field['v']
+        end
       end
 
       def build_cartographic(field)

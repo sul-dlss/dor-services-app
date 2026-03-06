@@ -22,7 +22,8 @@ module Cocina
           sudoc_classification,
           map_coordinates,
           uncontrolled_subjects,
-          controlled_subjects
+          controlled_subjects,
+          genre_form_subjects
         ].flatten.compact
       end
 
@@ -72,6 +73,19 @@ module Cocina
           results << build_uncontrolled_subject(alt_script_field) if alt_script_field
           results
         end.flatten.compact
+      end
+
+      # Genre/form subjects from 655$xyz
+      def genre_form_subjects # rubocop:disable Metrics/CyclomaticComplexity, Metrics/AbcSize
+        marc.fields('655').flat_map do |field|
+          next if field['x'].blank? && field['y'].blank? && field['z'].blank?
+
+          [].tap do |subjects|
+            subjects << { value: field['x'], type: 'topic' } if field['x']
+            subjects << { value: field['y'], type: 'time' } if field['y']
+            subjects << { value: field['z'], type: 'place' } if field['z']
+          end
+        end.compact
       end
 
       def build_uncontrolled_subject(field) # rubocop:disable Metrics/CyclomaticComplexity

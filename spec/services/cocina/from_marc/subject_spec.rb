@@ -1302,5 +1302,54 @@ RSpec.describe Cocina::FromMarc::Subject do
         ]
       end
     end
+
+    context 'with genre/form topic (655$x)' do
+      # See a13147621
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '655' => {
+              'ind1' => ' ', 'ind2' => '7',
+              'subfields' => [
+                { 'a' => 'Typefaces (Type evidence)' },
+                { 'x' => 'Garamond.' },
+                { '2' => 'rbtyp' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns topic subject' do
+        expect(build).to eq [
+          { value: 'Garamond.', type: 'topic' }
+        ]
+      end
+    end
+
+    context 'with genre/form place & time (655$yz)' do
+      # See a12265613
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '655' => {
+              'ind1' => ' ', 'ind2' => '4',
+              'subfields' => [
+                { 'a' => 'Novels' },
+                { 'y' => '1901-1910.' },
+                { 'z' => 'England' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns place/time subjects' do
+        expect(build).to eq [
+          { value: '1901-1910.', type: 'time' },
+          { value: 'England', type: 'place' }
+        ]
+      end
+    end
   end
 end
