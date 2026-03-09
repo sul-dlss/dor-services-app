@@ -35,6 +35,27 @@ RSpec.describe Migrators::MigrationRunner do
     it 'returns the druids it cares about' do
       expect(described_class.druids_for(migrator_class:, sample:)).to eq(migrated_druids)
     end
+
+    context 'when the migrator class does not specify druids' do
+      let(:migrator_class) do
+        Class.new(Migrators::Base) do
+          def self.druids = nil
+        end
+      end
+
+      it 'returns a lazy enumerator over all repository objects' do
+        all_druids = (migrated_druids + ignored_druids + ['druid:hy787xj5878']).sort
+        expect(described_class.druids_for(migrator_class:, sample:).to_a.sort).to eq(all_druids)
+      end
+
+      context 'with a sample size' do
+        let(:sample) { 2 }
+
+        it 'limits to the sample size' do
+          expect(described_class.druids_for(migrator_class:, sample:).size).to eq(2)
+        end
+      end
+    end
   end
 
   describe '.migrate_druid_list' do

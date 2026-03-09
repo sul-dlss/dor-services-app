@@ -79,9 +79,10 @@ end
 
 # @return [Array<String>] paths to temporary CSV files
 def migrate(migrator_class:, sample:, processes:, mode:, temp_dir:)
+  count = Migrators::MigrationRunner.druids_count_for(migrator_class:, sample:)
   druids = Migrators::MigrationRunner.druids_for(migrator_class:, sample:)
 
-  progress_bar = tty_progress_bar(druids.length, mode)
+  progress_bar = tty_progress_bar(count, mode)
   progress_bar.start
 
   Parallel.map(druids.each_slice(100).with_index,
