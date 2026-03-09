@@ -52,8 +52,8 @@ def num_for_progress_advance(count)
   count / 100
 end
 
-def on_finish(results, progress_bar)
-  progress_bar.advance(results.size)
+def on_finish(count, progress_bar)
+  progress_bar.advance(count)
 end
 
 def tty_progress_bar(count, mode)
@@ -77,24 +77,48 @@ def write_results_to_temp_file(results, temp_dir, process_index)
   temp_file
 end
 
+# @param druids_slice [Array<String>] druids to migrate
+# @return [String] path to temporary CSV file written
+def migrate_slice(migrator_class:, mode:, druids_slice:, temp_dir:, index:)
+  results = Migrators::MigrationRunner.migrate_druid_list(migrator_class:, mode:, druids_slice:).map do |result|
+    [result[:obj].id, result[:obj].external_identifier, result[:status]].tap do |r|
+      r << result[:exception].message if result[:exception].present?
+    end
+  end
+  write_results_to_temp_file(results, temp_dir, index)
+end
+
+BATCH_SIZE = 100
+
 # @return [Array<String>] paths to temporary CSV files
 def migrate(migrator_class:, sample:, processes:, mode:, temp_dir:)
   count = Migrators::MigrationRunner.druids_count_for(migrator_class:, sample:)
-  druids = Migrators::MigrationRunner.druids_for(migrator_class:, sample:)
 
   progress_bar = tty_progress_bar(count, mode)
   progress_bar.start
 
-  Parallel.map(druids.each_slice(100).with_index,
-               in_processes: processes,
-               finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |druids_slice, index|
-    results = Migrators::MigrationRunner.migrate_druid_list(migrator_class:, mode:, druids_slice:).map do |result|
-      [result[:obj].id, result[:obj].external_identifier, result[:status]].tap do |r|
-        r << result[:exception].message if result[:exception].present?
-      end
-    end
-    write_results_to_temp_file(results, temp_dir, index)
-  end.compact
+  if (specific_druids = migrator_class.druids.presence)
+    # Migrator provides a specific druid list
+    specific_druids = specific_druids.take(sample) if sample
+    Parallel.map(specific_druids.each_slice(BATCH_SIZE).with_index,
+                 in_processes: processes,
+                 finish: ->(_, _, result) { on_finish(result[1], progress_bar) }) do |druids_slice, index|
+      [migrate_slice(migrator_class:, mode:, druids_slice:, temp_dir:, index:), druids_slice.size]
+    end.compact.map(&:first)
+  else
+    # No custom druid list: pass only batch indices to Parallel so each worker fetches its own
+    # slice from the DB after forking, avoiding loading all druids into the parent process.
+    total_batches = (count.to_f / BATCH_SIZE).ceil
+    Parallel.map(0...total_batches,
+                 in_processes: processes,
+                 finish: ->(_, _, result) { on_finish(result[1], progress_bar) }) do |batch_index|
+      druids_slice = RepositoryObject.order(:id)
+                                     .offset(batch_index * BATCH_SIZE)
+                                     .limit(BATCH_SIZE)
+                                     .pluck(:external_identifier)
+      [migrate_slice(migrator_class:, mode:, druids_slice:, temp_dir:, index: batch_index), druids_slice.size]
+    end.compact.map(&:first)
+  end
 end
 
 # Consolidate all temp files into the final CSV

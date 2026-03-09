@@ -7,8 +7,12 @@ module Migrators
     MODES = %i[commit dryrun migrate verify].freeze
     DEFAULT_MODE = :dryrun
 
+    # Returns a count of the druids to migrate, for the progress bar.
+    # We need to get it before we start migrating, using the same logic as #druids_for to determine
+    # the list of druids to migrate, without sending all the druids to each process.
     def self.druids_count_for(migrator_class:, sample:)
-      if (specific_druids = migrator_class.druids)
+      specific_druids = migrator_class.druids.presence
+      if specific_druids
         sample ? [sample, specific_druids.size].min : specific_druids.size
       elsif sample
         [sample, RepositoryObject.count].min
@@ -20,7 +24,8 @@ module Migrators
     # Returns the druids to migrate. When no specific druid list is provided by the migrator class,
     # returns a lazy enumerator that pages through the DB to avoid loading all druids into memory at once.
     def self.druids_for(migrator_class:, sample:)
-      if (specific_druids = migrator_class.druids.presence)
+      specific_druids = migrator_class.druids.presence
+      if specific_druids
         sample ? specific_druids.take(sample) : specific_druids
       elsif sample
         RepositoryObject.limit(sample).pluck(:external_identifier)

@@ -29,6 +29,36 @@ RSpec.describe Migrators::MigrationRunner do
     end
   end
 
+  describe '.druids_count_for' do
+    let(:sample) { nil }
+
+    context 'when the migrator class specifies druids' do
+      it 'returns the count of those druids' do
+        expect(described_class.druids_count_for(migrator_class:, sample:)).to eq(migrated_druids.size)
+      end
+    end
+
+    context 'when the migrator class does not specify druids' do
+      let(:migrator_class) do
+        Class.new(Migrators::Base) do
+          def self.druids = nil
+        end
+      end
+
+      it 'returns the total count of all repository objects' do
+        expect(described_class.druids_count_for(migrator_class:, sample:)).to eq(RepositoryObject.count)
+      end
+
+      context 'with a sample size' do
+        let(:sample) { 1 }
+
+        it 'limits to the sample size' do
+          expect(described_class.druids_count_for(migrator_class:, sample:)).to eq(1)
+        end
+      end
+    end
+  end
+
   describe '.druids_for' do
     let(:sample) { nil }
 
