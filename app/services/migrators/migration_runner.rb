@@ -25,7 +25,7 @@ module Migrators
       elsif sample
         RepositoryObject.limit(sample).pluck(:external_identifier)
       else
-        RepositoryObject.select(:external_identifier).find_each.lazy.map(&:external_identifier)
+        RepositoryObject.select(:id, :external_identifier).find_each.lazy.map(&:external_identifier)
       end
     end
 
