@@ -48,7 +48,7 @@ def export(processes)
   Parallel.map(obj_ids.each_slice(1000).with_index,
                in_processes: processes,
                finish: ->(_, _, _results) { progress_bar.advance(1000) }) do |slice_obj_ids, index|
-                 @file ||= File.open("cocina-head-versions-#{Time.zone.today.iso8601}-#{format('%02d', index)}.jsonl",
+                 @file ||= File.open("cocina-head-versions-#{Time.zone.today.iso8601}-#{format('%02d', index)}.jsonl", # rubocop:disable Style/FileOpen
                                      'w')
                  RepositoryObject.find(slice_obj_ids).each do |repository_object|
                    @file.write("#{repository_object.head_version.to_cocina.to_json}\n")

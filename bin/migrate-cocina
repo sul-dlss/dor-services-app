@@ -21,7 +21,7 @@ require 'tty-progressbar'
 options = { processes: 4, mode: Migrators::MigrationRunner::DEFAULT_MODE, sample: nil }
 
 parser = OptionParser.new do |option_parser|
-  mode_list_str = Migrators::MigrationRunner::MODES.map(&:to_s).join(', ')
+  mode_list_str = Migrators::MigrationRunner::MODES.join(', ')
   option_parser.banner = 'Usage: bin/migrate-cocina MIGRATION_CLASS [options]'
   option_parser.on('--mode [MODE]', Migrators::MigrationRunner::MODES,
                    "Migration mode (#{mode_list_str}). Default is #{options[:mode]}")

@@ -7,7 +7,6 @@ require 'okcomputer'
 # /status/<name-of-check> for a specific check (e.g. for nagios warning)
 OkComputer.mount_at = 'status'
 OkComputer.check_in_parallel = true
-
 # Custom check to get the version from the VERSION file
 class CustomAppVersionCheck < OkComputer::AppVersionCheck
   def version
@@ -21,6 +20,7 @@ class CustomAppVersionCheck < OkComputer::AppVersionCheck
   end
 end
 
+# rubocop:disable Style/OneClassPerFile
 # Check if the Folio API is reachable
 class FolioCheck < OkComputer::Check
   def check
@@ -97,6 +97,7 @@ class RabbitQueueExistsCheck < OkComputer::Check
     mark_failure
   end
 end
+# rubocop:enable Style/OneClassPerFile
 
 if Settings.rabbitmq.enabled
   OkComputer::Registry.register 'rabbit-queues',
