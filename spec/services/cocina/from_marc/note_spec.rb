@@ -2230,6 +2230,36 @@ RSpec.describe Cocina::FromMarc::Note do
       end
     end
 
+    context 'with local collection note that has subfield p (795$ap)' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            {
+              '795' => {
+                'ind1' => ' ',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => 'Japanese rare materials related to travel'
+                  },
+                  {
+                    'p' => 'Kansai'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      end
+
+      it 'returns notes' do
+        expect(build).to eq [{
+          type: 'provenance',
+          value: 'Japanese rare materials related to travel Kansai'
+        }]
+      end
+    end
+
     context 'with note in multiple scripts (500/880)' do
       # See a13355277
       let(:marc_hash) do
