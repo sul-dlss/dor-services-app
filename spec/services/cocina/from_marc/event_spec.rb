@@ -788,6 +788,60 @@ RSpec.describe Cocina::FromMarc::Event do
           note: [{ value: 'Monthly <Apr. 1988->', type: 'frequency' }]
         }]
       end
+
+      context 'with alt script (880)' do
+        # see a6722441
+        let(:marc_hash) do
+          {
+            'fields' => [
+              {
+                '310' => {
+                  'ind1' => ' ',
+                  'ind2' => ' ',
+                  'subfields' => [
+                    {
+                      '6' => '880-03'
+                    },
+                    {
+                      'a' => 'Ban zhou'
+                    }
+                  ]
+                }
+              },
+              {
+                '880' => {
+                  'ind1' => ' ',
+                  'ind2' => ' ',
+                  'subfields' => [
+                    {
+                      '6' => '310-03'
+                    },
+                    {
+                      'a' => '半周'
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        end
+
+        it 'returns publication event with frequency note in both scripts' do
+          expect(build).to eq [{
+            type: 'publication',
+            note: [
+              {
+                value: 'Ban zhou',
+                type: 'frequency'
+              },
+              {
+                value: '半周',
+                type: 'frequency'
+              }
+            ]
+          }]
+        end
+      end
     end
 
     context 'with former frequency event (321$ab)' do
