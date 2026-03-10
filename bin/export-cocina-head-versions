@@ -31,10 +31,6 @@ def num_for_progress_advance(count)
   count / 100
 end
 
-def on_finish(results, progress_bar)
-  progress_bar.advance(results.size)
-end
-
 def tty_progress_bar(count)
   TTY::ProgressBar.new(
     'Exporting [:bar] (:percent (:current/:total), rate: :rate/s, mean rate: :mean_rate/s, :elapsed total, ' \
@@ -51,8 +47,8 @@ def export(processes)
 
   Parallel.map(obj_ids.each_slice(1000).with_index,
                in_processes: processes,
-               finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |slice_obj_ids, index|
-                 @file ||= File.open("cocina-head-versions-#{Time.zone.today.iso8601}-#{index}.jsonl",
+               finish: ->(_, _, _results) { progress_bar.advance(1000) }) do |slice_obj_ids, index|
+                 @file ||= File.open("cocina-head-versions-#{Time.zone.today.iso8601}-#{format('%02d', index)}.jsonl",
                                      'w')
                  RepositoryObject.find(slice_obj_ids).each do |repository_object|
                    @file.write("#{repository_object.head_version.to_cocina.to_json}\n")
