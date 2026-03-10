@@ -62,7 +62,7 @@ module Cocina
       def main_title
         return unless field245
 
-        parallel_field = linked_field(field245)
+        parallel_field = Util.linked_field(marc, field245)
         if parallel_field
           parallel_title(parallel_field)
         elsif has_245a_without_non_sorting?
@@ -78,19 +78,19 @@ module Cocina
       end
 
       def alternative_title(alternative_title_field, type: 'alternative')
-        display_label = alternative_title_field.subfields.find { |subfield| subfield.code == 'i' }&.value
-        alt_title = [
-          {
-            value: value_for(alternative_title_field, %w[a b f g k n p s]),
-            displayLabel: display_label,
-            type:
-          }.compact
-        ]
-
-        if (link = linked_field(alternative_title_field))
-          alt_title << { value: value_for(link, %w[a b f g k n p s]), type: }
-        end
+        alt_title = [build_alternative_title(alternative_title_field, type:)]
+        link = Util.linked_field(marc, alternative_title_field)
+        alt_title << build_alternative_title(link, type:) if link
         alt_title
+      end
+
+      def build_alternative_title(field, type:)
+        display_label = field.subfields.find { |subfield| subfield.code == 'i' }&.value
+        {
+          value: value_for(field, %w[a b f g k n p s]),
+          displayLabel: display_label,
+          type:
+        }.compact
       end
 
       # For 130/240/730
@@ -101,14 +101,6 @@ module Cocina
           end.map(&:value).join(' ')),
           type: 'uniform'
         }]
-      end
-
-      def linked_field(field)
-        pointer = field.subfields.find { |subfield| subfield.code == '6' }
-        return unless pointer
-
-        field_id, index = pointer.value.split('-')
-        marc.fields(field_id)[index.to_i - 1]
       end
 
       def basic_title
