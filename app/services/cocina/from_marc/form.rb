@@ -23,7 +23,7 @@ module Cocina
             when '255'
               build_cartographic(field)
             when '300'
-              build_extent(field)
+              extent(field)
             when '336'
               build_content_type(field)
             when '340'
@@ -64,9 +64,16 @@ module Cocina
 
       private
 
-      def build_extent(field)
+      def extent(field)
         return unless field
 
+        fields = [build_extent(field)]
+        alt_script_field = Util.linked_field(marc, field)
+        fields << build_extent(alt_script_field) if alt_script_field
+        fields
+      end
+
+      def build_extent(field)
         values = field.subfields.filter_map do |sf|
           sf.value if %w[a b c e f g 3].include?(sf.code)
         end
