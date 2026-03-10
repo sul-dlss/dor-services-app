@@ -149,7 +149,7 @@ RSpec.describe Cocina::FromMarc::Note do
       end
     end
 
-    context 'with with note (501$a)' do
+    context 'with note (501$a)' do
       # LC example
       let(:marc_hash) do
         {
