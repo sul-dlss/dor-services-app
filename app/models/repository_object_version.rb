@@ -38,9 +38,9 @@ class RepositoryObjectVersion < ApplicationRecord
   #       version's. In practice, this date is indexed and used in Argo to show
   #       the created date for the object itself; we use the modified date
   #       to show in Purl when a version was made.
-  def to_cocina_with_metadata
+  def to_cocina_with_metadata(...)
     Cocina::Models.with_metadata(
-      to_cocina,
+      to_cocina(...),
       repository_object.external_lock,
       created: repository_object.created_at.utc,
       modified: updated_at.utc
@@ -52,12 +52,12 @@ class RepositoryObjectVersion < ApplicationRecord
     cocina_version.present?
   end
 
-  def to_cocina
+  def to_cocina(**cocina_build_options)
     # Legacy RepositoryObjectVersions don't have cocina. We added them in order to store the
     # version number, but the Cocina is lost to time.
     raise NoCocina unless has_cocina?
 
-    Cocina::Models.build(to_h)
+    Cocina::Models.build(to_h, **cocina_build_options)
   end
 
   # @return [Hash] RepositoryObjectVersion instance as a hash

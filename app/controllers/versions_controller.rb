@@ -71,7 +71,7 @@ class VersionsController < ApplicationController
 
   def solr
     render json: Indexing::Builders::DocumentBuilder.for(
-      model: @repository_object_version.to_cocina_with_metadata
+      model: @repository_object_version.to_cocina_with_metadata(**cocina_build_params)
     ).to_solr
   end
 
@@ -92,6 +92,13 @@ class VersionsController < ApplicationController
       content_type: 'application/vnd.api+json',
       status:
     }
+  end
+
+  def cocina_build_params
+    boolean_param(
+      params.permit(:validate).to_h.symbolize_keys,
+      :validate
+    )
   end
 
   def create_params
