@@ -131,7 +131,7 @@ RSpec.describe Cocina::FromMarc::Title do
       end
     end
 
-    context 'with title with multiple scripts (245/880)' do
+    context 'with title with multiple scripts and multiple parts (245/880)' do
       let(:marc_hash) do
         {
           'fields' => [
@@ -168,6 +168,35 @@ RSpec.describe Cocina::FromMarc::Title do
                                       { value: 'женские образы в кино', type: 'subtitle' }
                                     ]
                                   }
+                                ]
+                              }
+                            ])
+      end
+    end
+
+    context 'with title with multiple scripts and single parts (245/880)' do
+      # See a10574536
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '245' => { 'ind1' => '1', 'ind2' => '0', 'subfields' => [
+              { '6' => '880-01' },
+              { 'a' => 'Mas̲navī.' }
+            ] } },
+            { '880' => { 'ind1' => '1', 'ind2' => '0', 'subfields' => [
+              { '6' => '245-02//r' },
+              { 'a' => 'مثنوى.' }
+            ] } }
+          ]
+        }
+      end
+
+      it 'returns the title with parallel values' do
+        expect(build).to eq([
+                              {
+                                parallelValue: [
+                                  { value: 'Mas̲navī.', type: 'main title' },
+                                  { value: 'مثنوى.', type: 'main title' }
                                 ]
                               }
                             ])
