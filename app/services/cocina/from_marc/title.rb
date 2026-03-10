@@ -127,11 +127,20 @@ module Cocina
                        type: 'nonsorting characters' }
         end
         sortable = { value: Util.strip_punctuation(title.value[nonsort_count..]), type: 'main title' }
-        subtitle = Util.strip_punctuation(field.select do |subfield|
+        subtitle_value = subtitle(field)
+        subtitle_node = { value: subtitle_value, type: 'subtitle' } if subtitle_value.present?
+        titles = [non_sort, sortable, subtitle_node].compact
+        if titles.size == 1
+          titles
+        else
+          [{ structuredValue: [non_sort, sortable, subtitle_node].compact }]
+        end
+      end
+
+      def subtitle(field)
+        Util.strip_punctuation(field.select do |subfield|
           %w[b f g k n p s].include? subfield.code
         end.map(&:value).join(' '))
-        subtitle_node = { value: subtitle, type: 'subtitle' } if subtitle.present?
-        [{ structuredValue: [non_sort, sortable, subtitle_node].compact }]
       end
 
       def parallel_title(linked_field)
