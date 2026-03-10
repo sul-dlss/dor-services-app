@@ -5,6 +5,9 @@ module Cocina
     # Maps language information from MARC records to Cocina models.
     class Language
       VALID_CODES = YAML.load_file(::File.join(__dir__, 'marc_languages.yml')).fetch('marc_languages')
+      DEFAULT_SOURCE = 'iso639-2b'
+
+      Lang = Struct.new(:code, :source)
 
       # @see #initialize
       # @see #build
@@ -20,30 +23,38 @@ module Cocina
       # 008/35-37, 041 $a, $b, $d, $e, $f, $g, $h, $j
       # @return [Array<Hash>] an array of language hashes
       def build
-        (lang_from008 + lang_from041).uniq.compact
-          .filter_map { |code| { code: code } if valid_language_code(code) }
+        (lang_from008 + lang_from041).map { |lang| { code: lang.code, source: { code: lang.source } } }.uniq.compact
       end
 
       private
 
       # @param [String] code language code
-      # @return [String] the code passed in, if found in the list of valid codes
-      def valid_language_code(code)
-        code if VALID_CODES.include?(code)
+      # @return [Boolean] is the code found in the list of valid codes?
+      def valid_iso639_2b_code?(code)
+        VALID_CODES.include?(code)
       end
 
-      def lang_from041
+      def lang_from041 # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
         return [] unless marc['041']
 
-        marc['041'].subfields.map do |subfield|
-          subfield.value if %w[a b d e f g h j].include?(subfield.code)
-        end
+        marc.fields.select { it.tag == '041' }.map do |field|
+          source = field['2'] || DEFAULT_SOURCE
+          field.subfields.filter_map do |subfield|
+            if %w[a b d e f g h i j k m n p q r t].include?(subfield.code) &&
+               (source != DEFAULT_SOURCE || valid_iso639_2b_code?(subfield.value))
+              Lang.new(code: subfield.value, source:)
+            end
+          end
+        end.flatten.compact
       end
 
       def lang_from008
         return [] unless marc['008']
 
-        [marc['008'].value[35..37]]
+        code = marc['008'].value[35..37]
+        return [] unless valid_iso639_2b_code?(code)
+
+        [Lang.new(code:, source: DEFAULT_SOURCE)]
       end
 
       attr_reader :marc
