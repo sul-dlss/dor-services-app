@@ -572,6 +572,37 @@ RSpec.describe Cocina::FromMarc::Form do
       end
     end
 
+    context 'with map data in alternate script 255/880' do
+      # see a13123352
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '255' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { '6' => '880-03' },
+                { 'a' => 'Scale not given.' }
+              ]
+            } },
+            { '880' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { '6' => '255-03' },
+                { 'a' => '[縮尺表示なし].' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns map projection type' do
+        expect(build).to eq [
+          { value: 'Scale not given.', type: 'map scale' },
+          { value: '[縮尺表示なし].', type: 'map scale' }
+        ]
+      end
+    end
+
     context 'with content type (336 $a)' do
       # see in00000861694
       let(:marc_hash) do
