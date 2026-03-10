@@ -46,8 +46,15 @@ module Cocina
       def in_series(field)
         return unless field
 
+        linked = Util.linked_field(marc, field)
+        vals = [build_in_series(field)]
+        vals << build_in_series(linked) if linked
+        vals
+      end
+
+      def build_in_series(field)
         { type: 'in series',
-          title: [{ value: [field['3'], field['a'], field['v'], field['l'], field['x']].join(' ') }] }
+          title: [{ value: [field['3'], field['a'], field['v'], field['l'], field['x']].compact.join(' ') }] }
       end
 
       def has_part(field) # rubocop:disable Naming/PredicatePrefix
