@@ -61,6 +61,40 @@ RSpec.describe Cocina::FromMarc::Form do
       end
     end
 
+    context 'with extent multiple scripts (300/880)' do
+      # see a11085259
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '300' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { '6' => '880-04' },
+                { 'a' => '1 map :' },
+                { 'b' => 'col. ;' },
+                { 'c' => '71 x 47cm' }
+              ]
+            } },
+            { '880' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { '6' => '300-04' },
+                { 'a' => '1幅 ;' },
+                { 'c' => '71 x 47(按邊框計)' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns extent value' do
+        expect(build).to eq [
+          { value: '1 map : col. ; 71 x 47cm', type: 'extent' },
+          { value: '1幅 ; 71 x 47(按邊框計)', type: 'extent' }
+        ]
+      end
+    end
+
     context 'with material base (340 $a)' do
       # see in00000022114
       let(:marc_hash) do
