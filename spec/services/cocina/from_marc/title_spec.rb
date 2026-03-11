@@ -180,7 +180,7 @@ RSpec.describe Cocina::FromMarc::Title do
         {
           'fields' => [
             { '245' => { 'ind1' => '1', 'ind2' => '0', 'subfields' => [
-              { '6' => '880-01' },
+              { '6' => '880-02' },
               { 'a' => 'Mas̲navī.' }
             ] } },
             { '880' => { 'ind1' => '1', 'ind2' => '0', 'subfields' => [
