@@ -153,7 +153,7 @@ RSpec.describe Cocina::FromMarc::Language do
                 'ind2' => ' ',
                 'subfields' => [
                   {
-                    'r' => 'asn',
+                    'r' => 'ase',
                     '2' => 'iso639-3'
                   }
                 ]
@@ -166,7 +166,7 @@ RSpec.describe Cocina::FromMarc::Language do
       it 'returns language list' do
         expect(build).to eq [
           { code: 'eng', source: { code: 'iso639-2b' } },
-          { code: 'asn', source: { code: 'iso639-3' } }
+          { code: 'ase', source: { code: 'iso639-3' } }
         ]
       end
     end

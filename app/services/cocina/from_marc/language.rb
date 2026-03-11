@@ -30,18 +30,17 @@ module Cocina
 
       # @param [String] code language code
       # @return [Boolean] is the code found in the list of valid codes?
-      def valid_iso639_2b_code?(code)
+      def valid_language_code?(code)
         VALID_CODES.include?(code)
       end
 
-      def lang_from041 # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
+      def lang_from041 # rubocop:disable Metrics/AbcSize
         return [] unless marc['041']
 
         marc.fields.select { it.tag == '041' }.map do |field|
           source = field['2'] || DEFAULT_SOURCE
           field.subfields.filter_map do |subfield|
-            if %w[a b d e f g h i j k m n p q r t].include?(subfield.code) &&
-               (source != DEFAULT_SOURCE || valid_iso639_2b_code?(subfield.value))
+            if %w[a b d e f g h i j k m n p q r t].include?(subfield.code) && valid_language_code?(subfield.value)
               Lang.new(code: subfield.value, source:)
             end
           end
@@ -52,7 +51,7 @@ module Cocina
         return [] unless marc['008']
 
         code = marc['008'].value[35..37]
-        return [] unless valid_iso639_2b_code?(code)
+        return [] unless valid_language_code?(code)
 
         [Lang.new(code:, source: DEFAULT_SOURCE)]
       end
