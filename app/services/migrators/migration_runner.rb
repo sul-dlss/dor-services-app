@@ -8,12 +8,10 @@ module Migrators
     DEFAULT_MODE = :dryrun
 
     # Returns a count of the druids to migrate, for the progress bar.
-    # We need to get it before we start migrating, using the same logic as #druids_for to determine
-    # the list of druids to migrate, without sending all the druids to each process.
     def self.druids_count_for(migrator_class:, sample:)
       specific_druids = migrator_class.druids.presence
       if specific_druids
-        sample ? [sample, specific_druids.size].min : specific_druids.size
+        specific_druids.size
       elsif sample
         [sample, RepositoryObject.count].min
       else
@@ -21,17 +19,37 @@ module Migrators
       end
     end
 
-    # Returns the druids to migrate. When no specific druid list is provided by the migrator class,
-    # returns a lazy enumerator that pages through the DB to avoid loading all druids into memory at once.
-    def self.druids_for(migrator_class:, sample:)
+    BATCH_SIZE = 100
+
+    # Returns the druids for a single batch. Each parallel worker calls this after forking so that
+    # only a small slice is loaded into each worker's memory.
+    # @param migrator_class [Migrators::Base] the migrator class to be run
+    # @param sample [Integer, nil] limits the number of druids returned from the entire set of druids
+    # @param batch_index [Integer] index of the batch to fetch
+    # @return [Array<String>] list of druids for the batch
+    # rubocop:disable Metrics/AbcSize
+    def self.druids_for_batch(migrator_class:, sample:, batch_index:)
+      Rails.logger.info("Fetching batch #{batch_index} of druids to migrate...")
       specific_druids = migrator_class.druids.presence
       if specific_druids
-        sample ? specific_druids.take(sample) : specific_druids
+        specific_druids.each_slice(BATCH_SIZE).to_a[batch_index] || []
       elsif sample
-        RepositoryObject.limit(sample).pluck(:external_identifier)
+        sample_druids = druids_for_sample(sample:)
+        Rails.logger.info("Sample druids for batch #{batch_index}: #{sample_druids}")
+        sample_druids.each_slice(BATCH_SIZE).to_a[batch_index] || []
       else
-        RepositoryObject.select(:id, :external_identifier).find_each.lazy.map(&:external_identifier)
+        RepositoryObject.order(:id)
+                        .offset(batch_index * BATCH_SIZE)
+                        .limit(BATCH_SIZE)
+                        .pluck(:external_identifier)
       end
+    end
+    # rubocop:enable Metrics/AbcSize
+
+    # Sample from the full set of druids
+    def self.druids_for_sample(sample:)
+      druids = RepositoryObject.pluck(:external_identifier)
+      @druids_for_sample ||= druids.take(sample)
     end
 
     def self.migrate_druid_list(migrator_class:, mode:, druids_slice:)
