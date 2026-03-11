@@ -1197,6 +1197,61 @@ RSpec.describe Cocina::FromMarc::Note do
           value: 'Reproduction of: Femme nue en plein air, 1876. 1 art original : oil, col. ; 79 x 64 cm. In Louvre Museum, Paris.'
         }]
       end
+
+      context 'with an 880' do
+        # See a10786239
+        let(:marc_hash) do
+          {
+            'fields' => [
+              {
+                '534' => {
+                  'ind1' => ' ',
+                  'ind2' => ' ',
+                  'subfields' => [
+                    {
+                      '6' => '880-04'
+                    },
+                    {
+                      'p' => 'Reprint of ed. publ.:'
+                    },
+                    {
+                      'c' => '[Tokyo] : Sanbō Honbu, 1914.'
+                    }
+                  ]
+                }
+              },
+              {
+                '880' => {
+                  'ind1' => ' ',
+                  'ind2' => ' ',
+                  'subfields' => [
+                    {
+                      '6' => '534-04'
+                    },
+                    {
+                      'p' => 'Reprint of ed. publ.:'
+                    },
+                    {
+                      'c' => '[Tokyo] : 参謀本部, 1914.'
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        end
+
+        it 'returns notes' do
+          expect(build).to eq [
+            {
+              value: 'Reprint of ed. publ.: [Tokyo] : Sanbō Honbu, 1914.'
+            },
+            {
+              value: 'Reprint of ed. publ.: [Tokyo] : 参謀本部, 1914.'
+            }
+          ]
+        end
+      end
     end
 
     context 'with location of originals/duplicates (535$abcdg3)' do
