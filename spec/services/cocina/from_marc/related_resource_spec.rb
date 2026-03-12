@@ -882,7 +882,27 @@ RSpec.describe Cocina::FromMarc::RelatedResource do
       end
     end
 
-    context 'with has part title (740 ind2=2)' do
+    context 'with has part title and part name (740 ind2=2)' do
+      # See a11366493
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '740' => { 'ind1' => '0', 'ind2' => '2', 'subfields' => [
+              { 'a' => 'Preludes.' },
+              { 'p' => 'No. 6, B minor.' }
+            ] } }
+          ]
+        }
+      end
+
+      it 'returns the part title' do
+        expect(build).to eq([
+                              { type: 'has part', title: [{ value: 'Preludes. No. 6, B minor.' }] }
+                            ])
+      end
+    end
+
+    context 'with multiple has part titles (740 ind2=2)' do
       let(:marc_hash) do
         {
           'fields' => [
