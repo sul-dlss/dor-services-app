@@ -7,7 +7,7 @@ gem 'rails', '~> 8.0.0'
 
 # DLSS/domain-specific dependencies
 gem 'cocina_display'
-gem 'cocina-models', '~> 0.113.0'
+gem 'cocina-models', github: 'sul-dlss/cocina-models', branch: 'main' # '~> 0.113.0'
 gem 'datacite', '~> 0.6'
 gem 'dor-services-client' # Used for Dor::Services::Response::* classes
 gem 'druid-tools', '~> 2.2'
@@ -37,6 +37,7 @@ gem 'edtf', '~> 3.0' # used for metadata reports
 gem 'equivalent-xml' # for diffing MODS
 gem 'faraday', '~> 2.0'
 gem 'faraday-retry'
+gem 'hashie'
 gem 'honeybadger'
 gem 'jbuilder'
 gem 'jsonpath', '~> 1.1' # used for metadata reports
