@@ -60,6 +60,16 @@ class RepositoryObjectVersion < ApplicationRecord
     Cocina::Models.build(to_h, **cocina_build_options)
   end
 
+  def to_invalid_cocina
+    InvalidCocina.new(
+      to_h.merge(
+        lock: repository_object.external_lock,
+        created: repository_object.created_at.utc,
+        modified: updated_at.utc
+      )
+    )
+  end
+
   # @return [Hash] RepositoryObjectVersion instance as a hash
   def to_h
     {

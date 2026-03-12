@@ -49,4 +49,29 @@ RSpec.describe 'Show solr for an object version' do
       end
     end
   end
+
+  context 'with an object that has *really* invalid cocina' do
+    before do
+      object.head_version.tap do |version|
+        version.administrative['releaseTags'] = [
+          {
+            who: 'mjgiarlo',
+            what: 'self',
+            to: 'Searchworks',
+            release: true
+          }
+        ]
+        version.save!
+      end
+    end
+
+    it 'returns a 200' do
+      get "/v1/objects/#{object.external_identifier}/versions/1/solr?validate=true",
+          headers: { 'Authorization' => "Bearer #{jwt}" }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(id: object.external_identifier)
+      expect(response.parsed_body).to include(display_title_ss: 'Test DRO')
+    end
+  end
 end

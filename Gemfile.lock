@@ -653,6 +653,7 @@ DEPENDENCIES
   folio_client (~> 0.8)
   graphiql-rails
   graphql
+  hashie
   honeybadger
   jbuilder
   json_schemer-rails (~> 0.4.0)
