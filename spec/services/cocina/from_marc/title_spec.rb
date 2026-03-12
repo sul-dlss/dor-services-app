@@ -483,6 +483,35 @@ RSpec.describe Cocina::FromMarc::Title do
                               { value: 'Drehorgel.', type: 'uniform' }
                             ])
       end
+
+      context 'with an 880' do
+        # See a6722879
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '245' => { 'ind1' => '0', 'ind2' => '0', 'subfields' => [
+                { 'a' => 'Must have a main title' }
+              ] } },
+              { '730' => { 'ind1' => '0', 'ind2' => ' ', 'subfields' => [
+                { '6' => '880-05' },
+                { 'a' => 'Ren min ri bao.' }
+              ] } },
+              { '880' => { 'ind1' => '0', 'ind2' => '0', 'subfields' => [
+                { '6' => '730-05' },
+                { 'a' => '人民日報.' }
+              ] } }
+            ]
+          }
+        end
+
+        it 'returns the uniform title from the 880' do
+          expect(build).to eq([
+                                { value: 'Must have a main title' },
+                                { value: 'Ren min ri bao.', type: 'uniform' },
+                                { value: '人民日報.', type: 'uniform' }
+                              ])
+        end
+      end
     end
 
     context 'with alternative title (740 ind2 blank)' do
