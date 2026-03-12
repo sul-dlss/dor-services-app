@@ -61,6 +61,40 @@ RSpec.describe Cocina::FromMarc::Form do
       end
     end
 
+    context 'with extent multiple scripts (300/880)' do
+      # see a11085259
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '300' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { '6' => '880-04' },
+                { 'a' => '1 map :' },
+                { 'b' => 'col. ;' },
+                { 'c' => '71 x 47cm' }
+              ]
+            } },
+            { '880' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { '6' => '300-04' },
+                { 'a' => '1幅 ;' },
+                { 'c' => '71 x 47(按邊框計)' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns extent value' do
+        expect(build).to eq [
+          { value: '1 map : col. ; 71 x 47cm', type: 'extent' },
+          { value: '1幅 ; 71 x 47(按邊框計)', type: 'extent' }
+        ]
+      end
+    end
+
     context 'with material base (340 $a)' do
       # see in00000022114
       let(:marc_hash) do
@@ -535,6 +569,37 @@ RSpec.describe Cocina::FromMarc::Form do
 
       it 'returns map projection type' do
         expect(build).to eq([{ value: 'projection: UTM Zone 28', type: 'map projection' }])
+      end
+    end
+
+    context 'with map data in alternate script 255/880' do
+      # see a13123352
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '255' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { '6' => '880-03' },
+                { 'a' => 'Scale not given.' }
+              ]
+            } },
+            { '880' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { '6' => '255-03' },
+                { 'a' => '[縮尺表示なし].' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns map projection type' do
+        expect(build).to eq [
+          { value: 'Scale not given.', type: 'map scale' },
+          { value: '[縮尺表示なし].', type: 'map scale' }
+        ]
       end
     end
 

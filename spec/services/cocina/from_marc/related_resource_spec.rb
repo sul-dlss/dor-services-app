@@ -46,6 +46,57 @@ RSpec.describe Cocina::FromMarc::RelatedResource do
       it 'returns in series' do
         expect(build).to eq [{ type: 'in series', title: [{ value: '<1981->: Le Masque ; 567 (AB123) 1234-5678' }] }]
       end
+
+      context 'with 880' do
+        # see a6722166
+        let(:marc_hash) do
+          {
+            'fields' => [
+              {
+                '490' => {
+                  'ind1' => '1',
+                  'ind2' => ' ',
+                  'subfields' => [
+                    {
+                      '6' => '880-02'
+                    },
+                    {
+                      'a' => 'Zu guo kang zhan liu zhou nian ji nian te ji ;'
+                    },
+                    {
+                      'v' => '2'
+                    }
+                  ]
+                }
+              },
+              {
+                '880' => {
+                  'ind1' => ' ',
+                  'ind2' => ' ',
+                  'subfields' => [
+                    {
+                      '6' => '490-02'
+                    },
+                    {
+                      'a' => '祖國抗戰六週年紀念特輯 ;'
+                    },
+                    {
+                      'v' => '2'
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        end
+
+        it 'returns in series' do
+          expect(build).to eq [
+            { type: 'in series', title: [{ value: 'Zu guo kang zhan liu zhou nian ji nian te ji ; 2' }] },
+            { type: 'in series', title: [{ value: '祖國抗戰六週年紀念特輯 ; 2' }] }
+          ]
+        end
+      end
     end
 
     context 'with has part with person contributor (700 ind2=2 with $t)' do

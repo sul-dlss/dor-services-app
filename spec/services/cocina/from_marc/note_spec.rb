@@ -149,7 +149,7 @@ RSpec.describe Cocina::FromMarc::Note do
       end
     end
 
-    context 'with with note (501$a)' do
+    context 'with note (501$a)' do
       # LC example
       let(:marc_hash) do
         {
@@ -2226,6 +2226,36 @@ RSpec.describe Cocina::FromMarc::Note do
         expect(build).to eq [{
           type: 'provenance',
           value: 'Denis Condon collection of reproducing pianos and rolls'
+        }]
+      end
+    end
+
+    context 'with local collection note that has subfield p (795$ap)' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            {
+              '795' => {
+                'ind1' => ' ',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => 'Japanese rare materials related to travel'
+                  },
+                  {
+                    'p' => 'Kansai'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      end
+
+      it 'returns notes' do
+        expect(build).to eq [{
+          type: 'provenance',
+          value: 'Japanese rare materials related to travel Kansai'
         }]
       end
     end

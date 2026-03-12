@@ -131,7 +131,7 @@ RSpec.describe Cocina::FromMarc::Title do
       end
     end
 
-    context 'with title with multiple scripts (245/880)' do
+    context 'with title with multiple scripts and multiple parts (245/880)' do
       let(:marc_hash) do
         {
           'fields' => [
@@ -168,6 +168,35 @@ RSpec.describe Cocina::FromMarc::Title do
                                       { value: 'женские образы в кино', type: 'subtitle' }
                                     ]
                                   }
+                                ]
+                              }
+                            ])
+      end
+    end
+
+    context 'with title with multiple scripts and single parts (245/880)' do
+      # See a10574536
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '245' => { 'ind1' => '1', 'ind2' => '0', 'subfields' => [
+              { '6' => '880-02' },
+              { 'a' => 'Mas̲navī.' }
+            ] } },
+            { '880' => { 'ind1' => '1', 'ind2' => '0', 'subfields' => [
+              { '6' => '245-02//r' },
+              { 'a' => 'مثنوى.' }
+            ] } }
+          ]
+        }
+      end
+
+      it 'returns the title with parallel values' do
+        expect(build).to eq([
+                              {
+                                parallelValue: [
+                                  { value: 'Mas̲navī.', type: 'main title' },
+                                  { value: 'مثنوى.', type: 'main title' }
                                 ]
                               }
                             ])
@@ -225,7 +254,7 @@ RSpec.describe Cocina::FromMarc::Title do
       end
     end
 
-    context 'with alternative title with display label (246)' do
+    context 'with alternative title with display label (246$i)' do
       let(:marc_hash) do
         {
           'fields' => [
@@ -250,6 +279,43 @@ RSpec.describe Cocina::FromMarc::Title do
                                 type: 'alternative'
                               }
                             ])
+      end
+
+      context 'with an alternate script (880)' do
+        # see a10083790
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '246' => { 'ind1' => '3', 'ind2' => ' ',
+                           'subfields' => [
+                             { '6' => '880-03' },
+                             { 'i' => 'At head of title on container:' },
+                             { 'a' => 'Konghun paeu' }
+                           ] } },
+              { '880' => { 'ind1' => '3', 'ind2' => ' ',
+                           'subfields' => [
+                             { '6' => '246-03' },
+                             { 'i' => 'At head of title on container:' },
+                             { 'a' => '공훈 배우' }
+                           ] } }
+            ]
+          }
+        end
+
+        it 'returns the alternative title with display label' do
+          expect(build).to eq [
+            {
+              value: 'Konghun paeu',
+              displayLabel: 'At head of title on container:',
+              type: 'alternative'
+            },
+            {
+              value: '공훈 배우',
+              displayLabel: 'At head of title on container:',
+              type: 'alternative'
+            }
+          ]
+        end
       end
     end
 
@@ -417,6 +483,35 @@ RSpec.describe Cocina::FromMarc::Title do
                               { value: 'Drehorgel.', type: 'uniform' }
                             ])
       end
+
+      context 'with an 880' do
+        # See a6722879
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '245' => { 'ind1' => '0', 'ind2' => '0', 'subfields' => [
+                { 'a' => 'Must have a main title' }
+              ] } },
+              { '730' => { 'ind1' => '0', 'ind2' => ' ', 'subfields' => [
+                { '6' => '880-05' },
+                { 'a' => 'Ren min ri bao.' }
+              ] } },
+              { '880' => { 'ind1' => '0', 'ind2' => '0', 'subfields' => [
+                { '6' => '730-05' },
+                { 'a' => '人民日報.' }
+              ] } }
+            ]
+          }
+        end
+
+        it 'returns the uniform title from the 880' do
+          expect(build).to eq([
+                                { value: 'Must have a main title' },
+                                { value: 'Ren min ri bao.', type: 'uniform' },
+                                { value: '人民日報.', type: 'uniform' }
+                              ])
+        end
+      end
     end
 
     context 'with alternative title (740 ind2 blank)' do
@@ -444,7 +539,7 @@ RSpec.describe Cocina::FromMarc::Title do
         {
           'fields' => [
             { '246' => { 'ind1' => '3', 'ind2' => '0', 'subfields' => [
-              { '6' => '880-01' },
+              { '6' => '880-02' },
               { 'a' => 'Nat͡sionalʹnye i mezhdunarodnye proekty razvitii͡a na evraziĭskom prostranstve i perspektivy ikh sopri͡azhenii͡a' }
             ] } },
             { '880' => { 'ind1' => '3', 'ind2' => '0', 'subfields' => [

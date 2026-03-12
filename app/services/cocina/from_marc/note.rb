@@ -63,7 +63,7 @@ module Cocina
         '586' => %w[a 3],
         '588' => ['a'],
         '590' => ['a'],
-        '795' => { codes: %w[a], type: 'provenance' }
+        '795' => { codes: %w[a p], type: 'provenance' }
       }.freeze
 
       # @param [MARC::Record] marc MARC record from FOLIO

@@ -5,7 +5,7 @@ module Workflow
   class TemplateParser
     attr_reader :workflow_doc
 
-    Process = Struct.new(:name, :label, :prerequisites, :skip_queue, keyword_init: true)
+    Process = Struct.new(:name, :label, :prerequisites, :skip_queue)
 
     # @param [Nokogiri::XML::Document] Workflow template as XML
     def initialize(workflow_doc)

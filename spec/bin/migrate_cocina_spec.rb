@@ -45,8 +45,10 @@ RSpec.describe 'bin/migrate-cocina' do # rubocop:disable RSpec/DescribeClass
     expect(objects_to_ignore.second.head_version.label).not_to include('migrated')
 
     puts "#{cmd_str} -- #{cmd_result}"
+
     expect(cmd_result[:status].exitstatus).to eq 0
 
+    expect(RepositoryObject.find_by(external_identifier: migrated_druids[0]).head_version.label).to include('migrated')
     expect(RepositoryObject.find_by(external_identifier: migrated_druids[0]).head_version.label).to include('migrated')
     expect(RepositoryObject.find_by(external_identifier: migrated_druids[1]).head_version.label).to include('migrated')
     expect(

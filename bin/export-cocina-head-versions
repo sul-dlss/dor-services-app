@@ -1,0 +1,64 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Exports cocina head versions for each object.
+
+require_relative '../config/environment'
+require 'optparse'
+require 'tty-progressbar'
+
+# This is an approximation of the total number of head versions (RepositoryObjectVersion.joins(:head_version_of).count)
+APPROX_DOC_COUNT = 5_483_724
+BATCH_SIZE = 1000
+
+options = { processes: 4 }
+parser = OptionParser.new do |option_parser|
+  option_parser.banner = 'Usage: bin/export-cocina-head-versions [options]'
+  option_parser.on('-pPROCESSES', '--processes PROCESSES', Integer,
+                   "Number of processes. Default is #{options[:processes]}.")
+  option_parser.on('-h', '--help', 'Displays help.') do
+    puts option_parser
+    exit
+  end
+end
+
+parser.parse!(into: options)
+
+# how many druids to process as a single advance unit of the progress bar
+def num_for_progress_advance(count)
+  return 1 if count < 100
+
+  count / 100
+end
+
+def tty_progress_bar(count)
+  TTY::ProgressBar.new(
+    'Exporting [:bar] (:percent (:current/:total), rate: :rate/s, mean rate: :mean_rate/s, :elapsed total, ' \
+    'ETA: :eta_time)',
+    bar_format: :box,
+    advance: num_for_progress_advance(count),
+    total: count
+  )
+end
+
+def export(processes)
+  obj_ids = RepositoryObject.ids
+  progress_bar = tty_progress_bar(APPROX_DOC_COUNT)
+
+  Parallel.map(obj_ids.each_slice(1000).with_index,
+               in_processes: processes,
+               finish: ->(_, _, _results) { progress_bar.advance(1000) }) do |slice_obj_ids, index|
+                 @file ||= File.open("cocina-head-versions-#{Time.zone.today.iso8601}-#{format('%02d', index)}.jsonl", # rubocop:disable Style/FileOpen
+                                     'w')
+                 RepositoryObject.find(slice_obj_ids).each do |repository_object|
+                   @file.write("#{repository_object.head_version.to_cocina.to_json}\n")
+                 end
+                 @file.path
+               end
+end
+
+paths = export(options[:processes])
+puts 'Exported to:'
+paths.each do |path|
+  puts path
+end

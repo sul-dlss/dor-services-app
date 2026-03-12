@@ -21,9 +21,9 @@ module Cocina
           marc.fields.filter_map do |field|
             case field.tag
             when '255'
-              build_cartographic(field)
+              cartographic(field)
             when '300'
-              build_extent(field)
+              extent(field)
             when '336'
               build_content_type(field)
             when '340'
@@ -64,9 +64,16 @@ module Cocina
 
       private
 
-      def build_extent(field)
+      def extent(field)
         return unless field
 
+        fields = [build_extent(field)]
+        alt_script_field = Util.linked_field(marc, field)
+        fields << build_extent(alt_script_field) if alt_script_field
+        fields
+      end
+
+      def build_extent(field)
         values = field.subfields.filter_map do |sf|
           sf.value if %w[a b c e f g 3].include?(sf.code)
         end
@@ -113,9 +120,16 @@ module Cocina
         end
       end
 
-      def build_cartographic(field)
+      def cartographic(field)
         return unless field
 
+        fields = [build_cartographic(field)]
+        alt_script_field = Util.linked_field(marc, field)
+        fields << build_cartographic(alt_script_field) if alt_script_field
+        fields
+      end
+
+      def build_cartographic(field)
         vals = []
         vals << { value: field['a'], type: 'map scale' } if field['a']
         vals << { value: field['b'], type: 'map projection' } if field['b']

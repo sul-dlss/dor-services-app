@@ -3,7 +3,7 @@
 module Cocina
   module FromMarc
     # Maps event information from MARC records to Cocina models.
-    class Event
+    class Event # rubocop:disable Metrics/ClassLength
       # @see #initialize
       # @see #build
       def self.build(...)
@@ -131,11 +131,18 @@ module Cocina
       def frequency_statement
         notes = marc.fields.filter_map do |field|
           if %w[310 321].include?(field.tag)
-            statement = field.subfields.select { %w[a b].include? it.code }.map(&:value).join(' ')
-            { value: statement, type: 'frequency' }
+            fields = [build_frequency_note(field)]
+            alt_script_field = Util.linked_field(marc, field)
+            fields << build_frequency_note(alt_script_field) if alt_script_field
+            fields
           end
-        end
+        end.flatten
         { type: 'publication', note: notes } if notes.present?
+      end
+
+      def build_frequency_note(field)
+        statement = field.subfields.select { %w[a b].include? it.code }.map(&:value).join(' ')
+        { value: statement, type: 'frequency' }
       end
 
       def mode_of_issuance(field)

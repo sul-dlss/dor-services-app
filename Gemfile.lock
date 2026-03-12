@@ -100,7 +100,7 @@ GEM
       uri (>= 0.13.1)
     addressable (2.8.9)
       public_suffix (>= 2.0.2, < 8.0)
-    airbrussh (1.6.0)
+    airbrussh (1.6.1)
       sshkit (>= 1.6.1, != 1.7.0)
     amq-protocol (2.5.1)
     ast (2.4.3)
@@ -131,11 +131,26 @@ GEM
       capistrano-bundler (>= 1.1, < 3)
     capistrano-shared_configs (0.2.2)
     chronic (0.10.2)
-    cocina_display (1.10.0)
+    cocina-models (0.113.0)
+      activesupport
+      deprecation
+      dry-struct (~> 1.0)
+      dry-types (~> 1.1)
+      edtf
+      equivalent-xml
+      i18n
+      json_schemer (~> 2.0)
+      jsonpath
+      nokogiri
+      super_diff
+      thor
+      zeitwerk (~> 2.1)
+    cocina_display (1.12.2)
       activesupport (>= 7)
       edtf (~> 3.2)
       geo_coord (~> 0.2)
       i18n
+      iso8601 (~> 0.13.0)
       janeway-jsonpath (~> 0.6)
       zeitwerk (~> 2.7)
     concurrent-ruby (1.3.6)
@@ -174,7 +189,7 @@ GEM
       ed25519
     docile (1.4.1)
     domain_name (0.6.20240107)
-    dor-services-client (15.31.0)
+    dor-services-client (15.32.0)
       activesupport (>= 7.0.0)
       cocina-models (~> 0.113.0)
       deprecation
@@ -199,7 +214,7 @@ GEM
       concurrent-ruby (~> 1.0)
       dry-core (~> 1.1)
       zeitwerk (~> 2.6)
-    dry-struct (1.8.0)
+    dry-struct (1.8.1)
       dry-core (~> 1.1)
       dry-types (~> 1.8, >= 1.8.2)
       ice_nine (~> 0.11)
@@ -255,7 +270,7 @@ GEM
     hashdiff (1.2.1)
     hashie (5.1.0)
       logger
-    honeybadger (6.5.0)
+    honeybadger (6.5.2)
       logger
       ostruct
     http-cookie (1.1.0)
@@ -269,12 +284,13 @@ GEM
       prism (>= 1.3.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
+    iso8601 (0.13.0)
     janeway-jsonpath (0.6.0)
     jbuilder (2.14.1)
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
-    json (2.18.1)
-    json-schema (6.1.0)
+    json (2.19.1)
+    json-schema (6.2.0)
       addressable (~> 2.8)
       bigdecimal (>= 3.1, < 5)
     json_schemer (2.5.0)
@@ -326,7 +342,7 @@ GEM
       nokogiri (~> 1.0)
       rexml
     marcel (1.1.0)
-    mcp (0.7.1)
+    mcp (0.8.0)
       json-schema (>= 4.1)
     mini_mime (1.1.5)
     minitest (6.0.2)
@@ -406,7 +422,7 @@ GEM
     psych (5.3.1)
       date
       stringio
-    public_suffix (7.0.2)
+    public_suffix (7.0.5)
     puma (6.6.1)
       nio4r (~> 2.0)
     purl_fetcher-client (2.1.2)
@@ -464,7 +480,7 @@ GEM
       tsort
     redis (5.4.1)
       redis-client (>= 0.22.0)
-    redis-client (0.26.4)
+    redis-client (0.27.0)
       connection_pool
     regexp_parser (2.11.3)
     reline (0.6.3)
@@ -499,7 +515,7 @@ GEM
     rspec-support (3.13.7)
     rspec_junit_formatter (0.6.0)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (1.85.0)
+    rubocop (1.85.1)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -542,7 +558,6 @@ GEM
     securerandom (0.4.1)
     serverengine (2.1.1)
       sigdump (~> 0.2.2)
-    set (1.1.2)
     sidekiq (8.1.1)
       connection_pool (>= 3.0.0)
       json (>= 2.16.0)
@@ -566,9 +581,8 @@ GEM
       rake (~> 12.3)
       serverengine (~> 2.1.0)
       thor
-    sorted_set (1.0.3)
+    sorted_set (1.1.0)
       rbtree
-      set (~> 1.0)
     sshkit (1.25.0)
       base64
       logger

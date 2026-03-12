@@ -62,7 +62,7 @@ module Cocina
       def main_title
         return unless field245
 
-        parallel_field = linked_field(field245)
+        parallel_field = Util.linked_field(marc, field245)
         if parallel_field
           parallel_title(parallel_field)
         elsif has_245a_without_non_sorting?
@@ -78,37 +78,36 @@ module Cocina
       end
 
       def alternative_title(alternative_title_field, type: 'alternative')
-        display_label = alternative_title_field.subfields.find { |subfield| subfield.code == 'i' }&.value
-        alt_title = [
-          {
-            value: value_for(alternative_title_field, %w[a b f g k n p s]),
-            displayLabel: display_label,
-            type:
-          }.compact
-        ]
-
-        if (link = linked_field(alternative_title_field))
-          alt_title << { value: value_for(link, %w[a b f g k n p s]), type: }
-        end
+        alt_title = [build_alternative_title(alternative_title_field, type:)]
+        link = Util.linked_field(marc, alternative_title_field)
+        alt_title << build_alternative_title(link, type:) if link
         alt_title
+      end
+
+      def build_alternative_title(field, type:)
+        display_label = field.subfields.find { |subfield| subfield.code == 'i' }&.value
+        {
+          value: value_for(field, %w[a b f g k n p s]),
+          displayLabel: display_label,
+          type:
+        }.compact
       end
 
       # For 130/240/730
       def uniform_title(uniform_title_field)
-        [{
-          value: Util.strip_punctuation(uniform_title_field.select do |subfield|
+        titles = [build_uniform_title(uniform_title_field)]
+        link = Util.linked_field(marc, uniform_title_field)
+        titles << build_uniform_title(link) if link
+        titles
+      end
+
+      def build_uniform_title(field)
+        {
+          value: Util.strip_punctuation(field.select do |subfield|
             %w[a d f g i k l m n o p r s t].include? subfield.code
           end.map(&:value).join(' ')),
           type: 'uniform'
-        }]
-      end
-
-      def linked_field(field)
-        pointer = field.subfields.find { |subfield| subfield.code == '6' }
-        return unless pointer
-
-        field_id, index = pointer.value.split('-')
-        marc.fields(field_id)[index.to_i - 1]
+        }
       end
 
       def basic_title
@@ -127,11 +126,20 @@ module Cocina
                        type: 'nonsorting characters' }
         end
         sortable = { value: Util.strip_punctuation(title.value[nonsort_count..]), type: 'main title' }
-        subtitle = Util.strip_punctuation(field.select do |subfield|
+        subtitle_value = subtitle(field)
+        subtitle_node = { value: subtitle_value, type: 'subtitle' } if subtitle_value.present?
+        titles = [non_sort, sortable, subtitle_node].compact
+        if titles.size == 1
+          titles
+        else
+          [{ structuredValue: titles }]
+        end
+      end
+
+      def subtitle(field)
+        Util.strip_punctuation(field.select do |subfield|
           %w[b f g k n p s].include? subfield.code
         end.map(&:value).join(' '))
-        subtitle_node = { value: subtitle, type: 'subtitle' } if subtitle.present?
-        [{ structuredValue: [non_sort, sortable, subtitle_node].compact }]
       end
 
       def parallel_title(linked_field)
