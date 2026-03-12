@@ -100,7 +100,8 @@ module Cocina
       def has_part_title(field) # rubocop:disable Naming/PredicatePrefix
         return unless field.indicator2 == '2'
 
-        { type: 'has part', title: [{ value: field['a'], type: field.tag == '730' ? 'uniform' : nil }.compact] }
+        value = [field['a'], field['h'], field['n'], field['p']].compact.join(' ')
+        { type: 'has part', title: [{ value:, type: field.tag == '730' ? 'uniform' : nil }.compact] }
       end
 
       def related_title(field)
