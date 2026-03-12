@@ -95,12 +95,19 @@ module Cocina
 
       # For 130/240/730
       def uniform_title(uniform_title_field)
-        [{
-          value: Util.strip_punctuation(uniform_title_field.select do |subfield|
+        titles = [build_uniform_title(uniform_title_field)]
+        link = Util.linked_field(marc, uniform_title_field)
+        titles << build_uniform_title(link) if link
+        titles
+      end
+
+      def build_uniform_title(field)
+        {
+          value: Util.strip_punctuation(field.select do |subfield|
             %w[a d f g i k l m n o p r s t].include? subfield.code
           end.map(&:value).join(' ')),
           type: 'uniform'
-        }]
+        }
       end
 
       def basic_title
