@@ -132,7 +132,7 @@ module Cocina
         if titles.size == 1
           titles
         else
-          [{ structuredValue: [non_sort, sortable, subtitle_node].compact }]
+          [{ structuredValue: titles }]
         end
       end
 
