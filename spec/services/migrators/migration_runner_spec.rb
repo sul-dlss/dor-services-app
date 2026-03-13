@@ -59,16 +59,18 @@ RSpec.describe Migrators::MigrationRunner do
     end
   end
 
-  describe '.druids_for_batch' do
-    let(:sample) { nil }
-
+  describe '.batch_descriptors' do
     context 'when the migrator class specifies druids' do
-      it 'returns the correct batch of druids' do
-        expect(described_class.druids_for_batch(migrator_class:, sample:, batch_index: 0)).to eq(migrated_druids)
+      it 'returns one descriptor per batch with index and count' do
+        descriptors = described_class.batch_descriptors(migrator_class:, sample: nil)
+        expect(descriptors).to eq([[0, migrated_druids.size]])
       end
 
-      it 'returns an empty array for an out-of-range batch index' do
-        expect(described_class.druids_for_batch(migrator_class:, sample:, batch_index: 999)).to eq([])
+      context 'with a sample size' do
+        it 'limits the descriptors to the sample' do
+          descriptors = described_class.batch_descriptors(migrator_class:, sample: 1)
+          expect(descriptors.sum(&:last)).to eq(1)
+        end
       end
     end
 
@@ -79,18 +81,54 @@ RSpec.describe Migrators::MigrationRunner do
         end
       end
 
-      it 'returns druids from the DB for the given batch index' do
+      it 'returns [0, count] for the first (and only) batch' do
+        descriptors = described_class.batch_descriptors(migrator_class:, sample: nil)
+        expect(descriptors.size).to eq(1)
+        expect(descriptors.first.first).to eq(0) # after_id starts at 0
+        expect(descriptors.first.last).to eq(RepositoryObject.count)
+      end
+
+      context 'with a sample size' do
+        it 'limits total druids to the sample size' do
+          descriptors = described_class.batch_descriptors(migrator_class:, sample: 2)
+          expect(descriptors.sum(&:last)).to eq(2)
+        end
+      end
+    end
+  end
+
+  describe '.druids_for_batch' do
+    context 'when the migrator class specifies druids' do
+      it 'returns the correct batch of druids' do
+        expect(described_class.druids_for_batch(migrator_class:,
+                                                batch_descriptor: [0,
+                                                                   migrated_druids.size])).to eq(migrated_druids)
+      end
+
+      it 'returns an empty array for an out-of-range batch index' do
+        expect(described_class.druids_for_batch(migrator_class:,
+                                                batch_descriptor: [999,
+                                                                   described_class::BATCH_SIZE])).to eq([])
+      end
+    end
+
+    context 'when the migrator class does not specify druids' do
+      let(:migrator_class) do
+        Class.new(Migrators::Base) do
+          def self.druids = nil
+        end
+      end
+
+      it 'returns druids from the DB for the given batch descriptor' do
         all_druids = (migrated_druids + ignored_druids + ['druid:hy787xj5878']).sort
-        batch = described_class.druids_for_batch(migrator_class:, sample:, batch_index: 0)
+        batch = described_class.druids_for_batch(migrator_class:, batch_descriptor: [0, described_class::BATCH_SIZE])
         expect(batch).not_to be_empty
         expect(batch).to all(be_in(all_druids))
       end
 
       context 'with a sample size' do
-        let(:sample) { 2 }
-
         it 'limits total results to the sample size' do
-          batch = described_class.druids_for_batch(migrator_class:, sample:, batch_index: 0)
+          batch = described_class.druids_for_batch(migrator_class:, batch_descriptor: [0, 2])
           expect(batch.size).to eq(2)
         end
       end
@@ -99,7 +137,9 @@ RSpec.describe Migrators::MigrationRunner do
 
   describe '.migrate_druid_list' do
     let(:mode) { :commit }
-    let(:druids_slice) { described_class.druids_for_batch(migrator_class:, sample: nil, batch_index: 0) }
+    let(:druids_slice) do
+      described_class.druids_for_batch(migrator_class:, batch_descriptor: [0, migrated_druids.size])
+    end
 
     it 'migrates exactly the objects it should' do
       expect(objects_to_migrate.first.head_version.label).not_to include('migrated')
