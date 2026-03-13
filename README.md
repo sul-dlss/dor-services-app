@@ -208,6 +208,27 @@ Custom reports are stored in dor-services-app in the `app/reports` directory.  E
     scp sdr-infra:/opt/app/deploy/[SUNETID]/dor-services-app/BadIso8601Dates.csv .
     ```
 
+### Export data
+
+You may want to export a full dataset to the 
+
+First export the database environment variables as above.  
+Then make sure there is about 100GB of space on `/sdrmd`. You can use `df -h`
+You can remove any old files in `/sdrmd/cocina`
+Then, in a `screen` session run:
+```
+cd /sdrmd/cocina
+RAILS_ENV=production ~/[SUNETID]/dor-services-app/bin/export-cocina-head-versions -p16
+time cat cocina-head-versions-2026-03-12-*.jsonl | xz -T8 > cocina-head-versions-2026-03-12-faster.jsonl.xz
+```
+
+The export step should take about 4 hours.  The compression step could take up to 4 hours.
+
+Once this is done, you may download the file to your local computer and run `bin/validate-data` (from cocina-models).
+
+Validating the whole dataset takes about 1 hour on a 2023 MacBook Pro. 
+
+
 ### Generate a list of druids from Solr query
 
 ```shell
