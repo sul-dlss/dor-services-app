@@ -210,7 +210,7 @@ Custom reports are stored in dor-services-app in the `app/reports` directory.  E
 
 ### Export data
 
-You may want to export a full dataset to the 
+You may want to export a full dataset to do validation on your local machine. 
 
 First export the database environment variables as above.  
 Then make sure there is about 100GB of space on `/sdrmd`. You can use `df -h`
