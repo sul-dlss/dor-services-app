@@ -91,17 +91,17 @@ end
 # @return [Array<String>] paths to temporary CSV files
 def migrate(migrator_class:, sample:, processes:, mode:, temp_dir:)
   count = Migrators::MigrationRunner.druids_count_for(migrator_class:, sample:)
-  total_batches = (count.to_f / Migrators::MigrationRunner::BATCH_SIZE).ceil
+  # Pre-compute keyset pagination boundaries in the parent process (a single indexed scan)
+  # so workers can each fetch their slice with an efficient WHERE id > ? LIMIT n query
+  batch_descriptors = Migrators::MigrationRunner.batch_descriptors(migrator_class:, sample:)
   progress_bar = tty_progress_bar(count, mode)
   progress_bar.start
 
-  # Pass only batch indices to Parallel so each worker fetches its own slice from the DB
-  # after forking, avoiding loading all druids into the parent process.
-  Parallel.map(0...total_batches,
+  Parallel.map(batch_descriptors.each_with_index,
                in_processes: processes,
-               finish: ->(_, _, result) { on_finish(result[1], progress_bar) }) do |batch_index|
-    druids_slice = Migrators::MigrationRunner.druids_for_batch(migrator_class:, sample:, batch_index:)
-    [migrate_slice(migrator_class:, mode:, druids_slice:, temp_dir:, index: batch_index), druids_slice.size]
+               finish: ->(_, _, result) { on_finish(result[1], progress_bar) }) do |batch_descriptor, index|
+    druids_slice = Migrators::MigrationRunner.druids_for_batch(migrator_class:, batch_descriptor:)
+    [migrate_slice(migrator_class:, mode:, druids_slice:, temp_dir:, index:), druids_slice.size]
   end.compact.map(&:first)
 end
 
