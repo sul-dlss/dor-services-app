@@ -222,7 +222,7 @@ RAILS_ENV=production ~/[SUNETID]/dor-services-app/bin/export-cocina-head-version
 time cat cocina-head-versions-2026-03-12-*.jsonl | xz -T8 > cocina-head-versions-2026-03-12-faster.jsonl.xz
 ```
 
-The export step should take about 4 hours.  The compression step could take up to 4 hours.
+The export step should take about 4 hours.  The compression step takes a little less than an hour.
 
 Once this is done, you may download the file to your local computer and run `bin/validate-data` (from cocina-models).
 
