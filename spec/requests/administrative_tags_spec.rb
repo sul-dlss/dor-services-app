@@ -128,10 +128,10 @@ RSpec.describe 'Administrative tags' do
         put "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(current_tag)}",
             params: %( {"administrative_tag":"#{new_tag}"} ),
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(response).to have_http_status(:no_content)
         expect(AdministrativeTags).to have_received(:update)
           .with(identifier: druid, current: current_tag, new: new_tag)
         expect(Indexer).to have_received(:reindex_later)
-        expect(response).to have_http_status(:no_content)
       end
     end
 
@@ -143,9 +143,9 @@ RSpec.describe 'Administrative tags' do
         put "/v1/objects/#{druid}/administrative_tags/#{CGI.escape(current_tag)}",
             params: %( {"administrative_tag":"#{new_tag}"} ),
             headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+        expect(response).to have_http_status(:no_content)
         expect(AdministrativeTags).to have_received(:update)
           .with(identifier: druid, current: current_tag, new: new_tag)
-        expect(response).to have_http_status(:no_content)
       end
     end
 

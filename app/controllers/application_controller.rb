@@ -91,4 +91,9 @@ class ApplicationController < ActionController::API
     headers['Last-Modified'] = cocina_object.modified.httpdate
     headers['ETag'] = "W/\"#{cocina_object.lock}\""
   end
+
+  def boolean_param(params_hash, key)
+    params_hash[key] = ActiveModel::Type::Boolean.new.cast(params_hash[key]) if params_hash.key?(key)
+    params_hash
+  end
 end

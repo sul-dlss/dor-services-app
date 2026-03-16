@@ -126,11 +126,6 @@ class VersionsController < ApplicationController
     boolean_param(new_params, :start_accession)
   end
 
-  def boolean_param(params_hash, key)
-    params_hash[key] = ActiveModel::Type::Boolean.new.cast(params_hash[key]) if params_hash.key?(key)
-    params_hash
-  end
-
   def load_version
     @version = CocinaObjectStore.version(params[:object_id])
   end

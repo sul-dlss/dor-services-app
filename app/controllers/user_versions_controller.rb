@@ -4,6 +4,7 @@
 class UserVersionsController < ApplicationController
   before_action :find_repository_object, except: %i[create]
   before_action :find_user_version, only: %i[show update solr]
+  before_action :validate_from_openapi, except: %i[show solr]
 
   rescue_from UserVersionService::UserVersioningError do |e|
     json_api_error(status: :unprocessable_content, message: e.message)
@@ -15,6 +16,10 @@ class UserVersionsController < ApplicationController
 
   def show
     render json: @user_version.repository_object_version.to_cocina_with_metadata
+  rescue Cocina::Models::ValidationError, Dry::Struct::Error => e
+    json_api_error(status: :conflict, message: e.message,
+                   title: 'Object is not valid cocina',
+                   meta: { json: @user_version.repository_object_version.to_h.as_json })
   rescue RepositoryObjectVersion::NoCocina
     json_api_error(status: :not_found, message: 'No Cocina for specified version')
   end
@@ -38,9 +43,13 @@ class UserVersionsController < ApplicationController
   end
 
   def solr
-    render json: Indexing::Builders::DocumentBuilder.for(
-      model: @user_version.repository_object_version.to_cocina_with_metadata
-    ).to_solr
+    model = begin
+      @user_version.repository_object_version.to_cocina_with_metadata(**cocina_build_params)
+    rescue Dry::Struct::Error
+      @user_version.repository_object_version.to_invalid_cocina
+    end
+
+    render json: Indexing::Builders::DocumentBuilder.for(model:).to_solr
   end
 
   private
@@ -59,5 +68,12 @@ class UserVersionsController < ApplicationController
 
   def find_user_version
     @user_version = @repository_object.user_versions.find_by!(version: user_version_param)
+  end
+
+  def cocina_build_params
+    boolean_param(
+      params.permit(:validate).to_h.symbolize_keys,
+      :validate
+    )
   end
 end
