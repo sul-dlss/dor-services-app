@@ -61,7 +61,7 @@ class RepositoryObjectVersion < ApplicationRecord
   end
 
   def to_invalid_cocina
-    InvalidCocina.new(
+    Dor::Services::Client::InvalidCocina.new(
       to_h.merge(
         lock: repository_object.external_lock,
         created: repository_object.created_at.utc,

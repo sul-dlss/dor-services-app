@@ -9,7 +9,7 @@ gem 'rails', '~> 8.0.0'
 gem 'cocina_display'
 gem 'cocina-models', '~> 0.114.0'
 gem 'datacite', '~> 0.6'
-gem 'dor-services-client' # Used for Dor::Services::Response::* classes
+gem 'dor-services-client' # Used for Dor::Services::Response::* & Dor::Services::Client::InvalidCocina classes
 gem 'druid-tools', '~> 2.2'
 gem 'folio_client', '~> 0.8'
 gem 'graphql'
@@ -37,7 +37,6 @@ gem 'edtf', '~> 3.0' # used for metadata reports
 gem 'equivalent-xml' # for diffing MODS
 gem 'faraday', '~> 2.0'
 gem 'faraday-retry'
-gem 'hashie'
 gem 'honeybadger'
 gem 'jbuilder'
 gem 'jsonpath', '~> 1.1' # used for metadata reports
