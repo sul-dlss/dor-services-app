@@ -147,7 +147,7 @@ module Indexing
       def catalog_links
         return [] if cocina.is_a?(Cocina::Models::AdminPolicyWithMetadata)
 
-        cocina.identification.catalogLinks
+        Array(cocina.identification.catalogLinks)
       end
 
       def cocina_display_record

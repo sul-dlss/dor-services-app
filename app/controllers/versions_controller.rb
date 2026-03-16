@@ -22,7 +22,7 @@ class VersionsController < ApplicationController
 
   def show
     render json: @repository_object_version.to_cocina_with_metadata
-  rescue Cocina::Models::ValidationError => e
+  rescue Cocina::Models::ValidationError, Dry::Struct::Error => e
     json_api_error(status: :conflict, message: e.message,
                    title: 'Object is not valid cocina',
                    meta: { json: @repository_object_version.to_h.as_json })
@@ -70,9 +70,13 @@ class VersionsController < ApplicationController
   end
 
   def solr
-    render json: Indexing::Builders::DocumentBuilder.for(
-      model: @repository_object_version.to_cocina_with_metadata
-    ).to_solr
+    model = begin
+      @repository_object_version.to_cocina_with_metadata(**cocina_build_params)
+    rescue Dry::Struct::Error
+      @repository_object_version.to_invalid_cocina
+    end
+
+    render json: Indexing::Builders::DocumentBuilder.for(model:).to_solr
   end
 
   private
@@ -92,6 +96,13 @@ class VersionsController < ApplicationController
       content_type: 'application/vnd.api+json',
       status:
     }
+  end
+
+  def cocina_build_params
+    boolean_param(
+      params.permit(:validate).to_h.symbolize_keys,
+      :validate
+    )
   end
 
   def create_params
