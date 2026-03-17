@@ -27,7 +27,7 @@ module Cocina
         return unless valid?
 
         titles = []
-        titles << main_title
+        titles << main_title(marc['245'])
 
         titles += marc.fields.filter_map do |field|
           case field.tag
@@ -55,26 +55,28 @@ module Cocina
         false
       end
 
-      def field245
-        @field245 ||= marc['245']
-      end
+      def main_title(field)
+        return unless field
 
-      def main_title
-        return unless field245
-
-        parallel_field = Util.linked_field(marc, field245)
+        parallel_field = Util.linked_field(marc, field)
         if parallel_field
-          parallel_title(parallel_field)
-        elsif has_245a_without_non_sorting?
-          basic_title
+          parallel_title(field, parallel_field)
         else
-          structured_title(field245)
+          basic_or_structured_title(field)
         end
       end
 
-      def has_245a_without_non_sorting?
-        field245 && field245.indicator2 == '0' && field245.subfields.any? { |subfield| subfield.code == 'a' } &&
-          field245.subfields.none? { |subfield| %w[b f g k n p s].include? subfield.code }
+      def basic_or_structured_title(field)
+        if has_subfield_a_without_non_sorting?(field)
+          basic_title(field)
+        else
+          structured_title(field)
+        end
+      end
+
+      def has_subfield_a_without_non_sorting?(field)
+        field && field.indicator2 == '0' && field.subfields.any? { |subfield| subfield.code == 'a' } &&
+          field.subfields.none? { |subfield| %w[b f g k n p s].include? subfield.code }
       end
 
       def alternative_title(alternative_title_field, type: 'alternative')
@@ -110,8 +112,8 @@ module Cocina
         }
       end
 
-      def basic_title
-        title = field245.subfields.find { |subfield| subfield.code == 'a' }
+      def basic_title(field)
+        title = field.subfields.find { |subfield| subfield.code == 'a' }
         title_value = Util.strip_punctuation(title.value)
         [{ value: title_value }]
       end
@@ -142,8 +144,12 @@ module Cocina
         end.map(&:value).join(' '))
       end
 
-      def parallel_title(linked_field)
-        [{ parallelValue: structured_title(field245) + structured_title(linked_field) }]
+      def parallel_title(field, linked_field)
+        [
+          {
+            parallelValue: basic_or_structured_title(field) + basic_or_structured_title(linked_field)
+          }
+        ]
       end
 
       def value_for(field, subfields)
