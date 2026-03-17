@@ -195,10 +195,37 @@ RSpec.describe Cocina::FromMarc::Title do
         expect(build).to eq([
                               {
                                 parallelValue: [
-                                  { value: 'Mas̲navī.', type: 'main title' },
-                                  { value: 'مثنوى.', type: 'main title' }
+                                  { value: 'Mas̲navī.' },
+                                  { value: 'مثنوى.' }
                                 ]
                               }
+                            ])
+      end
+    end
+
+    context 'when title and alternative both have multiple scripts (245, 246, 880s for each)' do
+      # See a11349573
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '245' => { 'ind1' => '1', 'ind2' => '0', 'subfields' => [{ '6' => '880-01' }, { 'a' => 'Ichimanbun no ichi chikeizu Fuzan' }] } },
+            { '246' => { 'ind1' => '1', 'ind2' => ' ', 'subfields' => [{ '6' => '880-04' }, { 'a' => 'Fuzan' }] } },
+            { '880' => { 'ind1' => '1', 'ind2' => '0', 'subfields' => [{ '6' => '245-01' }, { 'a' => '一萬分一地形圖釜山' }] } },
+            { '880' => { 'ind1' => '1', 'ind2' => ' ', 'subfields' => [{ '6' => '246-04' }, { 'a' => '釜山' }] } }
+          ]
+        }
+      end
+
+      it 'returns the main title as parallel basic values and the alternative as basic values' do
+        expect(build).to eq([
+                              {
+                                parallelValue: [
+                                  { value: 'Ichimanbun no ichi chikeizu Fuzan' },
+                                  { value: '一萬分一地形圖釜山' }
+                                ]
+                              },
+                              { value: 'Fuzan', type: 'alternative' },
+                              { value: '釜山', type: 'alternative' }
                             ])
       end
     end
