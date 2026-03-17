@@ -29,6 +29,7 @@ Layout/LineLength:
   Exclude:
     - "spec/services/cocina/mapping/descriptive/h2_datacite/subject_h2_datacite_spec.rb"
     - "spec/services/cocina/from_marc/**/*"
+    - "spec/services/migrators/remove_parallel_contributor_spec.rb"
     - "app/reports/**/*"
 
 Lint/UnusedMethodArgument:

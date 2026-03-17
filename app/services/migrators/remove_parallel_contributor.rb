@@ -15,12 +15,12 @@ module Migrators
       end
     end
 
-    def migrate_version(version) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+    def migrate_version(version) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
       # Nothing to do if there is no description
       return unless version.description
 
       # Remove parallelContributor from all contributors
-      # including those in event, event['parallelEvent'], relatedResource, and adminMetadata
+      # including any in event, parallelEvent, relatedResource, and adminMetadata
       remove_parallel_contributor(version.description)
       version.description['event']&.each do |event|
         remove_parallel_contributor(event)
@@ -31,8 +31,12 @@ module Migrators
       version.description['relatedResource']&.each do |related_resource|
         remove_parallel_contributor(related_resource)
       end
-      version.description['adminMetadata']&.each do |admin_metadata|
-        remove_parallel_contributor(admin_metadata)
+      remove_parallel_contributor(version.description&.dig('adminMetadata'))
+      version.description.dig('adminMetadata', 'event')&.each do |event|
+        remove_parallel_contributor(event)
+        event['parallelEvent']&.each do |parallel_event|
+          remove_parallel_contributor(parallel_event)
+        end
       end
     end
 
