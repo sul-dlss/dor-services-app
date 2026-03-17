@@ -108,6 +108,19 @@ catalog:
     tenant_id: "example_tenant"
     max_lookup_tries: 5
     sleep_seconds: 10
+    sdr_locations:
+      sul_sdr:
+        id: "1b14e21c-8d47-45c7-bc49-456a0086422b"
+        campus_id: "c365047a-51f2-45ce-8601-e421ca3615c5"
+      business_sdr:
+        id: "65cbea1d-ac50-4f47-85f5-0ebb8409cb4a"
+        campus_id: "b89563c5-cb66-4de7-b63c-ca4d82e9d856"
+      law_sdr:
+        id: "7120a9a0-dcac-4991-bb92-5fd3eecabe56"
+        campus_id: "7003123d-ef65-45f6-b469-d2b9839e1bb3"
+      hila_sdr:
+        id: "3dadb04e-931c-4ebe-85b0-dcb00c30ebcb"
+        campus_id: "be6468b8-ed88-4876-93fe-5bdac764959c"
 
 datacite:
   prefix: "10.80343"
