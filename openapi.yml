@@ -1,6 +1,6 @@
 openapi: 3.1.2
 info:
-  description: Backend API for the Stanford digital repository
+  description: Backend API for the Stanford Digital Repository
   version: 1.0.0
   title: DOR Services API
   license:
@@ -17,6 +17,11 @@ servers:
     variables:
       env:
         default: stage
+  - url: "https://dor-services-{env}.stanford.edu"
+    description: QA service
+    variables:
+      env:
+        default: qa
 tags:
   - name: objects
     description: Digital Repository Objects
@@ -804,7 +809,6 @@ paths:
           required: true
           schema:
             $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/Druid"
-
   "/v1/objects/{object_id}/versions/current/close":
     post:
       tags:
@@ -1002,6 +1006,13 @@ paths:
           required: true
           schema:
             type: string
+        - name: validate
+          in: query
+          description: Enable or disable validation of version Cocina
+          required: false
+          schema:
+            type: boolean
+            default: true
   "/v1/objects/{object_id}/user_versions":
     get:
       tags:
@@ -1060,6 +1071,43 @@ paths:
               required:
                 - version
   "/v1/objects/{object_id}/user_versions/{id}":
+    get:
+      tags:
+        - versions
+      summary: Show the cocina for a particular user version
+      operationId: "user_versions#show"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/DRO"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: The user version exists, but the cocina data is not valid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/Druid"
+        - name: id
+          in: path
+          description: ID of the user version
+          required: true
+          schema:
+            type: integer
     patch:
       tags:
         - versions
@@ -1087,7 +1135,7 @@ paths:
             $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/Druid"
         - name: id
           in: path
-          description: Version of user version
+          description: ID of the user version
           required: true
           schema:
             type: integer
@@ -1104,21 +1152,20 @@ paths:
                 withdrawn:
                   description: whether the version is withdrawn
                   type: boolean
-  "/v1/objects/{object_id}/user_versions/{version_id}":
-    get:
+    put:
       tags:
         - versions
-      summary: Show the cocina for a particular user version
-      operationId: "user_versions#show"
+      summary: Update a user version for this object
+      operationId: "user_versions#update"
       responses:
         "200":
-          description: OK
+          description: Updated
           content:
             application/json:
               schema:
-                $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/DRO"
-        "404":
-          description: Not found
+                $ref: "#/components/schemas/UserVersion"
+        "422":
+          description: Unprocessable content
           content:
             application/json:
               schema:
@@ -1130,13 +1177,26 @@ paths:
           required: true
           schema:
             $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/Druid"
-        - name: version_id
+        - name: id
           in: path
-          description: ID of the version
+          description: ID of the user version
           required: true
           schema:
-            type: string
-  "/v1/objects/{object_id}/user_versions/{version_id}/solr":
+            type: integer
+      requestBody:
+        description: user version to update
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                version:
+                  description: the number of the object version
+                  type: integer
+                withdrawn:
+                  description: whether the version is withdrawn
+                  type: boolean
+  "/v1/objects/{object_id}/user_versions/{id}/solr":
     get:
       tags:
         - versions
@@ -1162,12 +1222,19 @@ paths:
           required: true
           schema:
             $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/Druid"
-        - name: version_id
+        - name: id
           in: path
           description: ID of the version
           required: true
           schema:
             type: string
+        - name: validate
+          in: query
+          description: Enable or disable validation of version Cocina
+          required: false
+          schema:
+            type: boolean
+            default: true
   /v1/objects:
     post:
       tags:
