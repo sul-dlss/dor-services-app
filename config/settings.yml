@@ -4,7 +4,6 @@ enabled_features:
   create_ur_admin_policy: false
   datacite_update: false
   orcid_update: true
-  use_marc: false
 
 # Ur Admin Policy
 ur_admin_policy:
@@ -14,20 +13,20 @@ ur_admin_policy:
 
 # Graveyard Admin Policy
 graveyard_admin_policy:
-  druid: 'druid:kg712km1576'
+  druid: "druid:kg712km1576"
 
 # Stacks
 stacks:
-  document_cache_host: 'purl-test.stanford.edu'
-  local_workspace_root: '/dor/workspace'
-  transfer_stage_root: '/transfer-stage'
-  local_stacks_root: '/stacks'
-  local_document_cache_root: '/purl/document_cache'
-  web_archiving_stacks: '/web-archiving-stacks/data/collections'
+  document_cache_host: "purl-test.stanford.edu"
+  local_workspace_root: "/dor/workspace"
+  transfer_stage_root: "/transfer-stage"
+  local_stacks_root: "/stacks"
+  local_document_cache_root: "/purl/document_cache"
+  web_archiving_stacks: "/web-archiving-stacks/data/collections"
 
 # Suri
 suri:
-  url: 'https://suri.example.com'
+  url: "https://suri.example.com"
 
 version_service:
   # Turn sync_with_preservation to false in a testing environment where you don't
@@ -37,14 +36,14 @@ version_service:
 # URLs
 solr:
   enabled: true
-  select_path: 'select'
+  select_path: "select"
   timeout: 120
-  url: 'https://solr.example.com/solr/collection'
+  url: "https://solr.example.com/solr/collection"
 dor_indexing:
-  url: 'https://dor-indexing-app.example.edu/dor'
-redis_url: 'redis://localhost:6379/'
+  url: "https://dor-indexing-app.example.edu/dor"
+redis_url: "redis://localhost:6379/"
 # This is the redis used by all robots, including the robots running inside DSA.
-robots_redis_url: 'redis://localhost:6379/1'
+robots_redis_url: "redis://localhost:6379/1"
 
 sdr:
   local_workspace_root: /dor/workspace
@@ -58,38 +57,38 @@ rabbitmq:
   password: guest
 
 preservation_catalog:
-  url: 'https://example.org/prescat'
-  token: 'mint-token-with-target-preservation-catalog-rake-generate-token'
+  url: "https://example.org/prescat"
+  token: "mint-token-with-target-preservation-catalog-rake-generate-token"
   read_timeout: 600
 
 purl_fetcher:
-  url: 'https://purl-fetcher.example.edu'
-  token: 'fake-token'
+  url: "https://purl-fetcher.example.edu"
+  token: "fake-token"
 
 # As of may 2024, this is just here to support auditing contents of
 # technical-metadata-service. If the report that uses it (AuditTechnicalMetadataFileList)
 # is removed, see whether this section can be removed.
 technical_metadata:
-  url: 'https://techmd-svc.example.edu'
-  token: 'secret-token'
+  url: "https://techmd-svc.example.edu"
+  token: "secret-token"
 
 cleanup:
-  local_workspace_root: '/dor/workspace'
-  local_assembly_root: '/dor/assembly'
-  local_staging_root: '/sdr-deposit-staging'
-  local_export_home: '/dor/export'
-  local_backup_path: '/dor/stopped'
+  local_workspace_root: "/dor/workspace"
+  local_assembly_root: "/dor/assembly"
+  local_staging_root: "/sdr-deposit-staging"
+  local_export_home: "/dor/export"
+  local_backup_path: "/dor/stopped"
 
 dor:
-  hmac_secret: 'my$ecretK3y'
+  hmac_secret: "my$ecretK3y"
 
 release:
-  purl_base_url: 'https://purl.stanford.edu'
+  purl_base_url: "https://purl.stanford.edu"
 
 goobi:
-  url: 'https://goobi-env.stanford.edu:9292/goobi/api/process/stanfordcreate?token=faketoken'
-  dpg_workflow_name: 'goobiWF'
-  default_goobi_workflow_name: 'Example_Workflow'
+  url: "https://goobi-env.stanford.edu:9292/goobi/api/process/stanfordcreate?token=faketoken"
+  dpg_workflow_name: "goobiWF"
+  default_goobi_workflow_name: "Example_Workflow"
   max_tries: 3
   max_sleep_seconds: 20
   base_sleep_seconds: 2
@@ -111,13 +110,14 @@ catalog:
     sleep_seconds: 10
 
 datacite:
-  prefix: '10.80343'
+  prefix: "10.80343"
   host: fake.datacite.example.com
 
 sidekiq:
-  latency_threshold: 900 # number of seconds above which okcomputer check for sidekiq latency fails
-                         # latency is expected to be temporarily big if lots of content is accessioned all at once
-                         # see https://github.com/sidekiq/sidekiq/wiki/Monitoring#monitoring-queue-latency
+  latency_threshold:
+    900 # number of seconds above which okcomputer check for sidekiq latency fails
+    # latency is expected to be temporarily big if lots of content is accessioned all at once
+    # see https://github.com/sidekiq/sidekiq/wiki/Monitoring#monitoring-queue-latency
 
 honeybadger_checkins:
   embargo_release: ~
@@ -145,8 +145,7 @@ indexer:
 # They are omitted from indexing in wps field by WorkflowSolrDocument
 # and are not returned by Workflow::TemplateService.templates.
 # Note that some of these workflows are still in use and are still indexed in other fields.
-skip_workflows:
-  -accession2WF
+skip_workflows: -accession2WF
   -sdrMigrationWF
   -dpgImageWF
   -sdrAuditWF

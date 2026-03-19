@@ -29,19 +29,12 @@ class RefreshDescriptionFromCatalog
     # No identifiers to refresh from.
     return Failure() unless identifiers.any?
 
-    if Settings.enabled_features.use_marc
-      marc_hash = marc_service.marc
-      return Failure() if marc_hash.nil?
+    marc_hash = marc_service.marc
+    return Failure() if marc_hash.nil?
 
-      marc = MARC::Record.new_from_hash(marc_hash)
+    marc = MARC::Record.new_from_hash(marc_hash)
 
-      description_props = Cocina::FromMarc::Description.props(marc:, druid:)
-    else
-      return Failure() if mods_service.mods.nil?
-
-      description_props = Cocina::Models::Mapping::FromMods::Description.props(mods: mods_service.mods_ng, druid:,
-                                                                               label: cocina_object.label)
-    end
+    description_props = Cocina::FromMarc::Description.props(marc:, druid:)
 
     return Failure() if description_props.nil?
 
@@ -56,11 +49,6 @@ class RefreshDescriptionFromCatalog
   # @raises Catalog::MarcService::MarcServiceError
   def marc_service
     @marc_service ||= Catalog::MarcService.new(**identifiers)
-  end
-
-  # @raises Catalog::MarcService::MarcServiceError
-  def mods_service
-    @mods_service ||= Catalog::ModsService.new(marc_service:)
   end
 
   def identifiers

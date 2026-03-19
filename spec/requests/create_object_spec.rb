@@ -16,15 +16,10 @@ RSpec.describe 'Create object' do
 
   let(:data) { item.to_json }
   let(:druid) { 'druid:gg777gg7777' }
-  let(:mods_service) do
-    instance_double(Catalog::ModsService, mods:, mods_ng: Nokogiri::XML(mods))
-  end
   let(:marc_service) { instance_double(Catalog::MarcService) }
-  let(:mods) { nil }
 
   before do
     allow(SuriService).to receive(:mint_id).and_return(druid)
-    allow(Catalog::ModsService).to receive(:new).and_return(mods_service)
     allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
 
     allow(Indexer).to receive(:reindex)
@@ -129,18 +124,11 @@ RSpec.describe 'Create object' do
       end
 
       context 'when no object with the source id exists and the save is successful' do
-        let(:mods) do
-          <<~XML
-            <mods xmlns:xlink="http://www.w3.org/1999/xlink"
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xmlns="http://www.loc.gov/mods/v3" version="3.3"
-                  xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
-              <titleInfo>
-                <title>#{title}</title>
-              </titleInfo>
-            </mods>
-          XML
+        let(:marc_service) do
+          instance_double(Catalog::MarcService, marc: nil)
         end
+
+        let(:expected_label) { label }
 
         it 'registers the object with the registration service' do
           expect do
@@ -222,10 +210,6 @@ RSpec.describe 'Create object' do
           JSON
         end
 
-        before do
-          allow(Settings.enabled_features).to receive(:use_marc).and_return(true)
-        end
-
         it 'registers the object with the registration service' do
           expect do
             post '/v1/objects',
@@ -245,23 +229,7 @@ RSpec.describe 'Create object' do
 
       context 'when connecting to catalog fails' do
         before do
-          allow(mods_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogResponseError)
-        end
-
-        it 'draws an error message' do
-          post '/v1/objects',
-               params: data,
-               headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(response.body).to eq '{"errors":[{"status":"502","title":"Catalog connection error",' \
-                                      '"detail":"Unable to read descriptive metadata from the catalog"}]}'
-          expect(response).to have_http_status :bad_gateway
-        end
-      end
-
-      context 'when requesting MARC while connecting to catalog fails' do
-        before do
           allow(marc_service).to receive(:marc).and_raise(Catalog::MarcService::CatalogResponseError)
-          allow(Settings.enabled_features).to receive(:use_marc).and_return(true)
         end
 
         it 'draws an error message' do
@@ -276,7 +244,7 @@ RSpec.describe 'Create object' do
 
       context 'when catalog returns a 404' do
         before do
-          allow(mods_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogRecordNotFoundError,
+          allow(marc_service).to receive(:marc).and_raise(Catalog::MarcService::CatalogRecordNotFoundError,
                                                           'unable to find folio instance hrid')
         end
 
@@ -292,7 +260,7 @@ RSpec.describe 'Create object' do
 
       context 'when other error refreshing MARC' do
         before do
-          allow(mods_service).to receive(:mods).and_raise(Catalog::MarcService::MarcServiceError)
+          allow(marc_service).to receive(:marc).and_raise(Catalog::MarcService::MarcServiceError)
         end
 
         it 'draws an error message' do
