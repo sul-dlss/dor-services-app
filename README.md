@@ -226,7 +226,16 @@ The export step should take about 4 hours.  The compression step takes a little 
 
 Once this is done, you may download the file to your local computer and run `bin/validate-data` (from cocina-models).
 
-Validating the whole dataset takes about 1 hour on a 2023 MacBook Pro. 
+Validating the whole dataset takes about 1 hour on a 2023 MacBook Pro.
+
+You can also query this dataset using `jq` to find interesting records:
+```
+# Just a list of druids on stdout
+xzcat cocina-head-versions-2026-03-12.jsonl.xz|jq 'select(.description.contributor[]?.type == "person") | .externalIdentifier'
+
+# A CSV file
+xzcat cocina-head-versions-2026-03-12.jsonl.xz |jq -r '.externalIdentifier as $id | .description.contributor[]?.role[]? | select(has("code")) | [$id, .code] | @csv' > role_codes.csv
+```
 
 
 ### Generate a list of druids from Solr query
