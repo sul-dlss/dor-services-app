@@ -43,7 +43,7 @@ module Migrators
           end
         end
         # relatedResource > adminMetadata > contributor
-        related_resource&.dig('adminMetadata', 'contributor')&.each do |contributor|
+        related_resource&.dig('adminMetadata')&.each do |contributor|
           remove_parallel_contributor(contributor)
         end
         # relatedResource > adminMetadata > event > contributor
