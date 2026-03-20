@@ -237,6 +237,13 @@ xzcat cocina-head-versions-2026-03-12.jsonl.xz|jq 'select(.description.contribut
 xzcat cocina-head-versions-2026-03-12.jsonl.xz |jq -r '.externalIdentifier as $id | .description.contributor[]?.role[]? | select(has("code")) | [$id, .code] | @csv' > role_codes.csv
 ```
 
+#### Getting more information
+
+If you want hrid/title/collection/etc for the problems logged above. You can scp your `role_codes.csv` file to the sdr-infra server and run:
+```
+./bin/find-item-details.rb -f ~jcoyne85/role_codes.csv  > full_role_codes.csv
+```
+
 
 ### Generate a list of druids from Solr query
 
