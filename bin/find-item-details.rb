@@ -35,8 +35,10 @@ def result(batch)
 end
 
 def create_report(csv)
-  puts %w[druid title collection_druid collection_title apo apo_name project_tag HRID object_type].join(',')
+  puts %w[druid title second_column collection_druid collection_title apo apo_name project_tag HRID
+          object_type].join(',')
   csv.each_slice(BATCH_SIZE) do |batch|
+    second_column = batch.to_h
     result(batch).each do |row|
       druid = row['druid']
       collection_druid = row['collection_id']
@@ -48,6 +50,7 @@ def create_report(csv)
       puts [
         druid,
         (row['structured_title'] || row['title'])&.delete("\n"),
+        second_column[druid],
         collection_druid,
         collection_name,
         apo_druid,
