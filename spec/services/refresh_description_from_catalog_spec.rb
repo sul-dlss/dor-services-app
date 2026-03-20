@@ -39,13 +39,8 @@ RSpec.describe RefreshDescriptionFromCatalog do
     instance_double(Catalog::MarcService)
   end
 
-  let(:mods_service) do
-    instance_double(Catalog::ModsService, mods:, mods_ng: Nokogiri::XML(mods))
-  end
-
   before do
     allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
-    allow(Catalog::ModsService).to receive(:new).and_return(mods_service)
   end
 
   describe '#refresh' do
@@ -56,30 +51,24 @@ RSpec.describe RefreshDescriptionFromCatalog do
     let(:cocina_object) do
       build(:dro, id: druid).new(description:, identification:)
     end
-
-    let(:mods) do
-      <<~XML
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.7">
-          <titleInfo>
-            <title>Paying for College</title>
-          </titleInfo>
-        </mods>
-      XML
+    let(:marc) do
+      { fields: [
+        { '245': {
+          ind1: '1',
+          ind2: '0',
+          subfields: [
+            {
+              a: 'Gaudy night /'
+            },
+            {
+              c: 'by Dorothy L. Sayers.'
+            }
+          ]
+        } }
+      ] }.with_indifferent_access
     end
-
-    before do
-      allow(Settings.enabled_features).to receive(:use_marc).and_return(false)
-    end
-
-    context 'when reading from Folio' do
-      it 'gets the data from Folio and returns success' do
-        expect(refresh.success?).to be(true)
-        expect(refresh.value!.description_props).to eq({
-                                                         title: [{ value: 'Paying for College' }],
-                                                         purl: Purl.for(druid:)
-                                                       })
-        expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a123')
-      end
+    let(:marc_service) do
+      instance_double(Catalog::MarcService, marc:)
     end
 
     context 'when barcode provided and configured to use barcode' do
@@ -127,30 +116,6 @@ RSpec.describe RefreshDescriptionFromCatalog do
     end
 
     context 'when refreshing directly from MARC' do
-      let(:marc) do
-        { fields: [
-          { '245': {
-            ind1: '1',
-            ind2: '0',
-            subfields: [
-              {
-                a: 'Gaudy night /'
-              },
-              {
-                c: 'by Dorothy L. Sayers.'
-              }
-            ]
-          } }
-        ] }.with_indifferent_access
-      end
-      let(:marc_service) do
-        instance_double(Catalog::MarcService, marc:)
-      end
-
-      before do
-        allow(Settings.enabled_features).to receive(:use_marc).and_return(true)
-      end
-
       context 'when reading from Folio' do
         let(:today) { Time.zone.now.strftime('%Y-%m-%d') }
 
@@ -205,36 +170,6 @@ RSpec.describe RefreshDescriptionFromCatalog do
 
     context 'when admin policy' do
       let(:cocina_object) { build(:admin_policy) }
-
-      it 'returns failure' do
-        expect(refresh.failure?).to be(true)
-      end
-    end
-
-    context 'when fetching metadata fails' do
-      before do
-        allow(mods_service).to receive(:mods).and_raise(Catalog::MarcService::CatalogResponseError)
-      end
-
-      it 'does not rescue the error' do
-        expect { refresh }.to raise_error(Catalog::MarcService::CatalogResponseError)
-      end
-    end
-
-    context 'when mods is nil' do
-      before do
-        allow(mods_service).to receive(:mods).and_return(nil)
-      end
-
-      it 'returns failure' do
-        expect(refresh.failure?).to be(true)
-      end
-    end
-
-    context 'when Descriptive.props returns nil' do
-      before do
-        allow(Cocina::Models::Mapping::FromMods::Description).to receive(:props).and_return(nil)
-      end
 
       it 'returns failure' do
         expect(refresh.failure?).to be(true)

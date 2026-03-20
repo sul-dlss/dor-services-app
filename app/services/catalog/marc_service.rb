@@ -18,13 +18,6 @@ module Catalog
       @folio_instance_hrid = folio_instance_hrid
     end
 
-    # @return [Nokogiri::XML::Document] MARCXML XML
-    # @raise CatalogResponseError
-    # @raise CatalogRecordNotFoundError
-    def marcxml_ng
-      @marcxml_ng ||= Nokogiri::XML(marc_record.to_xml.to_s)
-    end
-
     # @return [MARC::Record] MARC record
     # @raise CatalogResponseError
     # @raise CatalogRecordNotFoundError

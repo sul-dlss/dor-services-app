@@ -40,6 +40,13 @@ RSpec.describe 'Create object' do
         }
       )
     end
+    let(:today) { Time.zone.today.iso8601 }
+
+    let(:expected_description) do
+      expected.description.new(adminMetadata: { note: [{
+                                 value: "Converted from MARC to Cocina #{today}", type: 'record origin'
+                               }] })
+    end
 
     let(:identification) do
       {
@@ -48,33 +55,34 @@ RSpec.describe 'Create object' do
         ]
       }
     end
-    let(:mods) do
-      <<~XML
-        <mods xmlns:xlink="http://www.w3.org/1999/xlink"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xmlns="http://www.loc.gov/mods/v3" version="3.3"
-              xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
-          <titleInfo>
-            <title>#{title}</title>
-          </titleInfo>
-        </mods>
-      XML
+
+    let(:marc) do
+      { fields: [
+        { '245': {
+          ind1: '1',
+          ind2: '0',
+          subfields: [
+            {
+              a: 'This is my title /'
+            }
+          ]
+        } }
+      ] }.deep_stringify_keys
     end
 
-    let(:mods_service) do
-      instance_double(Catalog::ModsService, mods:, mods_ng: Nokogiri::XML(mods))
+    let(:marc_service) do
+      instance_double(Catalog::MarcService, marc:)
     end
 
     before do
-      allow(Catalog::ModsService).to receive(:new).and_return(mods_service)
-      allow(Catalog::MarcService).to receive(:new)
+      allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
     end
 
     it 'creates the collection' do
       post '/v1/objects',
            params: data,
            headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-      expect(response.body).to equal_cocina_model(expected)
+      expect(response.body).to equal_cocina_model(expected.new(description: expected_description))
       expect(response).to have_http_status(:created)
       expect(response.location).to eq "/v1/objects/#{druid}"
       expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a8888')

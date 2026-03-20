@@ -10,13 +10,9 @@ RSpec.describe CreateObjectService do
   describe '#create' do
     let(:druid) { 'druid:bc123df4567' }
     let(:lock) { "#{druid}=0" }
-    let(:mods_service) do
-      instance_double(Catalog::ModsService, mods:, mods_ng: Nokogiri::XML(mods))
-    end
     let(:marc_service) do
       instance_double(Catalog::MarcService)
     end
-    let(:mods) { nil }
 
     before do
       allow(Cocina::ObjectValidator).to receive(:validate)
@@ -26,7 +22,6 @@ RSpec.describe CreateObjectService do
       allow(store).to receive(:add_project_tag)
       allow(SuriService).to receive(:mint_id).and_return(druid)
       allow(EventFactory).to receive(:create)
-      allow(Catalog::ModsService).to receive(:new).and_return(mods_service)
       allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
     end
 
@@ -77,21 +72,24 @@ RSpec.describe CreateObjectService do
 
     context 'when refreshing from folio with a refresh=true folio instance hrid' do
       let(:requested_cocina_object) { build(:request_dro, folio_instance_hrids: ['a999123']) }
-
-      let(:mods) do
-        <<~XML
-          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.7">
-            <titleInfo>
-              <title>The Well-Grounded Rubyist</title>
-            </titleInfo>
-          </mods>
-        XML
+      let(:marc_service) do
+        instance_double(Catalog::MarcService, marc:)
+      end
+      let(:marc) do
+        { fields: [
+          { '245': {
+            ind1: '1',
+            ind2: '0',
+            subfields: [
+              { a: 'The Well-Grounded Rubyist /' }
+            ]
+          } }
+        ] }.with_indifferent_access
       end
 
       it 'adds to description' do
         expect(store.create(requested_cocina_object).description.title.first.value).to eq 'The Well-Grounded Rubyist'
         expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a999123')
-        expect(mods_service).to have_received(:mods)
       end
     end
 
@@ -111,11 +109,6 @@ RSpec.describe CreateObjectService do
             ]
           } }
         ] }.with_indifferent_access
-      end
-
-      before do
-        allow(Settings.enabled_features).to receive(:use_marc).and_return(true)
-        allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
       end
 
       it 'with a basic title it adds to description' do
@@ -143,11 +136,6 @@ RSpec.describe CreateObjectService do
             ]
           } }
         ] }.with_indifferent_access
-      end
-
-      before do
-        allow(Settings.enabled_features).to receive(:use_marc).and_return(true)
-        allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
       end
 
       it 'adds to description' do

@@ -26,19 +26,19 @@ RSpec.describe 'Refresh metadata' do
   let(:cocina_object) do
     build(:dro, id: druid, label: 'A new map of Africa', admin_policy_id: apo_druid).new(identification:, description:)
   end
+  let(:today) { Time.zone.today.iso8601 }
+
   let(:updated_cocina_object) do
     build(:dro, id: druid, label: 'A new map of Africa', admin_policy_id: apo_druid).new(
       identification:,
       description: {
-        title: [{ value: 'Paying for College', status: 'primary' }],
+        title: [{ value: 'Paying for College' }],
         purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}",
         adminMetadata: {
           note: [
             {
               type: 'record origin',
-              value: "Converted from MARCXML to MODS version 3.7 using\n\t\t\t\t" \
-                     "MARC21slim2MODS3-7_SDR_v2-8.xsl (SUL 3.7 version 2.8 20251217; LC Revision 1.140\n\t\t\t\t" \
-                     '20200717)'
+              value: "Converted from MARC to Cocina #{today}"
             }
           ]
         }
@@ -48,12 +48,22 @@ RSpec.describe 'Refresh metadata' do
   let(:cocina_apo_object) { build(:admin_policy, id: apo_druid) }
 
   let(:marc) do
-    MARC::Record.new.tap do |record|
-      record << MARC::DataField.new('245', '0', ' ', ['a', 'Paying for College'])
-    end
+    { fields: [
+      { '245': {
+        ind1: '1',
+        ind2: '0',
+        subfields: [
+          {
+            a: 'Paying for College'
+          }
+        ]
+      } }
+    ] }.deep_stringify_keys
   end
 
-  let(:marc_service) { Catalog::MarcService.new }
+  let(:marc_service) do
+    instance_double(Catalog::MarcService, marc:)
+  end
 
   before do
     allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
@@ -117,7 +127,7 @@ RSpec.describe 'Refresh metadata' do
 
     context 'when folio instance hrid not found' do
       before do
-        allow(marc_service).to receive(:marcxml_ng).and_raise(Catalog::MarcService::CatalogRecordNotFoundError)
+        allow(marc_service).to receive(:marc).and_raise(Catalog::MarcService::CatalogRecordNotFoundError)
       end
 
       it 'returns a 400 error' do
@@ -142,8 +152,8 @@ RSpec.describe 'Refresh metadata' do
       end
 
       before do
-        allow(marc_service).to receive(:marcxml_ng).and_raise(Catalog::MarcService::CatalogResponseError,
-                                                              'Something went wrong')
+        allow(marc_service).to receive(:marc).and_raise(Catalog::MarcService::CatalogResponseError,
+                                                        'Something went wrong')
       end
 
       it 'returns a 500 error' do
@@ -151,28 +161,6 @@ RSpec.describe 'Refresh metadata' do
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:internal_server_error)
         expect(response.body).to match('Something went wrong')
-      end
-    end
-
-    context 'when transform error' do
-      let(:xslt) { instance_double(Nokogiri::XSLT::Stylesheet) }
-
-      let(:marc_service) { Catalog::MarcService.new(barcode: '1234') }
-
-      before do
-        allow(marc_service).to receive(:marc).and_return(MARC::Record.new)
-        allow(Nokogiri).to receive(:XSLT).and_return(xslt)
-        allow(xslt).to receive(:transform)
-          .and_raise(RuntimeError,
-                     'Cannot add attributes to an element if children have been already added to the element.')
-      end
-
-      it 'returns a 500 error' do
-        post '/v1/objects/druid:mk420bs7601/refresh_metadata',
-             headers: { 'Authorization' => "Bearer #{jwt}" }
-        expect(response).to have_http_status(:internal_server_error)
-        expect(response.body)
-          .to match('Cannot add attributes to an element if children have been already added to the element.')
       end
     end
 
