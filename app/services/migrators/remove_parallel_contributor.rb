@@ -20,20 +20,47 @@ module Migrators
       return unless version.description
 
       # Remove parallelContributor from all contributors
-      # including any in event, parallelEvent, relatedResource, and adminMetadata
+      # contributor
       remove_parallel_contributor(version.description)
+
       version.description['event']&.each do |event|
+        # event > contributor
         remove_parallel_contributor(event)
+        # event > parallelEvent > contributor
         event['parallelEvent']&.each do |parallel_event|
           remove_parallel_contributor(parallel_event)
         end
       end
       version.description['relatedResource']&.each do |related_resource|
+        # relatedResource > contributor
         remove_parallel_contributor(related_resource)
+        # relatedResource > event > contributor
+        related_resource['event']&.each do |event|
+          remove_parallel_contributor(event)
+          # relatedResource > event > parallelEvent > contributor
+          event['parallelEvent']&.each do |parallel_event|
+            remove_parallel_contributor(parallel_event)
+          end
+        end
+        # relatedResource > adminMetadata > contributor
+        related_resource&.dig('adminMetadata', 'contributor')&.each do |contributor|
+          remove_parallel_contributor(contributor)
+        end
+        # relatedResource > adminMetadata > event > contributor
+        related_resource&.dig('adminMetadata', 'event')&.each do |event|
+          remove_parallel_contributor(event)
+          # adminMetadata > event > parallelEvent > contributor
+          event['parallelEvent']&.each do |parallel_event|
+            remove_parallel_contributor(parallel_event)
+          end
+        end
       end
+      # adminMetadata > contributor
       remove_parallel_contributor(version.description&.dig('adminMetadata'))
-      version.description.dig('adminMetadata', 'event')&.each do |event|
+      # adminMetadata > event
+      version.description&.dig('adminMetadata', 'event')&.each do |event|
         remove_parallel_contributor(event)
+        # adminMetadata > event > parallelEvent > contributor
         event['parallelEvent']&.each do |parallel_event|
           remove_parallel_contributor(parallel_event)
         end
