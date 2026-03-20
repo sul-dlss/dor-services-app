@@ -106,7 +106,8 @@ module Migrators
 
       obj.versions.each do |version|
         next unless version.has_cocina?
-        version.to_cocina_with_metadata 
+
+        version.to_cocina_with_metadata
       end
 
       if mode == :migrate
