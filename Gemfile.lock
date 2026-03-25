@@ -574,7 +574,7 @@ GEM
       ostruct
     stringio (3.2.0)
     strings-ansi (0.2.0)
-    sul_orcid_client (0.8.0)
+    sul_orcid_client (0.8.1)
       activesupport (>= 4.2)
       cocina-models (~> 0.90)
       faraday

@@ -75,11 +75,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
           }],
           identifier: [
             {
-              value: '0000-1111-2222-3333',
-              type: 'ORCID',
-              source: {
-                uri: 'https://orcid.org'
-              }
+              uri: 'https://orcid.org/0000-1111-2222-3333',
+              type: 'ORCID'
             }
           ]
         },
@@ -114,11 +111,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
           type: 'person',
           identifier: [
             {
-              uri: 'https://sandbox.orcid.org/1111-2222-3333-4444',
-              type: 'ORCID',
-              source: {
-                code: 'orcid'
-              }
+              uri: 'https://orcid.org/1111-2222-3333-4444',
+              type: 'ORCID'
             }
           ]
         },
@@ -139,11 +133,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
           ],
           identifier: [
             {
-              value: '0000-0001-5321-289X',
-              type: 'ORCID',
-              source: {
-                code: 'orcid'
-              }
+              uri: 'https://orcid.org/0000-0001-5321-289X',
+              type: 'ORCID'
             }
           ]
         }
@@ -427,7 +418,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'subject_topic_tesim' => %w[Economics cats],
         'originInfo_place_placeTerm_tesim' => 'Garden City, N. Y',
         'contributor_orcids_ssimdv' => ['https://orcid.org/0000-1111-2222-3333',
-                                        'https://sandbox.orcid.org/1111-2222-3333-4444', 'https://orcid.org/0000-0001-5321-289X']
+                                        'https://orcid.org/1111-2222-3333-4444', 'https://orcid.org/0000-0001-5321-289X']
       )
     end
     # rubocop:enable Style/StringHashKeys
