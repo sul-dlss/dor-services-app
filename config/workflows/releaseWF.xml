@@ -15,4 +15,8 @@
     <prereq>release-publish</prereq>
     <label>Generates catalog record with PURL URI</label>
   </process>
+  <process name="update-holdings">
+    <prereq>update-marc</prereq>
+    <label>Updates or creates holdings record for SDR</label>
+  </process>
 </workflow-def>
