@@ -38,11 +38,8 @@ RSpec.describe Robots::DorRepo::Accession::UpdateOrcidWork, type: :robot do
   let(:identifiers) do
     [
       {
-        value: '0000-0003-3437-349X',
-        type: 'ORCID',
-        source: {
-          uri: 'https://sandbox.orcid.org'
-        }
+        uri: 'https://sandbox.orcid.org/0000-0003-3437-349X',
+        type: 'ORCID'
       }
     ]
   end
