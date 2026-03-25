@@ -30,7 +30,7 @@ module Catalog
         'instance_id' => instance_id,
         'permanent_location_id' => sdr_location,
         'source_id' => 'f32d531e-df79-46b3-8932-cdd35f7a2264', # FOLIO
-        'holdings_type_id' => '5684e4a3-9279-4463-b6ee-20ae21bbec07', # Electronic
+        'holdings_type_id' => '996f93e2-5b5e-4cf2-9168-33ced1f95eed', # Electronic
         'discoverySuppress' => false
       }
       FolioClient.create_holdings(holdings_record: holdings_record)

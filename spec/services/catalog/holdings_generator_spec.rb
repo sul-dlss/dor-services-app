@@ -103,7 +103,7 @@ RSpec.describe Catalog::HoldingsGenerator do
               'instance_id' => '1234-5678-0000',
               'permanent_location_id' => 'efgh-1111',
               'source_id' => 'f32d531e-df79-46b3-8932-cdd35f7a2264',
-              'holdings_type_id' => '5684e4a3-9279-4463-b6ee-20ae21bbec07',
+              'holdings_type_id' => '996f93e2-5b5e-4cf2-9168-33ced1f95eed',
               'discoverySuppress' => false
             )
           )
@@ -136,7 +136,7 @@ RSpec.describe Catalog::HoldingsGenerator do
               'instance_id' => '1234-5678-0000',
               'permanent_location_id' => 'abcd-0000',
               'source_id' => 'f32d531e-df79-46b3-8932-cdd35f7a2264',
-              'holdings_type_id' => '5684e4a3-9279-4463-b6ee-20ae21bbec07',
+              'holdings_type_id' => '996f93e2-5b5e-4cf2-9168-33ced1f95eed',
               'discoverySuppress' => false
             )
           )
