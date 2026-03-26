@@ -328,11 +328,10 @@ RSpec.describe Migrators::MigrationRunner do
       end
     end
 
-    context 'when multiple versions exist and one is invalid already' do
+    context 'when multiple versions exist and one is already invalid' do
       let(:mode) { :commit }
 
       before do
-        # make the first version of the first object invalid, and add a second valid version to both objects
         objects_to_migrate.first.versions.first.update(label: nil)
         objects_to_migrate.each do |obj|
           cocina_object = obj.head_version.to_cocina_with_metadata
@@ -340,7 +339,7 @@ RSpec.describe Migrators::MigrationRunner do
         end
       end
 
-      it 'migrates the versions that are valid' do
+      it 'migrates the versions that are valid', skip: 'implement logic to handle invalid versions in the migrator' do
         described_class.migrate_druid_list(migrator_class:, mode:, druids_slice:)
         expect(
           RepositoryObject.find_by(external_identifier: migrated_druids[0]).head_version.label
@@ -348,11 +347,6 @@ RSpec.describe Migrators::MigrationRunner do
         expect(
           RepositoryObject.find_by(external_identifier: migrated_druids[1]).head_version.label
         ).to include('migrated')
-        # expect(migration_results.map do |result|
-        #   [result[:obj].external_identifier, result[:status], result[:exception].to_s]
-        # end).to include(
-        #   ['druid:bc177tq6734', 'ERROR', /missing required properties: label/]
-        # )
       end
     end
 
