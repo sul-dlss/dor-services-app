@@ -90,11 +90,11 @@ RSpec.describe 'Refresh metadata' do
       }
     end
 
-    it 'updates the metadata and saves the changes' do
+    it 'observes default behavior and does not update the metadata' do
       post '/v1/objects/druid:mk420bs7601/refresh_metadata',
            headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response).to be_successful
-      expect(UpdateObjectService).to have_received(:update).with(cocina_object: updated_cocina_object)
+      expect(response).not_to be_successful
+      expect(UpdateObjectService).not_to have_received(:update)
     end
   end
 
@@ -165,7 +165,7 @@ RSpec.describe 'Refresh metadata' do
     end
 
     context 'when Cocina validation error' do
-      let(:result) { Success(RefreshDescriptionFromCatalog::Result.new(description_props, nil)) }
+      let(:result) { Success(RefreshDescriptionFromCatalog::Result.new(description_props)) }
       let(:description_props) do
         # Missing title
         {

@@ -115,6 +115,26 @@ RSpec.describe RefreshDescriptionFromCatalog do
       end
     end
 
+    context 'when barcode provided and configured but folio refresh is set to false' do
+      let(:identification) do
+        {
+          sourceId: 'sul:abc',
+          barcode: '36105123456789',
+          catalogLinks: [
+            {
+              catalog: 'folio',
+              catalogRecordId: 'a123',
+              refresh: false
+            }
+          ]
+        }
+      end
+
+      it 'returns failure' do
+        expect(refresh.failure?).to be(true)
+      end
+    end
+
     context 'when refreshing directly from MARC' do
       context 'when reading from Folio' do
         let(:today) { Time.zone.now.strftime('%Y-%m-%d') }

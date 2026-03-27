@@ -4,7 +4,7 @@
 class RefreshDescriptionFromCatalog
   include Dry::Monads[:result]
 
-  Result = Struct.new('Result', :description_props, :mods_ng_xml)
+  Result = Struct.new('Result', :description_props)
 
   # @param [Cocina::Models::DRO|Collection|APO|Agreement|RequestDRO|RequestCollection|RequestAPO|RequestAgreement] cocina_object to refresh #rubocop:disable Layout/LineLength
   # @param [string] druid
@@ -66,6 +66,10 @@ class RefreshDescriptionFromCatalog
 
   def barcode
     return nil unless use_barcode
+    # if there is a folio HRID and it's set to refresh: false do not refresh
+    return nil if Array(cocina_object.identification&.catalogLinks).find do |link|
+      link.catalog == 'folio' && !link.refresh
+    end
 
     cocina_object.identification.try(:barcode)
   end
