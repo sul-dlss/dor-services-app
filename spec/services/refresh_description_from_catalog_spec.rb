@@ -44,9 +44,8 @@ RSpec.describe RefreshDescriptionFromCatalog do
   end
 
   describe '#refresh' do
-    subject(:refresh) { described_class.run(cocina_object:, druid:, use_barcode:) }
+    subject(:refresh) { described_class.run(cocina_object:, druid:) }
 
-    let(:use_barcode) { false }
     let(:apo_druid) { 'druid:pp000pp0000' }
     let(:cocina_object) do
       build(:dro, id: druid).new(description:, identification:)
@@ -69,50 +68,6 @@ RSpec.describe RefreshDescriptionFromCatalog do
     end
     let(:marc_service) do
       instance_double(Catalog::MarcService, marc:)
-    end
-
-    context 'when barcode provided and configured to use barcode' do
-      let(:use_barcode) { true }
-
-      let(:identification) do
-        {
-          sourceId: 'sul:abc',
-          barcode: '36105123456789',
-          catalogLinks: [
-            {
-              catalog: 'folio',
-              catalogRecordId: 'a123',
-              refresh: true
-            }
-          ]
-        }
-      end
-
-      it 'gets the data from Folio by barcode and returns success' do
-        expect(refresh.success?).to be(true)
-        expect(Catalog::MarcService).to have_received(:new).with(barcode: '36105123456789', folio_instance_hrid: 'a123')
-      end
-    end
-
-    context 'when barcode provided and configured to not use barcode' do
-      let(:identification) do
-        {
-          sourceId: 'sul:abc',
-          barcode: '36105123456789',
-          catalogLinks: [
-            {
-              catalog: 'folio',
-              catalogRecordId: 'a123',
-              refresh: true
-            }
-          ]
-        }
-      end
-
-      it 'gets the data from Folio without barcode and returns success' do
-        expect(refresh.success?).to be(true)
-        expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a123')
-      end
     end
 
     context 'when refreshing directly from MARC' do

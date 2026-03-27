@@ -4,20 +4,19 @@
 class RefreshDescriptionFromCatalog
   include Dry::Monads[:result]
 
-  Result = Struct.new('Result', :description_props, :mods_ng_xml)
+  Result = Struct.new('Result', :description_props)
 
   # @param [Cocina::Models::DRO|Collection|APO|Agreement|RequestDRO|RequestCollection|RequestAPO|RequestAgreement] cocina_object to refresh #rubocop:disable Layout/LineLength
   # @param [string] druid
-  # @return [Dry::Monads::Results] returns Failure if there was no refreshable catalog link or barcode, otherwise
+  # @return [Dry::Monads::Results] returns Failure if there was no refreshable catalog link, otherwise
   # Success (Result with description_props and mods)
-  def self.run(cocina_object:, druid:, use_barcode: false)
-    new(cocina_object:, druid:, use_barcode:).run
+  def self.run(cocina_object:, druid:)
+    new(cocina_object:, druid:).run
   end
 
-  def initialize(cocina_object:, druid:, use_barcode:)
+  def initialize(cocina_object:, druid:)
     @cocina_object = cocina_object
     @druid = druid
-    @use_barcode = use_barcode
   end
 
   # @return [Dry::Monads::Results] Returns Failure if description unchanged (e.g., no refreshable identifiers),
@@ -44,7 +43,7 @@ class RefreshDescriptionFromCatalog
 
   private
 
-  attr_reader :cocina_object, :druid, :use_barcode
+  attr_reader :cocina_object, :druid
 
   # @raises Catalog::MarcService::MarcServiceError
   def marc_service
@@ -53,8 +52,7 @@ class RefreshDescriptionFromCatalog
 
   def identifiers
     {
-      folio_instance_hrid:,
-      barcode:
+      folio_instance_hrid:
     }.compact
   end
 
@@ -62,11 +60,5 @@ class RefreshDescriptionFromCatalog
     Array(cocina_object.identification&.catalogLinks).find do |link|
       link.catalog == 'folio' && link.refresh
     end&.catalogRecordId
-  end
-
-  def barcode
-    return nil unless use_barcode
-
-    cocina_object.identification.try(:barcode)
   end
 end
