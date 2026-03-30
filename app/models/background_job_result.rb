@@ -10,6 +10,6 @@ class BackgroundJobResult < ApplicationRecord
 
   # Deserialize JSON output field as a Hash with indifferent access
   def output
-    @output ||= super.with_indifferent_access
+    @output ||= super.is_a?(Hash) ? super.with_indifferent_access : super
   end
 end

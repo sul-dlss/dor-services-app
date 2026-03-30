@@ -3,13 +3,14 @@
 require 'rails_helper'
 
 RSpec.describe Migrators::MigrationRunner do
+  let(:migrated_druids) { Migrators::Exemplar::TEST_DRUIDS }
+
   let!(:objects_to_migrate) do
     [
-      create(:repository_object, :with_repository_object_version, :closed, external_identifier: 'druid:bc177tq6734'),
-      create(:repository_object, :with_repository_object_version, :closed, external_identifier: 'druid:rd069rk9728')
+      create(:repository_object, :with_repository_object_version, :closed, external_identifier: migrated_druids.first),
+      create(:repository_object, :with_repository_object_version, :closed, external_identifier: migrated_druids.second)
     ]
   end
-  let(:migrated_druids) { %w[druid:bc177tq6734 druid:rd069rk9728] }
 
   let!(:objects_to_ignore) do
     create_list(:repository_object, 2, :with_repository_object_version, :closed)
@@ -92,6 +93,15 @@ RSpec.describe Migrators::MigrationRunner do
         it 'limits total druids to the sample size' do
           descriptors = described_class.batch_descriptors(migrator_class:, sample: 2)
           expect(descriptors.sum(&:last)).to eq(2)
+        end
+      end
+
+      context 'when batch_size is provided' do
+        it 'uses the provided batch_size instead of the default' do
+          descriptors = described_class.batch_descriptors(migrator_class:, sample: nil, batch_size: 2)
+
+          expect(descriptors.map(&:last)).to eq([2, 2, 1])
+          expect(descriptors.sum(&:last)).to eq(RepositoryObject.count)
         end
       end
     end
@@ -249,8 +259,8 @@ RSpec.describe Migrators::MigrationRunner do
           expect(migration_results.map do |result|
             [result[:obj].external_identifier, result[:status], result[:exception].to_s]
           end).to include(
-            ['druid:bc177tq6734', 'ERROR', /missing required properties: label/],
-            ['druid:rd069rk9728', 'ERROR', /missing required properties: label/]
+            [migrated_druids[0], 'ERROR', /missing required properties: label/],
+            [migrated_druids[1], 'ERROR', /missing required properties: label/]
           )
           expect(migration_results.size).to eq 2
 
@@ -349,8 +359,8 @@ RSpec.describe Migrators::MigrationRunner do
           expect(migration_results.map do |result|
             [result[:obj].external_identifier, result[:status], result[:exception].to_s]
           end).to include(
-            ['druid:bc177tq6734', 'ERROR', /this is an error from the migrator/],
-            ['druid:rd069rk9728', 'ERROR', /this is an error from the migrator/]
+            [migrated_druids[0], 'ERROR', /this is an error from the migrator/],
+            [migrated_druids[1], 'ERROR', /this is an error from the migrator/]
           )
           expect(migration_results.size).to eq 2
         end

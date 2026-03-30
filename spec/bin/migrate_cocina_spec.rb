@@ -7,8 +7,8 @@ RSpec.describe 'bin/migrate-cocina' do # rubocop:disable RSpec/DescribeClass
     @apo = create(:repository_object, :admin_policy,
                   :with_repository_object_version, external_identifier: 'druid:hy787xj5878')
     @objects_to_migrate = [
-      create(:repository_object, :with_repository_object_version, external_identifier: 'druid:bc177tq6734'),
-      create(:repository_object, :with_repository_object_version, external_identifier: 'druid:rd069rk9728')
+      create(:repository_object, :with_repository_object_version, external_identifier: Migrators::Exemplar.druids.first),
+      create(:repository_object, :with_repository_object_version, external_identifier: Migrators::Exemplar.druids.second)
     ]
     @objects_to_ignore = create_list(:repository_object, 2, :with_repository_object_version)
   end
@@ -19,7 +19,7 @@ RSpec.describe 'bin/migrate-cocina' do # rubocop:disable RSpec/DescribeClass
     @apo.destroy!
   end
 
-  let(:migrated_druids) { %w[druid:bc177tq6734 druid:rd069rk9728] }
+  let(:migrated_druids) { Migrators::Exemplar.druids }
   let(:objects_to_migrate) do
     @objects_to_migrate
   end
@@ -48,7 +48,6 @@ RSpec.describe 'bin/migrate-cocina' do # rubocop:disable RSpec/DescribeClass
 
     expect(cmd_result[:status].exitstatus).to eq 0
 
-    expect(RepositoryObject.find_by(external_identifier: migrated_druids[0]).head_version.label).to include('migrated')
     expect(RepositoryObject.find_by(external_identifier: migrated_druids[0]).head_version.label).to include('migrated')
     expect(RepositoryObject.find_by(external_identifier: migrated_druids[1]).head_version.label).to include('migrated')
     expect(

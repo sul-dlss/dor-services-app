@@ -28,18 +28,18 @@ module Migrators
     #
     # @return [Array<Array(Integer, Integer)>] array of [index_or_after_id, limit] pairs
     # rubocop:disable Metrics/AbcSize
-    def self.batch_descriptors(migrator_class:, sample:)
+    def self.batch_descriptors(migrator_class:, sample:, batch_size: BATCH_SIZE)
       specific_druids = migrator_class.druids.presence
       if specific_druids
         druids = sample ? specific_druids.take(sample) : specific_druids
-        druids.each_slice(BATCH_SIZE).map.with_index { |slice, i| [i, slice.size] }
+        druids.each_slice(batch_size).map.with_index { |slice, i| [i, slice.size] }
       else
         # Pluck only integer PKs once in parent to compute keyset boundaries (~8 bytes each).
         # Workers then fetch their slice via indexed WHERE id > after_id LIMIT n queries.
         scope = RepositoryObject.order(:id)
         scope = scope.limit(sample) if sample
         ids = scope.pluck(:id)
-        slices = ids.each_slice(BATCH_SIZE).to_a
+        slices = ids.each_slice(batch_size).to_a
         after_ids = [0] + slices[0..-2].map(&:last)
         slices.zip(after_ids).map { |slice, after_id| [after_id, slice.size] }
       end
