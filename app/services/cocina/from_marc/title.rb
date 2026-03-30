@@ -75,7 +75,9 @@ module Cocina
       end
 
       def has_subfield_a_without_non_sorting?(field)
-        field && field.indicator2 == '0' && field.subfields.any? { |subfield| subfield.code == 'a' } &&
+        field && ['0', ' '].include?(field.indicator2) && field.subfields.any? do |subfield|
+          subfield.code == 'a'
+        end &&
           field.subfields.none? { |subfield| %w[b f g k n p s].include? subfield.code }
       end
 

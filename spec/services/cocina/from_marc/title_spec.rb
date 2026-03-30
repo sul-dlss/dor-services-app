@@ -68,6 +68,21 @@ RSpec.describe Cocina::FromMarc::Title do
       end
     end
 
+    context 'with a 245a and empty non-sorting (ind2)' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '245' => { 'ind1' => ' ', 'ind2' => ' ',
+                         'subfields' => [{ 'a' => 'Gaudy night /' }, { 'c' => 'by Dorothy L. Sayers' }] } }
+          ]
+        }
+      end
+
+      it 'returns the title' do
+        expect(build).to eq([{ value: 'Gaudy night' }])
+      end
+    end
+
     context 'with title with subtitle (245 abfgknps)' do
       let(:marc_hash) do
         {
