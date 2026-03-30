@@ -15,6 +15,8 @@ class DruidsRefreshFalseBarcode
       ro.external_identifier IN druid_list
       AND
       jsonb_path_exists(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio" && @.refresh == false)')
+      AND
+      jsonb_path_exists(rov.identification, '$.barcode')
       AND ro.head_version_id = rov.id;
   SQL
 
