@@ -12,15 +12,16 @@ class DruidsRefreshFalseBarcode
       jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio" && @.refresh == false).catalogRecordId') ->> 0 as catalog_record_id
     FROM repository_objects AS ro, repository_object_versions AS rov
     WHERE
-      ro.external_identifier IN ('#{DRUIDS.join("','")}')
+      ro.external_identifier IN druid_list
       AND
       jsonb_path_exists(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio" && @.refresh == false)')
       AND ro.head_version_id = rov.id;
   SQL
 
   def self.report
+    sql_query = SQL.gsub('druid_list', "(#{DRUIDS.map { |druid| "'#{druid}'" }.join(',')})")
     puts %w[druid structured_title title catalog_record_id].join(',')
-    rows(SQL).compact.each { |row| puts row }
+    rows(sql_query).compact.each { |row| puts row }
   end
 
   def self.rows(sql_query)
