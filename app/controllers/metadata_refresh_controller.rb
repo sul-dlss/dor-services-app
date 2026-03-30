@@ -6,7 +6,7 @@ class MetadataRefreshController < ApplicationController
 
   def refresh
     result = RefreshDescriptionFromCatalog.run(
-      cocina_object: @cocina_object, druid: @cocina_object.externalIdentifier, use_barcode: true
+      cocina_object: @cocina_object, druid: @cocina_object.externalIdentifier, use_barcode: false
     )
     if result.failure?
       return json_api_error(status: :unprocessable_content, title: 'No available catalog link or barcodes',

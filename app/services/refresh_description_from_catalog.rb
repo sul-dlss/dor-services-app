@@ -4,7 +4,7 @@
 class RefreshDescriptionFromCatalog
   include Dry::Monads[:result]
 
-  Result = Struct.new('Result', :description_props, :mods_ng_xml)
+  Result = Struct.new('Result', :description_props)
 
   # @param [Cocina::Models::DRO|Collection|APO|Agreement|RequestDRO|RequestCollection|RequestAPO|RequestAgreement] cocina_object to refresh #rubocop:disable Layout/LineLength
   # @param [string] druid
@@ -21,13 +21,12 @@ class RefreshDescriptionFromCatalog
   end
 
   # @return [Dry::Monads::Results] Returns Failure if description unchanged (e.g., no refreshable identifiers),
-  # otherwise Success (Result with description_props and mods)
+  # otherwise Success (Result with description_props)
   # @raises Catalog::MarcService::MarcServiceError
-  def run # rubocop:disable Metrics/AbcSize
+  def run
     # Admin policies don't have identification.
     return Failure() if cocina_object.admin_policy?
-    # No identifiers to refresh from.
-    return Failure() unless identifiers.any?
+    return Failure() unless refreshable?
 
     marc_hash = marc_service.marc
     return Failure() if marc_hash.nil?
@@ -38,7 +37,6 @@ class RefreshDescriptionFromCatalog
 
     return Failure() if description_props.nil?
 
-    # No longer returning MODS since CreateObjectService has method to generate a label from the description.title
     Success(Result.new(description_props))
   end
 
@@ -68,5 +66,12 @@ class RefreshDescriptionFromCatalog
     return nil unless use_barcode
 
     cocina_object.identification.try(:barcode)
+  end
+
+  def refreshable?
+    # Requires an identifier but if any catalog links exist that are set to refresh: false, do not refresh
+    identifiers.any? && Array(cocina_object.identification&.catalogLinks).find do |link|
+      link.catalog == 'folio' && !link.refresh
+    end.blank?
   end
 end

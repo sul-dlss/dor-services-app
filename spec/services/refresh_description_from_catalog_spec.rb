@@ -73,7 +73,6 @@ RSpec.describe RefreshDescriptionFromCatalog do
 
     context 'when barcode provided and configured to use barcode' do
       let(:use_barcode) { true }
-
       let(:identification) do
         {
           sourceId: 'sul:abc',
@@ -94,7 +93,7 @@ RSpec.describe RefreshDescriptionFromCatalog do
       end
     end
 
-    context 'when barcode provided and configured to not use barcode' do
+    context 'when barcode provided but using barcode default of false' do
       let(:identification) do
         {
           sourceId: 'sul:abc',
@@ -115,32 +114,64 @@ RSpec.describe RefreshDescriptionFromCatalog do
       end
     end
 
-    context 'when refreshing directly from MARC' do
-      context 'when reading from Folio' do
-        let(:today) { Time.zone.now.strftime('%Y-%m-%d') }
+    context 'when barcode provided and configured but folio refresh is set to false' do
+      let(:use_barcode) { true }
+      let(:identification) do
+        {
+          sourceId: 'sul:abc',
+          barcode: '36105123456789',
+          catalogLinks: [
+            {
+              catalog: 'folio',
+              catalogRecordId: 'a123',
+              refresh: false
+            }
+          ]
+        }
+      end
 
-        it 'gets the data from Folio and returns success' do
-          expect(refresh.success?).to be(true)
-          expect(refresh.value!.description_props).to eq({
-                                                           title: [{ value: 'Gaudy night' }],
-                                                           purl: Purl.for(druid:),
+      it 'returns failure' do
+        expect(refresh.failure?).to be(true)
+        expect(Catalog::MarcService).not_to have_received(:new)
+      end
+    end
+
+    context 'when refreshing with a valid catalog link' do
+      let(:identification) do
+        {
+          sourceId: 'sul:abc',
+          catalogLinks: [
+            {
+              catalog: 'folio',
+              catalogRecordId: 'a123',
+              refresh: true
+            }
+          ]
+        }
+      end
+      let(:today) { Time.zone.now.strftime('%Y-%m-%d') }
+
+      it 'gets the data from Folio and returns success' do
+        expect(refresh.success?).to be(true)
+        expect(refresh.value!.description_props).to eq({
+                                                         title: [{ value: 'Gaudy night' }],
+                                                         purl: Purl.for(druid:),
+                                                         note: [
+                                                           {
+                                                             value: 'by Dorothy L. Sayers.',
+                                                             type: 'statement of responsibility'
+                                                           }
+                                                         ],
+                                                         adminMetadata: {
                                                            note: [
                                                              {
-                                                               value: 'by Dorothy L. Sayers.',
-                                                               type: 'statement of responsibility'
+                                                               value: "Converted from MARC to Cocina #{today}",
+                                                               type: 'record origin'
                                                              }
-                                                           ],
-                                                           adminMetadata: {
-                                                             note: [
-                                                               {
-                                                                 value: "Converted from MARC to Cocina #{today}",
-                                                                 type: 'record origin'
-                                                               }
-                                                             ]
-                                                           }
-                                                         })
-          expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a123')
-        end
+                                                           ]
+                                                         }
+                                                       })
+        expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a123')
       end
     end
 
