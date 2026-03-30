@@ -73,7 +73,6 @@ RSpec.describe RefreshDescriptionFromCatalog do
 
     context 'when barcode provided and configured to use barcode' do
       let(:use_barcode) { true }
-
       let(:identification) do
         {
           sourceId: 'sul:abc',
@@ -94,7 +93,7 @@ RSpec.describe RefreshDescriptionFromCatalog do
       end
     end
 
-    context 'when barcode provided and using barcode default of false' do
+    context 'when barcode provided but using barcode default of false' do
       let(:identification) do
         {
           sourceId: 'sul:abc',
@@ -116,6 +115,7 @@ RSpec.describe RefreshDescriptionFromCatalog do
     end
 
     context 'when barcode provided and configured but folio refresh is set to false' do
+      let(:use_barcode) { true }
       let(:identification) do
         {
           sourceId: 'sul:abc',
@@ -132,6 +132,7 @@ RSpec.describe RefreshDescriptionFromCatalog do
 
       it 'returns failure' do
         expect(refresh.failure?).to be(true)
+        expect(Catalog::MarcService).not_to have_received(:new)
       end
     end
 
