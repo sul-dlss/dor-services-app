@@ -80,14 +80,23 @@ def consolidate_outputs(job_result_ids)
   end
 end
 
-job_result_ids = start_migrate(migrator_class:, sample: options[:sample], processes: options[:processes],
-                               mode: options[:mode], batch_size: options[:batch])
-puts "Enqueued #{job_result_ids.size} jobs with BackgroundJobResult ids: #{job_result_ids.inspect}"
+job_result_ids = if File.exist?(LAST_MIGRATION_FILENAME)
+                   puts "#{LAST_MIGRATION_FILENAME} found, so resuming"
+                   JSON.parse(File.read(LAST_MIGRATION_FILENAME))
+
+                 else
+                   start_migrate(migrator_class:, sample: options[:sample], processes: options[:processes],
+                                 mode: options[:mode], batch_size: options[:batch]).tap do |job_result_ids|
+                     puts "Enqueued #{job_result_ids.size} jobs with BackgroundJobResult ids: #{job_result_ids.inspect}"
+                     File.write(LAST_MIGRATION_FILENAME, job_result_ids.to_json)
+                   end
+                 end
 
 wait_for_jobs(job_result_ids)
 
 consolidate_outputs(job_result_ids)
 
 puts 'Output written to migrate-cocina.csv'
+File.delete(LAST_MIGRATION_FILENAME)
 
 exit 0
