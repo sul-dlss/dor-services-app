@@ -104,10 +104,14 @@ module Migrators
 
       migrator.migrate # This is where the actual migration happens
 
-      updated_cocina_object = migrator.updated_head_version_cocina_object
+      obj.versions.each do |version|
+        next unless version.has_cocina?
+
+        version.to_cocina_with_metadata
+      end
 
       if mode == :migrate
-        updated_cocina_object = UpdateObjectService.update(cocina_object: updated_cocina_object,
+        updated_cocina_object = UpdateObjectService.update(cocina_object: migrator.updated_head_version_cocina_object,
                                                            skip_open_check: !migrator.version?)
         Publish::MetadataTransferService.publish(druid: obj.external_identifier) if migrator.publish?
         if migrator.version?

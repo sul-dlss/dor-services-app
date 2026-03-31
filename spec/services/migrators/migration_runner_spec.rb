@@ -328,31 +328,48 @@ RSpec.describe Migrators::MigrationRunner do
       end
     end
 
+    context 'when multiple versions exist and one is already invalid' do
+      let(:mode) { :commit }
+
+      before do
+        objects_to_migrate.first.versions.first.update(label: nil)
+        objects_to_migrate.each do |obj|
+          cocina_object = obj.head_version.to_cocina_with_metadata
+          VersionService.open(cocina_object:, description: 'migration test', from_version: obj.head_version.version)
+        end
+      end
+
+      it 'migrates the versions that are valid', skip: 'implement logic to handle invalid versions in the migrator' do
+        described_class.migrate_druid_list(migrator_class:, mode:, druids_slice:)
+        expect(
+          RepositoryObject.find_by(external_identifier: migrated_druids[0]).head_version.label
+        ).to include('migrated')
+        expect(
+          RepositoryObject.find_by(external_identifier: migrated_druids[1]).head_version.label
+        ).to include('migrated')
+      end
+    end
+
     context 'when using dryrun mode' do
+      let(:migrator_class) { Migrators::ExemplarWithLabelRemoval }
       let(:mode) { :dryrun }
+      let(:object) do
+        create(:repository_object, :with_repository_object_version, :closed, external_identifier: 'druid:bc177tq6734')
+      end
+      let!(:objects_to_migrate) { [object] }
+      let(:druids_slice) { [object.external_identifier] }
 
-      context 'when an error raised during migration' do
-        let(:migrator_class) { Migrators::Exemplar }
-        let(:migrator_instance) do
-          instance_double(migrator_class, migrate?: true, version?: false, migrate: 'Migrated label')
-        end
-
+      context 'when a version fails cocina deserialization' do
         before do
-          allow(migrator_class).to receive(:new).and_return(migrator_instance)
-          allow(migrator_instance).to receive(:updated_head_version_cocina_object).and_raise(
-            StandardError, 'this is an error from the migrator'
-          )
+          allow(Rails.logger).to receive(:info)
         end
 
-        it 'returns an error status and exception for the migrated objects' do
-          migration_results = described_class.migrate_druid_list(migrator_class:, mode:, druids_slice:)
-          expect(migration_results.map do |result|
+        it 'logs the failed object' do
+          expect(described_class.migrate_druid_list(migrator_class:, mode:, druids_slice:).map do |result|
             [result[:obj].external_identifier, result[:status], result[:exception].to_s]
           end).to include(
-            ['druid:bc177tq6734', 'ERROR', /this is an error from the migrator/],
-            ['druid:rd069rk9728', 'ERROR', /this is an error from the migrator/]
+            ['druid:bc177tq6734', 'ERROR', /missing required properties: label/]
           )
-          expect(migration_results.size).to eq 2
         end
       end
     end
