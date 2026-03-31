@@ -15,7 +15,7 @@ RSpec.describe MigrationJob do
   let(:error) { StandardError.new('something went wrong') }
 
   before do
-    allow(Migrators::MigrationRunner).to receive(:druids_for_batch)
+    allow(Migrators::BatchSupport).to receive(:druids_for_batch)
       .with(migrator_class:, batch_descriptor:)
       .and_return(druids_slice)
 

@@ -47,7 +47,7 @@ migrator_class = ARGV.shift.constantize
 def start_migrate(migrator_class:, sample:, processes:, mode:, batch_size:)
   # Pre-compute keyset pagination boundaries (a single indexed scan)
   # so workers can each fetch their slice with an efficient WHERE id > ? LIMIT n query
-  batch_descriptors = Migrators::MigrationRunner.batch_descriptors(migrator_class:, sample:, batch_size:)
+  batch_descriptors = Migrators::BatchSupport.batch_descriptors(migrator_class:, sample:, batch_size:)
   batch_descriptors.map do |batch_descriptor|
     job_result = BackgroundJobResult.create!(status: :pending)
     MigrationJob.perform_later(migrator_class:, batch_descriptor:, mode:, background_job_result: job_result)
