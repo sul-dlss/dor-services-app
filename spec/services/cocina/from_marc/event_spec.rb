@@ -281,9 +281,39 @@ RSpec.describe Cocina::FromMarc::Event do
         }, {
           type: 'manufacture',
           location: [{ value: '(Twickenham' }],
-          contributor: [{ name: [{ value: 'CTD Printers', role: [{ value: 'manufacturer' }] }] }],
+          contributor: [{ name: [{ value: 'CTD Printers' }], role: [{ value: 'manufacturer' }] }],
           date: [{ value: '1974)', type: 'manufacture' }]
         }]
+      end
+    end
+
+    context 'with manufacture event (260 efg) with manufacturer and location but no date' do
+      let(:marc_hash) do
+        { 'fields' => [
+          { '260' =>
+            { 'ind1' => ' ',
+              'ind2' => ' ',
+              'subfields' =>
+                [{ 'a' => 'Sarajevo :' },
+                 { 'b' => 'Javnost,' },
+                 { 'c' => '1991.' },
+                 { 'e' => '(Beograd :' },
+                 { 'f' => 'BIGZ)' }] } }
+        ] }
+      end
+
+      it 'returns manufacture event with no date' do
+        expect(build).to eq [{
+          type: 'publication',
+          location: [{ value: 'Sarajevo' }],
+          contributor: [{ name: [{ value: 'Javnost' }], role: [{ value: 'publisher' }] }],
+          date: [{ value: '1991', type: 'publication' }]
+        },
+                             {
+                               type: 'manufacture',
+                               location: [{ value: '(Beograd' }],
+                               contributor: [{ name: [{ value: 'BIGZ)' }], role: [{ value: 'manufacturer' }] }]
+                             }]
       end
     end
 

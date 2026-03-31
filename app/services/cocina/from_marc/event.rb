@@ -184,15 +184,18 @@ module Cocina
 
         manufacture_location = field.subfields.find { |subfield| subfield.code == 'e' }&.value
         manufacturer = field.subfields.find { |subfield| subfield.code == 'f' }&.value
-        return nil unless manufacture_location || manufacturer
-
         manufacture_date = field.subfields.find { |subfield| subfield.code == 'g' }&.value
-        {
-          type: 'manufacture',
-          location: [{ value: Util.strip_punctuation(manufacture_location) }],
-          contributor: [{ name: [{ value: Util.strip_punctuation(manufacturer), role: [{ value: 'manufacturer' }] }] }],
-          date: [{ value: manufacture_date, type: 'manufacture' }]
-        }
+        return nil unless manufacture_location || manufacturer || manufacture_date
+
+        event = { type: 'manufacture' }
+        event[:location] = [{ value: Util.strip_punctuation(manufacture_location) }] if manufacture_location.present?
+        if manufacturer.present?
+          event[:contributor] =
+            [{ name: [{ value: Util.strip_punctuation(manufacturer) }],
+               role: [{ value: 'manufacturer' }] }]
+        end
+        event[:date] = [{ value: manufacture_date, type: 'manufacture' }] if manufacture_date.present?
+        event
       end
 
       attr_reader :marc
