@@ -81,9 +81,7 @@ end
 # @return [String] path to temporary CSV file written
 def migrate_slice(migrator_class:, mode:, druids_slice:, temp_dir:, index:)
   results = Migrators::MigrationRunner.migrate_druid_list(migrator_class:, mode:, druids_slice:).map do |result|
-    [result[:obj].id, result[:obj].external_identifier, result[:status]].tap do |r|
-      r << result[:exception].message if result[:exception].present?
-    end
+    [result[:id], result[:external_identifier], result[:status], result[:exception]]
   end
   write_results_to_temp_file(results, temp_dir, index)
 end

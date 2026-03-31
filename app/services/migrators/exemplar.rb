@@ -4,10 +4,10 @@ module Migrators
   # Very basic migrator that will be used to test the cocina migration runner and illustrate usage.
   # See parent class and Migrators::MigrationRunner for more information.
   class Exemplar < Base
-    # NOTE: these are QA druids from 2023-02-23
+    # NOTE: these are QA druids from 2026-03-30
     TEST_DRUIDS = [
-      'druid:bc177tq6734',
-      'druid:rd069rk9728'
+      'druid:bb029tv6105',
+      'druid:bb086gc7372'
     ].freeze
 
     def self.druids

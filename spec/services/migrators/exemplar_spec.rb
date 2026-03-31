@@ -16,7 +16,7 @@ RSpec.describe Migrators::Exemplar do
   describe '#migrate?' do
     context 'when a matching druid' do
       let(:repository_object) do
-        create(:repository_object, :with_repository_object_version, external_identifier: 'druid:bc177tq6734')
+        create(:repository_object, :with_repository_object_version, external_identifier: described_class.druids.first)
       end
 
       it 'returns true' do

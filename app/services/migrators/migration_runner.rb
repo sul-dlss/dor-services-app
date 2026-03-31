@@ -28,18 +28,18 @@ module Migrators
     #
     # @return [Array<Array(Integer, Integer)>] array of [index_or_after_id, limit] pairs
     # rubocop:disable Metrics/AbcSize
-    def self.batch_descriptors(migrator_class:, sample:)
+    def self.batch_descriptors(migrator_class:, sample:, batch_size: BATCH_SIZE)
       specific_druids = migrator_class.druids.presence
       if specific_druids
         druids = sample ? specific_druids.take(sample) : specific_druids
-        druids.each_slice(BATCH_SIZE).map.with_index { |slice, i| [i, slice.size] }
+        druids.each_slice(batch_size).map.with_index { |slice, i| [i, slice.size] }
       else
         # Pluck only integer PKs once in parent to compute keyset boundaries (~8 bytes each).
         # Workers then fetch their slice via indexed WHERE id > after_id LIMIT n queries.
         scope = RepositoryObject.order(:id)
         scope = scope.limit(sample) if sample
         ids = scope.pluck(:id)
-        slices = ids.each_slice(BATCH_SIZE).to_a
+        slices = ids.each_slice(batch_size).to_a
         after_ids = [0] + slices[0..-2].map(&:last)
         slices.zip(after_ids).map { |slice, after_id| [after_id, slice.size] }
       end
@@ -67,9 +67,9 @@ module Migrators
     end
 
     def self.migrate_druid_list(migrator_class:, mode:, druids_slice:)
-      RepositoryObject.where(external_identifier: druids_slice).map do |obj|
-        migrate_repository_object(migrator_class:, obj:, mode:)
-      end
+      RepositoryObject.where(external_identifier: druids_slice)
+                      .find_each(batch_size: 50)
+                      .map { |obj| migrate_repository_object(migrator_class:, obj:, mode:) }
     end
 
     # @param [Migrators::Base] migrator_class applied to obj to migrate it
@@ -84,9 +84,10 @@ module Migrators
       raise ArgumentError("invalid mode #{mode}") unless MODES.include?(mode)
 
       migrator = migrator_class.new(obj)
+      obj_id_attrs = { id: obj.id, external_identifier: obj.external_identifier }
 
-      return { obj:, status: (migrator.migrate? ? 'ERROR' : 'SUCCESS') } if mode == :verify
-      return { obj:, status: 'SKIPPED' } unless migrator.migrate?
+      return { status: (migrator.migrate? ? 'ERROR' : 'SUCCESS'), **obj_id_attrs } if mode == :verify
+      return { status: 'SKIPPED', **obj_id_attrs } unless migrator.migrate?
 
       if migrator.version?
         open_version(cocina_object: obj.head_version.to_cocina_with_metadata,
@@ -122,10 +123,10 @@ module Migrators
         end
       end
       Rails.logger.info("#{obj.external_identifier} successfully migrated")
-      { obj:, status: 'SUCCESS' }
+      { status: 'SUCCESS', **obj_id_attrs }
     rescue StandardError => e
       Rails.logger.info("#{obj.external_identifier} failed to migrate: #{e.message} -- #{e.backtrace}")
-      { obj:, status: 'ERROR', exception: e }
+      { status: 'ERROR', exception: e.message, **obj_id_attrs }
     end
 
     private_class_method def self.open_version(cocina_object:, version_description:, mode:)
