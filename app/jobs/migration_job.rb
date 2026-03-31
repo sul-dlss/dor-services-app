@@ -16,9 +16,7 @@ class MigrationJob < ApplicationJob
 
     results = Migrators::MigrationRunner.migrate_druid_list(migrator_class:, mode: mode,
                                                             druids_slice:).map do |result|
-      [result[:obj].id, result[:obj].external_identifier, result[:status]].tap do |r|
-        r << result[:exception].message if result[:exception].present?
-      end
+      [result[:id], result[:external_identifier], result[:status], result[:exception]]
     end
 
     background_job_result.update!(output: results, status: :complete)

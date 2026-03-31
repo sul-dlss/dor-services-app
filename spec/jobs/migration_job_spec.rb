@@ -21,8 +21,8 @@ RSpec.describe MigrationJob do
 
     allow(Migrators::MigrationRunner).to receive(:migrate_druid_list)
       .and_return([
-                    { obj: obj1, status: 'SUCCESS' },
-                    { obj: obj2, status: 'ERROR', exception: error }
+                    { id: 1, external_identifier: druid1, status: 'SUCCESS', exception: nil },
+                    { id: 2, external_identifier: druid2, status: 'ERROR', exception: error.message }
                   ])
   end
 
@@ -32,7 +32,7 @@ RSpec.describe MigrationJob do
                                   background_job_result:)
     end.to change(background_job_result, :status).from('pending').to('complete')
     expect(background_job_result.output).to eq([
-                                                 [1, druid1, 'SUCCESS'],
+                                                 [1, druid1, 'SUCCESS', nil],
                                                  [2, druid2, 'ERROR', 'something went wrong']
                                                ])
     expect(Migrators::MigrationRunner).to have_received(:migrate_druid_list)

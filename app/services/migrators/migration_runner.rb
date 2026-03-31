@@ -67,9 +67,9 @@ module Migrators
     end
 
     def self.migrate_druid_list(migrator_class:, mode:, druids_slice:)
-      RepositoryObject.where(external_identifier: druids_slice).map do |obj|
-        migrate_repository_object(migrator_class:, obj:, mode:)
-      end
+      RepositoryObject.where(external_identifier: druids_slice)
+                      .find_each(batch_size: 50)
+                      .map { |obj| migrate_repository_object(migrator_class:, obj:, mode:) }
     end
 
     # @param [Migrators::Base] migrator_class applied to obj to migrate it
@@ -84,9 +84,10 @@ module Migrators
       raise ArgumentError("invalid mode #{mode}") unless MODES.include?(mode)
 
       migrator = migrator_class.new(obj)
+      obj_id_attrs = { id: obj.id, external_identifier: obj.external_identifier }
 
-      return { obj:, status: (migrator.migrate? ? 'ERROR' : 'SUCCESS') } if mode == :verify
-      return { obj:, status: 'SKIPPED' } unless migrator.migrate?
+      return { status: (migrator.migrate? ? 'ERROR' : 'SUCCESS'), **obj_id_attrs } if mode == :verify
+      return { status: 'SKIPPED', **obj_id_attrs } unless migrator.migrate?
 
       if migrator.version?
         open_version(cocina_object: obj.head_version.to_cocina_with_metadata,
@@ -122,10 +123,10 @@ module Migrators
         end
       end
       Rails.logger.info("#{obj.external_identifier} successfully migrated")
-      { obj:, status: 'SUCCESS' }
+      { status: 'SUCCESS', **obj_id_attrs }
     rescue StandardError => e
       Rails.logger.info("#{obj.external_identifier} failed to migrate: #{e.message} -- #{e.backtrace}")
-      { obj:, status: 'ERROR', exception: e }
+      { status: 'ERROR', exception: e.message, **obj_id_attrs }
     end
 
     private_class_method def self.open_version(cocina_object:, version_description:, mode:)

@@ -256,8 +256,9 @@ RSpec.describe Migrators::MigrationRunner do
           expect(objects_to_ignore.second.head_version.label).not_to be_blank
 
           migration_results = described_class.migrate_druid_list(migrator_class:, mode:, druids_slice:)
+
           expect(migration_results.map do |result|
-            [result[:obj].external_identifier, result[:status], result[:exception].to_s]
+            [result[:external_identifier], result[:status], result[:exception]]
           end).to include(
             [migrated_druids[0], 'ERROR', /missing required properties: label/],
             [migrated_druids[1], 'ERROR', /missing required properties: label/]
@@ -357,7 +358,7 @@ RSpec.describe Migrators::MigrationRunner do
         it 'returns an error status and exception for the migrated objects' do
           migration_results = described_class.migrate_druid_list(migrator_class:, mode:, druids_slice:)
           expect(migration_results.map do |result|
-            [result[:obj].external_identifier, result[:status], result[:exception].to_s]
+            [result[:external_identifier], result[:status], result[:exception]]
           end).to include(
             [migrated_druids[0], 'ERROR', /this is an error from the migrator/],
             [migrated_druids[1], 'ERROR', /this is an error from the migrator/]
