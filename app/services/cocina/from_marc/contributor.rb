@@ -42,7 +42,7 @@ module Cocina
       # For 100/700/720
       def build_personal(field, primary: false)
         name_type = case field.indicator1
-                    when '1', '2'
+                    when '0', '1'
                       'person'
                     when '3'
                       'family'
@@ -60,7 +60,7 @@ module Cocina
         return unless field
 
         name = Util.strip_punctuation(field.subfields.select do |subfield|
-          %w[a c q d].include? subfield.code
+          %w[a b c j q d].include? subfield.code
         end.map(&:value).join(' '))
         { value: name }
       end

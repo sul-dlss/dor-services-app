@@ -12,6 +12,7 @@ RSpec.describe Cocina::FromMarc::Contributor do
     let(:marc) { MARC::Record.new_from_hash(marc_hash) }
 
     context 'with Person primary (100 ind1=1)' do
+      # see a895166
       let(:marc_hash) do
         {
           'fields' => [
@@ -40,6 +41,102 @@ RSpec.describe Cocina::FromMarc::Contributor do
       it 'returns person primary contributor' do
         expect(build).to eq [{ type: 'person', status: 'primary',
                                name: [{ value: 'Sayers, Dorothy L. (Dorothy Leigh), 1893-1957.' }] }]
+      end
+    end
+
+    context 'with Person primary (100 ind1=0)' do
+      # see a1008085
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '100' => {
+              'ind1' => '0',
+              'ind2' => ' ',
+              'subfields' => [
+                {
+                  'a' => 'Ptolemy,'
+                },
+                {
+                  'd' => 'active 2nd century.'
+                }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns person primary contributor' do
+        expect(build).to eq [{ type: 'person', status: 'primary',
+                               name: [{ value: 'Ptolemy, active 2nd century.' }] }]
+      end
+
+      context 'when 100$b has a value' do
+        # See a11513944
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '100' => {
+                'ind1' => '0',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => 'Hiroshige,'
+                  },
+                  {
+                    'b' => 'III,'
+                  },
+                  {
+                    'd' => '1842?-1894'
+                  },
+                  {
+                    'e' => 'artist.'
+                  }
+                ]
+              } }
+            ]
+          }
+        end
+
+        it 'returns person primary contributor' do
+          expect(build).to eq [{ type: 'person', status: 'primary',
+                                 name: [{ value: 'Hiroshige, III, 1842?-1894' }],
+                                 role: [{ value: 'artist' }] }]
+        end
+      end
+
+      context 'when 100$j has a value' do
+        # NOTE: $j is not in SDR data currently but it is valid MARC and we need
+        #       to account for it. This is a contrived example to test that it
+        #       is included in the name construction.
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '100' => {
+                'ind1' => '0',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => 'Reynolds, Joshua,'
+                  },
+                  {
+                    'c' => 'Sir,'
+                  },
+                  {
+                    'd' => '1723-1792,'
+                  },
+                  {
+                    'j' => 'Pupil of'
+                  }
+                ]
+              } }
+            ]
+          }
+        end
+
+        it 'returns person primary contributor' do
+          expect(build).to eq [{ type: 'person', status: 'primary',
+                                 name: [{ value: 'Reynolds, Joshua, Sir, 1723-1792, Pupil of' }] }]
+        end
       end
     end
 
@@ -329,6 +426,38 @@ RSpec.describe Cocina::FromMarc::Contributor do
               name: [{ value: 'Міжнародна науково-практична конференція "Константинопольський патріархат в історії України : минуле, сучасне, майбутнє" (2016 : Київ (Украіне))' }], role: [{ value: 'author' }] }
           ]
         end
+      end
+    end
+
+    context 'with Person contributor (700 ind1=0)' do
+      # See a103431
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '700' => {
+              'ind1' => '0',
+              'ind2' => ' ',
+              'subfields' => [
+                {
+                  'a' => 'Maximilian'
+                },
+                {
+                  'b' => 'II,'
+                },
+                {
+                  'c' => 'King of Bavaria,'
+                },
+                {
+                  'd' => '1811-1864.'
+                }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns person contributor' do
+        expect(build).to eq [{ type: 'person', name: [{ value: 'Maximilian II, King of Bavaria, 1811-1864.' }] }]
       end
     end
 
@@ -652,6 +781,7 @@ RSpec.describe Cocina::FromMarc::Contributor do
     end
 
     context 'with Person contributor (720 ind1=1)' do
+      # See 10773110
       let(:marc_hash) do
         {
           'fields' => [
@@ -660,7 +790,10 @@ RSpec.describe Cocina::FromMarc::Contributor do
               'ind2' => ' ',
               'subfields' => [
                 {
-                  'a' => 'Blacklock, Joseph'
+                  'a' => 'Gilly, William,'
+                },
+                {
+                  'e' => 'advisor.'
                 }
               ]
             } }
@@ -669,7 +802,11 @@ RSpec.describe Cocina::FromMarc::Contributor do
       end
 
       it 'returns person contributor' do
-        expect(build).to eq [{ type: 'person', name: [{ value: 'Blacklock, Joseph' }] }]
+        expect(build).to eq [{
+          type: 'person',
+          name: [{ value: 'Gilly, William' }],
+          role: [{ value: 'advisor' }]
+        }]
       end
     end
 
