@@ -42,7 +42,7 @@ module Cocina
       # For 100/700/720
       def build_personal(field, primary: false)
         name_type = case field.indicator1
-                    when '1', '2'
+                    when '0', '1'
                       'person'
                     when '3'
                       'family'
