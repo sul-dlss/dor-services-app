@@ -69,6 +69,75 @@ RSpec.describe Cocina::FromMarc::Contributor do
         expect(build).to eq [{ type: 'person', status: 'primary',
                                name: [{ value: 'Ptolemy, active 2nd century.' }] }]
       end
+
+      context 'when 100$b has a value' do
+        # See a11513944
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '100' => {
+                'ind1' => '0',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => 'Hiroshige,'
+                  },
+                  {
+                    'b' => 'III,'
+                  },
+                  {
+                    'd' => '1842?-1894'
+                  },
+                  {
+                    'e' => 'artist.'
+                  }
+                ]
+              } }
+            ]
+          }
+        end
+
+        it 'returns person primary contributor' do
+          expect(build).to eq [{ type: 'person', status: 'primary',
+                                 name: [{ value: 'Hiroshige, III, 1842?-1894' }],
+                                 role: [{ value: 'artist' }] }]
+        end
+      end
+
+      context 'when 100$j has a value' do
+        # NOTE: $j is not in SDR data currently but it is valid MARC and we need
+        #       to account for it. This is a contrived example to test that it
+        #       is included in the name construction.
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '100' => {
+                'ind1' => '0',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => 'Reynolds, Joshua,'
+                  },
+                  {
+                    'c' => 'Sir,'
+                  },
+                  {
+                    'd' => '1723-1792,'
+                  },
+                  {
+                    'j' => 'Pupil of'
+                  }
+                ]
+              } }
+            ]
+          }
+        end
+
+        it 'returns person primary contributor' do
+          expect(build).to eq [{ type: 'person', status: 'primary',
+                                 name: [{ value: 'Reynolds, Joshua, Sir, 1723-1792, Pupil of' }] }]
+        end
+      end
     end
 
     context 'with Family primary (100 ind1=3)' do
@@ -388,7 +457,7 @@ RSpec.describe Cocina::FromMarc::Contributor do
       end
 
       it 'returns person contributor' do
-        expect(build).to eq [{ type: 'person', name: [{ value: 'Maximilian King of Bavaria, 1811-1864.' }] }]
+        expect(build).to eq [{ type: 'person', name: [{ value: 'Maximilian II, King of Bavaria, 1811-1864.' }] }]
       end
     end
 

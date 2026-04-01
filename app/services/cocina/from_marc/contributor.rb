@@ -60,7 +60,7 @@ module Cocina
         return unless field
 
         name = Util.strip_punctuation(field.subfields.select do |subfield|
-          %w[a c q d].include? subfield.code
+          %w[a b c j q d].include? subfield.code
         end.map(&:value).join(' '))
         { value: name }
       end
