@@ -3,6 +3,17 @@
 require 'rails_helper'
 
 RSpec.describe 'Operations on release tags' do
+  let(:auth_headers) { { 'Authorization' => "Bearer #{jwt}" } }
+  let(:cocina_object) { build(object_type, id: druid) }
+  let(:cocina_object_with_metadata) { Cocina::Models.with_metadata(cocina_object, 'abc123') }
+  let(:collection) { build(:collection) }
+  let!(:collection_tag) do
+    ReleaseTag.create!(druid: collection.externalIdentifier, who: 'petucket', what: 'collection',
+                       released_to: 'PURL Sitemap', release: true)
+              .to_cocina
+  end
+  let(:druid) { 'druid:mx123qw2323' }
+  let(:object_type) { :dro }
   let(:tag) do
     Dor::ReleaseTag.new(
       to: 'Searchworks',
@@ -12,63 +23,42 @@ RSpec.describe 'Operations on release tags' do
       release: true
     )
   end
-  let(:auth_headers) { { 'Authorization' => "Bearer #{jwt}" } }
-  let(:lock) { 'abc123' }
-  let(:druid) { 'druid:mx123qw2323' }
-
-  let(:cocina_object_with_metadata) do
-    Cocina::Models.with_metadata(cocina_object, lock)
-  end
 
   before do
     allow(CocinaObjectStore).to receive_messages(find: cocina_object_with_metadata)
   end
 
   describe '#index' do
-    context 'when a DRO' do
-      let(:cocina_object) do
-        build(:dro, id: druid)
-      end
+    before { ReleaseTag.from_cocina(druid:, tag:).save! }
 
-      before do
-        ReleaseTag.from_cocina(druid:, tag:).save!
-      end
+    it 'returns the release tags' do
+      get "/v1/objects/#{druid}/release_tags", headers: auth_headers
 
+      expect(response.parsed_body).to contain_exactly(tag.to_h.stringify_keys)
+    end
+
+    context 'with public flag turned off' do
       it 'returns the release tags' do
-        get "/v1/objects/#{druid}/release_tags", headers: auth_headers
+        get "/v1/objects/#{druid}/release_tags?public=false", headers: auth_headers
 
         expect(response.parsed_body).to contain_exactly(tag.to_h.stringify_keys)
       end
+    end
 
-      context 'with public' do
-        let(:cocina_object) do
-          build(:dro, id: druid).new(structural: {
-                                       isMemberOf: [collection.externalIdentifier]
-                                     })
-        end
+    context 'with public tags requested' do
+      let(:cocina_object) do
+        build(object_type, id: druid).new(structural: { isMemberOf: [collection.externalIdentifier] })
+      end
 
-        let(:collection) do
-          build(:collection)
-        end
+      it 'returns the release tags' do
+        get "/v1/objects/#{druid}/release_tags?public=true", headers: auth_headers
 
-        let!(:collection_tag) do
-          ReleaseTag.create!(druid: collection.externalIdentifier, who: 'petucket', what: 'collection',
-                             released_to: 'PURL Sitemap', release: true)
-                    .to_cocina
-        end
-
-        it 'returns the release tags' do
-          get "/v1/objects/#{druid}/release_tags?public=true", headers: auth_headers
-
-          expect(response.parsed_body).to contain_exactly(collection_tag.to_h.stringify_keys, tag.to_h.stringify_keys)
-        end
+        expect(response.parsed_body).to contain_exactly(collection_tag.to_h.stringify_keys, tag.to_h.stringify_keys)
       end
     end
 
     context 'when an AdminPolicy' do
-      let(:cocina_object) do
-        build(:admin_policy, id: druid)
-      end
+      let(:object_type) { :admin_policy }
 
       it 'returns unprocessable entity' do
         get "/v1/objects/#{druid}/release_tags", headers: auth_headers
@@ -79,17 +69,9 @@ RSpec.describe 'Operations on release tags' do
   end
 
   describe '#create' do
-    let(:cocina_object) do
-      build(:dro, id: druid)
-    end
+    let(:data) { tag.to_json }
 
-    let(:data) do
-      tag.to_json
-    end
-
-    before do
-      allow(ReleaseTagService).to receive(:create)
-    end
+    before { allow(ReleaseTagService).to receive(:create) }
 
     it 'creates a tag' do
       post "/v1/objects/#{druid}/release_tags",
