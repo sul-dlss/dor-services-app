@@ -16,12 +16,13 @@ class ReleaseTagsController < ApplicationController
                             message: 'Only Collection or DROs can have release tags.')
     end
 
-    json = if params[:public]
+    tags = if ActiveModel::Type::Boolean.new.cast(params[:public])
              PublicMetadataReleaseTagService.for_public_metadata(cocina_object: @cocina_object)
            else
              ReleaseTagService.tags(druid: @cocina_object.externalIdentifier)
            end
-    render json: json
+
+    render json: tags
   end
 
   def create
