@@ -78,17 +78,17 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
-    addressable (2.8.9)
+    addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
     airbrussh (1.6.1)
       sshkit (>= 1.6.1, != 1.7.0)
-    amq-protocol (2.5.1)
+    amq-protocol (2.7.0)
     ast (2.4.3)
     attr_extras (7.1.0)
     base64 (0.3.0)
     bcrypt_pbkdf (1.1.2)
     benchmark (0.5.0)
-    bigdecimal (4.1.0)
+    bigdecimal (4.1.1)
     bootsnap (1.23.0)
       msgpack (~> 1.2)
     builder (3.3.0)
@@ -244,7 +244,7 @@ GEM
       activesupport (>= 6.1)
     graphiql-rails (1.10.5)
       railties
-    graphql (2.5.22)
+    graphql (2.5.23)
       base64
       fiber-storage
       logger
@@ -322,7 +322,7 @@ GEM
       rexml
     marcel (1.1.0)
     mini_mime (1.1.5)
-    minitest (6.0.2)
+    minitest (6.0.3)
       drb (~> 2.0)
       prism (~> 1.5)
     moab-versioning (6.1.2)
@@ -373,7 +373,7 @@ GEM
       benchmark
     optimist (3.2.1)
     ostruct (0.6.3)
-    parallel (1.27.0)
+    parallel (1.28.0)
     parser (3.3.11.1)
       ast (~> 2.4.1)
       racc
@@ -406,7 +406,7 @@ GEM
       activesupport
       faraday (~> 2.1)
     racc (1.8.1)
-    rack (3.2.5)
+    rack (3.2.6)
     rack-console (2.0.0)
       irb
       rack (~> 3.0)
@@ -459,7 +459,7 @@ GEM
       redis-client (>= 0.22.0)
     redis-client (0.28.0)
       connection_pool
-    regexp_parser (2.11.3)
+    regexp_parser (2.12.0)
     reline (0.6.3)
       io-console (~> 0.5)
     request_store (1.7.0)
