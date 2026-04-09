@@ -5,6 +5,8 @@ class RepositoryObjectVersion < ApplicationRecord
   class NoCocina < RuntimeError; end
   self.locking_column = 'lock'
 
+  attr_writer :repository_object_context
+
   belongs_to :repository_object
   has_many :user_versions, dependent: :destroy
 
@@ -39,10 +41,12 @@ class RepositoryObjectVersion < ApplicationRecord
   #       the created date for the object itself; we use the modified date
   #       to show in Purl when a version was made.
   def to_cocina_with_metadata(...)
+    repo_object = repository_object_for_cocina
+
     Cocina::Models.with_metadata(
       to_cocina(...),
-      repository_object.external_lock,
-      created: repository_object.created_at.utc,
+      external_lock_for(repo_object),
+      created: repo_object.created_at.utc,
       modified: updated_at.utc
     )
   end
@@ -61,10 +65,12 @@ class RepositoryObjectVersion < ApplicationRecord
   end
 
   def to_invalid_cocina
+    repo_object = repository_object_for_cocina
+
     Dor::Services::Client::InvalidCocina.new(
       to_h.merge(
-        lock: repository_object.external_lock,
-        created: repository_object.created_at.utc,
+        lock: external_lock_for(repo_object),
+        created: repo_object.created_at.utc,
         modified: updated_at.utc
       )
     )
@@ -72,10 +78,12 @@ class RepositoryObjectVersion < ApplicationRecord
 
   # @return [Hash] RepositoryObjectVersion instance as a hash
   def to_h
+    repo_object = repository_object_for_cocina
+
     {
       cocinaVersion: cocina_version,
       type: content_type,
-      externalIdentifier: repository_object.external_identifier,
+      externalIdentifier: repo_object.external_identifier,
       label:,
       version:,
       access:,
@@ -96,6 +104,18 @@ class RepositoryObjectVersion < ApplicationRecord
   end
 
   private
+
+  def repository_object_for_cocina
+    @repository_object_context || repository_object
+  end
+
+  def external_lock_for(repo_object)
+    # When this version is already known to be the head version,
+    # use its lock directly instead of loading head_version again.
+    head_version_lock = repo_object.head_version_id == id ? lock : repo_object.head_version.lock
+
+    [repo_object.external_identifier, repo_object.lock.to_s, head_version_lock.to_s].join('=')
+  end
 
   def update_object_source_id
     source_id = identification&.fetch('sourceId', nil)

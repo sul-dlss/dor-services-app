@@ -85,6 +85,13 @@ class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
       .select(:external_identifier, :id)
   }
 
+  def head_version
+    super.tap do |repository_object_version|
+      # Reuse the owning object when serializing the head version so we do not reload it just to build Cocina metadata.
+      repository_object_version&.repository_object_context = self
+    end
+  end
+
   delegate :to_cocina, :to_cocina_with_metadata, to: :head_version
 
   def head_user_version

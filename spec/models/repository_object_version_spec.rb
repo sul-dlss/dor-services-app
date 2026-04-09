@@ -187,6 +187,18 @@ RSpec.describe RepositoryObjectVersion do
       it 'returns a Cocina::Models::DRO from the RepositoryObjectVersion' do
         expect(repository_object_version.to_cocina_with_metadata).to be_a(Cocina::Models::DROWithMetadata)
       end
+
+      it 'reuses the inverse head version repository object when available' do
+        created_version = create(:repository_object_version, :with_repository_object, :dro_repository_object_version,
+                                 external_identifier: druid)
+        repository_object = created_version.repository_object
+        repository_object_version = repository_object.head_version
+
+        expect(repository_object_version.head_version_of).to eq(repository_object)
+        allow(repository_object_version).to receive(:repository_object).and_raise('unexpected repository_object lookup')
+
+        expect(repository_object_version.to_cocina_with_metadata).to be_a(Cocina::Models::DROWithMetadata)
+      end
     end
   end
 
