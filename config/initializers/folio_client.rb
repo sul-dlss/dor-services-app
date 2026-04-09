@@ -8,10 +8,8 @@ begin
       username: Settings.catalog.folio.okapi.username,
       password: Settings.catalog.folio.okapi.password
     },
-    okapi_headers: {
-      'X-Okapi-Tenant': Settings.catalog.folio.tenant_id,
-      'User-Agent': "folio_client #{FolioClient::VERSION}; dor-services-app #{Rails.env}"
-    }
+    tenant_id: Settings.catalog.folio.tenant_id,
+    user_agent: "folio_client #{FolioClient::VERSION}; dor-services-app #{Rails.env}"
   )
 rescue StandardError => e
   # as of v0.1.0, folio_client tries to connect immediately upon configuration, which would
