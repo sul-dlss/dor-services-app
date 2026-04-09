@@ -23,7 +23,7 @@ RSpec.describe Migrators::RemoveParallelContributor do
     end
     let(:contributor) { [{ 'name' => 'Test Contributor', 'parallelContributor' => [] }] }
     let(:related_resource) do
-      [{ 'title' => 'Test Title', 'contributor' => contributor }]
+      [{ 'title' => 'Test Related Resource Title', 'contributor' => contributor, 'event' => event, 'adminMetadata' => admin_metadata }]
     end
     let(:event) do
       [{ 'name' => 'Test Event', 'contributor' => contributor, 'parallelEvent' => [{ 'contributor' => contributor }] }]
@@ -34,36 +34,50 @@ RSpec.describe Migrators::RemoveParallelContributor do
     end
 
     it 'removes parallelContributor from contributors in events, relatedResources, adminMetadata' do
-      migrated_description = migrated_model_hash['description']
-      expect(migrated_description['contributor']).to eq([{ 'name' => 'Test Contributor' }])
-      expect(migrated_description['event']).to eq([{ 'name' => 'Test Event',
-                                                     'contributor' => [{
-                                                       'name' => 'Test Contributor'
-                                                     }],
-                                                     'parallelEvent' => [{ 'contributor' => [{
-                                                       'name' => 'Test Contributor'
-                                                     }] }] }])
-      expect(migrated_description['relatedResource']).to eq([{ 'title' => 'Test Title',
-                                                               'contributor' => [{
-                                                                 'name' => 'Test Contributor'
-                                                               }] }])
-      expect(migrated_description['adminMetadata']).to eq({ 'name' => 'Test Event',
-                                                            'contributor' => [{
-                                                              'name' => 'Test Contributor'
-                                                            }],
-                                                            'event' => [{ 'name' => 'Test Admin Event',
-                                                                          'contributor' => [{
-                                                                            'name' => 'Test Contributor'
-                                                                          }],
-                                                                          'parallelEvent' => [
-                                                                            {
-                                                                              'contributor' => [
-                                                                                {
-                                                                                  'name' => 'Test Contributor'
-                                                                                }
-                                                                              ]
-                                                                            }
-                                                                          ] }] })
+      migrated_description = migrated_model_hash['description'].with_indifferent_access
+      expect(migrated_description)
+        .to match(
+          {
+            title: 'Test Title',
+            contributor: [{ name: 'Test Contributor' }],
+            relatedResource: [
+              {
+                title: 'Test Related Resource Title',
+                contributor: [{ name: 'Test Contributor' }],
+                event:
+               [{ name: 'Test Event',
+                  contributor: [{ name: 'Test Contributor' }],
+                  parallelEvent: [{ contributor: [{ name: 'Test Contributor' }] }] }],
+                adminMetadata:
+               { name: 'Test Event',
+                 contributor: [{ name: 'Test Contributor' }],
+                 event:
+                 [{ name: 'Test Admin Event',
+                    contributor: [{ name: 'Test Contributor' }],
+                    parallelEvent: [{ contributor: [{ name: 'Test Contributor' }] }] }] }
+              }
+            ],
+            event: [
+              {
+                name: 'Test Event',
+                contributor: [{ name: 'Test Contributor' }],
+                parallelEvent: [{ contributor: [{ name: 'Test Contributor' }] }]
+              }
+            ],
+            adminMetadata: {
+              name: 'Test Event',
+              contributor: [{ name: 'Test Contributor' }],
+              event: [
+                {
+                  name: 'Test Admin Event',
+                  contributor: [{ name: 'Test Contributor' }],
+                  parallelEvent: [{ contributor: [{ name: 'Test Contributor' }] }]
+                }
+              ]
+            },
+            purl: 'https://purl.stanford.edu'
+          }
+        )
     end
   end
 
