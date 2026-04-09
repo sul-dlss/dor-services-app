@@ -4,47 +4,39 @@ module Migrators
   # Removes the unused parallelContributor property from description in all objects and versions.
   # See parent class and Migrators::MigrationRunner for more information.
   class RemoveParallelContributor < Base
-    def migrate?
-      # migrate all druids since parallelContributor is stored in all objects' descriptions
-      true
-    end
-
-    def migrate
-      repository_object.versions.each do |version|
-        migrate_version(version)
-      end
-    end
-
-    def migrate_version(version) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
+    def migrate # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       # Nothing to do if there is no description
-      return unless version.description
+      return model_hash if model_hash['description'].nil?
 
       # Remove parallelContributor from all contributors
       # including any in event, parallelEvent, relatedResource, and adminMetadata
-      remove_parallel_contributor(version.description)
-      version.description['event']&.each do |event|
-        remove_parallel_contributor(event)
-        event['parallelEvent']&.each do |parallel_event|
-          remove_parallel_contributor(parallel_event)
+      remove_parallel_contributor(model_hash['description'])
+      Array(model_hash.dig('description', 'event')).each do |event_hash|
+        remove_parallel_contributor(event_hash)
+        Array(event_hash['parallelEvent']).each do |parallel_event_hash|
+          remove_parallel_contributor(parallel_event_hash)
         end
       end
-      version.description['relatedResource']&.each do |related_resource|
-        remove_parallel_contributor(related_resource)
+      Array(model_hash.dig('description', 'relatedResource')).each do |related_resource_hash|
+        remove_parallel_contributor(related_resource_hash)
       end
-      remove_parallel_contributor(version.description&.dig('adminMetadata'))
-      version.description.dig('adminMetadata', 'event')&.each do |event|
-        remove_parallel_contributor(event)
-        event['parallelEvent']&.each do |parallel_event|
-          remove_parallel_contributor(parallel_event)
+      remove_parallel_contributor(model_hash.dig('description', 'adminMetadata'))
+      Array(model_hash.dig('description', 'adminMetadata', 'event')).each do |event_hash|
+        remove_parallel_contributor(event_hash)
+        Array(event_hash['parallelEvent']).each do |parallel_event_hash|
+          remove_parallel_contributor(parallel_event_hash)
         end
       end
+      model_hash
     end
 
     private
 
-    def remove_parallel_contributor(resource)
-      resource&.dig('contributor')&.each do |contributor|
-        contributor.delete('parallelContributor')
+    def remove_parallel_contributor(resource_hash)
+      return if resource_hash.nil?
+
+      Array(resource_hash['contributor']).each do |contributor_hash|
+        contributor_hash.delete('parallelContributor')
       end
     end
   end

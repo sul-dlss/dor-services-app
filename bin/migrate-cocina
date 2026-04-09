@@ -3,31 +3,31 @@
 
 # Migrates cocina objects.
 # Migration is performed by a Migrator class that is provided as an argument.
-# The Migrator class should be a subclass of or otherwise implement the interface
-# of Migrators::Base.
-# The migration is run by the Migrators::MigrationRunner class. It uses the migrator
-# class to get a list of druids to migrate, and then it uses the migrator class to migrate
-# each individual RepositoryObject from that druid list.
-# MigrationRunner has the generic mechanisms for actions like committing changes to migrated
-# objects, versioning them, and publishing them. _Whether_ each of those actions
-# should happen for a given RepositoryObject is determined by the mode in which MigrationRunner
-# is invoked (see class for allowable modes) and the various boolean methods on the migrator object (e.g.
-# #version? and #publish?).
+# The Migrator class must be a subclass of Migrators::Base.
+# The migration is performed by the MigrationJob, which operates on a batch of druids.
+# MigrationJob uses the migrator class to migrate each individual RepositoryObject from that batch of druids.
+# The results are stored in BackgroundJobResult records, and the final output is written to migrate-cocina.csv after
+# all jobs are complete.
 
 require_relative '../config/environment'
 require 'optparse'
-require 'tty-progressbar'
 
-options = { processes: 4, mode: Migrators::MigrationRunner::DEFAULT_MODE, sample: nil }
+BATCH_SIZE = 25_000
+BATCH_SIZE_WITH_FILE = 5_000
+LAST_MIGRATION_FILENAME = 'last-migration.json'
+
+options = { mode: Migrators::MigrationRunner::DEFAULT_MODE, sample: nil, batch: nil, file: nil }
 
 parser = OptionParser.new do |option_parser|
   mode_list_str = Migrators::MigrationRunner::MODES.join(', ')
   option_parser.banner = 'Usage: bin/migrate-cocina MIGRATION_CLASS [options]'
   option_parser.on('--mode [MODE]', Migrators::MigrationRunner::MODES,
                    "Migration mode (#{mode_list_str}). Default is #{options[:mode]}")
-  option_parser.on('-pPROCESSES', '--processes PROCESSES', Integer,
-                   "Number of processes. Default is #{options[:processes]}.")
   option_parser.on('-sSAMPLE', '--sample SAMPLE', Integer, 'Sample size per type, otherwise all objects.')
+  option_parser.on('-bBATCH', '--batch BATCH', Integer,
+                   "Batch size for processing. Default is #{BATCH_SIZE} or #{BATCH_SIZE_WITH_FILE} if reading druids from a file.") # rubocop:disable Layout/LineLength
+  option_parser.on('-fFILE', '--file FILE', String,
+                   'File from which to read specific druids.')
   option_parser.on('-h', '--help', 'Displays help.') do
     additional_hint = 'See README, comments in this script, Migrators::MigrationRunner, Migrators::Base, and ' \
                       'Migrators::Exemplar for more details about migrator implementation and migrator modes.'
@@ -43,85 +43,73 @@ if ARGV.empty?
 end
 
 parser.parse!(into: options)
-migrator_class = ARGV.shift
+migrator_class = ARGV.shift.constantize
 
-# how many druids to process as a single advance unit of the progress bar
-def num_for_progress_advance(count)
-  return 1 if count < 100
-
-  count / 100
-end
-
-def on_finish(count, progress_bar)
-  progress_bar.advance(count)
-end
-
-def tty_progress_bar(count, mode)
-  TTY::ProgressBar.new(
-    "#{mode} [:bar] (:percent (:current/:total), rate: :rate/s, mean rate: :mean_rate/s, :elapsed total, " \
-    'ETA: :eta_time)',
-    bar_format: :box,
-    advance: num_for_progress_advance(count),
-    total: count
-  )
-end
-
-# @return [String] path to temporary CSV file
-def write_results_to_temp_file(results, temp_dir, process_index)
-  temp_file = File.join(temp_dir, "results_#{process_index}.csv")
-  CSV.open(temp_file, 'w') do |writer|
-    results.each do |result|
-      writer << result
-    end
-  end
-  temp_file
-end
-
-# @param druids_slice [Array<String>] druids to migrate
-# @return [String] path to temporary CSV file written
-def migrate_slice(migrator_class:, mode:, druids_slice:, temp_dir:, index:)
-  results = Migrators::MigrationRunner.migrate_druid_list(migrator_class:, mode:, druids_slice:).map do |result|
-    [result[:id], result[:external_identifier], result[:status], result[:exception]]
-  end
-  write_results_to_temp_file(results, temp_dir, index)
-end
-
-# @return [Array<String>] paths to temporary CSV files
-def migrate(migrator_class:, sample:, processes:, mode:, temp_dir:)
-  count = Migrators::BatchSupport.druids_count_for(migrator_class:, sample:)
-  # Pre-compute keyset pagination boundaries in the parent process (a single indexed scan)
+# @return [Array<Integer>] ids of BackgroundJobResult records for the enqueued jobs
+def start_migrate(migrator_class:, sample:, processes:, mode:, batch_size:)
+  # Pre-compute keyset pagination boundaries (a single indexed scan)
   # so workers can each fetch their slice with an efficient WHERE id > ? LIMIT n query
-  batch_descriptors = Migrators::BatchSupport.batch_descriptors(migrator_class:, sample:)
-  progress_bar = tty_progress_bar(count, mode)
-  progress_bar.start
-
-  Parallel.map(batch_descriptors.each_with_index,
-               in_processes: processes,
-               finish: ->(_, _, result) { on_finish(result[1], progress_bar) }) do |batch_descriptor, index|
-    druids_slice = Migrators::BatchSupport.druids_for_batch(migrator_class:, batch_descriptor:)
-    [migrate_slice(migrator_class:, mode:, druids_slice:, temp_dir:, index:), druids_slice.size]
-  end.compact.map(&:first)
+  batch_descriptors = Migrators::BatchSupport.batch_descriptors(sample:, batch_size: batch_size || BATCH_SIZE)
+  batch_descriptors.map do |batch_descriptor|
+    job_result = BackgroundJobResult.create!(status: :pending)
+    MigrationJob.perform_later(migrator_class:, batch_descriptor:, mode:, background_job_result: job_result)
+    job_result.id
+  end
 end
 
-# Consolidate all temp files into the final CSV
-def consolidate_temp_files(temp_files, out_file)
-  CSV.open(out_file, 'w') do |writer|
-    writer << %w[id druid result message]
+def start_migrate_from_file(migrator_class:, sample:, processes:, mode:, batch_size:, file:) # rubocop:disable Metrics/ParameterLists
+  druids = File.read(file).split.then do |druids|
+    sample ? druids.take(sample) : druids
+  end
+  druids.each_slice(batch_size || BATCH_SIZE_WITH_FILE).map do |druids_slice|
+    job_result = BackgroundJobResult.create!(status: :pending)
+    MigrationJob.perform_later(migrator_class:, druids_slice:, mode:, background_job_result: job_result)
+    job_result.id
+  end
+end
 
-    temp_files.each do |temp_file|
-      CSV.foreach(temp_file) do |row|
-        writer << row
+def wait_for_jobs(job_result_ids)
+  start = Time.zone.now
+  until (status_counts = status_counts_for(job_result_ids))['complete'] == job_result_ids.size
+    elapsed_seconds = (Time.zone.now - start).to_i
+    elapsed = ActiveSupport::Duration.build(elapsed_seconds).inspect
+    puts "Job status counts: #{status_counts.inspect} - #{elapsed} elapsed"
+    sleep(20)
+  end
+end
+
+def status_counts_for(job_result_ids)
+  BackgroundJobResult.where(id: job_result_ids).group(:status).count
+end
+
+def consolidate_outputs(job_result_ids)
+  CSV.open('migrate-cocina.csv', 'w') do |writer|
+    job_result_ids.each do |job_result_id|
+      job_result = BackgroundJobResult.find(job_result_id)
+      job_result.output.each do |result|
+        writer << result
       end
     end
   end
 end
 
-temp_dir = Dir.mktmpdir('migrate-cocina')
-begin
-  temp_files = migrate(migrator_class: migrator_class.constantize, temp_dir: temp_dir, **options)
-  consolidate_temp_files(temp_files, 'migrate-cocina.csv')
-ensure
-  FileUtils.rm_rf(temp_dir)
-end
+job_result_ids = if File.exist?(LAST_MIGRATION_FILENAME)
+                   puts "#{LAST_MIGRATION_FILENAME} found, so resuming"
+                   JSON.parse(File.read(LAST_MIGRATION_FILENAME))
+                 elsif options[:file]
+                   start_migrate_from_file(migrator_class:, sample: options[:sample], processes: options[:processes],
+                                           mode: options[:mode], batch_size: options[:batch], file: options[:file])
+                 else
+                   start_migrate(migrator_class:, sample: options[:sample], processes: options[:processes],
+                                 mode: options[:mode], batch_size: options[:batch])
+                 end
+File.write(LAST_MIGRATION_FILENAME, job_result_ids.to_json)
+
+wait_for_jobs(job_result_ids)
+
+consolidate_outputs(job_result_ids)
+
+puts 'Output written to migrate-cocina.csv'
+File.delete(LAST_MIGRATION_FILENAME)
 
 exit 0

@@ -3,17 +3,16 @@
 require 'rails_helper'
 
 RSpec.describe Migrators::RemoveParallelContributor do
-  subject(:migrator) { described_class.new(repository_object) }
-
-  let(:repository_object) { create(:repository_object, :with_repository_object_version) }
-
-  describe '#migrate?' do
-    it 'returns true' do
-      expect(migrator.migrate?).to be true
-    end
-  end
+  subject(:migrator) { described_class.new(model_hash: model_hash, valid: true, opened_version: false, last_closed_version: false, head_version: false) }
 
   describe 'migrate' do
+    subject(:migrated_model_hash) { migrator.migrate }
+
+    let(:model_hash) do
+      # Only providing description instead of complete model hash.
+      { 'description' => description }
+    end
+
     let(:description) do
       { 'title' => 'Test Title',
         'contributor' => contributor,
@@ -33,54 +32,44 @@ RSpec.describe Migrators::RemoveParallelContributor do
       { 'name' => 'Test Event', 'contributor' => contributor,
         'event' => [{ 'name' => 'Test Admin Event', 'contributor' => contributor, 'parallelEvent' => [{ 'contributor' => contributor }] }] }
     end
-    let(:repository_object_version) do
-      build(:repository_object_version, label: 'Test DRO', description:)
-    end
-    let(:repository_object) { create(:repository_object, :with_repository_object_version, repository_object_version:) }
 
     it 'removes parallelContributor from contributors in events, relatedResources, adminMetadata' do
-      migrator.migrate
-      expect(repository_object.versions.last.description['contributor']).to eq([{ 'name' => 'Test Contributor' }])
-      expect(repository_object.versions.last.description['event']).to eq([{ 'name' => 'Test Event',
-                                                                            'contributor' => [{
-                                                                              'name' => 'Test Contributor'
-                                                                            }],
-                                                                            'parallelEvent' => [{ 'contributor' => [{
-                                                                              'name' => 'Test Contributor'
-                                                                            }] }] }])
-      expect(repository_object.versions.last.description['relatedResource']).to eq([{ 'title' => 'Test Title',
-                                                                                      'contributor' => [{
-                                                                                        'name' => 'Test Contributor'
-                                                                                      }] }])
-      expect(repository_object.versions.last.description['adminMetadata']).to eq({ 'name' => 'Test Event',
-                                                                                   'contributor' => [{
-                                                                                     'name' => 'Test Contributor'
-                                                                                   }],
-                                                                                   'event' => [{ 'name' => 'Test Admin Event',
-                                                                                                 'contributor' => [{
-                                                                                                   'name' => 'Test Contributor'
-                                                                                                 }],
-                                                                                                 'parallelEvent' => [
-                                                                                                   {
-                                                                                                     'contributor' => [
-                                                                                                       {
-                                                                                                         'name' => 'Test Contributor'
-                                                                                                       }
-                                                                                                     ]
-                                                                                                   }
-                                                                                                 ] }] })
+      migrated_description = migrated_model_hash['description']
+      expect(migrated_description['contributor']).to eq([{ 'name' => 'Test Contributor' }])
+      expect(migrated_description['event']).to eq([{ 'name' => 'Test Event',
+                                                     'contributor' => [{
+                                                       'name' => 'Test Contributor'
+                                                     }],
+                                                     'parallelEvent' => [{ 'contributor' => [{
+                                                       'name' => 'Test Contributor'
+                                                     }] }] }])
+      expect(migrated_description['relatedResource']).to eq([{ 'title' => 'Test Title',
+                                                               'contributor' => [{
+                                                                 'name' => 'Test Contributor'
+                                                               }] }])
+      expect(migrated_description['adminMetadata']).to eq({ 'name' => 'Test Event',
+                                                            'contributor' => [{
+                                                              'name' => 'Test Contributor'
+                                                            }],
+                                                            'event' => [{ 'name' => 'Test Admin Event',
+                                                                          'contributor' => [{
+                                                                            'name' => 'Test Contributor'
+                                                                          }],
+                                                                          'parallelEvent' => [
+                                                                            {
+                                                                              'contributor' => [
+                                                                                {
+                                                                                  'name' => 'Test Contributor'
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ] }] })
     end
   end
 
-  describe '#publish?' do
-    it 'returns false since using base default' do
-      expect(migrator.publish?).to be false
-    end
-  end
-
-  describe '#version?' do
-    it 'returns false since using base default' do
-      expect(migrator.version?).to be false
+  describe '#migration_strategy' do
+    it 'returns commit since using base default' do
+      expect(described_class.migration_strategy).to eq :commit
     end
   end
 end
