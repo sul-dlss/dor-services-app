@@ -32,10 +32,12 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
     let(:indexer) do
       Indexing::Indexers::CompositeIndexer.new(
         described_class
-      ).new(id: 'druid:ab123cd4567', cocina:, workflow_client: instance_double(Dor::Services::Client), trace_id:)
+      ).new(id: 'druid:ab123cd4567', cocina:, workflow_client: instance_double(Dor::Services::Client), trace_id:,
+            current_as_of:)
     end
     let(:doc) { indexer.to_solr }
     let(:trace_id) { 'abc123' }
+    let(:current_as_of) { Time.zone.parse('2026-04-10T12:00:00Z') }
 
     context 'with collections' do
       let(:structural) do
@@ -46,6 +48,7 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
         expect(doc).to eq(
           'obj_label_tesim' => 'item label',
           'current_version_ipsidv' => 4,
+          'current_as_of_dttsi' => '2026-04-10T12:00:00.000000Z',
           'milestones_ssim' => %w[foo bar],
           'has_constituents_ssimdv' => nil,
           'governed_by_ssim' => 'druid:vv888vv8888',
@@ -64,6 +67,7 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
         expect(doc).to eq(
           'obj_label_tesim' => 'item label',
           'current_version_ipsidv' => 4,
+          'current_as_of_dttsi' => '2026-04-10T12:00:00.000000Z',
           'milestones_ssim' => %w[foo bar],
           'governed_by_ssim' => 'druid:vv888vv8888',
           'bare_governed_by_ss' => 'vv888vv8888',
@@ -86,6 +90,7 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
         expect(doc).to eq(
           'obj_label_tesim' => 'item label',
           'current_version_ipsidv' => 4,
+          'current_as_of_dttsi' => '2026-04-10T12:00:00.000000Z',
           'milestones_ssim' => %w[foo bar],
           'has_constituents_ssimdv' => ['druid:bb777bb7777', 'druid:dd666dd6666'],
           'constituents_count_ips' => 2,

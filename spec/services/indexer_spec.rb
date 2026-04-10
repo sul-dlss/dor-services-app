@@ -11,10 +11,12 @@ RSpec.describe Indexer do
   let(:solr) { instance_double(RSolr::Client, add: nil, commit: nil, delete_by_id: nil) }
   let(:trace_id) { 'abc123' }
   let(:generated_trace_id) { 'def456' }
+  let(:current_as_of) { Time.zone.parse('2026-04-10T12:00:00Z') }
 
   before do
     allow(RSolr).to receive(:connect).and_return(solr)
     allow(SecureRandom).to receive(:uuid).and_return(generated_trace_id)
+    allow(Time.zone).to receive(:now).and_return(current_as_of)
   end
 
   describe '#reindex' do
@@ -26,7 +28,8 @@ RSpec.describe Indexer do
       described_class.reindex(cocina_object:, trace_id:)
       expect(Indexing::Builders::DocumentBuilder).to have_received(:for).with(
         model: cocina_object,
-        trace_id:
+        trace_id:,
+        current_as_of: nil
       )
       expect(solr).to have_received(:add).with(solr_doc)
       expect(solr).to have_received(:commit)
@@ -50,7 +53,8 @@ RSpec.describe Indexer do
         described_class.reindex(cocina_object:)
         expect(Indexing::Builders::DocumentBuilder).to have_received(:for).with(
           model: cocina_object,
-          trace_id: generated_trace_id
+          trace_id: generated_trace_id,
+          current_as_of: nil
         )
       end
     end
@@ -85,7 +89,8 @@ RSpec.describe Indexer do
       described_class.reindex_later(druid:, trace_id:)
       expect(ReindexJob).to have_received(:perform_later).with(
         druid:,
-        trace_id:
+        trace_id:,
+        current_as_of:
       )
     end
 
@@ -94,7 +99,8 @@ RSpec.describe Indexer do
         described_class.reindex_later(druid:)
         expect(ReindexJob).to have_received(:perform_later).with(
           druid:,
-          trace_id: generated_trace_id
+          trace_id: generated_trace_id,
+          current_as_of:
         )
       end
     end

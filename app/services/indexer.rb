@@ -3,13 +3,14 @@
 # Indexes a Cocina object into Solr for use by Argo.
 class Indexer
   # @param [Cocina::Models::DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata]
-  def self.reindex(cocina_object:, trace_id: nil)
+  def self.reindex(cocina_object:, trace_id: nil, current_as_of: nil)
     return unless Settings.solr.enabled
 
     trace_id ||= trace_id_for(druid: cocina_object.externalIdentifier)
     solr_doc = Indexing::Builders::DocumentBuilder.for(
       model: cocina_object,
-      trace_id:
+      trace_id:,
+      current_as_of:
     ).to_solr
     solr.add(solr_doc)
     # This logging is to assist with https://github.com/sul-dlss/dor-services-app/issues/5231
@@ -40,7 +41,8 @@ class Indexer
     Sidekiq::Client.via(REDIS) do
       ReindexJob.perform_later(
         druid:,
-        trace_id: trace_id || trace_id_for(druid:)
+        trace_id: trace_id || trace_id_for(druid:),
+        current_as_of: Time.zone.now
       )
     end
   end
