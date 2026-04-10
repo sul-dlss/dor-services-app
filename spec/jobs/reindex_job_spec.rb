@@ -24,6 +24,7 @@ RSpec.describe ReindexJob do
     it 'invokes the Indexer' do
       perform
       expect(Indexer).to have_received(:reindex).with(cocina_object: dro, trace_id:)
+      expect(CocinaObjectStore).to have_received(:find).with(dro.externalIdentifier, validate: false)
       expect(RedisLock).to have_received(:lock).with(key: "reindex-#{dro.externalIdentifier}", lock_timeout: Integer)
       expect(RedisLock).to have_received(:clear_lock)
     end

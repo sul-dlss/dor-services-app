@@ -51,6 +51,19 @@ RSpec.describe CocinaObjectStore do
           .to be_instance_of(Cocina::Models::CollectionWithMetadata)
       end
     end
+
+    context 'when skipping validation' do
+      let(:repository_object) { create(:repository_object, :with_repository_object_version) }
+
+      before do
+        allow(Cocina::Models).to receive(:build).and_call_original
+      end
+
+      it 'returns Cocina::Models::DROWithMetadata' do
+        expect(store.find(repository_object.external_identifier, validate: false)).to be_instance_of(Cocina::Models::DROWithMetadata)
+        expect(Cocina::Models).to have_received(:build).with(Hash, validate: false)
+      end
+    end
   end
 
   describe '#find_all' do
