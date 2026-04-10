@@ -98,13 +98,6 @@ class VersionsController < ApplicationController
     }
   end
 
-  def cocina_build_params
-    boolean_param(
-      params.permit(:validate).to_h.symbolize_keys,
-      :validate
-    )
-  end
-
   def create_params
     params.require(:description)
     new_params = params.permit(

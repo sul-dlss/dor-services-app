@@ -69,11 +69,4 @@ class UserVersionsController < ApplicationController
   def find_user_version
     @user_version = @repository_object.user_versions.find_by!(version: user_version_param)
   end
-
-  def cocina_build_params
-    boolean_param(
-      params.permit(:validate).to_h.symbolize_keys,
-      :validate
-    )
-  end
 end

@@ -64,6 +64,7 @@ module Indexing
       end
 
       # @param [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Model::AdminPolicyWithMetadata] model # rubocop:disable Layout/LineLength
+      # @return [Indexing::Indexers::CompositeIndexer] the indexer for the given model
       def for # rubocop:disable Metrics/AbcSize
         indexer_for_type(model.type).new(id: druid,
                                          cocina: model,

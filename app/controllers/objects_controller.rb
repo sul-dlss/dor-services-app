@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Controller for repository objects.
-class ObjectsController < ApplicationController
+class ObjectsController < ApplicationController # rubocop:disable Metrics/ClassLength
   before_action :load_cocina_object, only: %i[accession destroy show reindex]
   before_action :check_cocina_object_exists, only: :publish
   before_action :validate_from_openapi
@@ -169,6 +169,11 @@ class ObjectsController < ApplicationController
     render json: Indexer.validate_descriptive(cocina_object:)
   rescue StandardError => e
     json_api_error(status: :unprocessable_content, message: e.message)
+  end
+
+  def solr
+    cocina_object = load_cocina_object(**cocina_build_params)
+    render json: Indexing::Builders::DocumentBuilder.for(model: cocina_object).to_solr
   end
 
   private

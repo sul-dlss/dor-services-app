@@ -639,6 +639,39 @@ paths:
           required: true
           schema:
             $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/Druid"
+  "/v1/objects/{id}/solr":
+    get:
+      tags:
+        - objects
+      summary: Show solr document for head version
+      operationId: "objects#solr"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      parameters:
+        - name: id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/Druid"
+        - name: validate
+          in: query
+          description: Enable or disable validation ofCocina
+          required: false
+          schema:
+            type: boolean
+            default: true    
   "/v1/objects/{object_id}/workspace":
     post:
       tags:

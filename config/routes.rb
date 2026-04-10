@@ -42,6 +42,7 @@ Rails.application.routes.draw do
         post 'apply_admin_policy_defaults', to: 'admin_policy_defaults#apply'
         post 'reindex'
         post 'indexable'
+        get 'solr'
       end
 
       collection do
