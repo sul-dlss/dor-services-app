@@ -20,7 +20,7 @@ class ReindexJob < ApplicationJob
   def perform(druid:, trace_id:)
     # Reindexing should be fast, so timeout is only 30 seconds.
     raise DeadLockError unless RedisLock.with_lock(key: "reindex-#{druid}", lock_timeout: 30) do
-      cocina_object = CocinaObjectStore.find(druid)
+      cocina_object = CocinaObjectStore.find(druid, validate: false)
       Indexer.reindex(cocina_object:, trace_id:)
     rescue CocinaObjectStore::CocinaObjectStoreError => e
       Rails.logger.error("Error reindexing #{druid} - trace_id #{trace_id}: #{e.message}")

@@ -24,12 +24,8 @@ class CocinaObjectStore
   COLLECTION = 'Collection'
   ADMIN_POLICY = 'AdminPolicy'
 
-  # Retrieves a Cocina object from the datastore.
-  # @param [String] druid
-  # @return [Cocina::Models::DROWithMetadata, Cocina::Models::CollectionWithMetadata, Cocina::Models::AdminPolicyWithMetadata] cocina_object #rubocop:disable Layout/LineLength
-  # @raise [CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
-  def self.find(druid)
-    new.find(druid)
+  def self.find(...)
+    new.find(...)
   end
 
   # Retrieves a list of Cocina objects from the datastore.
@@ -86,10 +82,12 @@ class CocinaObjectStore
     new.version(druid)
   end
 
+  # Retrieves a Cocina object from the datastore.
   # @param [String] druid to find
+  # @param [Boolean] validate whether to validate the cocina object before returning
   # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata] for the requested version #rubocop:disable Layout/LineLength
-  def find(druid, version: :head)
-    RepositoryObject.find_by!(external_identifier: druid).head_version.to_cocina_with_metadata
+  def find(druid, validate: true)
+    RepositoryObject.find_by!(external_identifier: druid).head_version.to_cocina_with_metadata(validate:)
   rescue ActiveRecord::RecordNotFound
     return bootstrap_ur_admin_policy if bootstrap_ur_admin_policy?(druid)
 
