@@ -76,8 +76,15 @@ class ApplicationController < ActionController::API
   end
 
   # @raise [CocinaObjectStore::CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
-  def load_cocina_object
-    @cocina_object = CocinaObjectStore.find(params[:object_id] || params[:id])
+  def load_cocina_object(**cocina_build_params)
+    @cocina_object = CocinaObjectStore.find(params[:object_id] || params[:id], **cocina_build_params)
+  end
+
+  def cocina_build_params
+    boolean_param(
+      params.permit(:validate).to_h.symbolize_keys,
+      :validate
+    )
   end
 
   # @raise [CocinaObjectStore::CocinaObjectNotFoundError] raised when the requested Cocina object is not found.
