@@ -21,6 +21,11 @@ class Indexer
     solr.commit
   end
 
+  def self.reindex_by_druid(druid:, trace_id: nil, current_as_of: nil)
+    cocina_object = CocinaObjectStore.find(druid, validate: false)
+    reindex(cocina_object:, trace_id:, current_as_of:)
+  end
+
   def self.validate_descriptive(cocina_object:)
     return unless Settings.solr.enabled
 

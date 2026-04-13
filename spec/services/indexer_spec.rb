@@ -60,6 +60,26 @@ RSpec.describe Indexer do
     end
   end
 
+  describe '#reindex_by_druid' do
+    before do
+      allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+      allow(described_class).to receive(:reindex)
+    end
+
+    it 'finds by druid and reindexes the object' do
+      described_class.reindex_by_druid(druid:, trace_id:)
+
+      expect(CocinaObjectStore).to have_received(:find).with(druid, validate: false)
+      expect(described_class).to have_received(:reindex).with(cocina_object:, trace_id:, current_as_of: nil)
+    end
+
+    it 'passes current_as_of to reindex' do
+      described_class.reindex_by_druid(druid:, trace_id:, current_as_of:)
+
+      expect(described_class).to have_received(:reindex).with(cocina_object:, trace_id:, current_as_of:)
+    end
+  end
+
   describe '#delete' do
     it 'reindexes the object' do
       described_class.delete(druid:)

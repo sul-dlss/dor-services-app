@@ -9,7 +9,7 @@ RSpec.describe Workflow::NextStepService do
     before do
       allow(QueueService).to receive(:enqueue)
       allow(Notifications::WorkflowStepUpdated).to receive(:publish)
-      allow(Indexer).to receive(:reindex_later)
+      allow(Indexer).to receive(:reindex_by_druid)
       allow_any_instance_of(described_class).to receive(:sleep) # rubocop:disable RSpec/AnyInstance
     end
 
@@ -45,7 +45,7 @@ RSpec.describe Workflow::NextStepService do
         expect(next_steps).to eq [ready]
         expect(QueueService).to have_received(:enqueue).with(ready)
         expect(Notifications::WorkflowStepUpdated).not_to have_received(:publish)
-        expect(Indexer).to have_received(:reindex_later).with(druid: step.druid)
+        expect(Indexer).to have_received(:reindex_by_druid).with(druid: step.druid)
       end
     end
 
@@ -62,7 +62,7 @@ RSpec.describe Workflow::NextStepService do
         expect(next_steps).to eq []
         expect(QueueService).not_to have_received(:enqueue)
         expect(Notifications::WorkflowStepUpdated).to have_received(:publish).with(step:)
-        expect(Indexer).to have_received(:reindex_later).with(druid: step.druid)
+        expect(Indexer).to have_received(:reindex_by_druid).with(druid: step.druid)
       end
     end
 
@@ -104,6 +104,29 @@ RSpec.describe Workflow::NextStepService do
         expect { next_steps }.not_to(change { step.reload.status })
         expect(Notifications::WorkflowStepUpdated).to have_received(:publish).with(step:)
         expect(next_steps).to eq []
+      end
+    end
+
+    context 'when Indexer.reindex_by_druid raises an error' do
+      let(:step) do
+        create(:workflow_step,
+               process: 'start-accession',
+               version: 1,
+               status: 'completed',
+               active_version: true)
+      end
+
+      before do
+        allow(Indexer).to receive(:reindex_by_druid).and_raise(StandardError, 'solr is down')
+        allow(Honeybadger).to receive(:notify)
+      end
+
+      it 'does not raise and notifies Honeybadger' do
+        expect { next_steps }.not_to raise_error
+        expect(Honeybadger).to have_received(:notify).with(
+          an_instance_of(StandardError),
+          context: { druid: step.druid, workflow: step.workflow, process: step.process }
+        )
       end
     end
 
