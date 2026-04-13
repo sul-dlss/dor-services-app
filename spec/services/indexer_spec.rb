@@ -11,10 +11,12 @@ RSpec.describe Indexer do
   let(:solr) { instance_double(RSolr::Client, add: nil, commit: nil, delete_by_id: nil) }
   let(:trace_id) { 'abc123' }
   let(:generated_trace_id) { 'def456' }
+  let(:current_as_of) { Time.zone.parse('2026-04-10T12:00:00Z') }
 
   before do
     allow(RSolr).to receive(:connect).and_return(solr)
     allow(SecureRandom).to receive(:uuid).and_return(generated_trace_id)
+    allow(Time.zone).to receive(:now).and_return(current_as_of)
   end
 
   describe '#reindex' do
@@ -26,7 +28,8 @@ RSpec.describe Indexer do
       described_class.reindex(cocina_object:, trace_id:)
       expect(Indexing::Builders::DocumentBuilder).to have_received(:for).with(
         model: cocina_object,
-        trace_id:
+        trace_id:,
+        current_as_of: nil
       )
       expect(solr).to have_received(:add).with(solr_doc)
       expect(solr).to have_received(:commit)
@@ -50,9 +53,30 @@ RSpec.describe Indexer do
         described_class.reindex(cocina_object:)
         expect(Indexing::Builders::DocumentBuilder).to have_received(:for).with(
           model: cocina_object,
-          trace_id: generated_trace_id
+          trace_id: generated_trace_id,
+          current_as_of: nil
         )
       end
+    end
+  end
+
+  describe '#reindex_by_druid' do
+    before do
+      allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
+      allow(described_class).to receive(:reindex)
+    end
+
+    it 'finds by druid and reindexes the object' do
+      described_class.reindex_by_druid(druid:, trace_id:)
+
+      expect(CocinaObjectStore).to have_received(:find).with(druid, validate: false)
+      expect(described_class).to have_received(:reindex).with(cocina_object:, trace_id:, current_as_of: nil)
+    end
+
+    it 'passes current_as_of to reindex' do
+      described_class.reindex_by_druid(druid:, trace_id:, current_as_of:)
+
+      expect(described_class).to have_received(:reindex).with(cocina_object:, trace_id:, current_as_of:)
     end
   end
 
@@ -85,7 +109,8 @@ RSpec.describe Indexer do
       described_class.reindex_later(druid:, trace_id:)
       expect(ReindexJob).to have_received(:perform_later).with(
         druid:,
-        trace_id:
+        trace_id:,
+        current_as_of:
       )
     end
 
@@ -94,7 +119,8 @@ RSpec.describe Indexer do
         described_class.reindex_later(druid:)
         expect(ReindexJob).to have_received(:perform_later).with(
           druid:,
-          trace_id: generated_trace_id
+          trace_id: generated_trace_id,
+          current_as_of:
         )
       end
     end

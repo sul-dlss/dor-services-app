@@ -14,6 +14,7 @@ RSpec.describe Workflow::Creator do
 
   before do
     allow(QueueService).to receive(:enqueue)
+    allow(Indexer).to receive(:reindex_by_druid)
   end
 
   describe '#create_workflow_steps' do

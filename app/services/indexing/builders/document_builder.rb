@@ -53,7 +53,7 @@ module Indexing
       # Optional parameters allow passing in pre-fetched data to avoid redundant lookups.
       # If an optional parameter is not provided, it will be fetched as needed.
       def initialize(model:, workflows: nil, parent_collections: nil, parent_collections_release_tags: nil, # rubocop:disable Metrics/ParameterLists
-                     milestones: nil, release_tags: nil, trace_id: SecureRandom.uuid)
+                     milestones: nil, release_tags: nil, trace_id: SecureRandom.uuid, current_as_of: nil)
         @model = model
         @workflows = workflows
         @parent_collections = parent_collections
@@ -61,6 +61,7 @@ module Indexing
         @release_tags = release_tags
         @milestones = milestones
         @trace_id = trace_id
+        @current_as_of ||= Time.zone.now
       end
 
       # @param [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Model::AdminPolicyWithMetadata] model # rubocop:disable Layout/LineLength
@@ -74,6 +75,7 @@ module Indexing
                                          administrative_tags:,
                                          release_tags:,
                                          milestones:,
+                                         current_as_of:,
                                          trace_id:)
       rescue StandardError => e
         Honeybadger.notify('[DATA ERROR] Unexpected indexing exception',
@@ -86,7 +88,7 @@ module Indexing
 
       private
 
-      attr_reader :model, :trace_id
+      attr_reader :model, :trace_id, :current_as_of
 
       def druid
         model.externalIdentifier

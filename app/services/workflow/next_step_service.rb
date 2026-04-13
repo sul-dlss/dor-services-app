@@ -28,7 +28,9 @@ module Workflow
       # send message to RabbitMQ for accessioning complete/error steps, pre-assembly/H3 consume one or both to update UI
       Notifications::WorkflowStepUpdated.publish(step:) if step.status == 'error' || last_accession_step?(step)
 
-      Indexer.reindex_later(druid: step.druid)
+      # Performing a synchronous reindex to avoid a large number of reindexing jobs being enqueued right after another.
+      # This slows down the processing of workflow steps for the sake of less thrashing of reindexing jobs.
+      reindex!(step: step)
       next_steps
     end
 
@@ -74,6 +76,15 @@ module Workflow
 
     def last_accession_step?(step)
       step.workflow == 'accessionWF' && step.process == 'end-accession' && step.status == 'completed'
+    end
+
+    def reindex!(step:)
+      # Performing a synchronous reindex to avoid a large number of reindexing jobs being enqueued right after another.
+      # This slows down the processing of workflow steps for the sake of less thrashing of reindexing jobs.
+      Indexer.reindex_by_druid(druid: step.druid)
+    rescue StandardError => e
+      # Don't raise the error to avoid blocking the workflow.
+      Honeybadger.notify(e, context: { druid: step.druid, workflow: step.workflow, process: step.process })
     end
   end
 end

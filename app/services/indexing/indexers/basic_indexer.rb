@@ -4,20 +4,22 @@ module Indexing
   module Indexers
     # Basic indexing for any object
     class BasicIndexer
-      attr_reader :cocina, :workflow_client, :trace_id, :milestones
+      attr_reader :cocina, :workflow_client, :trace_id, :milestones, :current_as_of
 
-      def initialize(cocina:, trace_id:, milestones: nil, **)
+      def initialize(cocina:, trace_id:, current_as_of:, milestones: nil, **)
         @cocina = cocina
         @milestones = milestones
         @trace_id = trace_id
         @workflow_client = workflow_client
+        @current_as_of = current_as_of
       end
 
       # @return [Hash] the partial solr document for basic data
-      def to_solr # rubocop:disable Metrics/AbcSize
+      def to_solr # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         {}.tap do |solr_doc|
           solr_doc[:id] = cocina.externalIdentifier
           solr_doc['trace_id_ss'] = trace_id
+          solr_doc['current_as_of_dttsi'] = current_as_of.utc.iso8601(6)
           solr_doc['current_version_ipsidv'] = cocina.version # Argo Facet field "Version"
           solr_doc['obj_label_tesim'] = cocina.label
           solr_doc['purl_ss'] = Purl.for(druid: cocina.externalIdentifier) if purl?

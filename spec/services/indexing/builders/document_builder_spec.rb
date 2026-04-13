@@ -22,6 +22,11 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
   let(:druid) { 'druid:xx999xx9999' }
   let(:collection_druid) { 'druid:bc999df2323' }
   let(:trace_id) { 'abc123' }
+  let(:current_as_of) { Time.zone.parse('2026-04-10T12:00:00Z') }
+
+  before do
+    allow(Time.zone).to receive(:now).and_return(current_as_of)
+  end
 
   context 'when the model is an item' do
     it { is_expected.to be_instance_of Indexing::Indexers::CompositeIndexer::Instance }
@@ -122,6 +127,7 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
               parent_collections_release_tags: { 'druid:bc999df2323' => parent_collection_release_tags },
               release_tags:,
               workflows:,
+              current_as_of:,
               trace_id:
             }
           )
@@ -151,6 +157,7 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
               parent_collections_release_tags:,
               release_tags:,
               workflows:,
+              current_as_of:,
               trace_id:
             }
           )
