@@ -23,6 +23,10 @@
 #   bin/rails r 'AuditTechnicalMetadataFileList.test_report'
 # To follow up on one druid
 #   bin/rails r 'AuditTechnicalMetadataFileList.audit_one_druid(druid: "druid:bc123df4567")'
+# To audit a comma-separated list of druids
+#   bin/rails r 'AuditTechnicalMetadataFileList.audit_list(druids: "druid:bc123df4567,druid:cd234ef5678")'
+# To audit druids from a file (comma or newline separated)
+#   bin/rails r 'AuditTechnicalMetadataFileList.audit_file(file: "/path/to/druids.txt")'
 #
 # Error and info output other than an individual druid audit result (e.g. totally unexpected
 # responses and exceptions, progress info) will go to a log file named for the class.
@@ -46,34 +50,32 @@ class AuditTechnicalMetadataFileList
     new(...).report
   end
 
+  def self.audit_list(druids:)
+    new(druids: druids.split(',').map(&:strip)).report
+  end
+
+  def self.audit_file(file:)
+    druids = File.read(file).split(/[,\n]/).map(&:strip).reject(&:empty?)
+    new(druids:).report
+  end
+
   def self.audit_one_druid(druid:)
     new.audit_one_druid(druid:)
   end
 
-  def initialize(limit: nil)
+  def initialize(limit: nil, druids: [])
     @limit = limit
+    @druids = druids
   end
 
-  attr_reader :limit
+  attr_reader :limit, :druids
 
   def report
     logger.info("=== auditing technical-metadata-service for inconsistencies with current cocina file information (limit: #{limit})")
 
-    # We iterate over all DROs to start, filtering open objects and versions other than the latest out of the batches for which
-    # we actually run the queries.  We'll further filter the files we care about when processing each DRO.
-    # Using in_batches means we can pluck only the info we need to use, without having to instantiate an ActiveRecord obj for
-    # each Dro in each batch.
-    num_processed = 0
-    RepositoryObject.dros.limit(limit).in_batches.each do |batch_relation|
-      batch_dro_rows = batch_relation.closed.joins(:head_version).pluck(:external_identifier, FILES_FROM_RESOURCES_SQL)
-      batch_dro_rows.each do |dro_row|
-        num_processed += 1
-        self.class.process_dro_row(dro_row, techmd_connection, logger)
-        log_progress(num_processed)
-      rescue StandardError => e
-        logger.warn("error auditing technical-metadata-service for Dro: #{e}")
-      end
-    end
+    return audit_druids if druids.present?
+
+    audit_all_druids
   end
 
   def audit_one_druid(druid:)
@@ -145,6 +147,33 @@ class AuditTechnicalMetadataFileList
   end
 
   private
+
+  def audit_druids
+    RepositoryObject.dros.where(external_identifier: druids).closed.joins(:head_version)
+                    .pluck(:external_identifier, FILES_FROM_RESOURCES_SQL).each do |dro_row|
+      self.class.process_dro_row(dro_row, techmd_connection, logger)
+    rescue StandardError => e
+      logger.warn("error auditing technical-metadata-service for Dro: #{e}")
+    end
+  end
+
+  def audit_all_druids
+    # We iterate over all DROs to start, filtering open objects and versions other than the latest out of the batches for which
+    # we actually run the queries.  We'll further filter the files we care about when processing each DRO.
+    # Using in_batches means we can pluck only the info we need to use, without having to instantiate an ActiveRecord obj for
+    # each Dro in each batch.
+    num_processed = 0
+    RepositoryObject.dros.limit(limit).in_batches.each do |batch_relation|
+      batch_dro_rows = batch_relation.closed.joins(:head_version).pluck(:external_identifier, FILES_FROM_RESOURCES_SQL)
+      batch_dro_rows.each do |dro_row|
+        num_processed += 1
+        self.class.process_dro_row(dro_row, techmd_connection, logger)
+        log_progress(num_processed)
+      rescue StandardError => e
+        logger.warn("error auditing technical-metadata-service for Dro: #{e}")
+      end
+    end
+  end
 
   def logger
     @logger ||= Logger.new(Rails.root.join('log', "#{self.class.name}.log"))
