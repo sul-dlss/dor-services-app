@@ -62,7 +62,7 @@ module Migrators
       invalid_results = validate_migrated_model_hashes(migrated_model_hashes:, original_model_hash_map:)
       return invalid_results if invalid_results.present?
 
-      open_version! if migrator_class.version? # Note that open_version! is dryrun-aware.
+      opened = open_version! if migrator_class.version? # Note that open_version! is dryrun-aware.
 
       unless dryrun?
         if migrator_class.cocina_update?
@@ -72,13 +72,14 @@ module Migrators
         end
 
         Publish::MetadataTransferService.publish(druid:) if migrator_class.publish?
-        close_version! if migrator_class.version?
+        close_version! if migrator_class.version? && opened # Not closing objects that were already open.
       end
 
       Rails.logger.info("#{druid} successfully migrated#{' (dry run)' if dryrun?}")
 
       migrated_model_hashes.map do |migrated_model_hash|
-        Result.new(status: 'MIGRATED', version: migrated_model_hash['version'], **result_id_attrs)
+        Result.new(status: "MIGRATED#{' (dry run)' if dryrun?}", version: migrated_model_hash['version'],
+                   **result_id_attrs)
       end
     rescue StandardError => e
       Rails.logger.info("#{druid} failed to migrate#{' (dry run)' if dryrun?}: #{e.message} -- #{e.backtrace}")
@@ -117,20 +118,22 @@ module Migrators
       end
     end
 
-    def open_version!
+    # @return [Boolean] true if the version was opened by this method call, false otherwise
+    def open_version! # rubocop:disable Naming/PredicateMethod
       cocina_object = repository_object.head_version.to_cocina
       version_service = VersionService.new(druid: cocina_object.externalIdentifier, version: cocina_object.version,
                                            repository_object:)
-      return if version_service.open?
+      return false if version_service.open?
 
       # This allows us to know if the object can be opened for versioning without actually opening it during a dry run
       if dryrun?
         # Raise an error if the migration is trying to version an object that is not openable
         version_service.ensure_openable!(assume_accessioned: false)
-        return
+        return false
       end
 
       version_service.open(cocina_object:, description: migrator_class.version_description, assume_accessioned: false)
+      true
     end
 
     def result_id_attrs
@@ -214,6 +217,7 @@ module Migrators
     def close_version!
       VersionService.close(druid:,
                            version: repository_object.head_version.version,
+                           accession_args: { lane_id: 'low' }, # Always send to low queue.
                            description: nil) # Use the existing version description
     end
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Catalog
   # Service for retrieving MARC records from MARC dump files.
   # It builds a SQLite database from the MARC dump files that indexes the HRID, filename, and position of each record,
@@ -9,7 +11,8 @@ module Catalog
 
     # @param dump_filepath [String] the directory where the MARC dump files are located
     # @param db_filepath [String] the filepath where the MARC dump database should be created
-    def initialize(dump_filepath:, db_filepath: 'tmp/cache/marc_dump.db')
+    def initialize(dump_filepath: Settings.catalog.folio.refresh.dump_path,
+                   db_filepath: Settings.catalog.folio.refresh.db_path)
       @dump_filepath = dump_filepath
       @db_filepath = db_filepath
     end
@@ -60,7 +63,7 @@ module Catalog
       @db ||= begin
         raise Error, 'Database must be built before finding records' unless File.exist?(db_filepath)
 
-        SQLite3::Database.new(db_filepath)
+        SQLite3::Database.new(db_filepath, readonly: true)
       end
     end
 
