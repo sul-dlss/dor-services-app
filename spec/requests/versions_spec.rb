@@ -121,7 +121,7 @@ RSpec.describe 'Operations regarding object versions' do
         expect(response).to have_http_status :ok
         expect(response.body).to match(/version 1 closed/)
         expect(VersionService).to have_received(:close)
-          .with(druid:, version:, lane_id: :high,
+          .with(druid:, version:, accession_args: { lane_id: :high },
                 **close_params)
       end
     end

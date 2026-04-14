@@ -155,7 +155,7 @@ RSpec.describe Migrators::MigrationRunner do
             expect(args[:cocina_object].label).to eq 'version 3 migrated'
             expect(args[:skip_open_check]).to be true
           end
-          expect(version_service).to have_received(:close)
+          expect(version_service).not_to have_received(:close)
           expect(Publish::MetadataTransferService).not_to have_received(:publish)
         end
       end
@@ -193,6 +193,8 @@ RSpec.describe Migrators::MigrationRunner do
           end
 
           expect(version_service).to have_received(:close)
+            .with(description: nil, user_name: nil,
+                  start_accession: true, user_version_mode: :update_if_existing, accession_args: { lane_id: 'low' })
           expect(Publish::MetadataTransferService).not_to have_received(:publish)
         end
       end
@@ -258,7 +260,7 @@ RSpec.describe Migrators::MigrationRunner do
           expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3 migrated'
 
           expect(version_service).not_to have_received(:open)
-          expect(version_service).to have_received(:close)
+          expect(version_service).not_to have_received(:close)
           expect(Publish::MetadataTransferService).not_to have_received(:publish)
         end
       end
@@ -599,7 +601,7 @@ RSpec.describe Migrators::MigrationRunner do
 
         it 'does not call UpdateObjectService or close the version' do
           expect(results.map(&:to_h)).to contain_exactly(
-            hash_including(external_identifier: druid, version: 4, status: 'MIGRATED')
+            hash_including(external_identifier: druid, version: 4, status: 'MIGRATED (dry run)')
           )
 
           # The new version is not added..
@@ -635,9 +637,9 @@ RSpec.describe Migrators::MigrationRunner do
 
         it 'does not commit the changes or close the version' do
           expect(results.map(&:to_h)).to contain_exactly(
-            hash_including(external_identifier: druid, version: 1, status: 'MIGRATED'),
-            hash_including(external_identifier: druid, version: 2, status: 'MIGRATED'),
-            hash_including(external_identifier: druid, version: 3, status: 'MIGRATED')
+            hash_including(external_identifier: druid, version: 1, status: 'MIGRATED (dry run)'),
+            hash_including(external_identifier: druid, version: 2, status: 'MIGRATED (dry run)'),
+            hash_including(external_identifier: druid, version: 3, status: 'MIGRATED (dry run)')
           )
 
           expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1'
@@ -668,9 +670,9 @@ RSpec.describe Migrators::MigrationRunner do
 
         it 'does not commit the changes or publish' do
           expect(results.map(&:to_h)).to contain_exactly(
-            hash_including(external_identifier: druid, version: 1, status: 'MIGRATED'),
-            hash_including(external_identifier: druid, version: 2, status: 'MIGRATED'),
-            hash_including(external_identifier: druid, version: 3, status: 'MIGRATED')
+            hash_including(external_identifier: druid, version: 1, status: 'MIGRATED (dry run)'),
+            hash_including(external_identifier: druid, version: 2, status: 'MIGRATED (dry run)'),
+            hash_including(external_identifier: druid, version: 3, status: 'MIGRATED (dry run)')
           )
 
           expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1'
