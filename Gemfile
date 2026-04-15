@@ -11,7 +11,7 @@ gem 'cocina-models', '~> 0.116.0'
 gem 'datacite', '~> 0.6'
 gem 'dor-services-client' # Used for Dor::Services::Response::* & Dor::Services::Client::InvalidCocina classes
 gem 'druid-tools', '~> 2.2'
-gem 'folio_client', '~> 0.8'
+gem 'folio_client', '~> 1.0'
 gem 'graphql'
 gem 'json_schemer-rails', '~> 0.4.0'
 gem 'lyber-core', '~> 8.0' # For robots
