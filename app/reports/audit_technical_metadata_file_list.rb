@@ -68,14 +68,13 @@ class AuditTechnicalMetadataFileList
     @druids = druids
   end
 
-  attr_reader :limit, :druids
+  attr_reader :limit, :druids, :results
 
   def report
     logger.info("=== auditing technical-metadata-service for inconsistencies with current cocina file information (limit: #{limit})")
 
-    return audit_druids if druids.present?
-
-    audit_all_druids
+    results = druids.present? ? audit_druids : audit_all_druids
+    Rails.root.join('log', "#{self.class.name}.json").write(JSON.pretty_generate(results))
   end
 
   def audit_one_druid(druid:)
@@ -142,6 +141,7 @@ class AuditTechnicalMetadataFileList
         return if techmd_problem_info.keys.blank?
 
         puts "#{druid}: found in technical-metadata-service database; inconsistencies with latest cocina: #{techmd_problem_info}"
+        JSON.parse(response.body)
       end
     end
   end
@@ -149,12 +149,16 @@ class AuditTechnicalMetadataFileList
   private
 
   def audit_druids
+    results = []
     RepositoryObject.dros.where(external_identifier: druids).closed.joins(:head_version)
                     .pluck(:external_identifier, FILES_FROM_RESOURCES_SQL).each do |dro_row|
-      self.class.process_dro_row(dro_row, techmd_connection, logger)
+      dro_results = self.class.process_dro_row(dro_row, techmd_connection, logger)
+      results.append({ druid: dro_row[0], results: dro_results }) if dro_results.present?
     rescue StandardError => e
       logger.warn("error auditing technical-metadata-service for Dro: #{e}")
     end
+
+    results
   end
 
   def audit_all_druids
@@ -163,16 +167,19 @@ class AuditTechnicalMetadataFileList
     # Using in_batches means we can pluck only the info we need to use, without having to instantiate an ActiveRecord obj for
     # each Dro in each batch.
     num_processed = 0
+    results = []
     RepositoryObject.dros.limit(limit).in_batches.each do |batch_relation|
       batch_dro_rows = batch_relation.closed.joins(:head_version).pluck(:external_identifier, FILES_FROM_RESOURCES_SQL)
       batch_dro_rows.each do |dro_row|
         num_processed += 1
-        self.class.process_dro_row(dro_row, techmd_connection, logger)
+        dro_results = self.class.process_dro_row(dro_row, techmd_connection, logger)
+        results.append({ druid: dro_row[0], results: dro_results }) if dro_results.present?
         log_progress(num_processed)
       rescue StandardError => e
         logger.warn("error auditing technical-metadata-service for Dro: #{e}")
       end
     end
+    results
   end
 
   def logger
