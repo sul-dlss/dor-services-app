@@ -13,10 +13,10 @@ RSpec.describe 'Publish object' do
 
   # This happens when Argo invokes the API
   it 'calls Publish::MetadataTransferService and returns 201' do
-    post "/v1/objects/#{druid}/publish", headers: { 'Authorization' => "Bearer #{jwt}" }
+    post "/v1/objects/#{druid}/publish?lane-id=low", headers: { 'Authorization' => "Bearer #{jwt}" }
 
     expect(job).to have_received(:perform_later)
-      .with(druid:, background_job_result: BackgroundJobResult, release: true)
+      .with(druid:, background_job_result: BackgroundJobResult, release: true, lane_id: 'low')
     expect(response).to have_http_status(:created)
   end
 end

@@ -141,7 +141,9 @@ class ObjectsController < ApplicationController # rubocop:disable Metrics/ClassL
     EventFactory.create(druid: params[:id], event_type: 'publish_request_received',
                         data: { background_job_result_id: result.id })
     # This will also start a releaseWF.
-    PublishJob.set(queue: publish_queue).perform_later(druid: params[:id], background_job_result: result, release: true)
+    PublishJob.set(queue: publish_queue)
+              .perform_later(druid: params[:id], background_job_result: result, release: true,
+                             lane_id: params['lane-id'])
     head :created, location: result
   end
 
