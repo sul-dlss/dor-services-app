@@ -10,7 +10,8 @@ class PublishJob < ApplicationJob
   #  be published.
   # @param [BackgroundJobResult] background_job_result identifier of a background job result to store status info
   # @param [Boolean] release whether to release after publishing
-  def perform(druid:, background_job_result:, user_version: nil, release: false)
+  # @param [String,nil] lane_id the identifier of the lane to be used for releaseWF, if release is true
+  def perform(druid:, background_job_result:, user_version: nil, release: false, lane_id: nil)
     background_job_result.processing!
     cocina_object = CocinaObjectStore.find(druid)
 
@@ -28,8 +29,7 @@ class PublishJob < ApplicationJob
                         data: { background_job_result_id: background_job_result.id })
 
     if release
-      Workflow::Service.create(druid:, workflow_name: 'releaseWF',
-                               version: cocina_object.version)
+      Workflow::Service.create(druid:, workflow_name: 'releaseWF', version: cocina_object.version, lane_id: lane_id)
     end
 
     background_job_result.complete!

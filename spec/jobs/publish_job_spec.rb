@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe PublishJob do
   subject(:perform) do
-    described_class.perform_now(druid:, background_job_result: result, release:)
+    described_class.perform_now(druid:, background_job_result: result, release:, lane_id: 'low')
   end
 
   let(:druid) { 'druid:mk420bs7601' }
@@ -52,7 +52,7 @@ RSpec.describe PublishJob do
 
     it 'starts a releaseWF' do
       expect(Workflow::Service).to have_received(:create).with(druid:, workflow_name: 'releaseWF',
-                                                               version: 2)
+                                                               version: 2, lane_id: 'low')
     end
   end
 
