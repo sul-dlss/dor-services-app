@@ -585,6 +585,10 @@ paths:
           required: true
           schema:
             $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/Druid"
+        - name: lane-id
+          in: query
+          schema:
+            $ref: "#/components/schemas/LaneId"
       requestBody:
         description: release tag to add to the system
         content:
