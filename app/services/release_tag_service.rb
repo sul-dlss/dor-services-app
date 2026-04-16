@@ -11,7 +11,8 @@ class ReleaseTagService
   # @param [Dor::ReleaseTag] tag
   # @param [Cocina::Models::DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata] cocina_object
   # @param [Boolean] create_only or reindex and releaseWF workflow after creating the tag, defaults to false
-  def self.create(tag:, cocina_object:, create_only: false)
+  # @param [String] lane_id for releaseWF
+  def self.create(tag:, cocina_object:, create_only: false, lane_id: nil)
     ReleaseTag.from_cocina(druid: cocina_object.externalIdentifier, tag:).save!
     return if create_only
 
@@ -19,7 +20,7 @@ class ReleaseTagService
     return unless Publish::Item.new(druid: cocina_object.externalIdentifier).published?
 
     Workflow::Service.create(workflow_name: 'releaseWF', druid: cocina_object.externalIdentifier,
-                             version: cocina_object.version)
+                             version: cocina_object.version, lane_id:)
   end
 
   # Retrieve the latest release tags for each release target for an item
