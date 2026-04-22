@@ -33,7 +33,7 @@ RSpec.describe Cocina::FileHierarchyValidator do
     )
   end
 
-  context 'when hierarchy is present and content type is file' do
+  context 'when hierarchy is present and cocina type is object' do
     let(:filename) { 'folder1PuSu/story1u.txt' }
     let(:type) { Cocina::Models::ObjectType.object }
 
@@ -43,7 +43,17 @@ RSpec.describe Cocina::FileHierarchyValidator do
     end
   end
 
-  context 'when hierarchy is not present and content type is not file' do
+  context 'when hierarchy is present and cocina type is geo' do
+    let(:filename) { '10/547/380.png' }
+    let(:type) { Cocina::Models::ObjectType.geo }
+
+    it 'is valid' do
+      expect(validator.valid?).to be true
+      expect(validator.error).to be_nil
+    end
+  end
+
+  context 'when hierarchy is not present and cocina type is not object' do
     let(:filename) { 'story1u.txt' }
     let(:type) { Cocina::Models::ObjectType.book }
 
@@ -53,13 +63,13 @@ RSpec.describe Cocina::FileHierarchyValidator do
     end
   end
 
-  context 'when hierarchy is present and content type is not file' do
+  context 'when hierarchy is present and cocina type is not object' do
     let(:filename) { 'folder1PuSu/story1u.txt' }
     let(:type) { Cocina::Models::ObjectType.book }
 
     it 'is invalid' do
       expect(validator.valid?).to be false
-      expect(validator.error).to be 'File hierarchy present, but content type is not file'
+      expect(validator.error).to be 'File hierarchy present, but content type is not file or geo'
     end
   end
 

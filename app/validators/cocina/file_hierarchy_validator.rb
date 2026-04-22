@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Cocina
-  # Validates only only file content types have filenames with hierarchy (e.g., foo/bar.txt)
+  # Validates only object and geo Cocina types have filenames with hierarchy (e.g., foo/bar.txt)
   class FileHierarchyValidator
     def initialize(cocina_object)
       @cocina_object = cocina_object
@@ -9,9 +9,11 @@ module Cocina
 
     attr_reader :error
 
-    # @return [Boolean] false if file hierarchy is present, but not file content type
+    # @return [Boolean] false if file hierarchy is present, but Cocina type is not object or geo
     def valid?
-      @error = 'File hierarchy present, but content type is not file' if file_hierarchy_present? && !file_content_type?
+      if file_hierarchy_present? && !permitted_type?
+        @error = 'File hierarchy present, but content type is not file or geo'
+      end
       @error.nil?
     end
 
@@ -29,8 +31,9 @@ module Cocina
       end
     end
 
-    def file_content_type?
-      Cocina::ToXml::ContentType.map(cocina_object.type) == 'file'
+    # object and geo types may have filenames with hierarchy, but other Cocina types do not
+    def permitted_type?
+      [Cocina::Models::ObjectType.geo, Cocina::Models::ObjectType.object].include?(cocina_object.type)
     end
   end
 end
