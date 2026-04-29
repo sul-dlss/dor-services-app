@@ -139,21 +139,6 @@ RSpec.describe Workflow::StateBatchService do
                          workflow: 'wasSeedPreassemblyWF').where.not(process: 'end-was-seed-preassembly')
                   .update_all(status: 'completed')
 
-      # gisDeliveryWF delivering
-      Workflow::Service.create(druid: gis_delivering_druid, workflow_name: 'gisDeliveryWF', version: 1)
-      WorkflowStep.where(druid: gis_delivering_druid, active_version: true,
-                         workflow: 'gisDeliveryWF').order(:id).limit(2).update_all(status: 'completed')
-      # gisDeliveryWF delivered
-      Workflow::Service.create(druid: gis_delivered_druid, workflow_name: 'gisDeliveryWF', version: 1)
-      WorkflowStep.where(druid: gis_delivered_druid, active_version: true,
-                         workflow: 'gisDeliveryWF').update_all(status: 'completed')
-      # gisDeliveryWF delivering with all completed except the last step
-      Workflow::Service.create(druid: gis_delivering_druid_with_ignored_step, workflow_name: 'gisDeliveryWF',
-                               version: 1)
-      WorkflowStep.where(druid: gis_delivering_druid_with_ignored_step, active_version: true,
-                         workflow: 'gisDeliveryWF').where.not(process: 'start-accession-workflow')
-                  .update_all(status: 'completed')
-
       # ocrWF ocring
       Workflow::Service.create(druid: ocring_druid, workflow_name: 'ocrWF', version: 1)
       WorkflowStep.where(druid: ocring_druid, active_version: true,
@@ -194,8 +179,8 @@ RSpec.describe Workflow::StateBatchService do
 
     it 'returns the assembling druids' do
       expect(assembling_druids).to contain_exactly(assembling_druid, was_crawl_preassembling_druid,
-                                                   was_seed_preassembling_druid, gis_delivering_druid,
-                                                   ocring_druid, stting_druid, gis_assembling_druid)
+                                                   was_seed_preassembling_druid, ocring_druid,
+                                                   stting_druid, gis_assembling_druid)
     end
   end
 end

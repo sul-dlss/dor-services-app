@@ -43,8 +43,8 @@
     <prereq>generate-structural</prereq>
     <label>Finalize assembly workflow to prepare for assembly/delivery/discovery</label>
   </process>
-  <process name="start-delivery-workflow">
-    <prereq>finish-gis-assembly-workflow</prereq>
-    <label>Initiate gisDelivery workflow for the object</label>
+  <process name="start-accession-workflow">
+    <prereq>metadata-cleanup</prereq>
+    <label>Initiate accession workflow for the object</label>
   </process>
 </workflow-def>
