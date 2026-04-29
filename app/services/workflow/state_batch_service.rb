@@ -42,12 +42,12 @@ module Workflow
       WorkflowStep
         .where(druid: druids, active_version: true,
                workflow: %w[assemblyWF wasCrawlPreassemblyWF wasSeedPreassemblyWF
-                            gisDeliveryWF ocrWF speechToTextWF gisAssemblyWF])
+                            gisAssemblyWF ocrWF speechToTextWF])
         .incomplete
         .where.not(workflow: 'assemblyWF', process: 'accessioning-initiate')
         .where.not(workflow: 'wasCrawlPreassemblyWF', process: 'end-was-crawl-preassembly')
         .where.not(workflow: 'wasSeedPreassemblyWF', process: 'end-was-seed-preassembly')
-        .where.not(workflow: 'gisDeliveryWF', process: 'start-accession-workflow')
+        .where.not(workflow: 'gisAssemblyWF', process: 'start-accession-workflow')
         .where.not(workflow: 'ocrWF', process: 'end-ocr')
         .where.not(workflow: 'speechToTextWF', process: 'end-stt')
         .select(:druid).distinct.pluck(:druid)
