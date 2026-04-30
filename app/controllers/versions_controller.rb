@@ -113,9 +113,11 @@ class VersionsController < ApplicationController
       :description,
       :start_accession,
       :user_name,
-      :user_versions
+      :user_versions,
+      :'lane-id'
     ).to_h.symbolize_keys
     new_params[:user_version_mode] = new_params.delete(:user_versions).to_sym if new_params.key?(:user_versions)
+    new_params[:lane_id] = LaneSupport.lane_for(new_params.delete(:'lane-id')) if new_params.key?(:'lane-id')
     boolean_param(new_params, :start_accession)
   end
 

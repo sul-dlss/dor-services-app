@@ -110,6 +110,22 @@ RSpec.describe 'Operations regarding object versions' do
       end
     end
 
+    context 'when closing a version with a lane_id' do
+      before do
+        allow(VersionService).to receive(:close)
+      end
+
+      it 'closes the current version when posted to' do
+        post "/v1/objects/druid:mx123qw2323/versions/current/close?#{close_params.merge('lane-id': 'high').to_query}",
+             headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status :ok
+        expect(response.body).to match(/version 1 closed/)
+        expect(VersionService).to have_received(:close)
+          .with(druid:, version:, lane_id: :high,
+                **close_params)
+      end
+    end
+
     context 'when closing a version fails' do
       before do
         allow(VersionService).to receive(:close)

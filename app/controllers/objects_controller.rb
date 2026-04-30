@@ -180,10 +180,6 @@ class ObjectsController < ApplicationController # rubocop:disable Metrics/ClassL
 
   private
 
-  def queue
-    LaneSupport.lane_for(params['lane-id'])
-  end
-
   def publish_queue
     LaneSupport.lane_for(params['lane-id'], prefix: 'publish')
   end

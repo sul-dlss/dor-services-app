@@ -23,8 +23,8 @@ class VersionService
   end
 
   def self.close(druid:, version:, description: nil, user_name: nil, start_accession: true, # rubocop:disable Metrics/ParameterLists
-                 user_version_mode: DEFAULT_USER_VERSION_MODE)
-    new(druid:, version:).close(description:, user_name:, start_accession:, user_version_mode:)
+                 user_version_mode: DEFAULT_USER_VERSION_MODE, lane_id: nil)
+    new(druid:, version:).close(description:, user_name:, start_accession:, user_version_mode:, lane_id:)
   end
 
   def self.can_close?(...)
@@ -124,10 +124,11 @@ class VersionService
   # @param [Boolean] :start_accession set to true if you want accessioning to start (default), false otherwise
   # @param [Symbol] :user_version_mode :none (do nothing), :new, :update, or :update_if_existing (default) with
   # user_versions on close
+  # @param [Symbol] :lane_id the lane to use for accessionWF if start_accession is true
   # @raise [VersionService::VersioningError] if the object hasn't been opened for versioning, or if accessionWF has
   #   already been instantiated or the current version is missing a description
   # @raise [ArgumentError] if user_versions is not one of none, new, update
-  def close(description:, user_name:, start_accession: true, user_version_mode: DEFAULT_USER_VERSION_MODE) # rubocop:disable Metrics/AbcSize
+  def close(description:, user_name:, start_accession: true, user_version_mode: DEFAULT_USER_VERSION_MODE, lane_id: nil) # rubocop:disable Metrics/AbcSize
     user_version_mode_options = %i[none new update update_if_existing]
 
     unless user_version_mode_options.include?(user_version_mode)
@@ -147,7 +148,9 @@ class VersionService
     update_user_version(user_version_mode:, repository_object:, publish: !start_accession)
     update_previous_user_versions(repository_object:)
 
-    Workflow::Service.create(druid:, workflow_name: 'accessionWF', version: version.to_s) if start_accession
+    return unless start_accession
+
+    Workflow::Service.create(druid:, workflow_name: 'accessionWF', version: version.to_s, lane_id:)
   end
 
   # Determines whether a version can be closed for an object.

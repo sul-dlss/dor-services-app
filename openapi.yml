@@ -893,6 +893,10 @@ paths:
               - "new"
               - "update"
               - "update_if_existing"
+        - name: lane-id
+          in: query
+          schema:
+            $ref: "#/components/schemas/LaneId"
   "/v1/objects/{object_id}/versions":
     get:
       tags:
