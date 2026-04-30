@@ -560,6 +560,10 @@ GEM
       thor
     sorted_set (1.1.0)
       rbtree
+    sqlite3 (2.9.2-aarch64-linux-gnu)
+    sqlite3 (2.9.2-arm64-darwin)
+    sqlite3 (2.9.2-x86_64-darwin)
+    sqlite3 (2.9.2-x86_64-linux-gnu)
     sshkit (1.25.0)
       base64
       logger
@@ -680,6 +684,7 @@ DEPENDENCIES
   sidekiq-pro!
   simplecov
   sneakers (~> 2.11)
+  sqlite3
   sul_orcid_client (~> 0.6)
   tty-progressbar
   uuidtools (~> 2.1.4)
