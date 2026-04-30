@@ -14,7 +14,7 @@ class WorkflowsController < WorkflowApplicationController
     Workflow::Service.create(druid:, workflow_name:,
                              version: params[:version].to_i,
                              context: params[:context]&.to_unsafe_hash,
-                             lane_id: params[:'lane-id'] || 'default')
+                             lane_id: LaneSupport.lane_for(params['lane-id']))
 
     head :created
   end

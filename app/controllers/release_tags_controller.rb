@@ -26,7 +26,8 @@ class ReleaseTagsController < ApplicationController
   end
 
   def create
-    ReleaseTagService.create(cocina_object: @cocina_object, tag: new_tag, lane_id: params[:'lane-id'])
+    ReleaseTagService.create(cocina_object: @cocina_object, tag: new_tag,
+                             lane_id: LaneSupport.lane_for(params['lane-id']))
     head :created
   end
 

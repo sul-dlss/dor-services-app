@@ -1986,6 +1986,7 @@ components:
       enum:
         - "default"
         - "low"
+        - "high"
       default: "default"
     UserVersion:
       type: object

@@ -14,7 +14,7 @@ RSpec.describe 'Creating a workflow' do
          headers: { 'Authorization' => "Bearer #{jwt}" }
     expect(response).to have_http_status(:created)
     expect(Workflow::Service).to have_received(:create)
-      .with(druid:, workflow_name: 'etdSubmitWF', version: 1, lane_id: 'default', context: nil)
+      .with(druid:, workflow_name: 'etdSubmitWF', version: 1, lane_id: :default, context: nil)
   end
 
   context 'with a lane id and context' do
@@ -27,7 +27,7 @@ RSpec.describe 'Creating a workflow' do
            as: :json
       expect(response).to have_http_status(:created)
       expect(Workflow::Service).to have_received(:create)
-        .with(druid:, workflow_name: 'etdSubmitWF', version: 1, lane_id: 'low', context:)
+        .with(druid:, workflow_name: 'etdSubmitWF', version: 1, lane_id: :low, context:)
     end
   end
 end
