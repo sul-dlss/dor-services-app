@@ -79,7 +79,7 @@ RSpec.describe 'Operations on release tags' do
            params: data
       expect(response).to have_http_status :created
       expect(ReleaseTagService).to have_received(:create).with(cocina_object: cocina_object_with_metadata,
-                                                               tag: an_instance_of(Dor::ReleaseTag), lane_id: 'low')
+                                                               tag: an_instance_of(Dor::ReleaseTag), lane_id: :low)
     end
   end
 end

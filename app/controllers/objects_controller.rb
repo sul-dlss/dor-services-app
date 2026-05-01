@@ -180,12 +180,8 @@ class ObjectsController < ApplicationController # rubocop:disable Metrics/ClassL
 
   private
 
-  def queue
-    params['lane-id'] == 'low' ? :low : :default
-  end
-
   def publish_queue
-    params['lane-id'] == 'low' ? :publish_low : :publish_default
+    LaneSupport.lane_for(params['lane-id'], prefix: 'publish')
   end
 
   def from_etag(etag)

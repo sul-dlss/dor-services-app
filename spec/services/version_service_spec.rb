@@ -267,13 +267,15 @@ RSpec.describe VersionService do
                             description:,
                             user_name: 'jcoyne',
                             start_accession:,
-                            user_version_mode:)
+                            user_version_mode:,
+                            lane_id:)
     end
 
     let(:version) { 2 }
     let(:start_accession) { true }
     let(:user_version_mode) { :none }
     let(:description) { 'closing text' }
+    let(:lane_id) { :low }
 
     let(:repository_object) { create(:repository_object, :with_repository_object_version, external_identifier: druid) }
 
@@ -303,7 +305,7 @@ RSpec.describe VersionService do
                   event_type: 'version_close')
 
           expect(Workflow::Service).to have_received(:create).with(druid:, workflow_name: 'accessionWF',
-                                                                   version: '2')
+                                                                   version: '2', lane_id:)
 
           expect(repository_object.last_closed_version.user_versions.count).to eq 0
         end
@@ -531,7 +533,8 @@ RSpec.describe VersionService do
         close
         expect(repository_object.reload.last_closed_version).to be_present
         expect(workflow_state_service).to have_received(:assembling?)
-        expect(Workflow::Service).to have_received(:create).with(druid:, workflow_name: 'accessionWF', version: '2')
+        expect(Workflow::Service).to have_received(:create).with(druid:, workflow_name: 'accessionWF', version: '2',
+                                                                 lane_id:)
       end
     end
 
@@ -546,7 +549,8 @@ RSpec.describe VersionService do
         close
         expect(repository_object.reload.last_closed_version).to be_present
         expect(repository_object.last_closed_version.version_description).to eq 'A Second Version'
-        expect(Workflow::Service).to have_received(:create).with(druid:, workflow_name: 'accessionWF', version: '2')
+        expect(Workflow::Service).to have_received(:create).with(druid:, workflow_name: 'accessionWF', version: '2',
+                                                                 lane_id:)
       end
     end
 
