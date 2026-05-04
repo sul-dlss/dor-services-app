@@ -89,7 +89,7 @@ GEM
     bcrypt_pbkdf (1.1.2)
     benchmark (0.5.0)
     bigdecimal (4.1.2)
-    bootsnap (1.24.0)
+    bootsnap (1.24.1)
       msgpack (~> 1.2)
     builder (3.3.0)
     bunny (2.24.0)
@@ -111,7 +111,7 @@ GEM
       capistrano-bundler (>= 1.1, < 3)
     capistrano-shared_configs (0.2.2)
     chronic (0.10.2)
-    cocina-models (0.116.0)
+    cocina-models (0.117.0)
       activesupport
       deprecation
       dry-struct (~> 1.0)
@@ -143,7 +143,7 @@ GEM
       rexml
     crass (1.0.6)
     csv (3.3.5)
-    datacite (0.8.2)
+    datacite (0.8.3)
       activesupport
       dry-monads (~> 1.3)
       faraday (~> 2.0)
@@ -169,9 +169,9 @@ GEM
       ed25519
     docile (1.4.1)
     domain_name (0.6.20240107)
-    dor-services-client (15.40.0)
+    dor-services-client (15.42.0)
       activesupport (>= 7.0.0)
-      cocina-models (~> 0.116.0)
+      cocina-models (~> 0.117.0)
       deprecation
       faraday (~> 2.0)
       faraday-retry
@@ -245,7 +245,7 @@ GEM
       activesupport (>= 6.1)
     graphiql-rails (1.10.5)
       railties
-    graphql (2.6.0)
+    graphql (2.6.1)
       base64
       fiber-storage
       logger
@@ -272,7 +272,7 @@ GEM
     jbuilder (2.14.1)
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
-    json (2.19.4)
+    json (2.19.5)
     json_schemer (2.5.0)
       bigdecimal
       hana (~> 1.3)
@@ -323,7 +323,7 @@ GEM
       rexml
     marcel (1.1.0)
     mini_mime (1.1.5)
-    minitest (6.0.5)
+    minitest (6.0.6)
       drb (~> 2.0)
       prism (~> 1.5)
     moab-versioning (6.1.2)
@@ -332,8 +332,8 @@ GEM
       nokogiri
       nokogiri-happymapper
     msgpack (1.8.0)
-    multi_json (1.20.1)
-    multi_xml (0.8.1)
+    multi_json (1.21.0)
+    multi_xml (0.9.0)
       bigdecimal (>= 3.1, < 5)
     net-http (0.9.1)
       uri (>= 0.11.1)
@@ -352,13 +352,13 @@ GEM
       net-protocol
     net-ssh (7.3.2)
     nio4r (2.7.5)
-    nokogiri (1.19.2-aarch64-linux-gnu)
+    nokogiri (1.19.3-aarch64-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.19.2-arm64-darwin)
+    nokogiri (1.19.3-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.19.2-x86_64-darwin)
+    nokogiri (1.19.3-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.19.2-x86_64-linux-gnu)
+    nokogiri (1.19.3-x86_64-linux-gnu)
       racc (~> 1.4)
     nokogiri-happymapper (0.10.1)
       nokogiri (~> 1.5)
@@ -507,9 +507,9 @@ GEM
     rubocop-ast (1.49.1)
       parser (>= 3.3.7.2)
       prism (~> 1.7)
-    rubocop-capybara (2.22.1)
+    rubocop-capybara (2.23.0)
       lint_roller (~> 1.1)
-      rubocop (~> 1.72, >= 1.72.1)
+      rubocop (~> 1.81)
     rubocop-factory_bot (2.28.0)
       lint_roller (~> 1.1)
       rubocop (~> 1.72, >= 1.72.1)
@@ -576,10 +576,10 @@ GEM
       faraday-retry
       oauth2
       zeitwerk
-    super_diff (0.18.0)
-      attr_extras (>= 6.2.4)
-      diff-lcs
-      patience_diff
+    super_diff (0.19.0)
+      attr_extras (>= 6.2.4, < 8)
+      diff-lcs (~> 1.5)
+      patience_diff (~> 1.2)
     thor (1.5.0)
     timeout (0.6.1)
     tsort (0.2.0)
@@ -623,7 +623,7 @@ DEPENDENCIES
   capistrano-passenger
   capistrano-rails
   capistrano-shared_configs
-  cocina-models (~> 0.116.0)
+  cocina-models (~> 0.117.0)
   cocina_display
   config
   connection_pool
@@ -687,4 +687,4 @@ DEPENDENCIES
   whenever
 
 BUNDLED WITH
-  4.0.10
+  4.0.11
