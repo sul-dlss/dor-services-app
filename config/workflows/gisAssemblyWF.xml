@@ -44,7 +44,7 @@
     <label>Finalize assembly workflow to prepare for assembly/delivery/discovery</label>
   </process>
   <process name="start-accession-workflow">
-    <prereq>metadata-cleanup</prereq>
+    <prereq>finish-gis-assembly-workflow</prereq>
     <label>Initiate accession workflow for the object</label>
   </process>
 </workflow-def>
