@@ -71,10 +71,16 @@ module Cocina
 
       def build_roles(field, code: 'e') # rubocop:disable Metrics/AbcSize
         expanded = field.subfields.select { |sf| sf.code == '4' }
-                                  .map { |role| { value: MARC_RELATORS[role.value] }.compact_blank }
+                                  .map do |role|
+                                    { value: MARC_RELATORS[normalize_role_code(role.value)] }.compact_blank
+                                  end
 
         (field.subfields.select { |sf| sf.code == code }.map { |role| { value: role.value.sub(/\.|,$/, '') } } +
           expanded).uniq.compact_blank
+      end
+
+      def normalize_role_code(value)
+        value.sub(/[[:punct:]]+\z/, '')
       end
 
       # For 110/710

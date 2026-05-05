@@ -963,6 +963,64 @@ RSpec.describe Cocina::FromMarc::Contributor do
       end
     end
 
+    context 'with Contributor with role code ending in punctuation' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '700' => {
+              'ind1' => '1',
+              'ind2' => ' ',
+              'subfields' => [
+                {
+                  'a' => 'Cao, Rosa,'
+                },
+                {
+                  'e' => 'degree committee member.'
+                },
+                {
+                  '4' => 'ths.'
+                }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns contributor with mapped role code' do
+        expect(build).to eq [{ type: 'person', name: [{ value: 'Cao, Rosa' }],
+                               role: [{ value: 'degree committee member' }, { value: 'thesis advisor' }] }]
+      end
+    end
+
+    context 'with Event contributor with role code ending in punctuation' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '711' => {
+              'ind1' => '2',
+              'ind2' => ' ',
+              'subfields' => [
+                {
+                  'a' => 'Simulation Solutions Conference.'
+                },
+                {
+                  'j' => 'creator.'
+                },
+                {
+                  '4' => 'cre,'
+                }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns event contributor with mapped role code' do
+        expect(build).to eq [{ type: 'event', name: [{ value: 'Simulation Solutions Conference.' }],
+                               role: [{ value: 'creator' }] }]
+      end
+    end
+
     context 'with Contributor with invalid role code' do
       let(:marc_hash) do
         {
