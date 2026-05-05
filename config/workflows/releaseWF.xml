@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <workflow-def id="releaseWF">
-  <process name="start" skip-queue="true" status="completed">
+  <process name="start">
     <label>Initiate item release of the object</label>
   </process>
   <process name="release-members">

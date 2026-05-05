@@ -33,6 +33,7 @@ class QueueService
     'Robots::DorRepo::Accession::UpdateDoi',
     'Robots::DorRepo::Accession::UpdateOrcidWork',
     'Robots::DorRepo::Goobi::GoobiNotify',
+    'Robots::DorRepo::Release::Start',
     'Robots::DorRepo::Release::ReleaseMembers',
     'Robots::DorRepo::Release::ReleasePublish',
     'Robots::DorRepo::Release::UpdateHoldings'
