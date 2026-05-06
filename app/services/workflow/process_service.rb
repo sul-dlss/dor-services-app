@@ -4,8 +4,9 @@ module Workflow
   # Service for interacting with workflows processes (steps).
   class ProcessService
     def self.update(druid:, workflow_name:, process:, status:, elapsed: 0, lifecycle: nil, note: nil, # rubocop:disable Metrics/ParameterLists
-                    current_status: nil)
-      new(druid:, workflow_name:, process:).update(status:, elapsed:, lifecycle:, note:, current_status:)
+                    current_status: nil, enqueue_next_steps: true)
+      new(druid:, workflow_name:, process:).update(status:, elapsed:, lifecycle:, note:, current_status:,
+                                                   enqueue_next_steps:)
     end
 
     def self.update_error(druid:, workflow_name:, process:, error_msg:, error_text: nil)
@@ -27,11 +28,12 @@ module Workflow
     # @param [String] lifecycle Bookeeping label for this particular workflow step.  Examples: 'registered', 'shelved'
     # @param [String] note Any kind of string annotation that you want to attach to the workflow
     # @param [String] current_status Compare the current status to this value and raise if mismatch.
+    # @param [Boolean] enqueue_next_steps Whether to enqueue the next steps in the workflow.
     # @raise [Workflow::Service::ConflictException] if the current status does not match the passed in current_status.
     # @raise [Workflow::Service::NotFoundException] if the workflow step is not found.
-    def update(status:, elapsed: 0, lifecycle: nil, note: nil,
-               current_status: nil)
-      update_status(status:, elapsed:, lifecycle:, note:, current_status:)
+    def update(status:, elapsed: 0, lifecycle: nil, note: nil, # rubocop:disable Metrics/ParameterLists
+               current_status: nil, enqueue_next_steps: true)
+      update_status(status:, elapsed:, lifecycle:, note:, current_status:, enqueue_next_steps:)
     end
 
     # Updates the status of one step in a workflow to error.
@@ -50,7 +52,7 @@ module Workflow
     end
 
     def update_status(status:, elapsed: 0, lifecycle: nil, note: nil, # rubocop:disable Metrics/ParameterLists
-                      current_status: nil, error_msg: nil, error_text: nil)
+                      current_status: nil, error_msg: nil, error_text: nil, enqueue_next_steps: true)
       parser = ProcessParser.new(status:, elapsed:, lifecycle:, note:,
                                  error_msg:, error_txt: error_text, use_default_lane_id: false)
 
@@ -66,7 +68,7 @@ module Workflow
       end
 
       # Enqueue next steps
-      Workflow::NextStepService.enqueue_next_steps(step:)
+      Workflow::NextStepService.enqueue_next_steps(step:) if enqueue_next_steps
     end
 
     def find_step_for_process

@@ -97,6 +97,17 @@ RSpec.describe Workflow::ProcessService do
         expect(Workflow::NextStepService).to have_received(:enqueue_next_steps).with(step: version2_step)
       end
     end
+
+    context 'when enqueue_next_steps is false' do
+      let(:step) { create(:workflow_step) }
+
+      it 'does not enqueue next steps' do
+        described_class.update(druid: step.druid, workflow_name: step.workflow, process: step.process,
+                               status: 'completed', enqueue_next_steps: false)
+
+        expect(Workflow::NextStepService).not_to have_received(:enqueue_next_steps)
+      end
+    end
   end
 
   describe '.update_error' do

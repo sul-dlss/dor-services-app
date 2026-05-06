@@ -32,10 +32,12 @@ RSpec.describe Robots::DorRepo::Release::Start, type: :robot do
 
     it 'skips update-marc and update-holdings workflow steps' do
       perform
-      expect(Workflow::ProcessService).to have_received(:update).with(druid:, workflow_name: 'releaseWF',
-                                                                      process: 'update-marc', status: 'skipped')
-      expect(Workflow::ProcessService).to have_received(:update).with(druid:, workflow_name: 'releaseWF',
-                                                                      process: 'update-holdings', status: 'skipped')
+      expect(Workflow::ProcessService)
+        .to have_received(:update).with(druid:, workflow_name: 'releaseWF',
+                                        process: 'update-marc', status: 'skipped', enqueue_next_steps: false)
+      expect(Workflow::ProcessService)
+        .to have_received(:update).with(druid:, workflow_name: 'releaseWF',
+                                        process: 'update-holdings', status: 'skipped', enqueue_next_steps: false)
     end
   end
 end
