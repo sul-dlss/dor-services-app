@@ -14,8 +14,10 @@ module Robots
           # then mark the Folio steps as skipped.
           return if cocina_object.identification.catalogLinks.any?(Cocina::Models::FolioCatalogLink)
 
-          Workflow::ProcessService.update(druid:, workflow_name:, process: 'update-marc', status: 'skipped')
-          Workflow::ProcessService.update(druid:, workflow_name:, process: 'update-holdings', status: 'skipped')
+          Workflow::ProcessService.update(druid:, workflow_name:, process: 'update-marc', status: 'skipped',
+                                          enqueue_next_steps: false)
+          Workflow::ProcessService.update(druid:, workflow_name:, process: 'update-holdings', status: 'skipped',
+                                          enqueue_next_steps: false)
         end
       end
     end
