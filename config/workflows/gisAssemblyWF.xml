@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <workflow-def id="gisAssemblyWF">
   <process name="start-gis-assembly-workflow">
     <label>Initiate assembly workflow for the object</label>
@@ -43,8 +43,8 @@
     <prereq>generate-structural</prereq>
     <label>Finalize assembly workflow to prepare for assembly/delivery/discovery</label>
   </process>
-  <process name="start-accession-workflow">
+  <process name="start-derivative-workflow">
     <prereq>finish-gis-assembly-workflow</prereq>
-    <label>Initiate accession workflow for the object</label>
+    <label>Initiate derivative workflow for the object</label>
   </process>
 </workflow-def>

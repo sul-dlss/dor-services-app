@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<workflow-def id="gisDerivativeWF">
+  <process name="start-gis-derivative-workflow">
+    <label>Initiate derivative workflow for the object</label>
+  </process>
+  <process name="fetch-files">
+    <prereq>start-gis-delivery-workflow</prereq>
+    <label>Fetch needed files from preservation</label>
+  </process>
+  <process name="start-accession-workflow">
+    <prereq>fetch-files</prereq>
+    <label>Initiate accession workflow for the object</label>
+  </process>
+</workflow-def>
