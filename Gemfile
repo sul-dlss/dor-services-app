@@ -38,8 +38,8 @@ gem 'equivalent-xml' # for diffing MODS
 gem 'faraday', '~> 2.0'
 gem 'faraday-retry'
 gem 'honeybadger'
+gem 'janeway-jsonpath' # used for metadata reports
 gem 'jbuilder'
-gem 'jsonpath', '~> 1.1' # used for metadata reports
 gem 'jwt' # json web token
 gem 'lograge'
 gem 'okcomputer'

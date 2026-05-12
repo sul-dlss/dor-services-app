@@ -15,9 +15,9 @@ class InvalidW3cdtfDates
   # find cocina objects that have at least one date with the encoding
   DATE_JSONB_PATH = 'strict $.**.date ? (@.**.encoding.code == "w3cdtf")'
   # find individual cocina date objects that match the encoding
-  DATE_ENCODING_JSON_PATH = JsonPath.new('$..encoding.code[?(@ == "w3cdtf")]').freeze
+  DATE_ENCODING_JSON_PATH = Janeway.parse('$..encoding.code')
   # find all the values for a cocina date object (e.g. there may be a structuredValue)
-  DATE_VALUE_JSON_PATH = JsonPath.new('$..value').freeze
+  DATE_VALUE_JSON_PATH = Janeway.parse("$..['value']")
 
   SQL = <<~SQL.squish.freeze
     SELECT jsonb_path_query_array(rov.description, '#{DATE_JSONB_PATH}') ->> 0 as dates,
@@ -73,12 +73,12 @@ class InvalidW3cdtfDates
   end
 
   def self.date_has_encoding?(cocina_date)
-    DATE_ENCODING_JSON_PATH.on(cocina_date).present?
+    DATE_ENCODING_JSON_PATH.enum_for(cocina_date).search.include?('w3cdtf')
   end
 
   def self.invalid_values(cocina_date)
     invalid_values = []
-    DATE_VALUE_JSON_PATH.on(cocina_date).each do |value|
+    DATE_VALUE_JSON_PATH.enum_for(cocina_date).search.each do |value|
       invalid_values << value unless valid_w3cdtf?(value)
     end
     invalid_values
