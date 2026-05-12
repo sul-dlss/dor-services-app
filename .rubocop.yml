@@ -11,16 +11,16 @@ plugins:
 AllCops:
   TargetRubyVersion: 3.4
   Exclude:
-    - "bin/console"
-    - "bin/rails"
-    - "bin/rake"
-    - "docs/**/*"
-    - "db/migrate/**"
-    - "db/schema.rb"
-    - "log/**/*"
-    - "results/**/*"
-    - "tmp/**/*"
-    - "vendor/**/*"
+    - 'bin/console'
+    - 'bin/rails'
+    - 'bin/rake'
+    - 'docs/**/*'
+    - 'db/migrate/**'
+    - 'db/schema.rb'
+    - 'log/**/*'
+    - 'results/**/*'
+    - 'tmp/**/*'
+    - 'vendor/**/*'
   SuggestExtensions: false
 
 Rails:
@@ -29,18 +29,18 @@ Rails:
 Layout/LineLength:
   Max: 120
   Exclude:
-    - "spec/services/cocina/mapping/descriptive/h2_datacite/subject_h2_datacite_spec.rb"
-    - "spec/services/cocina/from_marc/**/*"
-    - "spec/services/migrators/remove_parallel_contributor_spec.rb"
-    - "app/reports/**/*"
+    - 'spec/services/cocina/mapping/descriptive/h2_datacite/subject_h2_datacite_spec.rb'
+    - 'spec/services/cocina/from_marc/**/*'
+    - 'spec/services/migrators/remove_parallel_contributor_spec.rb'
+    - 'app/reports/**/*'
 
 Lint/UnusedMethodArgument:
   AllowUnusedKeywordArguments: true
 
 Metrics/AbcSize:
   Exclude:
-    - "bin/*"
-    - "app/reports/**/*"
+    - 'bin/*'
+    - 'app/reports/**/*'
 
 Metrics/BlockLength:
   AllowedMethods:
@@ -49,48 +49,48 @@ Metrics/BlockLength:
     - namespace
     - class_methods
   Exclude:
-    - "spec/**/*"
-    - "config/routes.rb"
-    - "config/initializers/dor_config.rb"
-    - "lib/tasks/missing_druids.rake"
-    - "app/reports/**/*.rb"
+    - 'spec/**/*'
+    - 'config/routes.rb'
+    - 'config/initializers/dor_config.rb'
+    - 'lib/tasks/missing_druids.rake'
+    - 'app/reports/**/*.rb'
 
 Metrics/ClassLength:
   Max: 150 # default 100
   Exclude:
-    - "app/services/cocina/to_datacite/event.rb"
-    - "app/services/cocina/to_xml/content_metadata_generator.rb"
+    - 'app/services/cocina/to_datacite/event.rb'
+    - 'app/services/cocina/to_xml/content_metadata_generator.rb'
 
 Metrics/CyclomaticComplexity:
   Exclude:
-    - "bin/*"
-    - "app/reports/**/*"
+    - 'bin/*'
+    - 'app/reports/**/*'
 
 Metrics/MethodLength:
   CountAsOne:
-    - "hash"
+    - 'hash'
   Max: 15 # default 10
   Exclude:
-    - "bin/*"
-    - "app/reports/**/*"
-    - "db/**/*"
+    - 'bin/*'
+    - 'app/reports/**/*'
+    - 'db/**/*'
 
 Metrics/PerceivedComplexity:
   Exclude:
-    - "bin/*"
-    - "app/reports/**/*"
+    - 'bin/*'
+    - 'app/reports/**/*'
 
 Performance/CollectionLiteralInLoop:
   Enabled: true
   Exclude:
-    - "app/services/symphony_reader.rb"
+    - 'app/services/symphony_reader.rb'
 
 Rails/DynamicFindBy:
   Enabled: true
   Exclude:
-    - "app/services/cocina_object_store.rb"
-    - "app/controllers/objects_controller.rb"
-    - "spec/services/cocina_object_store_spec.rb"
+    - 'app/services/cocina_object_store.rb'
+    - 'app/controllers/objects_controller.rb'
+    - 'spec/services/cocina_object_store_spec.rb'
 
 Rails/EagerEvaluationLogMessage: # (new in 2.11)
   Enabled: false
@@ -101,12 +101,12 @@ Rails/EnvironmentVariableAccess: # (new in 2.10)
 
 Rails/Output:
   Exclude:
-    - "app/reports/**/*"
+    - 'app/reports/**/*'
 
 RSpec/DescribeClass:
   Exclude:
-    - "spec/requests/**/*"
-    - "spec/services/cocina/mapping/**/*"
+    - 'spec/requests/**/*'
+    - 'spec/services/cocina/mapping/**/*'
 
 RSpec/ExampleLength:
   Enabled: false
@@ -119,19 +119,19 @@ RSpec/MultipleMemoizedHelpers:
 
 RSpec/ExpectActual:
   Exclude:
-    - "spec/routing/**"
+    - 'spec/routing/**'
 
 RSpec/NestedGroups:
   Max: 5
 
 RSpec/SubjectStub:
   Exclude:
-    - "spec/services/catalog/update_marc856_record_service_spec.rb"
+    - 'spec/services/catalog/update_marc856_record_service_spec.rb'
 
 Style/Documentation:
   Exclude:
-    - "app/graphql/**/*"
-    - "db/**/*"
+    - 'app/graphql/**/*'
+    - 'db/**/*'
 
 Style/Lambda:
   EnforcedStyle: literal
@@ -140,7 +140,7 @@ Style/RedundantStringEscape:
   Enabled: true
   Exclude:
     # Does not play well with raw SQL.
-    - "app/reports/**"
+    - 'app/reports/**'
 
 Style/WordArray:
   MinSize: 3
@@ -932,4 +932,13 @@ Style/SelectByKind: # new in 1.85
 Style/SelectByRange: # new in 1.85
   Enabled: true
 Style/TallyMethod: # new in 1.85
+  Enabled: true
+
+Capybara/AssertStyle: # new in 2.23
+  Enabled: true
+Capybara/RSpec/CurrentPathExpectation: # new in 1.18
+  Enabled: true
+Capybara/RSpec/HaveContent: # new in 2.23
+  Enabled: true
+Capybara/RSpec/VisibilityMatcher: # new in 1.39
   Enabled: true
