@@ -24,7 +24,7 @@ class InvalidEdtfStructuredDates
   #       }
   #     ]
   #   }
-  STRUCTURE_ENCODING_JSON_PATH = JsonPath.new('$..date[?(@.encoding.code == "edtf")]')
+  STRUCTURE_ENCODING_JSON_PATH = Janeway.parse('$..date[?(@.encoding.code == "edtf")]')
 
   # structuredValue where value has encoding indicated as EDTF; example =
   #   {
@@ -41,7 +41,7 @@ class InvalidEdtfStructuredDates
   #       }
   #     ]
   #   }
-  VALUE_ENCODING_JSON_PATH = JsonPath.new('$..date..structuredValue.[?(@.encoding.code == "edtf")]')
+  VALUE_ENCODING_JSON_PATH = Janeway.parse('$..date..structuredValue[?(@.encoding.code == "edtf")]')
 
   def self.report
     puts "item_druid,catalogRecordId,collection_druid,invalid_values,reason\n"
@@ -67,7 +67,7 @@ class InvalidEdtfStructuredDates
   # outputs structuredValue with sibling encoding of edtf and invalid edtf values
   def output_invalid_with_structure_encodings
     bad_values = []
-    STRUCTURE_ENCODING_JSON_PATH.on(dro.description.to_json).each do |date|
+    STRUCTURE_ENCODING_JSON_PATH.enum_for(dro.description).search.each do |date|
       date['structuredValue'].each do |structured_value|
         bad_values << structured_value['value'] unless valid_edtf?(structured_value['value'])
       end
@@ -80,7 +80,7 @@ class InvalidEdtfStructuredDates
 
   # outputs edtf value from a date with structuredValue where only one of the two expected child values is indicated edtf
   def output_single_value_edtf_encoding
-    dates_with_value_encodings = VALUE_ENCODING_JSON_PATH.on(dro.description.to_json)
+    dates_with_value_encodings = VALUE_ENCODING_JSON_PATH.enum_for(dro.description).search
     # FIXME:  this can be incorrect if there are multiple dates matching the json path
     #  it is hoped that case is rare.
     return if dates_with_value_encodings.size != 1
