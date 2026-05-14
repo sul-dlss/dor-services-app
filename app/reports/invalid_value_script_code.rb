@@ -2,7 +2,7 @@
 
 # Invoke via:
 # bin/rails r -e production "InvalidScriptCode.report"
-class InvalidScriptCode
+class InvalidValueScriptCode
   # NOTE: Prefer strict JSON querying over lax when using the `.**` operator, per
   #       https://www.postgresql.org/docs/14/functions-json.html#STRICT-AND-LAX-MODES
   #
@@ -11,7 +11,7 @@ class InvalidScriptCode
   # > and each of its elements, while the .HR accessor automatically unwraps
   # > arrays when using the lax mode. To avoid surprising results, we recommend
   # > using the .** accessor only in the strict mode.
-  JSON_PATH = '$.**.language.**.script.code'
+  JSON_PATH = 'strict $.**.valueLanguage.valueScript.code'
 
   def self.valid_codes
     # These were extracted from https://www.unicode.org/iso15924/iso15924.txt
