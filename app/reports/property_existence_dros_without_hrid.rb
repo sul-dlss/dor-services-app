@@ -21,7 +21,6 @@ class PropertyExistenceDrosWithoutHrid
   SQL_QUERY = <<~SQL.squish.freeze
     SELECT ro.external_identifier as item_druid,
            jsonb_path_query(rov.description, '$.title[0].value') ->> 0 as title,
-           jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as folio_instance_hrid,
            jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_druid
            FROM repository_objects AS ro, repository_object_versions AS rov
            WHERE ro.head_version_id = rov.id
@@ -31,7 +30,7 @@ class PropertyExistenceDrosWithoutHrid
   SQL
 
   def self.report
-    puts 'item_druid,item_title,collection_druid,folio_instance_hrid'
+    puts 'item_druid,item_title,collection_druid,collection_name'
 
     ActiveRecord::Base.connection.execute(SQL_QUERY).to_a.each do |row|
       next if row.blank?
