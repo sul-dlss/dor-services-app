@@ -72,7 +72,7 @@ class VersionsController < ApplicationController
   def solr
     model = begin
       @repository_object_version.to_cocina_with_metadata(**cocina_build_params)
-    rescue Dry::Struct::Error
+    rescue Dry::Struct::Error, Cocina::Models::ValidationError
       @repository_object_version.to_invalid_cocina
     end
 

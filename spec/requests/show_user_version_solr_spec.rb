@@ -31,11 +31,13 @@ RSpec.describe 'Show single user version' do
     end
 
     context 'when validate param is set to true (default value)' do
-      it 'raises a Cocina validation error' do
-        expect do
-          get "/v1/objects/#{object.external_identifier}/user_versions/1/solr?validate=true",
-              headers: { 'Authorization' => "Bearer #{jwt}" }
-        end.to raise_error(Cocina::Models::ValidationError)
+      it 'returns a 200' do
+        get "/v1/objects/#{object.external_identifier}/user_versions/1/solr?validate=true",
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(id: object.external_identifier)
+        expect(response.parsed_body).to include(display_title_ss: 'Test DRO')
       end
     end
 

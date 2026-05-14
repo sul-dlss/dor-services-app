@@ -13,7 +13,6 @@ RSpec.describe 'Update object' do
   let(:modified) { DateTime.now }
   let(:label) { 'This is my label' }
   let(:title) { 'This is my title' }
-  let(:who) { 'test_user' }
   let(:current_collection_druid) { 'druid:xx888xx7777' } # the collection the item is in
   let(:updated_collection_druid) { current_collection_druid } # the collection them item will be updated to
 
@@ -31,7 +30,7 @@ RSpec.describe 'Update object' do
     Cocina::Models::DROAccess.new(view:, download:)
   end
   let(:expected) do
-    build(:dro, id: druid, label:, admin_policy_id: apo_druid, type: Cocina::Models::ObjectType.book).new(
+    build(:dro, id: druid, label:, admin_policy_id: apo_druid, type: Cocina::Models::ObjectType.object).new(
       description:,
       identification:,
       structural:,
@@ -47,11 +46,10 @@ RSpec.describe 'Update object' do
       purl: "https://purl.stanford.edu/#{item.external_identifier.delete_prefix('druid:')}"
     }
   end
-  let(:content_type) { Cocina::Models::ObjectType.book }
+  let(:content_type) { Cocina::Models::ObjectType.object }
   let(:data) do
     <<~JSON
       {
-        "user_name": "#{who}",
         "cocinaVersion": "#{Cocina::Models::VERSION}",
         "externalIdentifier": "#{druid}",
         "type":"#{content_type}",
@@ -111,6 +109,7 @@ RSpec.describe 'Update object' do
         patch("/v1/objects/#{druid}",
               params: data,
               headers:)
+
         expect(response).to have_http_status(:ok)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data).except('user_name')))
         expect(response.headers['Last-Modified']).to end_with 'GMT'
@@ -120,7 +119,7 @@ RSpec.describe 'Update object' do
         expect(item.reload.head_version.to_cocina.to_json).to equal_cocina_model(expected)
         expect(Cocina::ObjectValidator).to have_received(:validate)
 
-        expect(EventFactory).to have_received(:create).with(druid:, data: hash_including(:request, who:, success: true),
+        expect(EventFactory).to have_received(:create).with(druid:, data: hash_including(:request, success: true),
                                                             event_type: 'update')
       end
 
@@ -666,11 +665,12 @@ RSpec.describe 'Update object' do
           patch("/v1/objects/#{druid}",
                 params: data,
                 headers:)
+
           expect(response).to have_http_status(:ok)
           description = "Moved from Test Collection (#{current_collection_druid}) " \
                         "to New Collection (#{new_collection_druid})"
           expect(EventFactory).to have_received(:create).with(druid:, event_type: 'collection_changed',
-                                                              data: { who:, description: })
+                                                              data: { who: nil, description: })
         end
       end
 
@@ -722,7 +722,7 @@ RSpec.describe 'Update object' do
           expect(response).to have_http_status(:ok)
           description = "Moved from None () to Test Collection (#{current_collection_druid})"
           expect(EventFactory).to have_received(:create).with(druid:, event_type: 'collection_changed',
-                                                              data: { who:, description: })
+                                                              data: { who: nil, description: })
         end
       end
     end
