@@ -5,7 +5,7 @@
 #  To check for property of type string, or to include empty arrays, remove '? (@.size() > 0))' from JSON_PATH
 
 # Invoke via:
-# bin/rails r -e production "PropertyExistenceCollections.report"
+# bin/rails r -e production "PropertyExistenceCollectionsWithoutHrid.report"
 class PropertyExistenceCollectionsWithoutHrid
   # NOTE: JSON_PATH may need to be changed, in addition to PROPERTY
 
