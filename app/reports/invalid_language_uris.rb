@@ -36,8 +36,25 @@ class InvalidLanguageUris
 
     grouped = result.to_a.group_by { |row| row['external_identifier'] }
     grouped.map do |id, rows|
-      contrib = rows.pluck('contrib').join(';')
+      contrib = rows.pluck('contrib').reject { |uri| valid_language_uri?(uri) }.join(';')
       [id, rows.first['catalogRecordId'], rows.first['collection_id'], contrib].to_csv
     end
+  end
+
+  def self.valid_language_uri?(uri)
+    valid_uris.include?(uri)
+  end
+
+  def self.valid_uris
+    @valid_uris ||= Set.new(
+      fetch_uris_from('https://id.loc.gov/vocabulary/iso639-2.html', '/vocabulary/iso639-2/') +
+      fetch_uris_from('https://id.loc.gov/vocabulary/languages.html', '/vocabulary/languages/')
+    )
+  end
+
+  private_class_method def self.fetch_uris_from(url, path_prefix)
+    response = Faraday.get(url)
+    doc = Nokogiri::HTML(response.body)
+    doc.css("a[href^='#{path_prefix}']").map { |a| "http://id.loc.gov#{a['href']}" }
   end
 end

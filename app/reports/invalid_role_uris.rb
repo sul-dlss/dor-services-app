@@ -35,8 +35,24 @@ class InvalidRoleUris
 
     grouped = result.to_a.group_by { |row| row['external_identifier'] }
     grouped.map do |id, rows|
-      value = rows.map { |row| JSON.parse(row['value']) }.join(';')
+      value = rows.map { |row| JSON.parse(row['value']).reject { |uri| valid_role_uri?(uri) } }.join(';')
       [id, rows.first['catalogRecordId'], rows.first['collection_id'], value].to_csv
     end
+  end
+
+  def self.valid_role_uri?(uri)
+    valid_uris.include?(uri)
+  end
+
+  def self.valid_uris
+    @valid_uris ||= Set.new(
+      fetch_uris_from('https://id.loc.gov/vocabulary/relators.html', '/vocabulary/relators/')
+    )
+  end
+
+  private_class_method def self.fetch_uris_from(url, path_prefix)
+    response = Faraday.get(url)
+    doc = Nokogiri::HTML(response.body)
+    doc.css("a[href^='#{path_prefix}']").map { |a| "http://id.loc.gov#{a['href']}" }
   end
 end
