@@ -12,7 +12,6 @@ RSpec.describe 'Indexable' do
   let(:apo_druid) { apo.external_identifier }
   let(:label) { 'This is my label' }
   let(:title) { 'This is my title' }
-  let(:who) { 'test_user' }
 
   let(:view) { 'world' }
   let(:download) { 'world' }
@@ -76,7 +75,6 @@ RSpec.describe 'Indexable' do
   let(:data) do
     <<~JSON
       {
-        "user_name": "#{who}",
         "cocinaVersion": "#{Cocina::Models::VERSION}",
         "externalIdentifier": "#{druid}",
         "type":"#{content_type}",
