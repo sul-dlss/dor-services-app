@@ -145,8 +145,10 @@ RSpec.describe RepositoryObject do
 
     context 'with a last closed version lacking cocina' do
       before do
-        repository_object.update(last_closed_version: repository_object.versions
-                                                      .create!(version: 2, version_description: 'closed'))
+        repository_object.update(
+          last_closed_version: repository_object.versions
+                                                .create!(version: 2, version_description: 'closed')
+        )
       end
 
       it 'returns false' do
