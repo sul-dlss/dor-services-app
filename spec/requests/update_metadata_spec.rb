@@ -51,7 +51,6 @@ RSpec.describe 'Update object' do
   let(:data) do
     <<~JSON
       {
-        "user_name": "#{who}",
         "cocinaVersion": "#{Cocina::Models::VERSION}",
         "externalIdentifier": "#{druid}",
         "type":"#{content_type}",
@@ -108,9 +107,10 @@ RSpec.describe 'Update object' do
       end
 
       it 'updates the object' do
-        patch("/v1/objects/#{druid}",
+        patch("/v1/objects/#{druid}?user_name=#{who}",
               params: data,
               headers:)
+
         expect(response).to have_http_status(:ok)
         expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data).except('user_name')))
         expect(response.headers['Last-Modified']).to end_with 'GMT'
@@ -663,9 +663,10 @@ RSpec.describe 'Update object' do
         end
 
         it 'sends a collection changed event' do
-          patch("/v1/objects/#{druid}",
+          patch("/v1/objects/#{druid}?user_name=#{who}",
                 params: data,
                 headers:)
+
           expect(response).to have_http_status(:ok)
           description = "Moved from Test Collection (#{current_collection_druid}) " \
                         "to New Collection (#{new_collection_druid})"
@@ -699,13 +700,13 @@ RSpec.describe 'Update object' do
         end
 
         it 'sends a collection changed event' do
-          patch("/v1/objects/#{druid}",
+          patch("/v1/objects/#{druid}?user_name=#{who}",
                 params: data,
                 headers:)
           expect(response).to have_http_status(:ok)
           description = "Moved from Test Collection (#{current_collection_druid}) to None ()"
           expect(EventFactory).to have_received(:create).with(druid:, event_type: 'collection_changed',
-                                                              data: { who: nil, description: })
+                                                              data: { who:, description: })
         end
       end
 
@@ -716,7 +717,7 @@ RSpec.describe 'Update object' do
         end
 
         it 'sends a collection changed event' do
-          patch("/v1/objects/#{druid}",
+          patch("/v1/objects/#{druid}?user_name=#{who}",
                 params: data,
                 headers:)
           expect(response).to have_http_status(:ok)
@@ -771,7 +772,7 @@ RSpec.describe 'Update object' do
         end
 
         it 'is a bad request' do
-          patch("/v1/objects/#{druid}",
+          patch("/v1/objects/#{druid}?user_name=#{who}",
                 params: data,
                 headers:)
           expect(response).to have_http_status(:bad_request)
