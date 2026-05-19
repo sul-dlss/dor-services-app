@@ -118,6 +118,8 @@ class InvalidSubjectSourceCodes
       .group_by { |row| row['external_identifier'] }
       .map do |id, rows|
         collection_druid = rows.first['collection_id']
+        next if collection_druid == 'druid:yh583fk3400'
+
         collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
 
         omit_values = rows.filter_map { |row| row['omit_value'] }.uniq
