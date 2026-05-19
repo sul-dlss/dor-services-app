@@ -11,7 +11,7 @@ class InvalidContributorSourceCodes
   # > and each of its elements, while the .HR accessor automatically unwraps
   # > arrays when using the lax mode. To avoid surprising results, we recommend
   # > using the .** accessor only in the strict mode.
-  JSON_PATH = 'strict $.**.contributor.**.name.**.source.code'
+  JSON_PATH = 'strict $.**.contributor[*].name[*].source.code'
   # rubocop:disable Metrics/CollectionLiteralLength
   MARC_SUBJECT_SOURCE_CODES = %w[
     aass aat aatnor abne aedoml afo afset agrifors agrovoc agrovocf agrovocs
