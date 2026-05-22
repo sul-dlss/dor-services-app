@@ -51,7 +51,7 @@ module Cocina
           subfield_a = field.subfields.find { |sf| sf.code == 'a' }&.value
           next unless subfield_a
 
-          { value: subfield_a, type: 'classification', source: { code: 'sudoc' } }
+          { value: subfield_a, type: 'classification', source: { code: 'sudocs' } }
         end.compact
       end
 

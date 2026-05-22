@@ -47,7 +47,7 @@ RSpec.describe Cocina::FromMarc::Subject do
       end
 
       it 'returns SUDOC value' do
-        expect(build).to eq [{ value: 'A 13.36/2:C 64/2/2016', type: 'classification', source: { code: 'sudoc' } }]
+        expect(build).to eq [{ value: 'A 13.36/2:C 64/2/2016', type: 'classification', source: { code: 'sudocs' } }]
       end
     end
 
