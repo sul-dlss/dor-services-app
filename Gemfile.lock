@@ -626,7 +626,7 @@ DEPENDENCIES
   capistrano-passenger
   capistrano-rails
   capistrano-shared_configs
-  cocina-models (~> 0.117.0)
+  cocina-models
   cocina_display
   config
   connection_pool
