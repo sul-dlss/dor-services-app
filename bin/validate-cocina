@@ -100,7 +100,7 @@ def validate(sample_size, processes, latest_versions_only, temp_dir)
   Parallel.map(obj_ids.each_slice(100).with_index,
                in_processes: processes,
                finish: ->(_, _, results) { on_finish(results, progress_bar) }) do |slice_obj_ids, index|
-    results = RepositoryObject.find(slice_obj_ids).flat_map do |repository_object|
+    RepositoryObject.find(slice_obj_ids).flat_map do |repository_object|
       versions_to_validate(repository_object, latest_versions_only).map do |repository_object_version|
         is_head_version = repository_object_version.head_version_of.present?
         is_last_closed_version =
@@ -120,9 +120,7 @@ def validate(sample_size, processes, latest_versions_only, temp_dir)
          is_head_version, is_last_closed_version, has_user_version, repository_object.object_type,
          collection, e.message]
       end
-    end
-
-    write_results_to_temp_file(results, temp_dir, index)
+    end.tap { |slice_results| write_results_to_temp_file(slice_results, temp_dir, index) } # rubocop:disable Style/MultilineBlockChain
   end.compact
 end
 
@@ -142,7 +140,8 @@ end
 
 temp_dir = Dir.mktmpdir('validate-cocina')
 begin
-  temp_files = validate(options[:sample], options[:processes], options[:latest_versions_only], temp_dir)
+  validate(options[:sample], options[:processes], options[:latest_versions_only], temp_dir)
+  temp_files = Dir.glob("#{temp_dir}/*.csv")
 
   consolidate_temp_files(temp_files, 'validate-cocina.csv')
 ensure
