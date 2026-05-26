@@ -96,8 +96,11 @@ class InvalidSubjectSourceCodes
     SELECT jsonb_path_query(rov.description, '#{JSON_PATH} ? (@ like_regex "#{REGEX}")') ->> 0 as value,
            jsonb_path_query(rov.description, '#{OMIT_JSON_PATH} ? (@ like_regex "#{REGEX}")') ->> 0 as omit_value,
            ro.external_identifier,
-           jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as catalogRecordId,
-           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id
+           jsonb_path_query(rov.description, '$.title[0].structuredValue[*] ? (@.type == "main title").value') ->> 0 as structured_title,
+           jsonb_path_query(rov.description, '$.title[0].value') ->> 0 as title,
+           jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as hrid,
+           jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id,
+           jsonb_path_query(rov.administrative, '$.hasAdminPolicy') ->> 0 as apo
            FROM repository_objects AS ro, repository_object_versions AS rov
            WHERE ro.head_version_id = rov.id
            AND ro.object_type = 'dro'
@@ -105,7 +108,7 @@ class InvalidSubjectSourceCodes
   SQL
 
   def self.report
-    puts "item_druid,catalogRecordId,collection_druid,collection_name,value\n"
+    puts "item_druid,value,title,collection_druid,collection_name,hrid,apo_druid,apo_name\n"
 
     rows(SQL).each { |row| puts row if row }
   end
@@ -118,9 +121,12 @@ class InvalidSubjectSourceCodes
       .group_by { |row| row['external_identifier'] }
       .map do |id, rows|
         collection_druid = rows.first['collection_id']
-        next if collection_druid == 'druid:yh583fk3400'
+        next if collection_druid == 'druid:yh583fk3400' # ignore the google books collection
 
         collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
+        apo_druid = rows.first['apo']
+        apo_name = RepositoryObject.admin_policies.find_by(external_identifier: apo_druid)&.head_version&.label
+        title = (rows.first['structured_title'] || rows.first['title'])&.delete("\n")
 
         omit_values = rows.filter_map { |row| row['omit_value'] }.uniq
         keep_values = rows.filter_map { |row| row['value'] unless omit_values.include?(row['value']) }
@@ -128,10 +134,13 @@ class InvalidSubjectSourceCodes
 
         [
           id,
-          rows.first['catalogRecordId'],
+          keep_values.join(';'),
+          title,
           collection_druid,
           collection_name,
-          keep_values.join(';')
+          rows.first['hrid'],
+          apo_druid,
+          apo_name
         ].to_csv
       end
   end
