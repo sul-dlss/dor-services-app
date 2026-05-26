@@ -44,6 +44,7 @@ RSpec.describe Workflow::TemplateService do
           digitizationWF
           gisAssemblyWF
           gisDeliveryWF
+          gisDerivativeWF
           goobiWF
           ocrWF
           preservationAuditWF
