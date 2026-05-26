@@ -4,7 +4,7 @@
     <label>Initiate derivative workflow for the object</label>
   </process>
   <process name="fetch-files">
-    <prereq>start-gis-delivery-workflow</prereq>
+    <prereq>start-gis-derivative-workflow</prereq>
     <label>Fetch needed files from preservation</label>
   </process>
   <process name="start-accession-workflow">
