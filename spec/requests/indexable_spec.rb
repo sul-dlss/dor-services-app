@@ -91,7 +91,10 @@ RSpec.describe 'Indexable' do
         "structural":{
             "hasMemberOrders":[{"viewingDirection":"right-to-left"}],
             "isMemberOf":["druid:xx888xx7777"]
-          }
+         },
+         "created":"2024-11-01T19:54:10.000+00:00",
+         "modified":"2024-11-01T19:54:36.000+00:00",
+         "lock":"W/\\"#{druid}=1=2-gzip\\""
       }
     JSON
   end
