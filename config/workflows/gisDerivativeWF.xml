@@ -7,8 +7,12 @@
     <prereq>start-gis-derivative-workflow</prereq>
     <label>Fetch needed files from preservation</label>
   </process>
-  <process name="start-accession-workflow">
+  <process name="create-derivatives">
     <prereq>fetch-files</prereq>
+    <label>Create derivatives</label>
+  </process>
+  <process name="start-accession-workflow">
+    <prereq>create-derivatives</prereq>
     <label>Initiate accession workflow for the object</label>
   </process>
 </workflow-def>
