@@ -13,17 +13,17 @@ class ParallelEvents
   SQL = <<~SQL.squish.freeze
     SELECT ro.external_identifier,
            rov.label as title,
-           jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as hrid,
            jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id,
            jsonb_path_query(rov.administrative, '$.hasAdminPolicy') ->> 0 as apo
            FROM repository_objects AS ro, repository_object_versions AS rov
            WHERE ro.head_version_id = rov.id
            AND ro.object_type = 'dro'
            AND jsonb_path_exists(rov.description, '#{JSON_PATH}')
+           AND NOT jsonb_path_exists(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId')
   SQL
 
   def self.report
-    puts "druid,title,collection_druid,collection_name,hrid,apo_druid,apo_name\n"
+    puts "druid,title,collection_druid,collection_name,apo_druid,apo_name\n"
 
     rows(SQL).compact.each { |row| puts row }
   end
@@ -45,7 +45,6 @@ class ParallelEvents
           rows.first['title']&.delete("\n"),
           collection_druid,
           collection_name,
-          rows.first['hrid'],
           apo_druid,
           apo_name
         ].to_csv
