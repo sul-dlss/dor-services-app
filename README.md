@@ -178,7 +178,7 @@ Custom reports are stored in dor-services-app in the `app/reports` directory.  E
     # you may or may not need to supply the `-n SUNETID` argument
     ksu deploy
     ```
-1. Go to the home directory of the deploy user.  If you have previously run reports, you may have a directory for your username in here.  If not, you will create it:
+1. Go to the home directory of the deploy user.  If you have previously run reports, you may have a directory for your username in here already and can skip this step.  If not, you will create it:
     ```shell
     cd ~
     ls -al # do you see a folder for your sunet?  if so, go to the next step, if not create it below and then clone DSA
@@ -193,6 +193,16 @@ Custom reports are stored in dor-services-app in the `app/reports` directory.  E
    ```
 1. Connect to the desired database by setting the environment variables as shown below.  This must be done each time you SSH back into the box to run a new report.
    To run a report against production SDR, use the values below.  For stage or QA, replace `PROD` with `STAGE` or `QA` in the HOSTNAME and PASSWORD variables:
+
+    STAGE
+    ```shell
+    export DATABASE_NAME="dor_services"
+    export DATABASE_USERNAME=$DOR_SERVICES_DB_USER
+    export DATABASE_HOSTNAME=$DOR_SERVICES_DB_STAGE_HOST
+    export DATABASE_PASSWORD=$DOR_SERVICES_DB_STAGE_PWD
+    ```
+
+   PROD
    ```shell
     export DATABASE_NAME="dor_services"
     export DATABASE_USERNAME=$DOR_SERVICES_DB_USER
@@ -210,9 +220,9 @@ Custom reports are stored in dor-services-app in the `app/reports` directory.  E
 
 ### Export data
 
-You may want to export a full dataset to do validation on your local machine. 
+You may want to export a full dataset to do validation on your local machine.
 
-First export the database environment variables as above.  
+First export the database environment variables as above.
 Then make sure there is about 100GB of space on `/sdrmd`. You can use `df -h`
 You can remove any old files in `/sdrmd/cocina`
 Then, in a `screen` session run:
