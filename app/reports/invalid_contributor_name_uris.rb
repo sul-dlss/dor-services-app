@@ -7,9 +7,8 @@
 # http(s)://id.loc.gov/authorities/names.
 # See https://github.com/sul-dlss/dor-services-app/issues/6006
 class InvalidContributorNameUris
-  # NOTE: Prefer strict JSON querying over lax when using the `.**` operator, per
-  #       https://www.postgresql.org/docs/14/functions-json.html#STRICT-AND-LAX-MODES
-  JSON_PATH = 'strict $.**.contributor[*].name[*].uri'
+  # Scoped to top-level contributor to avoid matching adminMetadata.contributor entries.
+  JSON_PATH = 'strict $.contributor[*].name[*].uri'
   REGEX = '"^https?://(?!id\\.loc\\.gov/authorities/names/..).*$"'
 
   def self.sql
