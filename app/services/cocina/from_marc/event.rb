@@ -3,7 +3,19 @@
 module Cocina
   module FromMarc
     # Maps event information from MARC records to Cocina models.
-    class Event # rubocop:disable Metrics/ClassLength
+    class Event
+      MARC_264_INDICATOR2 = {
+        '0' => { type: 'production', role: 'creator' },
+        '1' => { type: 'publication', role: 'publisher' },
+        '2' => { type: 'distribution', role: 'distributor' },
+        '3' => { type: 'manufacture', role: 'manufacturer' },
+        '4' => { type: 'copyright notice', role: '' },
+        ' ' => { type: nil, role: nil }
+      }.freeze
+
+      FREQUENCY_TAGS = %w[310 321].freeze
+      CREATION_RECORD_TYPES = %w[d f p t].freeze
+
       # @see #initialize
       # @see #build
       def self.build(...)
@@ -16,189 +28,129 @@ module Cocina
       end
 
       # @return [Array<Hash>] an array of event hashes
-      def build # rubocop:disable Metrics/AbcSize
+      def build
         [
-          publication_from008,
-          publication(marc['260']),
-          manufacture(marc['260']),
-          marc.fields.filter_map { production(it) if it.tag == '264' },
-          edition_statement(marc['250']),
-          frequency_statement,
-          mode_of_issuance(marc['334'])
+          event_from_008,
+          publication_events,
+          manufacture_event,
+          marc_264_events,
+          edition_events,
+          frequency_event,
+          issuance_event
         ].flatten.compact
       end
 
-      MARC_264_INDICATOR2 = {
-        '0' => { type: 'production', role: 'creator' },
-        '1' => { type: 'publication', role: 'publisher' },
-        '2' => { type: 'distribution', role: 'distributor' },
-        '3' => { type: 'manufacture', role: 'manufacturer' },
-        '4' => { type: 'copyright notice', role: '' },
-        ' ' => { type: nil, role: nil }
-      }.freeze
-
       private
 
-      def publication_from008
+      attr_reader :marc
+
+      def event_from_008 # rubocop:disable Naming/VariableNumber
         field = marc['008']
         return unless field
 
-        type = %w[d f p t].include?(marc.leader[6]) ? 'creation' : 'publication'
+        type = CREATION_RECORD_TYPES.include?(marc.leader[6]) ? 'creation' : 'publication'
+        date = EventDate.build(record_type: type, field:)
 
-        date = dates_from008(type, field)
-        { type:, date: } if date
+        return if date.blank?
+
+        { type:, date: }
       end
 
-      def dates_from008(type, field)
-        case field.value[6]
-        when 'm'
-          [{ value: field.value[7..10], type:, encoding: { code: 'marc' } },
-           { value: field.value[11..14], type:, encoding: { code: 'marc' } }]
-        when 'c', 'd', 'i', 'k', 'u'
-          build_range(type, field)
-        when 'q'
-          build_range(type, field, qualifier: 'questionable')
-        when 'n'
-          nil
-        else
-          [{ value: field.value[7..10], type:, encoding: { code: 'marc' } }]
+      def publication_events
+        build_linked_events(marc['260']) do |field|
+          EventDataFieldBuilder.build(
+            field:,
+            type: 'publication',
+            role: 'publisher',
+            location_codes: ['a'],
+            contributor_codes: ['b'],
+            date_code: 'c'
+          )
         end
       end
 
-      def build_range(type, field, qualifier: nil)
-        start_value = field.value[7..10]
-        end_value = field.value[11..14]
-        return if start_value.blank? || end_value.blank? # Invalid MARC
-
-        [{
-          structuredValue: [{ value: start_value, type: 'start' },
-                            { value: end_value, type: 'end' }],
-          type:, qualifier:, encoding: { code: 'marc' }
-        }.compact]
-      end
-
-      def production(field)
+      def manufacture_event
+        field = marc['260']
         return unless field
 
-        fields = [build_production(field)]
-        alt_script_field = Util.linked_field(marc, field)
-        fields << build_production(alt_script_field) if alt_script_field
-        fields
+        event = EventDataFieldBuilder.build(
+          field:,
+          type: 'manufacture',
+          role: 'manufacturer',
+          location_codes: ['e'],
+          contributor_codes: ['f'],
+          date_code: 'g',
+          strip_date_punctuation: false
+        )
+
+        event if event.except(:type).present?
       end
 
-      def build_production(field) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-        indicator = MARC_264_INDICATOR2.fetch(field.indicator2)
-        return copyright(field) if indicator[:type] == 'copyright notice'
-
-        locations = field.subfields.filter_map { Util.strip_punctuation(it.value) if it.code == 'a' }
-        contributors = field.subfields.select { it.code == 'b' }.map(&:value)
-        date = field.subfields.find { it.code == 'c' }
-
-        event = { type: indicator[:type] }.compact_blank
-        event[:location] = locations.map { { value: it } } if locations.present?
-        contributor_template = indicator[:role] ? { role: [{ value: indicator[:role] }] } : {}
-        if contributors.present?
-          event[:contributor] = contributors.map do |contributor|
-            contributor_template.merge({ name: [{ value: Util.strip_punctuation(contributor) }] })
-          end
+      def marc_264_events
+        marc.fields.filter_map do |field|
+          build_linked_events(field) { |script_field| build_marc_264_event(script_field) } if field.tag == '264'
         end
-
-        event[:date] = [{ value: date.value.delete_suffix('.'), type: indicator[:type] }.compact_blank] if date
-
-        event
       end
 
-      def copyright(field)
-        date = field.subfields.find { it.code == 'c' }.value.delete_suffix('.')
+      def build_marc_264_event(field)
+        indicator = MARC_264_INDICATOR2.fetch(field.indicator2)
+        return copyright_event(field) if indicator[:type] == 'copyright notice'
+
+        EventDataFieldBuilder.build(
+          field:,
+          type: indicator[:type],
+          role: indicator[:role],
+          location_codes: ['a'],
+          contributor_codes: ['b'],
+          date_code: 'c'
+        )
+      end
+
+      def copyright_event(field)
+        date = field.subfields.find { it.code == 'c' }&.value&.delete_suffix('.')
+        return unless date
 
         { type: 'copyright notice', note: [{ value: date, type: 'copyright statement' }] }
       end
 
-      def edition_statement(field)
-        return unless field
-
-        fields = [build_edition_statement(field)]
-        alt_script_field = Util.linked_field(marc, field)
-        fields << build_edition_statement(alt_script_field) if alt_script_field
-        fields
+      def edition_events
+        build_linked_events(marc['250']) do |field|
+          statement = joined_subfield_values(field, 'a', 'b')
+          { type: 'publication', note: [{ value: statement, type: 'edition' }] }
+        end
       end
 
-      def build_edition_statement(field)
-        statement = field.subfields.select { %w[a b].include? it.code }.map(&:value).join(' ')
-        { type: 'publication', note: [{ value: statement, type: 'edition' }] }
-      end
-
-      def frequency_statement
+      def frequency_event
         notes = marc.fields.filter_map do |field|
-          if %w[310 321].include?(field.tag)
-            fields = [build_frequency_note(field)]
-            alt_script_field = Util.linked_field(marc, field)
-            fields << build_frequency_note(alt_script_field) if alt_script_field
-            fields
+          next unless FREQUENCY_TAGS.include?(field.tag)
+
+          build_linked_events(field) do |script_field|
+            { value: joined_subfield_values(script_field, 'a', 'b'), type: 'frequency' }
           end
         end.flatten
+
         { type: 'publication', note: notes } if notes.present?
       end
 
-      def build_frequency_note(field)
-        statement = field.subfields.select { %w[a b].include? it.code }.map(&:value).join(' ')
-        { value: statement, type: 'frequency' }
-      end
-
-      def mode_of_issuance(field)
+      def issuance_event
+        field = marc['334']
         return unless field
 
-        statement = field.subfields.find { %w[a].include? it.code }.value
+        statement = field.subfields.find { it.code == 'a' }&.value
+        return unless statement
+
         { note: [{ value: statement, type: 'issuance' }] }
       end
 
-      def publication(field)
+      def build_linked_events(field, &)
         return unless field
 
-        fields = [build_publication(field)]
-        alt_script_field = Util.linked_field(marc, field)
-        fields << build_publication(alt_script_field) if alt_script_field
-        fields
+        [field, Util.linked_field(marc, field)].compact.map(&)
       end
 
-      def build_publication(field) # rubocop:disable Metrics/AbcSize
-        publication_locations = field.subfields.filter_map { Util.strip_punctuation(it.value) if it.code == 'a' }
-        publisher_names = field.subfields.select { it.code == 'b' }.map(&:value)
-        contributor = publisher_names.map do |publisher_name|
-          { name: [{ value: Util.strip_punctuation(publisher_name) }],
-            role: [{ value: 'publisher' }] }
-        end
-        publication_date = field.subfields.find { it.code == 'c' }&.value&.delete_suffix('.')
-
-        date = [{ value: publication_date, type: 'publication' }] if publication_date
-        {
-          type: 'publication',
-          location: publication_locations.map { { value: it } },
-          contributor:,
-          date:
-        }.compact_blank
+      def joined_subfield_values(field, *codes)
+        field.subfields.select { |subfield| codes.include?(subfield.code) }.map(&:value).join(' ')
       end
-
-      def manufacture(field) # rubocop:disable Metrics/PerceivedComplexity,Metrics/AbcSize,Metrics/CyclomaticComplexity
-        return unless field
-
-        manufacture_location = field.subfields.find { |subfield| subfield.code == 'e' }&.value
-        manufacturer = field.subfields.find { |subfield| subfield.code == 'f' }&.value
-        manufacture_date = field.subfields.find { |subfield| subfield.code == 'g' }&.value
-        return nil unless manufacture_location || manufacturer || manufacture_date
-
-        event = { type: 'manufacture' }
-        event[:location] = [{ value: Util.strip_punctuation(manufacture_location) }] if manufacture_location.present?
-        if manufacturer.present?
-          event[:contributor] =
-            [{ name: [{ value: Util.strip_punctuation(manufacturer) }],
-               role: [{ value: 'manufacturer' }] }]
-        end
-        event[:date] = [{ value: manufacture_date, type: 'manufacture' }] if manufacture_date.present?
-        event
-      end
-
-      attr_reader :marc
     end
   end
 end

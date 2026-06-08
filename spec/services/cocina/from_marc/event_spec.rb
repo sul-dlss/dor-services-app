@@ -1083,6 +1083,41 @@ RSpec.describe Cocina::FromMarc::Event do
       end
     end
 
+    context 'when 008/06 indicates multiple dates but terminal date is blank' do
+      # see a2119728
+      let(:marc_hash) do
+        {
+          'leader' => '01321cam a2200337 4500',
+          'fields' => [
+            { '008' => '730514m1844    fr b          000 0 fre  ' }
+          ]
+        }
+      end
+
+      it 'returns creation event with encoded date' do
+        expect(build).to eq [{
+          type: 'publication',
+          date: [{ value: '1844', type: 'publication', encoding: { code: 'marc' } }]
+        }]
+      end
+    end
+
+    context 'when 008/06 is uncoded and initial date is blank' do
+      # see a12113669
+      let(:marc_hash) do
+        {
+          'leader' => '02419nem a2200457uu 4500',
+          'fields' => [
+            { '008' => '240711      |||||| |  || |  || | |      ' }
+          ]
+        }
+      end
+
+      it 'returns nothing' do
+        expect(build).to eq []
+      end
+    end
+
     context 'with encoded publication date range (008)' do
       let(:marc_hash) do
         {
