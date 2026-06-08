@@ -8,7 +8,7 @@
 # See https://github.com/sul-dlss/dor-services-app/issues/6006
 class InvalidContributorNameUris
   # Scoped to top-level contributor to avoid matching adminMetadata.contributor entries.
-  JSON_PATH = 'strict $.contributor[*].name[*].uri'
+  JSON_PATH = '$.contributor[*].name[*] ? (exists(@.uri)).uri'
   REGEX = '"^https?://(?!id\\.loc\\.gov/authorities/names/..).*$"'
 
   def self.sql
