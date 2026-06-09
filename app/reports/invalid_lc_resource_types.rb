@@ -11,7 +11,7 @@ class InvalidLcResourceTypes
   # > and each of its elements, while the .HR accessor automatically unwraps
   # > arrays when using the lax mode. To avoid surprising results, we recommend
   # > using the .** accessor only in the strict mode.
-  JSON_PATH = 'strict $.**.form[*] ? (@.type == "resource type" && @.source.value == "LC Resource Type Scheme").value'
+  JSON_PATH = 'strict $.**.form[*] ? (@.type == "resource type" && @.source.value == "LC Resource Types Scheme").value'
   VALID_VALUES = [
     'Artifact',
     'Audio',
