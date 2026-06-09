@@ -358,6 +358,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                 purl:,
                                 relatedResource: [
                                   {
+                                    title: [{ value: 'yadda yadda' }],
                                     note: [
                                       {
                                         value: 'Stanford University (Stanford, CA.). (2020). May 2020 dataset. yadda yadda.', # rubocop:disable Layout/LineLength
@@ -366,6 +367,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                     ]
                                   },
                                   {
+                                    title: [{ value: 'Example article' }],
                                     type: 'referenced by',
                                     dataCiteRelationType: 'IsReferencedBy',
                                     identifier: [
@@ -374,8 +376,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
                                         uri: 'https://doi.org/10.1234/example.doi'
                                       }
                                     ]
-                                  },
-                                  {} # Blank will be removed.
+                                  }
                                 ],
                                 subject: [
                                   {
@@ -490,7 +491,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
               relationType: 'IsReferencedBy',
               titles: [
                 {
-                  title: 'https://doi.org/10.1234/example.doi'
+                  title: 'Example article'
                 }
               ],
               relatedItemIdentifier: 'https://doi.org/10.1234/example.doi',
