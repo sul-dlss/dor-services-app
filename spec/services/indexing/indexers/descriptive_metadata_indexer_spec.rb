@@ -293,6 +293,11 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       relatedResource: [
         {
           type: 'has original version',
+          title: [
+            {
+              value: 'The complete works of Henry George.'
+            }
+          ],
           form: [
             {
               value: 'print',
@@ -392,7 +397,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
                         'electronic preservation reformatted digital photographs On cover: Complete works of Henry ' \
                         'George. Fels ' \
                         'fund. Library edition. I. Progress and poverty.--II. Social problems.--III. The land ' \
-                        'question. Property in land. blah blah print 10 v. fronts (v. 1-9) ports. 21 cm. Economics ' \
+                        'question. Property in land. blah blah The complete works of Henry George. print 10 v. ' \
+                        'fronts (v. 1-9) ports. 21 cm. Economics ' \
                         '1800-1900 Economics Europe cats'
       expect(doc).to eq(
         'descriptive_tiv' => all_search_text,
