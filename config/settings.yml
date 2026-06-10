@@ -1,3 +1,4 @@
+
 # Feature flippers
 enabled_features:
   registration: true
@@ -121,6 +122,9 @@ catalog:
       hila_sdr:
         id: "3dadb04e-931c-4ebe-85b0-dcb00c30ebcb"
         campus_id: "be6468b8-ed88-4876-93fe-5bdac764959c"
+    refresh:
+      dump_path: "/dor/marc_dump"
+      db_path: "/dor/marc_dump/marc_dump.db"
 
 datacite:
   prefix: "10.80343"

@@ -268,7 +268,7 @@ RSpec.describe VersionService do
                             user_name: 'jcoyne',
                             start_accession:,
                             user_version_mode:,
-                            lane_id:)
+                            accession_args: { lane_id: })
     end
 
     let(:version) { 2 }
