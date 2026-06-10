@@ -52,7 +52,7 @@ def export(processes)
                                      'w')
                  RepositoryObject.includes(:head_version).where(id: slice_obj_ids).find_each do |repository_object|
                    repository_object.head_version.repository_object = repository_object # avoid N+1 query
-                   @file.write("#{repository_object.head_version.to_cocina.to_json}\n")
+                   @file.write("#{repository_object.head_version.to_cocina(validate: false).to_json}\n")
                  end
                  @file.path
                end
