@@ -218,42 +218,21 @@ Custom reports are stored in dor-services-app in the `app/reports` directory.  E
     scp sdr-infra:/opt/app/deploy/[SUNETID]/dor-services-app/BadIso8601Dates.csv .
     ```
 
-### Export data
+### Export Cocina JSON data
 
-You may want to export a full dataset to do validation on your local machine.
+You may want to export a full dataset of Cocina JSON to do validation on your local machine to run Cocina validation or [jq](https://jqlang.org/) queries.
 
-First export the database environment variables as above.
-Then make sure there is about 100GB of space on `/sdrmd`. You can use `df -h`
-You can remove any old files in `/sdrmd/cocina`
-Then, in a `screen` session run:
-```
-cd /sdrmd/cocina
-RAILS_ENV=production ~/[SUNETID]/dor-services-app/bin/export-cocina-head-versions -p16
-time cat cocina-head-versions-2026-03-12-*.jsonl | xz -T8 > cocina-head-versions-2026-03-12-faster.jsonl.xz
-```
+To export data, in a screen session:
 
-The export step should take about 4 hours.  The compression step takes a little less than an hour.
+1. `ksu deploy`
+2. Export the database variables as above.
+3. `cd /sdrmd/cocina`
+4. Delete any existing `*.jsonl.xz` that are no longer necessary.
+5. Export in parallel: `RAILS_ENV=production ~/dor-services-app/bin/export-cocina-head-versions -p12`
+6. Compress: `cat *.jsonl | xz -T 8 > cocina-head-versions-$(date +%Y-%m-%d).jsonl.xz`
+7. Remove the temporary files: `rm *.jsonl`
 
-Once this is done, you may download the file to your local computer and run `bin/validate-data` (from cocina-models).
-
-Validating the whole dataset takes about 1 hour on a 2023 MacBook Pro.
-
-You can also query this dataset using `jq` to find interesting records:
-```
-# Just a list of druids on stdout
-xzcat cocina-head-versions-2026-03-12.jsonl.xz|jq 'select(.description.contributor[]?.type == "person") | .externalIdentifier'
-
-# A CSV file
-xzcat cocina-head-versions-2026-03-12.jsonl.xz |jq -r '.externalIdentifier as $id | .description.contributor[]?.role[]? | select(has("code")) | [$id, .code] | @csv' > role_codes.csv
-```
-
-#### Getting more information
-
-If you want hrid/title/collection/etc for the problems logged above. You can scp your `role_codes.csv` file to the sdr-infra server and run:
-```
-./bin/find-item-details.rb -f ~jcoyne85/role_codes.csv  > full_role_codes.csv
-```
-
+Once this is done, you may download the file to your local computer and run `bin/validate-data` (from cocina-models). See also the `/cocina-jq-query` skill (also in cocina-models).
 
 ### Generate a list of druids from Solr query
 
