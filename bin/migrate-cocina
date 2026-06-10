@@ -98,10 +98,11 @@ job_result_ids = if File.exist?(LAST_MIGRATION_FILENAME)
                    JSON.parse(File.read(LAST_MIGRATION_FILENAME))
                  elsif options[:file]
                    start_migrate_from_file(migrator_class:, sample: options[:sample], processes: options[:processes],
-                                           mode: options[:mode], batch_size: options[:batch], file: options[:file])
+                                           mode: options[:mode].to_sym, batch_size: options[:batch],
+                                           file: options[:file])
                  else
                    start_migrate(migrator_class:, sample: options[:sample], processes: options[:processes],
-                                 mode: options[:mode], batch_size: options[:batch])
+                                 mode: options[:mode].to_sym, batch_size: options[:batch])
                  end
 File.write(LAST_MIGRATION_FILENAME, job_result_ids.to_json)
 
