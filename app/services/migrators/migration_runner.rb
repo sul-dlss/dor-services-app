@@ -28,7 +28,7 @@ module Migrators
       @repository_object = repository_object
       @mode = mode
 
-      raise ArgumentError("invalid mode #{mode}") unless MODES.include?(mode)
+      raise ArgumentError, "invalid mode #{mode}" unless MODES.include?(mode)
     end
 
     # @return [Array<Result>] results for the migration attempt
