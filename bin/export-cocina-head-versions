@@ -11,11 +11,16 @@ require 'tty-progressbar'
 APPROX_DOC_COUNT = 5_483_724
 BATCH_SIZE = 1000
 
-options = { processes: 4 }
+options = { processes: 4, output_dir: '.' }
 parser = OptionParser.new do |option_parser|
   option_parser.banner = 'Usage: bin/export-cocina-head-versions [options]'
   option_parser.on('-pPROCESSES', '--processes PROCESSES', Integer,
                    "Number of processes. Default is #{options[:processes]}.")
+  option_parser.on('-oOUTPUT_DIR', '--output-dir OUTPUT_DIR', String,
+                   'Directory to write output files. Default is current directory.') do |dir|
+    options[:output_dir] = dir
+  end
+  option_parser.on('-r', '--rotate', 'Delete all but the 2 most recent .jsonl.xz files in the output directory.')
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
     exit
@@ -41,15 +46,35 @@ def tty_progress_bar(count)
   )
 end
 
-def export(processes)
+def compress(output_dir, env)
+  compressed_filename = "cocina-head-versions-#{env}-#{Time.zone.today.iso8601}.jsonl.xz"
+  compressed_path = File.join(output_dir, compressed_filename)
+  puts "\nCompressing to #{compressed_path} ..."
+  system("cat #{File.join(output_dir, '*.jsonl')} | xz -T 8 > #{compressed_path}") || abort('Compression failed')
+  puts "Compressed to #{compressed_path}"
+  compressed_path
+end
+
+def rotate(output_dir)
+  old_files = Dir[File.join(output_dir, 'cocina-head-versions-*.jsonl.xz')]
+              .sort_by { |f| File.mtime(f) }
+              .reverse
+              .drop(2)
+  old_files.each do |path|
+    FileUtils.rm_f(path)
+    puts "Rotated #{path}"
+  end
+end
+
+def export(processes, output_dir, env)
   obj_ids = RepositoryObject.ids
   progress_bar = tty_progress_bar(APPROX_DOC_COUNT)
 
   Parallel.map(obj_ids.each_slice(1000).with_index,
                in_processes: processes,
                finish: ->(_, _, _results) { progress_bar.advance(1000) }) do |slice_obj_ids, index|
-                 @file ||= File.open("cocina-head-versions-#{Time.zone.today.iso8601}-#{format('%02d', index)}.jsonl",
-                                     'w')
+                 filename = "cocina-head-versions-#{env}-#{format('%02d', index)}.jsonl"
+                 @file ||= File.open(File.join(output_dir, filename), 'w')
                  RepositoryObject.includes(:head_version).where(id: slice_obj_ids).find_each do |repository_object|
                    repository_object.head_version.repository_object = repository_object # avoid N+1 query
                    @file.write("#{repository_object.head_version.to_cocina(validate: false).to_json}\n")
@@ -58,8 +83,22 @@ def export(processes)
                end
 end
 
-paths = export(options[:processes])
-puts 'Exported to:'
-paths.each do |path|
-  puts path
+jsonl_paths = []
+env = Honeybadger.config[:env]
+
+begin
+  jsonl_paths = export(options[:processes], options[:output_dir], env)
+  puts 'Exported to:'
+  jsonl_paths.each do |path|
+    puts path
+  end
+
+  output_dir = options[:output_dir]
+  compress(output_dir, env)
+
+  rotate(output_dir) if options[:rotate]
+ensure
+  jsonl_paths.each do |path|
+    FileUtils.rm_f(path)
+  end
 end

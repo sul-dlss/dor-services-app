@@ -220,19 +220,21 @@ Custom reports are stored in dor-services-app in the `app/reports` directory.  E
 
 ### Export Cocina JSON data
 
-You may want to export a full dataset of Cocina JSON to do validation on your local machine to run Cocina validation or [jq](https://jqlang.org/) queries.
+You may want to export a full dataset of Cocina JSON perform actions like the following on your local machine:
+* Run validation. See `bin/validata-data` (in cocina-models). 
+* Create reports using [jq](https://jqlang.org/) queries. See the `/cocina-jq-query` skill (also in cocina-models).
 
-To export data, in a screen session:
+To export data, in a screen session on `sdr-deploy`:
 
 1. `ksu deploy`
 2. Export the database variables as above.
-3. `cd /sdrmd/cocina`
-4. Delete any existing `*.jsonl.xz` that are no longer necessary.
-5. Export in parallel: `RAILS_ENV=production ~/dor-services-app/bin/export-cocina-head-versions -p12`
-6. Compress: `cat *.jsonl | xz -T 8 > cocina-head-versions-$(date +%Y-%m-%d).jsonl.xz`
-7. Remove the temporary files: `rm *.jsonl`
+3. `cd ~/dor-services-app`
+4. Export in parallel: `RAILS_ENV=production bin/export-cocina-head-versions -p12 -r --output-dir /sdrmd/cocina`
 
-Once this is done, you may download the file to your local computer and run `bin/validate-data` (from cocina-models). See also the `/cocina-jq-query` skill (also in cocina-models).
+Once this is done, you may download the file to your local computer from `/sdrmd/cocina`.
+
+#### Scheduled Cocina JSON data exports
+Periodic data exports are available from `/dor/cocina_dump` in all environments. (See `schedule.rb`.)
 
 ### Generate a list of druids from Solr query
 
