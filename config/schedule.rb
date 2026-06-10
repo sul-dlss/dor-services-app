@@ -36,6 +36,9 @@ job_type :rake_hb,
 job_type :runner_hb,
          "cd :path && bin/rails runner -e :environment ':task' :output && curl --silent https://api.honeybadger.io/v1/check_in/:check_in"
 
+job_type :bin,
+         'cd :path && RAILS_ENV=:environment :task :output'
+
 # Suppress warnings to avoid unnecessary cron emails.
 env 'RUBYOPT', '-W0'
 
@@ -58,4 +61,8 @@ end
 every :friday, at: '8:00pm' do
   set :check_in, Settings.honeybadger_checkins.reindex_jobs
   rake_hb 'indexer:reindex_jobs'
+end
+
+every :day, at: '2:00am' do
+  bin 'bin/export-cocina-head-versions -p6 -r --output-dir /dor/cocina_dump > /dev/null'
 end
