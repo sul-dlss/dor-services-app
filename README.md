@@ -343,6 +343,9 @@ Additional notes:
 
 * Migrations can be performed against all items or just a list to `bin/migrate-cocina`.
 * The migrator specifies the migration strategy (cocina update, commit, commit with versioning, commit with publish), which determines how the object is persisted, whether it is versioned, and whether it is published.
+* For versioned migrations, a migrator may define `self.workflow_context` to pass optional workflow context when MigrationRunner closes the opened version and starts accessionWF.
+* Workflow context defaults to `{}` if not overridden.
+* See `Migrators::ExemplarWithContext` for a minimal example of context usage.
 * Breaking changes, especially breaking cocina model changes, are going to require additional steps, e.g., stopping SDR processing. The complete process is to be determined.
 
 ## Reset Process (for QA/Stage)

@@ -86,6 +86,7 @@ RSpec.describe 'Operations regarding object versions' do
   end
 
   describe 'POST /versions/current/close' do
+    let(:close_path) { "/v1/objects/#{druid}/versions/current/close" }
     let(:close_params) do
       {
         description: 'some text',
@@ -100,7 +101,7 @@ RSpec.describe 'Operations regarding object versions' do
       end
 
       it 'closes the current version when posted to' do
-        post "/v1/objects/druid:mx123qw2323/versions/current/close?#{close_params.to_query}",
+        post "#{close_path}?#{close_params.to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status :ok
         expect(response.body).to match(/version 1 closed/)
@@ -116,12 +117,30 @@ RSpec.describe 'Operations regarding object versions' do
       end
 
       it 'closes the current version when posted to' do
-        post "/v1/objects/druid:mx123qw2323/versions/current/close?#{close_params.merge('lane-id': 'high').to_query}",
+        post "#{close_path}?#{close_params.merge('lane-id': 'high').to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status :ok
         expect(response.body).to match(/version 1 closed/)
         expect(VersionService).to have_received(:close)
           .with(druid:, version:, accession_args: { lane_id: :high },
+                **close_params)
+      end
+    end
+
+    context 'when closing a version with workflow context' do
+      let(:workflow_context) { { 'skipReleaseWF' => 'true' } }
+
+      before do
+        allow(VersionService).to receive(:close)
+      end
+
+      it 'passes context as accession_args to close' do
+        post "#{close_path}?#{close_params.merge(context: workflow_context).to_query}",
+             headers: { 'Authorization' => "Bearer #{jwt}" }
+
+        expect(response).to have_http_status :ok
+        expect(VersionService).to have_received(:close)
+          .with(druid:, version:, accession_args: { context: workflow_context },
                 **close_params)
       end
     end
@@ -133,7 +152,7 @@ RSpec.describe 'Operations regarding object versions' do
       end
 
       it 'returns an error' do
-        post "/v1/objects/druid:mx123qw2323/versions/current/close?#{close_params.to_query}",
+        post "#{close_path}?#{close_params.to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status :unprocessable_content
         expect(response.body).to eq(

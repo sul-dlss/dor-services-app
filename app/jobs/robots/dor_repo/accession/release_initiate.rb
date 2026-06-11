@@ -27,7 +27,7 @@ module Robots
         def skipped?
           # checks if user has indicated that releaseWF should be skipped (sent as workflow_context)
           # default to false if not present
-          workflow.context['skipReleaseWF'] || false
+          ActiveModel::Type::Boolean.new.cast(workflow.context['skipReleaseWF'])
         end
       end
     end

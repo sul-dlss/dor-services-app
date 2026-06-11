@@ -194,8 +194,49 @@ RSpec.describe Migrators::MigrationRunner do
 
           expect(version_service).to have_received(:close)
             .with(description: nil, user_name: nil,
-                  start_accession: true, user_version_mode: :update_if_existing, accession_args: { lane_id: 'low' })
+                  start_accession: true, user_version_mode: :update_if_existing,
+                  accession_args: { lane_id: 'low', context: {} })
           expect(Publish::MetadataTransferService).not_to have_received(:publish)
+        end
+      end
+
+      context 'when the migrator provides workflow context' do
+        let(:migrator_class) do
+          stub_const(
+            'Migrators::TestMigrator',
+            Class.new(Migrators::Base) do
+              def migrate
+                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash
+              end
+
+              def self.migration_strategy
+                :cocina_update
+              end
+
+              def self.version_description
+                'test migration'
+              end
+
+              def self.workflow_context
+                { 'skipReleaseWF' => true }
+              end
+            end
+          )
+        end
+
+        before do
+          repository_object.close_version!
+          allow(version_service).to receive(:open?).and_return(false)
+        end
+
+        it 'passes workflow context when closing the version' do
+          results
+
+          expect(version_service).to have_received(:close)
+            .with(description: nil, user_name: nil,
+                  start_accession: true, user_version_mode: :update_if_existing,
+                  accession_args: { lane_id: 'low', context: { 'skipReleaseWF' => true } })
         end
       end
 

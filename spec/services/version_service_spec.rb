@@ -268,7 +268,7 @@ RSpec.describe VersionService do
                             user_name: 'jcoyne',
                             start_accession:,
                             user_version_mode:,
-                            accession_args: { lane_id: })
+                            accession_args:)
     end
 
     let(:version) { 2 }
@@ -276,6 +276,7 @@ RSpec.describe VersionService do
     let(:user_version_mode) { :none }
     let(:description) { 'closing text' }
     let(:lane_id) { :low }
+    let(:accession_args) { { lane_id: } }
 
     let(:repository_object) { create(:repository_object, :with_repository_object_version, external_identifier: druid) }
 
@@ -291,6 +292,17 @@ RSpec.describe VersionService do
 
       before do
         allow(workflow_state_service).to receive_messages(accessioning?: false, assembling?: false)
+      end
+
+      context 'when workflow context is provided in accession_args' do
+        let(:workflow_context) { { 'skipReleaseWF' => true } }
+        let(:accession_args) { { lane_id:, context: workflow_context } }
+
+        it 'creates accessionWF with lane_id and context' do
+          close
+          expect(Workflow::Service).to have_received(:create).with(druid:, workflow_name: 'accessionWF',
+                                                                   version: '2', lane_id:, context: workflow_context)
+        end
       end
 
       context 'when user_version is none' do

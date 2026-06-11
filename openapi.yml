@@ -900,6 +900,15 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/LaneId"
+        - name: context
+          in: query
+          description: Optional workflow context to pass to accessionWF.
+          required: false
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            additionalProperties: true
   "/v1/objects/{object_id}/versions":
     get:
       tags:

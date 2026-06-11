@@ -108,20 +108,32 @@ class VersionsController < ApplicationController
     boolean_param(new_params, :assume_accessioned)
   end
 
+  # rubocop:disable Metrics/MethodLength
+  # rubocop:disable Metrics/AbcSize
   def close_params
     new_params = params.permit(
       :description,
       :start_accession,
       :user_name,
       :user_versions,
-      :'lane-id'
+      :'lane-id',
+      context: {}
     ).to_h.symbolize_keys
     new_params[:user_version_mode] = new_params.delete(:user_versions).to_sym if new_params.key?(:user_versions)
+
     if new_params.key?(:'lane-id')
       new_params[:accession_args] = { lane_id: LaneSupport.lane_for(new_params.delete(:'lane-id')) }
     end
+
+    if new_params.key?(:context)
+      new_params[:accession_args] ||= {}
+      new_params[:accession_args][:context] = new_params.delete(:context)
+    end
+
     boolean_param(new_params, :start_accession)
   end
+  # rubocop:enable Metrics/MethodLength
+  # rubocop:enable Metrics/AbcSize
 
   def load_version
     @version = CocinaObjectStore.version(params[:object_id])

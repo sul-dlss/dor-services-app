@@ -11,6 +11,7 @@ module Migrators
   # The migrator subclass _may_ override the following methods:
   #   version? - true if the object should be versioned
   #   publish? - true if the object should be published
+  #   workflow_context - optional hash passed as workflow context when MigrationRunner closes a version
   #   initialize(repository_object) - takes the RepositoryObject to be migrated. If possible, consider
   #     overriding this in such a way as to maintain backwards compatibility for existing migrators. E.g.,
   #     if a parameter is added, the default value could maintain the existing behavior. If breaking
@@ -70,6 +71,16 @@ module Migrators
     # @return [Boolean] true if UpdateObjectService should be used to persist changes
     def self.cocina_update?
       migration_strategy == :cocina_update
+    end
+
+    # @return [Hash] optional workflow context passed when MigrationRunner closes a version.
+    # Override in a migrator class when versioning migrations need workflow context.
+    # Example:
+    #   def self.workflow_context
+    #     { 'skipReleaseWF' => true }
+    #   end
+    def self.workflow_context
+      {}
     end
 
     private
