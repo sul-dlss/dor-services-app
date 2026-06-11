@@ -108,9 +108,7 @@ class VersionsController < ApplicationController
     boolean_param(new_params, :assume_accessioned)
   end
 
-  # rubocop:disable Metrics/MethodLength
-  # rubocop:disable Metrics/AbcSize
-  def close_params
+  def close_params # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     new_params = params.permit(
       :description,
       :start_accession,
@@ -132,8 +130,6 @@ class VersionsController < ApplicationController
 
     boolean_param(new_params, :start_accession)
   end
-  # rubocop:enable Metrics/MethodLength
-  # rubocop:enable Metrics/AbcSize
 
   def load_version
     @version = CocinaObjectStore.version(params[:object_id])
