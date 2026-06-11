@@ -900,6 +900,17 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/LaneId"
+        - name: context
+          in: query
+          description: Optional workflow context to pass to accessionWF.
+          required: false
+          style: deepObject # Serializes the object using bracket notation rather than as a flat JSON string.
+          explode: true # Expands nested properties into separate query parameter key-value pairs.
+          # Together they mean a client sending: { "skipReleaseWF": true, "ocrLanguages": ["Russian"] }
+          # Should encode it as query string: ?context[skipReleaseWF]=true&context[ocrLanguages][]=Russian
+          schema:
+            type: object
+            additionalProperties: true
   "/v1/objects/{object_id}/versions":
     get:
       tags:

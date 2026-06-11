@@ -217,8 +217,12 @@ module Migrators
     def close_version!
       VersionService.close(druid:,
                            version: repository_object.head_version.version,
-                           accession_args: { lane_id: 'low' }, # Always send to low queue.
+                           accession_args: { lane_id: 'low', context: }, # Always send to low queue.
                            description: nil) # Use the existing version description
+    end
+
+    def context
+      migrator_class.workflow_context || {}
     end
   end
 end
