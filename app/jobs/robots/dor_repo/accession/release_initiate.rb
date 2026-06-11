@@ -15,8 +15,19 @@ module Robots
                                               note: 'Admin policy objects are not released')
           end
 
+          if skipped?
+            return LyberCore::ReturnState.new(status: :skipped,
+                                              note: 'releaseWF was skipped because workflow context indicated this')
+          end
+
           Workflow::Service.create(druid:, workflow_name: 'releaseWF',
                                    version: cocina_object.version)
+        end
+
+        def skipped?
+          # checks if user has indicated that releaseWF should be skipped (sent as workflow_context)
+          # default to false if not present
+          workflow.context['skipReleaseWF'] || false
         end
       end
     end
