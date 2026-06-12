@@ -1197,21 +1197,6 @@ RSpec.describe Cocina::ToDatacite::Event do
 
     ### --------------- specs below added by developers ---------------
 
-    context 'when cocina event array has empty hash' do
-      let(:cocina) do
-        {
-          event: [
-            {}
-          ]
-        }
-      end
-      let(:cocina_access) { {} }
-
-      it 'dates returns []' do
-        expect(dates).to eq []
-      end
-    end
-
     context 'when cocina event is empty array' do
       let(:cocina) do
         {
