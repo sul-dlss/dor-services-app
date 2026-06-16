@@ -57,6 +57,8 @@ gem 'uuidtools', '~> 2.1.4'
 gem 'whenever', require: false
 
 group :test, :development do
+  # Security audit for known security defects in code (use config/brakeman.ignore to ignore issues)
+  gem 'brakeman', require: false
   gem 'db-query-matchers'
   gem 'debug'
   gem 'diffy'
