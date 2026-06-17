@@ -9,6 +9,7 @@ workflows:
           context: dlss
       - ruby-rails/brakeman:
           name: brakeman
+          context: dlss
       - ruby-rails/test-rails:
           name: test
           api-only: true
