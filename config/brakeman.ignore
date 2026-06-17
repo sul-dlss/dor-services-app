@@ -1,0 +1,97 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "08502ac783e503ab2941812c17e5f69a908edb822937bb126d64b94abffd4713",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/reports/file_counts.rb",
+      "line": 30,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "ActiveRecord::Base.connection.execute(\"#{SQL} LIMIT #{limit}\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "FileCounts",
+        "method": "self.report"
+      },
+      "user_input": "limit",
+      "confidence": "Medium",
+      "cwe_id": [
+        89
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "7225a4c4de4db907b44bd8a223128aa32debaac5fc4012f69822c3ed821cf8bf",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/reports/report_invalid_uris.rb",
+      "line": 22,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "ActiveRecord::Base.connection.execute(\"SELECT ro.external_identifier as item_druid,\\n      jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == \\\"folio\\\").catalogRecordId') ->> 0 as hrid,\\n      jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id,\\n      jsonb_path_query_array(rov.description, '$.**.uri') as uri\\n       FROM repository_objects AS ro, repository_object_versions AS rov WHERE\\n       ro.head_version_id = rov.id\\n       AND ro.external_identifier = '#{line.chomp}'\\n\".squish)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "ReportInvalidUris",
+        "method": "self.report"
+      },
+      "user_input": "line",
+      "confidence": "Medium",
+      "cwe_id": [
+        89
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "7bccaacfe3241e12fe394150f1b89b852288ff4619f357cda997ddcd3127290b",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/reports/file_sizes.rb",
+      "line": 32,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "ActiveRecord::Base.connection.execute(\"#{SQL} LIMIT #{limit}\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "FileSizes",
+        "method": "self.report"
+      },
+      "user_input": "limit",
+      "confidence": "Medium",
+      "cwe_id": [
+        89
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "Command Injection",
+      "warning_code": 14,
+      "fingerprint": "da3f3cc16a2597e47a5df4fe989c69a70199156db405bd5f7421e5e1671ba549",
+      "check_name": "Execute",
+      "message": "Possible command injection",
+      "file": "app/reports/export_cocina_from_druid_list.rb",
+      "line": 72,
+      "link": "https://brakemanscanner.org/docs/warning_types/command_injection/",
+      "code": "`wc -l #{druid_list_filename}`",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "ExportCocinaFromDruidList",
+        "method": "num_input_lines"
+      },
+      "user_input": "druid_list_filename",
+      "confidence": "Medium",
+      "cwe_id": [
+        77
+      ],
+      "note": ""
+    }
+  ],
+  "brakeman_version": "8.0.5"
+}
