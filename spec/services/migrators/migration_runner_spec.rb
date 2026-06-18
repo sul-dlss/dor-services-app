@@ -33,6 +33,48 @@ RSpec.describe Migrators::MigrationRunner do
     end
   end
 
+  describe '.new' do
+    let(:repository_object) { create(:repository_object, :with_repository_object_version) }
+
+    context 'when the migrator is dryrun_only and mode is migrate' do
+      let(:migrator_class) do
+        stub_const(
+          'Migrators::TestMigrator',
+          Class.new(Migrators::Base) do
+            def migrate = model_hash
+
+            def self.dryrun_only? = true
+          end
+        )
+      end
+
+      it 'raises ArgumentError' do
+        expect do
+          described_class.new(migrator_class:, repository_object:, mode: :migrate)
+        end.to raise_error(ArgumentError, /is dryrun-only and cannot be run in mode migrate/)
+      end
+    end
+
+    context 'when the migrator is dryrun_only and mode is dryrun' do
+      let(:migrator_class) do
+        stub_const(
+          'Migrators::TestMigrator',
+          Class.new(Migrators::Base) do
+            def migrate = model_hash
+
+            def self.dryrun_only? = true
+          end
+        )
+      end
+
+      it 'does not raise' do
+        expect do
+          described_class.new(migrator_class:, repository_object:, mode: :dryrun)
+        end.not_to raise_error
+      end
+    end
+  end
+
   describe '#call' do
     subject(:results) { described_class.new(migrator_class:, repository_object:, mode:).call }
 

@@ -319,6 +319,13 @@ RAILS_ENV=production bin/rake seed:register[input_file]
 RAILS_ENV=production bin/rake workflow:step[druid,workflow,process,status]
 ```
 
+### Check that objects can be updated
+The `Migrators::CheckCocinaUpdate` migrator can be used to check that all objects that are not open are in an openable state. 
+
+```shell
+RAILS_ENV=production bin/migrate-cocina Migrators::CheckCocinaUpdate
+```
+
 ## Data migrations / bulk remediations
 
 `bin/migrate-cocina` provides a framework for data migrations and bulk remediations. It supports optional versioning and publishing of objects after migration. It also can persist by directly committing RepositoryObjectVersions (for any version for a RepositoryObject) using the UpdateObjectService (only for the head version).
