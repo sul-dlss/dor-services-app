@@ -37,7 +37,7 @@ RSpec.describe 'Creating a workspace' do
       post '/v1/objects/druid:mx123qw2323/workspace',
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to have_http_status(:conflict)
-      expect(response.body).to match(/The directory already exists/)
+      expect(response.body).to include('The directory already exists')
     end
   end
 
@@ -51,7 +51,7 @@ RSpec.describe 'Creating a workspace' do
            params: { source: '/some/path' },
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to have_http_status(:conflict)
-      expect(response.body).to match(/Unable to create link, directory already exists/)
+      expect(response.body).to include('Unable to create link, directory already exists')
     end
   end
 end

@@ -95,7 +95,7 @@ RSpec.describe Preserve::FileInventoryBuilder do
     context 'when contentMetadata.xml exists' do
       let(:metadata_dir) { fixtures.join('workspace/ab/123/cd/4567/ab123cd4567/metadata') }
 
-      it { is_expected.to match(/<contentMetadata /) }
+      it { is_expected.to include('<contentMetadata ') }
     end
 
     context "when contentMetadata.xml doesn't exist" do
