@@ -104,7 +104,7 @@ RSpec.describe 'Operations regarding object versions' do
         post "#{close_path}?#{close_params.to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status :ok
-        expect(response.body).to match(/version 1 closed/)
+        expect(response.body).to include('version 1 closed')
         expect(VersionService).to have_received(:close)
           .with(druid:, version:,
                 **close_params)
@@ -120,7 +120,7 @@ RSpec.describe 'Operations regarding object versions' do
         post "#{close_path}?#{close_params.merge('lane-id': 'high').to_query}",
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status :ok
-        expect(response.body).to match(/version 1 closed/)
+        expect(response.body).to include('version 1 closed')
         expect(VersionService).to have_received(:close)
           .with(druid:, version:, accession_args: { lane_id: :high },
                 **close_params)
