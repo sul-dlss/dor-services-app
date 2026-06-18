@@ -29,6 +29,10 @@ module Migrators
       @mode = mode
 
       raise ArgumentError, "invalid mode #{mode}" unless MODES.include?(mode)
+      return unless migrator_class.dryrun_only? && mode != :dryrun
+
+      raise ArgumentError,
+            "migrator #{migrator_class} is dryrun-only and cannot be run in mode #{mode}"
     end
 
     # @return [Array<Result>] results for the migration attempt

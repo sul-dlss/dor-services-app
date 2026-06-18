@@ -53,6 +53,11 @@ module Migrators
       raise NotImplementedError
     end
 
+    # @return [Boolean] true if this migrator should only be run in dryrun mode, false otherwise
+    def self.dryrun_only?
+      false
+    end
+
     # @return [Boolean] true if changed migrated objects should be published, false otherwise
     def self.publish?
       migration_strategy == :commit_with_publish
