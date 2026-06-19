@@ -53,6 +53,31 @@ RSpec.describe Cocina::FromMarc::AdminMetadata do
       end
     end
 
+    context 'with invalid date in 008' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '001' => 'in00000144356' },
+            { '008' => '||||||c20249999mnuuu         0    0eng d' },
+            { '005' => '20250614160727.3' },
+            { '040' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { 'a' => 'UCX' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'omits the creation event' do
+        expect(build[:event]).to eq([{
+                                      type: 'modification',
+                                      date: [{ value: '20250614', encoding: { code: 'iso8601' } }]
+                                    }])
+      end
+    end
+
     context 'without 040 $a' do
       let(:marc_hash) do
         {
