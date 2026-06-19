@@ -81,7 +81,10 @@ module Cocina
       def publisher_number(field)
         parts = values_for(field, %w[a b q])
 
-        { value: parts.join(' '), type: PUBLISHER_NUMBER_TYPES.fetch(field.indicator1) }.compact_blank if parts.any?
+        return unless parts.any? && PUBLISHER_NUMBER_TYPES.key?(field.indicator1)
+
+        { value: parts.join(' '),
+          type: PUBLISHER_NUMBER_TYPES.fetch(field.indicator1) }.compact_blank
       end
 
       def values_for(field, subfields)

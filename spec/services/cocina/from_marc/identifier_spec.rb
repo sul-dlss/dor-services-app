@@ -414,5 +414,44 @@ RSpec.describe Cocina::FromMarc::Identifier do
         expect(build).to eq [{ value: '440 073 032-9 Deutsche Grammophon (set and guide)', type: 'videorecording identifier' }]
       end
     end
+
+    context 'with unknown publisher number type (028 ind1=5)' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '028' => {
+              'ind1' => '5', 'ind2' => '0',
+              'subfields' => [
+                { 'a' => 'ABC 123' },
+                { 'b' => 'Some Publisher' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'excludes the identifier' do
+        expect(build).to eq []
+      end
+    end
+
+    context 'with unknown other identifier type (024 ind1=6)' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '024' => {
+              'ind1' => '6', 'ind2' => ' ',
+              'subfields' => [
+                { 'a' => '1234567890' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'excludes the identifier' do
+        expect(build).to eq []
+      end
+    end
   end
 end
