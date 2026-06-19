@@ -40,9 +40,12 @@ module Cocina
         field = marc['008']
         return unless field
 
+        date = field.value[0..5]
+        return unless Models::Validators::MarcDateValidator.validate(date)
+
         {
           type: 'creation',
-          date: [{ value: field.value[0..5], encoding: { code: 'marc' } }]
+          date: [{ value: date, encoding: { code: 'marc' } }]
         }
       end
 
