@@ -125,9 +125,9 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
           type: 'person',
           role: [
             {
-              value: 'Data Curator',
+              value: 'data contributor',
               source: {
-                code: 'datacite'
+                code: 'marcrelator'
               }
             }
           ],
