@@ -63,6 +63,6 @@ every :friday, at: '8:00pm' do
   rake_hb 'indexer:reindex_jobs'
 end
 
-every :day, at: '2:00am' do
+every '0 2 * * 1-5' do # Monday-Friday at 2am. Avoids running at the same time as reindex.
   bin 'bin/export-cocina-head-versions -p6 -r --output-dir /dor/cocina_dump > /dev/null'
 end
