@@ -68,7 +68,7 @@ class InvalidFormSourceCodes
     trfdh trfgr trfoba trfzb trt trtsa tsaij tshd tsht tsr ttka ttll tucua udc
     ukslc ula ulan umitrist unbisn unbist unescot unicefirc usaidt usgst valo
     vcaadu vffyl vgmsgg vgmsng vmj waqaf watrest wgst wikidata worldcat wot
-    wpicsh ysa yso zst
+    wpicsh ysa yso zst marccarrier lcmpt
   ].freeze
   REGEX = "^(?!#{VALID_CODES.map { |code| "#{code}$" }.join('|')})".freeze
   SQL = <<~SQL.squish.freeze
