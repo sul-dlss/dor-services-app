@@ -26,11 +26,11 @@ module Catalog
         filename = File.basename(filepath)
         Rails.logger.info("Processing file: #{filename}")
         Zlib::GzipReader.open(filepath, encoding: 'binary') do |gz|
-          reader = MARC::ForgivingReader.new(gz)
+          reader = MARC::ForgivingReader.new(gz, invalid: :replace, replace: '', external_encoding: 'UTF-8')
           new_db.transaction do # Transaction speeds up inserts.
             reader.each_with_index do |record, index|
               new_db.execute 'insert into records values ( ?, ?, ? )',
-                             [record['001'].value.encode('UTF-8'), filename, index]
+                             [record['001'].value, filename, index]
             end
           end
         end
@@ -47,7 +47,7 @@ module Catalog
       filename, position = row
       filepath = File.join(dump_filepath, filename)
       Zlib::GzipReader.open(filepath, encoding: 'binary') do |gz|
-        reader = MARC::ForgivingReader.new(gz)
+        reader = MARC::ForgivingReader.new(gz, invalid: :replace, replace: '', external_encoding: 'UTF-8')
         reader.each_with_index do |record, index|
           return record if index == position
         end
