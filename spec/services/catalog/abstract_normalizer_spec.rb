@@ -2,10 +2,10 @@
 
 require 'rails_helper'
 
-RSpec.describe Catalog::SourceStorageFetcher do
-  let(:fetcher) { described_class.new(folio_instance_hrid: instance_hrid) }
-  let(:fetcher_marc_result) { fetcher.fetch }
-  let(:marc_hash) do
+RSpec.describe Catalog::AbstractNormalizer do
+  subject(:normalizer) { described_class.new(record_hash:) }
+
+  let(:record_hash) do
     {
       'fields' => [
         { '001' => 'something_to_be_replaced' },
@@ -77,45 +77,23 @@ RSpec.describe Catalog::SourceStorageFetcher do
   end
   let(:instance_hrid) { 'a666' }
 
-  describe '#to_marc' do
-    context 'when Folio API successfully returns a single result' do
-      before do
-        allow(FolioClient).to receive(:fetch_marc_hash).with(instance_hrid:).and_return(marc_hash)
-      end
+  describe '#normalize' do
+    it 'builds a MARC::Record object from the hash returned by the API client' do
+      # the 520 abstracts have replaced escaped dollar signs with literals
+      expect(
+        normalizer.normalize['fields'].find { |field| field.keys.first == '520' }['520']['subfields'].first['a']
+      ).to eq('Excellent ab$tract')
 
-      it 'builds a MARC::Record object from the hash returned by the API client' do
-        expect(fetcher_marc_result).to be_a(Hash)
-
-        # the 520 abstracts have replaced escaped dollar signs with literals
-        expect(
-          fetcher_marc_result['fields'].find { |field| field.keys.first == '520' }['520']['subfields'].first['a']
-        ).to eq('Excellent ab$tract')
-
-        # these stay the same
-        expect(
-          fetcher_marc_result['fields'].find { |field| field.keys.first == '100' }['100']['subfields'].first['a']
-        ).to eq('Boccherini, Luigi,')
-        expect(
-          fetcher_marc_result['fields'].find { |field| field.keys.first == '240' }['240']['subfields'].second['m']
-        ).to eq('cello, continuo,')
-        expect(
-          fetcher_marc_result['fields'].find { |field| field.keys.first == '245' }['245']['subfields'].first['a']
-        ).to eq('Sonata no. 7, in B flat, for violoncello and piano.')
-      end
-    end
-
-    context 'when folio_client encounters an unexpected response and raises an error' do
-      before do
-        allow(FolioClient).to receive(:fetch_marc_hash)
-          .with(instance_hrid:).and_raise(FolioClient::ResourceNotFound, "No records found for #{instance_hrid}")
-      end
-
-      it 'lets the exception bubble up to the caller' do
-        expect { fetcher_marc_result }.to raise_error(
-          FolioClient::ResourceNotFound,
-          /No records found for #{instance_hrid}/
-        )
-      end
+      # these stay the same
+      expect(
+        normalizer.normalize['fields'].find { |field| field.keys.first == '100' }['100']['subfields'].first['a']
+      ).to eq('Boccherini, Luigi,')
+      expect(
+        normalizer.normalize['fields'].find { |field| field.keys.first == '240' }['240']['subfields'].second['m']
+      ).to eq('cello, continuo,')
+      expect(
+        normalizer.normalize['fields'].find { |field| field.keys.first == '245' }['245']['subfields'].first['a']
+      ).to eq('Sonata no. 7, in B flat, for violoncello and piano.')
     end
   end
 end

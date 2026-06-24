@@ -30,7 +30,7 @@ class CreateObjectService
     @id_minter = id_minter
   end
 
-  # @raise Catalog::MarcService::Error
+  # @raise [Catalog::Errors::BaseError]
   # @raise [Cocina::ValidationError] if externalIdentifier or sourceId not unique
   def create(cocina_request_object, assign_doi: false, who: nil) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     ensure_ur_admin_policy_exists(cocina_request_object)
@@ -89,11 +89,14 @@ class CreateObjectService
   end
 
   # Sync from ILS (Folio) if a catalog record identifier is present
-  # @raise Catalog::MarcService::Error
+  # @return [Cocina::Models::RequestDRO, Cocina::Models::RequestCollection, Cocina::Models::RequestAdminPolicy] a
+  #   request object with updated description properties from the catalog record
+  # @raise [Catalog::MarcService::Error]
   def sync_from_catalog(cocina_request_object, druid)
     return cocina_request_object if cocina_request_object.admin_policy?
 
-    result = RefreshDescriptionFromCatalog.run(cocina_object: cocina_request_object, druid:)
+    result = RefreshDescriptionFromCatalog.run(cocina_object: cocina_request_object,
+                                               druid:) # , create_marc_if_missing: true)
     return cocina_request_object if result.failure?
 
     description_props = result.value!.description_props
