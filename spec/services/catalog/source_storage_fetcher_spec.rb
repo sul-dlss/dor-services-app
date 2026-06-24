@@ -2,10 +2,9 @@
 
 require 'rails_helper'
 
-RSpec.describe Catalog::FolioReader do
-  let(:folio_reader) { described_class.new(folio_instance_hrid: instance_hrid, barcode:) }
-  let(:folio_reader_marc_result) { folio_reader.to_marc }
-
+RSpec.describe Catalog::SourceStorageFetcher do
+  let(:fetcher) { described_class.new(folio_instance_hrid: instance_hrid) }
+  let(:fetcher_marc_result) { fetcher.fetch }
   let(:marc_hash) do
     {
       'fields' => [
@@ -76,87 +75,47 @@ RSpec.describe Catalog::FolioReader do
       'leader' => '01185ccm a2200301   4500'
     }
   end
+  let(:instance_hrid) { 'a666' }
 
-  context 'when instance_hrid passed in' do
-    let(:barcode) { nil }
-    let(:instance_hrid) { 'a666' }
-
-    describe '#to_marc' do
-      context 'when Folio API successfully returns a single result' do
-        before do
-          allow(FolioClient).to receive(:fetch_marc_hash).with(instance_hrid:).and_return(marc_hash)
-        end
-
-        it 'builds a MARC::Record object from the hash returned by the API client' do
-          expect(folio_reader_marc_result).to be_a(MARC::Record)
-          # the 001 and 003 fields have been changed
-          expect(folio_reader_marc_result['001'].value).to eq instance_hrid # used to be a bogus value
-          expect(folio_reader_marc_result['003'].value).to eq 'FOLIO' # used to be SIRSI
-
-          # the 520 abstracts have replaced escaped dollar signs with literals
-          expect(folio_reader_marc_result['520']['a']).to eq('Excellent ab$tract')
-
-          # these stay the same
-          expect(folio_reader_marc_result['100']['a']).to eq('Boccherini, Luigi,')
-          expect(folio_reader_marc_result['240']['m']).to eq('cello, continuo,')
-          expect(folio_reader_marc_result['245']['a']).to eq('Sonata no. 7, in B flat, for violoncello and piano.')
-          expect(MarcCacheEntry.find_by(folio_hrid: 'a666')).to be_present
-        end
+  describe '#to_marc' do
+    context 'when Folio API successfully returns a single result' do
+      before do
+        allow(FolioClient).to receive(:fetch_marc_hash).with(instance_hrid:).and_return(marc_hash)
       end
 
-      context 'when folio_client encounters an unexpected response and raises an error' do
-        before do
-          allow(FolioClient).to receive(:fetch_marc_hash)
-            .with(instance_hrid:).and_raise(FolioClient::ResourceNotFound, "No records found for #{instance_hrid}")
-        end
+      it 'builds a MARC::Record object from the hash returned by the API client' do
+        expect(fetcher_marc_result).to be_a(Hash)
 
-        it 'lets the exception bubble up to the caller' do
-          expect do
-            folio_reader_marc_result
-          end.to raise_error(FolioClient::ResourceNotFound, "No records found for #{instance_hrid}")
-        end
+        # the 520 abstracts have replaced escaped dollar signs with literals
+        expect(
+          fetcher_marc_result['fields'].find { |field| field.keys.first == '520' }['520']['subfields'].first['a']
+        ).to eq('Excellent ab$tract')
+
+        # these stay the same
+        expect(
+          fetcher_marc_result['fields'].find { |field| field.keys.first == '100' }['100']['subfields'].first['a']
+        ).to eq('Boccherini, Luigi,')
+        expect(
+          fetcher_marc_result['fields'].find { |field| field.keys.first == '240' }['240']['subfields'].second['m']
+        ).to eq('cello, continuo,')
+        expect(
+          fetcher_marc_result['fields'].find { |field| field.keys.first == '245' }['245']['subfields'].first['a']
+        ).to eq('Sonata no. 7, in B flat, for violoncello and piano.')
       end
     end
-  end
 
-  context 'when barcode passed in' do
-    let(:barcode) { '12345' }
-    let(:instance_hrid) { nil }
-    let(:returned_hrid) { 'a666' }
-
-    describe '#to_marc' do
-      context 'when Folio API successfully returns a single result' do
-        before do
-          allow(FolioClient).to receive(:fetch_hrid).with(barcode:).and_return(returned_hrid)
-          allow(FolioClient).to receive(:fetch_marc_hash).with(instance_hrid: returned_hrid).and_return(marc_hash)
-        end
-
-        it 'look ups hrid from barcode and builds a MARC::Record object from the hash returned by the API client' do
-          expect(folio_reader_marc_result).to be_a(MARC::Record)
-
-          # the 001 and 003 fields have been changed
-          expect(folio_reader_marc_result['001'].value).to eq returned_hrid # used to be a bogus value
-          expect(folio_reader_marc_result['003'].value).to eq 'FOLIO' # used to be SIRSI
-
-          # these stay the same
-          expect(folio_reader_marc_result['100']['a']).to eq('Boccherini, Luigi,')
-          expect(folio_reader_marc_result['240']['m']).to eq('cello, continuo,')
-          expect(folio_reader_marc_result['245']['a']).to eq('Sonata no. 7, in B flat, for violoncello and piano.')
-        end
+    context 'when folio_client encounters an unexpected response and raises an error' do
+      before do
+        allow(FolioClient).to receive(:fetch_marc_hash)
+          .with(instance_hrid:).and_raise(FolioClient::ResourceNotFound, "No records found for #{instance_hrid}")
       end
-    end
-  end
 
-  context 'when barcode passed in but lookup returns no result' do
-    let(:barcode) { '12345' }
-    let(:instance_hrid) { nil }
-
-    before do
-      allow(FolioClient).to receive(:fetch_hrid).with(barcode:).and_return(nil)
-    end
-
-    it 'raises a ResourceNotFound error' do
-      expect { folio_reader_marc_result }.to raise_error(FolioClient::ResourceNotFound)
+      it 'lets the exception bubble up to the caller' do
+        expect { fetcher_marc_result }.to raise_error(
+          FolioClient::ResourceNotFound,
+          /No records found for #{instance_hrid}/
+        )
+      end
     end
   end
 end
