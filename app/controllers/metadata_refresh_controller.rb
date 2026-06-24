@@ -14,9 +14,9 @@ class MetadataRefreshController < ApplicationController
     end
 
     UpdateObjectService.update(cocina_object: @cocina_object.new(description: result.value!.description_props))
-  rescue Catalog::MarcService::CatalogRecordNotFoundError => e
+  rescue Catalog::Errors::RecordNotFoundError => e
     json_api_error(status: :bad_request, title: 'Not found in catalog', message: e.message)
-  rescue Catalog::MarcService::MarcServiceError => e
+  rescue Catalog::Errors::BaseError => e
     Honeybadger.notify(e)
     json_api_error(status: :internal_server_error, message: e.message)
   rescue Cocina::Models::ValidationError => e
