@@ -64,7 +64,7 @@ module Indexing
                :subject_places, to: :cocina_display_record
 
       def sw_format
-        Indexers::SearchworksFormatIndexer.value(cocina_display_record: cocina_display_record)
+        cocina_display_record.searchworks_resource_types
       end
 
       def subjects
