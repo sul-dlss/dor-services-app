@@ -20,7 +20,7 @@ RSpec.describe ShelvableFilesStager do
 
     context 'when the content files are in the workspace area' do
       before do
-        allow(Preservation::Client.objects).to receive(:content)
+        allow(Preservation::Client.objects).to receive(:content_to_file)
 
         filepaths.each do |filepath|
           path = content_dir.join(filepath)
@@ -31,34 +31,83 @@ RSpec.describe ShelvableFilesStager do
 
       it 'does not retrieve any files from preservation' do
         stage
-        expect(Preservation::Client.objects).not_to have_received(:content)
+        expect(Preservation::Client.objects).not_to have_received(:content_to_file)
       end
     end
 
     context 'when the content files are not in the workspace area' do
       before do
-        allow(Preservation::Client.objects).to receive(:content)
+        allow(Preservation::Client.objects).to receive(:content_to_file)
       end
 
-      # Note that for this test, the expected file size check passes because there are no matching files in the cocina.
-      it 'retrieve files from preservation' do
+      it 'retrieves files from preservation' do
         stage
-        expect(Preservation::Client.objects).to have_received(:content)
-          .with(druid:, filepath: 'file1.txt', version: 2, on_data: an_instance_of(Proc))
-        expect(Preservation::Client.objects).to have_received(:content)
-          .with(druid:, filepath: 'dir/file2.txt', version: 2, on_data: an_instance_of(Proc))
+        expect(Preservation::Client.objects).to have_received(:content_to_file)
+          .with(druid:, filepath: 'file1.txt', version: 2, destination_filepath: instance_of(String), expected_md5: nil)
+        expect(Preservation::Client.objects).to have_received(:content_to_file)
+          .with(druid:, filepath: 'dir/file2.txt', version: 2, destination_filepath: instance_of(String),
+                expected_md5: nil)
+      end
+
+      context 'when the cocina object has MD5 digests for the files' do
+        let(:cocina_object) do
+          build(:dro, id: druid, version:).new(access: { view: 'world' }, structural: Cocina::Models::DROStructural.new(
+            contains: [
+              Cocina::Models::FileSet.new(
+                externalIdentifier: 'bc123df4567_2',
+                type: Cocina::Models::FileSetType.file,
+                label: 'text files',
+                version: 2,
+                structural: Cocina::Models::FileSetStructural.new(
+                  contains: [
+                    Cocina::Models::File.new(
+                      externalIdentifier: '1234',
+                      type: Cocina::Models::ObjectType.file,
+                      label: 'file1.txt',
+                      filename: 'file1.txt',
+                      version: 2,
+                      hasMessageDigests: [{ type: 'md5', digest: 'abc123' }],
+                      administrative: { publish: true, shelve: true }
+                    ),
+                    Cocina::Models::File.new(
+                      externalIdentifier: '5678',
+                      type: Cocina::Models::ObjectType.file,
+                      label: 'dir/file2.txt',
+                      filename: 'dir/file2.txt',
+                      version: 2,
+                      hasMessageDigests: [{ type: 'md5', digest: 'def456' }],
+                      administrative: { publish: true, shelve: true }
+                    )
+                  ]
+                )
+              )
+            ]
+          ))
+        end
+
+        it 'passes the MD5 digest to the preservation client' do
+          stage
+          expect(Preservation::Client.objects).to have_received(:content_to_file)
+            .with(druid:, filepath: 'file1.txt', version: 2,
+                  destination_filepath: instance_of(String), expected_md5: 'abc123')
+          expect(Preservation::Client.objects).to have_received(:content_to_file)
+            .with(druid:, filepath: 'dir/file2.txt', version: 2,
+                  destination_filepath: instance_of(String), expected_md5: 'def456')
+        end
       end
     end
 
     context 'when the content files are not found in preservation' do
       before do
-        allow(Preservation::Client.objects).to receive(:content)
-          .with(druid:, filepath: 'file1.txt', version: 2, on_data: an_instance_of(Proc))
-        allow(Preservation::Client.objects).to receive(:content)
-          .with(druid:, filepath: 'dir/file2.txt', version: 2, on_data: an_instance_of(Proc))
+        allow(Preservation::Client.objects).to receive(:content_to_file)
+          .with(druid:, filepath: 'file1.txt', version: 2, destination_filepath: instance_of(String), expected_md5: nil)
+        allow(Preservation::Client.objects).to receive(:content_to_file)
+          .with(druid:, filepath: 'dir/file2.txt', version: 2, destination_filepath: instance_of(String),
+                expected_md5: nil)
           .and_raise(Preservation::Client::NotFoundError)
-        allow(Preservation::Client.objects).to receive(:content)
-          .with(druid:, filepath: 'dir/file2.txt', version: 1, on_data: an_instance_of(Proc))
+        allow(Preservation::Client.objects).to receive(:content_to_file)
+          .with(druid:, filepath: 'dir/file2.txt', version: 1, destination_filepath: instance_of(String),
+                expected_md5: nil)
           .and_raise(Preservation::Client::NotFoundError)
       end
 
@@ -69,23 +118,29 @@ RSpec.describe ShelvableFilesStager do
 
     context 'when the content file is found on version - 1' do
       before do
-        allow(Preservation::Client.objects).to receive(:content)
-          .with(druid:, filepath: 'file1.txt', version: 2, on_data: an_instance_of(Proc))
-        allow(Preservation::Client.objects).to receive(:content)
-          .with(druid:, filepath: 'dir/file2.txt', version: 2, on_data: an_instance_of(Proc))
+        allow(Preservation::Client.objects).to receive(:content_to_file)
+          .with(druid:, filepath: 'file1.txt', version: 2, destination_filepath: instance_of(String),
+                expected_md5: nil)
+        allow(Preservation::Client.objects).to receive(:content_to_file)
+          .with(druid:, filepath: 'dir/file2.txt', version: 2, destination_filepath: instance_of(String),
+                expected_md5: nil)
           .and_raise(Preservation::Client::NotFoundError)
-        allow(Preservation::Client.objects).to receive(:content)
-          .with(druid:, filepath: 'dir/file2.txt', version: 1, on_data: an_instance_of(Proc))
+        allow(Preservation::Client.objects).to receive(:content_to_file)
+          .with(druid:, filepath: 'dir/file2.txt', version: 1, destination_filepath: instance_of(String),
+                expected_md5: nil)
       end
 
       it 'retrieves the files from preservation' do
         stage
-        expect(Preservation::Client.objects).to have_received(:content)
-          .with(druid:, filepath: 'file1.txt', version: 2, on_data: an_instance_of(Proc))
-        expect(Preservation::Client.objects).to have_received(:content)
-          .with(druid:, filepath: 'dir/file2.txt', version: 2, on_data: an_instance_of(Proc))
-        expect(Preservation::Client.objects).to have_received(:content)
-          .with(druid:, filepath: 'dir/file2.txt', version: 1, on_data: an_instance_of(Proc))
+        expect(Preservation::Client.objects).to have_received(:content_to_file)
+          .with(druid:, filepath: 'file1.txt', version: 2, destination_filepath: instance_of(String),
+                expected_md5: nil)
+        expect(Preservation::Client.objects).to have_received(:content_to_file)
+          .with(druid:, filepath: 'dir/file2.txt', version: 2, destination_filepath: instance_of(String),
+                expected_md5: nil)
+        expect(Preservation::Client.objects).to have_received(:content_to_file)
+          .with(druid:, filepath: 'dir/file2.txt', version: 1, destination_filepath: instance_of(String),
+                expected_md5: nil)
       end
     end
 
@@ -93,74 +148,17 @@ RSpec.describe ShelvableFilesStager do
       let(:version) { 1 }
 
       before do
-        allow(Preservation::Client.objects).to receive(:content)
-          .with(druid:, filepath: 'file1.txt', version: 1, on_data: an_instance_of(Proc))
-        allow(Preservation::Client.objects).to receive(:content)
-          .with(druid:, filepath: 'dir/file2.txt', version: 1, on_data: an_instance_of(Proc))
+        allow(Preservation::Client.objects).to receive(:content_to_file)
+          .with(druid:, filepath: 'file1.txt', version: 1, destination_filepath: instance_of(String),
+                expected_md5: nil)
+        allow(Preservation::Client.objects).to receive(:content_to_file)
+          .with(druid:, filepath: 'dir/file2.txt', version: 1, destination_filepath: instance_of(String),
+                expected_md5: nil)
           .and_raise(Preservation::Client::NotFoundError)
       end
 
       it 'raises after only trying to retrieve version 1' do
         expect { stage }.to raise_error(ShelvableFilesStager::FileNotFound)
-      end
-    end
-  end
-
-  describe '#check_filesize' do
-    subject(:check_file_size) do
-      described_class.new(filepaths:, cocina_object:, workspace_content_pathname: content_dir)
-                     .send(:check_filesize, file_pathname: content_dir.join('file1.txt'),
-                                            filepath: 'file1.txt', received: received_bytes)
-    end
-
-    let(:cocina_object) do
-      build(:dro, id: druid, version: 2).new(access: { view: 'world' }, structural: Cocina::Models::DROStructural.new(
-        contains: [
-          Cocina::Models::FileSet.new(
-            externalIdentifier: 'bc123df4567_2',
-            type: Cocina::Models::FileSetType.file,
-            label: 'text file',
-            version: 1,
-            structural: Cocina::Models::FileSetStructural.new(
-              contains: [
-                Cocina::Models::File.new(
-                  externalIdentifier: '1234',
-                  type: Cocina::Models::ObjectType.file,
-                  label: 'file1.txt',
-                  filename: 'file1.txt',
-                  version: 1,
-                  size: 9,
-                  hasMessageDigests: [
-                    { type: 'md5', digest: '327d41a48b459a2807d750324bd864ce' }
-                  ],
-                  administrative: {
-                    publish: true,
-                    shelve: true
-                  }
-                )
-              ]
-            )
-          )
-        ]
-      ))
-    end
-
-    context 'when the content length matches' do
-      let(:received_bytes) { 9 }
-
-      it 'does not raise' do
-        expect { check_file_size }.not_to raise_error
-      end
-    end
-
-    context 'when the content length does not match' do
-      let(:received_bytes) { 10 }
-
-      it 'raises' do
-        expect do
-          check_file_size
-        end.to raise_error('File copied from preservation was not the expected size. Expected 9 bytes for file1.txt; ' \
-                           'received 10 bytes.')
       end
     end
   end

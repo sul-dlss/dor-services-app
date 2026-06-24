@@ -50,44 +50,25 @@ class ShelvableFilesStager
                            raise_if_not_found: true)
   end
 
-  def copy_from_preservation(file_pathname:, filepath:, version:, raise_if_not_found: false) # rubocop:disable Metrics/MethodLength
-    received_bytes = 0
-    File.open(file_pathname, 'wb') do |streamed|
-      writer = proc do |chunk, overall_received_bytes|
-        streamed.write chunk
-        received_bytes = overall_received_bytes
-      end
-      Preservation::Client.objects.content(druid:, filepath:, version: version, on_data: writer)
-      check_filesize(file_pathname:, filepath:, received: received_bytes)
-      true
-    end
+  def copy_from_preservation(file_pathname:, filepath:, version:, raise_if_not_found: false)
+    Preservation::Client.objects.content_to_file(druid:, filepath:, version:,
+                                                 destination_filepath: file_pathname.to_s,
+                                                 expected_md5: md5_for(filepath))
+    true
   rescue Preservation::Client::NotFoundError
-    cleanup(file_pathname)
     raise FileNotFound, "Unable to find #{filepath} in the content directory" if raise_if_not_found
 
     false
-  rescue Preservation::Client::Error
-    cleanup(file_pathname)
-    raise
   end
 
-  def cleanup(file_pathname)
-    file_pathname.delete if file_pathname.exist?
-  end
-
-  def check_filesize(file_pathname:, filepath:, received:)
-    expected = cocina_filesize_for(filepath)
-    return if expected.nil? || expected == received
-
-    file_pathname.delete if file_pathname.exist?
-    raise "File copied from preservation was not the expected size. Expected #{expected} bytes for #{filepath}; " \
-          "received #{received} bytes."
-  end
-
-  def cocina_filesize_for(filename)
+  def md5_for(filename)
     cocina_object.structural.contains.each do |file_set|
       file_set.structural.contains.each do |file|
-        return file.size if file.filename == filename
+        next unless file.filename == filename
+
+        file.hasMessageDigests.each do |digest|
+          return digest.digest if digest.type == 'md5'
+        end
       end
     end
     nil
