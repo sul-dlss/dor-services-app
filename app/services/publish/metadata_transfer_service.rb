@@ -58,14 +58,28 @@ module Publish
       # It's fine. The object is already deleted.
     end
 
-    def publish_shelve
+    def publish_shelve # rubocop:disable Metrics/AbcSize
       if filepaths_to_shelve.present?
         ShelvableFilesStager.stage(cocina_object:, filepaths: filepaths_to_shelve, workspace_content_pathname:)
         TransferStager.copy(druid:, filepath_map: filepath_uuid_map, workspace_content_pathname:)
       end
+
       PurlFetcher::Client::Publish.publish(cocina: public_cocina, file_uploads: filepath_uuid_map,
                                            version: public_version,
                                            must_version: must_version?, version_date:)
+    rescue StandardError
+      delete_staged_files
+      raise
+    end
+
+    def delete_staged_files
+      transfer_stage = Pathname(Settings.stacks.transfer_stage_root)
+      filepath_uuid_map.each_value do |uuid|
+        stage_file = transfer_stage.join(uuid)
+        stage_file.delete if stage_file.exist?
+      rescue StandardError => e
+        Rails.logger.warn("Failed to delete stage file #{uuid}: #{e.message}")
+      end
     end
 
     def check_stacks

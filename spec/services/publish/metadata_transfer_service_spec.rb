@@ -257,6 +257,73 @@ RSpec.describe Publish::MetadataTransferService do
       end
     end
 
+    context 'when a discoverable DRO and publish raises an error' do
+      let(:public_cocina) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, dro?: true) }
+      let(:transfer_stage_root) { 'tmp/transfer_staging' }
+
+      let(:structural) do
+        { contains: [
+          {
+            type: Cocina::Models::FileSetType.file,
+            externalIdentifier: 'https://cocina.sul.stanford.edu/fileSet/123-456-789', label: 'Page 1', version: 1,
+            structural: {
+              contains: [
+                {
+                  type: Cocina::Models::ObjectType.file,
+                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/123-456-789',
+                  label: '00001.html',
+                  filename: '00001.html',
+                  size: 0,
+                  version: 1,
+                  hasMimeType: 'text/html',
+                  use: 'transcription',
+                  hasMessageDigests: [
+                    { type: 'sha1', digest: 'cb19c405f8242d1f9a0a6180122dfb69e1d6e4c7' },
+                    { type: 'md5', digest: 'e6d52da47a5ade91ae31227b978fb023' }
+                  ],
+                  access: { view: 'world', download: 'world' },
+                  administrative: { publish: true, sdrPreserve: true, shelve: true }
+                }
+              ]
+            }
+          }
+        ] }
+      end
+
+      before do
+        repository_object_version = create(:repository_object_version, :with_repository_object,
+                                           external_identifier: druid, closed_at:, structural:)
+        repository_object_version.repository_object
+                                 .open_version!(description: 'draft')
+        allow(DigitalStacksDiffer).to receive(:call).and_return(['00001.html'])
+        allow(ShelvableFilesStager).to receive(:stage)
+        allow(Publish::TransferStager).to receive(:copy)
+        allow(SecureRandom).to receive(:uuid).and_return(uuid)
+        allow(Settings.stacks).to receive_messages(transfer_stage_root:)
+        FileUtils.mkdir_p(transfer_stage_root)
+        allow(PurlFetcher::Client::Publish).to receive(:publish).and_raise(RuntimeError, 'publish failed')
+      end
+
+      after { FileUtils.rm_rf(transfer_stage_root) }
+
+      it 'deletes the staged file and re-raises the error' do
+        File.write("#{transfer_stage_root}/#{uuid}", 'staged content')
+        expect { described_class.publish(druid:) }.to raise_error(RuntimeError, 'publish failed')
+        expect(File.exist?("#{transfer_stage_root}/#{uuid}")).to be false
+      end
+
+      it 're-raises the error when the staged file is already absent' do
+        expect { described_class.publish(druid:) }.to raise_error(RuntimeError, 'publish failed')
+      end
+
+      it 'logs a warning and re-raises when deletion fails' do
+        FileUtils.mkdir_p("#{transfer_stage_root}/#{uuid}/nested")
+        allow(Rails.logger).to receive(:warn)
+        expect { described_class.publish(druid:) }.to raise_error(RuntimeError, 'publish failed')
+        expect(Rails.logger).to have_received(:warn).with(a_string_including(uuid))
+      end
+    end
+
     context 'when a file missing from shelves' do
       let(:public_cocina) { instance_double(Cocina::Models::DRO, externalIdentifier: druid, dro?: true) }
 
