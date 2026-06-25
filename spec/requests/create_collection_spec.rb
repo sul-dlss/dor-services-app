@@ -86,7 +86,7 @@ RSpec.describe 'Create object' do
       expect(response).to have_http_status(:created)
       expect(response.location).to eq "/v1/objects/#{druid}"
       expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a8888',
-                                                               create_marc_if_missing: false)
+                                                               create_marc_if_missing: true)
     end
   end
 

@@ -78,7 +78,7 @@ RSpec.describe Catalog::AbstractNormalizer do
   let(:instance_hrid) { 'a666' }
 
   describe '#normalize' do
-    it 'builds a MARC::Record object from the hash returned by the API client' do
+    it 'normalizes a MARC hash returned by the API client' do
       # the 520 abstracts have replaced escaped dollar signs with literals
       expect(
         normalizer.normalize['fields'].find { |field| field.keys.first == '520' }['520']['subfields'].first['a']

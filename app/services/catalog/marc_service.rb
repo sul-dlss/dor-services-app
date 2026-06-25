@@ -18,19 +18,19 @@ module Catalog
     end
 
     # @return [Hash] MARC record as a hash
-    # @raise [Error]
-    def marc
-      marc_record ||= begin
+    # @raise [Errors:BaseError]
+    def marc # rubocop:disable Metrics/AbcSize
+      marc_record = begin
         FolioClient.fetch_marc_hash(instance_hrid: folio_instance_hrid)
                    .then { |record_hash| AbstractNormalizer.normalize(record_hash:) }
                    .then { |record_hash| ControlFieldNormalizer.normalize(record_hash:, folio_instance_hrid:) }
                    .then { |record_hash| MARC::Record.new_from_hash(record_hash) }
       rescue FolioClient::ResourceNotFound, FolioClient::MultipleResourcesFound
         error_message = "Catalog record not found for HRID '#{folio_instance_hrid}' or barcode '#{barcode}'"
-        raise Errors::RecordNotFoundError, error_message # unless create_marc_if_missing
+        raise Errors::RecordNotFoundError, error_message unless create_marc_if_missing
 
-        # FolioClient.fetch_instance_info(hrid: folio_instance_hrid)
-        #            .then { |instance_hash| InstanceToMarcMapper.map(instance_hash:) }
+        FolioClient.fetch_instance_info(hrid: folio_instance_hrid)
+                   .then { |instance_hash| InstanceMarcBuilder.build(instance_hash:) }
       end
 
       update_marc_cache!(marc_record:)

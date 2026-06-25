@@ -96,7 +96,7 @@ class CreateObjectService
     return cocina_request_object if cocina_request_object.admin_policy?
 
     result = RefreshDescriptionFromCatalog.run(cocina_object: cocina_request_object,
-                                               druid:) # , create_marc_if_missing: true)
+                                               druid:, create_marc_if_missing: true)
     return cocina_request_object if result.failure?
 
     description_props = result.value!.description_props
