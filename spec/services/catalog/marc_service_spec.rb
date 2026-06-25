@@ -28,11 +28,10 @@ RSpec.describe Catalog::MarcService do
         { '003' => 'FOLIO' }
       ] }.with_indifferent_access
   end
-  let(:fetcher) { instance_double(Catalog::SourceStorageFetcher, fetch: marc_record.to_hash) }
   let(:barcode) { nil }
 
   before do
-    allow(Catalog::SourceStorageFetcher).to receive(:new).and_return(fetcher)
+    allow(FolioClient).to receive(:fetch_marc_hash).and_return(marc_hash)
   end
 
   describe '#marc' do
@@ -43,13 +42,12 @@ RSpec.describe Catalog::MarcService do
     it 'returns MARC data from FOLIO' do
       described_class.marc(folio_instance_hrid: 'a123', barcode: nil)
       expect(described_class).to have_received(:new).with(folio_instance_hrid: 'a123', barcode: nil)
-      expect(Catalog::SourceStorageFetcher).to have_received(:new).with(folio_instance_hrid: 'a123')
-      expect(fetcher).to have_received(:fetch)
+      expect(FolioClient).to have_received(:fetch_marc_hash).with(instance_hrid: 'a123')
     end
 
     context 'when Folio record is found' do
       before do
-        allow(fetcher).to receive(:fetch).and_raise(FolioClient::ResourceNotFound)
+        allow(FolioClient).to receive(:fetch_marc_hash).and_raise(FolioClient::ResourceNotFound)
       end
 
       it 'raises CatalogRecordNotFoundError when FOLIO record not found' do
@@ -64,7 +62,6 @@ RSpec.describe Catalog::MarcService do
       let(:marc_service) { described_class.new }
 
       before do
-        allow(Catalog::SourceStorageFetcher).to receive(:new).and_call_original
         allow(FolioClient).to receive(:fetch_hrid).with(barcode:).and_return(nil)
         allow(FolioClient).to receive(:fetch_marc_hash).with(instance_hrid: nil).and_raise(FolioClient::MultipleResourcesFound)
       end
@@ -87,7 +84,34 @@ RSpec.describe Catalog::MarcService do
 
       it 'requests the record by barcode' do
         expect(marc_service.marc).to eq marc_hash
-        expect(Catalog::SourceStorageFetcher).to have_received(:new).with(folio_instance_hrid: 'a123')
+        expect(FolioClient).to have_received(:fetch_marc_hash).with(instance_hrid: 'a123')
+      end
+    end
+
+    context 'when MARC is missing and create_marc_if_missing is true' do
+      let(:marc_service) { described_class.new(folio_instance_hrid: 'a123', create_marc_if_missing: true) }
+
+      before do
+        allow(FolioClient).to receive(:fetch_marc_hash).and_raise(FolioClient::ResourceNotFound)
+        allow(FolioClient).to receive(:fetch_instance_info).with(hrid: 'a123').and_return(
+          {
+            'hrid' => 'a123',
+            'title' => 'Gaudy night',
+            'identifiers' => [],
+            'languages' => ['eng'],
+            'contributors' => [],
+            'editions' => [],
+            'publication' => []
+          }
+        )
+      end
+
+      it 'creates a MARC record hash from instance info' do
+        marc_hash = marc_service.marc
+        expect(
+          marc_hash['fields'].find { |field| field.key?('245') }.dig('245', 'subfields').first['a']
+        ).to eq('Gaudy night')
+        expect(FolioClient).to have_received(:fetch_instance_info).once
       end
     end
   end

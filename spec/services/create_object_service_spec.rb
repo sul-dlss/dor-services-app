@@ -90,7 +90,7 @@ RSpec.describe CreateObjectService do
       it 'adds to description' do
         expect(store.create(requested_cocina_object).description.title.first.value).to eq 'The Well-Grounded Rubyist'
         expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a999123',
-                                                                 create_marc_if_missing: false)
+                                                                 create_marc_if_missing: true)
       end
     end
 
@@ -117,7 +117,7 @@ RSpec.describe CreateObjectService do
         expect(cocina_object.description.title.first.value).to eq 'Example Item Title'
         expect(cocina_object.label).to eq 'Example Item Title'
         expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a999123',
-                                                                 create_marc_if_missing: false)
+                                                                 create_marc_if_missing: true)
         expect(marc_service).to have_received(:marc)
       end
     end
@@ -147,7 +147,7 @@ RSpec.describe CreateObjectService do
         end&.value).to eq 'well-grounded Rubyist'
         expect(cocina_object.label).to eq 'The well-grounded Rubyist'
         expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a999123',
-                                                                 create_marc_if_missing: false)
+                                                                 create_marc_if_missing: true)
         expect(marc_service).to have_received(:marc)
       end
     end
@@ -174,7 +174,8 @@ RSpec.describe CreateObjectService do
       it 'does not cause a failure' do
         store.create(requested_cocina_object)
         expect(RefreshDescriptionFromCatalog).to have_received(:run).with(cocina_object: requested_cocina_object,
-                                                                          druid:)
+                                                                          druid:,
+                                                                          create_marc_if_missing: true)
       end
     end
 
