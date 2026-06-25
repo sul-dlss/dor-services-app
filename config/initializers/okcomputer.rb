@@ -25,7 +25,7 @@ end
 class FolioCheck < OkComputer::Check
   def check
     Timeout.timeout(5) do
-      Catalog::MarcService.marc(barcode: '12345')
+      Catalog::FolioReader.to_marc(barcode: '12345')
     end
   rescue StandardError => e
     mark_failure

@@ -70,7 +70,7 @@ RSpec.describe 'Refresh metadata' do
     allow(CocinaObjectStore).to receive(:find).with(apo_druid).and_return(cocina_apo_object)
     allow(UpdateObjectService).to receive(:update).and_return(updated_cocina_object)
     allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
-    allow(marc_service).to receive(:marc).and_return(marc)
+    allow(marc_service).to receive(:marc_record).and_return(marc)
   end
 
   context 'when happy path' do
@@ -127,7 +127,7 @@ RSpec.describe 'Refresh metadata' do
 
     context 'when folio instance hrid not found' do
       before do
-        allow(marc_service).to receive(:marc).and_raise(Catalog::Errors::RecordNotFoundError)
+        allow(marc_service).to receive(:marc).and_raise(Catalog::MarcService::CatalogRecordNotFoundError)
       end
 
       it 'returns a 400 error' do
@@ -152,7 +152,7 @@ RSpec.describe 'Refresh metadata' do
       end
 
       before do
-        allow(marc_service).to receive(:marc).and_raise(Catalog::Errors::ResponseError,
+        allow(marc_service).to receive(:marc).and_raise(Catalog::MarcService::CatalogResponseError,
                                                         'Something went wrong')
       end
 

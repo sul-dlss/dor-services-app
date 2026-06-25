@@ -6,27 +6,23 @@ class RefreshDescriptionFromCatalog
 
   Result = Struct.new('Result', :description_props)
 
-  # @see #run, #initialize
-  def self.run(...)
-    new(...).run
+  # @param [Cocina::Models::DRO|Collection|APO|Agreement|RequestDRO|RequestCollection|RequestAPO|RequestAgreement] cocina_object to refresh #rubocop:disable Layout/LineLength
+  # @param [string] druid
+  # @return [Dry::Monads::Results] returns Failure if there was no refreshable catalog link or barcode, otherwise
+  # Success (Result with description_props and mods)
+  def self.run(cocina_object:, druid:, use_barcode: false)
+    new(cocina_object:, druid:, use_barcode:).run
   end
 
-  # @param cocina_object [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::APO, Cocina::Models::Agreement,
-  #   Cocina::Models::RequestDRO, Cocina::Models::RequestCollection, Cocina::Models::RequestAPO,
-  #   Cocina::Models::RequestAgreement] cocina object to refresh
-  # @param druid [String] the druid identifier
-  # @param use_barcode [Boolean] whether to use barcode as an identifier (default: false)
-  # @param create_marc_if_missing [Boolean] whether to create a MARC record if missing in the catalog (default: false)
-  def initialize(cocina_object:, druid:, use_barcode: false, create_marc_if_missing: false)
+  def initialize(cocina_object:, druid:, use_barcode:)
     @cocina_object = cocina_object
     @druid = druid
     @use_barcode = use_barcode
-    @create_marc_if_missing = create_marc_if_missing
   end
 
   # @return [Dry::Monads::Results] Returns Failure if description unchanged (e.g., no refreshable identifiers),
-  #   otherwise Success (Result with description_props)
-  # @raise [Catalog::MarcService::Error]
+  # otherwise Success (Result with description_props)
+  # @raises Catalog::MarcService::MarcServiceError
   def run
     # Admin policies don't have identification.
     return Failure() if cocina_object.admin_policy?
@@ -46,11 +42,11 @@ class RefreshDescriptionFromCatalog
 
   private
 
-  attr_reader :cocina_object, :druid, :use_barcode, :create_marc_if_missing
+  attr_reader :cocina_object, :druid, :use_barcode
 
-  # @raises Catalog::MarcService::Error
+  # @raises Catalog::MarcService::MarcServiceError
   def marc_service
-    @marc_service ||= Catalog::MarcService.new(**identifiers, create_marc_if_missing:)
+    @marc_service ||= Catalog::MarcService.new(**identifiers)
   end
 
   def identifiers

@@ -9,18 +9,16 @@
 #   Importing access from the admin_policy if none is provided
 #   Minting a doi if requested
 class CreateObjectService
-  # @param [Cocina::Models::RequestDRO, Cocina::Models::RequestCollection,
-  #   Cocina::Models::RequestAdminPolicy] cocina_object
+  # @param [Cocina::Models::RequestDRO,Cocina::Models::RequestCollection,Cocina::Models::RequestAdminPolicy] cocina_object # rubocop:disable Layout/LineLength
   # @param [boolean] assign_doi
   # @param [string] who the sunetid of the user performing the update
   # @param [#call] id_minter assigns identifiers. You can provide your own minter if you want to use a specific druid
   # for an item.
-  # @return [Cocina::Models::DROWithMetadata, Cocina::Models::CollectionWithMetadata,
-  #   Cocina::Models::AdminPolicyWithMetadata]
-  # @raise [Catalog::MarcService::CatalogRecordNotFoundError] if catalog identifer not found when
-  #   refreshing descMetadata
-  # @raise [Catalog::MarcService::CatalogResponseError] if other error occurred refreshing
-  #   descMetadata from catalog source
+  # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata] # rubocop:disable Layout/LineLength
+  # @raise [Catalog::MarcService::MarcServiceError::CatalogRecordNotFoundError] if catalog identifer not found when
+  # refreshing descMetadata
+  # @raise [Catalog::MarcService::MarcServiceError::CatalogResponseError] if other error occurred refreshing
+  # descMetadata from catalog source
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
   def self.create(cocina_request_object, assign_doi: false, who: nil, id_minter: -> { SuriService.mint_id })
     new(id_minter:).create(cocina_request_object, assign_doi:, who:)
@@ -30,7 +28,7 @@ class CreateObjectService
     @id_minter = id_minter
   end
 
-  # @raise Catalog::MarcService::Error
+  # @raise Catalog::MarcService::MarcServiceError
   # @raise [Cocina::ValidationError] if externalIdentifier or sourceId not unique
   def create(cocina_request_object, assign_doi: false, who: nil) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     ensure_ur_admin_policy_exists(cocina_request_object)
@@ -89,7 +87,7 @@ class CreateObjectService
   end
 
   # Sync from ILS (Folio) if a catalog record identifier is present
-  # @raise Catalog::MarcService::Error
+  # @raise Catalog::MarcService::MarcServiceError
   def sync_from_catalog(cocina_request_object, druid)
     return cocina_request_object if cocina_request_object.admin_policy?
 
