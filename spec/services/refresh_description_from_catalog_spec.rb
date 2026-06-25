@@ -89,9 +89,7 @@ RSpec.describe RefreshDescriptionFromCatalog do
 
       it 'gets the data from Folio by barcode and returns success' do
         expect(refresh.success?).to be(true)
-        expect(Catalog::MarcService).to have_received(:new).with(
-          barcode: '36105123456789', folio_instance_hrid: 'a123', create_marc_if_missing: false
-        )
+        expect(Catalog::MarcService).to have_received(:new).with(barcode: '36105123456789', folio_instance_hrid: 'a123')
       end
     end
 
@@ -112,8 +110,7 @@ RSpec.describe RefreshDescriptionFromCatalog do
 
       it 'gets the data from Folio without barcode and returns success' do
         expect(refresh.success?).to be(true)
-        expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a123',
-                                                                 create_marc_if_missing: false)
+        expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a123')
       end
     end
 
@@ -174,8 +171,7 @@ RSpec.describe RefreshDescriptionFromCatalog do
                                                            ]
                                                          }
                                                        })
-        expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a123',
-                                                                 create_marc_if_missing: false)
+        expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a123')
       end
     end
 

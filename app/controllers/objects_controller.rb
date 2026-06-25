@@ -35,13 +35,13 @@ class ObjectsController < ApplicationController # rubocop:disable Metrics/ClassL
     add_headers(cocina_object)
     render status: :created, location: object_path(cocina_object.externalIdentifier),
            json: Cocina::Models.without_metadata(cocina_object)
-  rescue Catalog::Errors::ResponseError => e
+  rescue Catalog::MarcService::CatalogResponseError => e
     Honeybadger.notify(e)
     json_api_error(status: :bad_gateway, title: 'Catalog connection error',
                    message: 'Unable to read descriptive metadata from the catalog')
-  rescue Catalog::Errors::RecordNotFoundError => e
+  rescue Catalog::MarcService::CatalogRecordNotFoundError => e
     json_api_error(status: :bad_request, title: 'Record not found in catalog', message: e.message)
-  rescue Catalog::Errors::BaseError => e
+  rescue Catalog::MarcService::MarcServiceError => e
     Honeybadger.notify(e)
     json_api_error(status: :internal_server_error, message: e.message)
   rescue Cocina::ValidationError => e

@@ -3,54 +3,45 @@
 module Catalog
   # MARC service for retrieving and transforming MARC records
   class MarcService
-    # @see #marc, #initialize
+    class MarcServiceError < RuntimeError; end
+    class CatalogResponseError < MarcServiceError; end
+    class CatalogRecordNotFoundError < MarcServiceError; end
+
+    # @see #initialize
+    # @return [Hash] MARC Record as a hash
     def self.marc(...)
       new(...).marc
     end
 
-    # @param barcode [String] barcode of the item
-    # @param folio_instance_hrid [String] Folio instance HRID
-    # @param create_marc_if_missing [Boolean] whether to create a MARC record if missing in the catalog (default: false)
-    def initialize(barcode: nil, folio_instance_hrid: nil, create_marc_if_missing: false)
+    def initialize(barcode: nil, folio_instance_hrid: nil)
       @barcode = barcode
-      @folio_instance_hrid = folio_instance_hrid || FolioClient.fetch_hrid(barcode:)
-      @create_marc_if_missing = create_marc_if_missing
+      @folio_instance_hrid = folio_instance_hrid
+    end
+
+    # @return [MARC::Record] MARC record
+    # @raise CatalogResponseError
+    # @raise CatalogRecordNotFoundError
+    def marc_record
+      @marc_record ||= marc_record_from_folio
     end
 
     # @return [Hash] MARC record as a hash
-    # @raise [Error]
+    # @raise CatalogResponseError
+    # @raise CatalogRecordNotFoundError
     def marc
-      marc_record ||= begin
-        marc_hash = SourceStorageFetcher.fetch(folio_instance_hrid:)
-        ControlFieldsTransformer.transform(marc_hash:, folio_instance_hrid:)
-      rescue FolioClient::ResourceNotFound, FolioClient::MultipleResourcesFound
-        raise Errors::RecordNotFoundError,
-              "Catalog record not found for HRID '#{folio_instance_hrid}' or barcode '#{barcode}'"
-        # raise e unless create_marc_if_missing
-
-        # marc_record_from_catalog_instance_record
-      end
-
-      update_marc_cache!(marc_record:)
-
       marc_record.to_hash
     end
 
     private
 
-    attr_reader :barcode, :create_marc_if_missing, :folio_instance_hrid
+    attr_reader :barcode, :folio_instance_hrid
 
-    def update_marc_cache!(marc_record:)
-      return if marc_record.nil?
-
-      # Cache the MARC, so that we can use it for creating the Argo index without having to fetch it again.
-      MarcCacheEntry.upsert( # rubocop:disable Rails/SkipsModelValidations
-        {
-          folio_hrid: folio_instance_hrid,
-          marc_data: marc_record.to_json_string
-        },
-        unique_by: :index_marc_cache_entries_on_folio_hrid
-      )
+    def marc_record_from_folio
+      FolioReader.to_marc(folio_instance_hrid:, barcode:)
+    rescue FolioClient::ResourceNotFound
+      raise CatalogRecordNotFoundError, "Catalog record not found. HRID: #{folio_instance_hrid} | Barcode: #{barcode}"
+    rescue FolioClient::Error => e
+      raise CatalogResponseError, "Error getting record from catalog: #{e.message}"
     end
   end
 end

@@ -139,8 +139,7 @@ RSpec.describe 'Create object' do
           expect(response.body).to equal_cocina_model(expected)
           expect(response).to have_http_status(:created)
           expect(response.location).to eq "/v1/objects/#{druid}"
-          expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a8888',
-                                                                   create_marc_if_missing: false)
+          expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a8888')
           expect(response.headers['Last-Modified']).to end_with 'GMT'
           expect(response.headers['X-Created-At']).to end_with 'GMT'
           expect(response.headers['ETag']).to match(%r{W/".+"})
@@ -221,8 +220,7 @@ RSpec.describe 'Create object' do
           expect(response.body).to equal_cocina_model(expected.new(description: expected_description))
           expect(response).to have_http_status(:created)
           expect(response.location).to eq "/v1/objects/#{druid}"
-          expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a8888',
-                                                                   create_marc_if_missing: false)
+          expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a8888')
           expect(response.headers['Last-Modified']).to end_with 'GMT'
           expect(response.headers['X-Created-At']).to end_with 'GMT'
           expect(response.headers['ETag']).to match(%r{W/".+"})
@@ -231,7 +229,7 @@ RSpec.describe 'Create object' do
 
       context 'when connecting to catalog fails' do
         before do
-          allow(marc_service).to receive(:marc).and_raise(Catalog::Errors::ResponseError)
+          allow(marc_service).to receive(:marc).and_raise(Catalog::MarcService::CatalogResponseError)
         end
 
         it 'draws an error message' do
@@ -246,7 +244,7 @@ RSpec.describe 'Create object' do
 
       context 'when catalog returns a 404' do
         before do
-          allow(marc_service).to receive(:marc).and_raise(Catalog::Errors::RecordNotFoundError,
+          allow(marc_service).to receive(:marc).and_raise(Catalog::MarcService::CatalogRecordNotFoundError,
                                                           'unable to find folio instance hrid')
         end
 
@@ -262,14 +260,14 @@ RSpec.describe 'Create object' do
 
       context 'when other error refreshing MARC' do
         before do
-          allow(marc_service).to receive(:marc).and_raise(Catalog::Errors::BaseError)
+          allow(marc_service).to receive(:marc).and_raise(Catalog::MarcService::MarcServiceError)
         end
 
         it 'draws an error message' do
           post '/v1/objects',
                params: data,
                headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
-          expect(response.body).to match 'Catalog::Errors::BaseError'
+          expect(response.body).to match 'Catalog::MarcService::MarcServiceError'
           expect(response).to have_http_status :internal_server_error
         end
       end
