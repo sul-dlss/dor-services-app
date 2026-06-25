@@ -2,9 +2,7 @@
 
 module Catalog
   # Service for retrieving MARC records from MARC dump files.
-  # It builds a SQLite database from the MARC dump files that indexes the HRID, filename, and position of each record,
-  # and allows for efficient lookup of a MARC record in the dump given an HRID.
-  # The MARC dump files should be in the format of gzipped MARC files, where each file contains multiple MARC records.
+  # It builds a SQLite database from the MARC dump files, storing each record's MARC binary (zlib-compressed).
   class MarcDump
     class Error < StandardError; end
     class NotFound < Error; end
@@ -18,19 +16,18 @@ module Catalog
     end
 
     # Build the MARC dump database by reading all the MARC records from the dump
-    # and storing their HRID, filename, and position in the file in a SQLite database.
+    # and storing their HRID and zlib-compressed MARC binary in a SQLite database.
     # This may take 20+ minutes to run.
-    def build_db!
+    def build_db! # rubocop:disable Metrics/AbcSize
       new_db = create_new_db!
       Dir.glob(File.join(dump_filepath, '*.mrc.gz')) do |filepath|
         filename = File.basename(filepath)
         Rails.logger.info("Processing file: #{filename}")
         Zlib::GzipReader.open(filepath, encoding: 'binary') do |gz|
-          reader = MARC::ForgivingReader.new(gz, invalid: :replace, replace: '', external_encoding: 'UTF-8')
+          reader = MARC::ForgivingReader.new(gz, **reader_params)
           new_db.transaction do # Transaction speeds up inserts.
-            reader.each_with_index do |record, index|
-              new_db.execute 'insert into records values ( ?, ?, ? )',
-                             [record['001'].value, filename, index]
+            reader.each do |record|
+              new_db.execute 'insert into records values ( ?, ? )', [record['001'].value, Zlib::Deflate.deflate(record.to_marc)]
             end
           end
         end
@@ -41,18 +38,11 @@ module Catalog
     # @return [MARC::Record]
     # @raise Catalog::MarcDump::NotFound
     def find(hrid)
-      row = db.execute('select filename, position from records where hrid = ?', hrid).first
+      row = db.execute('select data from records where hrid = ?', hrid).first
       raise NotFound, "Record not found for HRID: #{hrid}" unless row
 
-      filename, position = row
-      filepath = File.join(dump_filepath, filename)
-      Zlib::GzipReader.open(filepath, encoding: 'binary') do |gz|
-        reader = MARC::ForgivingReader.new(gz, invalid: :replace, replace: '', external_encoding: 'UTF-8')
-        reader.each_with_index do |record, index|
-          return record if index == position
-        end
-      end
-      raise NotFound, "Record not found for HRID: #{hrid}"
+      marc_binary = Zlib::Inflate.inflate(row[0])
+      MARC::Reader.new(StringIO.new(marc_binary), **reader_params).first
     end
 
     private
@@ -67,18 +57,21 @@ module Catalog
       end
     end
 
-    # @return [SQLite3::Database] a new SQLite database with the appropriate schema for storing MARC record metadata
+    # @return [SQLite3::Database] a new SQLite database with the appropriate schema for storing MARC records
     def create_new_db!
       FileUtils.rm_f(db_filepath)
       SQLite3::Database.new(db_filepath).tap do |db|
         db.execute <<~SQL.squish
           create table records (
             hrid varchar(20) primary key,
-            filename varchar(30),
-            position int
+            data blob not null
           );
         SQL
       end
+    end
+
+    def reader_params
+      { invalid: :replace, replace: '', external_encoding: 'UTF-8' }
     end
   end
 end
