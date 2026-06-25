@@ -71,6 +71,14 @@ RSpec.describe PruneService do
       end
     end
 
+    context 'when rmdir raises Errno::ENOENT due to a race condition' do
+      it 'does not raise' do
+        dr1.mkdir
+        allow_any_instance_of(Pathname).to receive(:rmdir).and_raise(Errno::ENOENT) # rubocop:disable RSpec/AnyInstance
+        expect { described_class.new(druid: dr1).prune! }.not_to raise_error
+      end
+    end
+
     it 'removes all directories up to the base path when there are no common ancestors' do
       # Nil the create records for this test
       dr1.mkdir
