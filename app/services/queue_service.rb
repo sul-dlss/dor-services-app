@@ -17,11 +17,24 @@ class QueueService
   end
 
   # Enqueue the provided step
-  def enqueue
-    job_id = ROBOT_SIDEKIQ_CLIENT.push('queue' => queue_name, 'class' => class_name, 'args' => [step.druid])
-    raise "Enqueueing #{class_name} for #{step.druid} to #{queue_name} failed." unless job_id
+  def enqueue # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    retries = 0
+    begin
+      job_id = ROBOT_SIDEKIQ_CLIENT.push('queue' => queue_name, 'class' => class_name, 'args' => [step.druid])
+      raise "Enqueueing #{class_name} for #{step.druid} to #{queue_name} failed." unless job_id
 
-    Rails.logger.info "Enqueued #{class_name} for #{step.druid} to #{queue_name}: #{job_id}"
+      Rails.logger.info "Enqueued #{class_name} for #{step.druid} to #{queue_name}: #{job_id}"
+    rescue Redis::CannotConnectError => e
+      retries += 1
+      if retries <= 3
+        sleep(retries * 2) # Exponential backoff: 2s, 4s, 6s
+        retry
+      else
+        Rails.logger.error "Redis connection failed after #{retries} attempts: #{e.message}"
+        Honeybadger.notify(e, context: { druid: step.druid, retries: retries })
+        raise
+      end
+    end
   end
 
   DSA_ROBOTS = [
