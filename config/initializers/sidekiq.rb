@@ -4,13 +4,14 @@ Sidekiq.configure_server do |config|
   # Add the following to a sidekiq.yml to have it handle robot jobs.
   # :labels:
   #   - robot
-  if config[:labels].include?('robot')
-    config.redis = { url: Settings.robots_redis_url }
-    # For Sidekiq Pro
-    config.super_fetch!
-  else
-    config.redis = { url: Settings.redis_url }
-  end
+  config.redis = if config[:labels].include?('robot')
+                   { url: Settings.robots_redis_url }
+                 else
+                   { url: Settings.redis_url }
+
+                 end
+  # For Sidekiq Pro
+  config.super_fetch!
 end
 
 Sidekiq.configure_client do |config|
