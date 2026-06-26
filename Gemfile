@@ -19,7 +19,7 @@ gem 'mais_orcid_client', '>= 1.0'
 gem 'marc'
 gem 'moab-versioning', '~> 6.0', require: 'moab/stanford'
 gem 'preservation-client', '~> 7.0'
-gem 'purl_fetcher-client', '~> 2.1'
+gem 'purl_fetcher-client'
 gem 'sul_orcid_client', '~> 0.6'
 
 source 'https://gems.contribsys.com/' do

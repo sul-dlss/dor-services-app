@@ -64,6 +64,7 @@ module Publish
         TransferStager.copy(druid:, filepath_map: filepath_uuid_map, workspace_content_pathname:)
       end
 
+      # This is going to retry several times if publish fails. This will avoid a re-copy.
       PurlFetcher::Client::Publish.publish(cocina: public_cocina, file_uploads: filepath_uuid_map,
                                            version: public_version,
                                            must_version: must_version?, version_date:)
