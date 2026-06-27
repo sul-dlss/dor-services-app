@@ -11,7 +11,7 @@ module Migrators
 
     # @return [Array<Result>] results for the migration attempts
     def self.migrate_druid_list(migrator_class:, mode:, druids_slice:)
-      druids_slice.each_slice(50).flat_map do |druids_slice_batch|
+      druids_slice.each_slice(15).flat_map do |druids_slice_batch|
         RepositoryObject
           .includes(:versions, :head_version, :last_closed_version, :opened_version)
           .where(external_identifier: druids_slice_batch)
