@@ -185,8 +185,7 @@ GEM
       nokogiri
       zeitwerk (~> 2.1)
     drb (2.2.3)
-    druid-tools (2.2.1)
-      deprecation
+    druid-tools (3.0.0)
     dry-core (1.2.0)
       concurrent-ruby (~> 1.0)
       logger
@@ -399,9 +398,10 @@ GEM
     pg (1.6.3-x86_64-linux)
     pp (0.6.4)
       prettyprint
-    preservation-client (7.4.0)
+    preservation-client (8.0.0)
       activesupport (>= 4.2)
       faraday (~> 2.0)
+      faraday-retry (~> 2.0)
       moab-versioning (>= 5.0.0, < 7)
       zeitwerk (~> 2.1)
     prettyprint (0.2.0)
@@ -411,7 +411,7 @@ GEM
       activesupport (>= 7.0.0)
       rack
     public_suffix (7.0.5)
-    puma (6.6.1)
+    puma (8.0.2)
       nio4r (~> 2.0)
     purl_fetcher-client (3.2.0)
       activesupport
@@ -614,7 +614,7 @@ GEM
     unicode-display_width (2.6.0)
     uri (1.1.1)
     useragent (0.16.11)
-    uuidtools (2.1.5)
+    uuidtools (3.0.0)
     version_gem (1.1.13)
     webmock (3.26.2)
       addressable (>= 2.8.0)
@@ -635,9 +635,9 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  bootsnap (>= 1.4.2)
+  bootsnap
   brakeman
-  bunny (~> 2.17)
+  bunny
   capistrano (~> 3.6)
   capistrano-bundler
   capistrano-passenger
@@ -654,32 +654,32 @@ DEPENDENCIES
   diffy
   dlss-capistrano
   dor-services-client
-  druid-tools (~> 2.2)
+  druid-tools
   dry-monads
-  edtf (~> 3.0)
+  edtf
   equivalent-xml
   factory_bot_rails
-  faraday (~> 2.0)
+  faraday
   faraday-retry
-  folio_client (~> 1.0)
+  folio_client
   graphiql-rails
   graphql
   honeybadger
   janeway-jsonpath
   jbuilder
-  json_schemer-rails (~> 0.4.0)
+  json_schemer-rails
   jwt
   lograge
-  lyber-core (~> 8.0)
-  mais_orcid_client (>= 1.0)
+  lyber-core
+  mais_orcid_client
   marc
-  moab-versioning (~> 6.0)
+  moab-versioning
   okcomputer
   parallel
   pg
-  preservation-client (~> 7.0)
+  preservation-client
   propshaft
-  puma (~> 6.0)
+  puma
   purl_fetcher-client
   rack-console
   rails (~> 8.0.0)
@@ -695,15 +695,15 @@ DEPENDENCIES
   rubocop-rails
   rubocop-rspec
   rubocop-rspec_rails
-  ruby-cache (~> 0.3.0)
+  ruby-cache
   sidekiq (~> 8.0)
   sidekiq-pro!
   simplecov
-  sneakers (~> 2.11)
+  sneakers
   sqlite3
-  sul_orcid_client (~> 0.6)
+  sul_orcid_client
   tty-progressbar
-  uuidtools (~> 2.1.4)
+  uuidtools
   webmock
   whenever
 

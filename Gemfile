@@ -10,32 +10,32 @@ gem 'cocina_display'
 gem 'cocina-models'
 gem 'datacite', '~> 0.6'
 gem 'dor-services-client' # Used for Dor::Services::Response::* & Dor::Services::Client::InvalidCocina classes
-gem 'druid-tools', '~> 2.2'
-gem 'folio_client', '~> 1.0'
+gem 'druid-tools'
+gem 'folio_client'
 gem 'graphql'
-gem 'json_schemer-rails', '~> 0.4.0'
-gem 'lyber-core', '~> 8.0' # For robots
-gem 'mais_orcid_client', '>= 1.0'
+gem 'json_schemer-rails'
+gem 'lyber-core' # For robots
+gem 'mais_orcid_client'
 gem 'marc'
-gem 'moab-versioning', '~> 6.0', require: 'moab/stanford'
-gem 'preservation-client', '~> 7.0'
+gem 'moab-versioning', require: 'moab/stanford'
+gem 'preservation-client'
 gem 'purl_fetcher-client'
-gem 'sul_orcid_client', '~> 0.6'
+gem 'sul_orcid_client'
 
 source 'https://gems.contribsys.com/' do
   gem 'sidekiq-pro'
 end
 
 # Ruby general dependencies
-gem 'bootsnap', '>= 1.4.2', require: false
-gem 'bunny', '~> 2.17' # Send messages to RabbitMQ
+gem 'bootsnap', require: false
+gem 'bunny' # Send messages to RabbitMQ
 gem 'config'
 gem 'connection_pool' # Used for redis
 gem 'csv'
 gem 'dry-monads'
-gem 'edtf', '~> 3.0' # used for metadata reports
+gem 'edtf' # used for metadata reports
 gem 'equivalent-xml' # for diffing MODS
-gem 'faraday', '~> 2.0'
+gem 'faraday'
 gem 'faraday-retry'
 gem 'honeybadger'
 gem 'janeway-jsonpath' # used for metadata reports
@@ -48,12 +48,12 @@ gem 'pg'
 gem 'redis', '~> 5.0' # used for unique jobs
 gem 'retries' # for Goobi
 gem 'rsolr'
-gem 'ruby-cache', '~> 0.3.0'
+gem 'ruby-cache'
 gem 'sidekiq', '~> 8.0'
-gem 'sneakers', '~> 2.11'
+gem 'sneakers'
 gem 'sqlite3' # used for Marc dump
 gem 'tty-progressbar' # to show progress when running validate-cocina script
-gem 'uuidtools', '~> 2.1.4'
+gem 'uuidtools'
 gem 'whenever', require: false
 
 group :test, :development do
@@ -82,7 +82,7 @@ end
 group :development do
   gem 'graphiql-rails' # GraphQL IDE
   gem 'propshaft' # for GraphiQL
-  gem 'puma', '~> 6.0' # app server for dev
+  gem 'puma' # app server for dev
 end
 
 group :deployment do
