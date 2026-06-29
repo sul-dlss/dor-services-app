@@ -741,8 +741,6 @@ Rails/RedundantActiveRecordAllMethod: # new in 2.21
 Rails/UnusedRenderContent: # new in 2.21
   Enabled: true
 
-Capybara/ClickLinkOrButtonStyle: # new in 2.19
-  Enabled: true
 Capybara/RSpec/HaveSelector: # new in 2.19
   Enabled: true
 Capybara/RSpec/PredicateMatcher: # new in 2.19
