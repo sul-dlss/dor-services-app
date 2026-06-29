@@ -36,6 +36,12 @@ module Migrators
     end
 
     def call
+      if migrator_class.migration_tag &&
+         AdministrativeTags.exist?(identifier: repository_object.external_identifier,
+                                   tag: migrator_class.migration_tag)
+        return [Result.new(status: 'SKIPPED', **result_id_attrs)]
+      end
+
       runner_class = migrator_class.cocina_update? ? CocinaUpdateRunner : CommitRunner
       runner_class.new(migrator_class:, repository_object:, mode:).call
     end
@@ -43,6 +49,10 @@ module Migrators
     private
 
     attr_reader :migrator_class, :repository_object, :mode
+
+    def result_id_attrs
+      { id: repository_object.id, external_identifier: repository_object.external_identifier }
+    end
 
     # Base class for migration runners.
     class BaseRunner
@@ -141,6 +151,12 @@ module Migrators
         @opened_version = new_version
         @head_version = new_version
       end
+
+      def add_migration_tag!
+        return unless migrator_class.migration_tag
+
+        AdministrativeTags.create(identifier: druid, tags: [migrator_class.migration_tag])
+      end
     end
 
     # Runner that migrates a RepositoryObject by committing the migrated model hashes to the database.
@@ -187,6 +203,7 @@ module Migrators
           Publish::MetadataTransferService.publish(druid:) if migrator_class.publish?
           # Not closing objects that were already open.
           close_version! if migrator_class.version? && !open_before_migration?
+          add_migration_tag!
         end
 
         Rails.logger.info("#{druid} successfully migrated#{' (dry run)' if dryrun?}")
@@ -301,6 +318,7 @@ module Migrators
         unless dryrun?
           cocina_update!(migrated_cocina_object:)
           close_version! unless open_before_migration? # Not closing objects that were already open.
+          add_migration_tag!
         end
 
         Rails.logger.info("#{druid} successfully migrated#{' (dry run)' if dryrun?}")

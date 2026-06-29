@@ -919,6 +919,74 @@ RSpec.describe Migrators::MigrationRunner do
       end
     end
 
+    context 'when the migrator has a migration_tag' do
+      let(:migrator_class) do
+        stub_const(
+          'Migrators::TestMigrator',
+          Class.new(Migrators::Base) do
+            def migrate
+              model_hash['label'] = "#{model_hash['label']} migrated"
+              model_hash
+            end
+
+            def self.migration_tag
+              'Migration : Test'
+            end
+          end
+        )
+      end
+
+      context 'when the tag is already present on the object' do
+        before do
+          create(:administrative_tag, druid:, tag_label: create(:tag_label, tag: 'Migration : Test'))
+        end
+
+        it 'returns SKIPPED without migrating' do
+          expect(results.map(&:to_h)).to contain_exactly(
+            hash_including(external_identifier: druid, status: 'SKIPPED')
+          )
+          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1'
+          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3'
+        end
+
+        context 'when dryrun' do
+          let(:mode) { :dryrun }
+
+          it 'also returns SKIPPED without migrating' do
+            expect(results.map(&:to_h)).to contain_exactly(
+              hash_including(external_identifier: druid, status: 'SKIPPED')
+            )
+          end
+        end
+      end
+
+      context 'when the tag is not present on the object' do
+        context 'when mode is migrate' do
+          it 'migrates and adds the tag' do
+            expect(results.map(&:to_h)).to contain_exactly(
+              hash_including(external_identifier: druid, version: 1, status: 'MIGRATED'),
+              hash_including(external_identifier: druid, version: 2, status: 'MIGRATED'),
+              hash_including(external_identifier: druid, version: 3, status: 'MIGRATED')
+            )
+            expect(AdministrativeTags.for(identifier: druid)).to include('Migration : Test')
+          end
+        end
+
+        context 'when mode is dryrun' do
+          let(:mode) { :dryrun }
+
+          it 'reports MIGRATED (dry run) but does not add the tag' do
+            expect(results.map(&:to_h)).to contain_exactly(
+              hash_including(external_identifier: druid, version: 1, status: 'MIGRATED (dry run)'),
+              hash_including(external_identifier: druid, version: 2, status: 'MIGRATED (dry run)'),
+              hash_including(external_identifier: druid, version: 3, status: 'MIGRATED (dry run)')
+            )
+            expect(AdministrativeTags.for(identifier: druid)).not_to include('Migration : Test')
+          end
+        end
+      end
+    end
+
     context 'when there is an error in the runner' do
       let(:migrator_class) do
         stub_const(
