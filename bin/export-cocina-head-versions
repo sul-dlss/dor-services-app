@@ -7,8 +7,6 @@ require_relative '../config/environment'
 require 'optparse'
 require 'tty-progressbar'
 
-# This is an approximation of the total number of head versions (RepositoryObjectVersion.joins(:head_version_of).count)
-APPROX_DOC_COUNT = 5_483_724
 BATCH_SIZE = 1000
 
 options = { processes: 4, output_dir: '.' }
@@ -66,14 +64,24 @@ def rotate(output_dir)
   end
 end
 
-def export(processes, output_dir, env)
-  obj_ids = RepositoryObject.ids
-  progress_bar = tty_progress_bar(APPROX_DOC_COUNT)
+def aprox_doc_count
+  ActiveRecord::Base.connection.execute("SELECT reltuples::bigint FROM pg_class WHERE relname = 'repository_objects'")
+                    .first['reltuples']
+end
 
-  Parallel.map(obj_ids.each_slice(1000).with_index,
+def export(processes, output_dir, env)
+  progress_bar = tty_progress_bar(aprox_doc_count)
+
+  id_batches = Enumerator.new do |yielder|
+    RepositoryObject.in_batches(of: BATCH_SIZE).each_with_index do |batch, index|
+      yielder << [batch.ids, index]
+    end
+  end
+
+  Parallel.map(id_batches,
                in_processes: processes,
-               finish: ->(_, _, _results) { progress_bar.advance(1000) }) do |slice_obj_ids, index|
-                 filename = "cocina-head-versions-#{env}-#{format('%02d', index)}.jsonl"
+               finish: ->(_, _, _results) { progress_bar.advance(BATCH_SIZE) }) do |slice_obj_ids, _index|
+                 filename = "cocina-head-versions-#{env}-#{format('%02d', Parallel.worker_number)}.jsonl"
                  @file ||= File.open(File.join(output_dir, filename), 'w')
                  RepositoryObject.includes(:head_version).where(id: slice_obj_ids).find_each do |repository_object|
                    repository_object.head_version.repository_object = repository_object # avoid N+1 query
@@ -87,7 +95,7 @@ jsonl_paths = []
 env = Honeybadger.config[:env]
 
 begin
-  jsonl_paths = export(options[:processes], options[:output_dir], env)
+  jsonl_paths = export(options[:processes], options[:output_dir], env).uniq
   puts 'Exported to:'
   jsonl_paths.each do |path|
     puts path
