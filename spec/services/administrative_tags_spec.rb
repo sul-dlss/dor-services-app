@@ -31,6 +31,19 @@ RSpec.describe AdministrativeTags do
     end
   end
 
+  describe '.exist?' do
+    let(:instance) { instance_double(described_class, exist?: nil) }
+
+    before do
+      allow(described_class).to receive(:new).and_return(instance)
+    end
+
+    it 'calls #exist? on a new instance' do
+      described_class.exist?(identifier:, tag: 'Foo : Bar')
+      expect(instance).to have_received(:exist?).once.with(tag: 'Foo : Bar')
+    end
+  end
+
   describe '.create' do
     let(:instance) { instance_double(described_class, create: nil) }
 
@@ -91,6 +104,24 @@ RSpec.describe AdministrativeTags do
 
     it 'returns administrative tags from the database' do
       expect(described_class.for(identifier:)).to eq(['Foo : Bar', 'Bar : Baz : Quux'])
+    end
+  end
+
+  describe '#exist?' do
+    before do
+      create(:administrative_tag, druid: identifier, tag_label: create(:tag_label, tag: 'Foo : Bar'))
+    end
+
+    context 'when the tag exists' do
+      it 'returns true' do
+        expect(described_class.exist?(identifier:, tag: 'Foo : Bar')).to be true
+      end
+    end
+
+    context 'when the tag does not exist' do
+      it 'returns false' do
+        expect(described_class.exist?(identifier:, tag: 'Other : Tag')).to be false
+      end
     end
   end
 

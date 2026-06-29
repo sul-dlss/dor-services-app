@@ -26,6 +26,15 @@ class AdministrativeTags
     new(identifier:).project
   end
 
+  # Check if a specific administrative tag exists for an item
+  #
+  # @param identifier [String] the item identifier to check administrative tags for
+  # @param tag [String] the tag to check for
+  # @return [Boolean] true if the tag exists, false otherwise
+  def self.exist?(identifier:, tag:)
+    new(identifier:).exist?(tag:)
+  end
+
   # Add one or more administrative tags for an item
   #
   # @param identifier [String] the item identifier to list administrative tags for
@@ -74,6 +83,12 @@ class AdministrativeTags
   # @return [Array<String>] an array of tags (strings), possibly empty
   def for
     AdministrativeTag.includes(:tag_label).where(druid: identifier).pluck(:tag)
+  end
+
+  # @param tag [String] the tag to check for
+  # @return [Boolean] true if the tag exists, false otherwise
+  def exist?(tag:)
+    AdministrativeTag.joins(:tag_label).exists?(druid: identifier, tag_labels: { tag: })
   end
 
   # @return [Array<String>] an array of tags (strings), possibly empty

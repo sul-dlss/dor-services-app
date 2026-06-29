@@ -353,6 +353,7 @@ Additional notes:
 * For versioned migrations, a migrator may define `self.workflow_context` to pass optional workflow context when MigrationRunner closes the opened version and starts accessionWF.
 * Workflow context defaults to `{}` if not overridden.
 * See `Migrators::ExemplarWithContext` for a minimal example of context usage.
+* A migrator may define `self.migration_tag` returning an administrative tag string (e.g. `'Migration : MyMigratorName'`) to enable tag-based gating. If the tag is already present on an object, migration is skipped (status: `SKIPPED`). If absent, the object is migrated and the tag is added afterwards (non-dry-run only). This provides idempotent re-runs. Returns `nil` by default (no gating).
 * Breaking changes, especially breaking cocina model changes, are going to require additional steps, e.g., stopping SDR processing. The complete process is to be determined.
 
 ## Reset Process (for QA/Stage)

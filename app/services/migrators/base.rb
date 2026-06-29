@@ -12,6 +12,10 @@ module Migrators
   #   version? - true if the object should be versioned
   #   publish? - true if the object should be published
   #   workflow_context - optional hash passed as workflow context when MigrationRunner closes a version
+  #   migration_tag - an administrative tag string used to gate migration. If the tag is already present on an
+  #     object, migration is skipped (status: SKIPPED). If absent and not a dry run, the tag is added after the
+  #     object is successfully migrated. Returns nil by default (no gating). The tag string is free-form, e.g.
+  #     'Migration : MyMigratorName'.
   #   initialize(repository_object) - takes the RepositoryObject to be migrated. If possible, consider
   #     overriding this in such a way as to maintain backwards compatibility for existing migrators. E.g.,
   #     if a parameter is added, the default value could maintain the existing behavior. If breaking
@@ -51,6 +55,11 @@ module Migrators
     # @return [String] version description for the migrated version (if versioning)
     def self.version_description
       raise NotImplementedError
+    end
+
+    # @return [String, nil] an administrative tag used to gate migration, or nil for no gating
+    def self.migration_tag
+      nil
     end
 
     # @return [Boolean] true if this migrator should only be run in dryrun mode, false otherwise
