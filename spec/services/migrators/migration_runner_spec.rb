@@ -765,6 +765,136 @@ RSpec.describe Migrators::MigrationRunner do
           expect(Publish::MetadataTransferService).not_to have_received(:publish)
         end
       end
+
+      context 'when migration strategy is commit' do
+        let(:migrator_class) do
+          stub_const(
+            'Migrators::TestMigrator',
+            Class.new(Migrators::Base) do
+              def migrate
+                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash
+              end
+            end
+          )
+        end
+
+        it 'does not commit the changes' do
+          expect(results.map(&:to_h)).to contain_exactly(
+            hash_including(external_identifier: druid, version: 1, status: 'MIGRATED (dry run)'),
+            hash_including(external_identifier: druid, version: 2, status: 'MIGRATED (dry run)'),
+            hash_including(external_identifier: druid, version: 3, status: 'MIGRATED (dry run)')
+          )
+
+          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1'
+          expect(repository_object.versions.find_by(version: 2).label).to eq 'version 2'
+          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3'
+        end
+      end
+
+      context 'when migration strategy is cocina_update and object is open' do
+        let(:migrator_class) do
+          stub_const(
+            'Migrators::TestMigrator',
+            Class.new(Migrators::Base) do
+              def migrate
+                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash
+              end
+
+              def self.migration_strategy
+                :cocina_update
+              end
+            end
+          )
+        end
+
+        it 'does not call UpdateObjectService or open/close the version' do
+          expect(results.map(&:to_h)).to contain_exactly(
+            hash_including(external_identifier: druid, version: 3, status: 'MIGRATED (dry run)')
+          )
+
+          expect(repository_object.reload.versions.count).to eq 3
+          expect(version_service).not_to have_received(:open)
+          expect(UpdateObjectService).not_to have_received(:update)
+          expect(version_service).not_to have_received(:close)
+        end
+      end
+
+      context 'when migration strategy is commit_with_version and object is closed' do
+        let(:migrator_class) do
+          stub_const(
+            'Migrators::TestMigrator',
+            Class.new(Migrators::Base) do
+              def migrate
+                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash
+              end
+
+              def self.migration_strategy
+                :commit_with_version
+              end
+
+              def self.version_description
+                'test migration'
+              end
+            end
+          )
+        end
+
+        before do
+          repository_object.close_version!
+          allow(version_service).to receive(:open?).and_return(false)
+        end
+
+        it 'calls ensure_openable! but does not commit or open a new version' do
+          expect(results.map(&:to_h)).to contain_exactly(
+            hash_including(external_identifier: druid, version: 1, status: 'MIGRATED (dry run)'),
+            hash_including(external_identifier: druid, version: 2, status: 'MIGRATED (dry run)'),
+            hash_including(external_identifier: druid, version: 3, status: 'MIGRATED (dry run)'),
+            hash_including(external_identifier: druid, version: 4, status: 'MIGRATED (dry run)')
+          )
+
+          expect(repository_object.reload.versions.count).to eq 3
+          expect(version_service).to have_received(:ensure_openable!)
+          expect(version_service).not_to have_received(:open)
+          expect(version_service).not_to have_received(:close)
+        end
+      end
+
+      context 'when ensure_openable! raises' do
+        let(:migrator_class) do
+          stub_const(
+            'Migrators::TestMigrator',
+            Class.new(Migrators::Base) do
+              def migrate
+                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash
+              end
+
+              def self.migration_strategy
+                :commit_with_version
+              end
+
+              def self.version_description
+                'test migration'
+              end
+            end
+          )
+        end
+
+        before do
+          repository_object.close_version!
+          allow(version_service).to receive(:open?).and_return(false)
+          allow(version_service).to receive(:ensure_openable!).and_raise('Object cannot be opened')
+        end
+
+        it 'returns a result with status ERROR' do
+          expect(results.map(&:to_h)).to contain_exactly(
+            hash_including(external_identifier: druid, status: 'ERROR', exception: 'Object cannot be opened')
+          )
+        end
+      end
     end
 
     context 'when there is an error in the migrator' do
@@ -814,6 +944,34 @@ RSpec.describe Migrators::MigrationRunner do
         expect(results.map(&:to_h)).to contain_exactly(
           hash_including(external_identifier: druid, version: nil, status: 'ERROR',
                          exception: 'Something went wrong in the runner')
+        )
+      end
+    end
+
+    context 'when there is an error in the CommitRunner after migration (e.g., publish fails)' do
+      let(:migrator_class) do
+        stub_const(
+          'Migrators::TestMigrator',
+          Class.new(Migrators::Base) do
+            def migrate
+              model_hash['label'] = "#{model_hash['label']} migrated"
+              model_hash
+            end
+
+            def self.migration_strategy
+              :commit_with_publish
+            end
+          end
+        )
+      end
+
+      before do
+        allow(Publish::MetadataTransferService).to receive(:publish).and_raise('Publish failed')
+      end
+
+      it 'returns a result with status ERROR and the exception message' do
+        expect(results.map(&:to_h)).to contain_exactly(
+          hash_including(external_identifier: druid, status: 'ERROR', exception: 'Publish failed')
         )
       end
     end
