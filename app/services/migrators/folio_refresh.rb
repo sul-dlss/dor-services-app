@@ -21,6 +21,10 @@ module Migrators
       :cocina_update
     end
 
+    def self.migration_tag
+      'Migration : Folio Refresh'
+    end
+
     # @return [String] version description for the migrated version (if versioning)
     def self.version_description
       'Refresh description from Folio.'

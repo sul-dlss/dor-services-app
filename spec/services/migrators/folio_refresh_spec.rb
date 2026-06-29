@@ -68,4 +68,10 @@ RSpec.describe Migrators::FolioRefresh do
       expect(described_class.version_description).to eq('Refresh description from Folio.')
     end
   end
+
+  describe '.migration_tag' do
+    it 'returns the migration tag' do
+      expect(described_class.migration_tag).to eq('Migration : Folio Refresh')
+    end
+  end
 end
