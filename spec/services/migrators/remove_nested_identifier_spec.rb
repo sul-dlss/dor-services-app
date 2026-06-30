@@ -13,15 +13,14 @@ RSpec.describe Migrators::RemoveNestedIdentifier do
 
     let(:model_hash) do
       # Only providing description instead of complete model hash.
-      { 'description' => description }
+      { 'description' => description.deep_dup }
     end
 
     let(:description) do
       { 'title' => 'Test Title',
         'contributor' => contributor,
         'relatedResource' => related_resource,
-        # 'event' => event,
-        # 'adminMetadata' => admin_metadata,
+        'adminMetadata' => admin_metadata,
         'identifier' => identifier,
         'purl' => 'https://purl.stanford.edu' }
     end
@@ -35,6 +34,11 @@ RSpec.describe Migrators::RemoveNestedIdentifier do
     let(:contributor) { [{ 'name' => 'Test Contributor', 'identifier' => identifier }] }
     let(:related_resource) do
       [{ 'title' => 'Test Related Resource Title', 'identifier' => identifier }]
+    end
+    let(:admin_metadata) do
+      {
+        'identifier' => identifier
+      }
     end
 
     it 'removes nested identifier from description' do
@@ -53,6 +57,9 @@ RSpec.describe Migrators::RemoveNestedIdentifier do
               }
             ],
             identifier: [{ type: 'local', value: 'sul-chs:PC010_09_1009', displayLabel: 'Source ID' }],
+            adminMetadata: {
+              identifier: [{ type: 'local', value: 'sul-chs:PC010_09_1009', displayLabel: 'Source ID' }]
+            },
             purl: 'https://purl.stanford.edu'
           }
         )
