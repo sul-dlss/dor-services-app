@@ -27,6 +27,7 @@ module Migrators
       hash.delete('identifier') if nested
 
       hash.each do |key, value|
+        next remove_from_hash(hash: value) if value.is_a?(Hash)
         next unless value.is_a?(Array)
 
         value.each do |item|
