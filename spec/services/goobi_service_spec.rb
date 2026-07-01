@@ -11,7 +11,6 @@ RSpec.describe GoobiService do
       externalIdentifier: druid,
       version: 1,
       type: Cocina::Models::ObjectType.book,
-      label: 'Object Title & A Special character',
       description: {
         title: [{ value: 'Object Title & A Special character' }],
         purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
@@ -40,30 +39,11 @@ RSpec.describe GoobiService do
 
   let(:description) { nil }
 
-  describe '#title_or_label' do
-    subject(:title_or_label) { Nokogiri::XML(goobi.send(:xml_request)).xpath('//title').first.content }
+  describe '#title' do
+    subject(:title) { Nokogiri::XML(goobi.send(:xml_request)).xpath('//title').first.content }
 
-    context 'when description is present' do
-      let(:description) do
-        {
-          title: [
-            {
-              value: 'Constituent label & A Special character'
-            }
-          ],
-          purl: Purl.for(druid:)
-        }
-      end
-
-      it 'returns title text' do
-        expect(title_or_label).to eq 'Constituent label & A Special character'
-      end
-    end
-
-    context 'when MODS title is absent or empty' do
-      it 'returns object label' do
-        expect(title_or_label).to eq 'Object Title & A Special character'
-      end
+    it 'returns title text' do
+      expect(title).to eq 'Object Title & A Special character'
     end
   end
 
@@ -75,7 +55,6 @@ RSpec.describe GoobiService do
                                        externalIdentifier: collection_druid,
                                        version: 1,
                                        type: Cocina::Models::ObjectType.collection,
-                                       label: 'Collection label',
                                        description: {
                                          title: [{ value: 'Collection label' }],
                                          purl: "https://purl.stanford.edu/#{collection_druid.delete_prefix('druid:')}"
