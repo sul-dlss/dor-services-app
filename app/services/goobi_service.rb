@@ -72,7 +72,7 @@ class GoobiService
             <objectId>#{cocina_obj.externalIdentifier}</objectId>
             <objectType>item</objectType>
             <sourceID>#{source_id&.encode(xml: :text)}</sourceID>
-            <title>#{title_or_label.encode(xml: :text)}</title>
+            <title>#{title.encode(xml: :text)}</title>
             <contentType>#{content_type}</contentType>
             <project>#{project_name.encode(xml: :text)}</project>
             <catkey>#{catalog_id}</catkey>
@@ -165,15 +165,14 @@ class GoobiService
   # returns the name of the first collection the object is contained in (if any)
   # @return [String] first collection name the item is in (blank if none)
   def collection_name
-    collection_id == '' ? '' : CocinaObjectStore.find(collection_id).label
+    collection_id == '' ? '' : title_for(CocinaObjectStore.find(collection_id))
   end
 
-  def title_or_label
-    if cocina_obj.description
-      main_title = CocinaDisplay::CocinaRecord.new(cocina_obj.to_h.with_indifferent_access).short_title
-      return main_title if main_title
-    end
+  def title
+    title_for(cocina_obj)
+  end
 
-    cocina_obj.label
+  def title_for(cocina_object)
+    CocinaDisplay::CocinaRecord.new(cocina_object.to_h.with_indifferent_access).short_title
   end
 end
