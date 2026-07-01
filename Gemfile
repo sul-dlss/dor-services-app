@@ -7,9 +7,9 @@ gem 'rails', '~> 8.0.0'
 
 # DLSS/domain-specific dependencies
 gem 'cocina_display'
-gem 'cocina-models'
+gem 'cocina-models', '= 0.124.0'
 gem 'datacite', '~> 0.6'
-gem 'dor-services-client' # Used for Dor::Services::Response::* & Dor::Services::Client::InvalidCocina classes
+gem 'dor-services-client', '= 15.49.0' # Used for Dor::Services::Response::* & Dor::Services::Client::InvalidCocina classes
 gem 'druid-tools'
 gem 'folio_client'
 gem 'graphql'
