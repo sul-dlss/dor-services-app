@@ -73,6 +73,8 @@ class VersionService
 
     ensure_openable!(assume_accessioned:, check_preservation_version: !from_version)
 
+    skip_incomplete_release_steps!
+
     from_repository_object_version = from_version ? repository_object.versions.find_by!(version: from_version) : nil
 
     repository_object.open_version!(description:, from_version: from_repository_object_version)
@@ -251,6 +253,15 @@ class VersionService
 
   def workflow_state_service
     @workflow_state_service ||= Workflow::StateService.new(druid:, version:)
+  end
+
+  # An active releaseWF doesn't block opening a new version, so a releaseWF step from a previous
+  # version can be left incomplete forever once that version is no longer the active one. Skip any
+  # such steps so they stop showing up in stuck workflow monitoring.
+  def skip_incomplete_release_steps!
+    Workflow::Service.skip_incomplete(druid:, workflow_name: 'releaseWF', through_version: version,
+                                      note: 'Automatically skipped because a new object version was opened ' \
+                                            'while this releaseWF step was still incomplete.')
   end
 
   def ensure_closeable!

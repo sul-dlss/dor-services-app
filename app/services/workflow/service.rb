@@ -59,6 +59,10 @@ module Workflow
       new(druid:).skip_all(workflow_name:, note:)
     end
 
+    def self.skip_incomplete(druid:, workflow_name:, through_version:, note: nil)
+      new(druid:).skip_incomplete(workflow_name:, through_version:, note:)
+    end
+
     def initialize(druid:)
       @druid = druid
     end
@@ -147,6 +151,21 @@ module Workflow
     # @param [String] note an optional note to add to the skip action
     def skip_all(workflow_name:, note: nil)
       steps = WorkflowStep.where(druid:, active_version: true, workflow: workflow_name)
+      WorkflowStep.transaction do
+        steps.each do |step|
+          step.update(status: 'skipped', note:)
+        end
+      end
+    end
+
+    # Skips incomplete processes in a workflow for versions up through the given version.
+    # @param [String] workflow_name the name of the workflow to skip
+    # @param [Integer] through_version skip incomplete steps with a version less than or equal to this
+    # @param [String] note an optional note to add to the skip action
+    def skip_incomplete(workflow_name:, through_version:, note: nil)
+      steps = WorkflowStep.incomplete
+                          .where(druid:, workflow: workflow_name)
+                          .where(WorkflowStep.arel_table[:version].lteq(through_version))
       WorkflowStep.transaction do
         steps.each do |step|
           step.update(status: 'skipped', note:)

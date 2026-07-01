@@ -134,6 +134,22 @@ RSpec.describe VersionService do
         expect(repository_object.opened_version.version_description).to eq 'same as it ever was'
       end
     end
+
+    context 'when there are incomplete releaseWF steps from a previous version' do
+      let!(:incomplete_release_step) do
+        create(:workflow_step, druid:, workflow: 'releaseWF', process: 'update-marc', status: 'queued', version:)
+      end
+      let!(:incomplete_accession_step) do
+        create(:workflow_step, druid:, workflow: 'accessionWF', process: 'start-accession', status: 'queued', version:)
+      end
+
+      it 'skips the incomplete releaseWF step but leaves other workflows alone' do
+        expect { open }
+          .to change { incomplete_release_step.reload.status }
+          .from('queued').to('skipped')
+          .and(not_change { incomplete_accession_step.reload.status })
+      end
+    end
   end
 
   describe '.open?' do

@@ -178,4 +178,39 @@ RSpec.describe Workflow::Service do
         .and(not_change { step_with_different_workflow.reload.status })
     end
   end
+
+  describe '#skip_incomplete' do
+    let!(:queued_step) do
+      create(:workflow_step, druid:, workflow: 'releaseWF', process: 'update-marc', status: 'queued', version: 2)
+    end
+    let!(:earlier_incomplete_step) do
+      create(:workflow_step, druid:, workflow: 'releaseWF', process: 'update-marc', status: 'started', version: 1)
+    end
+    let!(:completed_step) do
+      create(:workflow_step, :completed, druid:, workflow: 'releaseWF', process: 'release-publish', version: 2)
+    end
+    let!(:later_version_step) do
+      create(:workflow_step, druid:, workflow: 'releaseWF', process: 'update-marc', status: 'queued', version: 3)
+    end
+    let!(:step_with_different_workflow) do
+      create(:workflow_step, druid:, workflow: 'accessionWF', process: 'start-accession', status: 'queued',
+                             version: 2)
+    end
+
+    it 'skips incomplete steps in a workflow up through the given version' do
+      expect do
+        described_class.skip_incomplete(druid:, workflow_name: 'releaseWF', through_version: 2,
+                                        note: 'Skipping incomplete steps')
+      end
+        .to change { queued_step.reload.status }
+        .from('queued').to('skipped')
+        .and change(queued_step, :note)
+        .to('Skipping incomplete steps')
+        .and change { earlier_incomplete_step.reload.status }
+        .from('started').to('skipped')
+        .and(not_change { completed_step.reload.status })
+        .and(not_change { later_version_step.reload.status })
+        .and(not_change { step_with_different_workflow.reload.status })
+    end
+  end
 end
