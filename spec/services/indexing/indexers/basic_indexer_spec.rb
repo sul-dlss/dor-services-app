@@ -46,7 +46,6 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
 
       it 'makes a solr doc' do
         expect(doc).to eq(
-          'obj_label_tesim' => 'item label',
           'current_version_ipsidv' => 4,
           'current_as_of_dttsi' => '2026-04-10T12:00:00.000000Z',
           'milestones_ssim' => %w[foo bar],
@@ -65,7 +64,6 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
     context 'with no collections' do
       it 'makes a solr doc' do
         expect(doc).to eq(
-          'obj_label_tesim' => 'item label',
           'current_version_ipsidv' => 4,
           'current_as_of_dttsi' => '2026-04-10T12:00:00.000000Z',
           'milestones_ssim' => %w[foo bar],
@@ -88,7 +86,6 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
 
       it 'makes a solr doc' do
         expect(doc).to eq(
-          'obj_label_tesim' => 'item label',
           'current_version_ipsidv' => 4,
           'current_as_of_dttsi' => '2026-04-10T12:00:00.000000Z',
           'milestones_ssim' => %w[foo bar],
