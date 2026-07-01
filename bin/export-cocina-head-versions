@@ -18,7 +18,7 @@ parser = OptionParser.new do |option_parser|
                    'Directory to write output files. Default is current directory.') do |dir|
     options[:output_dir] = dir
   end
-  option_parser.on('-r', '--rotate', 'Delete all but the 2 most recent .jsonl.xz files in the output directory.')
+  option_parser.on('-r', '--rotate', 'Delete all but the 2 most recent .jsonl.zst files in the output directory.')
   option_parser.on('-h', '--help', 'Displays help.') do
     puts option_parser
     exit
@@ -45,16 +45,16 @@ def tty_progress_bar(count)
 end
 
 def compress(output_dir, env)
-  compressed_filename = "cocina-head-versions-#{env}-#{Time.zone.today.iso8601}.jsonl.xz"
+  compressed_filename = "cocina-head-versions-#{env}-#{Time.zone.today.iso8601}.jsonl.zst"
   compressed_path = File.join(output_dir, compressed_filename)
   puts "\nCompressing to #{compressed_path} ..."
-  system("cat #{File.join(output_dir, '*.jsonl')} | xz -T 4 > #{compressed_path}") || abort('Compression failed')
+  system("cat #{File.join(output_dir, '*.jsonl')} | zstd -T4 -f -o #{compressed_path}") || abort('Compression failed')
   puts "Compressed to #{compressed_path}"
   compressed_path
 end
 
 def rotate(output_dir)
-  old_files = Dir[File.join(output_dir, 'cocina-head-versions-*.jsonl.xz')]
+  old_files = Dir[File.join(output_dir, 'cocina-head-versions-*.jsonl.zst')]
               .sort_by { |f| File.mtime(f) }
               .reverse
               .drop(2)
