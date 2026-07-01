@@ -15,13 +15,12 @@ module Indexing
       end
 
       # @return [Hash] the partial solr document for basic data
-      def to_solr # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      def to_solr # rubocop:disable Metrics/AbcSize
         {}.tap do |solr_doc|
           solr_doc[:id] = cocina.externalIdentifier
           solr_doc['trace_id_ss'] = trace_id
           solr_doc['current_as_of_dttsi'] = current_as_of.utc.iso8601(6)
           solr_doc['current_version_ipsidv'] = cocina.version # Argo Facet field "Version"
-          solr_doc['obj_label_tesim'] = cocina.label
           solr_doc['purl_ss'] = Purl.for(druid: cocina.externalIdentifier) if purl?
           solr_doc['created_at_dttsi'] = created_at
           solr_doc['member_of_collection_ssim'] = collections
