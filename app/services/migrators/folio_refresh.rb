@@ -30,6 +30,10 @@ module Migrators
       'Refresh description from Folio.'
     end
 
+    def self.workflow_context
+      { 'skipReleaseWF' => true }
+    end
+
     private
 
     def refreshable_hrid
