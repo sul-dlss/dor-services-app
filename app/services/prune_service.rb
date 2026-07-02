@@ -17,11 +17,14 @@ class PruneService
   # @param [Pathname] outermost_branch The branch at which pruning begins
   # @return [void] Ascend the druid tree and prune empty branches
   def prune_ancestors(outermost_branch)
-    while outermost_branch.exist? && outermost_branch.children.empty?
+    while outermost_branch.exist?
       begin
         outermost_branch.rmdir
       rescue Errno::ENOENT
         # This handles a race condition with other pruning.
+      rescue Errno::ENOTEMPTY
+        # The directory is not empty, so we stop pruning.
+        break
       end
       outermost_branch = outermost_branch.parent
       break if outermost_branch == druid.base_pathname

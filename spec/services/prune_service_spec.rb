@@ -79,6 +79,17 @@ RSpec.describe PruneService do
       end
     end
 
+    context 'when rmdir raises Errno::ENOTEMPTY due to a race condition' do
+      it 'does not raise and stops ascending' do
+        dr1.mkdir
+        allow_any_instance_of(Pathname).to receive(:rmdir).and_raise(Errno::ENOTEMPTY) # rubocop:disable RSpec/AnyInstance
+        expect { described_class.new(druid: dr1).prune! }.not_to raise_error
+        # The leaf directory is removed via rmtree, but ancestor rmdir calls
+        # all raise ENOTEMPTY, so no ancestor directories get removed.
+        expect(File).to exist(dr1.pruning_base.parent)
+      end
+    end
+
     it 'removes all directories up to the base path when there are no common ancestors' do
       # Nil the create records for this test
       dr1.mkdir
