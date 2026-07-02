@@ -8,12 +8,13 @@ RSpec.describe Robots::DorRepo::Accession::ReleaseInitiate, type: :robot do
   let(:druid) { 'druid:zz000zz0001' }
   let(:robot) { described_class.new }
   let(:workflow_context) { {} }
+  let(:lane_id) { 'default' }
 
   before do
     allow(CocinaObjectStore).to receive(:find).with(druid).and_return(object)
     allow(Workflow::Service).to receive(:create)
     allow(robot).to receive(:workflow).and_return(instance_double(Robots::Robot::RobotWorkflow,
-                                                                  context: workflow_context))
+                                                                  context: workflow_context, lane_id:))
   end
 
   context 'when the object is an admin policy' do
@@ -54,14 +55,16 @@ RSpec.describe Robots::DorRepo::Accession::ReleaseInitiate, type: :robot do
 
       it 'creates the workflow' do
         expect(perform).to be_nil # no return state defaults to completed.
-        expect(Workflow::Service).to have_received(:create).with(druid: druid, workflow_name: 'releaseWF', version: 1)
+        expect(Workflow::Service).to have_received(:create).with(druid: druid, workflow_name: 'releaseWF', version: 1,
+                                                                 lane_id: 'default')
       end
     end
 
     context 'when workflow context does not indicate release should be skipped' do
       it 'creates the workflow' do
         expect(perform).to be_nil # no return state defaults to completed.
-        expect(Workflow::Service).to have_received(:create).with(druid: druid, workflow_name: 'releaseWF', version: 1)
+        expect(Workflow::Service).to have_received(:create).with(druid: druid, workflow_name: 'releaseWF', version: 1,
+                                                                 lane_id: 'default')
       end
     end
   end

@@ -21,7 +21,7 @@ module Robots
           end
 
           Workflow::Service.create(druid:, workflow_name: 'releaseWF',
-                                   version: cocina_object.version)
+                                   version: cocina_object.version, lane_id:)
         end
 
         def skipped?
