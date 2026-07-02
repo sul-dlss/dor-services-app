@@ -4,22 +4,24 @@ module Workflow
   # Service for interacting with workflows processes (steps).
   class ProcessService
     def self.update(druid:, workflow_name:, process:, status:, elapsed: 0, lifecycle: nil, note: nil, # rubocop:disable Metrics/ParameterLists
-                    current_status: nil, enqueue_next_steps: true)
-      new(druid:, workflow_name:, process:).update(status:, elapsed:, lifecycle:, note:, current_status:,
-                                                   enqueue_next_steps:)
+                    version: nil, current_status: nil, enqueue_next_steps: true)
+      new(druid:, workflow_name:, process:, version:).update(status:, elapsed:, lifecycle:, note:, current_status:,
+                                                             enqueue_next_steps:)
     end
 
-    def self.update_error(druid:, workflow_name:, process:, error_msg:, error_text: nil)
-      new(druid:, workflow_name:, process:).update_error(error_msg:, error_text:)
+    def self.update_error(druid:, workflow_name:, process:, error_msg:, error_text: nil, version: nil) # rubocop:disable Metrics/ParameterLists
+      new(druid:, workflow_name:, process:, version:).update_error(error_msg:, error_text:)
     end
 
     # @param [String] druid
     # @param [String] workflow_name The name of the workflow
     # @param [String] process The name of the workflow step
-    def initialize(druid:, workflow_name:, process:)
+    # @param [String] version The object version of the workflow step (nil if workflow step for latest version)
+    def initialize(druid:, workflow_name:, process:, version: nil)
       @druid = druid
       @workflow_name = workflow_name
       @process = process
+      @version = version
     end
 
     # Updates the status of one step in a workflow.
@@ -45,7 +47,7 @@ module Workflow
 
     private
 
-    attr_reader :druid, :workflow_name, :process
+    attr_reader :druid, :workflow_name, :process, :version
 
     def workflow_client
       @workflow_client ||= WorkflowClientFactory.build
@@ -71,11 +73,18 @@ module Workflow
       Workflow::NextStepService.enqueue_next_steps(step:) if enqueue_next_steps
     end
 
-    def find_step_for_process
+    def find_step_for_process # rubocop:disable Metrics/AbcSize
       query = WorkflowStep.where(druid:,
                                  workflow: workflow_name,
                                  process: process)
-                          .order(version: :desc)
+      query = if version.present?
+                query.for_version(version)
+              else
+                query.active
+              end
+      # ordering should not be necessary since we target a specific version
+      # but just in case there are multiple rows for the same version, we want the latest one
+      query = query.order(version: :desc)
       # Validate uniqueness until https://github.com/sul-dlss/workflow-server-rails/pull/40 is in place
       if query.size != query.pluck(:version).uniq.size
         raise "Duplicate workflow step for #{druid} #{workflow_name} #{process}"

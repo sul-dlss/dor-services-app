@@ -14,17 +14,18 @@ module Robots
     private
 
     def workflow
-      @workflow ||= RobotWorkflow.new(workflow_name: workflow_name, process: process, druid:)
+      @workflow ||= RobotWorkflow.new(workflow_name: workflow_name, process: process, druid:, version:)
     end
 
     # This encapsulates the workflow operations that lyber-core does.
     # This implementation uses local services instead of the dor-services-client.
     # It should have the same interface as LyberCore::Workflow.
     class RobotWorkflow
-      def initialize(workflow_name:, process:, druid:)
+      def initialize(workflow_name:, process:, druid:, version:)
         @workflow_name = workflow_name
         @process = process
         @druid = druid
+        @version = version
       end
 
       def object_workflow
@@ -46,24 +47,31 @@ module Robots
       end
 
       def start!(note)
-        Workflow::ProcessService.update(druid:, workflow_name:, process:, status: 'started', note:, elapsed: 1.0)
+        Workflow::ProcessService.update(druid:, workflow_name:, process:, status: 'started', note:, elapsed: 1.0,
+                                        version:)
       end
 
       def complete!(status, elapsed, note)
-        Workflow::ProcessService.update(druid:, workflow_name:, process:, status:, note:, elapsed:)
+        Workflow::ProcessService.update(druid:, workflow_name:, process:, status:, note:, elapsed:, version:)
       end
 
       def retrying!
-        Workflow::ProcessService.update(druid:, workflow_name:, process:, status: 'retrying', note: nil, elapsed: 1.0)
+        Workflow::ProcessService.update(druid:, workflow_name:, process:, status: 'retrying', note: nil,
+                                        elapsed: 1.0, version:)
       end
 
       def error!(error_msg, error_text)
-        Workflow::ProcessService.update_error(druid:, workflow_name:, process:, error_msg:, error_text:)
+        Workflow::ProcessService.update_error(druid:, workflow_name:, process:, error_msg:, error_text:, version:)
+      end
+
+      def skip!(note)
+        Workflow::ProcessService.update(druid:, workflow_name:, process:, status: 'skipped', note:, elapsed: 0,
+                                        version:)
       end
 
       delegate :context, :status, :lane_id, :active_version?, to: :process_response
 
-      attr_reader :workflow_name, :process, :druid
+      attr_reader :workflow_name, :process, :druid, :version
     end
   end
 end

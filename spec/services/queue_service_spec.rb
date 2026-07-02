@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe QueueService do
   let(:service) { described_class.new step }
 
-  let(:step) { create(:workflow_step, workflow: 'assemblyWF', process: 'jp2-create') }
+  let(:step) { create(:workflow_step, workflow: 'assemblyWF', process: 'jp2-create', version: 2) }
 
   describe '#enqueue' do
     before do
@@ -19,7 +19,7 @@ RSpec.describe QueueService do
         service.enqueue
         expect(ROBOT_SIDEKIQ_CLIENT).to have_received(:push).with('queue' => 'assemblyWF_jp2',
                                                                   'class' => 'Robots::DorRepo::Assembly::Jp2Create',
-                                                                  'args' => [step.druid])
+                                                                  'args' => [step.druid, step.version])
       end
     end
 
@@ -30,7 +30,7 @@ RSpec.describe QueueService do
         service.enqueue
         expect(ROBOT_SIDEKIQ_CLIENT).to have_received(:push).with('queue' => 'accessionWF_default_dsa',
                                                                   'class' => 'Robots::DorRepo::Accession::Publish',
-                                                                  'args' => [step.druid])
+                                                                  'args' => [step.druid, step.version])
       end
     end
 
@@ -41,7 +41,7 @@ RSpec.describe QueueService do
         service.enqueue
         expect(ROBOT_SIDEKIQ_CLIENT).to have_received(:push).with('queue' => 'accessionWF_default',
                                                                   'class' => 'Robots::DorRepo::Accession::TechnicalMetadata',
-                                                                  'args' => [step.druid])
+                                                                  'args' => [step.druid, step.version])
       end
     end
 
@@ -52,7 +52,7 @@ RSpec.describe QueueService do
         service.enqueue
         expect(ROBOT_SIDEKIQ_CLIENT).to have_received(:push).with('queue' => 'preservationIngestWF_default',
                                                                   'class' => 'Robots::SdrRepo::PreservationIngest::TransferObject',
-                                                                  'args' => [step.druid])
+                                                                  'args' => [step.druid, step.version])
       end
     end
 

@@ -14,12 +14,12 @@ RSpec.describe 'Update a workflow process' do
     it 'updates the status' do
       put '/v1/objects/druid:mx123qw2323/workflows/accessionWF/processes/shelve',
           headers: { 'Authorization' => "Bearer #{jwt}" },
-          params: { status: 'completed' },
+          params: { status: 'completed', version: 2 },
           as: :json
       expect(response).to have_http_status(:no_content)
       expect(Workflow::ProcessService).to have_received(:update)
         .with(druid:, workflow_name: 'accessionWF', process: 'shelve', status: 'completed', elapsed:  0,
-              lifecycle: nil, note: nil, current_status: nil)
+              lifecycle: nil, note: nil, current_status: nil, version: 2)
     end
   end
 
@@ -28,12 +28,12 @@ RSpec.describe 'Update a workflow process' do
       put '/v1/objects/druid:mx123qw2323/workflows/accessionWF/processes/shelve',
           headers: { 'Authorization' => "Bearer #{jwt}" },
           params: { status: 'completed', elapsed: 5.1, lifecycle: 'accession', note: 'Test note',
-                    current_status: 'started' },
+                    current_status: 'started', version: 2 },
           as: :json
       expect(response).to have_http_status(:no_content)
       expect(Workflow::ProcessService).to have_received(:update)
         .with(druid:, workflow_name: 'accessionWF', process: 'shelve', status: 'completed', elapsed:  5.1,
-              lifecycle: 'accession', note: 'Test note', current_status: 'started')
+              lifecycle: 'accession', note: 'Test note', current_status: 'started', version: 2)
     end
   end
 
@@ -41,12 +41,13 @@ RSpec.describe 'Update a workflow process' do
     it 'updates the status' do
       put '/v1/objects/druid:mx123qw2323/workflows/accessionWF/processes/shelve',
           headers: { 'Authorization' => "Bearer #{jwt}" },
-          params: { status: 'error', error_msg: 'Something went wrong', error_text: 'Detailed error message' },
+          params: { status: 'error', error_msg: 'Something went wrong', error_text: 'Detailed error message',
+                    version: 2 },
           as: :json
       expect(response).to have_http_status(:no_content)
       expect(Workflow::ProcessService).to have_received(:update_error)
         .with(druid:, workflow_name: 'accessionWF', process: 'shelve', error_msg: 'Something went wrong',
-              error_text: 'Detailed error message')
+              error_text: 'Detailed error message', version: 2)
     end
   end
 

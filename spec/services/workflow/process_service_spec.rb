@@ -19,7 +19,8 @@ RSpec.describe Workflow::ProcessService do
                status: 'error',
                error_msg: 'Bang!',
                error_txt: 'This is error',
-               lifecycle: 'submitted')
+               lifecycle: 'submitted',
+               active_version: true)
       end
 
       it 'clears the old error message, but preserves the lifecycle' do
@@ -38,7 +39,7 @@ RSpec.describe Workflow::ProcessService do
 
     context 'when a non-default lane_id' do
       let(:step) do
-        create(:workflow_step, lane_id: 'low')
+        create(:workflow_step, lane_id: 'low', active_version: true)
       end
 
       it 'does not change the lane_id' do
@@ -61,7 +62,7 @@ RSpec.describe Workflow::ProcessService do
     end
 
     context 'when current status does not match' do
-      let(:step) { create(:workflow_step) }
+      let(:step) { create(:workflow_step, active_version: true) }
 
       it 'raises ConflictException' do
         expect do
@@ -73,7 +74,7 @@ RSpec.describe Workflow::ProcessService do
     end
 
     context 'when current status matches' do
-      let(:step) { create(:workflow_step) }
+      let(:step) { create(:workflow_step, active_version: true) }
 
       it 'does not raise' do
         expect do
@@ -84,8 +85,10 @@ RSpec.describe Workflow::ProcessService do
     end
 
     context 'when there are multiple versions' do
-      let(:version1_step) { create(:workflow_step, status: 'error', version: 1) }
-      let(:version2_step) { create(:workflow_step, status: 'error', version: 2, druid: version1_step.druid) }
+      let(:version1_step) { create(:workflow_step, status: 'error', version: 1, active_version: false) }
+      let(:version2_step) do
+        create(:workflow_step, status: 'error', version: 2, druid: version1_step.druid, active_version: true)
+      end
 
       it 'updates the newest version' do
         expect do
@@ -98,8 +101,25 @@ RSpec.describe Workflow::ProcessService do
       end
     end
 
+    context 'when a version is given' do
+      let(:version1_step) { create(:workflow_step, status: 'queued', version: 1, active_version: false) }
+      let(:version2_step) do
+        create(:workflow_step, status: 'queued', version: 2, druid: version1_step.druid, active_version: true)
+      end
+
+      it 'updates the given version, even when it is not the active version' do
+        expect do
+          described_class.update(druid: version1_step.druid, workflow_name: version1_step.workflow,
+                                 process: version1_step.process, status: 'completed', version: 1)
+        end.to change { version1_step.reload.status }.from('queued').to('completed')
+                                                     .and not_change { version2_step.reload.status }.from('queued')
+
+        expect(Workflow::NextStepService).to have_received(:enqueue_next_steps).with(step: version1_step)
+      end
+    end
+
     context 'when enqueue_next_steps is false' do
-      let(:step) { create(:workflow_step) }
+      let(:step) { create(:workflow_step, active_version: true) }
 
       it 'does not enqueue next steps' do
         described_class.update(druid: step.druid, workflow_name: step.workflow, process: step.process,
@@ -115,7 +135,7 @@ RSpec.describe Workflow::ProcessService do
       allow(Workflow::NextStepService).to receive(:enqueue_next_steps)
     end
 
-    let(:step) { create(:workflow_step) }
+    let(:step) { create(:workflow_step, active_version: true) }
 
     it 'updates the step with error message/text' do
       expect do

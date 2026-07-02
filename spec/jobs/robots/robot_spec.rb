@@ -21,25 +21,44 @@ RSpec.describe Robots::Robot do
   end
 
   describe '#perform' do
-    let(:robot_workflow) { instance_double(Robots::Robot::RobotWorkflow, status: 'queued', start!: true, complete!: true) }
+    let(:robot_workflow) do
+      instance_double(Robots::Robot::RobotWorkflow, status: 'queued', start!: true, complete!: true,
+                                                    active_version?: true)
+    end
+    let(:cocina_object) { instance_double(Cocina::Models::DRO, version: 2) }
 
     before do
       allow(Robots::Robot::RobotWorkflow).to receive(:new).and_return(robot_workflow)
+      allow(CocinaObjectStore).to receive(:find).and_return(cocina_object)
     end
 
     it 'invokes a RobotWorkflow' do
-      robot.perform('druid:gv054hp4128')
+      robot.perform('druid:gv054hp4128', 2)
       expect(robot.send(:workflow)).to be robot_workflow
       expect(Robots::Robot::RobotWorkflow).to have_received(:new).with(workflow_name: 'testWF', process: 'test-step',
-                                                                       druid: 'druid:gv054hp4128')
+                                                                       druid: 'druid:gv054hp4128', version: 2)
       expect(robot_workflow).to have_received(:start!).with(Socket.gethostname)
       expect(robot_workflow).to have_received(:complete!).with('completed', Float, Socket.gethostname)
+    end
+
+    context 'when the given version is not active' do
+      before do
+        allow(robot_workflow).to receive_messages(active_version?: false, skip!: true)
+      end
+
+      it 'skips the job without performing the work' do
+        robot.perform('druid:gv054hp4128', 1)
+        expect(robot_workflow).to have_received(:skip!)
+          .with(/queued for version 1 of test-step \(testWF\), but that is not the active version/)
+        expect(robot_workflow).not_to have_received(:start!)
+        expect(robot_workflow).not_to have_received(:complete!)
+      end
     end
   end
 
   describe Robots::Robot::RobotWorkflow do
     subject(:workflow) do
-      described_class.new(workflow_name: 'testWF', process: 'test-step', druid: 'druid:gv054hp4128')
+      described_class.new(workflow_name: 'testWF', process: 'test-step', druid: 'druid:gv054hp4128', version: 3)
     end
 
     let(:workflow_response) { instance_double(Workflow::WorkflowResponse, process_for_recent_version: process_response) }
@@ -85,7 +104,7 @@ RSpec.describe Robots::Robot do
         workflow.start!('Starting workflow')
         expect(Workflow::ProcessService).to have_received(:update)
           .with(druid: 'druid:gv054hp4128', workflow_name: 'testWF',
-                process: 'test-step', status: 'started', note: 'Starting workflow', elapsed: 1.0)
+                process: 'test-step', status: 'started', note: 'Starting workflow', elapsed: 1.0, version: 3)
       end
     end
 
@@ -94,7 +113,8 @@ RSpec.describe Robots::Robot do
         workflow.complete!('completed', 1.0, 'Workflow completed successfully')
         expect(Workflow::ProcessService).to have_received(:update)
           .with(druid: 'druid:gv054hp4128', workflow_name: 'testWF',
-                process: 'test-step', status: 'completed', note: 'Workflow completed successfully', elapsed: 1.0)
+                process: 'test-step', status: 'completed', note: 'Workflow completed successfully', elapsed: 1.0,
+                version: 3)
       end
     end
 
@@ -103,7 +123,7 @@ RSpec.describe Robots::Robot do
         workflow.retrying!
         expect(Workflow::ProcessService).to have_received(:update)
           .with(druid: 'druid:gv054hp4128', workflow_name: 'testWF',
-                process: 'test-step', status: 'retrying', note: nil, elapsed: 1.0)
+                process: 'test-step', status: 'retrying', note: nil, elapsed: 1.0, version: 3)
       end
     end
 
@@ -112,7 +132,18 @@ RSpec.describe Robots::Robot do
         workflow.error!('An error occurred', 'Detailed error information')
         expect(Workflow::ProcessService).to have_received(:update_error)
           .with(druid: 'druid:gv054hp4128', workflow_name: 'testWF',
-                process: 'test-step', error_msg: 'An error occurred', error_text: 'Detailed error information')
+                process: 'test-step', error_msg: 'An error occurred', error_text: 'Detailed error information',
+                version: 3)
+      end
+    end
+
+    describe '.skip!' do
+      it 'updates the workflow process to skipped' do
+        workflow.skip!('Superseded by a newer version')
+        expect(Workflow::ProcessService).to have_received(:update)
+          .with(druid: 'druid:gv054hp4128', workflow_name: 'testWF',
+                process: 'test-step', status: 'skipped', note: 'Superseded by a newer version', elapsed: 0,
+                version: 3)
       end
     end
 
@@ -137,6 +168,12 @@ RSpec.describe Robots::Robot do
     describe '.active_version?' do
       it 'returns the active_version? of the process response' do
         expect(workflow.active_version?).to be true
+      end
+    end
+
+    describe '.version' do
+      it 'returns the version passed to the constructor, not the process response version' do
+        expect(workflow.version).to eq(3)
       end
     end
   end
