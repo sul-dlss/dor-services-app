@@ -48,7 +48,8 @@ def compress(output_dir, env)
   compressed_filename = "cocina-head-versions-#{env}-#{Time.zone.today.iso8601}.jsonl.zst"
   compressed_path = File.join(output_dir, compressed_filename)
   puts "\nCompressing to #{compressed_path} ..."
-  system("cat #{File.join(output_dir, '*.jsonl')} | zstd -T4 -f -o #{compressed_path}") || abort('Compression failed')
+  system("cat #{File.join(output_dir, '*.jsonl')} | zstd -T4 -f --no-progress -o #{compressed_path}") ||
+    abort('Compression failed')
   puts "Compressed to #{compressed_path}"
   compressed_path
 end
