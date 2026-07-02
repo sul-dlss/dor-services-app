@@ -74,4 +74,10 @@ RSpec.describe Migrators::FolioRefresh do
       expect(described_class.migration_tag).to eq('Migration : Folio Refresh')
     end
   end
+
+  describe '.workflow_context' do
+    it 'returns the workflow context' do
+      expect(described_class.workflow_context).to eq({ 'skipReleaseWF' => true })
+    end
+  end
 end
