@@ -8,7 +8,7 @@ module Types
     include GraphQL::Types::Relay::HasNodeField
     include GraphQL::Types::Relay::HasNodesField
 
-    BASE_ALLOWED_FIELDS = %i[external_identifier cocina_version label version administrative description].freeze
+    BASE_ALLOWED_FIELDS = %i[external_identifier cocina_version version administrative description].freeze
     DRO_ALLOWED_FIELDS = BASE_ALLOWED_FIELDS + %i[content_type access identification structural geographic]
     COLLECTION_ALLOWED_FIELDS = BASE_ALLOWED_FIELDS + %i[collection_type access identification]
 
