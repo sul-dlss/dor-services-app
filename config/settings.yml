@@ -170,6 +170,7 @@ skip_workflows: -accession2WF
   -googleScannedBookWF
   -eemsAccessionWF
   -gisDiscoveryWF
+  -gisDeliveryWF
   -etdSubmitWF
   -hydrusAssemblyWF
   -disseminationWF
