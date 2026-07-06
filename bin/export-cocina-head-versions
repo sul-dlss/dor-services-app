@@ -48,14 +48,15 @@ def compress(output_dir, env)
   compressed_filename = "cocina-head-versions-#{env}-#{Time.zone.today.iso8601}.jsonl.zst"
   compressed_path = File.join(output_dir, compressed_filename)
   puts "\nCompressing to #{compressed_path} ..."
-  system("cat #{File.join(output_dir, '*.jsonl')} | zstd -T4 -f --no-progress -o #{compressed_path}") ||
+  system("cat #{File.join(output_dir,
+                          "cocina-head-versions-#{env}-*.jsonl")} | zstd -T4 -f --no-progress -o #{compressed_path}") ||
     abort('Compression failed')
   puts "Compressed to #{compressed_path}"
   compressed_path
 end
 
-def rotate(output_dir)
-  old_files = Dir[File.join(output_dir, 'cocina-head-versions-*.jsonl.zst')]
+def rotate(output_dir, env)
+  old_files = Dir[File.join(output_dir, "cocina-head-versions-#{env}-*.jsonl.zst")]
               .sort_by { |f| File.mtime(f) }
               .reverse
               .drop(2)
@@ -105,7 +106,7 @@ begin
   output_dir = options[:output_dir]
   compress(output_dir, env)
 
-  rotate(output_dir) if options[:rotate]
+  rotate(output_dir, env) if options[:rotate]
 ensure
   jsonl_paths.each do |path|
     FileUtils.rm_f(path)
