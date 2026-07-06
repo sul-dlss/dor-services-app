@@ -10,7 +10,6 @@ module Types
     field :cocina_version, String, null: false
     # Type requires a special resolver method because it is different in AR models.
     field :type, String, null: false, resolver_method: :object_type
-    field :label, String, null: false
     field :version, Int, null: false
     # Note these these are nullable.
     field :access, GraphQL::Types::JSON, fallback_value: nil
