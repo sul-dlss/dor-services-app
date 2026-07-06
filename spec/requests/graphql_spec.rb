@@ -12,7 +12,6 @@ RSpec.describe 'GraphQL' do
           externalIdentifier
           type
           cocinaVersion
-          label
           description
           geographic
         }
@@ -33,7 +32,6 @@ RSpec.describe 'GraphQL' do
       {
         content_type: 'https://cocina.sul.stanford.edu/models/book',
         cocina_version: '0.96.0',
-        label: 'Test DRO',
         description: {
           purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}",
           title: [
@@ -63,7 +61,6 @@ RSpec.describe 'GraphQL' do
               externalIdentifier: druid,
               type: 'https://cocina.sul.stanford.edu/models/book',
               cocinaVersion: cocina_version,
-              label: 'Test DRO',
               description: {
                 purl:,
                 title: [{
@@ -94,7 +91,6 @@ RSpec.describe 'GraphQL' do
               externalIdentifier: druid,
               type: 'https://cocina.sul.stanford.edu/models/collection',
               cocinaVersion: cocina_version,
-              label: 'Test Collection',
               description: {
                 purl:,
                 title: [{
@@ -125,7 +121,6 @@ RSpec.describe 'GraphQL' do
               externalIdentifier: druid,
               type: 'https://cocina.sul.stanford.edu/models/admin_policy',
               cocinaVersion: cocina_version,
-              label: 'Test Admin Policy',
               description: {
                 purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}",
                 title: [
