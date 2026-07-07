@@ -61,7 +61,7 @@ module Robots
         Workflow::ProcessService.update_error(druid:, workflow_name:, process:, error_msg:, error_text:)
       end
 
-      delegate :context, :status, :lane_id, to: :process_response
+      delegate :context, :status, :lane_id, :active_version?, to: :process_response
 
       attr_reader :workflow_name, :process, :druid
     end
