@@ -35,11 +35,12 @@ module Cocina
       end
 
       # @return [Array<Hash>] an array of event date hashes
-      def build
-        return if no_date?
+      def build # rubocop:disable Metrics/CyclomaticComplexity
+        return if no_date? || invalid_marc_date?(start_date) || invalid_marc_date?(end_date)
         return structured_open_range if open_range?
         return simple_range if simple_range?
         return structured_range if structured_range?
+
         return single_date if start_date
 
         nil
@@ -117,6 +118,12 @@ module Cocina
         return if date.blank? || date == BLANK_DATE
 
         date
+      end
+
+      def invalid_marc_date?(date)
+        return false unless date
+
+        !Cocina::Models::Validators::MarcDateValidator.validate(date)
       end
     end
   end

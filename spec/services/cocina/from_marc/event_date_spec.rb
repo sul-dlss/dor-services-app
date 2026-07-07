@@ -94,5 +94,23 @@ RSpec.describe Cocina::FromMarc::EventDate do
         expect(build).to be_nil
       end
     end
+
+    context 'when the initial date is not a valid MARC date' do
+      let(:initial_date) { '201x' }
+
+      it 'returns nothing' do
+        expect(build).to be_nil
+      end
+    end
+
+    context 'when the terminal date is not a valid MARC date' do
+      let(:date_code) { 'm' }
+      let(:initial_date) { '2017' }
+      let(:terminal_date) { '201x' }
+
+      it 'returns nothing' do
+        expect(build).to be_nil
+      end
+    end
   end
 end
