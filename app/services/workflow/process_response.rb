@@ -29,6 +29,10 @@ module Workflow
       step.druid
     end
 
+    def active_version?
+      step.active_version
+    end
+
     private
 
     attr_reader :step

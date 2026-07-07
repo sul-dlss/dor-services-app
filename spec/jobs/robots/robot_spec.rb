@@ -42,8 +42,11 @@ RSpec.describe Robots::Robot do
       described_class.new(workflow_name: 'testWF', process: 'test-step', druid: 'druid:gv054hp4128')
     end
 
-    let(:workflow_response) { instance_double(Dor::Services::Response::Workflow, process_for_recent_version: process_response) }
-    let(:process_response) { instance_double(Dor::Services::Response::Process, name: 'test-step', status: 'waiting', lane_id: 'low', context: { foo: 'bar' }) }
+    let(:workflow_response) { instance_double(Workflow::WorkflowResponse, process_for_recent_version: process_response) }
+    let(:process_response) do
+      instance_double(Workflow::ProcessResponse, name: 'test-step', status: 'waiting', lane_id: 'low',
+                                                 context: { foo: 'bar' }, active_version?: true)
+    end
 
     before do
       allow(Workflow::Service).to receive(:workflow).and_return(workflow_response)
@@ -128,6 +131,12 @@ RSpec.describe Robots::Robot do
     describe '.context' do
       it 'returns the context of the process response' do
         expect(workflow.context).to eq({ foo: 'bar' })
+      end
+    end
+
+    describe '.active_version?' do
+      it 'returns the active_version? of the process response' do
+        expect(workflow.active_version?).to be true
       end
     end
   end

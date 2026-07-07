@@ -26,6 +26,7 @@ RSpec.describe Notifications::WorkflowStepUpdated do
         context: nil,
         status: 'completed',
         name: 'end-accession',
+        activeVersion: false,
         action: 'workflow updated',
         druid: step.druid
       }.to_json

@@ -179,6 +179,7 @@ RSpec.describe Workflow::WorkflowResponse do
         expect(process).to be_a Workflow::ProcessResponse
         expect(process.status).to eq 'completed'
         expect(process.name).to eq 'jp2-create'
+        expect(process.active_version?).to be false
       end
     end
 
@@ -187,7 +188,8 @@ RSpec.describe Workflow::WorkflowResponse do
         [
           build(:workflow_step, :completed, druid:, workflow: workflow_name, process: 'start-assembly', version: 1),
           build(:workflow_step, :completed, druid:, workflow: workflow_name, process: 'jp2-create', version: 1),
-          build(:workflow_step, :error, druid:, workflow: workflow_name, process: 'jp2-create', version: 2)
+          build(:workflow_step, :error, druid:, workflow: workflow_name, process: 'jp2-create', version: 2,
+                                        active_version: true)
         ]
       end
 
@@ -196,6 +198,7 @@ RSpec.describe Workflow::WorkflowResponse do
         expect(process.status).to eq 'error'
         expect(process.error_message).to eq 'Something went wrong'
         expect(process.name).to eq 'jp2-create'
+        expect(process.active_version?).to be true
       end
     end
   end

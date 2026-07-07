@@ -192,8 +192,17 @@ RSpec.describe WorkflowStep do
         attempts: 0,
         datetime: String,
         status: 'waiting',
-        name: 'start-accession'
+        name: 'start-accession',
+        activeVersion: false
       )
+    end
+
+    context 'when active_version is true' do
+      before { step.active_version = true }
+
+      it 'includes the active version value' do
+        expect(step.attributes_for_process).to include(activeVersion: true)
+      end
     end
   end
 end

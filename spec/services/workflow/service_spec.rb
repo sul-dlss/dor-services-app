@@ -30,11 +30,11 @@ RSpec.describe Workflow::Service do
         <?xml version="1.0"?>
         <workflows objectId="druid:bb033gt0615">
           <workflow id="accessionWF" objectId="druid:bb033gt0615">
-           <process version="2" note="" lifecycle="" laneId="default" elapsed="" attempts="0" datetime="2025-07-22T21:35:36+00:00" context="{&quot;requireOCR&quot;:true,&quot;requireTranscript&quot;:true}" status="waiting" name="start-accession"/>
-           <process version="1" note="" lifecycle="" laneId="default" elapsed="" attempts="0" datetime="2025-07-22T21:35:36+00:00" context="{&quot;requireOCR&quot;:true,&quot;requireTranscript&quot;:true}" status="waiting" name="start-accession"/>
+           <process version="2" note="" lifecycle="" laneId="default" elapsed="" attempts="0" datetime="2025-07-22T21:35:36+00:00" context="{&quot;requireOCR&quot;:true,&quot;requireTranscript&quot;:true}" status="waiting" name="start-accession" activeVersion="false"/>
+           <process version="1" note="" lifecycle="" laneId="default" elapsed="" attempts="0" datetime="2025-07-22T21:35:36+00:00" context="{&quot;requireOCR&quot;:true,&quot;requireTranscript&quot;:true}" status="waiting" name="start-accession" activeVersion="false"/>
          </workflow>
          <workflow id="wasCrawlPreassemblyWF" objectId="druid:bb033gt0615">
-           <process version="1" note="" lifecycle="" laneId="default" elapsed="" attempts="0" datetime="2025-07-22T21:35:36+00:00" context="{&quot;requireOCR&quot;:true,&quot;requireTranscript&quot;:true}" status="waiting" name="start"/>
+           <process version="1" note="" lifecycle="" laneId="default" elapsed="" attempts="0" datetime="2025-07-22T21:35:36+00:00" context="{&quot;requireOCR&quot;:true,&quot;requireTranscript&quot;:true}" status="waiting" name="start" activeVersion="false"/>
          </workflow>
         </workflows>
       XML
