@@ -1000,8 +1000,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/DRO"
-                $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/DROWithMetadata"
+                oneOf:
+                  - $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/DRO"
+                  - $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/DROWithMetadata"
         "400":
           description: The version exists but there is no record of the cocina data.
           content:
@@ -1141,8 +1142,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/DRO"
-                $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/DROWithMetadata"
+                oneOf:
+                  - $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/DRO"
+                  - $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/DROWithMetadata"
         "404":
           description: Not found
           content:
@@ -1169,50 +1171,6 @@ paths:
           schema:
             type: integer
     patch:
-      tags:
-        - versions
-      summary: Update a user version for this object
-      operationId: "user_versions#update"
-      responses:
-        "200":
-          description: Updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserVersion"
-        "422":
-          description: Unprocessable content
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      parameters:
-        - name: object_id
-          in: path
-          description: ID of object
-          required: true
-          schema:
-            $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/Druid"
-        - name: id
-          in: path
-          description: ID of the user version
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        description: user version to update
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                version:
-                  description: the number of the object version
-                  type: integer
-                withdrawn:
-                  description: whether the version is withdrawn
-                  type: boolean
-    put:
       tags:
         - versions
       summary: Update a user version for this object
