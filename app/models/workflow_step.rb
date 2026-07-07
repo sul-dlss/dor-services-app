@@ -87,7 +87,8 @@ class WorkflowStep < WorkflowApplicationRecord
       # context (which is deserialized as a hash by activerecord) as json so it can be deserialized by client
       context: context&.to_json,
       status:,
-      name: process
+      name: process,
+      activeVersion: active_version
     }.tap do |attr|
       attr[:errorMessage] = error_msg if error_msg
     end
