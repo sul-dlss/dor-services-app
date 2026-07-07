@@ -35,13 +35,12 @@ module Cocina
       end
 
       # @return [Array<Hash>] an array of event date hashes
-      def build # rubocop:disable Metrics/CyclomaticComplexity
-        return if no_date? || invalid_marc_date?(start_date) || invalid_marc_date?(end_date)
+      def build
+        return if no_date?
         return structured_open_range if open_range?
         return simple_range if simple_range?
         return structured_range if structured_range?
-
-        return single_date if start_date
+        return single_date if start_valid?
 
         nil
       end
@@ -54,8 +53,16 @@ module Cocina
         date_code == 'n'
       end
 
+      def start_valid?
+        valid_marc_date?(start_date)
+      end
+
+      def end_valid?
+        valid_marc_date?(end_date)
+      end
+
       def open_range?
-        start_date && [OPEN_ENDED_DATE, UNKNOWN_DATE].include?(end_date)
+        start_valid? && [OPEN_ENDED_DATE, UNKNOWN_DATE].include?(end_date)
       end
 
       def simple_range?
@@ -77,7 +84,10 @@ module Cocina
       end
 
       def simple_range
-        return single_date unless end_date
+        return unless start_valid? || end_valid?
+
+        return single_date unless end_valid?
+        return [date_hash(end_date)] unless start_valid?
 
         [date_hash(start_date), date_hash(end_date)]
       end
@@ -95,13 +105,36 @@ module Cocina
       end
 
       def structured_range
-        return unless start_date && end_date
+        return if start_date.nil? || end_date.nil?
 
+        if start_valid? && end_valid?
+          full_structured_range
+        elsif start_valid?
+          partial_structured_range(start_date, 'start')
+        elsif end_valid?
+          partial_structured_range(end_date, 'end')
+        end
+      end
+
+      def full_structured_range
         [
           {
             structuredValue: [
               { value: start_date, type: 'start' },
               { value: end_date, type: 'end' }
+            ],
+            type:,
+            qualifier:,
+            encoding: { code: 'marc' }
+          }.compact
+        ]
+      end
+
+      def partial_structured_range(value, value_type)
+        [
+          {
+            structuredValue: [
+              { value:, type: value_type }
             ],
             type:,
             qualifier:,
@@ -120,10 +153,10 @@ module Cocina
         date
       end
 
-      def invalid_marc_date?(date)
+      def valid_marc_date?(date)
         return false unless date
 
-        !Cocina::Models::Validators::MarcDateValidator.validate(date)
+        Cocina::Models::Validators::MarcDateValidator.validate(date)
       end
     end
   end
