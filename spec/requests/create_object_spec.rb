@@ -30,13 +30,12 @@ RSpec.describe 'Create object' do
   end
 
   context 'when a DRO is provided' do
-    let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
-    let(:expected_label) { label }
+    let(:expected_title) { title }
     let(:expected_structural) { {} }
     let(:view) { 'world' }
     let(:expected) do
-      build(:dro, id: druid, label: expected_label, title:, type: Cocina::Models::ObjectType.image, admin_policy_id:)
+      build(:dro, id: druid, title: expected_title, type: Cocina::Models::ObjectType.image, admin_policy_id:)
         .new(
           identification: expected_identification,
           structural: expected_structural,
@@ -54,7 +53,7 @@ RSpec.describe 'Create object' do
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.image}",
-          "label":"#{label}","version":1,
+          "label":"","version":1,
           "access":{
             "view":"#{view}",
             "download":"none",
@@ -62,7 +61,7 @@ RSpec.describe 'Create object' do
             "useAndReproductionStatement":"Property rights reside with the repository..."
           },
           "administrative":{"hasAdminPolicy":"#{admin_policy_id}","partOfProject":"Google Books"},
-          "description":{"title":[{"value":"#{title}"}]},
+          "description":{"title":[{"value":"#{expected_title}"}]},
           "identification":#{identification.to_json},
           "structural":#{structural.to_json}}
       JSON
@@ -149,9 +148,10 @@ RSpec.describe 'Create object' do
 
       context 'when using MARC and the save is successful' do
         let(:expected) do
-          build(:dro, id: druid, label: expected_label, title:, type: Cocina::Models::ObjectType.image,
+          build(:dro, id: druid, title: expected_title, type: Cocina::Models::ObjectType.image,
                       admin_policy_id:)
             .new(
+              label: expected_title,
               identification: expected_identification,
               structural: expected_structural,
               access: {
@@ -287,7 +287,7 @@ RSpec.describe 'Create object' do
 
           item = CocinaObjectStore.find(druid)
           # Metadata persisted correctly.
-          expect(item.label).to eq(expected_label)
+          expect(item.description.title.first.value).to eq(expected_title)
           expect(item.type).to eq('https://cocina.sul.stanford.edu/models/image')
           expect(item.identification.barcode).to eq('36105036289127')
         end
@@ -709,7 +709,7 @@ RSpec.describe 'Create object' do
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
             "type":"#{Cocina::Models::ObjectType.image}",
-            "label":"#{label}","version":1,
+            "label":"","version":1,
             "administrative":{"hasAdminPolicy":"#{admin_policy_id}","partOfProject":"Google Books"},
             "description":{"title":[{"value":"#{title}"}]},
             "identification":#{identification.to_json},
@@ -735,11 +735,10 @@ RSpec.describe 'Create object' do
   end
 
   context 'when a book is provided' do
-    let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
-    let(:expected_label) { label }
+    let(:expected_title) { title }
     let(:expected) do
-      build(:dro, id: druid, title:, label: expected_label, admin_policy_id:,
+      build(:dro, id: druid, title: expected_title, admin_policy_id:,
                   type: Cocina::Models::ObjectType.book).new(
                     identification: { sourceId: 'googlebooks:999999' },
                     structural: {
@@ -758,9 +757,9 @@ RSpec.describe 'Create object' do
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.book}",
-          "label":"#{label}","version":1,"access":{"view":"world","download":"world"},
+          "label":"","version":1,"access":{"view":"world","download":"world"},
           "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
-          "description":{"title":[{"value":"#{title}"}]},
+          "description":{"title":[{"value":"#{expected_title}"}]},
           "identification":{"sourceId":"googlebooks:999999"},
           "structural":{"hasMemberOrders":[{"viewingDirection":"right-to-left"}]}}
       JSON
@@ -995,7 +994,7 @@ RSpec.describe 'Create object' do
 
   context 'when no-download access is specified' do
     let(:expected) do
-      build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my title',
+      build(:dro, id: 'druid:gg777gg7777', title: 'This is my title',
                   type: Cocina::Models::ObjectType.book, admin_policy_id:).new(
                     structural: {
                       hasMemberOrders: [
@@ -1014,7 +1013,7 @@ RSpec.describe 'Create object' do
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.book}",
-          "label":"This is my label","version":1,
+          "label":"","version":1,
           "access":{"view":"world","download":"none"},
           "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
           "description":{"title":[{"value":"This is my title"}]},
@@ -1043,8 +1042,8 @@ RSpec.describe 'Create object' do
   context 'when no description is provided (registration use case)' do
     context 'when structural is provided' do
       let(:expected) do
-        build(:dro, id: 'druid:gg777gg7777', admin_policy_id:, label: 'This is my label',
-                    title: 'This is my label').new(
+        build(:dro, id: 'druid:gg777gg7777', admin_policy_id:,
+                    title: 'This is my title').new(
                       identification: { sourceId: 'googlebooks:999999' }
                     )
       end
@@ -1053,9 +1052,10 @@ RSpec.describe 'Create object' do
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
             "type":"#{Cocina::Models::ObjectType.object}",
-            "label":"This is my label","version":1,"access":{},
+            "label":"","version":1,"access":{},
             "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
             "identification":{"sourceId":"googlebooks:999999"},
+            "description":{"title":[{"value":"This is my title"}]},
             "structural":{}}
         JSON
       end
@@ -1078,7 +1078,7 @@ RSpec.describe 'Create object' do
 
     context 'when structural is not provided' do
       let(:expected) do
-        build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my label',
+        build(:dro, id: 'druid:gg777gg7777', title: 'This is my title',
                     admin_policy_id:).new(
                       identification: { sourceId: 'googlebooks:999999' }
                     )
@@ -1088,9 +1088,10 @@ RSpec.describe 'Create object' do
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
             "type":"#{Cocina::Models::ObjectType.object}",
-            "label":"This is my label","version":1,"access":{},
+            "label":"","version":1,"access":{},
             "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
             "identification":{"sourceId":"googlebooks:999999"},
+            "description":{"title":[{"value":"This is my title"}]},
             "structural":{}
           }
         JSON
@@ -1114,7 +1115,7 @@ RSpec.describe 'Create object' do
 
     context 'when access is not provided' do
       let(:expected) do
-        build(:dro, id: 'druid:gg777gg7777', label: 'This is my label', title: 'This is my label',
+        build(:dro, id: 'druid:gg777gg7777', title: 'This is my title',
                     admin_policy_id:).new(
                       identification: { sourceId: 'googlebooks:999999' }
                     )
@@ -1125,10 +1126,11 @@ RSpec.describe 'Create object' do
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
             "type":"#{Cocina::Models::ObjectType.object}",
-            "label":"This is my label","version":1,
+            "label":"","version":1,
             "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
             "access":{},
             "identification":{"sourceId":"googlebooks:999999"},
+            "description":{"title":[{"value":"This is my title"}]},
             "structural":{}}
         JSON
       end

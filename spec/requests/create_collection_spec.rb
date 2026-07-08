@@ -6,9 +6,8 @@ RSpec.describe 'Create object' do
   let(:minimal_cocina_admin_policy) do
     build(:admin_policy, id: 'druid:dd999df4567')
   end
-  let(:label) { 'This is my label' }
   let(:title) { 'This is my title' }
-  let(:expected_label) { label }
+  let(:expected_title) { title }
   let(:druid) { 'druid:gg777gg7777' }
 
   before do
@@ -19,21 +18,22 @@ RSpec.describe 'Create object' do
   end
 
   context 'when the folio instance hrid is provided and save is successful' do
-    let(:expected_label) { title } # label derived from catalog data
+    let(:expected_title) { title } # title derived from catalog data
     let(:data) do
       <<~JSON
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.collection}",
-          "label":"#{label}","version":1,"access":{"view":"world"},
+          "label":"","version":1,"access":{"view":"world"},
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
-          "description":{"title":[{"value":"#{title}"}]},
+          "description":{"title":[{"value":"#{expected_title}"}]},
           "identification":#{identification.to_json}}
       JSON
     end
 
     let(:expected) do
-      build(:collection, id: druid, label: expected_label, title:, admin_policy_id: 'druid:dd999df4567').new(
+      build(:collection, id: druid, title: expected_title, admin_policy_id: 'druid:dd999df4567').new(
+        label: expected_title,
         identification:,
         access: {
           view: 'world'
@@ -92,7 +92,7 @@ RSpec.describe 'Create object' do
 
   context 'when the folio instance hrid is not provided and save is successful' do
     let(:expected) do
-      build(:collection, id: druid, label: expected_label, title:, admin_policy_id: 'druid:dd999df4567').new(
+      build(:collection, id: druid, title: expected_title, admin_policy_id: 'druid:dd999df4567').new(
         identification: {
           sourceId: 'hydrus:collection-456'
         },
@@ -107,10 +107,10 @@ RSpec.describe 'Create object' do
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.collection}",
-          "label":"#{label}","version":1,"access":{"view":"world"},
+          "label":"","version":1,"access":{"view":"world"},
           "administrative":{"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Hydrus"},
           "identification":{"sourceId":"hydrus:collection-456"},
-          "description":{"title":[{"value":"#{title}"}]}
+          "description":{"title":[{"value":"#{expected_title}"}]}
         }
       JSON
     end
@@ -131,12 +131,12 @@ RSpec.describe 'Create object' do
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.collection}",
-          "label":"#{label}",
+          "label":"",
           "version":1,
           "access":{"view":"world"},
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "description":{
-            "title":[{"value":"#{title}"}],
+            "title":[{"value":"#{expected_title}"}],
             "note":[{"value":"coll abstract","type":"abstract"}]
             },
           "identification": {"sourceId": "sulcollection:1234"}
@@ -145,12 +145,12 @@ RSpec.describe 'Create object' do
       JSON
     end
     let(:expected) do
-      build(:collection, id: druid, label: expected_label, title:, admin_policy_id: 'druid:dd999df4567').new(
+      build(:collection, id: druid, title: expected_title, admin_policy_id: 'druid:dd999df4567').new(
         access: {
           view: 'world'
         },
         description: {
-          title: [{ value: title }],
+          title: [{ value: expected_title }],
           note: [{ value: 'coll abstract', type: 'abstract' }],
           purl: Purl.for(druid:)
         }
@@ -173,16 +173,17 @@ RSpec.describe 'Create object' do
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.collection}",
-          "label":"#{label}",
+          "label":"",
           "version":1,
           "access":{ "view": "world" },
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
-          "identification":{ "sourceId": "sulcollection:1234" }
+          "identification":{ "sourceId": "sulcollection:1234" },
+          "description":{"title":[{"value":"#{expected_title}"}]}
           }
       JSON
     end
     let(:expected) do
-      build(:collection, id: druid, label: expected_label, title: expected_label,
+      build(:collection, id: druid, title: expected_title,
                          admin_policy_id: 'druid:dd999df4567').new(
                            access: {
                              view: 'world'
