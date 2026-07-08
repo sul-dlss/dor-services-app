@@ -49,6 +49,9 @@ RSpec.describe Indexing::Indexers::CompositeIndexer do
         'subject_topic_tesim' => ['word'],
         'sw_format_ssimdv' => [
           'Software/Multimedia'
+        ],
+        'format_ssimdv' => [
+          'No format specified'
         ]
       )
       # rubocop:enable Style/StringHashKeys

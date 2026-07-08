@@ -35,6 +35,7 @@ module Indexing
         'publication_year_ssidv' => :pub_year_int,
 
         # SW facets plus a friend facet
+        'format_ssimdv' => :format,
         'sw_format_ssimdv' => :sw_format,
         'mods_typeOfResource_ssimdv' => :resource_type, # MODS Resource Type facet
         'genre_ssimdv' => :genres,
@@ -102,6 +103,10 @@ module Indexing
       def display_title
         Cocina::Models::Builders::TitleBuilder.build(cocina.description.title,
                                                      catalog_links: catalog_links)
+      end
+
+      def format
+        Indexing::Builders::FormatBuilder.build(cocina.description.form)
       end
 
       def forms
