@@ -15,7 +15,7 @@ module Cocina
         @marc = marc
       end
 
-      PERIODICAL_TYPE_OF_CONTINUING_RESOURCE_CODES = [' ', 'g', 'j', 'p', 's', 't', '|'].freeze
+      PERIODICAL_TYPE_OF_CONTINUING_RESOURCE_CODES = [' ', 'g', 'j', 'p', 's', 't', '|', '\\'].freeze
 
       # @return [Array<Hash>] an array of form hashes
       def build # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength
