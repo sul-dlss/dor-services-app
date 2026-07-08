@@ -405,6 +405,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'descriptive_teiv' => all_search_text,
         'descriptive_text_nostem_i' => all_search_text,
         'sw_language_names_ssimdv' => ['English'],
+        'format_ssimdv' => ['Book'],
         'sw_format_ssimdv' => ['Book'],
         'mods_typeOfResource_ssimdv' => ['text'],
         'subject_place_ssimdv' => ['Europe'],
@@ -494,6 +495,9 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
           'additional_titles_tenim' => ['History of the Jews in the Islamic countries'],
           'display_title_ss' =>
             'Toldot ha-Yehudim be-artsot ha-Islam : ha-ʻet ha-ḥadashah-ʻad emtsaʻ ha-meʼah ha-19, Part 1',
+          'format_ssimdv' => [
+            'No format specified'
+          ],
           'sw_format_ssimdv' => [
             'Software/Multimedia'
           ]
