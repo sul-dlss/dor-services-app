@@ -917,6 +917,277 @@ RSpec.describe Cocina::FromMarc::Form do
       end
     end
 
+    context 'with periodical (Leader/07 = s and 008/21 = p)' do
+      let(:marc_hash) do
+        {
+          'leader' => '02675cas a2200517 4500',
+          'fields' => [
+            { '008' => '790220c18699999enkwr p 0 a0eng d' }
+          ]
+        }
+      end
+
+      it 'returns Periodicals genre' do
+        expect(build).to eq [
+          { value: 'text', type: 'resource type', source: { value: 'MODS resource types' } },
+          { value: 'Text', type: 'resource type', source: { value: 'LC Resource Types Scheme' } },
+          { value: 'Periodicals', type: 'genre' }
+        ]
+      end
+    end
+
+    context 'with periodical (Leader/07 = s and 008/21 = blank)' do
+      let(:marc_hash) do
+        {
+          'leader' => '02675czs a2200517 4500',
+          'fields' => [
+            { '008' => '790220c18699999enkwr   0 a0eng d' }
+          ]
+        }
+      end
+
+      it 'returns Periodicals genre' do
+        expect(build).to eq [{ value: 'Periodicals', type: 'genre' }]
+      end
+    end
+
+    context 'with periodical (Leader/07 = s and 008/21 = |)' do
+      let(:marc_hash) do
+        {
+          'leader' => '02675czs a2200517 4500',
+          'fields' => [
+            { '008' => '790220c18699999enkwr | 0 a0eng d' }
+          ]
+        }
+      end
+
+      it 'returns Periodicals genre' do
+        expect(build).to eq [{ value: 'Periodicals', type: 'genre' }]
+      end
+    end
+
+    context 'with a non-serial (Leader/07 = m and 008/21 = p)' do
+      let(:marc_hash) do
+        {
+          'leader' => '02675czm a2200517 4500',
+          'fields' => [
+            { '008' => '790220c18699999enkwr p 0 a0eng d' }
+          ]
+        }
+      end
+
+      it 'does not return Periodicals genre' do
+        expect(build).to eq []
+      end
+    end
+
+    context 'with periodical (Leader/07 = s and 008/21 = p) and Periodicals genre already present (655)' do
+      let(:marc_hash) do
+        {
+          'leader' => '02675czs a2200517 4500',
+          'fields' => [
+            { '008' => '790220c18699999enkwr p 0 a0eng d' },
+            { '655' => {
+              'ind1' => ' ', 'ind2' => '7',
+              'subfields' => [
+                { 'a' => 'Periodicals' },
+                { '2' => 'lcgft' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'does not duplicate the Periodicals genre' do
+        expect(build).to eq [{ value: 'Periodicals', type: 'genre' }]
+      end
+    end
+
+    context 'with periodical (006/00 = s and 006/04 = p)' do
+      let(:marc_hash) do
+        {
+          'leader' => '02675czm a2200517 4500',
+          'fields' => [
+            { '006' => 's   p             ' }
+          ]
+        }
+      end
+
+      it 'returns Periodicals genre' do
+        expect(build).to eq [{ value: 'Periodicals', type: 'genre' }]
+      end
+    end
+
+    context 'with repeated 006 and periodical (006/00 = s and 006/04 = p) on second occurrence' do
+      let(:marc_hash) do
+        {
+          'leader' => '02675czm a2200517 4500',
+          'fields' => [
+            { '006' => 'm                   0' },
+            { '006' => 's   p             ' }
+          ]
+        }
+      end
+
+      it 'returns Periodicals genre' do
+        expect(build).to eq [{ value: 'Periodicals', type: 'genre' }]
+      end
+    end
+
+    context 'with periodical (590 $a = MARCit brief record.)' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '590' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { 'a' => 'MARCit brief record.' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns Periodicals genre' do
+        expect(build).to eq [{ value: 'Periodicals', type: 'genre' }]
+      end
+    end
+
+    context 'with periodical (590 $a = MARCit brief record, no trailing period)' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '590' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { 'a' => 'MARCit brief record' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns Periodicals genre' do
+        expect(build).to eq [{ value: 'Periodicals', type: 'genre' }]
+      end
+    end
+
+    context 'with a non-matching 590 $a' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '590' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { 'a' => 'Some other note.' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'does not return Periodicals genre' do
+        expect(build).to eq []
+      end
+    end
+
+    context 'with periodical (590 $a = MARCit brief record.) and Periodicals genre already present (655)' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '590' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { 'a' => 'MARCit brief record.' }
+              ]
+            } },
+            { '655' => {
+              'ind1' => ' ', 'ind2' => '7',
+              'subfields' => [
+                { 'a' => 'Periodicals' },
+                { '2' => 'lcgft' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'does not duplicate the Periodicals genre' do
+        expect(build).to eq [{ value: 'Periodicals', type: 'genre' }]
+      end
+    end
+
+    context 'with newspaper (Leader/07 = s and 008/21 = n)' do
+      let(:marc_hash) do
+        {
+          'leader' => '03436cas a2200649 a 4500',
+          'fields' => [
+            { '008' => '750921c18579999nyudr ne 0 a0eng c' }
+          ]
+        }
+      end
+
+      it 'returns Newspapers genre' do
+        expect(build).to eq [
+          { value: 'text', type: 'resource type', source: { value: 'MODS resource types' } },
+          { value: 'Text', type: 'resource type', source: { value: 'LC Resource Types Scheme' } },
+          { value: 'Newspapers', type: 'genre' }
+        ]
+      end
+    end
+
+    context 'with a non-serial (Leader/07 = m and 008/21 = n)' do
+      let(:marc_hash) do
+        {
+          'leader' => '02675czm a2200517 4500',
+          'fields' => [
+            { '008' => '790220c18699999enkwr n 0 a0eng d' }
+          ]
+        }
+      end
+
+      it 'does not return Newspapers genre' do
+        expect(build).to eq []
+      end
+    end
+
+    context 'with newspaper (Leader/07 = s and 008/21 = n) and Newspapers genre already present (655)' do
+      let(:marc_hash) do
+        {
+          'leader' => '03436czs a2200649 a 4500',
+          'fields' => [
+            { '008' => '750921c18579999nyudr ne 0 a0eng c' },
+            { '655' => {
+              'ind1' => ' ', 'ind2' => '7',
+              'subfields' => [
+                { 'a' => 'Newspapers' },
+                { '2' => 'lcgft' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'does not duplicate the Newspapers genre' do
+        expect(build).to eq [{ value: 'Newspapers', type: 'genre' }]
+      end
+    end
+
+    context 'with newspaper (006/00 = s and 006/04 = n)' do
+      let(:marc_hash) do
+        {
+          'leader' => '02675czm a2200517 4500',
+          'fields' => [
+            { '006' => 's   n             ' }
+          ]
+        }
+      end
+
+      it 'returns Newspapers genre' do
+        expect(build).to eq [{ value: 'Newspapers', type: 'genre' }]
+      end
+    end
+
     context 'with dissertation note and DOI (502 + 024)' do
       # Based on in00000870077
       let(:marc_hash) do

@@ -15,6 +15,8 @@ module Cocina
         @marc = marc
       end
 
+      PERIODICAL_TYPE_OF_CONTINUING_RESOURCE_CODES = [' ', 'g', 'j', 'p', 's', 't', '|'].freeze
+
       # @return [Array<Hash>] an array of form hashes
       def build # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength
         [
@@ -38,8 +40,10 @@ module Cocina
           end,
           build_resource_types,
           build_datacite_dissertation,
-          build_dataset_genre
-        ].flatten.compact
+          build_dataset_genre,
+          build_periodical_genre,
+          build_newspaper_genre
+        ].flatten.compact.uniq
       end
 
       PHYSICAL_MEDIUM_FIELDS = {
@@ -152,6 +156,40 @@ module Cocina
         return unless marc['008'] && marc['008'].value[26] == 'a' && marc.leader[6] == 'm'
 
         { value: 'dataset', type: 'genre', source: { code: 'local' } }
+      end
+
+      def periodical?
+        periodical_leader_and_008? || periodical_006? || periodical_590?
+      end
+
+      def periodical_leader_and_008?
+        return false unless marc.leader && marc['008']
+
+        marc.leader[7] == 's' && PERIODICAL_TYPE_OF_CONTINUING_RESOURCE_CODES.include?(marc['008'].value[21])
+      end
+
+      def periodical_006?
+        marc.fields('006').any? do |field006|
+          field006.value[0] == 's' && PERIODICAL_TYPE_OF_CONTINUING_RESOURCE_CODES.include?(field006.value[4])
+        end
+      end
+
+      def periodical_590?
+        marc.fields('590').any? { |field590| field590['a']&.delete_suffix('.') == 'MARCit brief record' }
+      end
+
+      def newspaper?
+        newspaper_leader_and_008? || newspaper_006?
+      end
+
+      def newspaper_leader_and_008?
+        return false unless marc.leader && marc['008']
+
+        marc.leader[7] == 's' && marc['008'].value[21] == 'n'
+      end
+
+      def newspaper_006?
+        marc.fields('006').any? { |field006| field006.value[0] == 's' && field006.value[4] == 'n' }
       end
 
       def build_resource_types # rubocop:disable Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/AbcSize
@@ -306,6 +344,18 @@ module Cocina
           { value: 'Manuscript', type: 'resource type', source: { value: 'LC Resource Types Scheme' } },
           { value: 'Text', type: 'resource type', source: { value: 'LC Resource Types Scheme' } }
         ]
+      end
+
+      def build_periodical_genre
+        return unless periodical?
+
+        [{ value: 'Periodicals', type: 'genre' }]
+      end
+
+      def build_newspaper_genre
+        return unless newspaper?
+
+        [{ value: 'Newspapers', type: 'genre' }]
       end
 
       attr_reader :marc
