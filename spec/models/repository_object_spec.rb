@@ -263,7 +263,7 @@ RSpec.describe RepositoryObject do
       expect { repository_object.update_opened_version_from(cocina_object:) }
         .to change(repository_object.opened_version, :cocina_version).from(nil).to(Cocina::Models::VERSION)
         .and change(repository_object.opened_version, :content_type).from(nil).to(Cocina::Models::ObjectType.object)
-        .and change(repository_object.opened_version, :label).from(nil).to('factory DRO label')
+        .and change(repository_object.opened_version, :label).from(nil).to('')
         .and change(repository_object.opened_version, :access).from(nil).to(instance_of(Hash))
         .and change(repository_object.opened_version, :administrative).from(nil).to(instance_of(Hash))
         .and change(repository_object.opened_version, :description).from(nil).to(instance_of(Hash))

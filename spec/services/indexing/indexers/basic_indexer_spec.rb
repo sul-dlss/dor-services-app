@@ -8,7 +8,6 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
       :dro,
       id: 'druid:xx999xx9999',
       admin_policy_id: 'druid:vv888vv8888',
-      label: 'item label',
       version: 4
     ).new(structural:, access:)
     Cocina::Models.with_metadata(dro, 'abc123', created: DateTime.parse('Wed, 01 Jan 2020 12:00:01 GMT'),

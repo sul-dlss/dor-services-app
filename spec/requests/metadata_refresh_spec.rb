@@ -24,12 +24,12 @@ RSpec.describe 'Refresh metadata' do
     }
   end
   let(:cocina_object) do
-    build(:dro, id: druid, label: 'A new map of Africa', admin_policy_id: apo_druid).new(identification:, description:)
+    build(:dro, id: druid, admin_policy_id: apo_druid).new(identification:, description:)
   end
   let(:today) { Time.zone.today.iso8601 }
 
   let(:updated_cocina_object) do
-    build(:dro, id: druid, label: 'A new map of Africa', admin_policy_id: apo_druid).new(
+    build(:dro, id: druid, admin_policy_id: apo_druid).new(
       identification:,
       description: {
         title: [{ value: 'Paying for College' }],

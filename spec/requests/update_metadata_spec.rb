@@ -11,7 +11,6 @@ RSpec.describe 'Update object' do
   end
   let(:apo_druid) { apo.external_identifier }
   let(:modified) { DateTime.now }
-  let(:label) { 'This is my label' }
   let(:title) { 'This is my title' }
   let(:who) { 'test_user' }
   let(:current_collection_druid) { 'druid:xx888xx7777' } # the collection the item is in
@@ -31,7 +30,7 @@ RSpec.describe 'Update object' do
     Cocina::Models::DROAccess.new(view:, download:)
   end
   let(:expected) do
-    build(:dro, id: druid, label:, admin_policy_id: apo_druid, type: Cocina::Models::ObjectType.book).new(
+    build(:dro, id: druid, admin_policy_id: apo_druid, type: Cocina::Models::ObjectType.book).new(
       description:,
       identification:,
       structural:,
@@ -54,7 +53,7 @@ RSpec.describe 'Update object' do
         "cocinaVersion": "#{Cocina::Models::VERSION}",
         "externalIdentifier": "#{druid}",
         "type":"#{content_type}",
-        "label":"#{label}","version":1,
+        "label":"","version":1,
         "access":{
           "view":"#{view}",
           "download":"#{view}",
@@ -169,9 +168,8 @@ RSpec.describe 'Update object' do
       end
 
       context 'when an image is provided' do
-        let(:label) { 'This is my label' }
-        let(:expected_label) { label }
         let(:title) { 'This is my title' }
+        let(:expected_title) { title }
         let(:structural) do
           {
             isMemberOf: [current_collection_druid]
@@ -179,7 +177,7 @@ RSpec.describe 'Update object' do
         end
         let(:view) { 'world' }
         let(:expected) do
-          build(:dro, id: druid, type: Cocina::Models::ObjectType.image, label: expected_label, title:,
+          build(:dro, id: druid, type: Cocina::Models::ObjectType.image, title: expected_title,
                       admin_policy_id: 'druid:dd999df4567').new(
                         access: {
                           view:,
@@ -197,7 +195,7 @@ RSpec.describe 'Update object' do
               "cocinaVersion": "#{Cocina::Models::VERSION}",
               "externalIdentifier": "#{druid}",
               "type":"#{Cocina::Models::ObjectType.image}",
-              "label":"#{expected_label}","version":1,
+              "label":"","version":1,
               "access":{
                 "view":"#{view}",
                 "download":"world",
@@ -206,7 +204,7 @@ RSpec.describe 'Update object' do
               },
               "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
               "description":{
-                "title":[{"value":"#{title}"}],
+                "title":[{"value":"#{expected_title}"}],
                 "purl":"#{purl}"
               },
               "identification":#{identification.to_json},
@@ -226,7 +224,7 @@ RSpec.describe 'Update object' do
         end
 
         context 'when the save is successful' do
-          let(:expected_label) { 'This is a new label' }
+          let(:expected_title) { 'This is a new title' }
 
           it 'updates the object' do
             patch("/v1/objects/#{druid}",
@@ -237,25 +235,9 @@ RSpec.describe 'Update object' do
             expect(item.reload.head_version.to_cocina.to_json).to equal_cocina_model(expected)
 
             # Metadata set correctly.
-            expect(item.head_version.label).to eq(expected_label)
+            expect(item.head_version.description['title'].first['value']).to eq(expected_title)
           end
         end
-
-        # rubocop:disable Layout/LineLength
-        context 'when a really long label' do
-          let(:label) { 'Hearings before the Subcommittee on Elementary, Secondary, and Vocational Education of the Committee on Education and Labor, House of Representatives, Ninety-fifth Congress, first session, on H.R. 15, to extend for five years certain elementary, secondary, and other education programs ....' }
-          let(:truncated_label) { 'Hearings before the Subcommittee on Elementary, Secondary, and Vocational Education of the Committee on Education and Labor, House of Representatives, Ninety-fifth Congress, first session, on H.R. 15, to extend for five years certain elementary, secondar' }
-
-          it 'truncates the title' do
-            patch("/v1/objects/#{druid}",
-                  params: data,
-                  headers:)
-            expect(response).to have_http_status(:ok)
-            expect(response.body).to equal_cocina_model(Cocina::Models.build(JSON.parse(data)))
-            expect(item.reload.head_version.to_cocina.to_json).to equal_cocina_model(expected)
-          end
-        end
-        # rubocop:enable Layout/LineLength
 
         context 'when files are provided with a mix of valid and invalid identifiers' do
           let(:file1_id) { 'https://cocina.sul.stanford.edu/file/123-456-789' }
@@ -461,7 +443,7 @@ RSpec.describe 'Update object' do
                 "cocinaVersion": "#{Cocina::Models::VERSION}",
                 "externalIdentifier": "#{druid}",
                 "type":"#{Cocina::Models::ObjectType.image}",
-                "label":"#{label}","version":1,
+                "label":"","version":1,
                 "access":{
                   "view":"#{view}",
                   "download":"world",
@@ -511,7 +493,7 @@ RSpec.describe 'Update object' do
                 "cocinaVersion":"#{Cocina::Models::VERSION}",
                 "externalIdentifier": "#{druid}",
                 "type":"#{Cocina::Models::ObjectType.image}",
-                "label":"#{label}","version":1,
+                "label":"","version":1,
                 "access":{
                   "view":"#{view}",
                   "download":"world",
@@ -543,7 +525,7 @@ RSpec.describe 'Update object' do
         let(:label) { 'This is my label' }
         let(:title) { 'This is my title' }
         let(:expected) do
-          build(:dro, id: druid, type: Cocina::Models::ObjectType.book, label:, title:,
+          build(:dro, id: druid, type: Cocina::Models::ObjectType.book, title:,
                       admin_policy_id: 'druid:dd999df4567').new(
                         identification: { sourceId: 'googlebooks:999999' },
                         structural: {
@@ -561,7 +543,7 @@ RSpec.describe 'Update object' do
               "cocinaVersion": "#{Cocina::Models::VERSION}",
               "externalIdentifier": "#{druid}",
               "type":"#{Cocina::Models::ObjectType.book}",
-              "label":"#{label}","version":1,
+              "label":"","version":1,
               "access":{
                 "view":"world",
                 "download":"world"
@@ -596,7 +578,7 @@ RSpec.describe 'Update object' do
 
       context 'when an embargo is provided' do
         let(:expected) do
-          build(:dro, id: druid, label: 'This is my label', title: 'This is my title', admin_policy_id: apo_druid,
+          build(:dro, id: druid, title: 'This is my title', admin_policy_id: apo_druid,
                       type: Cocina::Models::ObjectType.book).new(
                         identification: { sourceId: 'googlebooks:999999' },
                         structural: {
@@ -622,7 +604,7 @@ RSpec.describe 'Update object' do
               "cocinaVersion": "#{Cocina::Models::VERSION}",
               "externalIdentifier": "#{druid}",
               "type":"#{Cocina::Models::ObjectType.book}",
-              "label":"This is my label","version":1,
+              "label":"","version":1,
               "access":{"view":"stanford","download":"stanford",
                 "embargo":{"view":"world","download":"world","releaseDate":"2020-02-29T07:00:00.000+00:00"}
               },
@@ -682,7 +664,7 @@ RSpec.describe 'Update object' do
               "cocinaVersion": "#{Cocina::Models::VERSION}",
               "externalIdentifier": "#{druid}",
               "type":"#{content_type}",
-              "label":"#{label}","version":1,
+              "label":"","version":1,
               "access":{
                 "view":"#{view}",
                 "download":"#{view}",
@@ -748,7 +730,7 @@ RSpec.describe 'Update object' do
               "cocinaVersion": "#{Cocina::Models::VERSION}",
               "externalIdentifier": "druid:xs123xx8388",
               "type":"#{content_type}",
-              "label":"#{label}","version":1,
+              "label":"","version":1,
               "access":{
                 "view":"#{view}",
                 "download":"#{view}",
@@ -809,10 +791,9 @@ RSpec.describe 'Update object' do
 
   context 'when a collection is provided' do
     let!(:item) { create(:repository_object, :collection, :with_repository_object_version, version: 1) }
-    let(:label) { 'This is my label' }
     let(:title) { 'This is my title' }
     let(:expected) do
-      build(:collection, id: druid, label:, title:, admin_policy_id: 'druid:dd999df4567').new(
+      build(:collection, id: druid, title:, admin_policy_id: 'druid:dd999df4567').new(
         identification:
       )
     end
@@ -830,7 +811,7 @@ RSpec.describe 'Update object' do
           "cocinaVersion": "#{Cocina::Models::VERSION}",
           "externalIdentifier": "#{druid}",
           "type":"#{Cocina::Models::ObjectType.collection}",
-          "label":"#{label}","version":1,
+          "label":"","version":1,
           "access":{},
           "identification":#{identification.to_json},
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
@@ -867,7 +848,7 @@ RSpec.describe 'Update object' do
     end
 
     let(:expected) do
-      build(:admin_policy, id: druid, label: 'This is my label', title: 'This is my title').new(
+      build(:admin_policy, id: druid, title: 'This is my title').new(
         administrative: {
           accessTemplate: default_access_expected,
           hasAdminPolicy: 'druid:dd999df4567',
@@ -908,7 +889,7 @@ RSpec.describe 'Update object' do
           "cocinaVersion": "#{Cocina::Models::VERSION}",
           "externalIdentifier": "#{druid}",
           "type":"#{Cocina::Models::ObjectType.admin_policy}",
-          "label":"This is my label",
+          "label":"",
           "version":1,
           "administrative":{
             "disseminationWorkflow":"assemblyWF",
