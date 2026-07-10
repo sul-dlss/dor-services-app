@@ -73,7 +73,7 @@ module Cocina
         field = marc['260']
         return unless field
 
-        event = EventDataFieldBuilder.build(
+        EventDataFieldBuilder.build(
           field:,
           type: 'manufacture',
           role: 'manufacturer',
@@ -82,8 +82,6 @@ module Cocina
           date_code: 'g',
           strip_date_punctuation: false
         )
-
-        event if event.except(:type).present?
       end
 
       def marc_264_events

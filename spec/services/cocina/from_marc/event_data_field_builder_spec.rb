@@ -110,11 +110,11 @@ RSpec.describe Cocina::FromMarc::EventDataFieldBuilder do
       end
     end
 
-    context 'when only the type is present' do
+    context 'when only the type would be present' do
       let(:field) { MARC::DataField.new('264', ' ', '1') }
 
-      it 'returns only the type' do
-        expect(build).to eq(type: 'publication')
+      it 'returns nil' do
+        expect(build).to be_nil
       end
     end
   end

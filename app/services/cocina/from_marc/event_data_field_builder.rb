@@ -23,12 +23,14 @@ module Cocina
       end
 
       def build
-        {
+        event = {
           type:,
           location: locations,
           contributor: contributors,
           date:
         }.compact_blank
+
+        event if event.except(:type).present?
       end
 
       private

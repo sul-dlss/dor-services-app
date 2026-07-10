@@ -102,6 +102,28 @@ RSpec.describe Cocina::FromMarc::Event do
         end
       end
 
+      context 'with a single script that has only a 260$d' do
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '260' => {
+                'ind1' => ' ',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'd' => '1831.'
+                  }
+                ]
+              } }
+            ]
+          }
+        end
+
+        it 'returns nothing' do
+          expect(build).to eq []
+        end
+      end
+
       context 'with multiple $b subfields' do
         # See a10422378
         let(:marc_hash) do
@@ -314,6 +336,46 @@ RSpec.describe Cocina::FromMarc::Event do
                                location: [{ value: '(Beograd' }],
                                contributor: [{ name: [{ value: 'BIGZ)' }], role: [{ value: 'manufacturer' }] }]
                              }]
+      end
+    end
+
+    context 'with manufacture event (260 f) and no publication subfields' do
+      let(:marc_hash) do
+        { 'fields' => [
+          { '260' =>
+            { 'ind1' => ' ',
+              'ind2' => ' ',
+              'subfields' =>
+                [{ 'f' => 'Ch. Geoffroy.' }] } }
+        ] }
+      end
+
+      it 'returns only a manufacture event' do
+        expect(build).to eq [{
+          type: 'manufacture',
+          contributor: [{ name: [{ value: 'Ch. Geoffroy.' }], role: [{ value: 'manufacturer' }] }]
+        }]
+      end
+    end
+
+    context 'with manufacture event (260 eg) and no publication subfields' do
+      let(:marc_hash) do
+        { 'fields' => [
+          { '260' =>
+            { 'ind1' => ' ',
+              'ind2' => ' ',
+              'subfields' =>
+                [{ 'e' => '[Netherlands?' },
+                 { 'g' => '1351-]' }] } }
+        ] }
+      end
+
+      it 'returns only a manufacture event with location and date' do
+        expect(build).to eq [{
+          type: 'manufacture',
+          location: [{ value: '[Netherlands?' }],
+          date: [{ value: '1351-]', type: 'manufacture' }]
+        }]
       end
     end
 
