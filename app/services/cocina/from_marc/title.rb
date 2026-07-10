@@ -89,10 +89,12 @@ module Cocina
       end
 
       def build_alternative_title(field, type:)
-        display_label = field.subfields.find { |subfield| subfield.code == 'i' }&.value
+        value = value_for(field, %w[a b f g k n p s])
+        return nil if value.blank?
+
         {
-          value: value_for(field, %w[a b f g k n p s]),
-          displayLabel: display_label,
+          value:,
+          displayLabel: Util.subfield_value(field, 'i'),
           type:
         }.compact
       end
@@ -106,30 +108,33 @@ module Cocina
       end
 
       def build_uniform_title(field)
-        {
-          value: Util.strip_punctuation(field.select do |subfield|
-            %w[a d f g i k l m n o p r s t].include? subfield.code
-          end.map(&:value).join(' ')),
-          type: 'uniform'
-        }
+        value = Util.strip_punctuation(field.select do |subfield|
+          %w[a d f g i k l m n o p r s t].include? subfield.code
+        end.map(&:value).join(' '))
+        return nil if value.blank?
+
+        { value:, type: 'uniform' }
       end
 
       def basic_title(field)
-        title = field.subfields.find { |subfield| subfield.code == 'a' }
-        title_value = Util.strip_punctuation(title.value)
-        [{ value: title_value }]
+        title_value = Util.subfield_value(field, 'a')
+        return [] if title_value.blank?
+
+        [{ value: Util.strip_punctuation(title_value) }]
       end
 
-      def structured_title(field) # rubocop:disable Metrics/AbcSize
+      def structured_title(field) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
         return unless field
 
-        title = field.subfields.find { |subfield| subfield.code == 'a' }
+        title_value = Util.subfield_value(field, 'a')
+        return [] if title_value.blank?
+
         nonsort_count = field.indicator2.to_i
         unless nonsort_count.zero?
-          non_sort = { value: Util.strip_punctuation(title.value[0..(nonsort_count - 1)]),
+          non_sort = { value: Util.strip_punctuation(title_value[0..(nonsort_count - 1)]),
                        type: 'nonsorting characters' }
         end
-        sortable = { value: Util.strip_punctuation(title.value[nonsort_count..]), type: 'main title' }
+        sortable = { value: Util.strip_punctuation(title_value[nonsort_count..]), type: 'main title' }
         subtitle_value = subtitle(field)
         subtitle_node = { value: subtitle_value, type: 'subtitle' } if subtitle_value.present?
         titles = [non_sort, sortable, subtitle_node].compact

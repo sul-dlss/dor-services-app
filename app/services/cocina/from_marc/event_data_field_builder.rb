@@ -64,7 +64,7 @@ module Cocina
       end
 
       def values_for(*codes)
-        field.subfields.filter_map { |subfield| subfield.value if codes.include?(subfield.code) }
+        field.subfields.filter_map { |subfield| subfield.value.presence if codes.include?(subfield.code) }
       end
     end
   end

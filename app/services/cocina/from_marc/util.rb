@@ -11,6 +11,16 @@ module Cocina
         value.gsub(regex, '')
       end
 
+      # Value of the first subfield with the given code, or nil if absent or blank.
+      def self.subfield_value(field, code)
+        field.subfields.find { |subfield| subfield.code == code }&.value.presence
+      end
+
+      # Values of subfields with the given codes, excluding blank values.
+      def self.subfield_values(field, codes)
+        field.subfields.filter_map { |subfield| subfield.value.presence if codes.include?(subfield.code) }
+      end
+
       # Parse a MARC 880$6
       # See https://www.loc.gov/marc/bibliographic/ecbdcntf.html
       def self.linked_field(marc, field)

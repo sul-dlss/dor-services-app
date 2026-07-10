@@ -32,12 +32,12 @@ module Cocina
       attr_reader :marc
 
       # LCC classification from 050$ab
-      def lcc_classification # rubocop:disable Metrics/AbcSize
+      def lcc_classification
         marc.fields('050').flat_map do |field|
-          subfield_a = field.subfields.find { |sf| sf.code == 'a' }&.value
-          subfield_b = field.subfields.find { |sf| sf.code == 'b' }&.value
+          subfield_a = Util.subfield_value(field, 'a')
           next unless subfield_a
 
+          subfield_b = Util.subfield_value(field, 'b')
           value = [subfield_a, subfield_b].compact.join
           { value: value, type: 'classification', source: { code: 'lcc' } }
         end.compact
@@ -48,7 +48,7 @@ module Cocina
         marc.fields('086').flat_map do |field|
           next unless field.indicator1 == '0'
 
-          subfield_a = field.subfields.find { |sf| sf.code == 'a' }&.value
+          subfield_a = Util.subfield_value(field, 'a')
           next unless subfield_a
 
           { value: subfield_a, type: 'classification', source: { code: 'sudocs' } }
@@ -58,7 +58,7 @@ module Cocina
       # Map coordinates from 255$c
       def map_coordinates
         marc.fields('255').flat_map do |field|
-          subfield_c = field.subfields.find { |sf| sf.code == 'c' }&.value
+          subfield_c = Util.subfield_value(field, 'c')
           next unless subfield_c
 
           { value: subfield_c, type: 'map coordinates' }
@@ -76,14 +76,17 @@ module Cocina
       end
 
       # Genre/form subjects from 655$xyz
-      def genre_form_subjects # rubocop:disable Metrics/CyclomaticComplexity, Metrics/AbcSize
+      def genre_form_subjects # rubocop:disable Metrics/CyclomaticComplexity
         marc.fields('655').flat_map do |field|
-          next if field['x'].blank? && field['y'].blank? && field['z'].blank?
+          subfield_x = Util.subfield_value(field, 'x')
+          subfield_y = Util.subfield_value(field, 'y')
+          subfield_z = Util.subfield_value(field, 'z')
+          next if subfield_x.blank? && subfield_y.blank? && subfield_z.blank?
 
           [].tap do |subjects|
-            subjects << { value: field['x'], type: 'topic' } if field['x']
-            subjects << { value: field['y'], type: 'time' } if field['y']
-            subjects << { value: field['z'], type: 'place' } if field['z']
+            subjects << { value: subfield_x, type: 'topic' } if subfield_x
+            subjects << { value: subfield_y, type: 'time' } if subfield_y
+            subjects << { value: subfield_z, type: 'place' } if subfield_z
           end
         end.compact
       end
@@ -99,8 +102,8 @@ module Cocina
                else 'topic'
                end
 
-        field.subfields.select { |sf| sf.code == 'a' }.map do |subfield|
-          { value: subfield.value, type: type }
+        Util.subfield_values(field, ['a']).map do |value|
+          { value: value, type: type }
         end
       end
 
@@ -194,8 +197,7 @@ module Cocina
 
       # Build 648 (Chronological term subject)
       def build_648_subject(field, return_parts: false)
-        main_subfields = field.subfields.select { |sf| %w[a e].include?(sf.code) }
-        main_value = main_subfields.map(&:value).join(' ')
+        main_value = Util.subfield_values(field, %w[a e]).join(' ')
 
         main = main_value.present? ? { value: main_value, type: 'time' } : nil
         subdivisions = build_subdivisions(field)
@@ -207,8 +209,7 @@ module Cocina
 
       # Build 650 (Topical term subject)
       def build_650_subject(field, return_parts: false)
-        main_subfields = field.subfields.select { |sf| %w[a b c d e g].include?(sf.code) }
-        main_value = main_subfields.map(&:value).join(' ')
+        main_value = Util.subfield_values(field, %w[a b c d e g]).join(' ')
 
         main = main_value.present? ? { value: main_value, type: 'topic' } : nil
         subdivisions = build_subdivisions(field)
@@ -220,8 +221,7 @@ module Cocina
 
       # Build 651 (Geographic name subject)
       def build_651_subject(field, return_parts: false)
-        main_subfields = field.subfields.select { |sf| %w[a e g].include?(sf.code) }
-        main_value = main_subfields.map(&:value).join(' ')
+        main_value = Util.subfield_values(field, %w[a e g]).join(' ')
 
         main = main_value.present? ? { value: main_value, type: 'place' } : nil
         subdivisions = build_subdivisions(field)
@@ -236,8 +236,7 @@ module Cocina
         type = determine_name_type(field, tag)
         subfield_codes = name_subfield_codes[tag]
 
-        main_subfields = field.subfields.select { |sf| subfield_codes.include?(sf.code) }
-        main_value = main_subfields.map(&:value).join(' ')
+        main_value = Util.subfield_values(field, subfield_codes).join(' ')
 
         main = main_value.present? ? { value: main_value, type: type } : nil
         subdivisions = build_subdivisions(field)
@@ -251,8 +250,7 @@ module Cocina
       def build_title_subject(field, tag, return_parts: false)
         subfield_codes = title_subfield_codes[tag]
 
-        main_subfields = field.subfields.select { |sf| subfield_codes.include?(sf.code) }
-        main_value = main_subfields.map(&:value).join(' ')
+        main_value = Util.subfield_values(field, subfield_codes).join(' ')
 
         main = main_value.present? ? { value: main_value, type: 'title' } : nil
         subdivisions = build_subdivisions(field)
@@ -292,28 +290,20 @@ module Cocina
       end
 
       # Build subdivisions (v, x, y, z)
-      def build_subdivisions(field) # rubocop:disable Metrics/PerceivedComplexity,Metrics/AbcSize,Metrics/CyclomaticComplexity
+      def build_subdivisions(field)
         results = []
 
         # Topic subdivisions ($x)
-        results += field.subfields.select { |sf| sf.code == 'x' }.map do |sf|
-          { value: sf.value, type: 'topic' }
-        end
+        results += Util.subfield_values(field, ['x']).map { |value| { value: value, type: 'topic' } }
 
         # Time subdivisions ($y)
-        results += field.subfields.select { |sf| sf.code == 'y' }.map do |sf|
-          { value: sf.value, type: 'time' }
-        end
+        results += Util.subfield_values(field, ['y']).map { |value| { value: value, type: 'time' } }
 
         # Place subdivisions ($z)
-        results += field.subfields.select { |sf| sf.code == 'z' }.map do |sf|
-          { value: sf.value, type: 'place' }
-        end
+        results += Util.subfield_values(field, ['z']).map { |value| { value: value, type: 'place' } }
 
         # Form subdivisions ($v)
-        results += field.subfields.select { |sf| sf.code == 'v' }.map do |sf|
-          { value: sf.value, type: 'genre' }
-        end
+        results += Util.subfield_values(field, ['v']).map { |value| { value: value, type: 'genre' } }
 
         results
       end

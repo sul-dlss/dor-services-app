@@ -1351,5 +1351,45 @@ RSpec.describe Cocina::FromMarc::Subject do
         ]
       end
     end
+
+    context 'with an LCC subject where the subfield has no value (050$a is blank)' do
+      # See druid:tg738bw7717 for #6232
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '050' => {
+              'ind1' => ' ', 'ind2' => '4',
+              'subfields' => [
+                { 'a' => '' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'does not map a subject' do
+        expect(build).to eq []
+      end
+    end
+
+    context 'with a topical subject where the subdivision subfield has no value (650$x is blank)' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '650' => {
+              'ind1' => ' ', 'ind2' => '0',
+              'subfields' => [
+                { 'a' => 'Birds' },
+                { 'x' => '' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'does not map the blank subdivision' do
+        expect(build).to eq [{ value: 'Birds', type: 'topic' }]
+      end
+    end
   end
 end

@@ -30,7 +30,7 @@ module Cocina
       private
 
       def personal(field, primary: false)
-        return if !field || field['t']
+        return if !field || field['t'].present?
 
         linked_field = Util.linked_field(marc, field)
 
@@ -48,7 +48,7 @@ module Cocina
                       'family'
                     end
         contributor = { type: name_type }.compact
-        contributor[:name] = [build_personal_name(field)]
+        contributor[:name] = [build_personal_name(field)].compact
         contributor[:role] = build_roles(field)
         id = build_id(field).first
         contributor[:identifier] = [{ uri: id, type: 'ORCID' }.compact_blank] if id&.start_with? 'https://orcid.org/'
@@ -59,10 +59,8 @@ module Cocina
       def build_personal_name(field)
         return unless field
 
-        name = Util.strip_punctuation(field.subfields.select do |subfield|
-          %w[a b c j q d].include? subfield.code
-        end.map(&:value).join(' '))
-        { value: name }
+        name = Util.strip_punctuation(Util.subfield_values(field, %w[a b c j q d]).join(' '))
+        { value: name } if name.present?
       end
 
       def build_id(field)
@@ -75,8 +73,12 @@ module Cocina
                                     { value: MARC_RELATORS[normalize_role_code(role.value)] }.compact_blank
                                   end
 
-        (field.subfields.select { |sf| sf.code == code }.map { |role| { value: role.value.sub(/\.|,$/, '') } } +
-          expanded).uniq.compact_blank
+        primary = field.subfields.select { |sf| sf.code == code }.filter_map do |role|
+          value = role.value.sub(/\.|,$/, '').presence
+          { value: } if value
+        end
+
+        (primary + expanded).uniq.compact_blank
       end
 
       def normalize_role_code(value)
@@ -85,7 +87,7 @@ module Cocina
 
       # For 110/710
       def corporate(field, primary: false)
-        return if !field || field['t']
+        return if !field || field['t'].present?
 
         linked_field = Util.linked_field(marc, field)
 
@@ -95,12 +97,10 @@ module Cocina
       end
 
       # For 110/710
-      def build_corporate(field, primary: false) # rubocop:disable Metrics/AbcSize
+      def build_corporate(field, primary: false)
         contributor = { type: 'organization' }
-        name = field.subfields.filter_map do |subfield|
-          subfield.value.delete_suffix(',') if %w[a b c d n].include? subfield.code
-        end.join(' ')
-        contributor[:name] = [{ value: name }]
+        name = Util.subfield_values(field, %w[a b c d n]).map { |value| value.delete_suffix(',') }.join(' ')
+        contributor[:name] = [{ value: name }] if name.present?
         id = build_id(field).first
         contributor[:identifier] = [{ uri: id }] if id
         roles = build_roles(field)
@@ -111,7 +111,7 @@ module Cocina
 
       # For 111/711
       def event(field, primary: false)
-        return if !field || field['t']
+        return if !field || field['t'].present?
 
         linked_field = Util.linked_field(marc, field)
 
@@ -123,10 +123,8 @@ module Cocina
       # For 111/711
       def build_event(field, primary: false)
         contributor = { type: 'event' }
-        name = field.subfields.select do |subfield|
-          %w[a c d e n q].include? subfield.code
-        end.map(&:value).join(' ').delete_suffix(',')
-        contributor[:name] = [{ value: name }]
+        name = Util.subfield_values(field, %w[a c d e n q]).join(' ').delete_suffix(',')
+        contributor[:name] = [{ value: name }] if name.present?
         roles = build_roles(field, code: 'j')
         contributor[:role] = roles if roles.present?
         contributor[:status] = 'primary' if primary
