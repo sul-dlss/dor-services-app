@@ -33,26 +33,11 @@ module Catalog
                    .then { |instance_hash| InstanceMarcBuilder.build(instance_hash:) }
       end
 
-      update_marc_cache!(marc_record:)
-
       marc_record.to_hash
     end
 
     private
 
     attr_reader :barcode, :create_marc_if_missing, :folio_instance_hrid
-
-    def update_marc_cache!(marc_record:)
-      return if marc_record.nil?
-
-      # Cache the MARC, so that we can use it for creating the Argo index without having to fetch it again.
-      MarcCacheEntry.upsert( # rubocop:disable Rails/SkipsModelValidations
-        {
-          folio_hrid: folio_instance_hrid,
-          marc_data: marc_record.to_json_string
-        },
-        unique_by: :index_marc_cache_entries_on_folio_hrid
-      )
-    end
   end
 end

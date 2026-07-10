@@ -406,7 +406,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'descriptive_text_nostem_i' => all_search_text,
         'sw_language_names_ssimdv' => ['English'],
         'format_ssimdv' => ['Book'],
-        'sw_format_ssimdv' => ['Book'],
         'mods_typeOfResource_ssimdv' => ['text'],
         'subject_place_ssimdv' => ['Europe'],
         'genre_ssimdv' => ['Photographs'],
@@ -497,9 +496,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
             'Toldot ha-Yehudim be-artsot ha-Islam : ha-ʻet ha-ḥadashah-ʻad emtsaʻ ha-meʼah ha-19, Part 1',
           'format_ssimdv' => [
             'No format specified'
-          ],
-          'sw_format_ssimdv' => [
-            'Software/Multimedia'
           ]
         )
         # rubocop:enable Style/StringHashKeys
