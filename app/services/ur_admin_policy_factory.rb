@@ -4,11 +4,10 @@
 class UrAdminPolicyFactory
   # If an object references the Ur-AdminPolicy, it has to exist first.
   # This is particularly important in testing, where the repository may be empty.
-  def self.create # rubocop:disable Metrics/AbcSize
+  def self.create
     admin_policy_cocina = Cocina::Models::AdminPolicy.new(
       type: Cocina::Models::ObjectType.admin_policy,
       externalIdentifier: Settings.ur_admin_policy.druid,
-      label: Settings.ur_admin_policy.label,
       version: 1,
       administrative: {
         hasAdminPolicy: Settings.ur_admin_policy.druid,
@@ -19,7 +18,7 @@ class UrAdminPolicyFactory
         }
       },
       description: {
-        title: [{ value: 'Test Admin Policy' }],
+        title: [{ value: 'Ur Admin Policy' }],
         purl: Purl.for(druid: Settings.ur_admin_policy.druid)
       }
     )
