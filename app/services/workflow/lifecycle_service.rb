@@ -44,7 +44,7 @@ module Workflow
     # @param [String] milestone_name the name of the milestone
     # @return [Boolean] true if the object has the milestone
     def milestone?(milestone_name:)
-      workflow_steps.any? { |step| step.lifecycle == milestone_name }
+      workflow_steps.exists?(lifecycle: milestone_name)
     end
 
     # @return [Array<Hash>]
