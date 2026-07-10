@@ -10,7 +10,6 @@ RSpec.describe RegistrationCsvConverter do
       {
         cocinaVersion: Cocina::Models::VERSION,
         type: Cocina::Models::ObjectType.book,
-        label: 'My new object',
         version: 1,
         access: { view: 'world', download: 'world', controlledDigitalLending: false },
         administrative: { hasAdminPolicy: 'druid:bc123df4567' },
@@ -23,9 +22,9 @@ RSpec.describe RegistrationCsvConverter do
   context 'when all values provided in CSV' do
     let(:csv_string) do
       <<~CSV
-        administrative_policy_object,collection,initial_workflow,content_type,source_id,label,rights_view,rights_download,tags,tags
-        druid:bc123df4567,druid:bk024qs1808,accessionWF,book,foo:123,My new object,world,world,csv : test,Project : two
-        xdruid:dj123qx4567,druid:bk024qs1808,accessionWF,book,foo:123,A label,world,world
+        administrative_policy_object,collection,initial_workflow,content_type,source_id,rights_view,rights_download,tags,tags
+        druid:bc123df4567,druid:bk024qs1808,accessionWF,book,foo:123,world,world,csv : test,Project : two
+        xdruid:dj123qx4567,druid:bk024qs1808,accessionWF,book,foo:123,world,world
       CSV
     end
 

@@ -38,14 +38,13 @@ class RegistrationCsvConverter
   #   5: source_id (required)
   #   6: catkey or folio_id (optional)
   #   7: barcode (optional)
-  #   8: label (required unless a catkey or folio_id have been entered)
-  #   9: rights_view (required)
-  #  10: rights_download (required)
-  #  11: rights_location (required if "view" or "download" uses "location-based")
-  #  12: rights_controlledDigitalLending (optional: "true" is valid only when "view" is "stanford" and "download"
+  #   8: rights_view (required)
+  #   9: rights_download (required)
+  #  10: rights_location (required if "view" or "download" uses "location-based")
+  #  11: rights_controlledDigitalLending (optional: "true" is valid only when "view" is "stanford" and "download"
   #   is "none")
-  #  13: project_name (optional)
-  #  14: tags (optional, may repeat)
+  #  12: project_name (optional)
+  #  13: tags (optional, may repeat)
 
   def convert
     CSV.parse(csv_string, headers: true).map { |row| { druid: row['druid'], cocina_request_object: convert_row(row) } }
@@ -64,7 +63,6 @@ class RegistrationCsvConverter
     model_params = {
       type: dro_type(row.fetch('content_type')),
       version: 1,
-      label: row['label'],
       administrative: {
         hasAdminPolicy: row.fetch('administrative_policy_object')
       },
