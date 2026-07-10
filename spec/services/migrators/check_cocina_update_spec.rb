@@ -8,7 +8,11 @@ RSpec.describe Migrators::CheckCocinaUpdate do
                         head_version: false)
   end
 
-  let(:model_hash) { { 'label' => 'Original label' } }
+  let(:model_hash) do
+    {
+      'description' => { 'title' => [{ 'value' => 'Original title' }] }
+    }
+  end
 
   describe '.migration_strategy' do
     it 'returns cocina_update' do
@@ -29,10 +33,10 @@ RSpec.describe Migrators::CheckCocinaUpdate do
   end
 
   describe '#migrate' do
-    it 'returns the mutated model hash with label set to Test' do
+    it 'returns the mutated model hash with the title set to Test' do
       result = migrator.migrate
       expect(result).to eq model_hash
-      expect(result['label']).to eq 'Test'
+      expect(result.dig('description', 'title', 0, 'value')).to eq 'Test'
     end
   end
 end

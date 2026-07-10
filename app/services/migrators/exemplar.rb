@@ -10,10 +10,9 @@ module Migrators
       'druid:bb086gc7372'
     ].freeze
 
-    def migrate # rubocop:disable Metrics/AbcSize
+    def migrate
       return model_hash unless TEST_DRUIDS.include?(model_hash['externalIdentifier'])
 
-      model_hash['label'] = mark_migrated(model_hash['label'])
       title = model_hash.dig('description', 'title', 0, 'value')
       model_hash['description']['title'].first['value'] = mark_migrated(title) if title.present?
       model_hash
@@ -21,8 +20,8 @@ module Migrators
 
     private
 
-    def mark_migrated(label)
-      "#{label.gsub(/ - migrated .+$/, '')} - migrated #{Time.now.utc.iso8601}"
+    def mark_migrated(value)
+      "#{value.gsub(/ - migrated .+$/, '')} - migrated #{Time.now.utc.iso8601}"
     end
   end
 end

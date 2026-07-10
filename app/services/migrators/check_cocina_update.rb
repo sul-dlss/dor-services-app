@@ -5,7 +5,7 @@ module Migrators
   class CheckCocinaUpdate < Base
     def migrate
       # This changes every object.
-      model_hash['label'] = 'Test'
+      model_hash['description']['title'].first['value'] = 'Test'
       model_hash
     end
 
