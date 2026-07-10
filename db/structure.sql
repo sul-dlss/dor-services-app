@@ -10,6 +10,13 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: public; Type: SCHEMA; Schema: -; Owner: -
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+--
 -- Name: background_job_result_status; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -141,18 +148,6 @@ CREATE SEQUENCE public.events_id_seq
 --
 
 ALTER SEQUENCE public.events_id_seq OWNED BY public.events.id;
-
-
---
--- Name: marc_cache_entries; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.marc_cache_entries (
-    folio_hrid character varying NOT NULL,
-    marc_data jsonb NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
 
 
 --
@@ -474,14 +469,6 @@ ALTER TABLE ONLY public.events
 
 
 --
--- Name: marc_cache_entries marc_cache_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.marc_cache_entries
-    ADD CONSTRAINT marc_cache_entries_pkey PRIMARY KEY (folio_hrid);
-
-
---
 -- Name: orcid_works orcid_works_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -591,13 +578,6 @@ CREATE INDEX index_events_on_druid ON public.events USING btree (druid);
 --
 
 CREATE INDEX index_events_on_event_type ON public.events USING btree (event_type);
-
-
---
--- Name: index_marc_cache_entries_on_folio_hrid; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_marc_cache_entries_on_folio_hrid ON public.marc_cache_entries USING btree (folio_hrid);
 
 
 --
@@ -746,6 +726,7 @@ ALTER TABLE ONLY public.repository_objects
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260710111258'),
 ('20260218154641'),
 ('20240807210223'),
 ('20240531122304'),

@@ -4,7 +4,7 @@ services:
     ports:
       - 6379:6379
   db:
-    image: postgres:13
+    image: postgres:13.5
     ports:
       - 5432:5432
     environment:

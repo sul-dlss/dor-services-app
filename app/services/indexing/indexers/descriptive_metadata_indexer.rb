@@ -36,7 +36,6 @@ module Indexing
 
         # SW facets plus a friend facet
         'format_ssimdv' => :format,
-        'sw_format_ssimdv' => :sw_format,
         'mods_typeOfResource_ssimdv' => :resource_type, # MODS Resource Type facet
         'genre_ssimdv' => :genres,
         'sw_language_names_ssimdv' => :searchworks_language_names,
@@ -63,10 +62,6 @@ module Indexing
 
       delegate :subject_topics_other, :subject_topics, :pub_year_int, :genres, :searchworks_language_names,
                :subject_places, to: :cocina_display_record
-
-      def sw_format
-        Indexers::SearchworksFormatIndexer.value(cocina_display_record: cocina_display_record)
-      end
 
       def subjects
         @subjects ||= Array(cocina.description.subject)

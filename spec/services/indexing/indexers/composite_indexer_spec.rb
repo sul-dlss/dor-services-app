@@ -47,9 +47,6 @@ RSpec.describe Indexing::Indexers::CompositeIndexer do
         'druid_prefixed_ssi' => 'druid:mx123ms3333',
         'subject_topic_other_ssimdv' => ['word'],
         'subject_topic_tesim' => ['word'],
-        'sw_format_ssimdv' => [
-          'Software/Multimedia'
-        ],
         'format_ssimdv' => [
           'No format specified'
         ]
