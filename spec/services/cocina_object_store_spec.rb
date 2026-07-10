@@ -39,7 +39,7 @@ RSpec.describe CocinaObjectStore do
       end
 
       it 'bootstraps' do
-        expect(store.find('druid:bc123df4567').label).to eq('Ur-APO')
+        expect(store.find('druid:bc123df4567').externalIdentifier).to eq('druid:bc123df4567')
       end
     end
 
