@@ -18,7 +18,7 @@ class UrAdminPolicyFactory
         }
       },
       description: {
-        title: [{ value: 'Test Admin Policy' }],
+        title: [{ value: 'Ur Admin Policy' }],
         purl: Purl.for(druid: Settings.ur_admin_policy.druid)
       }
     )
