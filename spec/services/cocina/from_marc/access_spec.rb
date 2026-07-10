@@ -27,6 +27,24 @@ RSpec.describe Cocina::FromMarc::Access do
       end
     end
 
+    context 'with local call number/shelfmark (099) that has only a $b (no $a)' do
+      # See druid:fk742rz2402 for #6233
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '099' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [{ 'b' => 'SC1607' }]
+            } }
+          ]
+        }
+      end
+
+      it 'does not map a physicalLocation' do
+        expect(build).to eq({})
+      end
+    end
+
     context 'with url (856 $uyz3)' do
       let(:marc_hash) do
         {

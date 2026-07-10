@@ -25,7 +25,7 @@ module Cocina
 
       def physical_location
         field = marc['099']
-        return unless field
+        return unless field && field['a'].present?
 
         [{
           value: field['a'],
@@ -36,7 +36,7 @@ module Cocina
       def url(field)
         return if field.indicator2 == '2'
 
-        notes = field.subfields.select { %(y z).include? it.code }.map { { value: it.value } }
+        notes = Util.subfield_values(field, %w[y z]).map { |value| { value: value } }
         { displayLabel: field['3'], value: field['u'], note: notes }.compact_blank
       end
 

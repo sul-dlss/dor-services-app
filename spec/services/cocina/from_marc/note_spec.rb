@@ -2425,5 +2425,25 @@ RSpec.describe Cocina::FromMarc::Note do
         ]
       end
     end
+
+    context 'with a note field where the subfield has no value (500$a is blank)' do
+      # See druid:vj213rj1935 for #6232
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '500' => {
+              'ind1' => ' ', 'ind2' => ' ',
+              'subfields' => [
+                { 'a' => '' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'does not map a note' do
+        expect(build).to eq []
+      end
+    end
   end
 end

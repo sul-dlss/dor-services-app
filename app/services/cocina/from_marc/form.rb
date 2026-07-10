@@ -78,9 +78,7 @@ module Cocina
       end
 
       def build_extent(field)
-        values = field.subfields.filter_map do |sf|
-          sf.value if %w[a b c e f g 3].include?(sf.code)
-        end
+        values = Util.subfield_values(field, %w[a b c e f g 3])
         return nil if values.empty?
 
         { value: values.join(' '), type: 'extent' }
@@ -89,29 +87,31 @@ module Cocina
       def build_physical_medium(field)
         return unless field
 
-        field.subfields.map do |sf|
-          value = PHYSICAL_MEDIUM_FIELDS[sf.code]
-          next unless value
+        field.subfields.filter_map do |sf|
+          label = PHYSICAL_MEDIUM_FIELDS[sf.code]
+          next unless label && sf.value.present?
 
-          { note: [{ value: sf.value, displayLabel: value }] }
+          { note: [{ value: sf.value, displayLabel: label }] }
         end
       end
 
       def build_sound_characteristics(field)
         return unless field
 
-        field.subfields.map do |sf|
-          value = SOUND_CHARACTERISTICS[sf.code]
-          next unless value
+        field.subfields.filter_map do |sf|
+          label = SOUND_CHARACTERISTICS[sf.code]
+          next unless label && sf.value.present?
 
-          { note: [{ value: sf.value, displayLabel: value }] }
+          { note: [{ value: sf.value, displayLabel: label }] }
         end
       end
 
       def build_organization_and_arrangement(field)
         return unless field
 
-        values = [field['3'], field['c'], field['a'], field['b']].compact
+        values = [field['3'], field['c'], field['a'], field['b']].compact_blank
+        return nil if values.empty?
+
         { note: [{ value: values.join(' '), type: 'arrangement' }] }
       end
 
@@ -119,8 +119,8 @@ module Cocina
         return unless field
 
         [].tap do |genres|
-          genres << { value: field['a'], type: 'genre' } if field['a']
-          genres << { value: field['v'], type: 'genre' } if field['v']
+          genres << { value: field['a'], type: 'genre' } if field['a'].present?
+          genres << { value: field['v'], type: 'genre' } if field['v'].present?
         end
       end
 
@@ -135,13 +135,13 @@ module Cocina
 
       def build_cartographic(field)
         vals = []
-        vals << { value: field['a'], type: 'map scale' } if field['a']
-        vals << { value: field['b'], type: 'map projection' } if field['b']
+        vals << { value: field['a'], type: 'map scale' } if field['a'].present?
+        vals << { value: field['b'], type: 'map projection' } if field['b'].present?
         vals.compact
       end
 
       def build_content_type(field)
-        return unless field
+        return unless field && field['a'].present?
 
         { value: field['a'], type: 'genre' }
       end

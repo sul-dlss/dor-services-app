@@ -141,26 +141,14 @@ module Cocina
       end
 
       def build_simple_note(field, codes)
-        codes = Array(codes)
-        values = []
-        field.subfields.each do |sf|
-          next if sf.code == '6'
-
-          values << sf.value if codes.include?(sf.code)
-        end
+        values = Util.subfield_values(field, Array(codes))
         return nil if values.empty?
 
         { value: values.join(' ') }
       end
 
       def build_note(field, codes, type)
-        codes = Array(codes)
-        values = []
-        field.subfields.each do |sf|
-          next if sf.code == '6'
-
-          values << sf.value if codes.include?(sf.code)
-        end
+        values = Util.subfield_values(field, Array(codes))
         return nil if values.empty?
 
         result = { value: values.join(' ') }
@@ -169,12 +157,7 @@ module Cocina
       end
 
       def build_summary_note(field)
-        values = []
-        field.subfields.each do |sf|
-          next if sf.code == '6'
-
-          values << sf.value if %w[3 a b c u].include?(sf.code)
-        end
+        values = Util.subfield_values(field, %w[3 a b c u])
         return nil if values.empty?
 
         type = field.indicator1 == '4' ? 'content warning' : 'summary'

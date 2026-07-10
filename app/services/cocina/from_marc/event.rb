@@ -107,8 +107,8 @@ module Cocina
       end
 
       def copyright_event(field)
-        date = field.subfields.find { it.code == 'c' }&.value&.delete_suffix('.')
-        return unless date
+        date = Util.subfield_value(field, 'c')&.delete_suffix('.')
+        return if date.blank?
 
         { type: 'copyright notice', note: [{ value: date, type: 'copyright statement' }] }
       end
@@ -116,7 +116,7 @@ module Cocina
       def edition_events
         build_linked_events(marc['250']) do |field|
           statement = joined_subfield_values(field, 'a', 'b')
-          { type: 'publication', note: [{ value: statement, type: 'edition' }] }
+          { type: 'publication', note: [{ value: statement, type: 'edition' }] } if statement.present?
         end
       end
 
@@ -125,9 +125,10 @@ module Cocina
           next unless FREQUENCY_TAGS.include?(field.tag)
 
           build_linked_events(field) do |script_field|
-            { value: joined_subfield_values(script_field, 'a', 'b'), type: 'frequency' }
+            value = joined_subfield_values(script_field, 'a', 'b')
+            { value:, type: 'frequency' } if value.present?
           end
-        end.flatten
+        end.flatten.compact
 
         { type: 'publication', note: notes } if notes.present?
       end
@@ -136,7 +137,7 @@ module Cocina
         field = marc['334']
         return unless field
 
-        statement = field.subfields.find { it.code == 'a' }&.value
+        statement = Util.subfield_value(field, 'a')
         return unless statement
 
         { note: [{ value: statement, type: 'issuance' }] }

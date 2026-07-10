@@ -593,6 +593,38 @@ RSpec.describe Cocina::FromMarc::Contributor do
           expect(build).to be_empty
         end
       end
+
+      context 'when $t is blank' do
+        # See #6232
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '700' => {
+                'ind1' => '1',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => 'Chikamatsu, Monzaemon,'
+                  },
+                  {
+                    'd' => '1653-1725.'
+                  },
+                  {
+                    't' => ''
+                  }
+                ]
+              } }
+            ]
+          }
+        end
+
+        it 'does not filter it out' do
+          expect(build).to eq [{
+            type: 'person',
+            name: [{ value: 'Chikamatsu, Monzaemon, 1653-1725.' }]
+          }]
+        end
+      end
     end
 
     context 'with Family contributor (700 ind1=3)' do

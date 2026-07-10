@@ -88,7 +88,7 @@ module Cocina
       end
 
       def values_for(field, subfields)
-        field.subfields.select { |sf| subfields.include? sf.code }.map { it.value.strip }
+        field.subfields.filter_map { |sf| sf.value.strip.presence if subfields.include?(sf.code) }
       end
 
       attr_reader :marc
