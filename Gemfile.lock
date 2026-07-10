@@ -413,9 +413,10 @@ GEM
     public_suffix (7.0.5)
     puma (8.0.2)
       nio4r (~> 2.0)
-    purl_fetcher-client (3.2.0)
+    purl_fetcher-client (3.2.1)
       activesupport
       faraday (~> 2.1)
+      faraday-retry (~> 2.4)
     racc (1.8.1)
     rack (3.2.6)
     rack-console (2.0.0)
