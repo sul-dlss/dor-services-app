@@ -102,6 +102,28 @@ RSpec.describe Cocina::FromMarc::Event do
         end
       end
 
+      context 'with a single script that has only a 260$d' do
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '260' => {
+                'ind1' => ' ',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'd' => '1831.'
+                  }
+                ]
+              } }
+            ]
+          }
+        end
+
+        it 'returns nothing' do
+          expect(build).to eq []
+        end
+      end
+
       context 'with multiple $b subfields' do
         # See a10422378
         let(:marc_hash) do

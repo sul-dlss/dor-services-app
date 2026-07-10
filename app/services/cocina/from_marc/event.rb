@@ -58,7 +58,7 @@ module Cocina
 
       def publication_events
         build_linked_events(marc['260']) do |field|
-          EventDataFieldBuilder.build(
+          event = EventDataFieldBuilder.build(
             field:,
             type: 'publication',
             role: 'publisher',
@@ -66,6 +66,8 @@ module Cocina
             contributor_codes: ['b'],
             date_code: 'c'
           )
+
+          event if event.except(:type).present?
         end
       end
 
