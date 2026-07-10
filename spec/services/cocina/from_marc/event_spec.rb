@@ -317,6 +317,46 @@ RSpec.describe Cocina::FromMarc::Event do
       end
     end
 
+    context 'with manufacture event (260 f) and no publication subfields' do
+      let(:marc_hash) do
+        { 'fields' => [
+          { '260' =>
+            { 'ind1' => ' ',
+              'ind2' => ' ',
+              'subfields' =>
+                [{ 'f' => 'Ch. Geoffroy.' }] } }
+        ] }
+      end
+
+      it 'returns only a manufacture event' do
+        expect(build).to eq [{
+          type: 'manufacture',
+          contributor: [{ name: [{ value: 'Ch. Geoffroy.' }], role: [{ value: 'manufacturer' }] }]
+        }]
+      end
+    end
+
+    context 'with manufacture event (260 eg) and no publication subfields' do
+      let(:marc_hash) do
+        { 'fields' => [
+          { '260' =>
+            { 'ind1' => ' ',
+              'ind2' => ' ',
+              'subfields' =>
+                [{ 'e' => '[Netherlands?' },
+                 { 'g' => '1351-]' }] } }
+        ] }
+      end
+
+      it 'returns only a manufacture event with location and date' do
+        expect(build).to eq [{
+          type: 'manufacture',
+          location: [{ value: '[Netherlands?' }],
+          date: [{ value: '1351-]', type: 'manufacture' }]
+        }]
+      end
+    end
+
     context 'with production event (264 ind2=0)' do
       # see a10106195
       let(:marc_hash) do
