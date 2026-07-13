@@ -11,16 +11,14 @@ module Publish
       @cocina = cocina
     end
 
-    # update the label to match what is in the description.title (used by sul-embed and searchworks_traject_indexer)
     # remove any file that is not published
     # remove any file_set that doesn't have at least one published file
     # remove partOfProject (similar to how we remove tags from identityMetadata)
-    def build # rubocop:disable Metrics/AbcSize
-      label = Cocina::Models::Builders::TitleBuilder.build(cocina.description.title)
+    def build
       if cocina.dro?
-        cocina.new(label:, structural: build_structural, administrative: build_administrative)
+        cocina.new(structural: build_structural, administrative: build_administrative)
       elsif cocina.collection?
-        cocina.new(label:, administrative: build_administrative)
+        cocina.new(administrative: build_administrative)
       else
         raise "unexpected call to PublicCocinaService.build for #{cocina.externalIdentifier}"
       end
