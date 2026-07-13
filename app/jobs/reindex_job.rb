@@ -4,12 +4,10 @@
 #
 # NOTE: INFO-level logging is filtered out when this job runs due to ApplicationJob::IgnoreReindexingLogSubscriber
 class ReindexJob < ApplicationJob
-  class DeadLockError < StandardError; end
-
   queue_as :low
 
   # Retry at ~3 seconds, ~18 seconds, ~83 seconds. If all attempts fail, the error is swallowed not bubbled up.
-  retry_on DeadLockError, attempts: 3, wait: :polynomially_longer, queue: :low do |_job, _error|
+  retry_on RedisLock::DeadLockError, attempts: 3, wait: :polynomially_longer, queue: :low do |_job, _error|
     nil # do nothing
   end
   # ActiveJob retries are used instead of Sidekiq retries. Bump up log level to filter out start/end job logging
@@ -23,7 +21,7 @@ class ReindexJob < ApplicationJob
     return if skip?(druid:, current_as_of:, trace_id:)
 
     # Reindexing should be fast, so timeout is only 30 seconds.
-    raise DeadLockError unless RedisLock.with_lock(key: "reindex-#{druid}", lock_timeout: 30) do
+    raise RedisLock::DeadLockError unless RedisLock.with_lock(key: "reindex-#{druid}", lock_timeout: 30) do
       cocina_object = CocinaObjectStore.find(druid, validate: false)
       Rails.logger.error("Starting reindexing #{druid} - trace_id #{trace_id}")
       Indexer.reindex(cocina_object:, trace_id:, current_as_of: current_as_of)
