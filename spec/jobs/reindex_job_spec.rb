@@ -55,7 +55,7 @@ RSpec.describe ReindexJob do
     it 'raises' do
       expect do
         described_class.new.perform(druid: dro.externalIdentifier, trace_id:, current_as_of:)
-      end.to raise_error(ReindexJob::DeadLockError)
+      end.to raise_error(RedisLock::DeadLockError)
     end
   end
 

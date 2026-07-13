@@ -4,6 +4,8 @@
 # This is useful for ensuring that only one worker is processing a given job at a time.
 # Based on https://github.com/sul-dlss/preservation_catalog/blob/main/app/jobs/concerns/unique_job.rb
 class RedisLock
+  class DeadLockError < StandardError; end
+
   # @param [String] key the key to lock
   # @param [Integer] lock_timeout the number of seconds before the lock expires
   # @return [Boolean] true if the lock can be acquired
