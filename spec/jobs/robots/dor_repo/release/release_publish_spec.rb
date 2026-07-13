@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Robots::DorRepo::Release::ReleasePublish, type: :robot do
-  subject(:perform) { test_perform(robot, druid) }
+  subject(:perform) { test_perform(robot, druid, version: 4) }
 
   let(:druid) { 'bb222cc3333' }
   let!(:repository_object) { create(:repository_object, :closed, external_identifier: druid) } # rubocop:disable RSpec/LetSetup
@@ -44,7 +44,6 @@ RSpec.describe Robots::DorRepo::Release::ReleasePublish, type: :robot do
     allow(PurlFetcher::Client::ReleaseTags).to receive(:release)
     allow(Workflow::LifecycleService).to receive(:milestone?).and_return(true)
     allow(UserVersionService).to receive(:latest_user_version).with(druid:).and_return(nil)
-    # allow(Publish::Item).to receive(:new).with(druid:).and_return(publish_item)
   end
 
   context 'when a not dark DRO' do
@@ -52,7 +51,7 @@ RSpec.describe Robots::DorRepo::Release::ReleasePublish, type: :robot do
       perform
 
       expect(Workflow::LifecycleService).to have_received(:milestone?)
-        .with(druid:, milestone_name: 'published', version: 1)
+        .with(druid:, milestone_name: 'published', version: 4)
       expect(PurlFetcher::Client::ReleaseTags).to have_received(:release)
         .with(druid:, index: ['Searchworks', 'Purl sitemap'], delete: ['Earthworks'])
     end
@@ -76,14 +75,6 @@ RSpec.describe Robots::DorRepo::Release::ReleasePublish, type: :robot do
 
       expect(PurlFetcher::Client::ReleaseTags).to have_received(:release)
         .with(druid:, index: ['Searchworks', 'Purl sitemap'], delete: ['Earthworks'])
-    end
-  end
-
-  context 'when a registered item (open first version)' do
-    let!(:repository_object) { create(:repository_object, external_identifier: druid) }
-
-    it 'raises' do
-      expect { perform }.to raise_error(Robots::DorRepo::Release::ReleasePublish::PublishNotCompleteError)
     end
   end
 

@@ -2,10 +2,10 @@
 
 require 'simplecov'
 SimpleCov.start :rails do
-  add_filter '/spec/'
-  add_filter '/bin/'
-  add_filter '/app/reports/'
-  add_filter '/db/'
+  SimpleCov.skip '/spec/'
+  SimpleCov.skip '/bin/'
+  SimpleCov.skip '/app/reports/'
+  SimpleCov.skip '/db/'
 
   if ENV['CI']
     require 'simplecov_json_formatter'
