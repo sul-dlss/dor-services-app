@@ -18,7 +18,7 @@ module Robots
           end
 
           # Ensure that item has been published before releasing.
-          raise PublishNotCompleteError unless Publish::Item.new(druid:).published?
+          raise PublishNotCompleteError unless published?
 
           PurlFetcher::Client::ReleaseTags.release(
             druid:,
@@ -37,6 +37,10 @@ module Robots
 
         def dark?
           Cocina::Support.dark?(cocina_object)
+        end
+
+        def published?
+          Workflow::LifecycleService.milestone?(druid:, milestone_name: 'published', version:)
         end
       end
     end
