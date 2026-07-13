@@ -308,7 +308,7 @@ GEM
     loofah (2.25.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
-    lyber-core (8.2.0)
+    lyber-core (9.0.0)
       activesupport
       config
       dor-services-client
@@ -671,7 +671,7 @@ DEPENDENCIES
   json_schemer-rails
   jwt
   lograge
-  lyber-core (~> 8.0)
+  lyber-core
   mais_orcid_client
   marc
   moab-versioning

@@ -1935,6 +1935,9 @@ paths:
                   type: string
                 error_message:
                   type: string
+                version:
+                  # description: The version of the object this workflow step belongs to (defaults to the active version)
+                  type: integer
               required:
                 - status
 components:

@@ -14,9 +14,7 @@ gem 'druid-tools'
 gem 'folio_client'
 gem 'graphql'
 gem 'json_schemer-rails'
-# Temporarily pinned lyber-core on 7/10/2026 since >v9.0 lybercore has version-aware breaking changes requiring updates
-# to all consumers simultaneously. See https://github.com/sul-dlss/dor-services-app/pull/6196
-gem 'lyber-core', '~> 8.0' # For robots
+gem 'lyber-core' # For robots
 gem 'mais_orcid_client'
 gem 'marc'
 gem 'moab-versioning', require: 'moab/stanford'

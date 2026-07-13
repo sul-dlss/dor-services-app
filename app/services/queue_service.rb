@@ -17,8 +17,9 @@ class QueueService
   end
 
   # Enqueue the provided step
-  def enqueue
-    job_id = ROBOT_SIDEKIQ_CLIENT.push('queue' => queue_name, 'class' => class_name, 'args' => [step.druid])
+  def enqueue # rubocop:disable Metrics/AbcSize
+    job_id = ROBOT_SIDEKIQ_CLIENT.push('queue' => queue_name, 'class' => class_name,
+                                       'args' => [step.druid, step.version])
     raise "Enqueueing #{class_name} for #{step.druid} to #{queue_name} failed." unless job_id
 
     Rails.logger.info "Enqueued #{class_name} for #{step.druid} to #{queue_name}: #{job_id}"
