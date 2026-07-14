@@ -84,20 +84,19 @@ module Indexing
       end
 
       def main_title
-        Cocina::Models::Builders::TitleBuilder.main_title(cocina.description.title)
+        cocina_display_record.all_titles.reject { it.type == 'alternative' }.map(&:short_title)
       end
 
       def full_title
-        Cocina::Models::Builders::TitleBuilder.full_title(cocina.description.title)
+        cocina_display_record.all_titles.reject { it.type == 'alternative' }.map(&:full_title)
       end
 
       def additional_titles
-        Cocina::Models::Builders::TitleBuilder.additional_titles(cocina.description.title)
+        cocina_display_record.all_titles.reject { it.type.nil? }.map(&:short_title)
       end
 
       def display_title
-        Cocina::Models::Builders::TitleBuilder.build(cocina.description.title,
-                                                     catalog_links: catalog_links)
+        cocina_display_record.primary_title.to_s
       end
 
       def format
@@ -144,14 +143,8 @@ module Indexing
         @all_search_text ||= Indexing::Builders::AllSearchTextBuilder.build(cocina.description)
       end
 
-      def catalog_links
-        return [] if cocina.is_a?(Cocina::Models::AdminPolicyWithMetadata)
-
-        Array(cocina.identification.catalogLinks)
-      end
-
       def cocina_display_record
-        @cocina_display_record ||= CocinaDisplay::CocinaRecord.new(cocina.to_h.with_indifferent_access)
+        @cocina_display_record ||= CocinaDisplay::CocinaRecord.new(cocina.as_json)
       end
     end
   end
