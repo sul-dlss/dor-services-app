@@ -5,7 +5,7 @@ default: &default
   password: "<%= ENV.fetch('DATABASE_PASSWORD', 'sekret') %>"
   host: "<%= ENV.fetch('DATABASE_HOSTNAME', 'localhost') %>"
   port: "<%= ENV.fetch('DATABASE_PORT', 5432) %>"
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 10 } %>
+  pool: <%= ENV.fetch("MAX_DB_CONNECTIONS") { 5 } %>
   timeout: 5000
 
 workflow_default: &workflow_default
@@ -15,7 +15,7 @@ workflow_default: &workflow_default
   password: "<%= ENV.fetch('WORKFLOW_DATABASE_PASSWORD', 'sekret') %>"
   host: "<%= ENV.fetch('WORKFLOW_DATABASE_HOSTNAME', 'localhost') %>"
   port: "<%= ENV.fetch('WORKFLOW_DATABASE_PORT', 5432) %>"
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: <%= ENV.fetch("MAX_DB_CONNECTIONS") { 5 } %>
   timeout: 5000
   migrations_paths: 'db/workflow_migrate'
 
