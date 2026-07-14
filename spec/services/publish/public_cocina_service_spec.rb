@@ -130,6 +130,10 @@ RSpec.describe Publish::PublicCocinaService do
       )
     end
 
+    it 'updates the label' do
+      expect(create.label).to eq 'Constituent label &amp; A Special character'
+    end
+
     context 'when there are no published files' do
       it 'discards the non-published filesets and files' do
         expect(create.structural.contains.size).to eq 0
