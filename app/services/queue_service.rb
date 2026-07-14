@@ -17,7 +17,8 @@ class QueueService
   end
 
   # Enqueue the provided step
-  def enqueue # rubocop:disable Metrics/AbcSize
+  def enqueue
+    queue_name = build_queue_name
     job_id = ROBOT_SIDEKIQ_CLIENT.push('queue' => queue_name, 'class' => class_name,
                                        'args' => [step.druid, step.version])
     raise "Enqueueing #{class_name} for #{step.druid} to #{queue_name} failed." unless job_id
@@ -48,6 +49,9 @@ class QueueService
     'Robots::DorRepo::Release::UpdateMarc' => 'releaseWF_update-marc_dsa'
   }.freeze
 
+  # Include the process name in the queue name to allow for greater sidekiq control.
+  QUEUE_PER_PROCESS_WORKFLOWS = %w[accessionWF].freeze
+
   private
 
   # Generate the queue name from step
@@ -55,15 +59,14 @@ class QueueService
   # @example
   #     => 'assemblyWF_default'
   #     => 'assemblyWF_low'
-  def queue_name
-    @queue_name ||= if SPECIAL_ROBOTS.include?(class_name)
-                      SPECIAL_ROBOTS[class_name]
-                    elsif DSA_ROBOTS.include?(class_name)
-                      # DSA only handles certain robots. Those need to be sent to separate queues.
-                      "#{step.workflow}_#{step.lane_id}_dsa"
-                    else
-                      "#{step.workflow}_#{step.lane_id}"
-                    end
+  def build_queue_name
+    return SPECIAL_ROBOTS[class_name] if SPECIAL_ROBOTS.include?(class_name)
+
+    queue_name = step.workflow
+    queue_name += "_#{step.process}" if QUEUE_PER_PROCESS_WORKFLOWS.include?(step.workflow)
+    queue_name += "_#{step.lane_id}"
+    queue_name += '_dsa' if DSA_ROBOTS.include?(class_name)
+    queue_name
   end
 
   # Converts a given step to the Robot class name
