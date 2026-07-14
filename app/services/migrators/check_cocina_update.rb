@@ -4,8 +4,15 @@ module Migrators
   # Fake migrator that can be used to check that objects can be updated.
   class CheckCocinaUpdate < Base
     def migrate
-      # This changes every object.
-      model_hash['description']['title'].first['value'] = 'Test'
+      # This changes every object by adding a title to the description,
+      # and creating a description first if it doesn't exist.
+      description = model_hash['description'] || {}
+      titles = description['title'] || []
+
+      titles << { 'value' => 'Test' }
+      description['title'] = titles
+      model_hash['description'] = description
+
       model_hash
     end
 
