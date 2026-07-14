@@ -7,7 +7,8 @@ class CreateEventJob
   # This worker will connect to "dsa.create-event" queue
   # env is set to nil since by default the actual queue name would be
   # "dsa.create-event_development"
-  from_queue 'dsa.create-event', env: nil
+  # Setting to 1 worker since this is a low volume queue and want to avoid using too many db connections.
+  from_queue 'dsa.create-event', env: nil, workers: 1
 
   def work(msg_str)
     Rails.logger.debug("Msg_str: #{msg_str}")

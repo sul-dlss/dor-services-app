@@ -29,6 +29,21 @@ Developer notes:
 * Most GraphQL code is in `app/graphql`.
 * In local development, the [GraphiQL browser](https://github.com/graphql/graphiql) is available at http://localhost:3000/graphiql.
 
+## Database connections
+Both the DSA and workflow databases are configured with a maximum number of allowed connections (`SHOW max_connections;`). The following describes the use of connections by parts of production DSA:
+
+* 2 per passenger process (1 needed + 1 headroom) x 30 processes x 2 servers = 120
+  * This is configured by the MAX_DB_CONNECTIONS env variable in puppet.
+* 7 per sidekiq process (concurrency of 6 + 1 headroom) x 8 processes x 5 servers = 280
+  * This is configured by the MAX_DB_CONNECTIONS env variable in puppet.
+* 2 per export-cocina-head-versions process x 6 processes = 12
+  * This is configured by setting the MAX_DB_CONNECTIONS env variable in schedule.rb
+* 2 per validate-cocina process x 12 processes = 24
+* 5 per sneakers process x ((1 sneakers worker class x 1 processes per worker class) + 1 supervisor) x 2 servers = 20
+ * CreateEventJob is the worker class. It is configured to have 1 process (instead of default of 4).
+* headroom = 25
+Total: 481
+
 ## Developer Notes
 
 DOR Services App is a Rails app.
@@ -88,7 +103,7 @@ sudo /usr/bin/systemctl stop sneakers
 sudo /usr/bin/systemctl status sneakers
 ```
 
-This is started automatically during a deploy via capistrano
+This is started automatically during a deploy via capistrano. Note that sneakers only runs on some worker servers.
 
 ## Cron check-ins
 
@@ -200,6 +215,7 @@ Custom reports are stored in dor-services-app in the `app/reports` directory.  E
     export DATABASE_USERNAME=$DOR_SERVICES_DB_USER
     export DATABASE_HOSTNAME=$DOR_SERVICES_DB_STAGE_HOST
     export DATABASE_PASSWORD=$DOR_SERVICES_DB_STAGE_PWD
+    export MAX_DB_CONNECTIONS=2
     ```
 
    PROD
@@ -208,6 +224,7 @@ Custom reports are stored in dor-services-app in the `app/reports` directory.  E
     export DATABASE_USERNAME=$DOR_SERVICES_DB_USER
     export DATABASE_HOSTNAME=$DOR_SERVICES_DB_PROD_HOST
     export DATABASE_PASSWORD=$DOR_SERVICES_DB_PROD_PWD
+    export MAX_DB_CONNECTIONS=2
     ```
 1. Run the report (good idea to do it in a screen or via background process in case you get disconnected):
     ```shell

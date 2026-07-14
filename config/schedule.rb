@@ -64,5 +64,5 @@ every :friday, at: '8:00pm' do
 end
 
 every '0 2 * * 1-5' do # Monday-Friday at 2am. Avoids running at the same time as reindex.
-  bin 'bin/export-cocina-head-versions -p6 -r --output-dir /dor/cocina_dump > /dev/null'
+  bin 'MAX_DB_CONNECTIONS=2 bin/export-cocina-head-versions -p6 -r --output-dir /dor/cocina_dump > /dev/null'
 end
