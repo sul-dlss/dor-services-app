@@ -13,13 +13,12 @@ class Indexer
       current_as_of:
     ).to_solr
     solr = connect_solr
-    solr.add(solr_doc)
     # This logging is to assist with https://github.com/sul-dlss/dor-services-app/issues/5231
-    # It is capturing that a Solr document is being committed and the order relative to other commits.
+    # It is capturing that a Solr document is being added and the order relative to other adds.
     if Settings.indexer.logging
-      Rails.logger.info("[Indexing] Committing #{cocina_object.externalIdentifier} with trace_id=#{trace_id}")
+      Rails.logger.info("[Indexing] Adding #{cocina_object.externalIdentifier} with trace_id=#{trace_id}")
     end
-    solr.soft_commit
+    solr.add(solr_doc, add_attributes: { commitWithin: 5000 })
   end
 
   def self.reindex_by_druid(druid:, trace_id: nil, current_as_of: nil)
