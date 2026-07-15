@@ -32,7 +32,7 @@ Developer notes:
 ## Database connections
 Both the DSA and workflow databases are configured with a maximum number of allowed connections (`SHOW max_connections;`). The following describes the use of connections by parts of production DSA:
 
-* 2 per passenger process (1 needed + 1 headroom) x 30 processes x 2 servers = 120
+* 2 per passenger process (1 needed + 1 headroom) x 45 processes x 2 servers = 180
   * This is configured by the MAX_DB_CONNECTIONS env variable in puppet.
 * 7 per sidekiq process (concurrency of 6 + 1 headroom) x 8 processes x 5 servers = 280
   * This is configured by the MAX_DB_CONNECTIONS env variable in puppet.
@@ -42,7 +42,7 @@ Both the DSA and workflow databases are configured with a maximum number of allo
 * 5 per sneakers process x ((1 sneakers worker class x 1 processes per worker class) + 1 supervisor) x 2 servers = 20
  * CreateEventJob is the worker class. It is configured to have 1 process (instead of default of 4).
 * headroom = 25
-Total: 481
+Total: 541
 
 ## Developer Notes
 
