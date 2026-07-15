@@ -28,19 +28,31 @@ RSpec.describe QueueService do
 
       it 'enqueues to Sidekiq' do
         service.enqueue
-        expect(ROBOT_SIDEKIQ_CLIENT).to have_received(:push).with('queue' => 'accessionWF_default_dsa',
-                                                                  'class' => 'Robots::DorRepo::Accession::Publish',
-                                                                  'args' => [step.druid, step.version])
+        expect(ROBOT_SIDEKIQ_CLIENT).to have_received(:push)
+          .with('queue' => 'accessionWF_publish_default_dsa',
+                'class' => 'Robots::DorRepo::Accession::Publish',
+                'args' => [step.druid, step.version])
       end
     end
 
-    context 'when DorRepo classes' do
+    context 'when queue per process workflow' do
       let(:step) { create(:workflow_step, workflow: 'accessionWF', process: 'technical-metadata') }
 
       it 'enqueues to Sidekiq' do
         service.enqueue
-        expect(ROBOT_SIDEKIQ_CLIENT).to have_received(:push).with('queue' => 'accessionWF_default',
+        expect(ROBOT_SIDEKIQ_CLIENT).to have_received(:push).with('queue' => 'accessionWF_technical-metadata_default',
                                                                   'class' => 'Robots::DorRepo::Accession::TechnicalMetadata',
+                                                                  'args' => [step.druid, step.version])
+      end
+    end
+
+    context 'when non-queue per process workflow' do
+      let(:step) { create(:workflow_step, workflow: 'assemblyWF', process: 'checksum-compute') }
+
+      it 'enqueues to Sidekiq' do
+        service.enqueue
+        expect(ROBOT_SIDEKIQ_CLIENT).to have_received(:push).with('queue' => 'assemblyWF_default',
+                                                                  'class' => 'Robots::DorRepo::Assembly::ChecksumCompute',
                                                                   'args' => [step.druid, step.version])
       end
     end
