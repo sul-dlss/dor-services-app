@@ -17,7 +17,6 @@ RSpec.describe Migrators::Exemplar do
     let(:model_hash) do
       {
         'externalIdentifier' => druid,
-        'label' => 'Original label',
         'description' => {
           'title' => [
             { 'value' => 'Original title' }
@@ -37,8 +36,7 @@ RSpec.describe Migrators::Exemplar do
     context 'when the externalIdentifier matches a test druid' do
       let(:druid) { described_class::TEST_DRUIDS.first }
 
-      it 'changes the label and title' do
-        expect(migrated_model_hash['label']).to include('- migrated')
+      it 'changes the title' do
         expect(migrated_model_hash['description']['title'].first['value']).to include('- migrated')
       end
     end

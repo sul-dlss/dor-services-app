@@ -8,7 +8,11 @@ RSpec.describe Migrators::CheckCocinaUpdate do
                         head_version: false)
   end
 
-  let(:model_hash) { { 'label' => 'Original label' } }
+  let(:model_hash) do
+    {
+      'description' => { 'title' => [{ 'value' => 'Original title' }] }
+    }
+  end
 
   describe '.migration_strategy' do
     it 'returns cocina_update' do
@@ -29,10 +33,32 @@ RSpec.describe Migrators::CheckCocinaUpdate do
   end
 
   describe '#migrate' do
-    it 'returns the mutated model hash with label set to Test' do
+    it 'returns the mutated model hash with an additional title' do
       result = migrator.migrate
       expect(result).to eq model_hash
-      expect(result['label']).to eq 'Test'
+      expect(result.dig('description', 'title')).to eq [{ 'value' => 'Original title' }, { 'value' => 'Test' }]
+    end
+
+    context 'when there are no titles' do
+      let(:model_hash) do
+        {
+          'description' => { 'title' => [] }
+        }
+      end
+
+      it 'adds a title' do
+        expect(migrator.migrate.dig('description', 'title')).to eq [{ 'value' => 'Test' }]
+      end
+    end
+
+    context 'when there is no description' do
+      let(:model_hash) { { 'externalIdentifier' => 'druid:bc123df4567' } }
+
+      it 'adds a description with a title' do
+        expect(migrator.migrate['description']).to eq(
+          'title' => [{ 'value' => 'Test' }]
+        )
+      end
     end
   end
 end
