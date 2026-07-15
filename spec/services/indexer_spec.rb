@@ -8,7 +8,7 @@ RSpec.describe Indexer do
 
   let(:indexer) { double(to_solr: solr_doc) }
   let(:solr_doc) { instance_double(Hash) }
-  let(:solr) { instance_double(RSolr::Client, add: nil, commit: nil, delete_by_id: nil) }
+  let(:solr) { instance_double(RSolr::Client, add: nil, commit: nil, soft_commit: nil, delete_by_id: nil) }
   let(:trace_id) { 'abc123' }
   let(:generated_trace_id) { 'def456' }
   let(:current_as_of) { Time.zone.parse('2026-04-10T12:00:00Z') }
@@ -32,7 +32,7 @@ RSpec.describe Indexer do
         current_as_of: nil
       )
       expect(solr).to have_received(:add).with(solr_doc)
-      expect(solr).to have_received(:commit)
+      expect(solr).to have_received(:soft_commit)
     end
 
     context 'when solr is not enabled' do
