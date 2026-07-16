@@ -167,9 +167,9 @@ RSpec.describe 'Refresh metadata' do
     context 'when Cocina validation error' do
       let(:result) { Success(RefreshDescriptionFromCatalog::Result.new(description_props)) }
       let(:description_props) do
-        # Missing title
+        # Invalid title type
         {
-          purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+          title: [{ value: 'Paying for College', type: 'not a type' }]
         }
       end
 
@@ -181,7 +181,7 @@ RSpec.describe 'Refresh metadata' do
         post '/v1/objects/druid:mk420bs7601/refresh_metadata',
              headers: { 'Authorization' => "Bearer #{jwt}" }
         expect(response).to have_http_status(:unprocessable_content)
-        expect(response.body).to match('\\\"title\\\" is a required property')
+        expect(response.body).to include('Unrecognized types in description: title1 (not a type)')
       end
     end
   end
