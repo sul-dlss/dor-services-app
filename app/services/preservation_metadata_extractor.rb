@@ -13,11 +13,12 @@ class PreservationMetadataExtractor
   # @param [DruidTools::Druid] workspace The representation of the item's work area
   def initialize(cocina_object:, workspace:)
     @cocina_object = cocina_object
-    @metadata_dir = Pathname.new(workspace.path('metadata', true))
+    @metadata_dir = Pathname.new(workspace.path('metadata'))
   end
 
   # @return [Pathname] metadata directory
   def extract
+    FileUtils.mkdir_p(metadata_dir)
     generate_xml
     extract_cocina
     metadata_dir

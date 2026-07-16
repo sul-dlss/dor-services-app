@@ -20,9 +20,10 @@ RSpec.describe PreservationMetadataExtractor do
     let(:content_file) { instance_double(File, :<< => nil) }
 
     before do
-      allow(workspace).to receive(:path).with('metadata', true).and_return('metadata_dir')
+      allow(workspace).to receive(:path).with('metadata').and_return('metadata_dir')
       allow(Pathname).to receive(:new).and_call_original
       allow(Pathname).to receive(:new).with('metadata_dir').and_return(metadata_dir)
+      allow(FileUtils).to receive(:mkdir_p)
       allow(metadata_dir).to receive(:join).with('versionMetadata.xml').and_return(version_path)
       allow(metadata_dir).to receive(:join).with('contentMetadata.xml').and_return(content_path)
 
@@ -61,6 +62,7 @@ RSpec.describe PreservationMetadataExtractor do
         )
 
       expect(instance).to have_received(:extract_cocina)
+      expect(FileUtils).to have_received(:mkdir_p).with(metadata_dir)
     end
   end
 
@@ -70,8 +72,9 @@ RSpec.describe PreservationMetadataExtractor do
     let(:file) { instance_double(File, :<< => nil) }
 
     before do
-      allow(workspace).to receive(:path).with('metadata', true).and_return('metadata_dir')
+      allow(workspace).to receive(:path).with('metadata').and_return('metadata_dir')
       allow(Pathname).to receive(:new).with('metadata_dir').and_return(metadata_dir)
+      allow(FileUtils).to receive(:mkdir_p)
       allow(metadata_dir).to receive(:join).and_return(metadata_file)
       allow(metadata_file).to receive(:open).and_yield(file)
     end
