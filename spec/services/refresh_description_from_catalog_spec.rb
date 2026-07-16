@@ -210,5 +210,32 @@ RSpec.describe RefreshDescriptionFromCatalog do
         expect(refresh.failure?).to be(true)
       end
     end
+
+    context 'when no fields mapped from MARC' do
+      let(:marc) do
+        { fields: [] }.with_indifferent_access
+      end
+
+      it 'returns failure' do
+        expect(refresh.failure?).to be(true)
+      end
+    end
+
+    context 'when marc has fields but none of them map to a title' do
+      let(:marc) do
+        { fields: [
+          { '100': {
+            ind1: '1',
+            subfields: [
+              { a: 'Sayers, Dorothy L.' }
+            ]
+          } }
+        ] }.with_indifferent_access
+      end
+
+      it 'returns failure' do
+        expect(refresh.failure?).to be(true)
+      end
+    end
   end
 end

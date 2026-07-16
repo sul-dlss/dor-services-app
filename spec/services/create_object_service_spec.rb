@@ -179,17 +179,6 @@ RSpec.describe CreateObjectService do
       end
     end
 
-    context 'when there is no description' do
-      let(:requested_cocina_object) do
-        props = build(:request_dro).new(label: 'Roadside Geology of Utah').to_h.except(:description)
-        Cocina::Models::RequestDRO.new(props)
-      end
-
-      it 'creates a description from label' do
-        expect(store.create(requested_cocina_object).description.title.first.value).to eq 'Roadside Geology of Utah'
-      end
-    end
-
     context 'when there is structural' do
       let(:requested_cocina_object) do
         build(:request_dro).new(

@@ -27,7 +27,7 @@ class RefreshDescriptionFromCatalog
   # @return [Dry::Monads::Results] Returns Failure if description unchanged (e.g., no refreshable identifiers),
   #   otherwise Success (Result with description_props)
   # @raise [Catalog::MarcService::Error]
-  def run
+  def run # rubocop:disable Metrics/AbcSize
     # Admin policies don't have identification.
     return Failure() if cocina_object.admin_policy?
     return Failure() unless refreshable?
@@ -40,6 +40,7 @@ class RefreshDescriptionFromCatalog
     description_props = Cocina::FromMarc::Description.props(marc:, druid:)
 
     return Failure() if description_props.nil?
+    return Failure() if description_props[:title].blank?
 
     Success(Result.new(description_props))
   end

@@ -36,7 +36,7 @@ class RegistrationCsvConverter
   #   3: initial_workflow (required)
   #   4: content_type (required)
   #   5: source_id (required)
-  #   6: catkey or folio_id (optional)
+  #   6: folio_id (optional)
   #   7: barcode (optional)
   #   8: rights_view (required)
   #   9: rights_download (required)
@@ -45,6 +45,7 @@ class RegistrationCsvConverter
   #   is "none")
   #  12: project_name (optional)
   #  13: tags (optional, may repeat)
+  #  14: title (required if no folio_id)
 
   def convert
     CSV.parse(csv_string, headers: true).map { |row| { druid: row['druid'], cocina_request_object: convert_row(row) } }
@@ -59,7 +60,7 @@ class RegistrationCsvConverter
     Failure(e)
   end
 
-  def model_params(row)
+  def model_params(row) # rubocop:disable Metrics/AbcSize
     model_params = {
       type: dro_type(row.fetch('content_type')),
       version: 1,
@@ -71,11 +72,18 @@ class RegistrationCsvConverter
         barcode: row['barcode']
       }.compact
     }
-
     model_params[:structural] = structural(row)
     model_params[:access] = access(row)
+    title = row['title']
+    model_params[:description] = description(row) if title.present?
     project_name = row['project_name']
     model_params[:administrative][:partOfProject] = project_name if project_name.present?
+    folio_id = row['folio_id']
+    if folio_id.present?
+      model_params[:identification] = model_params[:identification].merge(
+        catalogLinks: [{ catalog: 'folio', catalogRecordId: folio_id, refresh: true }]
+      )
+    end
     model_params
   end
 
@@ -133,5 +141,11 @@ class RegistrationCsvConverter
       cdl = row['rights_controlledDigitalLending']
       access[:controlledDigitalLending] = ActiveModel::Type::Boolean.new.cast(cdl) if cdl.present?
     end.compact
+  end
+
+  def description(row)
+    {}.tap do |description|
+      description[:title] = [{ value: row['title'] }]
+    end
   end
 end
