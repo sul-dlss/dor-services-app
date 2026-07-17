@@ -38,7 +38,6 @@ class CreateObjectService
     updated_cocina_request_object = merge_access_for(cocina_request_object)
     druid = id_minter.call
     updated_cocina_request_object = sync_from_catalog(updated_cocina_request_object, druid)
-    updated_cocina_request_object = add_description(updated_cocina_request_object)
     cocina_object = cocina_from_request(updated_cocina_request_object, druid, assign_doi)
     cocina_object = assign_doi(cocina_object) if assign_doi
     cocina_object_with_metadata = RepositoryObject.create_from(cocina_object:).to_cocina_with_metadata
@@ -102,14 +101,7 @@ class CreateObjectService
     description_props = result.value!.description_props
     # Remove PURL since this is still a request
     description_props.delete(:purl)
-    label = label_from_title(description_props)
-    cocina_request_object.new(label:, description: description_props)
-  end
-
-  def add_description(cocina_request_object)
-    return cocina_request_object if cocina_request_object.description.present?
-
-    cocina_request_object.new(description: { title: [{ value: cocina_request_object.label }] })
+    cocina_request_object.new(description: description_props)
   end
 
   def assign_doi(cocina_object)
@@ -177,9 +169,5 @@ class CreateObjectService
 
     tags = ["Project : #{cocina_request_object.administrative.partOfProject}"]
     AdministrativeTags.create(identifier: druid, tags:)
-  end
-
-  def label_from_title(description_props)
-    CocinaDisplay::CocinaRecord.new({ 'description' => description_props.with_indifferent_access }).short_title
   end
 end

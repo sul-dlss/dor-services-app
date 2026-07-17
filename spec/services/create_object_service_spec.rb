@@ -115,7 +115,6 @@ RSpec.describe CreateObjectService do
       it 'with a basic title it adds to description' do
         cocina_object = store.create(requested_cocina_object)
         expect(cocina_object.description.title.first.value).to eq 'Example Item Title'
-        expect(cocina_object.label).to eq 'Example Item Title'
         expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a999123',
                                                                  create_marc_if_missing: true)
         expect(marc_service).to have_received(:marc)
@@ -145,7 +144,6 @@ RSpec.describe CreateObjectService do
         expect(cocina_object.description.title.first&.structuredValue&.find do |t|
           t.type == 'main title'
         end&.value).to eq 'well-grounded Rubyist'
-        expect(cocina_object.label).to eq 'The well-grounded Rubyist'
         expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a999123',
                                                                  create_marc_if_missing: true)
         expect(marc_service).to have_received(:marc)
