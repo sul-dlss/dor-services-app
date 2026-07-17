@@ -35,12 +35,8 @@
     <prereq>assign-placenames</prereq>
     <label>Extract bounding box from data for cocina descriptive</label>
   </process>
-  <process name="generate-structural">
-    <prereq>extract-boundingbox</prereq>
-    <label>Generate cocina structural</label>
-  </process>
   <process name="finish-gis-assembly-workflow">
-    <prereq>generate-structural</prereq>
+    <prereq>extract-boundingbox</prereq>
     <label>Finalize assembly workflow to prepare for assembly/delivery/discovery</label>
   </process>
   <process name="start-derivative-workflow">
