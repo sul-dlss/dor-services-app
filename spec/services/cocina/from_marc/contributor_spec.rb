@@ -745,6 +745,28 @@ RSpec.describe Cocina::FromMarc::Contributor do
           ]
         end
       end
+
+      context 'when blank' do
+        let(:marc_hash) do
+          {
+            'fields' => [
+              { '710' => {
+                'ind1' => '1',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    'a' => ''
+                  }
+                ]
+              } }
+            ]
+          }
+        end
+
+        it 'returns empty' do
+          expect(build).to eq []
+        end
+      end
     end
 
     context 'with meeting contributor (711)' do
