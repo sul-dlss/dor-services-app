@@ -78,7 +78,9 @@ module Cocina
         field && ['0', ' '].include?(field.indicator2) && field.subfields.any? do |subfield|
           subfield.code == 'a'
         end &&
-          field.subfields.none? { |subfield| %w[b f g k n p s].include? subfield.code }
+          field.subfields.none? do |subfield|
+            %w[b f g k n p s].include?(subfield.code) && Util.strip_punctuation(subfield.value).present?
+          end
       end
 
       def alternative_title(alternative_title_field, type: 'alternative')

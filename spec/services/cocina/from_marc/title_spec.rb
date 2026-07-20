@@ -83,6 +83,25 @@ RSpec.describe Cocina::FromMarc::Title do
       end
     end
 
+    context 'with a 245a and an empty subfield b' do
+      # See az543gm6497
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '245' => { 'ind1' => '1', 'ind2' => '0', 'subfields' => [
+              { 'a' => 'Cameroons under United Kingdom trusteeship, 1948 :' },
+              { 'b' => '/' },
+              { 'c' => 'drawn and reproduced by Survey Department, Lagos, Nigeria.' }
+            ] } }
+          ]
+        }
+      end
+
+      it 'returns the basic title, ignoring the empty subfield b' do
+        expect(build).to eq([{ value: 'Cameroons under United Kingdom trusteeship, 1948' }])
+      end
+    end
+
     context 'with title with subtitle (245 abfgknps)' do
       let(:marc_hash) do
         {
