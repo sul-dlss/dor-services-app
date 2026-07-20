@@ -485,6 +485,28 @@ RSpec.describe Cocina::FromMarc::Contributor do
         it 'returns person contributor' do
           expect(build).to eq [{ type: 'person', name: [{ value: 'Street, Stephen (Double bassist).' }] }]
         end
+
+        context 'when blank' do
+          let(:marc_hash) do
+            {
+              'fields' => [
+                { '700' => {
+                  'ind1' => '1',
+                  'ind2' => ' ',
+                  'subfields' => [
+                    {
+                      'a' => ''
+                    }
+                  ]
+                } }
+              ]
+            }
+          end
+
+          it 'returns empty' do
+            expect(build).to eq([])
+          end
+        end
       end
 
       context 'with multiple contributors' do

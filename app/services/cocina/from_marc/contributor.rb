@@ -41,19 +41,19 @@ module Cocina
 
       # For 100/700/720
       def build_personal(field, primary: false)
-        name_type = case field.indicator1
-                    when '0', '1'
-                      'person'
-                    when '3'
-                      'family'
-                    end
-        contributor = { type: name_type }.compact
-        contributor[:name] = [build_personal_name(field)].compact
-        contributor[:role] = build_roles(field)
+        contributor = {
+          name: [build_personal_name(field)].compact,
+          role: build_roles(field)
+        }.compact_blank!
+
         id = build_id(field).first
         contributor[:identifier] = [{ uri: id, type: 'ORCID' }.compact_blank] if id&.start_with? 'https://orcid.org/'
+        return if contributor.blank?
+
+        name_type = build_name_type(field)
+        contributor[:type] = name_type if name_type
         contributor[:status] = 'primary' if primary
-        contributor.compact_blank
+        contributor
       end
 
       def build_personal_name(field)
@@ -79,6 +79,15 @@ module Cocina
         end
 
         (primary + expanded).uniq.compact_blank
+      end
+
+      def build_name_type(field)
+        case field.indicator1
+        when '0', '1'
+          'person'
+        when '3'
+          'family'
+        end
       end
 
       def normalize_role_code(value)
