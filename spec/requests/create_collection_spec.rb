@@ -24,7 +24,7 @@ RSpec.describe 'Create object' do
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.collection}",
-          "label":"","version":1,"access":{"view":"world"},
+          "version":1,"access":{"view":"world"},
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
           "description":{"title":[{"value":"#{expected_title}"}]},
           "identification":#{identification.to_json}}
@@ -33,7 +33,6 @@ RSpec.describe 'Create object' do
 
     let(:expected) do
       build(:collection, id: druid, title: expected_title, admin_policy_id: 'druid:dd999df4567').new(
-        label: expected_title,
         identification:,
         access: {
           view: 'world'
@@ -107,7 +106,7 @@ RSpec.describe 'Create object' do
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.collection}",
-          "label":"","version":1,"access":{"view":"world"},
+          "version":1,"access":{"view":"world"},
           "administrative":{"hasAdminPolicy":"druid:dd999df4567","partOfProject":"Hydrus"},
           "identification":{"sourceId":"hydrus:collection-456"},
           "description":{"title":[{"value":"#{expected_title}"}]}
@@ -131,7 +130,6 @@ RSpec.describe 'Create object' do
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.collection}",
-          "label":"",
           "version":1,
           "access":{"view":"world"},
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
@@ -173,7 +171,6 @@ RSpec.describe 'Create object' do
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.collection}",
-          "label":"",
           "version":1,
           "access":{ "view": "world" },
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
