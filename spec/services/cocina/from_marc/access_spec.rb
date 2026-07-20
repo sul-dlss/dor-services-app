@@ -92,6 +92,45 @@ RSpec.describe Cocina::FromMarc::Access do
       end
     end
 
+    context 'with 856 that has no $u' do
+      # See druid:zt012xt7655/a5786629
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '856' => {
+              'ind1' => '4', 'ind2' => '0',
+              'subfields' => [
+                { 'h' => 'http://insight.stanford.edu:8081/BrowserInsight/BrowserInsight?cmd=start&cid=4&iia=0' },
+                { 'z' => 'not available when searched on January 28, 2026' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'does not map a url' do
+        expect(build).to eq({})
+      end
+    end
+
+    context 'with 856 that has an empty $u' do
+      # See druid:gq306ss6685/a10450014
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '856' => {
+              'ind1' => '4', 'ind2' => '0',
+              'subfields' => [{ 'u' => '' }]
+            } }
+          ]
+        }
+      end
+
+      it 'does not map a url' do
+        expect(build).to eq({})
+      end
+    end
+
     context 'with multiple 856s where ind2!=2' do
       # See a10738211
       let(:marc_hash) do

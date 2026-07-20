@@ -17,7 +17,7 @@ module Cocina
 
       # @return [Hash] a hash that can be mapped to a cocina model
       def build
-        urls = marc.fields.filter_map { url(it) if it.tag == '856' }
+        urls = marc.fields.filter_map { url_for(it) if it.tag == '856' }
         { url: urls, physicalLocation: physical_location }.compact_blank
       end
 
@@ -33,8 +33,9 @@ module Cocina
         }]
       end
 
-      def url(field)
+      def url_for(field)
         return if field.indicator2 == '2'
+        return if field['u'].blank?
 
         notes = Util.subfield_values(field, %w[y z]).map { |value| { value: value } }
         { displayLabel: field['3'], value: field['u'], note: notes }.compact_blank
