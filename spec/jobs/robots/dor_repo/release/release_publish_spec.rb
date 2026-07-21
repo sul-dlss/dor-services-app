@@ -6,7 +6,7 @@ RSpec.describe Robots::DorRepo::Release::ReleasePublish, type: :robot do
   subject(:perform) { test_perform(robot, druid, version: 4) }
 
   let(:druid) { 'bb222cc3333' }
-  let!(:repository_object) { create(:repository_object, :closed, external_identifier: druid) } # rubocop:disable RSpec/LetSetup
+  let!(:repository_object) { create(:repository_object, :closed, external_identifier: druid) }
   let(:cocina_object) { instance_double(Cocina::Models::DRO, dro?: true, access: dro_access, admin_policy?: false) }
   let(:dro_access) { instance_double(Cocina::Models::DROAccess, view: 'world') }
   let(:robot) { described_class.new }
@@ -43,17 +43,36 @@ RSpec.describe Robots::DorRepo::Release::ReleasePublish, type: :robot do
     allow(CocinaObjectStore).to receive(:find).with(druid).and_return(cocina_object)
     allow(PurlFetcher::Client::ReleaseTags).to receive(:release)
     allow(Workflow::LifecycleService).to receive(:milestone?).and_return(true)
-    allow(UserVersionService).to receive(:latest_user_version).with(druid:).and_return(nil)
   end
 
-  context 'when a not dark DRO' do
+  context 'when the last closed version is published' do
     it 'calls purl fetcher with the release tags' do
       perform
 
       expect(Workflow::LifecycleService).to have_received(:milestone?)
-        .with(druid:, milestone_name: 'published', version: 4)
+        .with(druid:, milestone_name: 'published', version: repository_object.last_closed_version_version)
       expect(PurlFetcher::Client::ReleaseTags).to have_received(:release)
         .with(druid:, index: ['Searchworks', 'Purl sitemap'], delete: ['Earthworks'])
+    end
+  end
+
+  context 'when an unpublished item' do
+    before do
+      allow(Workflow::LifecycleService).to receive(:milestone?).and_return(false)
+    end
+
+    it 'raises when the last closed version is not published' do
+      expect { perform }.to raise_error(Robots::DorRepo::Release::ReleasePublish::PublishNotCompleteError)
+    end
+  end
+
+  context 'when the object does not have a closed version' do
+    let!(:repository_object) { create(:repository_object, external_identifier: druid) }
+
+    it 'raises without checking for a published milestone' do
+      expect { perform }.to raise_error(Robots::DorRepo::Release::ReleasePublish::PublishNotCompleteError)
+
+      expect(Workflow::LifecycleService).not_to have_received(:milestone?)
     end
   end
 
@@ -75,16 +94,6 @@ RSpec.describe Robots::DorRepo::Release::ReleasePublish, type: :robot do
 
       expect(PurlFetcher::Client::ReleaseTags).to have_received(:release)
         .with(druid:, index: ['Searchworks', 'Purl sitemap'], delete: ['Earthworks'])
-    end
-  end
-
-  context 'when an unpublished item' do
-    before do
-      allow(Workflow::LifecycleService).to receive(:milestone?).and_return(false)
-    end
-
-    it 'raises' do
-      expect { perform }.to raise_error(Robots::DorRepo::Release::ReleasePublish::PublishNotCompleteError)
     end
   end
 end
