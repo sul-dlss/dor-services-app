@@ -53,7 +53,7 @@ RSpec.describe 'Create object' do
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.image}",
-          "label":"","version":1,
+          "version":1,
           "access":{
             "view":"#{view}",
             "download":"none",
@@ -111,8 +111,6 @@ RSpec.describe 'Create object' do
     end
 
     context 'when folio instance hrid is provided' do
-      let(:expected_label) { title } # label derived from catalog data
-
       let(:identification) do
         {
           sourceId: 'googlebooks:999999',
@@ -126,8 +124,6 @@ RSpec.describe 'Create object' do
         let(:marc_service) do
           instance_double(Catalog::MarcService, marc: nil)
         end
-
-        let(:expected_label) { label }
 
         it 'registers the object with the registration service' do
           expect do
@@ -151,7 +147,6 @@ RSpec.describe 'Create object' do
           build(:dro, id: druid, title: expected_title, type: Cocina::Models::ObjectType.image,
                       admin_policy_id:)
             .new(
-              label: expected_title,
               identification: expected_identification,
               structural: expected_structural,
               access: {
@@ -171,7 +166,6 @@ RSpec.describe 'Create object' do
                                    note: [{ value: 'by Some Author.',
                                             type: 'statement of responsibility' }])
         end
-        let(:label) { 'Here is my title' }
         let(:title) { 'Here is my title' }
         let(:marc) do
           { fields: [
@@ -197,7 +191,7 @@ RSpec.describe 'Create object' do
             {
               "cocinaVersion":"#{Cocina::Models::VERSION}",
               "type":"#{Cocina::Models::ObjectType.image}",
-              "label":"#{label}","version":1,
+              "version":1,
               "access":{
                 "view":"#{view}",
                 "download":"none",
@@ -709,7 +703,7 @@ RSpec.describe 'Create object' do
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
             "type":"#{Cocina::Models::ObjectType.image}",
-            "label":"","version":1,
+            "version":1,
             "administrative":{"hasAdminPolicy":"#{admin_policy_id}","partOfProject":"Google Books"},
             "description":{"title":[{"value":"#{title}"}]},
             "identification":#{identification.to_json},
@@ -757,7 +751,8 @@ RSpec.describe 'Create object' do
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.book}",
-          "label":"","version":1,"access":{"view":"world","download":"world"},
+          "version":1,
+          "access":{"view":"world","download":"world"},
           "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
           "description":{"title":[{"value":"#{expected_title}"}]},
           "identification":{"sourceId":"googlebooks:999999"},
@@ -784,7 +779,6 @@ RSpec.describe 'Create object' do
   context 'when an APO is provided' do
     let(:expected) do
       Cocina::Models::AdminPolicy.new(type: Cocina::Models::ObjectType.admin_policy,
-                                      label: 'This is my label',
                                       version: 1,
                                       description: {
                                         title: [{ value: 'This is my title' }],
@@ -824,7 +818,7 @@ RSpec.describe 'Create object' do
         {
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.admin_policy}",
-          "label":"This is my label","version":1,
+          "version":1,
           "administrative":{
             "accessTemplate":{
               "view":"location-based",
@@ -880,7 +874,6 @@ RSpec.describe 'Create object' do
   context 'when an embargo is provided' do
     let(:expected) do
       Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.book,
-                              label: 'This is my label',
                               version: 1,
                               description: {
                                 title: [{ value: 'This is my title' }],
@@ -909,7 +902,7 @@ RSpec.describe 'Create object' do
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.book}",
-          "label":"This is my label","version":1,"access":{"view":"stanford","download":"none","controlledDigitalLending":false,
+          "version":1,"access":{"view":"stanford","download":"none","controlledDigitalLending":false,
           "embargo":{"view":"world","download":"world","releaseDate":"2020-02-29T07:00:00.000+00:00"}},
           "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
           "description":{"title":[{"value":"This is my title"}]},
@@ -938,7 +931,6 @@ RSpec.describe 'Create object' do
   context 'when location access is specified' do
     let(:expected) do
       Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.book,
-                              label: 'This is my label',
                               version: 1,
                               description: {
                                 title: [{ value: 'This is my title' }],
@@ -966,7 +958,7 @@ RSpec.describe 'Create object' do
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.book}",
-          "label":"This is my label","version":1,
+          "version":1,
           "access":{"view":"location-based","download":"location-based","location":"m&m"},
           "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
           "description":{"title":[{"value":"This is my title"}]},
@@ -1013,7 +1005,7 @@ RSpec.describe 'Create object' do
         {#{' '}
           "cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.book}",
-          "label":"","version":1,
+          "version":1,
           "access":{"view":"world","download":"none"},
           "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
           "description":{"title":[{"value":"This is my title"}]},
@@ -1052,7 +1044,7 @@ RSpec.describe 'Create object' do
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
             "type":"#{Cocina::Models::ObjectType.object}",
-            "label":"","version":1,"access":{},
+            "version":1,"access":{},
             "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
             "identification":{"sourceId":"googlebooks:999999"},
             "description":{"title":[{"value":"This is my title"}]},
@@ -1088,7 +1080,7 @@ RSpec.describe 'Create object' do
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
             "type":"#{Cocina::Models::ObjectType.object}",
-            "label":"","version":1,"access":{},
+            "version":1,"access":{},
             "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
             "identification":{"sourceId":"googlebooks:999999"},
             "description":{"title":[{"value":"This is my title"}]},
@@ -1126,7 +1118,7 @@ RSpec.describe 'Create object' do
           {#{' '}
             "cocinaVersion":"#{Cocina::Models::VERSION}",
             "type":"#{Cocina::Models::ObjectType.object}",
-            "label":"","version":1,
+            "version":1,
             "administrative":{"hasAdminPolicy":"#{admin_policy_id}"},
             "access":{},
             "identification":{"sourceId":"googlebooks:999999"},

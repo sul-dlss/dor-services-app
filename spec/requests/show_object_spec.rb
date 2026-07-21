@@ -18,7 +18,6 @@ RSpec.describe 'Get the object' do
           {
             externalIdentifier: druid,
             type: Cocina::Models::ObjectType.object,
-            label: 'foo',
             version: 1,
             access: {
               view: 'world',
@@ -53,7 +52,6 @@ RSpec.describe 'Get the object' do
       before do
         object.head_version.update(
           content_type: Cocina::Models::ObjectType.object,
-          label: 'foo',
           version: 1,
           access: {
             view: 'world',
@@ -209,7 +207,6 @@ RSpec.describe 'Get the object' do
         json = response.parsed_body
 
         expect(json['type']).to eq Cocina::Models::ObjectType.admin_policy
-        expect(json['label']).to eq 'Test Admin Policy'
         expect(json['version']).to eq 1
         expect(json['administrative']['registrationWorkflow']).to eq %w[registrationWF goobiWF]
         expect(json['administrative']['disseminationWorkflow']).to eq 'wasCrawlPreassemblyWF'

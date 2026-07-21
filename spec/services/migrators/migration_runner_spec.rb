@@ -79,21 +79,21 @@ RSpec.describe Migrators::MigrationRunner do
     subject(:results) { described_class.new(migrator_class:, repository_object:, mode:).call }
 
     let(:repository_object) do
-      # This repository object will have 3 versions, each with a unique label:
+      # This repository object will have 3 versions, each with a unique title:
       # version 1
       # version 2 (last closed)
       # version 3 (opened and head)
       create(:repository_object, :with_repository_object_version).tap do |repository_object|
-        repository_object.head_version.update!(label: 'version 1')
+        update_title!(repository_object.head_version, 'version 1 title')
         # First version is open. Close it.
         repository_object.close_version!(description: 'first version')
         # Open a second version.
         repository_object.open_version!(description: 'second version')
-        repository_object.head_version.update!(label: 'version 2')
+        update_title!(repository_object.head_version, 'version 2 title')
         # Close it and open a third version.
         repository_object.close_version!
         repository_object.open_version!(description: 'third version')
-        repository_object.head_version.update!(label: 'version 3')
+        update_title!(repository_object.head_version, 'version 3 title')
       end
     end
     let(:druid) { repository_object.external_identifier }
@@ -106,6 +106,11 @@ RSpec.describe Migrators::MigrationRunner do
       allow(UpdateObjectService).to receive(:update)
     end
 
+    def update_title!(repository_object_version, title)
+      new_description = repository_object_version.description.merge('title' => [{ 'value' => title }])
+      repository_object_version.update!(description: new_description)
+    end
+
     context 'when migration strategy is commit' do
       context 'when some versions are changed' do
         let(:migrator_class) do
@@ -113,7 +118,10 @@ RSpec.describe Migrators::MigrationRunner do
             'Migrators::TestMigrator',
             Class.new(Migrators::Base) do
               def migrate
-                model_hash['label'] = "#{model_hash['label']} migrated" unless model_hash['version'] == 2
+                unless model_hash['version'] == 2
+                  model_hash['description']['title'].first['value'] =
+                    "#{model_hash['description']['title'].first['value']} migrated"
+                end
                 model_hash
               end
             end
@@ -125,9 +133,13 @@ RSpec.describe Migrators::MigrationRunner do
             hash_including(external_identifier: druid, version: 1, status: 'MIGRATED'),
             hash_including(external_identifier: druid, version: 3, status: 'MIGRATED')
           )
-          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1 migrated'
-          expect(repository_object.versions.find_by(version: 2).label).to eq 'version 2'
-          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3 migrated'
+
+          expect(repository_object.reload.versions.find_by(version: 1).description['title'].first['value'])
+            .to eq 'version 1 title migrated'
+          expect(repository_object.versions.find_by(version: 2).description['title'].first['value'])
+            .to eq 'version 2 title'
+          expect(repository_object.versions.find_by(version: 3).description['title'].first['value'])
+            .to eq 'version 3 title migrated'
 
           expect(version_service).not_to have_received(:open)
           expect(version_service).not_to have_received(:close)
@@ -165,7 +177,8 @@ RSpec.describe Migrators::MigrationRunner do
           'Migrators::TestMigrator',
           Class.new(Migrators::Base) do
             def migrate
-              model_hash['label'] = "#{model_hash['label']} migrated"
+              model_hash['description']['title'].first['value'] =
+                "#{model_hash['description']['title'].first['value']} migrated"
               model_hash
             end
 
@@ -187,14 +200,17 @@ RSpec.describe Migrators::MigrationRunner do
           )
 
           # Changes aren't persisted.
-          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1'
-          expect(repository_object.versions.find_by(version: 2).label).to eq 'version 2'
-          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3'
+          expect(repository_object.reload.versions.find_by(version: 1).description['title'].first['value'])
+            .to eq 'version 1 title'
+          expect(repository_object.versions.find_by(version: 2).description['title'].first['value'])
+            .to eq 'version 2 title'
+          expect(repository_object.versions.find_by(version: 3).description['title'].first['value'])
+            .to eq 'version 3 title'
 
           expect(version_service).not_to have_received(:open)
           expect(UpdateObjectService).to have_received(:update) do |args|
             expect(args[:cocina_object]).to be_an_instance_of(Cocina::Models::DROWithMetadata)
-            expect(args[:cocina_object].label).to eq 'version 3 migrated'
+            expect(args[:cocina_object].description.title.first.value).to eq 'version 3 title migrated'
             expect(args[:skip_open_check]).to be true
           end
           expect(version_service).not_to have_received(:close)
@@ -214,9 +230,12 @@ RSpec.describe Migrators::MigrationRunner do
           )
 
           # Changes aren't persisted.
-          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1'
-          expect(repository_object.versions.find_by(version: 2).label).to eq 'version 2'
-          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3'
+          expect(repository_object.reload.versions.find_by(version: 1).description['title'].first['value'])
+            .to eq 'version 1 title'
+          expect(repository_object.versions.find_by(version: 2).description['title'].first['value'])
+            .to eq 'version 2 title'
+          expect(repository_object.versions.find_by(version: 3).description['title'].first['value'])
+            .to eq 'version 3 title'
 
           expect(VersionService).to have_received(:new)
             .with(druid:, version: 3, repository_object: repository_object).at_least(:once)
@@ -230,7 +249,7 @@ RSpec.describe Migrators::MigrationRunner do
           expect(UpdateObjectService).to have_received(:update) do |args|
             expect(args[:cocina_object]).to be_an_instance_of(Cocina::Models::DROWithMetadata)
             expect(args[:cocina_object].version).to eq 4
-            expect(args[:cocina_object].label).to eq 'version 3 migrated'
+            expect(args[:cocina_object].description.title.first.value).to eq 'version 3 title migrated'
             expect(args[:skip_open_check]).to be true
           end
 
@@ -248,7 +267,8 @@ RSpec.describe Migrators::MigrationRunner do
             'Migrators::TestMigrator',
             Class.new(Migrators::Base) do
               def migrate
-                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash['description']['title'].first['value'] =
+                  "#{model_hash['description']['title'].first['value']} migrated"
                 model_hash
               end
 
@@ -317,7 +337,10 @@ RSpec.describe Migrators::MigrationRunner do
           'Migrators::TestMigrator',
           Class.new(Migrators::Base) do
             def migrate
-              model_hash['label'] = "#{model_hash['label']} migrated" unless model_hash['version'] == 2
+              unless model_hash['version'] == 2
+                model_hash['description']['title'].first['value'] =
+                  "#{model_hash['description']['title'].first['value']} migrated"
+              end
               model_hash
             end
 
@@ -338,9 +361,12 @@ RSpec.describe Migrators::MigrationRunner do
             hash_including(external_identifier: druid, version: 1, status: 'MIGRATED'),
             hash_including(external_identifier: druid, version: 3, status: 'MIGRATED')
           )
-          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1 migrated'
-          expect(repository_object.versions.find_by(version: 2).label).to eq 'version 2'
-          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3 migrated'
+          expect(repository_object.reload.versions.find_by(version: 1).description['title'].first['value'])
+            .to eq 'version 1 title migrated'
+          expect(repository_object.versions.find_by(version: 2).description['title'].first['value'])
+            .to eq 'version 2 title'
+          expect(repository_object.versions.find_by(version: 3).description['title'].first['value'])
+            .to eq 'version 3 title migrated'
 
           expect(version_service).not_to have_received(:open)
           expect(version_service).not_to have_received(:close)
@@ -366,10 +392,14 @@ RSpec.describe Migrators::MigrationRunner do
             hash_including(external_identifier: druid, version: 3, status: 'MIGRATED'),
             hash_including(external_identifier: druid, version: 4, status: 'MIGRATED')
           )
-          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1 migrated'
-          expect(repository_object.versions.find_by(version: 2).label).to eq 'version 2'
-          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3 migrated'
-          expect(repository_object.versions.find_by(version: 4).label).to eq 'version 3 migrated'
+          expect(repository_object.reload.versions.find_by(version: 1).description['title'].first['value'])
+            .to eq 'version 1 title migrated'
+          expect(repository_object.versions.find_by(version: 2).description['title'].first['value'])
+            .to eq 'version 2 title'
+          expect(repository_object.versions.find_by(version: 3).description['title'].first['value'])
+            .to eq 'version 3 title migrated'
+          expect(repository_object.versions.find_by(version: 4).description['title'].first['value'])
+            .to eq 'version 3 title migrated'
 
           expect(version_service).to have_received(:open).with(
             cocina_object: cocina_object_for_opening,
@@ -415,7 +445,10 @@ RSpec.describe Migrators::MigrationRunner do
           'Migrators::TestMigrator',
           Class.new(Migrators::Base) do
             def migrate
-              model_hash['label'] = "#{model_hash['label']} migrated" unless model_hash['version'] == 2
+              unless model_hash['version'] == 2
+                model_hash['description']['title'].first['value'] =
+                  "#{model_hash['description']['title'].first['value']} migrated"
+              end
               model_hash
             end
 
@@ -436,9 +469,12 @@ RSpec.describe Migrators::MigrationRunner do
             hash_including(external_identifier: druid, version: 1, status: 'MIGRATED'),
             hash_including(external_identifier: druid, version: 3, status: 'MIGRATED')
           )
-          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1 migrated'
-          expect(repository_object.versions.find_by(version: 2).label).to eq 'version 2'
-          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3 migrated'
+          expect(repository_object.reload.versions.find_by(version: 1).description['title'].first['value'])
+            .to eq 'version 1 title migrated'
+          expect(repository_object.versions.find_by(version: 2).description['title'].first['value'])
+            .to eq 'version 2 title'
+          expect(repository_object.versions.find_by(version: 3).description['title'].first['value'])
+            .to eq 'version 3 title migrated'
 
           expect(version_service).not_to have_received(:open)
           expect(version_service).not_to have_received(:close)
@@ -482,7 +518,8 @@ RSpec.describe Migrators::MigrationRunner do
             Class.new(Migrators::Base) do
               def migrate
                 model_hash['identification'].delete('sourceId') if model_hash['version'] == 1
-                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash['description']['title'].first['value'] =
+                  "#{model_hash['description']['title'].first['value']} migrated"
                 model_hash
               end
 
@@ -500,9 +537,12 @@ RSpec.describe Migrators::MigrationRunner do
             hash_including(external_identifier: druid, version: 3, status: 'MIGRATED')
           )
 
-          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1 migrated'
-          expect(repository_object.versions.find_by(version: 2).label).to eq 'version 2 migrated'
-          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3 migrated'
+          expect(repository_object.reload.versions.find_by(version: 1).description['title'].first['value'])
+            .to eq 'version 1 title migrated'
+          expect(repository_object.versions.find_by(version: 2).description['title'].first['value'])
+            .to eq 'version 2 title migrated'
+          expect(repository_object.versions.find_by(version: 3).description['title'].first['value'])
+            .to eq 'version 3 title migrated'
 
           expect { repository_object.reload.versions.find_by(version: 1).to_cocina }.to raise_error(Cocina::Models::ValidationError)
         end
@@ -514,7 +554,8 @@ RSpec.describe Migrators::MigrationRunner do
             'Migrators::TestMigrator',
             Class.new(Migrators::Base) do
               def migrate
-                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash['description']['title'].first['value'] =
+                  "#{model_hash['description']['title'].first['value']} migrated"
                 model_hash['identification'].delete('sourceId') if model_hash['version'] == 3
                 model_hash
               end
@@ -531,9 +572,12 @@ RSpec.describe Migrators::MigrationRunner do
             hash_including(external_identifier: druid, version: 3, status: 'INVALID', exception: /When validating DRO/)
           )
 
-          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1'
-          expect(repository_object.versions.find_by(version: 2).label).to eq 'version 2'
-          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3'
+          expect(repository_object.reload.versions.find_by(version: 1).description['title'].first['value'])
+            .to eq 'version 1 title'
+          expect(repository_object.versions.find_by(version: 2).description['title'].first['value'])
+            .to eq 'version 2 title'
+          expect(repository_object.versions.find_by(version: 3).description['title'].first['value'])
+            .to eq 'version 3 title'
         end
       end
 
@@ -543,7 +587,8 @@ RSpec.describe Migrators::MigrationRunner do
             'Migrators::TestMigrator',
             Class.new(Migrators::Base) do
               def migrate
-                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash['description']['title'].first['value'] =
+                  "#{model_hash['description']['title'].first['value']} migrated"
                 model_hash['identification'].delete('sourceId') if model_hash['version'] == 2
                 model_hash
               end
@@ -560,9 +605,12 @@ RSpec.describe Migrators::MigrationRunner do
             hash_including(external_identifier: druid, version: 2, status: 'INVALID', exception: /When validating DRO/)
           )
 
-          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1'
-          expect(repository_object.versions.find_by(version: 2).label).to eq 'version 2'
-          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3'
+          expect(repository_object.reload.versions.find_by(version: 1).description['title'].first['value'])
+            .to eq 'version 1 title'
+          expect(repository_object.versions.find_by(version: 2).description['title'].first['value'])
+            .to eq 'version 2 title'
+          expect(repository_object.versions.find_by(version: 3).description['title'].first['value'])
+            .to eq 'version 3 title'
         end
       end
     end
@@ -575,7 +623,8 @@ RSpec.describe Migrators::MigrationRunner do
             Class.new(Migrators::Base) do
               def migrate
                 model_hash['identification'].delete('sourceId') if model_hash['version'] == 1
-                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash['description']['title'].first['value'] =
+                  "#{model_hash['description']['title'].first['value']} migrated"
                 model_hash
               end
             end
@@ -588,9 +637,12 @@ RSpec.describe Migrators::MigrationRunner do
                            exception: /When validating DRO/)
           )
 
-          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1'
-          expect(repository_object.versions.find_by(version: 2).label).to eq 'version 2'
-          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3'
+          expect(repository_object.reload.versions.find_by(version: 1).description['title'].first['value'])
+            .to eq 'version 1 title'
+          expect(repository_object.versions.find_by(version: 2).description['title'].first['value'])
+            .to eq 'version 2 title'
+          expect(repository_object.versions.find_by(version: 3).description['title'].first['value'])
+            .to eq 'version 3 title'
         end
       end
 
@@ -600,7 +652,8 @@ RSpec.describe Migrators::MigrationRunner do
             'Migrators::TestMigrator',
             Class.new(Migrators::Base) do
               def migrate
-                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash['description']['title'].first['value'] =
+                  "#{model_hash['description']['title'].first['value']} migrated"
                 model_hash
               end
             end
@@ -622,9 +675,12 @@ RSpec.describe Migrators::MigrationRunner do
             hash_including(external_identifier: druid, version: 3, status: 'MIGRATED')
           )
 
-          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1 migrated'
-          expect(repository_object.versions.find_by(version: 2).label).to eq 'version 2 migrated'
-          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3 migrated'
+          expect(repository_object.reload.versions.find_by(version: 1).description['title'].first['value'])
+            .to eq 'version 1 title migrated'
+          expect(repository_object.versions.find_by(version: 2).description['title'].first['value'])
+            .to eq 'version 2 title migrated'
+          expect(repository_object.versions.find_by(version: 3).description['title'].first['value'])
+            .to eq 'version 3 title migrated'
         end
       end
     end
@@ -635,7 +691,8 @@ RSpec.describe Migrators::MigrationRunner do
           'Migrators::TestMigrator',
           Class.new(Migrators::Base) do
             def migrate
-              model_hash['label'] = "#{model_hash['label']} migrated"
+              model_hash['description']['title'].first['value'] =
+                "#{model_hash['description']['title'].first['value']} migrated"
               model_hash
             end
           end
@@ -651,9 +708,12 @@ RSpec.describe Migrators::MigrationRunner do
           hash_including(external_identifier: druid, version: 1, status: 'MIGRATED'),
           hash_including(external_identifier: druid, version: 3, status: 'MIGRATED')
         )
-        expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1 migrated'
-        expect(repository_object.versions.find_by(version: 2).label).to eq 'version 2'
-        expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3 migrated'
+        expect(repository_object.reload.versions.find_by(version: 1).description['title'].first['value'])
+          .to eq 'version 1 title migrated'
+        expect(repository_object.versions.find_by(version: 2).description['title'].first['value'])
+          .to eq 'version 2 title'
+        expect(repository_object.versions.find_by(version: 3).description['title'].first['value'])
+          .to eq 'version 3 title migrated'
       end
     end
 
@@ -666,7 +726,8 @@ RSpec.describe Migrators::MigrationRunner do
             'Migrators::TestMigrator',
             Class.new(Migrators::Base) do
               def migrate
-                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash['description']['title'].first['value'] =
+                  "#{model_hash['description']['title'].first['value']} migrated"
                 model_hash
               end
 
@@ -703,7 +764,8 @@ RSpec.describe Migrators::MigrationRunner do
             'Migrators::TestMigrator',
             Class.new(Migrators::Base) do
               def migrate
-                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash['description']['title'].first['value'] =
+                  "#{model_hash['description']['title'].first['value']} migrated"
                 model_hash
               end
 
@@ -725,9 +787,12 @@ RSpec.describe Migrators::MigrationRunner do
             hash_including(external_identifier: druid, version: 3, status: 'MIGRATED (dry run)')
           )
 
-          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1'
-          expect(repository_object.versions.find_by(version: 2).label).to eq 'version 2'
-          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3'
+          expect(repository_object.reload.versions.find_by(version: 1).description['title'].first['value'])
+            .to eq 'version 1 title'
+          expect(repository_object.versions.find_by(version: 2).description['title'].first['value'])
+            .to eq 'version 2 title'
+          expect(repository_object.versions.find_by(version: 3).description['title'].first['value'])
+            .to eq 'version 3 title'
 
           expect(version_service).not_to have_received(:open)
           expect(version_service).not_to have_received(:close)
@@ -740,7 +805,8 @@ RSpec.describe Migrators::MigrationRunner do
             'Migrators::TestMigrator',
             Class.new(Migrators::Base) do
               def migrate
-                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash['description']['title'].first['value'] =
+                  "#{model_hash['description']['title'].first['value']} migrated"
                 model_hash
               end
 
@@ -758,9 +824,12 @@ RSpec.describe Migrators::MigrationRunner do
             hash_including(external_identifier: druid, version: 3, status: 'MIGRATED (dry run)')
           )
 
-          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1'
-          expect(repository_object.versions.find_by(version: 2).label).to eq 'version 2'
-          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3'
+          expect(repository_object.reload.versions.find_by(version: 1).description['title'].first['value'])
+            .to eq 'version 1 title'
+          expect(repository_object.versions.find_by(version: 2).description['title'].first['value'])
+            .to eq 'version 2 title'
+          expect(repository_object.versions.find_by(version: 3).description['title'].first['value'])
+            .to eq 'version 3 title'
 
           expect(Publish::MetadataTransferService).not_to have_received(:publish)
         end
@@ -772,7 +841,8 @@ RSpec.describe Migrators::MigrationRunner do
             'Migrators::TestMigrator',
             Class.new(Migrators::Base) do
               def migrate
-                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash['description']['title'].first['value'] =
+                  "#{model_hash['description']['title'].first['value']} migrated"
                 model_hash
               end
             end
@@ -786,9 +856,12 @@ RSpec.describe Migrators::MigrationRunner do
             hash_including(external_identifier: druid, version: 3, status: 'MIGRATED (dry run)')
           )
 
-          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1'
-          expect(repository_object.versions.find_by(version: 2).label).to eq 'version 2'
-          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3'
+          expect(repository_object.reload.versions.find_by(version: 1).description['title'].first['value'])
+            .to eq 'version 1 title'
+          expect(repository_object.versions.find_by(version: 2).description['title'].first['value'])
+            .to eq 'version 2 title'
+          expect(repository_object.versions.find_by(version: 3).description['title'].first['value'])
+            .to eq 'version 3 title'
         end
       end
 
@@ -798,7 +871,8 @@ RSpec.describe Migrators::MigrationRunner do
             'Migrators::TestMigrator',
             Class.new(Migrators::Base) do
               def migrate
-                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash['description']['title'].first['value'] =
+                  "#{model_hash['description']['title'].first['value']} migrated"
                 model_hash
               end
 
@@ -827,7 +901,8 @@ RSpec.describe Migrators::MigrationRunner do
             'Migrators::TestMigrator',
             Class.new(Migrators::Base) do
               def migrate
-                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash['description']['title'].first['value'] =
+                  "#{model_hash['description']['title'].first['value']} migrated"
                 model_hash
               end
 
@@ -868,7 +943,8 @@ RSpec.describe Migrators::MigrationRunner do
             'Migrators::TestMigrator',
             Class.new(Migrators::Base) do
               def migrate
-                model_hash['label'] = "#{model_hash['label']} migrated"
+                model_hash['description']['title'].first['value'] =
+                  "#{model_hash['description']['title'].first['value']} migrated"
                 model_hash
               end
 
@@ -925,7 +1001,8 @@ RSpec.describe Migrators::MigrationRunner do
           'Migrators::TestMigrator',
           Class.new(Migrators::Base) do
             def migrate
-              model_hash['label'] = "#{model_hash['label']} migrated"
+              model_hash['description']['title'].first['value'] =
+                "#{model_hash['description']['title'].first['value']} migrated"
               model_hash
             end
 
@@ -945,8 +1022,10 @@ RSpec.describe Migrators::MigrationRunner do
           expect(results.map(&:to_h)).to contain_exactly(
             hash_including(external_identifier: druid, status: 'SKIPPED')
           )
-          expect(repository_object.reload.versions.find_by(version: 1).label).to eq 'version 1'
-          expect(repository_object.versions.find_by(version: 3).label).to eq 'version 3'
+          expect(repository_object.reload.versions.find_by(version: 1).description['title'].first['value'])
+            .to eq 'version 1 title'
+          expect(repository_object.versions.find_by(version: 3).description['title'].first['value'])
+            .to eq 'version 3 title'
         end
 
         context 'when dryrun' do
@@ -993,7 +1072,8 @@ RSpec.describe Migrators::MigrationRunner do
           'Migrators::TestMigrator',
           Class.new(Migrators::Base) do
             def migrate
-              model_hash['label'] = "#{model_hash['label']} migrated"
+              model_hash['description']['title'].first['value'] =
+                "#{model_hash['description']['title'].first['value']} migrated"
               model_hash
             end
 
@@ -1022,7 +1102,8 @@ RSpec.describe Migrators::MigrationRunner do
           'Migrators::TestMigrator',
           Class.new(Migrators::Base) do
             def migrate
-              model_hash['label'] = "#{model_hash['label']} migrated"
+              model_hash['description']['title'].first['value'] =
+                "#{model_hash['description']['title'].first['value']} migrated"
               model_hash
             end
 

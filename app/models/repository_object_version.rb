@@ -76,7 +76,6 @@ class RepositoryObjectVersion < ApplicationRecord
       cocinaVersion: cocina_version,
       type: content_type,
       externalIdentifier: repository_object.external_identifier,
-      label:,
       version:,
       access:,
       administrative:,
