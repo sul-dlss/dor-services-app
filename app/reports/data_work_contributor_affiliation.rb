@@ -27,7 +27,10 @@ class DataWorkContributorAffiliation
     sql_result_rows.map do |row|
       druid = row['druid']
       collection_druid = row['collection_druid']
-      collection_title = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
+      collection_head_version = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version
+      if collection_head_version&.has_cocina?
+        collection_title = Cocina::Models::Builders::TitleBuilder.build(collection_head_version.to_cocina.description.title)
+      end
 
       [
         druid,

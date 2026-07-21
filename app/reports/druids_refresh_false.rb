@@ -10,8 +10,7 @@ class DruidsRefreshFalse
       jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio" && @.refresh == false).catalogRecordId') ->> 0 as catalog_record_id,
       jsonb_path_query(rov.description, '$.title[0].structuredValue[*] ? (@.type == "main title").value') ->> 0 as structured_title,
       jsonb_path_query(rov.description, '$.title[0].value') ->> 0 as title,
-      ro.object_type as object_type,
-      rov.label as label
+      ro.object_type as object_type
     FROM repository_objects AS ro, repository_object_versions AS rov
     WHERE
       jsonb_path_exists(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio" && @.refresh == false)')
@@ -19,7 +18,7 @@ class DruidsRefreshFalse
   SQL
 
   def self.report
-    puts %w[catalogRecordId druid object_type label structured_title title collection_name collection_druid].join(',')
+    puts %w[catalogRecordId druid object_type structured_title title collection_name collection_druid].join(',')
     rows(SQL).compact.each { |row| puts row }
   end
 
@@ -28,13 +27,15 @@ class DruidsRefreshFalse
 
     sql_result_rows.map do |row|
       collection_druid = row['collection_id']
-      collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
+      collection_head_version = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version
+      if collection_head_version&.has_cocina?
+        collection_name = Cocina::Models::Builders::TitleBuilder.build(collection_head_version.to_cocina.description.title)
+      end
 
       [
         row['catalog_record_id'],
         row['druid'],
         row['object_type'],
-        row['label'],
         row['structured_title']&.delete('\n'),
         row['title'],
         collection_name,

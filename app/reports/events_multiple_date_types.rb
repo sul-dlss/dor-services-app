@@ -45,7 +45,10 @@ class EventsMultipleDateTypes
         next if event_date_types.blank? || event_date_types.size == 1
 
         collection_druid = rows.first['collection_id']
-        collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
+        collection_head_version = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version
+        if collection_head_version&.has_cocina?
+          collection_name = Cocina::Models::Builders::TitleBuilder.build(collection_head_version.to_cocina.description.title)
+        end
 
         [
           id,

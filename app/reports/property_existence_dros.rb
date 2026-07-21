@@ -26,7 +26,10 @@ class PropertyExistenceDros
     ActiveRecord::Base.connection.execute(property_query).to_a.each do |row|
       next if row.blank?
 
-      collection_name = RepositoryObject.collections.find_by(external_identifier: row['collection_druid'])&.head_version&.label
+      collection_head_version = RepositoryObject.collections.find_by(external_identifier: row['collection_druid'])&.head_version
+      if collection_head_version&.has_cocina?
+        collection_name = Cocina::Models::Builders::TitleBuilder.build(collection_head_version.to_cocina.description.title)
+      end
 
       puts [
         row['item_druid'],
