@@ -59,9 +59,9 @@ module Cocina
 
       def date
         value = field.subfields.find { it.code == date_code }&.value
+        value = value.delete_suffix('.') if value && strip_date_punctuation
         return if value.blank?
 
-        value = value.delete_suffix('.') if strip_date_punctuation
         [{ value:, type: }.compact_blank]
       end
 
