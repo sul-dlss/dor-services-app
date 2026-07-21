@@ -257,6 +257,47 @@ RSpec.describe Cocina::FromMarc::Identifier do
       end
     end
 
+    context 'with unrecognized source code (024 ind1=7)' do
+      # See PB0439401 2|CCP
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '024' => {
+              'ind1' => '7', 'ind2' => '0',
+              'subfields' => [
+                { 'a' => 'PB0439401' },
+                { '2' => 'CCP' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'excludes the identifier' do
+        expect(build).to eq []
+      end
+    end
+
+    context 'with recognized source code (024 ind1=7)' do
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '024' => {
+              'ind1' => '7', 'ind2' => ' ',
+              'subfields' => [
+                { 'a' => '123' },
+                { '2' => 'apis' }
+              ]
+            } }
+          ]
+        }
+      end
+
+      it 'returns identifier with source code' do
+        expect(build).to eq [{ value: '123', source: { code: 'apis' } }]
+      end
+    end
+
     context 'with multiple other identifiers (024)' do
       let(:marc_hash) do
         {
