@@ -237,6 +237,48 @@ RSpec.describe Cocina::FromMarc::Title do
       end
     end
 
+    context 'with title with multiple scripts and non-sorting characters (245/880)' do
+      # See yt945wz5602
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '245' => { 'ind1' => '1', 'ind2' => '3', 'subfields' => [
+              { '6' => '880-02' },
+              { 'a' => 'ha-Ṿeʻidah ha-shelishit shel ha-Mizraḥi :' },
+              { 'b' => 'Shiḳago, 23, 25, 26, ṿe-27 Iyar, din ṿe-ḥeshbon rishmi.' }
+            ] } },
+            { '880' => { 'ind1' => '1', 'ind2' => '1', 'subfields' => [
+              { '6' => '245-02//r' },
+              { 'a' => 'הועידה השלישית של המזרחי :' },
+              { 'b' => 'שיקגו, כ"ג, כ"ה, כ"ו וכ"ז אייר, דין וחשבון רשמי.' }
+            ] } }
+          ]
+        }
+      end
+
+      it 'does not split non-sorting characters out of the main title' do
+        expect(build).to eq([
+                              {
+                                parallelValue: [
+                                  {
+                                    structuredValue: [
+                                      { value: 'ha-Ṿeʻidah ha-shelishit shel ha-Mizraḥi', type: 'main title' },
+                                      { value: 'Shiḳago, 23, 25, 26, ṿe-27 Iyar, din ṿe-ḥeshbon rishmi.',
+                                        type: 'subtitle' }
+                                    ]
+                                  },
+                                  {
+                                    structuredValue: [
+                                      { value: 'הועידה השלישית של המזרחי', type: 'main title' },
+                                      { value: 'שיקגו, כ"ג, כ"ה, כ"ו וכ"ז אייר, דין וחשבון רשמי.', type: 'subtitle' }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ])
+      end
+    end
+
     context 'when title and alternative both have multiple scripts (245, 246, 880s for each)' do
       # See a11349573
       let(:marc_hash) do

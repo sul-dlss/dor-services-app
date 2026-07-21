@@ -66,11 +66,11 @@ module Cocina
         end
       end
 
-      def basic_or_structured_title(field)
+      def basic_or_structured_title(field, non_sorting: true)
         if has_subfield_a_without_non_sorting?(field)
           basic_title(field)
         else
-          structured_title(field)
+          structured_title(field, non_sorting:)
         end
       end
 
@@ -125,13 +125,13 @@ module Cocina
         [{ value: Util.strip_punctuation(title_value) }]
       end
 
-      def structured_title(field) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+      def structured_title(field, non_sorting: true) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
         return unless field
 
         title_value = Util.subfield_value(field, 'a')
         return [] if title_value.blank?
 
-        nonsort_count = field.indicator2.to_i
+        nonsort_count = non_sorting ? field.indicator2.to_i : 0
         unless nonsort_count.zero?
           non_sort = { value: Util.strip_punctuation(title_value[0..(nonsort_count - 1)]),
                        type: 'nonsorting characters' }
@@ -156,7 +156,8 @@ module Cocina
       def parallel_title(field, linked_field)
         [
           {
-            parallelValue: basic_or_structured_title(field) + basic_or_structured_title(linked_field)
+            parallelValue: basic_or_structured_title(field, non_sorting: false) +
+              basic_or_structured_title(linked_field, non_sorting: false)
           }
         ]
       end
