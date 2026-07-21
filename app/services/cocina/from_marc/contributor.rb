@@ -107,15 +107,22 @@ module Cocina
 
       # For 110/710
       def build_corporate(field, primary: false)
-        contributor = { type: 'organization' }
-        name = Util.subfield_values(field, %w[a b c d n]).map { |value| value.delete_suffix(',') }.join(' ')
+        contributor = {}
+        name = build_corporate_name(field)
         contributor[:name] = [{ value: name }] if name.present?
         id = build_id(field).first
         contributor[:identifier] = [{ uri: id }] if id
+        return if contributor.blank?
+
         roles = build_roles(field)
         contributor[:role] = roles if roles.present?
         contributor[:status] = 'primary' if primary
+        contributor[:type] = 'organization'
         contributor
+      end
+
+      def build_corporate_name(field)
+        Util.subfield_values(field, %w[a b c d n]).map { |value| value.delete_suffix(',') }.join(' ')
       end
 
       # For 111/711
