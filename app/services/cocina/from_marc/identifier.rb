@@ -39,6 +39,11 @@ module Cocina
         '4' => 'SICI'
       }.freeze
 
+      # See https://github.com/sul-dlss/cocina-models/blob/main/identifier_source_codes.yml
+      RECOGNIZED_SOURCE_CODES = YAML.load_file(
+        "#{Gem::Specification.find_by_name('cocina-models').gem_dir}/identifier_source_codes.yml"
+      ).to_set(&:downcase).freeze
+
       PUBLISHER_NUMBER_TYPES = {
         '0' => 'issue number',
         '1' => 'matrix number',
@@ -72,7 +77,9 @@ module Cocina
 
         if field.indicator1 == '7'
           code = field.subfields.find { it.code == '2' }.value
-          code == 'doi' ? { value: parts.join(' '), type: 'DOI' } : { value: parts.join(' '), source: { code: } }
+          return { value: parts.join(' '), type: 'DOI' } if code == 'doi'
+
+          { value: parts.join(' '), source: { code: } } if RECOGNIZED_SOURCE_CODES.include?(code.downcase)
         elsif (type = OTHER_IDENTIFER_TYPES[field.indicator1])
           { value: parts.join(' '), type: }
         end
