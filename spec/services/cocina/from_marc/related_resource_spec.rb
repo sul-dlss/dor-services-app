@@ -295,6 +295,34 @@ RSpec.describe Cocina::FromMarc::RelatedResource do
       end
     end
 
+    context 'with related title and no contributor (700 ind2 not 2, no $a)' do
+      # constructed
+      let(:marc_hash) do
+        {
+          'fields' => [
+            {
+              '700' => {
+                'ind1' => '0',
+                'ind2' => ' ',
+                'subfields' => [
+                  {
+                    't' => 'Book of hallucinations.'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      end
+
+      it 'returns related to with no contributor' do
+        expect(build).to eq [{
+          type: 'related to',
+          title: [{ value: 'Book of hallucinations.' }]
+        }]
+      end
+    end
+
     context 'with related title with person contributor (700 ind2 not 2, constructed)' do
       # constructed
       let(:marc_hash) do

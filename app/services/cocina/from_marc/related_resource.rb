@@ -141,10 +141,12 @@ module Cocina
                       field['p'], field['o'], field['r'], field['s']].compact_blank.join(' ')
             }
           ],
-          contributor: [
-            contributor
-          ].compact
-        }.compact
+          contributor: contributor_list(contributor)
+        }.compact_blank
+      end
+
+      def contributor_list(contributor)
+        [contributor].compact.select { |c| c.except(:type).present? }
       end
 
       def person_contributor(field)
