@@ -117,5 +117,41 @@ RSpec.describe Cocina::FromMarc::EventDataFieldBuilder do
         expect(build).to be_nil
       end
     end
+
+    context 'when the date subfield contains only a period' do
+      let(:field) do
+        MARC::DataField.new(
+          '264',
+          ' ',
+          '1',
+          ['a', 'Stanford, Calif. :'],
+          ['b', 'Stanford University Press,'],
+          ['c', '.']
+        )
+      end
+
+      it 'omits the date' do
+        expect(build).to eq(
+          type: 'publication',
+          location: [{ value: 'Stanford, Calif.' }],
+          contributor: [{ name: [{ value: 'Stanford University Press' }], role: [{ value: 'publisher' }] }]
+        )
+      end
+    end
+
+    context 'when the date subfield contains only a period and no other fields' do
+      let(:field) do
+        MARC::DataField.new(
+          '260',
+          ' ',
+          ' ',
+          ['c', '.']
+        )
+      end
+
+      it 'returns nil' do
+        expect(build).to be_nil
+      end
+    end
   end
 end
