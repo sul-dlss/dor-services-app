@@ -12,7 +12,8 @@ class PropertyMultipleEvents
   SQL = <<~SQL.squish.freeze
     SELECT jsonb_path_query(rov.description, '#{PURL_JSONB_PATH}') ->> 0 as purl,
            ro.external_identifier,
-           rov.label,
+           jsonb_path_query(rov.description, '$.title[0].structuredValue[*] ? (@.type == "main title").value') ->> 0 as structured_title,
+           jsonb_path_query(rov.description, '$.title[0].value') ->> 0 as title,
            jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id,
            jsonb_path_query(rov.administrative, '$.hasAdminPolicy') ->> 0 as apo
            FROM repository_objects AS ro, repository_object_versions AS rov WHERE
@@ -36,11 +37,14 @@ class PropertyMultipleEvents
       .group_by { |row| row['external_identifier'] }
       .map do |_id, rows|
         collection_druid = rows.first['collection_id']
-        collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
+        collection_head_version = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version
+        if collection_head_version&.has_cocina?
+          collection_name = Cocina::Models::Builders::TitleBuilder.build(collection_head_version.to_cocina.description.title)
+        end
 
         [
           rows.first['purl'],
-          rows.first['label'],
+          (rows.first['structured_title'] || rows.first['title'])&.delete("\n"),
           collection_name,
           rows.first['apo']
         ].to_csv

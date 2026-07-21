@@ -32,7 +32,10 @@ class DataWorkType
     sql_result_rows.map do |row|
       druid = row['druid']
       collection_druid = row['collection_druid']
-      collection_title = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
+      collection_head_version = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version
+      if collection_head_version&.has_cocina?
+        collection_title = Cocina::Models::Builders::TitleBuilder.build(collection_head_version.to_cocina.description.title)
+      end
       work_subtypes = JSON.parse(row['work_subtypes'] || '[]').join(',')
       object = RepositoryObject.find_by(external_identifier: druid)
       content_type = object&.head_version&.content_type

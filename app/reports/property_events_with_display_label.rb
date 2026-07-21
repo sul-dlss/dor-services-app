@@ -7,7 +7,8 @@
 class PropertyEventsWithDisplayLabel
   SQL = <<~SQL.squish.freeze
     SELECT ro.external_identifier as item_druid,
-           rov.label as title,#{' '}
+           jsonb_path_query(rov.description, '$.title[0].structuredValue[*] ? (@.type == "main title").value') ->> 0 as structured_title,
+           jsonb_path_query(rov.description, '$.title[0].value') ->> 0 as title,
            jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_druid,
            jsonb_path_query_array(rov.description, '$.event.displayLabel') as displayLabels,
            jsonb_path_query_first(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') as catalogRecordId
@@ -27,12 +28,15 @@ class PropertyEventsWithDisplayLabel
     sql_result_rows = ActiveRecord::Base.connection.execute(sql_query).to_a
 
     sql_result_rows.map do |row|
-      collection_name = RepositoryObject.collections.find_by(external_identifier: row['collection_druid'])&.head_version&.label
+      collection_head_version = RepositoryObject.collections.find_by(external_identifier: row['collection_druid'])&.head_version
+      if collection_head_version&.has_cocina?
+        collection_name = Cocina::Models::Builders::TitleBuilder.build(collection_head_version.to_cocina.description.title)
+      end
       display_labels = JSON.parse(row['displaylabels']).map { |label| "\"#{label}\"" }.join(';')
 
       [
         row['item_druid'],
-        row['title'],
+        (row['structured_title'] || row['title'])&.delete("\n"),
         collection_name,
         row['catalogrecordid'],
         display_labels

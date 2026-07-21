@@ -20,7 +20,8 @@ class SubjectsWithoutTypes
 
   SQL = <<~SQL.squish.freeze
     SELECT ro.external_identifier,
-           rov.label as title,
+           jsonb_path_query(rov.description, '$.title[0].structuredValue[*] ? (@.type == "main title").value') ->> 0 as structured_title,
+           jsonb_path_query(rov.description, '$.title[0].value') ->> 0 as title,
            jsonb_path_query(rov.identification, '$.catalogLinks[*] ? (@.catalog == "folio").catalogRecordId') ->> 0 as hrid,
            jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_id,
            jsonb_path_query(rov.administrative, '$.hasAdminPolicy') ->> 0 as apo,
@@ -47,7 +48,10 @@ class SubjectsWithoutTypes
       .group_by { |row| row['external_identifier'] }
       .map do |id, rows|
         collection_druid = rows.first['collection_id']
-        collection_name = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version&.label
+        collection_head_version = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version
+        if collection_head_version&.has_cocina?
+          collection_name = Cocina::Models::Builders::TitleBuilder.build(collection_head_version.to_cocina.description.title)
+        end
         apo_druid = rows.first['apo']
         apo_name = RepositoryObject.admin_policies.find_by(external_identifier: apo_druid)&.head_version&.label
 
@@ -58,7 +62,7 @@ class SubjectsWithoutTypes
         [
           id,
           all_values.join(';'),
-          rows.first['title']&.delete("\n"),
+          (rows.first['structured_title'] || rows.first['title'])&.delete("\n"),
           collection_druid,
           collection_name,
           rows.first['hrid'],
