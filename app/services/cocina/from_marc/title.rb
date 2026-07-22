@@ -67,20 +67,25 @@ module Cocina
       end
 
       def basic_or_structured_title(field, non_sorting: true)
-        if has_subfield_a_without_non_sorting?(field)
+        if has_subfield_a_without_non_sorting?(field, non_sorting:)
           basic_title(field)
         else
           structured_title(field, non_sorting:)
         end
       end
 
-      def has_subfield_a_without_non_sorting?(field)
-        field && ['0', ' '].include?(field.indicator2) && field.subfields.any? do |subfield|
-          subfield.code == 'a'
-        end &&
-          field.subfields.none? do |subfield|
-            %w[b f g k n p s].include?(subfield.code) && Util.strip_punctuation(subfield.value).present?
-          end
+      def has_subfield_a_without_non_sorting?(field, non_sorting:)
+        return false unless field
+        return false if non_sorting && ['0', ' '].exclude?(field.indicator2)
+        return false unless field.subfields.any? { |subfield| subfield.code == 'a' }
+
+        other_title_part_subfields(field).none?
+      end
+
+      def other_title_part_subfields(field)
+        field.subfields.select do |subfield|
+          %w[b f g k n p s].include?(subfield.code) && Util.strip_punctuation(subfield.value).present?
+        end
       end
 
       def alternative_title(alternative_title_field, type: 'alternative')

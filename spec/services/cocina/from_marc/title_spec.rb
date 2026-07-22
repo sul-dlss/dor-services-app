@@ -637,6 +637,46 @@ RSpec.describe Cocina::FromMarc::Title do
       end
     end
 
+    context 'with parallel structured title and a 740 alternative title (245/740/880)' do
+      # See ha101tb7807
+      let(:marc_hash) do
+        {
+          'fields' => [
+            { '245' => { 'ind1' => '1', 'ind2' => '3', 'subfields' => [
+              { '6' => '880-02' },
+              { 'a' => 'ha-Tsiyonut ha-sotsiyalisṭit-- mahi =' },
+              { 'b' => 'Was ist sozialistischer Zionismus /' },
+              { 'c' => 'Berl Locker.' }
+            ] } },
+            { '740' => { 'ind1' => ' ', 'ind2' => '0', 'subfields' => [
+              { 'a' => 'Was ist sozialistischer Zionismus.' }
+            ] } },
+            { '880' => { 'ind1' => '1', 'ind2' => '1', 'subfields' => [
+              { '6' => '245-02//r' },
+              { 'a' => 'הציונות הסוציאליסטית־מהי.' }
+            ] } }
+          ]
+        }
+      end
+
+      it 'returns the parallel structured title and the alternative title' do
+        expect(build).to eq([
+                              {
+                                parallelValue: [
+                                  {
+                                    structuredValue: [
+                                      { value: 'ha-Tsiyonut ha-sotsiyalisṭit-- mahi =', type: 'main title' },
+                                      { value: 'Was ist sozialistischer Zionismus', type: 'subtitle' }
+                                    ]
+                                  },
+                                  { value: 'הציונות הסוציאליסטית־מהי.' }
+                                ]
+                              },
+                              { value: 'Was ist sozialistischer Zionismus.', type: 'alternative' }
+                            ])
+      end
+    end
+
     context 'with alternative title with multiple scripts (246/880)' do
       let(:marc_hash) do
         {
