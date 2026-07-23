@@ -28,14 +28,20 @@ module Migrators
       return if hash.nil?
 
       Array(hash['event']).each do |event_hash|
-        event_hash.delete('parallelEvent')
+        event_hash.delete('parallelEvent') if delete?(event_hash)
       end
 
       Array(hash['event']).delete_if do |event_hash|
-        %w[date contributor location identifier note structuredValue].none? do |field|
+        %w[date contributor location identifier note structuredValue parallelEvent].none? do |field|
           event_hash[field].present?
         end
       end
+    end
+
+    def delete?(event_hash)
+      return false unless event_hash.key?('parallelEvent')
+
+      event_hash['parallelEvent'].empty? || opened_version? || last_closed_version?
     end
   end
 end
