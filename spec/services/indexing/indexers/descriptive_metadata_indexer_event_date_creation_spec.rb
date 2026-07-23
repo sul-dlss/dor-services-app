@@ -309,54 +309,5 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         expect(doc).to include('originInfo_date_created_tesim' => '1900-04-02')
       end
     end
-
-    context 'when creation date is in parallelEvent' do
-      let(:description) do
-        {
-          title: [
-            {
-              value: 'Title'
-            }
-          ],
-          event: [
-            {
-              type: 'creation',
-              parallelEvent: [
-                {
-                  date: [
-                    {
-                      value: '1900-04-02',
-                      note: [
-                        {
-                          value: 'Gregorian',
-                          type: 'calendar'
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  date: [
-                    {
-                      value: '1900-03-20',
-                      note: [
-                        {
-                          value: 'Julian',
-                          type: 'calendar'
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      it 'uses first creation date in parallelEvent' do
-        expect(doc).to include('originInfo_date_created_tesim' => '1900-04-02')
-      end
-    end
   end
 end

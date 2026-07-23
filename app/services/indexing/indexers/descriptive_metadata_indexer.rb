@@ -122,10 +122,9 @@ module Indexing
       end
 
       def publisher_name
-        publish_events = events.map { |event| event.parallelEvent&.first || event }
-        return if publish_events.blank?
+        return if events.blank?
 
-        Indexing::Builders::PublisherNameBuilder.build(publish_events)
+        Indexing::Builders::PublisherNameBuilder.build(events)
       end
 
       def publication_event

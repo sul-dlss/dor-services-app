@@ -31,7 +31,7 @@ module Indexing
       # @return [Cocina::Models::Event, nil] event with date of type desired_date_type and of status primary
       def self.date_type_matches_and_primary(events, desired_date_type)
         events.find do |event|
-          event_dates = Array(event.date) + Array(event.parallelEvent&.map(&:date))
+          event_dates = Array(event.date)
           event_dates.flatten.compact.find do |date|
             next if desired_date_type != date_type(date)
 
@@ -46,7 +46,7 @@ module Indexing
         events.find do |event|
           next unless event_type_matches?(event, desired_date_type)
 
-          event_dates = Array(event.date) + Array(event.parallelEvent&.map(&:date))
+          event_dates = Array(event.date)
           event_dates.flatten.compact.find do |date|
             desired_date_type == date_type(date)
           end
@@ -59,7 +59,7 @@ module Indexing
         events.find do |event|
           next unless event_type_matches?(event, desired_date_type)
 
-          event_dates = Array(event.date) + Array(event.parallelEvent&.map(&:date))
+          event_dates = Array(event.date)
           event_dates.flatten.compact.find do |date|
             date_type(date).blank?
           end
@@ -70,7 +70,7 @@ module Indexing
       # @return [Cocina::Models::Event, nil] event with date of type desired_date_type
       def self.event_has_date_type(events, desired_date_type)
         events.find do |event|
-          event_dates = Array(event.date) + Array(event.parallelEvent&.map(&:date))
+          event_dates = Array(event.date)
           event_dates.flatten.compact.find do |date|
             desired_date_type == date_type(date)
           end
@@ -78,12 +78,9 @@ module Indexing
       end
       private_class_method :event_has_date_type
 
-      # @return [Boolean] true if event type matches or parallelEvent type matches the param
+      # @return [Boolean] true if event type matches the param
       def self.event_type_matches?(event, desired_type)
-        return true if event.type == desired_type
-
-        matching_event = event.parallelEvent&.find { |parallel_event| parallel_event.type == desired_type }
-        matching_event.present?
+        event.type == desired_type
       end
       private_class_method :event_type_matches?
 
