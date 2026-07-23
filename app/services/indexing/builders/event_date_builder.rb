@@ -7,7 +7,7 @@ module Indexing
       # @param [Cocina::Models::Event] event single selected  event
       # @return [String, nil] the date value for Solr
       def self.build(event, date_type)
-        event_dates = Array(event&.date) + Array(event&.parallelEvent&.map(&:date))
+        event_dates = Array(event&.date)
 
         matching_date_value_with_status_primary(event_dates, date_type) ||
           matching_date_value(event_dates, date_type) ||

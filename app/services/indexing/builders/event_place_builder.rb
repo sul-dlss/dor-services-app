@@ -36,13 +36,9 @@ module Indexing
           marccountry_code_for(locations)
       end
 
-      def flat_locations # rubocop:disable Metrics/AbcSize
+      def flat_locations
         @flat_locations ||= begin
-          locations = if event.parallelEvent.present?
-                        event.parallelEvent.flat_map { |parallel_event| Array(parallel_event.location) }
-                      else
-                        Array(event.location)
-                      end
+          locations = Array(event.location)
           locations.flat_map do |location|
             location.parallelValue.presence || location.structuredValue.presence || location
           end
