@@ -74,7 +74,7 @@ RSpec.describe 'Show single user version' do
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(id: object.external_identifier)
-      expect(response.parsed_body).to include(display_title_ss: 'Test DRO')
+      expect(response.parsed_body).to include(display_title_ss: 'Test Object')
     end
   end
 end

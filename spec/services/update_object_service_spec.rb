@@ -29,7 +29,6 @@ RSpec.describe UpdateObjectService do
                                     cocinaVersion: '0.0.1',
                                     externalIdentifier: druid,
                                     type: Cocina::Models::ObjectType.book,
-                                    label: 'Changed Test DRO',
                                     version: 1,
                                     description: {
                                       title: [{ value: 'Changed Test DRO' }],
@@ -44,7 +43,7 @@ RSpec.describe UpdateObjectService do
 
         it 'saves to datastore and sends event data to EventFactory' do
           expect(store.update).to be_a Cocina::Models::DROWithMetadata
-          expect(repository_object.reload.head_version.label).to eq 'Changed Test DRO'
+          expect(repository_object.reload.head_version.to_cocina.description.title.first.value).to eq 'Changed Test DRO'
           expect(EventFactory).to have_received(:create).with(
             druid:,
             event_type: 'update',
@@ -64,12 +63,10 @@ RSpec.describe UpdateObjectService do
           Cocina::Models.with_metadata(repository_object.head_version.to_cocina, lock,
                                        created: repository_object.created_at.utc,
                                        modified: repository_object.updated_at.utc)
-                        .new(label: 'new label')
         end
 
         it 'saves to datastore' do
           expect(store.update).to be_a Cocina::Models::DROWithMetadata
-          expect(repository_object.reload.opened_version.label).to eq 'new label'
         end
       end
 
@@ -83,7 +80,6 @@ RSpec.describe UpdateObjectService do
           Cocina::Models.with_metadata(repository_object.head_version.to_cocina, lock,
                                        created: repository_object.created_at.utc,
                                        modified: repository_object.updated_at.utc)
-                        .new(label: 'new label')
         end
 
         it 'saves to datastore' do
@@ -103,7 +99,6 @@ RSpec.describe UpdateObjectService do
           Cocina::Models.with_metadata(repository_object.head_version.to_cocina, lock,
                                        created: repository_object.created_at.utc,
                                        modified: repository_object.updated_at.utc)
-                        .new(label: 'new label')
         end
 
         it 'raises' do
@@ -123,7 +118,6 @@ RSpec.describe UpdateObjectService do
           Cocina::Models.with_metadata(repository_object.head_version.to_cocina, lock,
                                        created: repository_object.head_version.created_at.utc,
                                        modified: repository_object.head_version.updated_at.utc)
-                        .new(label: 'new label')
         end
 
         before do
@@ -148,19 +142,23 @@ RSpec.describe UpdateObjectService do
                                           cocinaVersion: '0.0.1',
                                           externalIdentifier: druid,
                                           type: Cocina::Models::ObjectType.admin_policy,
-                                          label: 'Updated Test Admin Policy',
                                           version: 1,
                                           administrative: {
                                             hasAdminPolicy: 'druid:hy787xj5878',
                                             hasAgreement: 'druid:bb033gt0615',
                                             accessTemplate: { view: 'world', download: 'world' }
+                                          },
+                                          description: {
+                                            title: [{ value: 'Updated Test Admin Policy' }],
+                                            purl: "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
                                           }
                                         })
       end
 
       it 'saves to datastore' do
         expect(store.update).to be_a Cocina::Models::AdminPolicyWithMetadata
-        expect(repository_object.reload.head_version.label).to eq 'Updated Test Admin Policy'
+        expect(repository_object.reload.head_version.to_cocina.description.title.first.value)
+          .to eq 'Updated Test Admin Policy'
       end
     end
 
@@ -174,7 +172,6 @@ RSpec.describe UpdateObjectService do
                                          cocinaVersion: '0.0.1',
                                          externalIdentifier: druid,
                                          type: Cocina::Models::ObjectType.collection,
-                                         label: 'Test Collection',
                                          description: {
                                            title: [{ value: 'Updated title' }],
                                            purl: 'https://purl.stanford.edu/zr174jb7823'
