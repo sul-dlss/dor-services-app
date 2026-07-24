@@ -12,7 +12,6 @@ FactoryBot.define do
     lock { 2 }
     cocina_version { Cocina::Models::VERSION }
     content_type { Cocina::Models::ObjectType.book }
-    label { 'Test DRO' }
     access do
       { view: 'world', download: 'world' }
     end
@@ -21,7 +20,7 @@ FactoryBot.define do
     end
     description do
       {
-        title: [{ value: label }],
+        title: [{ value: 'Test Object' }],
         purl: "https://purl.stanford.edu/#{external_identifier.delete_prefix('druid:')}"
       }
     end
@@ -110,6 +109,12 @@ FactoryBot.define do
         hasAdminPolicy: 'druid:hy787xj5878',
         hasAgreement: 'druid:bb033gt0615',
         accessTemplate: access_template
+      }
+    end
+    description do
+      {
+        title: [{ value: label }],
+        purl: "https://purl.stanford.edu/#{external_identifier.delete_prefix('druid:')}"
       }
     end
     access { nil }

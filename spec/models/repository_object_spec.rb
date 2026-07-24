@@ -196,10 +196,10 @@ RSpec.describe RepositoryObject do
 
     context 'when based on an earlier version' do
       before do
-        repository_object.head_version.label = 'Version 1'
+        repository_object.head_version.description = { 'title' => [{ 'value' => 'Version 1' }] }
         repository_object.close_version!
         repository_object.open_version!(description: 'Another version')
-        repository_object.head_version.label = 'Version 2'
+        repository_object.head_version.description = { 'title' => [{ 'value' => 'Version 2' }] }
         repository_object.close_version!
       end
 
@@ -212,7 +212,7 @@ RSpec.describe RepositoryObject do
         expect(newly_created_version.version).to eq(3)
         expect(repository_object.head_version).to eq(newly_created_version)
         expect(repository_object.opened_version).to eq(newly_created_version)
-        expect(newly_created_version.label).to eq 'Version 1'
+        expect(newly_created_version.description['title'].first['value']).to eq 'Version 1'
         expect(newly_created_version.closed_at).to be_nil
       end
     end
@@ -263,7 +263,6 @@ RSpec.describe RepositoryObject do
       expect { repository_object.update_opened_version_from(cocina_object:) }
         .to change(repository_object.opened_version, :cocina_version).from(nil).to(Cocina::Models::VERSION)
         .and change(repository_object.opened_version, :content_type).from(nil).to(Cocina::Models::ObjectType.object)
-        .and change(repository_object.opened_version, :label).from(nil).to('')
         .and change(repository_object.opened_version, :access).from(nil).to(instance_of(Hash))
         .and change(repository_object.opened_version, :administrative).from(nil).to(instance_of(Hash))
         .and change(repository_object.opened_version, :description).from(nil).to(instance_of(Hash))

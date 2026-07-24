@@ -24,7 +24,8 @@ RSpec.describe 'Show solr for an object version' do
     before do
       object.head_version.tap do |version|
         version.description['title'] =
-          [{ 'value' => 'Test DRO', 'parallelValue' => [{ 'value' => 'Аԥышәара DRO' }, { 'value' => 'परीक्षण DRO' }] }]
+          [{ 'value' => 'Test Object',
+             'parallelValue' => [{ 'value' => 'Аԥышәара DRO' }, { 'value' => 'परीक्षण DRO' }] }]
         version.save!
       end
     end
@@ -36,7 +37,7 @@ RSpec.describe 'Show solr for an object version' do
 
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body).to include(id: object.external_identifier)
-        expect(response.parsed_body).to include(display_title_ss: 'Test DRO')
+        expect(response.parsed_body).to include(display_title_ss: 'Test Object')
       end
     end
 
@@ -47,7 +48,7 @@ RSpec.describe 'Show solr for an object version' do
 
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body).to include(id: object.external_identifier)
-        expect(response.parsed_body).to include(display_title_ss: 'Test DRO')
+        expect(response.parsed_body).to include(display_title_ss: 'Test Object')
       end
     end
   end
@@ -73,7 +74,7 @@ RSpec.describe 'Show solr for an object version' do
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(id: object.external_identifier)
-      expect(response.parsed_body).to include(display_title_ss: 'Test DRO')
+      expect(response.parsed_body).to include(display_title_ss: 'Test Object')
     end
   end
 end

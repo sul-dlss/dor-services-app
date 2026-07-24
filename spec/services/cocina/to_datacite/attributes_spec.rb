@@ -7,7 +7,6 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   let(:cocina_item) do
     Cocina::Models::DRO.new(externalIdentifier: druid,
                             type: Cocina::Models::ObjectType.object,
-                            label:,
                             version: 1,
                             description: {
                               title: [{ value: title }],
@@ -26,7 +25,6 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   let(:druid) { 'druid:bb666bb1234' }
   let(:doi) { "10.25740/#{druid.split(':').last}" }
   let(:purl) { "https://purl.stanford.edu/#{druid.split(':').last}" }
-  let(:label) { 'label' }
   let(:title) { 'title' }
   let(:apo_druid) { 'druid:pp000pp0000' }
   let(:url) { nil }
@@ -73,7 +71,6 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     let(:cocina_item) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::ObjectType.object,
-                              label:,
                               version: 1,
                               description: {
                                 title: [{ value: title }],
@@ -123,7 +120,6 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     let(:cocina_item) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::ObjectType.object,
-                              label:,
                               version: 1,
                               description: {
                                 contributor: [
@@ -533,7 +529,6 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     let(:cocina_item) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::ObjectType.object,
-                              label:,
                               version: 1,
                               description: {
                                 contributor: [
@@ -847,7 +842,6 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     let(:cocina_item) do
       Cocina::Models::Collection.new(externalIdentifier: druid,
                                      type: Cocina::Models::ObjectType.collection,
-                                     label:,
                                      version: 1,
                                      description: {
                                        title: [{ value: title }],
@@ -869,7 +863,6 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     let(:cocina_item) do
       Cocina::Models::AdminPolicy.new(externalIdentifier: druid,
                                       type: Cocina::Models::ObjectType.admin_policy,
-                                      label:,
                                       version: 1,
                                       description: {
                                         title: [{ value: title }],

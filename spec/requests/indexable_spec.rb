@@ -10,7 +10,6 @@ RSpec.describe 'Indexable' do
     create(:repository_object, :admin_policy, :with_repository_object_version)
   end
   let(:apo_druid) { apo.external_identifier }
-  let(:label) { 'This is my label' }
   let(:title) { 'This is my title' }
 
   let(:view) { 'world' }
@@ -78,7 +77,7 @@ RSpec.describe 'Indexable' do
         "cocinaVersion": "#{Cocina::Models::VERSION}",
         "externalIdentifier": "#{druid}",
         "type":"#{content_type}",
-        "label":"#{label}","version":1,
+        "version":1,
         "access":{
           "view":"#{view}",
           "download":"#{view}",
