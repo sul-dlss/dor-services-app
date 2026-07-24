@@ -92,8 +92,8 @@ end
 
 def druids_from_csv(csv_file)
   CSV.foreach(csv_file).filter_map do |row|
-    druid = row.first&.strip&.delete_prefix("\uFEFF")
-    druid unless druid.blank? || druid.casecmp?('druid')
+    druid = row.first # assume druid is in the first column
+    druid unless druid.blank? || druid.casecmp?('druid') # skip header row if exists
   end.uniq
 end
 
