@@ -113,13 +113,18 @@ RSpec.describe VersionService do
 
       before do
         repository_object.open_version!(description: 'A new version')
-        repository_object.head_version.update!(label: 'New version label')
+        repository_object.head_version.update!(
+          description: {
+            'title' => [{ 'value' => 'New version title' }],
+            'purl' => "https://purl.stanford.edu/#{druid.delete_prefix('druid:')}"
+          }
+        )
         repository_object.close_version!
       end
 
       it 'creates an object version and starts a workflow' do
         expect(open).to be_a(Cocina::Models::DROWithMetadata)
-        expect(open.label).not_to eq 'New version label'
+        expect(open.description.title.first.value).not_to eq 'New version title'
         expect(workflow_state_service).to have_received(:accessioned?)
         expect(workflow_state_service).to have_received(:accessioning?)
         expect(Workflow::Service).to have_received(:create).with(druid:, workflow_name: 'versioningWF', version: '3')

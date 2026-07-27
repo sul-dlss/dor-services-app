@@ -53,7 +53,7 @@ RSpec.describe 'Update object' do
         "cocinaVersion": "#{Cocina::Models::VERSION}",
         "externalIdentifier": "#{druid}",
         "type":"#{content_type}",
-        "label":"","version":1,
+        "version":1,
         "access":{
           "view":"#{view}",
           "download":"#{view}",
@@ -195,7 +195,7 @@ RSpec.describe 'Update object' do
               "cocinaVersion": "#{Cocina::Models::VERSION}",
               "externalIdentifier": "#{druid}",
               "type":"#{Cocina::Models::ObjectType.image}",
-              "label":"","version":1,
+              "version":1,
               "access":{
                 "view":"#{view}",
                 "download":"world",
@@ -218,7 +218,7 @@ RSpec.describe 'Update object' do
           {
             sourceId: 'googlebooks:999999',
             catalogLinks: [
-              { catalog: 'symphony', catalogRecordId: '8888', refresh: true }
+              { catalog: 'folio', catalogRecordId: 'a8888', refresh: true }
             ]
           }
         end
@@ -443,7 +443,7 @@ RSpec.describe 'Update object' do
                 "cocinaVersion": "#{Cocina::Models::VERSION}",
                 "externalIdentifier": "#{druid}",
                 "type":"#{Cocina::Models::ObjectType.image}",
-                "label":"","version":1,
+                "version":1,
                 "access":{
                   "view":"#{view}",
                   "download":"world",
@@ -493,7 +493,7 @@ RSpec.describe 'Update object' do
                 "cocinaVersion":"#{Cocina::Models::VERSION}",
                 "externalIdentifier": "#{druid}",
                 "type":"#{Cocina::Models::ObjectType.image}",
-                "label":"","version":1,
+                "version":1,
                 "access":{
                   "view":"#{view}",
                   "download":"world",
@@ -522,7 +522,6 @@ RSpec.describe 'Update object' do
       end
 
       context 'when a book is provided' do
-        let(:label) { 'This is my label' }
         let(:title) { 'This is my title' }
         let(:expected) do
           build(:dro, id: druid, type: Cocina::Models::ObjectType.book, title:,
@@ -543,7 +542,7 @@ RSpec.describe 'Update object' do
               "cocinaVersion": "#{Cocina::Models::VERSION}",
               "externalIdentifier": "#{druid}",
               "type":"#{Cocina::Models::ObjectType.book}",
-              "label":"","version":1,
+              "version":1,
               "access":{
                 "view":"world",
                 "download":"world"
@@ -604,7 +603,7 @@ RSpec.describe 'Update object' do
               "cocinaVersion": "#{Cocina::Models::VERSION}",
               "externalIdentifier": "#{druid}",
               "type":"#{Cocina::Models::ObjectType.book}",
-              "label":"","version":1,
+              "version":1,
               "access":{"view":"stanford","download":"stanford",
                 "embargo":{"view":"world","download":"world","releaseDate":"2020-02-29T07:00:00.000+00:00"}
               },
@@ -664,7 +663,7 @@ RSpec.describe 'Update object' do
               "cocinaVersion": "#{Cocina::Models::VERSION}",
               "externalIdentifier": "#{druid}",
               "type":"#{content_type}",
-              "label":"","version":1,
+              "version":1,
               "access":{
                 "view":"#{view}",
                 "download":"#{view}",
@@ -730,7 +729,7 @@ RSpec.describe 'Update object' do
               "cocinaVersion": "#{Cocina::Models::VERSION}",
               "externalIdentifier": "druid:xs123xx8388",
               "type":"#{content_type}",
-              "label":"","version":1,
+              "version":1,
               "access":{
                 "view":"#{view}",
                 "download":"#{view}",
@@ -811,7 +810,7 @@ RSpec.describe 'Update object' do
           "cocinaVersion": "#{Cocina::Models::VERSION}",
           "externalIdentifier": "#{druid}",
           "type":"#{Cocina::Models::ObjectType.collection}",
-          "label":"","version":1,
+          "version":1,
           "access":{},
           "identification":#{identification.to_json},
           "administrative":{"hasAdminPolicy":"druid:dd999df4567"},
@@ -889,7 +888,6 @@ RSpec.describe 'Update object' do
           "cocinaVersion": "#{Cocina::Models::VERSION}",
           "externalIdentifier": "#{druid}",
           "type":"#{Cocina::Models::ObjectType.admin_policy}",
-          "label":"",
           "version":1,
           "administrative":{
             "disseminationWorkflow":"assemblyWF",

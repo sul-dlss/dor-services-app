@@ -57,10 +57,13 @@ class InvalidRoleCodes
         collection_druid = rows.first['collection_id']
         collection_head_version = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version
         if collection_head_version&.has_cocina?
-          collection_name = Cocina::Models::Builders::TitleBuilder.build(collection_head_version.to_cocina.description.title)
+          collection_name = CocinaDisplay::CocinaRecord.new(collection_head_version.to_cocina.to_h.with_indifferent_access).display_title
         end
         apo_druid = rows.first['apo']
-        apo_name = RepositoryObject.admin_policies.find_by(external_identifier: apo_druid)&.head_version&.label
+        apo_head_version = RepositoryObject.admin_policies.find_by(external_identifier: apo_druid)&.head_version
+        if apo_head_version&.has_cocina?
+          apo_name = CocinaDisplay::CocinaRecord.new(apo_head_version.to_cocina.to_h.with_indifferent_access).display_title
+        end
         title = (rows.first['structured_title'] || rows.first['title'])&.delete("\n")
 
         [

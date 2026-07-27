@@ -11,7 +11,6 @@ RSpec.describe Cocina::ToDatacite::Event do
   end
   let(:cocina_item) do
     Cocina::Models::DRO.new(type: Cocina::Models::ObjectType.object,
-                            label: 'This is my label',
                             version: 1,
                             administrative: { hasAdminPolicy: 'druid:dd999df4567' },
                             description: cocina_description,

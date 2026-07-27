@@ -236,16 +236,6 @@ RSpec.describe RepositoryObjectVersion do
       it { is_expected.to include(cocina_version: Cocina::Models::VERSION) }
       it { is_expected.to include(content_type: Cocina::Models::ObjectType.admin_policy) }
       it { is_expected.to include(description: hash_including(:title)) }
-
-      context 'with no description' do
-        let(:cocina_instance) do
-          # NOTE: The cocina-models factories (as of v0.96.0) don't seem to
-          #       provide a better way to build an APO sans description.
-          Cocina::Models::AdminPolicy.new(build(:admin_policy).to_h.except(:description))
-        end
-
-        it { is_expected.to include(description: nil) }
-      end
     end
   end
 

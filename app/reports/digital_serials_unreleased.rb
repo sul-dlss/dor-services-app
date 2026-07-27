@@ -33,7 +33,7 @@ class DigitalSerialsUnreleased
       collection_druid = row['collection_id']
       collection_head_version = RepositoryObject.collections.find_by(external_identifier: collection_druid)&.head_version
       if collection_head_version&.has_cocina?
-        collection_name = Cocina::Models::Builders::TitleBuilder.build(collection_head_version.to_cocina.description.title)
+        collection_name = CocinaDisplay::CocinaRecord.new(collection_head_version.to_cocina.to_h.with_indifferent_access).display_title
       end
 
       title_part_number_before, title_part_name, title_part_number_after = title_part_label_from(JSON.parse(row['title_part_name_and_number']))
