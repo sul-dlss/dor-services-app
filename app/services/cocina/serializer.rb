@@ -9,7 +9,9 @@ module Cocina
     end
 
     def serialize(cocina_item)
-      super(Cocina::Models.without_metadata(cocina_item).to_h)
+      cocina_object = super(Cocina::Models.without_metadata(cocina_item).to_h)
+      # Remove when label fully gone from cocina-models schema
+      cocina_object.merge({ label: '' })
     end
 
     def deserialize(hash)

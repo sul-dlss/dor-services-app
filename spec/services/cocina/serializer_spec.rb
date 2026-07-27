@@ -8,6 +8,7 @@ RSpec.describe Cocina::Serializer do
       {
         'type' => Cocina::Models::ObjectType.object,
         'externalIdentifier' => 'druid:ft609gr4031',
+        'label' => '',
         'version' => 1,
         'access' => {
           'view' => 'citation-only',
@@ -78,6 +79,7 @@ RSpec.describe Cocina::Serializer do
       type: Cocina::Models::ObjectType.object,
       externalIdentifier: 'druid:ft609gr4031',
       version: 1,
+      label: '',
       access: {
         view: 'citation-only',
         download: 'none',
