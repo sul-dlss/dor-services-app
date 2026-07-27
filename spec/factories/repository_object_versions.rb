@@ -6,6 +6,7 @@ FactoryBot.define do
       external_identifier { generate(:unique_druid) }
       is_member_of { [] }
       source_id { "sul:#{SecureRandom.uuid}" }
+      title { 'Test Object' }
     end
     sequence(:version)
     version_description { 'Best version ever' }
@@ -20,7 +21,7 @@ FactoryBot.define do
     end
     description do
       {
-        title: [{ value: 'Test Object' }],
+        title: [{ value: title }],
         purl: "https://purl.stanford.edu/#{external_identifier.delete_prefix('druid:')}"
       }
     end
@@ -101,8 +102,8 @@ FactoryBot.define do
   trait :admin_policy_repository_object_version do
     transient do
       access_template { { view: 'world', download: 'world' } }
+      title { 'Test Admin Policy' }
     end
-    label { 'Test Admin Policy' }
     content_type { Cocina::Models::ObjectType.admin_policy }
     administrative do
       {
@@ -113,7 +114,7 @@ FactoryBot.define do
     end
     description do
       {
-        title: [{ value: label }],
+        title: [{ value: title }],
         purl: "https://purl.stanford.edu/#{external_identifier.delete_prefix('druid:')}"
       }
     end
@@ -126,7 +127,6 @@ FactoryBot.define do
     transient do
       title { 'Test Collection' }
     end
-    label { title }
     content_type { Cocina::Models::ObjectType.collection }
     administrative do
       { hasAdminPolicy: 'druid:hy787xj5878' }
