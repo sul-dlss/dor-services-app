@@ -13,7 +13,12 @@ class DataWorkContributorAffiliation
       jsonb_path_query(rov.structural, '$.isMemberOf') ->> 0 as collection_druid
     FROM repository_objects AS ro, repository_object_versions AS rov
     WHERE ro.head_version_id = rov.id
-      AND jsonb_path_exists(rov.description, '$.contributor[*].note[*] ? (@.type == "affiliation")');
+      AND (
+        jsonb_path_exists(rov.description, '$.contributor[*].note[*] ? (@.type == "affiliation")')
+        OR jsonb_path_exists(rov.description, '$.event[*].contributor[*].note[*] ? (@.type == "affiliation")')
+        OR jsonb_path_exists(rov.description, '$.relatedResource[*].contributor[*].note[*] ? (@.type == "affiliation")')
+        OR jsonb_path_exists(rov.description, '$.relatedResource[*].event[*].contributor[*].note[*] ? (@.type == "affiliation")')
+      );
   SQL
 
   def self.report
