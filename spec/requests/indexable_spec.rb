@@ -37,7 +37,7 @@ RSpec.describe 'Indexable' do
         code: 'eng',
         uri: 'https://id.loc.gov/vocabulary/iso639-2/eng',
         source: {
-          code: 'iso632-2b'
+          code: 'iso639-2b'
         },
         valueScript: {
           code: 'Latn',
@@ -59,7 +59,7 @@ RSpec.describe 'Indexable' do
         code: 'eng',
         uri: 'https://id.loc.gov/vocabulary/iso639-2/eng',
         source: {
-          code: 'iso632-2b'
+          code: 'iso639-2b'
         },
         valueScript: {
           code: 'Latn',
@@ -124,7 +124,7 @@ RSpec.describe 'Indexable' do
       end
     end
 
-    context 'when the descriptive metadata can not be index' do
+    context 'when the descriptive metadata can not be indexed' do
       before do
         allow(Indexer).to receive(:validate_descriptive).and_raise(StandardError, "that's not valid")
       end
