@@ -39,9 +39,9 @@ module Cocina
         '4' => 'SICI'
       }.freeze
 
-      # See https://github.com/sul-dlss/cocina-models/blob/main/identifier_source_codes.yml
+      # See https://github.com/sul-dlss/cocina-models/blob/main/config/identifier_source_codes.yml
       RECOGNIZED_SOURCE_CODES = YAML.load_file(
-        "#{Gem::Specification.find_by_name('cocina-models').gem_dir}/identifier_source_codes.yml"
+        "#{Gem::Specification.find_by_name('cocina-models').gem_dir}/config/identifier_source_codes.yml"
       ).to_set(&:downcase).freeze
 
       PUBLISHER_NUMBER_TYPES = {
