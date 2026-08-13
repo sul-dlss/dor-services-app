@@ -8,7 +8,7 @@
     <label>Ensure proper registration of druid, source ID, and label</label>
   </process>
   <process name="extract-iso19139-metadata">
-    <prereq>register-druid</prereq>
+    <prereq>start-gis-assembly-workflow</prereq>
     <label>Transform ISO 19139 metadata from ArcCatalog metadata</label>
   </process>
   <process name="extract-iso19110-metadata">
