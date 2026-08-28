@@ -27,6 +27,7 @@ module Cocina
 
       def initialize(cocina_item, url: nil)
         @access = cocina_item.access
+        @cocina_item = cocina_item
         @description = cocina_item.description
         @purl = Purl.for(druid: cocina_item.externalIdentifier)
         @url = url || @purl
@@ -54,7 +55,7 @@ module Cocina
 
       private
 
-      attr_reader :access, :description, :purl, :url
+      attr_reader :access, :cocina_item, :description, :purl, :url
 
       def publication_year
         date = if access.embargo
@@ -106,7 +107,7 @@ module Cocina
       end
 
       def titles
-        Title.title_attributes(description)
+        Title.title_attributes(cocina_item)
       end
 
       def types_attributes
