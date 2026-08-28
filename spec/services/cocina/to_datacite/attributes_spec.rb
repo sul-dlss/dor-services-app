@@ -830,6 +830,56 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     end
   end
 
+  context 'with a subtitle' do
+    let(:cocina_item) do
+      Cocina::Models::DRO.new(externalIdentifier: druid,
+                              type: Cocina::Models::ObjectType.object,
+                              version: 1,
+                              description: {
+                                title: [{ structuredValue: [{ value: 'A title', type: 'main title' },
+                                                            { value: 'some subtitle', type: 'subtitle' }] }],
+                                purl:
+                              },
+                              identification: {
+                                sourceId: 'sul:8.559351',
+                                doi:
+                              },
+                              access: {
+                                embargo: {
+                                  releaseDate: '2031-07-01T00:00:00.000+00:00'
+                                }
+                              },
+                              administrative: {
+                                hasAdminPolicy: apo_druid
+                              },
+                              structural: {})
+    end
+
+    it 'creates the attributes hash' do
+      expect(attributes).to eq(
+        {
+          event: 'publish',
+          url: 'https://purl.stanford.edu/bb666bb1234',
+          creators: [],
+          contributors: [],
+          fundingReferences: [],
+          dates: [],
+          publicationYear: '2031',
+          publisher: 'Stanford Digital Repository',
+          titles: [{ title: 'A title : some subtitle' }],
+          alternateIdentifiers: [
+            {
+              alternateIdentifier: purl,
+              alternateIdentifierType: 'PURL'
+            }
+          ],
+          relatedItems: [],
+          relatedIdentifiers: []
+        }
+      )
+    end
+  end
+
   context 'when cocina_item is nil' do
     let(:cocina_item) { nil }
 
