@@ -5,31 +5,31 @@ module Cocina
     # Transform the Cocina::Models::DRO schema to DataCite attributes
     #  see https://support.datacite.org/reference/dois-2#put_dois-id
     class Attributes
-      # @param [Cocina::Models::DRO] cocina_item
+      # @param [Cocina::Models::DRO] cocina_object
       # @param [String] url URL to be used for the item. If not provided, will use the PURL for the item.
       # @return [Hash] Hash of DataCite attributes, conforming to the expectations of HTTP PUT request to DataCite
-      def self.mapped_from_cocina(cocina_item, url: nil)
-        return unless cocina_item&.dro?
+      def self.mapped_from_cocina(cocina_object, url: nil)
+        return unless cocina_object&.dro?
 
-        new(cocina_item, url:).mapped_from_cocina
+        new(cocina_object, url:).mapped_from_cocina
       end
 
-      # @param [Cocina::Models::DRO] cocina_item
+      # @param [Cocina::Models::DRO] cocina_object
       # To be exportable an item must have a creator, and resourceTypeGeneral.
       # @return [Boolean] is this item exportable to datacite
-      def self.exportable?(cocina_item)
-        new(cocina_item).exportable?
+      def self.exportable?(cocina_object)
+        new(cocina_object).exportable?
       end
 
       def exportable?
         types_attributes&.fetch(:resourceTypeGeneral).present? && creators.present?
       end
 
-      def initialize(cocina_item, url: nil)
-        @access = cocina_item.access
-        @cocina_item = cocina_item
-        @description = cocina_item.description
-        @purl = Purl.for(druid: cocina_item.externalIdentifier)
+      def initialize(cocina_object, url: nil)
+        @access = cocina_object.access
+        @cocina_object = cocina_object
+        @description = cocina_object.description
+        @purl = Purl.for(druid: cocina_object.externalIdentifier)
         @url = url || @purl
       end
 
@@ -55,7 +55,7 @@ module Cocina
 
       private
 
-      attr_reader :access, :cocina_item, :description, :purl, :url
+      attr_reader :access, :cocina_object, :description, :purl, :url
 
       def publication_year
         date = if access.embargo
@@ -107,7 +107,7 @@ module Cocina
       end
 
       def titles
-        Title.title_attributes(cocina_item)
+        Title.title_attributes(cocina_object)
       end
 
       def types_attributes
