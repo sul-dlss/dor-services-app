@@ -3,8 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe Cocina::ToDatacite::Attributes do
-  let(:attributes) { described_class.mapped_from_cocina(cocina_item, url:) }
-  let(:cocina_item) do
+  let(:attributes) { described_class.mapped_from_cocina(cocina_object, url:) }
+  let(:cocina_object) do
     Cocina::Models::DRO.new(externalIdentifier: druid,
                             type: Cocina::Models::ObjectType.object,
                             version: 1,
@@ -68,7 +68,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   end
 
   context 'with an embargo' do
-    let(:cocina_item) do
+    let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::ObjectType.object,
                               version: 1,
@@ -117,7 +117,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   end
 
   context 'with a fully described object' do
-    let(:cocina_item) do
+    let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::ObjectType.object,
                               version: 1,
@@ -526,7 +526,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   end
 
   context 'with an ETD-like object' do
-    let(:cocina_item) do
+    let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::ObjectType.object,
                               version: 1,
@@ -831,7 +831,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   end
 
   context 'with a subtitle' do
-    let(:cocina_item) do
+    let(:cocina_object) do
       Cocina::Models::DRO.new(externalIdentifier: druid,
                               type: Cocina::Models::ObjectType.object,
                               version: 1,
@@ -880,8 +880,8 @@ RSpec.describe Cocina::ToDatacite::Attributes do
     end
   end
 
-  context 'when cocina_item is nil' do
-    let(:cocina_item) { nil }
+  context 'when cocina_object is nil' do
+    let(:cocina_object) { nil }
 
     it 'attributes retuns nil' do
       expect(attributes).to be_nil
@@ -889,7 +889,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   end
 
   context 'when cocina type is collection' do
-    let(:cocina_item) do
+    let(:cocina_object) do
       Cocina::Models::Collection.new(externalIdentifier: druid,
                                      type: Cocina::Models::ObjectType.collection,
                                      version: 1,
@@ -910,7 +910,7 @@ RSpec.describe Cocina::ToDatacite::Attributes do
   end
 
   context 'when cocina type is APO' do
-    let(:cocina_item) do
+    let(:cocina_object) do
       Cocina::Models::AdminPolicy.new(externalIdentifier: druid,
                                       type: Cocina::Models::ObjectType.admin_policy,
                                       version: 1,
