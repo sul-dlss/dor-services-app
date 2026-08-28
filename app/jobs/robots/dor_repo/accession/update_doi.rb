@@ -24,7 +24,8 @@ module Robots
           # Check to see if these meet the conditions necessary to export to datacite
           unless Cocina::ToDatacite::Attributes.exportable?(cocina_object)
             raise "Item requested a DOI be updated, but it doesn't meet all the preconditions. " \
-                  'Datacite requires that this object have creators and a datacite extension with resourceTypeGeneral'
+                  'Datacite requires that this object have creators and a datacite extension ' \
+                  'with resourceTypeGeneral. One or both of these may be missing.'
           end
 
           attributes = Cocina::ToDatacite::Attributes
