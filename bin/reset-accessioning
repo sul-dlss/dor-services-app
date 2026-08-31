@@ -43,7 +43,7 @@ mode = options[:input].starts_with?('druid:') ? :druid : :csv_file
 $stdout.puts '*** DRY RUN - NO ACTIONS WILL BE PERFORMED' if options[:dry_run]
 
 if mode == :druid
-  $stdout.puts "This will completely reset accessioning for #{options[:druid]}. Are you sure? [y/n]:"
+  $stdout.puts "This will completely reset accessioning for #{options[:input]}. Are you sure? [y/n]:"
   raise 'User requested termination of operation' unless $stdin.gets.chomp.downcase == 'y'
 
   begin
@@ -56,7 +56,7 @@ if mode == :druid
 else
   raise "CSV file not found: #{options[:input]}" unless File.exist?(options[:input])
 
-  $stdout.puts "This will completely reset accessioning for #{File.foreach(options[:input].count)} " \
+  $stdout.puts "This will completely reset accessioning for #{File.foreach(options[:input]).count} " \
                'objects. Are you sure? [y/n]:'
   raise 'User requested termination of operation' unless $stdin.gets.chomp.downcase == 'y'
 
