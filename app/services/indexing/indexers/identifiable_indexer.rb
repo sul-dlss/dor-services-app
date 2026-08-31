@@ -2,7 +2,7 @@
 
 module Indexing
   module Indexers
-    # Indexes the druid, metadata sources, and the apo titles
+    # Indexes the druid, metadata sources, and related object titles
     class IdentifiableIndexer
       attr_reader :cocina
 
@@ -13,24 +13,28 @@ module Indexing
       end
 
       ## Module-level variable, shared between ALL mixin includers (and ALL *their* includers/extenders)!
-      ## used for caching apo titles
-      @@apo_hash = {} # rubocop:disable Style/ClassVars
+      ## used for caching related object titles
+      @@title_hash = {} # rubocop:disable Style/ClassVars
 
       # @return [Hash] the partial solr document for identifiable concerns
-      def to_solr
+      def to_solr # rubocop:disable Metrics/AbcSize
         {}.tap do |solr_doc|
           # Hydrus APOs are excluded since every Hydrus item had its own APO.
           solr_doc['apo_title_ssimdv'] = [apo_title] unless hydrus_apo?
 
+          if cocina.admin_policy?
+            solr_doc['agreement_ssi'] = agreement_druid
+            solr_doc['agreement_ssidv'] = title_for(agreement_druid)
+          end
           solr_doc['metadata_source_ssimdv'] = identity_metadata_sources unless cocina.admin_policy?
           solr_doc['druid_prefixed_ssi'] = cocina.externalIdentifier
           solr_doc['druid_bare_ssi'] = cocina.externalIdentifier.delete_prefix('druid:')
         end
       end
 
-      # Clears out the cache of apos. Used primarily in testing.
+      # Clears out the cache of related object titles. Used primarily in testing.
       def self.reset_cache!
-        @@apo_hash = {} # rubocop:disable Style/ClassVars
+        @@title_hash = {} # rubocop:disable Style/ClassVars
       end
 
       private
@@ -57,14 +61,22 @@ module Indexing
         cocina.administrative.hasAdminPolicy
       end
 
-      # populate cache if necessary
       def apo_title
-        @@apo_hash[apo_druid] ||= begin
-          apo_obj = CocinaObjectStore.find(apo_druid)
-          Cocina::Models::Builders::TitleBuilder.build(apo_obj.description.title)
+        title_for(apo_druid)
+      end
+
+      def agreement_druid
+        cocina.administrative.hasAgreement
+      end
+
+      # Populate the related object title cache if necessary.
+      def title_for(druid)
+        @@title_hash[druid] ||= begin
+          object = CocinaObjectStore.find(druid)
+          Cocina::Models::Builders::TitleBuilder.build(object.description.title)
         rescue CocinaObjectStore::CocinaObjectStoreError
-          Honeybadger.notify("Bad association found on #{cocina.externalIdentifier}. #{apo_druid} could not be found")
-          apo_druid
+          Honeybadger.notify("Bad association found on #{cocina.externalIdentifier}. #{druid} could not be found")
+          druid
         end
       end
 
