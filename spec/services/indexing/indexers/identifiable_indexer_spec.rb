@@ -4,6 +4,7 @@ require 'rails_helper'
 RSpec.describe Indexing::Indexers::IdentifiableIndexer do
   let(:druid) { 'druid:rt923jk3422' }
   let(:apo_id) { 'druid:bd999bd9999' }
+  let(:agreement_id) { 'druid:bb033gt0615' }
   let(:cocina_item) do
     build(:dro, id: druid, admin_policy_id: apo_id).new(
       identification:
@@ -45,6 +46,10 @@ RSpec.describe Indexing::Indexers::IdentifiableIndexer do
       allow(CocinaObjectStore).to receive(:find).and_return(related)
     end
 
+    it 'does not index agreement fields for a non-APO' do
+      expect(doc).not_to include('agreement_ssi', 'agreement_ssidv')
+    end
+
     context 'when APO is not found' do
       before do
         allow(CocinaObjectStore).to receive(:find).and_raise(CocinaObjectStore::CocinaObjectNotFoundError)
@@ -64,6 +69,40 @@ RSpec.describe Indexing::Indexers::IdentifiableIndexer do
 
       it 'indexes metadata sources' do
         expect(doc).to match a_hash_including('metadata_source_ssimdv' => %w[Folio])
+      end
+    end
+
+    context 'when the object is an APO' do
+      let(:cocina_item) { build(:admin_policy, id: druid, admin_policy_id: apo_id, agreement_id:) }
+      let(:agreement) do
+        build(:dro, id: agreement_id, type: Cocina::Models::ObjectType.agreement, title: 'Agreement title')
+      end
+
+      before do
+        allow(CocinaObjectStore).to receive(:find).with(apo_id).and_return(related)
+        allow(CocinaObjectStore).to receive(:find).with(agreement_id).and_return(agreement)
+      end
+
+      it 'indexes the agreement druid and title as single values' do
+        expect(doc).to include(
+          'agreement_ssi' => agreement_id,
+          'agreement_ssidv' => 'Agreement title'
+        )
+      end
+
+      context 'when the agreement is not found' do
+        before do
+          allow(CocinaObjectStore).to receive(:find).with(agreement_id).and_raise(
+            CocinaObjectStore::CocinaObjectNotFoundError
+          )
+        end
+
+        it 'uses the agreement druid as the title' do
+          expect(doc).to include(
+            'agreement_ssi' => agreement_id,
+            'agreement_ssidv' => agreement_id
+          )
+        end
       end
     end
 
