@@ -18,7 +18,7 @@ module Cocina
         apo = CocinaObjectStore.find(apo_id)
         @error = "Expected '#{apo_id}' to be an AdminPolicy but it is a #{apo.class}" unless apo.admin_policy?
       rescue CocinaObjectStore::CocinaObjectNotFoundError
-        @error = "Unable to find adminPolicy '#{apo_id}'"
+        @error = "Unable to find APO '#{apo_id}'"
       end
 
       @error.nil?
