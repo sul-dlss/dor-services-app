@@ -12,7 +12,7 @@ module Indexing
 
       # @return [Hash] the partial solr document for identityMetadata
       def to_solr # rubocop:disable Metrics/AbcSize
-        if object_type == 'adminPolicy' || cocina_object.identification.blank?
+        if object_type == 'APO' || cocina_object.identification.blank?
           return {
             'objectType_ssimdv' => [object_type]
           }
@@ -53,7 +53,7 @@ module Indexing
       end
 
       def object_type
-        return 'adminPolicy' if cocina_object.admin_policy?
+        return 'APO' if cocina_object.admin_policy?
         return 'collection' if cocina_object.collection?
         return 'agreement' if Cocina::Support.agreement?(cocina_object)
         return 'virtual object' if Cocina::Support.virtual_object?(cocina_object)
