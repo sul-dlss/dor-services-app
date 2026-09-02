@@ -39,10 +39,10 @@ RSpec.describe Cocina::IdGenerator do
     end
 
     context 'with a non-standard string resource ID' do
-      let(:resource_id) { 'resource123' }
+      let(:resource_id) { "#{bare_druid}_1" }
 
       it 'generates an ID with the prior string' do
-        expect(file_set_id).to eq("https://cocina.sul.stanford.edu/fileSet/#{bare_druid}-resource123")
+        expect(file_set_id).to eq("https://cocina.sul.stanford.edu/fileSet/#{bare_druid}-#{resource_id}")
       end
     end
   end
