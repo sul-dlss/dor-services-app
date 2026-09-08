@@ -40,6 +40,7 @@ gem 'faraday-retry'
 gem 'honeybadger'
 gem 'janeway-jsonpath' # used for metadata reports
 gem 'jbuilder'
+gem 'json', '~> 2.0' # Pinned until Rails 8.1.4 is released https://github.com/rails/rails/issues/58685
 gem 'jwt' # json web token
 gem 'lograge'
 gem 'okcomputer'
