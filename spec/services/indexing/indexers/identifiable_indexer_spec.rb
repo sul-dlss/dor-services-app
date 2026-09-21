@@ -75,14 +75,14 @@ RSpec.describe Indexing::Indexers::IdentifiableIndexer do
     end
 
     context 'when APO is found' do
-      let(:related) { build(:collection, id: mock_rel_druid, admin_policy_id: apo_id, title: 'collection title') }
+      let(:related) { build(:admin_policy, id: mock_rel_druid, admin_policy_id: apo_id, title: 'apo title') }
 
       it 'generates apo title fields' do
-        expect(doc['apo_title_ssimdv'].first).to eq 'collection title'
+        expect(doc['apo_title_ssimdv'].first).to eq 'apo title'
       end
 
       it 'generates a composite apo title/druid field' do
-        expect(doc['apo_title_druid_ssimdv'].first).to eq 'collection title:druid:bd999bd9999'
+        expect(doc['apo_title_druid_ssimdv'].first).to eq 'apo title:druid:bd999bd9999'
       end
 
       it 'indexes metadata sources' do
