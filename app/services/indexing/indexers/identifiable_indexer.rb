@@ -20,7 +20,11 @@ module Indexing
       def to_solr # rubocop:disable Metrics/AbcSize
         {}.tap do |solr_doc|
           # Hydrus APOs are excluded since every Hydrus item had its own APO.
-          solr_doc['apo_title_ssimdv'] = [apo_title] unless hydrus_apo?
+          unless hydrus_apo?
+            solr_doc['apo_title_ssimdv'] = [apo_title]
+            solr_doc['apo_title_druid_ssimdv'] =
+              [Indexing::CompositeFacetValue.build(label: apo_title, druid: apo_druid)]
+          end
 
           if cocina.admin_policy?
             solr_doc['agreement_ssi'] = agreement_druid
