@@ -50,6 +50,16 @@ RSpec.describe Indexing::Indexers::IdentifiableIndexer do
       expect(doc).not_to include('agreement_ssi', 'agreement_ssidv')
     end
 
+    context 'when the APO is a Hydrus APO' do
+      before do
+        allow(AdministrativeTags).to receive(:for).with(identifier: apo_id).and_return(['Project : Hydrus'])
+      end
+
+      it 'skips the apo title fields' do
+        expect(doc).not_to include('apo_title_ssimdv', 'apo_title_druid_ssimdv')
+      end
+    end
+
     context 'when APO is not found' do
       before do
         allow(CocinaObjectStore).to receive(:find).and_raise(CocinaObjectStore::CocinaObjectNotFoundError)
@@ -58,13 +68,21 @@ RSpec.describe Indexing::Indexers::IdentifiableIndexer do
       it 'generates apo title fields' do
         expect(doc['apo_title_ssimdv'].first).to eq apo_id
       end
+
+      it 'generates a composite apo title/druid field that degrades to the druid' do
+        expect(doc['apo_title_druid_ssimdv'].first).to eq 'druid:bd999bd9999:druid:bd999bd9999'
+      end
     end
 
     context 'when APO is found' do
-      let(:related) { build(:collection, id: mock_rel_druid, admin_policy_id: apo_id, title: 'collection title') }
+      let(:related) { build(:admin_policy, id: mock_rel_druid, admin_policy_id: apo_id, title: 'apo title') }
 
       it 'generates apo title fields' do
-        expect(doc['apo_title_ssimdv'].first).to eq 'collection title'
+        expect(doc['apo_title_ssimdv'].first).to eq 'apo title'
+      end
+
+      it 'generates a composite apo title/druid field' do
+        expect(doc['apo_title_druid_ssimdv'].first).to eq 'apo title:druid:bd999bd9999'
       end
 
       it 'indexes metadata sources' do

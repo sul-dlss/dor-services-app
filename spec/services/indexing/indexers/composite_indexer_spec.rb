@@ -14,7 +14,7 @@ RSpec.describe Indexing::Indexers::CompositeIndexer do
   end
 
   let(:cocina_item) do
-    build(:dro, id: druid).new(
+    build(:dro, id: druid, admin_policy_id: apo_id).new(
       description: {
         title: [{ value: 'Test item' }],
         subject: [{ type: 'topic', value: 'word' }],
@@ -42,6 +42,7 @@ RSpec.describe Indexing::Indexers::CompositeIndexer do
         'full_title_tenim' => ['Test item'],
         'display_title_ss' => 'Test item',
         'apo_title_ssimdv' => ['test admin policy'],
+        'apo_title_druid_ssimdv' => ['test admin policy:druid:gf999hb9999'],
         'metadata_source_ssimdv' => ['DOR'],
         'druid_bare_ssi' => 'mx123ms3333',
         'druid_prefixed_ssi' => 'druid:mx123ms3333',

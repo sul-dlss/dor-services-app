@@ -19,6 +19,7 @@ RSpec.describe Indexing::Indexers::CollectionTitleIndexer do
       it "doesn't raise an error" do
         expect(doc['collection_title_ssimdv']).to be_nil
         expect(doc['collection_title_tesim']).to be_nil
+        expect(doc['collection_title_druid_ssimdv']).to be_nil
       end
     end
 
@@ -29,6 +30,10 @@ RSpec.describe Indexing::Indexers::CollectionTitleIndexer do
       it 'generates collection title fields' do
         expect(doc['collection_title_ssimdv'].first).to eq 'Collection test object'
         expect(doc['collection_title_tesim'].first).to eq 'Collection test object'
+      end
+
+      it 'generates a composite collection title/druid field' do
+        expect(doc['collection_title_druid_ssimdv'].first).to eq 'Collection test object:druid:qf999gg9999'
       end
     end
   end
