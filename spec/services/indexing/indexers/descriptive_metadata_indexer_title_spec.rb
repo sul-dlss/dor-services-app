@@ -23,6 +23,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
     # 'full_title_tenim' => full_title, # for searching; 1 more field type is copyField in solr schema.xml
     # 'additional_titles_tenim' => additional_titles, # for searching; 1 more field type is copyField in solr schema.xml
     # 'display_title_ss' => display_title, # for display in Argo
+    # 'sort_title_ssidv' => sort_title, # for sorting in Argo b-3
 
     context 'with multiple typed and untyped simple title values, one status primary' do
       let(:titles) do
@@ -52,6 +53,10 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
 
       it 'display_title_ss is value with status primary' do
         expect(doc['display_title_ss']).to eq 'Primary Title'
+      end
+
+      it 'sort_title_ssidv is downcased value with status primary' do
+        expect(doc['sort_title_ssidv']).to eq 'primary title'
       end
     end
 
@@ -99,6 +104,10 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
 
       it 'display_title_ss is rebuilt structuredValue with punctuation' do
         expect(doc['display_title_ss']).to eq 'A title : a subtitle. Vol. 1, Supplement'
+      end
+
+      it 'sort_title_ssidv omits nonsorting characters and punctuation and is downcased' do
+        expect(doc['sort_title_ssidv']).to eq 'title a subtitle vol 1 supplement'
       end
     end
 
@@ -148,6 +157,11 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       it 'display_title_ss is rebuilt structured value with punctuation' do
         expect(doc['display_title_ss']).to eq 'The title. Vol. 1, Supplement : a subtitle'
       end
+
+      # unlike full_title_tenim, the sort title puts the parts in the common order
+      it 'sort_title_ssidv omits nonsorting characters and punctuation and is downcased' do
+        expect(doc['sort_title_ssidv']).to eq 'title a subtitle vol 1 supplement'
+      end
     end
 
     context 'with structuredValue with nonsorting character count' do
@@ -191,6 +205,10 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       it 'display_title_ss includes nonsorting chars without extra space' do
         expect(doc['display_title_ss']).to eq 'L\'autre title'
       end
+
+      it 'sort_title_ssidv omits the counted nonsorting characters' do
+        expect(doc['sort_title_ssidv']).to eq 'autre title'
+      end
     end
 
     context 'with structuredValue with nonsorting characters not first' do
@@ -229,6 +247,12 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
 
       it 'display_title_ss is reconstructed value in occurrence order with punctuation added' do
         expect(doc['display_title_ss']).to eq 'Series 1. A Title'
+      end
+
+      # unlike display_title_ss, the sort title leads with the main title, so the
+      # nonsorting characters are the ones actually dropped
+      it 'sort_title_ssidv omits the nonsorting characters' do
+        expect(doc['sort_title_ssidv']).to eq 'title series 1'
       end
     end
 
@@ -277,6 +301,12 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       it 'display_title_ss is value of the only title without associated name note' do
         expect(doc['display_title_ss']).to eq 'Title'
       end
+
+      # the title sorts under its own value rather than last, but note that cocina-display
+      # includes the associated name in the sort title while display_title_ss omits it
+      it 'sort_title_ssidv is the only title, prefixed by the associated name' do
+        expect(doc['sort_title_ssidv']).to eq 'author an title'
+      end
     end
 
     context 'with structuredValue containing punctuation/space in individual values' do
@@ -314,6 +344,10 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
       it 'display_title_ss is reconstructed value with adjusted punctuation' do
         expect(doc['display_title_ss']).to eq 'Title : subtitle'
       end
+
+      it 'sort_title_ssidv drops the punctuation and collapses the resulting whitespace' do
+        expect(doc['sort_title_ssidv']).to eq 'title subtitle'
+      end
     end
 
     context 'with parallelValue with primary on (whole) parallelValue' do
@@ -347,6 +381,36 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
 
       it 'display_title_ss is first parallel value' do
         expect(doc['display_title_ss']).to eq 'Title 1'
+      end
+
+      it 'sort_title_ssidv is the first parallel value, downcased' do
+        expect(doc['sort_title_ssidv']).to eq 'title 1'
+      end
+    end
+
+    context 'with only typed titles, none of them primary' do
+      let(:titles) do
+        [
+          { value: 'Zebra', type: 'uniform' },
+          { value: 'Apple', type: 'alternative' }
+        ]
+      end
+
+      it 'display_title_ss falls back to the first title' do
+        expect(doc['display_title_ss']).to eq 'Zebra'
+      end
+
+      it 'sort_title_ssidv falls back to the same title display_title_ss uses' do
+        expect(doc['sort_title_ssidv']).to eq 'zebra'
+      end
+    end
+
+    context 'with diacritics in the title' do
+      let(:titles) { [{ value: 'Émile Zola & Cie' }] }
+
+      # the sort title is decomposed (NFD) so that diacritics survive punctuation stripping
+      it 'sort_title_ssidv keeps the diacritics and drops the punctuation' do
+        expect(doc['sort_title_ssidv']).to eq 'émile zola cie'.unicode_normalize(:nfd)
       end
     end
   end

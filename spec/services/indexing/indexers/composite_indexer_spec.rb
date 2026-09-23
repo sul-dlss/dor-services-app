@@ -41,6 +41,7 @@ RSpec.describe Indexing::Indexers::CompositeIndexer do
         'main_title_tenim' => ['Test item'],
         'full_title_tenim' => ['Test item'],
         'display_title_ss' => 'Test item',
+        'sort_title_ssidv' => 'test item',
         'apo_title_ssimdv' => ['test admin policy'],
         'apo_title_druid_ssimdv' => ['test admin policy:druid:gf999hb9999'],
         'metadata_source_ssimdv' => ['DOR'],
