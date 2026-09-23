@@ -17,6 +17,7 @@ module Indexing
         'additional_titles_tenim' => :additional_titles, # for searching; 1 more field type is copyField in
         # solr schema.xml
         'display_title_ss' => :display_title, # for display in Argo
+        'sort_title_ssidv' => :sort_title, # for sorting in Argo b-3
 
         # contributor
         'author_text_nostem_im' => :author_primary, # primary author tokenized but not stemmed
@@ -98,6 +99,14 @@ module Indexing
       def display_title
         Cocina::Models::Builders::TitleBuilder.build(cocina.description.title,
                                                      catalog_links: catalog_links)
+      end
+
+      # cocina-display only considers a title primary if it is marked primary or is untyped, so
+      # fall back to the first title the way display_title does. Otherwise a record whose only
+      # title is typed (e.g. uniform) would sort last despite having a title to display.
+      def sort_title
+        title = cocina_display_record.primary_title || cocina_display_record.all_titles.first
+        title.sort_title.downcase
       end
 
       def format

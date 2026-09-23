@@ -418,6 +418,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'full_title_tenim' => ['The complete works of Henry George'],
         # 'additional_titles_tenim' => '', # not populated by the example; see indexer_spec instead
         'display_title_ss' => 'The complete works of Henry George, Part 1',
+        'sort_title_ssidv' => 'complete works of henry george part 1',
         # 'originInfo_date_created_tesim' => '', # not populated by the example; see indexer_spec instead
         'originInfo_publisher_tesim' => 'Doubleday, Page',
         'subject_topic_other_ssimdv' => %w[Economics cats],
@@ -494,6 +495,8 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
           'additional_titles_tenim' => ['History of the Jews in the Islamic countries'],
           'display_title_ss' =>
             'Toldot ha-Yehudim be-artsot ha-Islam : ha-ʻet ha-ḥadashah-ʻad emtsaʻ ha-meʼah ha-19, Part 1',
+          'sort_title_ssidv' =>
+            'toldot hayehudim beartsot haislam haʻet haḥadashahʻad emtsa hameʼah ha19 part 1'.unicode_normalize(:nfd),
           'format_ssimdv' => [
             'No format specified'
           ]
