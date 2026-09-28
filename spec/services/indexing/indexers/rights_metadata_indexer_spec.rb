@@ -31,6 +31,9 @@ RSpec.describe Indexing::Indexers::RightsMetadataIndexer do
           'copyright_ssim' => 'Copyright © World Trade Organization',
           'use_statement_ssim' => 'Official WTO documents are free for public use.',
           'use_license_machine_ssidv' => 'CC0-1.0',
+          'use_license_label_uri_ssidv' => 'CC Zero 1.0:https://creativecommons.org/publicdomain/zero/1.0/legalcode',
+          'use_license_label_ss' => 'CC Zero 1.0',
+          'use_license_uri_ssidv' => 'https://creativecommons.org/publicdomain/zero/1.0/legalcode',
           'rights_descriptions_ssimdv' => 'world'
         )
       end
@@ -44,6 +47,9 @@ RSpec.describe Indexing::Indexers::RightsMetadataIndexer do
           'copyright_ssim' => 'Copyright © World Trade Organization',
           'use_statement_ssim' => 'Official WTO documents are free for public use.',
           'use_license_machine_ssidv' => 'CC0-1.0',
+          'use_license_label_uri_ssidv' => 'CC Zero 1.0:https://creativecommons.org/publicdomain/zero/1.0/legalcode',
+          'use_license_label_ss' => 'CC Zero 1.0',
+          'use_license_uri_ssidv' => 'https://creativecommons.org/publicdomain/zero/1.0/legalcode',
           'rights_descriptions_ssimdv' => 'dark'
         )
       end
@@ -75,8 +81,77 @@ RSpec.describe Indexing::Indexers::RightsMetadataIndexer do
         'copyright_ssim' => 'Copyright © World Trade Organization',
         'use_statement_ssim' => 'Official WTO documents are free for public use.',
         'use_license_machine_ssidv' => 'CC0-1.0',
+        'use_license_label_uri_ssidv' => 'CC Zero 1.0:https://creativecommons.org/publicdomain/zero/1.0/legalcode',
+        'use_license_label_ss' => 'CC Zero 1.0',
+        'use_license_uri_ssidv' => 'https://creativecommons.org/publicdomain/zero/1.0/legalcode',
         'rights_descriptions_ssimdv' => ['world']
       )
+    end
+
+    describe 'license fields' do
+      subject(:license_fields) do
+        doc.slice('use_license_machine_ssidv', 'use_license_label_uri_ssidv', 'use_license_label_ss',
+                  'use_license_uri_ssidv')
+      end
+
+      context 'with a Creative Commons license' do
+        let(:license) { 'https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode' }
+
+        it do
+          expect(license_fields).to eq(
+            'use_license_machine_ssidv' => 'CC-BY-NC-ND-4.0',
+            'use_license_label_uri_ssidv' => 'CC Attribution-NonCommercial, No Derivatives 4.0 International:' \
+                                             'https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode',
+            'use_license_label_ss' => 'CC Attribution-NonCommercial, No Derivatives 4.0 International',
+            'use_license_uri_ssidv' => license
+          )
+        end
+      end
+
+      context 'with an open source license' do
+        let(:license) { 'https://opensource.org/licenses/MIT' }
+
+        it do
+          expect(license_fields).to eq(
+            'use_license_machine_ssidv' => 'MIT',
+            'use_license_label_uri_ssidv' => 'MIT License:https://opensource.org/licenses/MIT',
+            'use_license_label_ss' => 'MIT License',
+            'use_license_uri_ssidv' => license
+          )
+        end
+      end
+
+      context 'with the legacy none license' do
+        let(:license) { 'https://cocina.sul.stanford.edu/licenses/none' }
+
+        it do
+          expect(license_fields).to eq(
+            'use_license_machine_ssidv' => 'none',
+            'use_license_label_uri_ssidv' => 'None:https://cocina.sul.stanford.edu/licenses/none',
+            'use_license_label_ss' => 'None',
+            'use_license_uri_ssidv' => license
+          )
+        end
+      end
+
+      context 'with an unmapped license' do
+        let(:license) { 'http://opendatacommons.org/licenses/odbl/1.0/' }
+
+        it do
+          expect(license_fields).to eq(
+            'use_license_machine_ssidv' => license,
+            'use_license_label_uri_ssidv' => "#{license}:#{license}",
+            'use_license_label_ss' => license,
+            'use_license_uri_ssidv' => license
+          )
+        end
+      end
+
+      context 'without a license' do
+        let(:license) { nil }
+
+        it { is_expected.to eq({}) }
+      end
     end
     # rubocop:enable Style/StringHashKeys
 

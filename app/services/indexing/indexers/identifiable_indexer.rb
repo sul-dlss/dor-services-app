@@ -23,7 +23,7 @@ module Indexing
           unless hydrus_apo?
             solr_doc['apo_title_ssimdv'] = [apo_title]
             solr_doc['apo_title_druid_ssimdv'] =
-              [Indexing::CompositeFacetValue.build(label: apo_title, druid: apo_druid)]
+              [Indexing::CompositeFacetValue.build(label: apo_title, id: apo_druid)]
           end
 
           if cocina.admin_policy?

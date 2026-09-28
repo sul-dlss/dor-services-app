@@ -40,7 +40,7 @@ module Indexing
       # the composite title:druids
       def title_druids
         titled_collections.map do |(title, druid)|
-          Indexing::CompositeFacetValue.build(label: title, druid:)
+          Indexing::CompositeFacetValue.build(label: title, id: druid)
         end
       end
     end
