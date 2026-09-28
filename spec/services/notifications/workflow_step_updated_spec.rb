@@ -7,7 +7,8 @@ RSpec.describe Notifications::WorkflowStepUpdated do
 
   let(:step) do
     create(:workflow_step, status: 'completed', process: 'end-accession', workflow: 'accessionWF',
-                           lifecycle: 'accessioned', updated_at: '2025-07-17T15:52:47+00:00')
+                           lifecycle: 'accessioned', updated_at: '2025-07-17T15:52:47+00:00',
+                           completed_at: '2025-07-15T15:00:00+00:00')
   end
 
   let(:channel) { instance_double(Notifications::RabbitChannel, topic:) }
@@ -22,7 +23,7 @@ RSpec.describe Notifications::WorkflowStepUpdated do
         laneId: 'default',
         elapsed: nil,
         attempts: 0,
-        datetime: '2025-07-17T15:52:47+00:00',
+        datetime: '2025-07-15T15:00:00+00:00',
         context: nil,
         status: 'completed',
         name: 'end-accession',
