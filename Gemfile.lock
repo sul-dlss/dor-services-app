@@ -666,7 +666,6 @@ DEPENDENCIES
   honeybadger
   janeway-jsonpath
   jbuilder
-  json (~> 2.0)
   json_schemer-rails
   jwt
   lograge
