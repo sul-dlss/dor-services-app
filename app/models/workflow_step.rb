@@ -74,7 +74,6 @@ class WorkflowStep < WorkflowApplicationRecord
     errors.add(:process, 'is not valid') unless valid_process_for_workflow?
   end
 
-  # rubocop:disable Metrics/AbcSize
   def attributes_for_process
     {
       version:,
@@ -83,7 +82,7 @@ class WorkflowStep < WorkflowApplicationRecord
       laneId: lane_id,
       elapsed:,
       attempts:,
-      datetime: updated_at.to_time.iso8601,
+      datetime: workflow_step_datetime,
       # context (which is deserialized as a hash by activerecord) as json so it can be deserialized by client
       context: context&.to_json,
       status:,
@@ -93,5 +92,14 @@ class WorkflowStep < WorkflowApplicationRecord
       attr[:errorMessage] = error_msg if error_msg
     end
   end
-  # rubocop:enable Metrics/AbcSize
+
+  # the returned date for the workflow step should depend on the step status
+  # see https://github.com/sul-dlss/argo-b3/issues/635
+  def workflow_step_datetime
+    if completed?
+      completed_at.to_time.iso8601
+    else
+      updated_at.to_time.iso8601
+    end
+  end
 end

@@ -190,11 +190,24 @@ RSpec.describe WorkflowStep do
         laneId: 'default',
         elapsed: nil,
         attempts: 0,
-        datetime: String,
+        datetime: step.updated_at.to_time.iso8601,
         status: 'waiting',
         name: 'start-accession',
         activeVersion: false
       )
+    end
+
+    context 'when the step is completed' do
+      # since the factory can create both the created and completed_at timestamps at the same second,
+      # let's shift the completed_at timestamp a bit to be sure it's different for this test
+      before { completed_step.completed_at = completed_step.updated_at + 2.seconds }
+
+      it 'uses the completed_at time' do
+        expect(completed_step.attributes_for_process).to include(
+          datetime: completed_step.completed_at.to_time.iso8601,
+          status: 'completed'
+        )
+      end
     end
 
     context 'when active_version is true' do
