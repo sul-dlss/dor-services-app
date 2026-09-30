@@ -15,9 +15,9 @@ RSpec.describe Indexing::CompositeFacetValue do
     end
 
     it 'joins the label and a URI with a colon' do
-      expect(described_class.build(label: 'CC Zero 1.0',
+      expect(described_class.build(label: 'CC0 1.0 Universal',
                                    id: 'https://creativecommons.org/publicdomain/zero/1.0/legalcode'))
-        .to eq 'CC Zero 1.0:https://creativecommons.org/publicdomain/zero/1.0/legalcode'
+        .to eq 'CC0 1.0 Universal:https://creativecommons.org/publicdomain/zero/1.0/legalcode'
     end
   end
 end

@@ -11,60 +11,60 @@ module Indexing
           label: 'None'
         },
         'https://creativecommons.org/licenses/by/3.0/legalcode' => {
-          code: 'CC-BY-3.0',
-          label: 'CC Attribution 3.0 Unported'
+          code: 'CC BY 3.0',
+          label: 'CC BY 3.0 Attribution Unported'
         },
         'https://creativecommons.org/licenses/by-sa/3.0/legalcode' => {
-          code: 'CC-BY-SA-3.0',
-          label: 'CC Attribution Share Alike 3.0 Unported'
+          code: 'CC BY-SA 3.0',
+          label: 'CC BY-SA 3.0 Attribution-ShareAlike Unported'
         },
         'https://creativecommons.org/licenses/by-nd/3.0/legalcode' => {
-          code: 'CC-BY-ND-3.0',
-          label: 'CC Attribution No Derivatives 3.0 Unported'
+          code: 'CC BY-ND 3.0',
+          label: 'CC BY-ND 3.0 Attribution-NoDerivatives Unported'
         },
         'https://creativecommons.org/licenses/by-nc/3.0/legalcode' => {
-          code: 'CC-BY-NC-3.0',
-          label: 'CC Attribution Non-Commercial 3.0 Unported'
+          code: 'CC BY-NC 3.0',
+          label: 'CC BY-NC 3.0 Attribution-NonCommercial Unported'
         },
         'https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode' => {
-          code: 'CC-BY-NC-SA-3.0',
-          label: 'CC Attribution Non-Commercial Share Alike 3.0 Unported'
+          code: 'CC BY-NC-SA 3.0',
+          label: 'CC BY-NC-SA 3.0 Attribution-NonCommercial-ShareAlike Unported'
         },
         'https://creativecommons.org/licenses/by-nc-nd/3.0/legalcode' => {
-          code: 'CC-BY-NC-ND-3.0',
-          label: 'CC Attribution Non-Commercial, No Derivatives 3.0 Unported'
+          code: 'CC BY-NC-ND 3.0',
+          label: 'CC BY-NC-ND 3.0 Attribution-NonCommercial-NoDerivatives Unported'
         },
         'https://creativecommons.org/licenses/by/4.0/legalcode' => {
-          code: 'CC-BY-4.0',
-          label: 'CC Attribution 4.0 International'
+          code: 'CC BY 4.0',
+          label: 'CC BY 4.0 Attribution International'
         },
         'https://creativecommons.org/licenses/by-sa/4.0/legalcode' => {
-          code: 'CC-BY-SA-4.0',
-          label: 'CC Attribution-ShareAlike 4.0 International'
+          code: 'CC BY-SA 4.0',
+          label: 'CC BY-SA 4.0 Attribution-ShareAlike International'
         },
         'https://creativecommons.org/licenses/by-nd/4.0/legalcode' => {
-          code: 'CC-BY-ND-4.0',
-          label: 'CC Attribution-NoDerivatives 4.0 International'
+          code: 'CC BY-ND 4.0',
+          label: 'CC BY-ND 4.0 Attribution-NoDerivatives International'
         },
         'https://creativecommons.org/licenses/by-nc/4.0/legalcode' => {
-          code: 'CC-BY-NC-4.0',
-          label: 'CC Attribution-NonCommercial 4.0 International'
+          code: 'CC BY-NC 4.0',
+          label: 'CC BY-NC 4.0 Attribution-NonCommercial International'
         },
         'https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode' => {
-          code: 'CC-BY-NC-SA-4.0',
-          label: 'CC Attribution-NonCommercial Share Alike 4.0 International'
+          code: 'CC BY-NC-SA 4.0',
+          label: 'CC BY-NC-SA 4.0 Attribution-NonCommercial-ShareAlike International'
         },
         'https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode' => {
-          code: 'CC-BY-NC-ND-4.0',
-          label: 'CC Attribution-NonCommercial, No Derivatives 4.0 International'
+          code: 'CC BY-NC-ND 4.0',
+          label: 'CC BY-NC-ND 4.0 Attribution-NonCommercial-NoDerivatives International'
         },
         'https://creativecommons.org/publicdomain/zero/1.0/legalcode' => {
           code: 'CC0-1.0',
-          label: 'CC Zero 1.0'
+          label: 'CC0 1.0 Universal'
         },
         'https://creativecommons.org/publicdomain/mark/1.0/' => {
           code: 'PDM',
-          label: 'CC Public Domain Mark 1.0'
+          label: 'Public Domain Mark 1.0'
         },
         'https://opendatacommons.org/licenses/pddl/1-0/' => {
           code: 'PDDL-1.0',
