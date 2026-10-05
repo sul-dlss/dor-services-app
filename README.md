@@ -111,7 +111,7 @@ Events record the history of an SDR object (e.g., registration, version open/clo
 
 ### Adding a new event type
 
-`Event` validates that `event_type` is one of `Event::EVENT_TYPES` (`app/models/event.rb`), so an event of a new type is rejected until it has been added there.
+`Event` validates that `event_type` is one of `Event::EVENT_TYPES` (`app/models/event.rb`), so an event of a new type is rejected until it has been added there. The valid event types can be listed with `GET /v1/event_types`.
 
 ### Creating events
 

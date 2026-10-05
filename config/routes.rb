@@ -22,6 +22,8 @@ Rails.application.routes.draw do
 
     resources :background_job_results, only: [:show], defaults: { format: :json }
 
+    resources :event_types, only: [:index], defaults: { format: :json }
+
     resources :administrative_tags, only: [] do
       collection do
         get 'search'
