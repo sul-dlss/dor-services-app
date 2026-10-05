@@ -11,5 +11,11 @@ class EventsController < ApplicationController
     params.require(:event_type)
     Event.create!(druid: params[:object_id], event_type: params[:event_type], data: params[:data])
     head :created
+  rescue ActiveRecord::RecordInvalid => e
+    render json: {
+      errors: [
+        { title: 'bad request', detail: e.message }
+      ]
+    }, status: :bad_request
   end
 end
