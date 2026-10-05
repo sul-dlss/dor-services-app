@@ -954,9 +954,7 @@ RSpec.describe 'Create object' do
     end
     let(:data) do
       <<~JSON
-        {#{' '}
-          "cocinaVersion":"#{Cocina::Models::VERSION}",
-          "cocinaVersion":"#{Cocina::Models::VERSION}",
+        {"cocinaVersion":"#{Cocina::Models::VERSION}",
           "type":"#{Cocina::Models::ObjectType.book}",
           "version":1,
           "access":{"view":"location-based","download":"location-based","location":"m&m"},
