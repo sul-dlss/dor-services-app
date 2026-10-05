@@ -758,6 +758,12 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ObjectEvent"
+        "400":
+          description: Invalid from or to
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
       parameters:
         - name: object_id
           in: path
@@ -773,6 +779,20 @@ paths:
             type: array
             items:
               type: string
+        - name: from
+          in: query
+          description: Only return events created at or after this time (inclusive). An ISO 8601 date or date-time; UTC if no offset is given.
+          required: false
+          schema:
+            type: string
+            example: "2026-10-01T12:00:00-07:00"
+        - name: to
+          in: query
+          description: Only return events created before this time (exclusive). An ISO 8601 date or date-time; UTC if no offset is given.
+          required: false
+          schema:
+            type: string
+            example: "2026-10-02"
     post:
       tags:
         - events
