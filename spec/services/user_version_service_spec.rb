@@ -68,6 +68,8 @@ RSpec.describe UserVersionService do
         user_version_service_withdraw
         expect(user_version.reload.withdrawn?).to be true
         expect(WithdrawRestoreJob).to have_received(:perform_later).with(user_version:)
+        expect(EventFactory).to have_received(:create).with(druid:, event_type: 'user_version_withdrawn',
+                                                            data: { version: '1', withdrawn: true })
       end
     end
 
@@ -142,6 +144,8 @@ RSpec.describe UserVersionService do
       expect(user_version3.reload.available?).to be true
 
       expect(EventFactory).to have_received(:create).once
+      expect(EventFactory).to have_received(:create).with(druid:, event_type: 'user_version_permanently_withdrawn',
+                                                          data: { version: '2' })
     end
   end
 end
