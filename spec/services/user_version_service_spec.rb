@@ -25,6 +25,8 @@ RSpec.describe UserVersionService do
       it 'creates a user version' do
         user_version_service_create
         expect(repository_object.user_versions.count).to eq 1
+        expect(EventFactory).to have_received(:create).with(druid:, event_type: 'user_version_created',
+                                                            data: { version: '1', user_version: '1' })
       end
     end
 

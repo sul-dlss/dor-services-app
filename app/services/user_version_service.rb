@@ -17,7 +17,8 @@ class UserVersionService
     # Get the next increment of the user version (or 1 if this is the first user version)
     next_user_version = repository_object_version.repository_object.user_versions.maximum(:version)&.next || 1
     user_version = UserVersion.create!(version: next_user_version, repository_object_version:)
-    EventFactory.create(druid:, event_type: 'user_version_created', data: { version: version.to_s })
+    EventFactory.create(druid:, event_type: 'user_version_created',
+                        data: { version: version.to_s, user_version: next_user_version.to_s })
     user_version
   end
 
