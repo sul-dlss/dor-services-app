@@ -94,12 +94,9 @@ class WorkflowStep < WorkflowApplicationRecord
   end
 
   # the returned date for the workflow step should depend on the step status
-  # see https://github.com/sul-dlss/argo-b3/issues/635
+  # some legacy completed steps have no completed_at, so fall back to updated_at
   def workflow_step_datetime
-    if completed?
-      completed_at.to_time.iso8601
-    else
-      updated_at.to_time.iso8601
-    end
+    datetime = completed? ? completed_at || updated_at : updated_at
+    datetime.to_time.iso8601
   end
 end

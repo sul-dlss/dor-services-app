@@ -210,6 +210,17 @@ RSpec.describe WorkflowStep do
       end
     end
 
+    context 'when the step is completed but has no completed_at' do
+      before { completed_step.update_column(:completed_at, nil) } # rubocop:disable Rails/SkipsModelValidations
+
+      it 'uses the updated_at time' do
+        expect(completed_step.attributes_for_process).to include(
+          datetime: completed_step.updated_at.to_time.iso8601,
+          status: 'completed'
+        )
+      end
+    end
+
     context 'when active_version is true' do
       before { step.active_version = true }
 
