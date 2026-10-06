@@ -105,6 +105,64 @@ sudo /usr/bin/systemctl status sneakers
 
 This is started automatically during a deploy via capistrano. Note that sneakers only runs on some worker servers.
 
+## Events
+
+Events record the history of an SDR object (e.g., registration, version open/close, publishing, preservation, indexing). They are stored in the `events` table (`Event` model) with a `druid`, an `event_type`, a `data` hash, and a `created_at` timestamp.
+
+### Adding a new event type
+
+`Event` validates that `event_type` is one of `Event::EVENT_TYPES` (`app/models/event.rb`), so an event of a new type is rejected until it has been added there. The valid event types can be listed with `GET /v1/event_types`.
+
+### Creating events
+
+#### From within DSA
+
+Use `EventFactory`, which adds `host` and `invoked_by` to the data:
+
+```ruby
+EventFactory.create(druid:, event_type: 'version_open', data: { who:, version: version.to_s, description: })
+```
+
+#### From another application, via RabbitMQ with Dor Event Client (preferred)
+
+[dor-event-client](https://github.com/sul-dlss/dor-event-client) publishes the event to the `sdr.objects.event` topic exchange (with the event type as the routing key). DSA consumes the `dsa.create-event` queue (see `CreateEventJob` and [RabbitMQ queue workers](#rabbitmq-queue-workers)). This is asynchronous, so the creating application doesn't wait on or depend on DSA being available.
+
+```ruby
+Dor::Event::Client.create(druid: 'druid:bb408qn5061', type: 'h3_review_approved', data: { who: 'jdoe' })
+```
+
+#### From another application, via the REST API with Dor Services Client
+
+[dor-services-client](https://github.com/sul-dlss/dor-services-client) calls `POST /v1/objects/:object_id/events`, which creates the event synchronously.
+
+```ruby
+Dor::Services::Client.object('druid:bb408qn5061').events.create(type: 'ocr_success', data: { host:, invoked_by: 'abbyy_watcher' })
+```
+
+### Conventions
+
+Event types:
+* Use snake_case (a few older types use hyphens, e.g., `cleanup-workspace`; don't follow them).
+* Prefix types created outside of DSA with the application name (e.g., `h3_review_approved`, `argo_permission_created`, `earthworks_indexing_success`) unless the type is shared by several applications (e.g., `indexing_success`, distinguished by `target`).
+* For outcomes, use suffixes like `_success`/`_errored` or `_complete`; for requests, `_request_received`.
+
+Data keys (snake_case):
+
+| Key | Meaning |
+| --- | --- |
+| `host` | Hostname of the server that created the event. |
+| `invoked_by` | The application or user / token that caused the event (e.g., `preservation-catalog`, `indexer`). |
+| `who` | The sunetid of the user who performed the action. |
+| `description` | A human-readable description (e.g., a version description). |
+| `version` | The object (repository object) version, as a string. |
+| `user_version` | The user version, as a string. |
+| `message` / `error` | A description of why something was skipped or failed. |
+| `context` | Additional details about an error. |
+| `target` | The system being acted on (e.g., `Searchworks` for indexing events). |
+| `request` | The Cocina object submitted with the request (e.g., `registration`, `update`). |
+
+Keep `data` a flat hash of simple values where possible, and use the same keys for every event of a given type.
+
 ## Cron check-ins
 
 Some cron jobs (configured via the `whenever` gem) are integrated with Honeybadger check-ins. These cron jobs will check-in with HB (via a curl request to an HB endpoint) whenever run. If a cron job does not check-in as expected, HB will alert.

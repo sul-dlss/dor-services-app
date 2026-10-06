@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :event do
     druid { 'druid:xz456jk0987' }
-    event_type { 'important_action_completed' }
+    event_type { 'update' }
     data { { other: 'useful info specific to the event/occurrence' } }
   end
 end
