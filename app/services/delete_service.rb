@@ -24,7 +24,7 @@ class DeleteService
     delete_from_dor
     EventFactory.create(druid:, event_type: 'delete',
                         data: { request: cocina_object.to_h, source_id: cocina_object&.identification&.sourceId,
-                                user_name: })
+                                who: user_name })
   end
 
   private
