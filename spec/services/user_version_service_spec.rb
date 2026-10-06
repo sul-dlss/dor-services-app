@@ -25,6 +25,8 @@ RSpec.describe UserVersionService do
       it 'creates a user version' do
         user_version_service_create
         expect(repository_object.user_versions.count).to eq 1
+        expect(EventFactory).to have_received(:create).with(druid:, event_type: 'user_version_created',
+                                                            data: { version: '1', user_version: '1' })
       end
     end
 
@@ -68,6 +70,8 @@ RSpec.describe UserVersionService do
         user_version_service_withdraw
         expect(user_version.reload.withdrawn?).to be true
         expect(WithdrawRestoreJob).to have_received(:perform_later).with(user_version:)
+        expect(EventFactory).to have_received(:create).with(druid:, event_type: 'user_version_withdrawn',
+                                                            data: { version: '1', user_version: '1', withdrawn: true })
       end
     end
 
@@ -96,6 +100,8 @@ RSpec.describe UserVersionService do
       expect(user_version.reload.repository_object_version).to eq repository_object_version2
       expect(PublishJob).to have_received(:perform_later).with(druid:, user_version: 1,
                                                                background_job_result: BackgroundJobResult)
+      expect(EventFactory).to have_received(:create).with(druid:, event_type: 'user_version_moved',
+                                                          data: { version: '2', user_version: '1' })
     end
 
     context 'when publishing is false' do
@@ -142,6 +148,8 @@ RSpec.describe UserVersionService do
       expect(user_version3.reload.available?).to be true
 
       expect(EventFactory).to have_received(:create).once
+      expect(EventFactory).to have_received(:create).with(druid:, event_type: 'user_version_permanently_withdrawn',
+                                                          data: { version: '1', user_version: '2' })
     end
   end
 end

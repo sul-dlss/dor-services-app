@@ -17,7 +17,8 @@ class UserVersionService
     # Get the next increment of the user version (or 1 if this is the first user version)
     next_user_version = repository_object_version.repository_object.user_versions.maximum(:version)&.next || 1
     user_version = UserVersion.create!(version: next_user_version, repository_object_version:)
-    EventFactory.create(druid:, event_type: 'user_version_created', data: { version: version.to_s })
+    EventFactory.create(druid:, event_type: 'user_version_created',
+                        data: { version: version.to_s, user_version: next_user_version.to_s })
     user_version
   end
 
@@ -32,7 +33,8 @@ class UserVersionService
     user_version.update!(state: withdraw ? 'withdrawn' : 'available')
     WithdrawRestoreJob.perform_later(user_version:)
     EventFactory.create(druid:, event_type: 'user_version_withdrawn',
-                        data: { version: user_version.to_s, withdrawn: withdraw })
+                        data: { version: user_version.repository_object_version.version.to_s,
+                                user_version: user_version.version.to_s, withdrawn: withdraw })
     user_version
   rescue ActiveRecord::RecordInvalid => e
     raise(UserVersioningError, e.message)
@@ -53,7 +55,8 @@ class UserVersionService
     user_version_obj = user_version_for(druid:, user_version:)
     user_version_obj.update(repository_object_version:)
     PublishJob.perform_later(druid:, user_version:, background_job_result: BackgroundJobResult.create) if publish
-    EventFactory.create(druid:, event_type: 'user_version_moved', data: { version: user_version.to_s })
+    EventFactory.create(druid:, event_type: 'user_version_moved',
+                        data: { version: version.to_s, user_version: user_version.to_s })
     user_version_obj
   end
 
@@ -93,7 +96,8 @@ class UserVersionService
 
         user_version.permanently_withdrawn!
         EventFactory.create(druid:, event_type: 'user_version_permanently_withdrawn',
-                            data: { version: user_version.to_s })
+                            data: { version: user_version.repository_object_version.version.to_s,
+                                    user_version: user_version.version.to_s })
       end
     end
   end
