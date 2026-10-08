@@ -17,7 +17,7 @@ module Catalog
     def normalize
       abstracts_from(record_hash).each do |abstract|
         abstract.dig('520', 'subfields').each do |subfield|
-          next unless subfield['a'].match?('{dollar}')
+          next unless subfield['a']&.match?('{dollar}')
 
           subfield['a'] = subfield['a'].dup.gsub('{dollar}', '$')
         end

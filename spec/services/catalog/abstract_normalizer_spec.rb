@@ -45,7 +45,7 @@ RSpec.describe Catalog::AbstractNormalizer do
         { '520' =>
           { 'ind1' => '3',
             'ind2' => ' ',
-            'subfields' => [{ 'a' => 'Excellent ab{dollar}tract' }] } },
+            'subfields' => [{ 'a' => 'Excellent ab{dollar}tract' }, { 'c' => 'Some {dollar}ource' }] } },
         { '596' => { 'ind1' => ' ', 'ind2' => ' ', 'subfields' => [{ 'a' => '31' }] } },
         { '650' => { 'ind1' => ' ', 'ind2' => '0', 'subfields' => [{ 'a' => 'Sonatas (Cello and harpsichord)' }] } },
         { '700' =>
@@ -83,6 +83,10 @@ RSpec.describe Catalog::AbstractNormalizer do
       expect(
         normalizer.normalize['fields'].find { |field| field.keys.first == '520' }['520']['subfields'].first['a']
       ).to eq('Excellent ab$tract')
+      # non-$a subfields in the 520 are left alone
+      expect(
+        normalizer.normalize['fields'].find { |field| field.keys.first == '520' }['520']['subfields'].second['c']
+      ).to eq('Some {dollar}ource')
 
       # these stay the same
       expect(
