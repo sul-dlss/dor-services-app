@@ -40,10 +40,23 @@ module Robots
         end
 
         def published_version_available?
-          last_closed_version = RepositoryObject.find_by!(external_identifier: druid).last_closed_version_version
-          return false unless last_closed_version
+          workflow_version = version.to_i
 
-          Workflow::LifecycleService.milestone?(druid:, milestone_name: 'published', version: last_closed_version)
+          # The release workflow version itself has been published.
+          return true if version_published?(version: workflow_version)
+
+          # The release workflow may have started for a newer open version while an earlier version
+          # was already published. See https://github.com/sul-dlss/dor-services-app/issues/6278.
+          latest_version = latest_published_version
+          latest_version.present? && latest_version < workflow_version
+        end
+
+        def version_published?(version:)
+          Workflow::LifecycleService.milestone?(druid:, milestone_name: 'published', version:)
+        end
+
+        def latest_published_version
+          Workflow::LifecycleService.latest_milestone_version(druid:, milestone_name: 'published')
         end
       end
     end
