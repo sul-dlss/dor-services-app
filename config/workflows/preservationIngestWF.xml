@@ -3,21 +3,15 @@
   <process name="start-ingest" status="completed">
     <label>Initiate preservation ingest workflow</label>
   </process>
-  <process name="transfer-object">
-    <label>Get bagit/Moab deposit bag for new Moab version from (common-accessioning sdrIngestTransfer robot)</label>
+  <process name="write-new-moab-version">
+    <label>
+      In one step on a single VM to avoid network file system lag: get Bagit deposit bag for building new Moab version (from accessionWF sdr-ingest-transfer robot); verify the new version's deposit bag structure; create/update Moab object from deposit bag
+    </label>
     <prereq>start-ingest</prereq>
-  </process>
-  <process name="validate-bag">
-    <label>Verify the bagit/Moab deposit bag structure of new version</label>
-    <prereq>transfer-object</prereq>
-  </process>
-  <process name="update-moab">
-    <label>Create/update Moab object from deposit bag</label>
-    <prereq>validate-bag</prereq>
   </process>
   <process name="validate-moab">
     <label>Verify the Moab on local disk passes validation, including checksums</label>
-    <prereq>update-moab</prereq>
+    <prereq>write-new-moab-version</prereq>
   </process>
   <process name="update-catalog">
     <label>Create/update Preservation Catalog entry</label>
