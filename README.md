@@ -46,7 +46,7 @@ Total: 541
 
 ## Developer Notes
 
-DOR Services App is a Rails app.
+DOR Services App is a Rails app. Use Ruby 4.0.7 for development and testing.
 
 ### Background Jobs
 

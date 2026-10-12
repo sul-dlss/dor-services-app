@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'pathname'
-
 # Remove all traces of the object's data files from the workspace and export areas
 class CleanupService
   def self.reset_accessioning(druid, ...)
