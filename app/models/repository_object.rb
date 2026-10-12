@@ -177,6 +177,18 @@ class RepositoryObject < ApplicationRecord # rubocop:disable Metrics/ClassLength
     end
   end
 
+  # Updates the description of the opened version.
+  # The lock is intentionally not changed (via update_column) so that clients' ETags remain valid.
+  # @param [String] description for the version
+  def update_opened_version_description!(description:)
+    if closed?
+      raise VersionNotOpened,
+            "Cannot update version description because head version is closed: #{head_version.version}"
+    end
+
+    opened_version.update_column(:version_description, description) # rubocop:disable Rails/SkipsModelValidations
+  end
+
   def check_discard_open_version!
     raise VersionNotDiscardable, 'Cannot discard version because head version is closed' if closed?
     raise VersionNotDiscardable, 'Cannot discard version because this is the first version' if last_closed_version.nil?

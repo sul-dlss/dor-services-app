@@ -4,9 +4,13 @@
 class VersionsController < ApplicationController
   before_action :load_cocina_object, only: %i[create]
   before_action :check_cocina_object_exists, only: %i[index]
-  before_action :load_version, only: %i[current close_current destroy_current status]
+  before_action :load_version, only: %i[current close_current destroy_current update_current status]
   before_action :load_repository_object_version, only: %i[show solr]
   before_action :validate_from_openapi, except: %i[show solr]
+
+  rescue_from(JSONSchemer::Rails::RequestValidationError) do |e|
+    json_api_error(status: :bad_request, message: e.message)
+  end
 
   rescue_from RepositoryObjectVersion::NoCocina do |e|
     render build_error('No content for this version', e, status: :bad_request)
@@ -60,6 +64,13 @@ class VersionsController < ApplicationController
     render build_error('Unable to delete version', e, status: :conflict)
   end
 
+  def update_current
+    VersionService.update_description(druid: params[:object_id], version: @version, **update_current_params)
+    head :no_content
+  rescue VersionService::VersioningError => e
+    render build_error('Unable to update version description', e, status: :conflict)
+  end
+
   def status
     render json: VersionBatchStatusService.call_single(druid: params[:object_id])
   end
@@ -106,6 +117,10 @@ class VersionsController < ApplicationController
       :opening_user_name
     ).to_h.symbolize_keys
     boolean_param(new_params, :assume_accessioned)
+  end
+
+  def update_current_params
+    params.permit(:description, :user_name).to_h.symbolize_keys
   end
 
   def close_params # rubocop:disable Metrics/AbcSize, Metrics/MethodLength

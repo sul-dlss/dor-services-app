@@ -28,6 +28,10 @@ class VersionService
                                 accession_args: accession_args)
   end
 
+  def self.update_description(druid:, version:, description:, user_name: nil)
+    new(druid:, version:).update_description(description:, user_name:)
+  end
+
   def self.can_close?(...)
     new(...).can_close?
   end
@@ -210,6 +214,24 @@ class VersionService
     raise VersionService::VersioningError, 'Preservation (SDR) is not yet answering queries about this object. When ' \
                                            'an object has just been transferred, Preservation isn\'t immediately ' \
                                            'ready to answer queries.'
+  end
+
+  # Updates the description of the currently opened version
+  # @param [String] description new description of version change (required)
+  # @param [String] user_name add username to the events datastream (optional)
+  # @raise [VersionService::VersioningError] if the object does not have an opened version
+  def update_description(description:, user_name: nil)
+    raise ArgumentError, 'description is required to update a version description' if description.blank?
+
+    previous_description = repository_object.opened_version&.version_description
+    begin
+      repository_object.update_opened_version_description!(description:)
+    rescue RepositoryObject::VersionNotOpened => e
+      raise VersionService::VersioningError, e.message
+    end
+
+    EventFactory.create(druid:, event_type: 'version_description_update',
+                        data: { who: user_name, version: version.to_s, description:, previous_description: })
   end
 
   # Discards (delete) the current version of an object

@@ -254,6 +254,32 @@ RSpec.describe RepositoryObject do
     end
   end
 
+  describe '#update_opened_version_description!' do
+    subject(:repository_object) { create(:repository_object, **attrs) }
+
+    let(:description) { 'my updated version' }
+
+    it 'updates the version description without changing the lock or updated_at' do
+      opened_version = repository_object.opened_version
+      expect do
+        repository_object.update_opened_version_description!(description:)
+      end.not_to(change { opened_version.reload.slice(:lock, :updated_at) })
+      expect(opened_version.version_description).to eq(description)
+    end
+
+    context 'when closed' do
+      before do
+        repository_object.close_version!
+      end
+
+      it 'raises' do
+        expect do
+          repository_object.update_opened_version_description!(description:)
+        end.to raise_error(described_class::VersionNotOpened)
+      end
+    end
+  end
+
   describe '#update_opened_version_from' do
     subject(:repository_object) { create(:repository_object, **attrs) }
 

@@ -70,6 +70,7 @@ Rails.application.routes.draw do
           get 'openable'
           get 'current'
           delete 'current', action: 'destroy_current'
+          patch 'current', action: 'update_current'
           get 'status'
           post 'current/close', action: 'close_current'
         end
