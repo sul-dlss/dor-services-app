@@ -85,6 +85,71 @@ RSpec.describe 'Operations regarding object versions' do
     end
   end
 
+  describe 'PATCH /versions/current' do
+    let(:update_params) { { description: 'some text', user_name: 'eshackleton' } }
+
+    context 'when updating the description succeeds' do
+      before do
+        allow(VersionService).to receive(:update_description)
+      end
+
+      it 'returns no content' do
+        patch '/v1/objects/druid:mx123qw2323/versions/current',
+              params: update_params.to_json,
+              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+
+        expect(response).to have_http_status :no_content
+        expect(VersionService).to have_received(:update_description)
+          .with(druid:, version:, **update_params)
+      end
+    end
+
+    context 'when the description is missing' do
+      before do
+        allow(VersionService).to receive(:update_description)
+      end
+
+      it 'returns bad request' do
+        patch '/v1/objects/druid:mx123qw2323/versions/current',
+              params: { user_name: 'eshackleton' }.to_json,
+              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+
+        expect(response).to have_http_status :bad_request
+        expect(VersionService).not_to have_received(:update_description)
+      end
+    end
+
+    context 'when the description is empty' do
+      before do
+        allow(VersionService).to receive(:update_description)
+      end
+
+      it 'returns bad request' do
+        patch '/v1/objects/druid:mx123qw2323/versions/current',
+              params: { description: '' }.to_json,
+              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+
+        expect(response).to have_http_status :bad_request
+        expect(VersionService).not_to have_received(:update_description)
+      end
+    end
+
+    context 'when updating the description fails' do
+      before do
+        allow(VersionService).to receive(:update_description)
+          .and_raise(VersionService::VersioningError, 'Cannot update version description')
+      end
+
+      it 'returns conflict' do
+        patch '/v1/objects/druid:mx123qw2323/versions/current',
+              params: update_params.to_json,
+              headers: { 'Authorization' => "Bearer #{jwt}", 'Content-Type' => 'application/json' }
+
+        expect(response).to have_http_status :conflict
+      end
+    end
+  end
+
   describe 'POST /versions/current/close' do
     let(:close_path) { "/v1/objects/#{druid}/versions/current/close" }
     let(:close_params) do

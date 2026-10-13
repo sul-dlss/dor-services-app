@@ -749,6 +749,47 @@ RSpec.describe VersionService do
     end
   end
 
+  describe '.update_description' do
+    subject(:update_description) do
+      described_class.update_description(druid:, version:, description:, user_name: 'jcoyne')
+    end
+
+    let(:version) { 2 }
+    let(:description) { 'An updated version' }
+
+    context 'when the version is open' do
+      before do
+        # Starts with version 1 being closed.
+        repository_object.open_version!(description: 'A new version')
+      end
+
+      it 'updates the description and creates an event' do
+        update_description
+        expect(repository_object.reload.opened_version.version_description).to eq description
+        expect(EventFactory).to have_received(:create)
+          .with(druid:, event_type: 'version_description_update',
+                data: { who: 'jcoyne', version: '2', description:, previous_description: 'A new version' })
+      end
+
+      context 'when the description is blank' do
+        let(:description) { ' ' }
+
+        it 'raises' do
+          expect { update_description }.to raise_error(ArgumentError)
+        end
+      end
+    end
+
+    context 'when the version is closed' do
+      let(:version) { 1 }
+
+      it 'raises' do
+        expect { update_description }.to raise_error(VersionService::VersioningError)
+        expect(EventFactory).not_to have_received(:create)
+      end
+    end
+  end
+
   describe '.discard' do
     subject(:discard) do
       described_class.discard(druid:, version:)

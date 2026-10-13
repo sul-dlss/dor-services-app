@@ -864,6 +864,58 @@ paths:
           required: true
           schema:
             $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/Druid"
+    patch:
+      tags:
+        - versions
+      summary: Update the description of the currently open version for this object
+      description: ""
+      operationId: "versions#update_current"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - description
+              properties:
+                description:
+                  type: string
+                  minLength: 1
+                  description: the new description of the version change
+                  example: "Updating the title"
+                user_name:
+                  type: string
+                  description: the username of the person updating the version description
+                  example: "some_sunetid"
+      responses:
+        "204":
+          description: Updated
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Object not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Current version is not open
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      parameters:
+        - name: object_id
+          in: path
+          description: ID of object
+          required: true
+          schema:
+            $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/Druid"
   "/v1/objects/{object_id}/versions/status":
     get:
       tags:
