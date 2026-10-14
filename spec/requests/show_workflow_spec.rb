@@ -64,7 +64,7 @@ RSpec.describe 'Show workflow' do
     it 'returns an 500 error' do
       get "/v1/objects/#{druid}/workflows/accessionWF",
           headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response).to have_http_status(:server_error)
+      expect(response).to have_http_status(:error)
     end
   end
 end

@@ -66,7 +66,7 @@ RSpec.describe 'List workflows' do
     it 'returns an 500 error' do
       get "/v1/objects/#{druid}/workflows",
           headers: { 'Authorization' => "Bearer #{jwt}" }
-      expect(response).to have_http_status(:server_error)
+      expect(response).to have_http_status(:error)
     end
   end
 end
