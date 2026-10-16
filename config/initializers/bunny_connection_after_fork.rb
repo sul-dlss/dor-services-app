@@ -5,7 +5,7 @@
 #   Bunny::ConnectionClosedError: Trying to send frame through a closed connection.
 #
 # See http://rubybunny.info/articles/connecting.html#using_bunny_with_passenger
-# rubocop:disable Style/GlobalVars
+# rubocop:disable-next Style/GlobalVars
 if defined?(PhusionPassenger) # otherwise it breaks rake commands if you put this in an initializer
   PhusionPassenger.on_event(:starting_worker_process) do |forked|
     if forked
@@ -19,4 +19,3 @@ if defined?(PhusionPassenger) # otherwise it breaks rake commands if you put thi
     $rabbitmq_connection&.close
   end
 end
-# rubocop:enable Style/GlobalVars

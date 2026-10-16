@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-# rubocop:disable Rails/SkipsModelValidations
+# rubocop:disable-next Rails/SkipsModelValidations
 RSpec.describe Workflow::StateBatchService do
   before do
     allow(QueueService).to receive(:enqueue)
@@ -184,4 +184,3 @@ RSpec.describe Workflow::StateBatchService do
     end
   end
 end
-# rubocop:enable Rails/SkipsModelValidations

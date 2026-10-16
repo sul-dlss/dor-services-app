@@ -8,7 +8,7 @@ gem 'rails', '~> 8.1.0'
 # DLSS/domain-specific dependencies
 gem 'cocina_display'
 gem 'cocina-models'
-gem 'datacite', '~> 0.6'
+gem 'datacite'
 gem 'dor-services-client' # Used for Dor::Services::Response::* & Dor::Services::Client::InvalidCocina classes
 gem 'druid-tools'
 gem 'folio_client'
@@ -45,11 +45,11 @@ gem 'lograge'
 gem 'okcomputer'
 gem 'parallel' # used for validating cocina tools
 gem 'pg'
-gem 'redis', '~> 5.0' # used for unique jobs
+gem 'redis' # used for unique jobs
 gem 'retries' # for Goobi
 gem 'rsolr'
 gem 'ruby-cache'
-gem 'sidekiq', '~> 8.0'
+gem 'sidekiq'
 gem 'sneakers'
 gem 'sqlite3' # used for Marc dump
 gem 'tty-progressbar' # to show progress when running validate-cocina script
@@ -86,7 +86,7 @@ group :development do
 end
 
 group :deployment do
-  gem 'capistrano', '~> 3.6'
+  gem 'capistrano'
   gem 'capistrano-bundler'
   gem 'capistrano-passenger'
   gem 'capistrano-rails'

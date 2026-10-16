@@ -47,7 +47,7 @@ class VersionBatchStatusService
 
   attr_reader :druids, :limit
 
-  # rubocop:disable Metrics/MethodLength, Layout/LineLength
+  # rubocop:disable-next Metrics/MethodLength, Layout/LineLength
   def repository_object_map
     @repository_object_map ||= RepositoryObject
                                .joins('INNER JOIN repository_object_versions AS head_version ON repository_objects.head_version_id = head_version.id')
@@ -70,7 +70,6 @@ class VersionBatchStatusService
                                .limit(limit)
                                .index_by(&:external_identifier)
   end
-  # rubocop:enable Metrics/MethodLength, Layout/LineLength
 
   def accessioning_druids
     @accessioning_druids ||= workflow_state_batch_service.accessioning_druids

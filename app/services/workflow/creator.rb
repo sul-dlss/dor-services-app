@@ -18,7 +18,7 @@ module Workflow
     ##
     # Delete all the rows for this druid/version/workflow, and replace with new rows.
     # @return [Array]
-    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable-next Metrics/AbcSize
     def create_workflow_steps
       ActiveRecord::Base.transaction do
         version.workflow_steps(workflow_id).destroy_all
@@ -35,7 +35,6 @@ module Workflow
       end
       enqueue
     end
-    # rubocop:enable Metrics/AbcSize
 
     private
 

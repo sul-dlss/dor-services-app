@@ -484,7 +484,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
                           'תולדות היהודים בארצות האיסלאם ' \
                           'העת החדשה עד אמצע המאה ה־19 History of the ' \
                           'Jews in the Islamic countries'
-        # rubocop:disable Style/StringHashKeys
+        # rubocop:disable-next Style/StringHashKeys
         expect(doc).to eq(
           'descriptive_tiv' => all_search_text,
           'descriptive_teiv' => all_search_text,
@@ -501,7 +501,6 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
             'No format specified'
           ]
         )
-        # rubocop:enable Style/StringHashKeys
       end
     end
   end

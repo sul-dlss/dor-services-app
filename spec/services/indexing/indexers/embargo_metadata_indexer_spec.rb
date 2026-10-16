@@ -45,7 +45,7 @@ RSpec.describe Indexing::Indexers::EmbargoMetadataIndexer do
     context 'when embargo.releaseDate is in the past' do
       let(:release_date) { '2020-06-06T07:00:00.000+09:00' }
 
-      # rubocop:disable Style/StringHashKeys
+      # rubocop:disable-next Style/StringHashKeys
       it 'Solr doc has embargo fields' do
         expect(doc).to eq(
           'embargo_release_dtpsimdv' => ['2020-06-05T22:00:00Z'],
@@ -53,7 +53,6 @@ RSpec.describe Indexing::Indexers::EmbargoMetadataIndexer do
           'embargo_status_ssim' => ['embargoed']
         )
       end
-      # rubocop:enable Style/StringHashKeys
     end
 
     context 'when there is no embargo' do

@@ -3,7 +3,7 @@
 # Invoke via:
 # bin/rails r -e production "InvalidSubjectSourceCodes.report"
 #
-# rubocop:disable Metrics/CollectionLiteralLength
+# rubocop:disable-next Metrics/CollectionLiteralLength
 class InvalidSubjectSourceCodes
   # NOTE: Prefer strict JSON querying over lax when using the `.**` operator, per
   #       https://www.postgresql.org/docs/14/functions-json.html#STRICT-AND-LAX-MODES
@@ -151,4 +151,3 @@ class InvalidSubjectSourceCodes
       end
   end
 end
-# rubocop:enable Metrics/CollectionLiteralLength
