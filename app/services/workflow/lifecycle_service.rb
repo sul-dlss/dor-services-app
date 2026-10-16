@@ -11,6 +11,10 @@ module Workflow
       new(druid: druid, version: version).milestone?(milestone_name: milestone_name)
     end
 
+    def self.latest_milestone_version(druid:, milestone_name:)
+      new(druid:).latest_milestone_version(milestone_name:)
+    end
+
     def self.milestones(...)
       new(...).milestones
     end
@@ -45,6 +49,12 @@ module Workflow
     # @return [Boolean] true if the object has the milestone
     def milestone?(milestone_name:)
       workflow_steps.exists?(lifecycle: milestone_name)
+    end
+
+    # @param [String] milestone_name the name of the milestone
+    # @return [Integer, nil] the most recent version with the completed milestone
+    def latest_milestone_version(milestone_name:)
+      workflow_steps.where(lifecycle: milestone_name).maximum(:version)
     end
 
     # @return [Array<Hash>]
