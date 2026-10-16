@@ -13,7 +13,7 @@ class InvalidEventLocationCodes
   # > using the .** accessor only in the strict mode.
   JSON_PATH = '$.**.event.location.code'
 
-  # rubocop:disable Metrics/CollectionLiteralLength
+  # rubocop:disable-next Metrics/CollectionLiteralLength
   def self.valid_codes
     # These were extracted from https://www.loc.gov/marc/countries/countries_code.html
     # as of 5/18/2026
@@ -38,7 +38,6 @@ class InvalidEventLocationCodes
       xp xr xra xs xv xx xxc xxk xxr xxu ye ykc ys yu za
     ]
   end
-  # rubocop:enable Metrics/CollectionLiteralLength
 
   def self.regex
     # codes = valid_codes

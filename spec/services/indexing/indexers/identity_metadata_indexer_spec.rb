@@ -68,7 +68,7 @@ RSpec.describe Indexing::Indexers::IdentityMetadataIndexer do
     context 'with an agreement' do
       let(:type) { Cocina::Models::ObjectType.agreement }
 
-      # rubocop:disable Style/StringHashKeys
+      # rubocop:disable-next Style/StringHashKeys
       it 'has the fields used by argo' do
         expect(doc).to include(
           'barcode_id_ssimdv' => [],
@@ -80,19 +80,17 @@ RSpec.describe Indexing::Indexers::IdentityMetadataIndexer do
           'dissertation_id_ss' => nil
         )
       end
-      # rubocop:enable Style/StringHashKeys
     end
 
     context 'with a virtual object' do
       let(:structural) { { hasMemberOrders: [{ members: ['druid:mk420bs7601'] }] } }
 
-      # rubocop:disable Style/StringHashKeys
+      # rubocop:disable-next Style/StringHashKeys
       it 'sets the object type as virtual object' do
         expect(doc).to include(
           'objectType_ssimdv' => ['virtual object']
         )
       end
-      # rubocop:enable Style/StringHashKeys
     end
 
     context 'with a collection' do
@@ -116,7 +114,7 @@ RSpec.describe Indexing::Indexers::IdentityMetadataIndexer do
         }
       end
 
-      # rubocop:disable Style/StringHashKeys
+      # rubocop:disable-next Style/StringHashKeys
       it 'has the fields used by argo' do
         expect(doc).to include(
           'barcode_id_ssimdv' => [],
@@ -128,7 +126,6 @@ RSpec.describe Indexing::Indexers::IdentityMetadataIndexer do
           'source_id_text_nostem_i' => 'google:STANFORD_342837261527'
         )
       end
-      # rubocop:enable Style/StringHashKeys
     end
   end
 end

@@ -67,13 +67,12 @@ RSpec.describe Indexing::Indexers::AdministrativeTagIndexer do
     end
 
     it 'indexes prefixed tags' do
-      # rubocop:disable Style/StringHashKeys
+      # rubocop:disable-next Style/StringHashKeys
       expect(document).to include(
         'project_tag_ssim' => ['Beautiful Books', 'Rare Books : Very Old Books'],
         'registered_by_tag_ssim' => ['blalbrit'],
         'ticket_tag_ssim' => ['DIGREQ-1234']
       )
-      # rubocop:enable Style/StringHashKeys
     end
   end
 end

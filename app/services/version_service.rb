@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Open and close versions
-# rubocop:disable Metrics/ClassLength
+# rubocop:disable-next Metrics/ClassLength
 class VersionService
   class VersioningError < StandardError; end
 
@@ -329,4 +329,3 @@ class VersionService
     @repository_object ||= RepositoryObject.includes(:head_version).find_by(external_identifier: druid)
   end
 end
-# rubocop:enable Metrics/ClassLength

@@ -3,7 +3,7 @@
 # Invoke via:
 # bin/rails r -e production "InvalidFormSourceCodes.report"
 #
-# rubocop:disable Metrics/CollectionLiteralLength
+# rubocop:disable-next Metrics/CollectionLiteralLength
 class InvalidFormSourceCodes
   # NOTE: Prefer strict JSON querying over lax when using the `.**` operator, per
   #       https://www.postgresql.org/docs/14/functions-json.html#STRICT-AND-LAX-MODES
@@ -123,4 +123,3 @@ class InvalidFormSourceCodes
     end
   end
 end
-# rubocop:enable Metrics/CollectionLiteralLength

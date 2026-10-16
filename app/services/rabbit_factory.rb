@@ -2,7 +2,7 @@
 
 # Factory for initializing global RabbitMQ connection and channel.
 class RabbitFactory
-  # rubocop:disable Style/GlobalVars
+  # rubocop:disable-next Style/GlobalVars
   def self.start_global
     $rabbitmq_connection = Bunny.new(hostname: Settings.rabbitmq.hostname,
                                      vhost: Settings.rabbitmq.vhost,
@@ -12,5 +12,4 @@ class RabbitFactory
 
     $rabbitmq_channel = $rabbitmq_connection.create_channel
   end
-  # rubocop:enable Style/GlobalVars
 end

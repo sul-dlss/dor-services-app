@@ -2,7 +2,7 @@
 
 module Indexing
   # Helper for MARC country codes
-  # rubocop:disable Metrics/ClassLength
+  # rubocop:disable-next Metrics/ClassLength
   class MarcCountry
     MARC_COUNTRY_URI = 'http://id.loc.gov/vocabulary/countries/'
 
@@ -355,5 +355,4 @@ module Indexing
       COUNTRY_CODES[uri[MARC_COUNTRY_URI.length..]]
     end
   end
-  # rubocop:enable Metrics/ClassLength
 end
