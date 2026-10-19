@@ -290,13 +290,13 @@ GEM
       json_schemer (~> 2.5)
       railties (~> 8.0)
       zeitwerk
-    jsonschema_rs (0.58.6-aarch64-linux)
+    jsonschema_rs (0.59.0-aarch64-linux)
       bigdecimal (>= 3.1, < 5)
-    jsonschema_rs (0.58.6-arm64-darwin)
+    jsonschema_rs (0.59.0-arm64-darwin)
       bigdecimal (>= 3.1, < 5)
-    jsonschema_rs (0.58.6-x86_64-darwin)
+    jsonschema_rs (0.59.0-x86_64-darwin)
       bigdecimal (>= 3.1, < 5)
-    jsonschema_rs (0.58.6-x86_64-linux)
+    jsonschema_rs (0.59.0-x86_64-linux)
       bigdecimal (>= 3.1, < 5)
     jwt (3.3.0)
       base64
@@ -710,4 +710,4 @@ DEPENDENCIES
   whenever
 
 BUNDLED WITH
-  4.0.22
+  4.0.23
