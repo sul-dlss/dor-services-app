@@ -15,6 +15,7 @@ class UpdateObjectService
   # @param [Cocina::Models::DRO|Collection|AdminPolicy|DROWithMetadata|CollectionWithMetadata|AdminPolicyWithMetadata] cocina_object # rubocop:disable Layout/LineLength
   # @param [boolean] skip_lock do not perform an optimistic lock check
   # @param [boolean] skip_open_check do not check that the object has an open version
+  # @param [boolean] auto_refresh_description if description should be automatically refreshed from Folio
   # @param [string] who the sunetid of the user performing the update
   # @param [string] description a description of the update
   # @raise [Cocina::ValidationError] raised when validation of the Cocina object fails.
@@ -22,10 +23,13 @@ class UpdateObjectService
   # @raise [StateLockError] raised if optimistic lock failed.
   # @raise [StandardError] raised if the object does not have an open version
   # @return [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] normalized cocina object
-  def initialize(cocina_object:, skip_lock: false, skip_open_check: false, description: nil, who: nil)
+  def initialize(cocina_object:, skip_lock: false, skip_open_check: false,
+                 auto_refresh_description: Settings.enabled_features.refresh_folio_description_on_update, # rubocop:disable Metrics/ParameterLists
+                 description: nil, who: nil)
     @cocina_object = cocina_object
     @skip_lock = skip_lock
     @skip_open_check = skip_open_check
+    @auto_refresh_description = auto_refresh_description
     @description = description
     @who = who
     @previous_cocina_object = CocinaObjectStore.find(druid) # this is the object about to be updated
@@ -34,6 +38,7 @@ class UpdateObjectService
   def update # rubocop:disable Metrics/AbcSize
     Cocina::ObjectValidator.validate(cocina_object)
     raise_unless_open_version
+    refresh_description if auto_refresh_description
 
     # If this is a collection and the title has changed, then reindex the children.
     update_items = need_to_update_members?
@@ -60,7 +65,8 @@ class UpdateObjectService
 
   private
 
-  attr_reader :cocina_object, :skip_lock, :skip_open_check, :who, :description, :previous_cocina_object
+  attr_reader :cocina_object, :skip_lock, :skip_open_check, :auto_refresh_description, :who, :description,
+              :previous_cocina_object
 
   delegate :version, to: :cocina_object
 
@@ -76,6 +82,11 @@ class UpdateObjectService
     return if skip_open_check || VersionService.open?(druid:, version:)
 
     raise "Updating repository item #{druid} without an open version"
+  end
+
+  def refresh_description
+    result = RefreshDescriptionFromCatalog.run(cocina_object:, druid:, create_marc_if_missing: true)
+    @cocina_object = cocina_object.new(description: result.value!.description_props) if result.success?
   end
 
   def need_to_update_members?
