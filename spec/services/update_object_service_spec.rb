@@ -22,6 +22,119 @@ RSpec.describe UpdateObjectService do
       allow(EventFactory).to receive(:create)
     end
 
+    context 'when refreshing the description' do
+      let(:refresh_enabled) { true }
+      let(:catalog_links) { [{ catalog: 'folio', catalogRecordId: 'a999123', refresh: true }] }
+      let(:cocina_object) do
+        object = repository_object.to_cocina_with_metadata
+        object.new(identification: object.identification.new(catalogLinks: catalog_links))
+      end
+      let(:store) { described_class.new(cocina_object:, who:, description:) }
+      let(:marc) do
+        { fields: [{ '245' => { 'ind1' => '1', 'ind2' => '0',
+                                'subfields' => [{ 'a' => 'Title from FOLIO' }] } }] }.with_indifferent_access
+      end
+      let(:marc_service) { instance_double(Catalog::MarcService, marc:) }
+
+      before do
+        allow(Settings.enabled_features).to receive(:refresh_folio_description_on_update).and_return(refresh_enabled)
+        allow(Catalog::MarcService).to receive(:new).and_return(marc_service)
+        allow(PublishItemsModifiedJob).to receive(:perform_later)
+      end
+
+      it 'updates the object and refreshes the FOLIO description' do
+        updated_object = store.update
+
+        expect(updated_object.description.title.first.value).to eq 'Title from FOLIO'
+        expect(updated_object.description.purl).to eq cocina_object.description.purl
+        expect(repository_object.reload.to_cocina.description).to eq updated_object.description
+        expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a999123',
+                                                                 create_marc_if_missing: true)
+        expect(EventFactory).to have_received(:create).with(
+          druid:, event_type: 'update',
+          data: { who:, description:, success: true, request: Cocina::Models.without_metadata(updated_object).to_h }
+        )
+      end
+
+      context 'when auto refresh is disabled' do
+        let(:refresh_enabled) { false }
+
+        it 'keeps the supplied description without fetching from FOLIO' do
+          expect(store.update.description).to eq cocina_object.description
+          expect(Catalog::MarcService).not_to have_received(:new)
+        end
+      end
+
+      context 'when refresh is explicitly skipped' do
+        let(:store) { described_class.new(cocina_object:, auto_refresh_description: false) }
+
+        it 'keeps the supplied description without fetching FOLIO' do
+          expect(store.update.description).to eq cocina_object.description
+          expect(Catalog::MarcService).not_to have_received(:new)
+        end
+      end
+
+      context 'when the HRID is not refreshable' do
+        let(:catalog_links) { [{ catalog: 'folio', catalogRecordId: 'a999123', refresh: false }] }
+
+        it 'keeps the supplied description without fetching FOLIO' do
+          expect(store.update.description).to eq cocina_object.description
+          expect(Catalog::MarcService).not_to have_received(:new)
+        end
+      end
+
+      context 'when there is no HRID' do
+        let(:catalog_links) { [] }
+
+        it 'keeps the supplied description without fetching FOLIO' do
+          expect(store.update.description).to eq cocina_object.description
+          expect(Catalog::MarcService).not_to have_received(:new)
+        end
+      end
+
+      context 'when the refresh produces no description' do
+        let(:marc) { { fields: [] } }
+
+        it 'keeps the supplied description' do
+          expect(store.update.description).to eq cocina_object.description
+          expect(marc_service).to have_received(:marc)
+        end
+      end
+
+      context 'when FOLIO raises an error' do
+        before do
+          allow(marc_service).to receive(:marc).and_raise(Catalog::Errors::RecordNotFoundError)
+        end
+
+        it 'propagates the error without persisting the update' do
+          expect { store.update }.to raise_error(Catalog::Errors::RecordNotFoundError)
+          expect(repository_object.reload.to_cocina.description).to eq cocina_object.description
+          expect(Indexer).not_to have_received(:reindex_later)
+        end
+      end
+
+      context 'when the version is closed' do
+        let(:open) { false }
+
+        it 'rejects the update without fetching FOLIO' do
+          expect { store.update }.to raise_error(StandardError, /without an open version/)
+          expect(Catalog::MarcService).not_to have_received(:new)
+        end
+      end
+
+      context 'when FOLIO changes a collection title' do
+        let!(:repository_object) do
+          create(:repository_object, :collection, :with_repository_object_version, external_identifier: druid)
+        end
+
+        it 'persists the refreshed title and schedules member updates' do
+          expect(store.update.description.title.first.value).to eq 'Title from FOLIO'
+          expect(repository_object.reload.to_cocina.description.title.first.value).to eq 'Title from FOLIO'
+          expect(PublishItemsModifiedJob).to have_received(:perform_later).with(druid)
+        end
+      end
+    end
+
     context 'when object is a DRO' do
       context 'when skipping lock' do
         let(:cocina_object) do

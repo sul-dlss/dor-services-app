@@ -5,6 +5,7 @@ enabled_features:
   create_ur_admin_policy: false
   datacite_update: false
   orcid_update: true
+  refresh_folio_description_on_update: false
 
 # Ur Admin Policy
 ur_admin_policy:

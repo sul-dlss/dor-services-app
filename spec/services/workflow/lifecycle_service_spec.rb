@@ -122,8 +122,10 @@ RSpec.describe Workflow::LifecycleService do
     context 'when no version is specified' do
       it 'returns the milestones for all versions' do
         expect(milestones.length).to eq 2
-        expect(milestones.last[:milestone]).to eq('published')
-        expect(milestones.last[:version]).to eq('2')
+        expect(milestones).to contain_exactly(
+          a_hash_including(milestone: 'published', version: '2'),
+          a_hash_including(milestone: 'submitted', version: '1')
+        )
       end
     end
   end
