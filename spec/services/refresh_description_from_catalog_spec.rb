@@ -139,6 +139,14 @@ RSpec.describe RefreshDescriptionFromCatalog do
       end
     end
 
+    context 'when one folio link is set to refresh and others are not' do
+      it 'gets the data from Folio for the refreshable link and returns success' do
+        expect(refresh.success?).to be(true)
+        expect(Catalog::MarcService).to have_received(:new).with(folio_instance_hrid: 'a123',
+                                                                 create_marc_if_missing: false)
+      end
+    end
+
     context 'when refreshing with a valid catalog link' do
       let(:identification) do
         {

@@ -74,9 +74,11 @@ class RefreshDescriptionFromCatalog
   end
 
   def refreshable?
-    # Requires an identifier but if any catalog links exist that are set to refresh: false, do not refresh
-    identifiers.any? && Array(cocina_object.identification&.catalogLinks).find do |link|
+    return true if folio_instance_hrid.present?
+
+    # Don't fall back to barcode if a folio link has been explicitly set to not refresh
+    barcode.present? && Array(cocina_object.identification&.catalogLinks).none? do |link|
       link.catalog == 'folio' && !link.refresh
-    end.blank?
+    end
   end
 end
