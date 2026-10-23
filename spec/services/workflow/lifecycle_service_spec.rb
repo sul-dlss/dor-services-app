@@ -88,6 +88,45 @@ RSpec.describe Workflow::LifecycleService do
     end
   end
 
+  describe '.latest_milestone_version' do
+    subject(:latest_milestone_version) do
+      described_class.latest_milestone_version(druid:, milestone_name: 'published')
+    end
+
+    before do
+      create(:workflow_step,
+             druid:,
+             version: 2,
+             process: 'publish',
+             status: 'completed',
+             lifecycle: 'published')
+      create(:workflow_step,
+             druid:,
+             version: 4,
+             process: 'publish',
+             status: 'completed',
+             lifecycle: 'published')
+      create(:workflow_step,
+             druid:,
+             version: 5,
+             process: 'publish',
+             status: 'waiting',
+             lifecycle: 'published')
+    end
+
+    it 'returns the most recent version with the completed milestone' do
+      expect(latest_milestone_version).to eq 4
+    end
+
+    context 'when the milestone has not been completed' do
+      subject(:latest_milestone_version) do
+        described_class.latest_milestone_version(druid:, milestone_name: 'accessioned')
+      end
+
+      it { is_expected.to be_nil }
+    end
+  end
+
   describe '#milestones' do
     subject(:milestones) { service.milestones }
 
