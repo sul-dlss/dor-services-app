@@ -15,12 +15,12 @@ RSpec.describe 'Workspaces' do
       allow(WorkspaceService).to receive(:create).and_return(path_to_workspace)
     end
 
-    context 'when no source is passed' do
+    context 'when no params are passed' do
       it 'is successful and returns the created directory' do
         post "/v1/objects/#{druid}/workspace",
              headers: { 'Authorization' => "Bearer #{jwt}" }
 
-        expect(WorkspaceService).to have_received(:create).with(druid, nil, content: nil, metadata: nil)
+        expect(WorkspaceService).to have_received(:create).with(druid, content: nil, metadata: nil)
         expect(response).to have_http_status(:created)
         expect(response.body).to eq({ path: path_to_workspace }.to_json)
       end
@@ -31,7 +31,7 @@ RSpec.describe 'Workspaces' do
         post "/v1/objects/#{druid}/workspace?content=true",
              headers: { 'Authorization' => "Bearer #{jwt}" }
 
-        expect(WorkspaceService).to have_received(:create).with(druid, nil, content: true, metadata: nil)
+        expect(WorkspaceService).to have_received(:create).with(druid, content: true, metadata: nil)
         expect(response).to have_http_status(:created)
         expect(response.body).to eq({ path: path_to_workspace }.to_json)
       end
@@ -42,7 +42,7 @@ RSpec.describe 'Workspaces' do
         post "/v1/objects/#{druid}/workspace?metadata=true",
              headers: { 'Authorization' => "Bearer #{jwt}" }
 
-        expect(WorkspaceService).to have_received(:create).with(druid, nil, content: nil, metadata: true)
+        expect(WorkspaceService).to have_received(:create).with(druid, content: nil, metadata: true)
         expect(response).to have_http_status(:created)
         expect(response.body).to eq({ path: path_to_workspace }.to_json)
       end
@@ -53,20 +53,7 @@ RSpec.describe 'Workspaces' do
         post "/v1/objects/#{druid}/workspace?metadata=true&content=true",
              headers: { 'Authorization' => "Bearer #{jwt}" }
 
-        expect(WorkspaceService).to have_received(:create).with(druid, nil, content: true, metadata: true)
-        expect(response).to have_http_status(:created)
-        expect(response.body).to eq({ path: path_to_workspace }.to_json)
-      end
-    end
-
-    context 'when source is passed' do
-      let(:source) { '/path/to/source' }
-
-      it 'is successful and returns the created directory' do
-        post "/v1/objects/#{druid}/workspace?source=#{source}",
-             headers: { 'Authorization' => "Bearer #{jwt}" }
-
-        expect(WorkspaceService).to have_received(:create).with(druid, source, content: nil, metadata: nil)
+        expect(WorkspaceService).to have_received(:create).with(druid, content: true, metadata: true)
         expect(response).to have_http_status(:created)
         expect(response.body).to eq({ path: path_to_workspace }.to_json)
       end
