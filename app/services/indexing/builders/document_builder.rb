@@ -12,7 +12,8 @@ module Indexing
         Indexing::Indexers::IdentityMetadataIndexer,
         Indexing::Indexers::DescriptiveMetadataIndexer,
         Indexing::Indexers::IdentifiableIndexer,
-        Indexing::Indexers::WorkflowsIndexer
+        Indexing::Indexers::WorkflowsIndexer,
+        Indexing::Indexers::EventsIndexer
       )
 
       COLLECTION_INDEXER = Indexing::Indexers::CompositeIndexer.new(
@@ -23,7 +24,8 @@ module Indexing
         Indexing::Indexers::DescriptiveMetadataIndexer,
         Indexing::Indexers::IdentifiableIndexer,
         Indexing::Indexers::ReleasableIndexer,
-        Indexing::Indexers::WorkflowsIndexer
+        Indexing::Indexers::WorkflowsIndexer,
+        Indexing::Indexers::EventsIndexer
       )
 
       ITEM_INDEXER = Indexing::Indexers::CompositeIndexer.new(
@@ -37,7 +39,8 @@ module Indexing
         Indexing::Indexers::IdentifiableIndexer,
         Indexing::Indexers::CollectionTitleIndexer,
         Indexing::Indexers::ReleasableIndexer,
-        Indexing::Indexers::WorkflowsIndexer
+        Indexing::Indexers::WorkflowsIndexer,
+        Indexing::Indexers::EventsIndexer
       )
 
       INDEXERS = {
@@ -53,13 +56,15 @@ module Indexing
       # Optional parameters allow passing in pre-fetched data to avoid redundant lookups.
       # If an optional parameter is not provided, it will be fetched as needed.
       def initialize(model:, workflows: nil, parent_collections: nil, parent_collections_release_tags: nil, # rubocop:disable Metrics/ParameterLists
-                     milestones: nil, release_tags: nil, trace_id: SecureRandom.uuid, current_as_of: nil)
+                     milestones: nil, release_tags: nil, last_event: nil, trace_id: SecureRandom.uuid,
+                     current_as_of: nil)
         @model = model
         @workflows = workflows
         @parent_collections = parent_collections
         @parent_collections_release_tags = parent_collections_release_tags
         @release_tags = release_tags
         @milestones = milestones
+        @last_event = last_event
         @trace_id = trace_id
         @current_as_of ||= Time.zone.now
       end
@@ -75,6 +80,7 @@ module Indexing
                                          administrative_tags:,
                                          release_tags:,
                                          milestones:,
+                                         last_event:,
                                          current_as_of:,
                                          trace_id:)
       rescue StandardError => e
@@ -114,6 +120,10 @@ module Indexing
 
       def milestones
         @milestones ||= Workflow::LifecycleService.milestones(druid:)
+      end
+
+      def last_event
+        @last_event ||= Event.last_updates_for(druids: [druid])[druid]
       end
 
       def parent_collections_release_tags

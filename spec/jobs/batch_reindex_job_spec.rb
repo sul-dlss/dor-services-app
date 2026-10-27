@@ -24,6 +24,7 @@ RSpec.describe BatchReindexJob do
     allow(Indexing::Builders::DocumentBuilder).to receive(:for).and_return(indexer)
     allow(indexer).to receive(:to_solr).and_return(solr_doc, collection_solr_doc)
     create(:workflow_step, druid:, lifecycle: 'accessioned', status: 'completed')
+    create(:event, druid:, event_type: 'update', data: { who: 'jcoyne' })
     repository_object.head_version.structural['isMemberOf'] = [collection_druid]
     repository_object.head_version.save!
   end
@@ -37,6 +38,7 @@ RSpec.describe BatchReindexJob do
       workflows: [an_instance_of(Workflow::WorkflowResponse)],
       release_tags: [release_tag.to_cocina],
       milestones: [{ milestone: 'accessioned', at: an_instance_of(ActiveSupport::TimeWithZone), version: '1' }],
+      last_event: an_object_having_attributes(druid:, who: 'jcoyne'),
       parent_collections: [collection_repository_object.head_version.to_cocina_with_metadata],
       parent_collections_release_tags: { collection_druid => [collection_release_tag.to_cocina] }
     )

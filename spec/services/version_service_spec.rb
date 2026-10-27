@@ -501,6 +501,7 @@ RSpec.describe VersionService do
         expect(repository_object.reload.last_closed_version).to be_present
 
         expect(Workflow::Service).not_to have_received(:create)
+        expect(Indexer).to have_received(:reindex_later).with(druid:)
       end
     end
 

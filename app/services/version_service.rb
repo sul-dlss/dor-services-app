@@ -81,12 +81,12 @@ class VersionService
 
     repository_object.open_version!(description:, from_version: from_repository_object_version)
 
-    Indexer.reindex_later(druid: cocina_object.externalIdentifier)
-
     new_version = repository_object.opened_version.version
     Workflow::Service.create(druid:, workflow_name: 'versioningWF', version: new_version.to_s)
     EventFactory.create(druid:, event_type: 'version_open',
                         data: { who: opening_user_name, version: new_version.to_s, description: })
+
+    Indexer.reindex_later(druid: cocina_object.externalIdentifier)
     # Reloading to get correct lock value.
     repository_object.reload.to_cocina_with_metadata
   end
@@ -154,7 +154,11 @@ class VersionService
     update_user_version(user_version_mode:, repository_object:, publish: !start_accession)
     update_previous_user_versions(repository_object:)
 
-    return unless start_accession
+    # Accessioning reindexes, so only reindex here when not accessioning.
+    unless start_accession
+      Indexer.reindex_later(druid:)
+      return
+    end
 
     Workflow::Service.create(druid:, workflow_name: 'accessionWF', version: version.to_s,
                              **accession_args)

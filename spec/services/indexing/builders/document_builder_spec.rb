@@ -105,6 +105,7 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
     let(:parent_collection_release_tags) { [instance_double(Dor::ReleaseTag)] }
     let(:parent_collections_release_tags) { { collection_druid => parent_collection_release_tags } }
     let(:workflows) { [instance_double(Workflow::WorkflowResponse)] }
+    let(:last_event) { instance_double(Event) }
 
     before do
       allow(Indexing::Indexers::CompositeIndexer::Instance).to receive(:new).and_call_original
@@ -114,7 +115,8 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
     context 'when optional parameters are provided' do
       it 'uses the provided values' do
         described_class.for(model: cocina_with_metadata, trace_id:, parent_collections:,
-                            milestones:, parent_collections_release_tags:, release_tags:, workflows:)
+                            milestones:, parent_collections_release_tags:, release_tags:, workflows:,
+                            last_event:)
         expect(Indexing::Indexers::CompositeIndexer::Instance).to have_received(:new)
           .with(
             Array, # This is the array of indexers
@@ -126,6 +128,7 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
               milestones:,
               parent_collections_release_tags: { 'druid:bc999df2323' => parent_collection_release_tags },
               release_tags:,
+              last_event:,
               workflows:,
               current_as_of:,
               trace_id:
@@ -141,6 +144,7 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
         allow(ReleaseTagService).to receive(:tags).with(druid: collection_druid)
                                                   .and_return(parent_collection_release_tags)
         allow(Workflow::Service).to receive(:workflows).with(druid:).and_return(workflows)
+        allow(Event).to receive(:last_updates_for).with(druids: [druid]).and_return(druid => last_event)
       end
 
       it 'fetches them as needed' do
@@ -156,6 +160,7 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
               milestones:,
               parent_collections_release_tags:,
               release_tags:,
+              last_event:,
               workflows:,
               current_as_of:,
               trace_id:

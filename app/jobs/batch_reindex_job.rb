@@ -71,15 +71,21 @@ class BatchReindexJob < ApplicationJob
     @milestones_map ||= Workflow::LifecycleBatchService.milestones_map(druids: druids)
   end
 
+  def last_events_map
+    @last_events_map ||= Event.last_updates_for(druids:)
+  end
+
   def build_solr_doc(repository_object:)
+    druid = repository_object.external_identifier
     Indexing::Builders::DocumentBuilder.for(
       model: repository_object.head_version.to_cocina_with_metadata,
-      workflows: workflows_map[repository_object.external_identifier],
-      release_tags: release_tags_map.fetch(repository_object.external_identifier, []),
-      milestones: milestones_map.fetch(repository_object.external_identifier, []),
+      workflows: workflows_map[druid],
+      release_tags: release_tags_map.fetch(druid, []),
+      milestones: milestones_map.fetch(druid, []),
+      last_event: last_events_map[druid],
       parent_collections: parent_collections_for(repository_object:),
       parent_collections_release_tags: parent_collections_release_tags_for(repository_object:),
-      trace_id: Indexer.trace_id_for(druid: repository_object.external_identifier)
+      trace_id: Indexer.trace_id_for(druid:)
     ).to_solr
   end
 
