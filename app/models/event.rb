@@ -66,5 +66,17 @@ class Event < ApplicationRecord
     'stt-create-success'
   ].freeze
 
+  LAST_UPDATE_EVENT_TYPES = %w[registration version_open update version_close].freeze
+
   validates :event_type, inclusion: { in: EVENT_TYPES }
+
+  # @param [Array<String>] druids
+  # @return [Hash<String, Event>] map of druid to its most recent update event (with druid, created_at, and who)
+  def self.last_updates_for(druids:)
+    # Selecting only ids in the DISTINCT ON avoids reading the (large) data column for every event.
+    latest_ids = select('DISTINCT ON (druid) id')
+                 .where(druid: druids, event_type: LAST_UPDATE_EVENT_TYPES)
+                 .order(:druid, arel_table[:created_at].desc.nulls_last, id: :desc)
+    where(id: latest_ids).select(:druid, :created_at, "data->>'who' AS who").index_by(&:druid)
+  end
 end
