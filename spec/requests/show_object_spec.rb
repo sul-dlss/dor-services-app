@@ -120,6 +120,33 @@ RSpec.describe 'Get the object' do
       end
     end
 
+    context 'when without structural contains is requested' do
+      before do
+        object.head_version.update(
+          structural: {
+            contains: [
+              {
+                type: Cocina::Models::FileSetType.file,
+                externalIdentifier: "#{druid.delete_prefix('druid:')}_1",
+                label: 'Page 1',
+                version: 1,
+                structural: { contains: [] }
+              }
+            ],
+            isMemberOf: ['druid:xx888xx7777']
+          }
+        )
+      end
+
+      it 'returns the object without file sets' do
+        get "/v1/objects/#{druid}?without_structural_contains=true",
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status(:ok)
+        expect(response.headers['ETag']).to match(%r{W/".+"})
+        expect(response_model[:structural]).to eq(contains: [], hasMemberOrders: [], isMemberOf: ['druid:xx888xx7777'])
+      end
+    end
+
     context 'when the object has not changed and If-None-Match provided' do
       it 'returns not modified' do
         get "/v1/objects/#{druid}",

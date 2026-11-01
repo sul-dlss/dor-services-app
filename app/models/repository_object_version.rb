@@ -52,12 +52,15 @@ class RepositoryObjectVersion < ApplicationRecord
     cocina_version.present?
   end
 
-  def to_cocina(**cocina_build_options)
+  # @param [Boolean] without_structural_contains omit the file sets (structural.contains), e.g., for large objects
+  def to_cocina(without_structural_contains: false, **cocina_build_options)
     # Legacy RepositoryObjectVersions don't have cocina. We added them in order to store the
     # version number, but the Cocina is lost to time.
     raise NoCocina unless has_cocina?
 
-    Cocina::Models.build(to_h, **cocina_build_options)
+    cocina_hash = to_h
+    cocina_hash[:structural] = structural.except('contains') if without_structural_contains && structural
+    Cocina::Models.build(cocina_hash, **cocina_build_options)
   end
 
   def to_invalid_cocina

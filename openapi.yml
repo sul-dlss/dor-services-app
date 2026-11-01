@@ -1689,6 +1689,13 @@ paths:
           required: true
           schema:
             $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/Druid"
+        - name: without_structural_contains
+          in: query
+          description: Omit the file sets (structural.contains) of a DRO, e.g., for objects with many files. The returned object must not be used for an update.
+          required: false
+          schema:
+            type: boolean
+            default: false
     head:
       tags:
         - objects

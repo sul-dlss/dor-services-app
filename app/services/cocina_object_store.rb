@@ -85,9 +85,11 @@ class CocinaObjectStore
   # Retrieves a Cocina object from the datastore.
   # @param [String] druid to find
   # @param [Boolean] validate whether to validate the cocina object before returning
+  # @param [Boolean] without_structural_contains whether to omit the file sets (structural.contains)
   # @return [Cocina::Models::DROWithMetadata,Cocina::Models::CollectionWithMetadata,Cocina::Models::AdminPolicyWithMetadata] for the requested version #rubocop:disable Layout/LineLength
-  def find(druid, validate: true)
-    RepositoryObject.find_by!(external_identifier: druid).head_version.to_cocina_with_metadata(validate:)
+  def find(druid, validate: true, without_structural_contains: false)
+    RepositoryObject.find_by!(external_identifier: druid).head_version
+                    .to_cocina_with_metadata(validate:, without_structural_contains:)
   rescue ActiveRecord::RecordNotFound
     return bootstrap_ur_admin_policy if bootstrap_ur_admin_policy?(druid)
 
