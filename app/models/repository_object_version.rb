@@ -15,6 +15,11 @@ class RepositoryObjectVersion < ApplicationRecord
 
   delegate :external_identifier, to: :repository_object
 
+  # Postgres drops the file sets, so they aren't sent to or parsed by the app. Read-only, since structural is partial.
+  scope :without_structural_contains, -> {
+    select(*(column_names - ['structural']), "structural - 'contains' AS structural").readonly
+  }
+
   # @param [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] cocina_object a Cocina
   #   model instance, either a DRO, collection, or APO.
   # @return [Hash] Hash representation of a Cocina object suitable to be passed to an object type-specific AR update
@@ -52,15 +57,12 @@ class RepositoryObjectVersion < ApplicationRecord
     cocina_version.present?
   end
 
-  # @param [Boolean] without_structural_contains omit the file sets (structural.contains), e.g., for large objects
-  def to_cocina(without_structural_contains: false, **cocina_build_options)
+  def to_cocina(**cocina_build_options)
     # Legacy RepositoryObjectVersions don't have cocina. We added them in order to store the
     # version number, but the Cocina is lost to time.
     raise NoCocina unless has_cocina?
 
-    cocina_hash = to_h
-    cocina_hash[:structural] = structural.except('contains') if without_structural_contains && structural
-    Cocina::Models.build(cocina_hash, **cocina_build_options)
+    Cocina::Models.build(to_h, **cocina_build_options)
   end
 
   def to_invalid_cocina

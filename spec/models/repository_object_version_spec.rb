@@ -190,6 +190,27 @@ RSpec.describe RepositoryObjectVersion do
     end
   end
 
+  describe '.without_structural_contains' do
+    subject(:loaded_version) { described_class.without_structural_contains.find(stored_version.id) }
+
+    let(:stored_version) { create(:repository_object, :with_repository_object_version).head_version }
+
+    it 'loads structural without the file sets' do
+      expect(stored_version.structural['contains']).not_to be_empty
+      expect(loaded_version.structural).to eq(stored_version.structural.except('contains'))
+      expect(loaded_version.description).to eq(stored_version.description)
+      expect(loaded_version).to be_readonly
+    end
+
+    context 'with a Collection' do
+      let(:stored_version) { create(:repository_object, :collection, :with_repository_object_version).head_version }
+
+      it 'loads a nil structural' do
+        expect(loaded_version.structural).to be_nil
+      end
+    end
+  end
+
   describe '.to_model_hash' do
     subject(:model_hash) { described_class.to_model_hash(cocina_instance) }
 
