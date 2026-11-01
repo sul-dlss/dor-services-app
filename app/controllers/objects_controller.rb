@@ -2,6 +2,7 @@
 
 # Controller for repository objects.
 class ObjectsController < ApplicationController # rubocop:disable Metrics/ClassLength
+  before_action :show_headers, only: :show, if: -> { request.head? }
   before_action :load_cocina_object, only: %i[accession destroy reindex]
   before_action :check_cocina_object_exists, only: :publish
   before_action :validate_from_openapi
@@ -182,6 +183,22 @@ class ObjectsController < ApplicationController # rubocop:disable Metrics/ClassL
   end
 
   private
+
+  # A HEAD request (e.g., for the lock) only needs the headers, so the object's metadata isn't loaded.
+  def show_headers # rubocop:disable Metrics/AbcSize
+    repository_object = RepositoryObject.find_by(external_identifier: params[:id])
+    return unless repository_object # The full object handles not found (and bootstrapping).
+
+    repository_object.head_version = RepositoryObjectVersion.select(:id, :lock, :updated_at)
+                                                            .find(repository_object.head_version_id)
+    lock = repository_object.external_lock
+    return head :not_modified if from_etag(request.headers['If-None-Match']) == lock
+
+    headers['X-Created-At'] = repository_object.created_at.utc.httpdate
+    headers['Last-Modified'] = repository_object.head_version.updated_at.utc.httpdate
+    headers['ETag'] = "W/\"#{lock}\""
+    head :ok
+  end
 
   def publish_queue
     LaneSupport.lane_for(params['lane-id'], prefix: 'publish')
