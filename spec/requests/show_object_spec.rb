@@ -175,6 +175,24 @@ RSpec.describe 'Get the object' do
       end
     end
 
+    context 'when the object has invalid cocina' do
+      before do
+        object.head_version.tap do |version|
+          version.administrative['releaseTags'] = [{ who: 'mjgiarlo', to: 'Searchworks', release: true }]
+          version.save!
+        end
+      end
+
+      it 'returns an invalid cocina error' do
+        get "/v1/objects/#{druid}",
+            headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status(:internal_server_error)
+        expect(response.media_type).to eq('application/vnd.api+json')
+        expect(response.parsed_body['errors'].first).to include('status' => '500', 'title' => 'Invalid cocina',
+                                                                'detail' => be_present)
+      end
+    end
+
     context 'when a HEAD request' do
       before { allow(CocinaObjectStore).to receive(:find).and_call_original }
 
