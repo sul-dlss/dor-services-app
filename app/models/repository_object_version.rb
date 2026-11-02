@@ -15,6 +15,11 @@ class RepositoryObjectVersion < ApplicationRecord
 
   delegate :external_identifier, to: :repository_object
 
+  # Postgres drops the file sets, so they aren't sent to or parsed by the app. Read-only, since structural is partial.
+  scope :without_structural_contains, -> {
+    select(*(column_names - ['structural']), "structural - 'contains' AS structural").readonly
+  }
+
   # @param [Cocina::Models::DRO, Cocina::Models::Collection, Cocina::Models::AdminPolicy] cocina_object a Cocina
   #   model instance, either a DRO, collection, or APO.
   # @return [Hash] Hash representation of a Cocina object suitable to be passed to an object type-specific AR update

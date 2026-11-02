@@ -2,7 +2,7 @@
 
 # Controller for repository objects.
 class ObjectsController < ApplicationController # rubocop:disable Metrics/ClassLength
-  before_action :load_cocina_object, only: %i[accession destroy show reindex]
+  before_action :load_cocina_object, only: %i[accession destroy reindex]
   before_action :check_cocina_object_exists, only: :publish
   before_action :validate_from_openapi
 
@@ -15,6 +15,9 @@ class ObjectsController < ApplicationController # rubocop:disable Metrics/ClassL
   end
 
   def show
+    # An object without structural contains must not be used for an update, which would remove its files.
+    without_structural_contains = ActiveModel::Type::Boolean.new.cast(params[:without_structural_contains]) || false
+    @cocina_object = CocinaObjectStore.find(params.expect(:id), without_structural_contains:)
     return head :not_modified if from_etag(request.headers['If-None-Match']) == @cocina_object.lock
 
     add_headers(@cocina_object)
