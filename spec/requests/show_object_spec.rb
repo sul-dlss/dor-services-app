@@ -174,6 +174,34 @@ RSpec.describe 'Get the object' do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context 'when a HEAD request' do
+      before { allow(CocinaObjectStore).to receive(:find).and_call_original }
+
+      it 'returns the same headers as a GET without loading the object' do
+        get "/v1/objects/#{druid}", headers: { 'Authorization' => "Bearer #{jwt}" }
+        get_headers = response.headers.slice('ETag', 'Last-Modified', 'X-Created-At')
+
+        head "/v1/objects/#{druid}", headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to be_empty
+        expect(response.headers.slice('ETag', 'Last-Modified', 'X-Created-At')).to eq(get_headers)
+        expect(CocinaObjectStore).to have_received(:find).once # Only for the GET.
+      end
+
+      it 'returns not modified when the object has not changed' do
+        head "/v1/objects/#{druid}", headers: { 'Authorization' => "Bearer #{jwt}" }
+
+        head "/v1/objects/#{druid}",
+             headers: { 'Authorization' => "Bearer #{jwt}", 'If-None-Match' => response.headers['ETag'] }
+        expect(response).to have_http_status(:not_modified)
+      end
+
+      it 'returns not found when the object does not exist' do
+        head '/v1/objects/druid:bc123df4567', headers: { 'Authorization' => "Bearer #{jwt}" }
+        expect(response).to have_http_status(:not_found)
+      end
+    end
   end
 
   context 'when the requested object is a collection' do
