@@ -15,6 +15,11 @@ class ObjectsController < ApplicationController # rubocop:disable Metrics/ClassL
     json_api_error(status: :not_found, message: e.message)
   end
 
+  # Stored cocina that fails validation; actions validating request input rescue this themselves.
+  rescue_from(Cocina::Models::ValidationError) do |e|
+    json_api_error(status: :internal_server_error, title: 'Invalid cocina', message: e.message)
+  end
+
   def show
     # An object without structural contains must not be used for an update, which would remove its files.
     without_structural_contains = ActiveModel::Type::Boolean.new.cast(params[:without_structural_contains]) || false
