@@ -58,12 +58,12 @@ RSpec.describe QueueService do
     end
 
     context 'when SdrRepo classes' do
-      let(:step) { create(:workflow_step, workflow: 'preservationIngestWF', process: 'transfer-object') }
+      let(:step) { create(:workflow_step, workflow: 'preservationIngestWF', process: 'write-new-moab-version') }
 
       it 'enqueues to Sidekiq' do
         service.enqueue
         expect(ROBOT_SIDEKIQ_CLIENT).to have_received(:push).with('queue' => 'preservationIngestWF_default',
-                                                                  'class' => 'Robots::SdrRepo::PreservationIngest::TransferObject',
+                                                                  'class' => 'Robots::SdrRepo::PreservationIngest::WriteNewMoabVersion',
                                                                   'args' => [step.druid, step.version])
       end
     end
