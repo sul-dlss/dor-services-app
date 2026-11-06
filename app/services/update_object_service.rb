@@ -52,6 +52,7 @@ class UpdateObjectService
                         data: { who:, description:, success: true, request: cocina_object_without_metadata.to_h })
 
     Indexer.reindex_later(druid:)
+    changed_constituents.each { |constituent_druid| Indexer.reindex_later(druid: constituent_druid) }
 
     # Update all items in the collection if necessary
     PublishItemsModifiedJob.perform_later(druid) if update_items
@@ -100,6 +101,19 @@ class UpdateObjectService
 
     # these are arrays of collection druids, convert to set to ignore ordering
     previous_collections.to_set != new_collections.to_set
+  end
+
+  # druids added to or removed from a virtual object, whose is-constituent-of index field is now stale
+  def changed_constituents
+    return [] unless cocina_object.dro?
+
+    previous = constituents_for(previous_cocina_object)
+    current = constituents_for(cocina_object)
+    (previous | current) - (previous & current)
+  end
+
+  def constituents_for(cocina)
+    Array(cocina.structural&.hasMemberOrders).first&.members || []
   end
 
   def send_collection_changed_event
