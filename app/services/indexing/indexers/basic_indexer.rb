@@ -15,7 +15,7 @@ module Indexing
       end
 
       # @return [Hash] the partial solr document for basic data
-      def to_solr # rubocop:disable Metrics/AbcSize
+      def to_solr # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         {}.tap do |solr_doc|
           solr_doc[:id] = cocina.externalIdentifier
           solr_doc['trace_id_ss'] = trace_id
@@ -29,6 +29,7 @@ module Indexing
           solr_doc['bare_governed_by_ss'] = bare_druid_for(cocina.administrative.hasAdminPolicy)
           solr_doc['has_constituents_ssimdv'] = virtual_object_constituents
           solr_doc['constituents_count_ips'] = virtual_object_constituents.length if virtual_object_constituents
+          solr_doc['is_constituent_of_ssimdv'] = constituent_of if cocina.dro?
         end.merge(Indexing::WorkflowFields.for(druid: cocina.externalIdentifier, version: cocina.version, milestones:))
            .transform_keys(&:to_s)
       end
@@ -47,6 +48,11 @@ module Indexing
         return unless cocina.dro?
 
         Array(cocina.structural&.hasMemberOrders).first&.members
+      end
+
+      # druids of virtual objects whose head version lists this object as a constituent
+      def constituent_of
+        RepositoryObject.currently_constituent_of(cocina.externalIdentifier).pluck(:external_identifier)
       end
 
       def purl?

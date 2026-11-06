@@ -242,6 +242,44 @@ RSpec.describe UpdateObjectService do
           expect(Honeybadger).not_to have_received(:notify)
         end
       end
+
+      context 'when constituents change' do
+        let(:cocina_object) do
+          repository_object.head_version.to_cocina.then do |cocina|
+            cocina.new(structural: cocina.structural.new(hasMemberOrders: [{ members: new_members }]))
+          end
+        end
+
+        before do
+          repository_object.head_version.update!(
+            structural: repository_object.head_version.structural
+                                         .merge('hasMemberOrders' => [{ 'members' => previous_members }])
+          )
+        end
+
+        context 'when constituents are added and removed' do
+          let(:previous_members) { ['druid:bb111bb1111', 'druid:cc222cc2222'] }
+          let(:new_members) { ['druid:cc222cc2222', 'druid:dd333dd3333'] }
+
+          it 'reindexes the added and removed constituents' do
+            store.update
+            expect(Indexer).to have_received(:reindex_later).with(druid: 'druid:bb111bb1111')
+            expect(Indexer).to have_received(:reindex_later).with(druid: 'druid:dd333dd3333')
+            expect(Indexer).not_to have_received(:reindex_later).with(druid: 'druid:cc222cc2222')
+          end
+        end
+
+        context 'when constituents are unchanged' do
+          let(:previous_members) { ['druid:bb111bb1111'] }
+          let(:new_members) { ['druid:bb111bb1111'] }
+
+          it 'reindexes only the virtual object' do
+            store.update
+            expect(Indexer).to have_received(:reindex_later).once
+            expect(Indexer).to have_received(:reindex_later).with(druid:)
+          end
+        end
+      end
     end
 
     context 'when object is an AdminPolicy' do
