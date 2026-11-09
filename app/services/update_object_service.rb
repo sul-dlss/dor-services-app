@@ -52,7 +52,7 @@ class UpdateObjectService
                         data: { who:, description:, success: true, request: cocina_object_without_metadata.to_h })
 
     Indexer.reindex_later(druid:)
-    changed_constituents.each { |constituent_druid| Indexer.reindex_later(druid: constituent_druid) }
+    stale_constituents.each { |constituent_druid| Indexer.reindex_later(druid: constituent_druid) }
 
     # Update all items in the collection if necessary
     PublishItemsModifiedJob.perform_later(druid) if update_items
@@ -103,13 +103,20 @@ class UpdateObjectService
     previous_collections.to_set != new_collections.to_set
   end
 
-  # druids added to or removed from a virtual object, whose is-constituent-of index field is now stale
-  def changed_constituents
+  # constituents whose is-constituent-of index field (druid and title) is now stale
+  def stale_constituents
     return [] unless cocina_object.dro?
 
     previous = constituents_for(previous_cocina_object)
     current = constituents_for(cocina_object)
+    return previous | current if title_changed?
+
     (previous | current) - (previous & current)
+  end
+
+  def title_changed?
+    Cocina::Models::Builders::TitleBuilder.build(previous_cocina_object.description.title) !=
+      Cocina::Models::Builders::TitleBuilder.build(cocina_object.description.title)
   end
 
   def constituents_for(cocina)

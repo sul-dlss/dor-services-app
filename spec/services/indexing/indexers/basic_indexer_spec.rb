@@ -49,7 +49,6 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
           'current_as_of_dttsi' => '2026-04-10T12:00:00.000000Z',
           'milestones_ssim' => %w[foo bar],
           'has_constituents_ssimdv' => nil,
-          'is_constituent_of_ssimdv' => [],
           'governed_by_ssim' => 'druid:vv888vv8888',
           'bare_governed_by_ss' => 'vv888vv8888',
           'member_of_collection_ssim' => ['druid:bb777bb7777', 'druid:dd666dd6666'],
@@ -72,7 +71,6 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
           'member_of_collection_ssim' => [],
           'bare_member_of_collection_ssm' => [],
           'has_constituents_ssimdv' => nil,
-          'is_constituent_of_ssimdv' => [],
           'created_at_dttsi' => '2020-01-01T12:00:01Z',
           'id' => 'druid:xx999xx9999',
           'trace_id_ss' => 'abc123'
@@ -92,7 +90,6 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
           'milestones_ssim' => %w[foo bar],
           'has_constituents_ssimdv' => ['druid:bb777bb7777', 'druid:dd666dd6666'],
           'constituents_count_ips' => 2,
-          'is_constituent_of_ssimdv' => [],
           'governed_by_ssim' => 'druid:vv888vv8888',
           'bare_governed_by_ss' => 'vv888vv8888',
           'member_of_collection_ssim' => [],
@@ -101,20 +98,6 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
           'id' => 'druid:xx999xx9999',
           'trace_id_ss' => 'abc123'
         )
-      end
-    end
-
-    context 'when a constituent of virtual objects' do
-      before do
-        %w[druid:bb777bb7777 druid:dd666dd6666].each do |virtual_object_druid|
-          create(:repository_object, :with_repository_object_version, external_identifier: virtual_object_druid)
-            .head_version.update!(structural: { hasMemberOrders: [{ members: ['druid:xx999xx9999'] }] })
-        end
-        create(:repository_object, :with_repository_object_version, external_identifier: 'druid:cc555cc5555')
-      end
-
-      it 'includes the virtual object druids' do
-        expect(doc['is_constituent_of_ssimdv']).to contain_exactly('druid:bb777bb7777', 'druid:dd666dd6666')
       end
     end
 
@@ -149,10 +132,6 @@ RSpec.describe Indexing::Indexers::BasicIndexer do
 
       it 'does not include the purl_ss field' do
         expect(doc.key?('purl_ss')).to be false
-      end
-
-      it 'does not include the is_constituent_of_ssimdv field' do
-        expect(doc.key?('is_constituent_of_ssimdv')).to be false
       end
     end
   end

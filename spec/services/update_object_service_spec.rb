@@ -279,6 +279,21 @@ RSpec.describe UpdateObjectService do
             expect(Indexer).to have_received(:reindex_later).with(druid:)
           end
         end
+
+        context 'when constituents are unchanged but the title changes' do
+          let(:previous_members) { ['druid:bb111bb1111'] }
+          let(:new_members) { ['druid:bb111bb1111'] }
+          let(:cocina_object) do
+            super().then do |cocina|
+              cocina.new(description: cocina.description.new(title: [{ value: 'New title' }]))
+            end
+          end
+
+          it 'reindexes the constituents' do
+            store.update
+            expect(Indexer).to have_received(:reindex_later).with(druid: 'druid:bb111bb1111')
+          end
+        end
       end
     end
 

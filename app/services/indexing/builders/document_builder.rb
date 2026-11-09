@@ -38,6 +38,7 @@ module Indexing
         Indexing::Indexers::ObjectFilesIndexer,
         Indexing::Indexers::IdentifiableIndexer,
         Indexing::Indexers::CollectionTitleIndexer,
+        Indexing::Indexers::ConstituentOfIndexer,
         Indexing::Indexers::ReleasableIndexer,
         Indexing::Indexers::WorkflowsIndexer,
         Indexing::Indexers::EventsIndexer
@@ -56,11 +57,12 @@ module Indexing
       # Optional parameters allow passing in pre-fetched data to avoid redundant lookups.
       # If an optional parameter is not provided, it will be fetched as needed.
       def initialize(model:, workflows: nil, parent_collections: nil, parent_collections_release_tags: nil, # rubocop:disable Metrics/ParameterLists
-                     milestones: nil, release_tags: nil, last_event: nil, trace_id: SecureRandom.uuid,
-                     current_as_of: nil)
+                     parent_virtual_objects: nil, milestones: nil, release_tags: nil, last_event: nil,
+                     trace_id: SecureRandom.uuid, current_as_of: nil)
         @model = model
         @workflows = workflows
         @parent_collections = parent_collections
+        @parent_virtual_objects = parent_virtual_objects
         @parent_collections_release_tags = parent_collections_release_tags
         @release_tags = release_tags
         @milestones = milestones
@@ -77,6 +79,7 @@ module Indexing
                                          workflows:,
                                          parent_collections:,
                                          parent_collections_release_tags:,
+                                         parent_virtual_objects:,
                                          administrative_tags:,
                                          release_tags:,
                                          milestones:,
@@ -116,6 +119,17 @@ module Indexing
           # This may happen if the referenced Collection does not exist (bad data)
           nil
         end
+      end
+
+      # virtual objects whose head version lists this object as a constituent
+      def parent_virtual_objects
+        @parent_virtual_objects ||= if model.dro?
+                                      CocinaObjectStore.find_all(
+                                        RepositoryObject.currently_constituent_of(druid).pluck(:external_identifier)
+                                      )
+                                    else
+                                      []
+                                    end
       end
 
       def milestones
