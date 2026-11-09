@@ -104,6 +104,15 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
     let(:release_tags) { [instance_double(Dor::ReleaseTag)] }
     let(:parent_collection_release_tags) { [instance_double(Dor::ReleaseTag)] }
     let(:parent_collections_release_tags) { { collection_druid => parent_collection_release_tags } }
+    let!(:parent_virtual_object_repository_object) do
+      repository_object_version = build(:repository_object_version, :dro_repository_object_version,
+                                        external_identifier: virtual_object_druid,
+                                        structural: { hasMemberOrders: [{ members: [druid] }] })
+      create(:repository_object, :with_repository_object_version, external_identifier: virtual_object_druid,
+                                                                  repository_object_version:)
+    end
+    let(:virtual_object_druid) { 'druid:bb777bb7777' }
+    let(:parent_virtual_objects) { [parent_virtual_object_repository_object.head_version.to_cocina_with_metadata] }
     let(:workflows) { [instance_double(Workflow::WorkflowResponse)] }
     let(:last_event) { instance_double(Event) }
 
@@ -115,8 +124,8 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
     context 'when optional parameters are provided' do
       it 'uses the provided values' do
         described_class.for(model: cocina_with_metadata, trace_id:, parent_collections:,
-                            milestones:, parent_collections_release_tags:, release_tags:, workflows:,
-                            last_event:)
+                            milestones:, parent_collections_release_tags:, parent_virtual_objects:, release_tags:,
+                            workflows:, last_event:)
         expect(Indexing::Indexers::CompositeIndexer::Instance).to have_received(:new)
           .with(
             Array, # This is the array of indexers
@@ -127,6 +136,7 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
               parent_collections:,
               milestones:,
               parent_collections_release_tags: { 'druid:bc999df2323' => parent_collection_release_tags },
+              parent_virtual_objects:,
               release_tags:,
               last_event:,
               workflows:,
@@ -159,6 +169,7 @@ RSpec.describe Indexing::Builders::DocumentBuilder do
               parent_collections:,
               milestones:,
               parent_collections_release_tags:,
+              parent_virtual_objects:,
               release_tags:,
               last_event:,
               workflows:,
