@@ -25,7 +25,8 @@ module Indexing
         return unless status
 
         # add a record of the robot having operated on this item, so we can track robot activity
-        solr_doc.add_process_time(workflow_name, name, Time.zone.parse(process.datetime)) if time?
+        solr_doc.add_process_time(workflow_name, name, process_time) if time?
+        solr_doc.add_error_time(process_time) if status == 'error' && datetime
 
         index_error_message
 
@@ -38,6 +39,10 @@ module Indexing
       attr_reader :process, :workflow_name, :solr_doc
 
       delegate :status, :name, :state, :error_message, :datetime, to: :process
+
+      def process_time
+        Time.zone.parse(datetime)
+      end
 
       def time?
         datetime && ['completed', 'error'].include?(status)
