@@ -9,6 +9,8 @@ module Indexing
     WORKFLOW_HIERARCHICAL_WPS_SOLR = 'wf_hierarchical_wps_ssimdv'
     WORKFLOW_ERROR_SOLR = 'wf_error_ssim'
     WORKFLOW_STATUS_SOLR = 'workflow_status_ssim'
+    # time of the most recent current error across all workflows
+    WORKFLOW_ERROR_LATEST_SOLR = 'wf_error_latest_dtpsidv'
 
     # For hierarchical workflow fields
     # They have the format: [LEVEL]|[WORKFLOW DATA]|[LEAF OR BRANCH]
@@ -80,6 +82,12 @@ module Indexing
       data["wf_#{wf_name}_#{process_name}_dttsi"] = time.utc.iso8601
     end
 
+    # Record the time a process went into error, keeping only the most recent
+    # @param [Time] time
+    def add_error_time(time)
+      self.error_latest = time.utc.iso8601
+    end
+
     def to_h
       KEYS_TO_MERGE.each { |k| data[k].uniq! }
       data
@@ -90,7 +98,8 @@ module Indexing
     # @param [WorkflowSolrDocument] doc
     def merge!(doc)
       # This is going to get the date fields, e.g. `wf_assemblyWF_jp2-create_dttsi'
-      @data.merge!(doc.except(*KEYS_TO_MERGE))
+      @data.merge!(doc.except(*KEYS_TO_MERGE, WORKFLOW_ERROR_LATEST_SOLR))
+      self.error_latest = doc[WORKFLOW_ERROR_LATEST_SOLR]
 
       # Combine the non-unique fields together
       KEYS_TO_MERGE.each do |k|
@@ -101,6 +110,13 @@ module Indexing
     private
 
     attr_reader :data, :wf_name
+
+    # ISO 8601 UTC strings sort chronologically
+    def error_latest=(time)
+      return if time.nil?
+
+      data[WORKFLOW_ERROR_LATEST_SOLR] = [data[WORKFLOW_ERROR_LATEST_SOLR], time].compact.max
+    end
 
     def empty_document
       KEYS_TO_MERGE.index_with { |_k| [] }

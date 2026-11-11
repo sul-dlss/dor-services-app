@@ -135,5 +135,81 @@ RSpec.describe Indexing::Indexers::WorkflowsIndexer do
                            'hydrusAssemblyWF|completed|0', 'versioningWF|completed|0']
       end
     end
+
+    describe 'wf_error_latest_dtpsidv' do
+      let(:doc) { solr_doc['wf_error_latest_dtpsidv'] }
+
+      it 'is the time of the current error' do
+        expect(doc).to eq '2019-01-29T22:51:09Z'
+      end
+
+      context 'when processes in two workflows are in error' do
+        let(:xml) do
+          <<~XML
+            <workflows objectId="druid:ab123cd4567">
+              <workflow objectId="druid:ab123cd4567" id="accessionWF">
+                <process version="1" datetime="2026-11-09T10:00:00+00:00" status="error" name="shelve"/>
+              </workflow>
+              <workflow objectId="druid:ab123cd4567" id="assemblyWF">
+                <process version="1" datetime="2026-11-03T10:00:00+00:00" status="error" name="jp2-create"/>
+              </workflow>
+            </workflows>
+          XML
+        end
+
+        it 'is the time of the most recent error' do
+          expect(doc).to eq '2026-11-09T10:00:00Z'
+        end
+      end
+
+      context 'when a process in a workflow skipped for wps is in error' do
+        let(:xml) do
+          <<~XML
+            <workflows objectId="druid:ab123cd4567">
+              <workflow objectId="druid:ab123cd4567" id="disseminationWF">
+                <process version="1" datetime="2026-11-09T10:00:00+00:00" status="error" name="cleanup"/>
+              </workflow>
+            </workflows>
+          XML
+        end
+
+        it 'is the time of the error' do
+          expect(doc).to eq '2026-11-09T10:00:00Z'
+        end
+      end
+
+      context 'when only a process in an older version is in error' do
+        let(:xml) do
+          <<~XML
+            <workflows objectId="druid:ab123cd4567">
+              <workflow objectId="druid:ab123cd4567" id="assemblyWF">
+                <process version="1" datetime="2026-11-03T10:00:00+00:00" status="error" name="jp2-create"/>
+                <process version="2" datetime="2026-11-09T10:00:00+00:00" status="completed" name="jp2-create"/>
+              </workflow>
+            </workflows>
+          XML
+        end
+
+        it 'is not indexed' do
+          expect(solr_doc).not_to have_key('wf_error_latest_dtpsidv')
+        end
+      end
+
+      context 'when no processes are in error' do
+        let(:xml) do
+          <<~XML
+            <workflows objectId="druid:ab123cd4567">
+              <workflow objectId="druid:ab123cd4567" id="assemblyWF">
+                <process version="1" datetime="2026-11-03T10:00:00+00:00" status="completed" name="jp2-create"/>
+              </workflow>
+            </workflows>
+          XML
+        end
+
+        it 'is not indexed' do
+          expect(solr_doc).not_to have_key('wf_error_latest_dtpsidv')
+        end
+      end
+    end
   end
 end
