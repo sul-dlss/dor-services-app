@@ -17,6 +17,7 @@ class ShelvedNotPublished
       FROM repository_objects AS ro, repository_object_versions AS rov
       WHERE ro.head_version_id = rov.id
       AND ro.object_type = 'dro'
+      AND rov.content_type != '#{Cocina::Models::ObjectType.webarchive_binary}'
   SQL
 
   def self.report
