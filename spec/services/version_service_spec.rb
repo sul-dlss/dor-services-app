@@ -537,7 +537,7 @@ RSpec.describe VersionService do
         expect do
           close
         end.to raise_error(VersionService::VersioningError,
-                           "Trying to close version 2 on #{druid} which has active assemblyWF")
+                           "Trying to close version 2 on #{druid} which is assembling")
         expect(workflow_state_service).to have_received(:assembling?)
       end
     end

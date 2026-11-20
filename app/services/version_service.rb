@@ -286,7 +286,7 @@ class VersionService
     end
     if assembling?
       raise VersionService::VersioningError,
-            "Trying to close version #{version} on #{druid} which has active assemblyWF"
+            "Trying to close version #{version} on #{druid} which is assembling"
     end
     raise VersionService::VersioningError, "accessionWF already created for versioned object #{druid}" if accessioning?
   end
