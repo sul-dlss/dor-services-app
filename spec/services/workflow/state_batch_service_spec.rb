@@ -71,7 +71,8 @@ RSpec.describe Workflow::StateBatchService do
           gis_delivering_druid, gis_delivered_druid, gis_delivering_druid_with_ignored_step,
           ocring_druid, ocred_druid, ocring_druid_with_ignored_step,
           stting_druid, stted_druid, stting_druid_with_ignored_step,
-          gis_assembling_druid, gis_assembled_druid
+          gis_assembling_druid, gis_assembled_druid, gis_assembling_druid_starting_derivative,
+          gis_deriving_druid, gis_derived_druid, gis_deriving_druid_with_ignored_step
         ]
       )
     end
@@ -97,6 +98,10 @@ RSpec.describe Workflow::StateBatchService do
     let(:stting_druid_with_ignored_step) { 'druid:bj033gt0617' }
     let(:gis_assembling_druid) { 'druid:bk033gt0615' }
     let(:gis_assembled_druid) { 'druid:bk033gt0616' }
+    let(:gis_assembling_druid_starting_derivative) { 'druid:bk033gt0617' }
+    let(:gis_deriving_druid) { 'druid:bm033gt0615' }
+    let(:gis_derived_druid) { 'druid:bm033gt0616' }
+    let(:gis_deriving_druid_with_ignored_step) { 'druid:bm033gt0617' }
 
     before do
       # assembling
@@ -175,12 +180,36 @@ RSpec.describe Workflow::StateBatchService do
       Workflow::Service.create(druid: gis_assembled_druid, workflow_name: 'gisAssemblyWF', version: 1)
       WorkflowStep.where(druid: gis_assembled_druid, active_version: true,
                          workflow: 'gisAssemblyWF').update_all(status: 'completed')
+      # gisAssemblyWF with all completed except the step that starts gisDerivativeWF
+      Workflow::Service.create(druid: gis_assembling_druid_starting_derivative, workflow_name: 'gisAssemblyWF',
+                               version: 1)
+      WorkflowStep.where(druid: gis_assembling_druid_starting_derivative, active_version: true,
+                         workflow: 'gisAssemblyWF').where.not(process: 'start-derivative-workflow')
+                  .update_all(status: 'completed')
+
+      # gisDerivativeWF deriving, with a step in error
+      Workflow::Service.create(druid: gis_deriving_druid, workflow_name: 'gisDerivativeWF', version: 1)
+      WorkflowStep.where(druid: gis_deriving_druid, active_version: true,
+                         workflow: 'gisDerivativeWF').order(:id).limit(2).update_all(status: 'completed')
+      WorkflowStep.where(druid: gis_deriving_druid, active_version: true,
+                         workflow: 'gisDerivativeWF', process: 'create-derivatives').update_all(status: 'error')
+      # gisDerivativeWF derived
+      Workflow::Service.create(druid: gis_derived_druid, workflow_name: 'gisDerivativeWF', version: 1)
+      WorkflowStep.where(druid: gis_derived_druid, active_version: true,
+                         workflow: 'gisDerivativeWF').update_all(status: 'completed')
+      # gisDerivativeWF deriving with all completed except the last step
+      Workflow::Service.create(druid: gis_deriving_druid_with_ignored_step, workflow_name: 'gisDerivativeWF',
+                               version: 1)
+      WorkflowStep.where(druid: gis_deriving_druid_with_ignored_step, active_version: true,
+                         workflow: 'gisDerivativeWF').where.not(process: 'start-accession-workflow')
+                  .update_all(status: 'completed')
     end
 
     it 'returns the assembling druids' do
       expect(assembling_druids).to contain_exactly(assembling_druid, was_crawl_preassembling_druid,
                                                    was_seed_preassembling_druid, ocring_druid,
-                                                   stting_druid, gis_assembling_druid)
+                                                   stting_druid, gis_assembling_druid,
+                                                   gis_assembling_druid_starting_derivative, gis_deriving_druid)
     end
   end
 end
