@@ -335,6 +335,26 @@ RSpec.describe VersionService do
         end
       end
 
+      context 'when the user version mode is invalid' do
+        let(:user_version_mode) { :bogus }
+
+        it 'raises without closing the version' do
+          expect { close }.to raise_error(ArgumentError, /user_version_mode must be one of/)
+          expect(repository_object.reload).to be_open
+        end
+      end
+
+      context 'when the user version mode is not provided and the version context sets an invalid one' do
+        let(:user_version_mode) { nil }
+
+        before { create(:version_context, druid:, version: 2, values: { 'userVersions' => 'bogus' }) }
+
+        it 'raises without closing the version' do
+          expect { close }.to raise_error(ArgumentError, /user_version_mode must be one of/)
+          expect(repository_object.reload).to be_open
+        end
+      end
+
       context 'when the user version mode is not provided and the version context does not set one' do
         let(:user_version_mode) { nil }
 
