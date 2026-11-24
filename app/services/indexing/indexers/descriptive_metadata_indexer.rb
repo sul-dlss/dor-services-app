@@ -34,6 +34,7 @@ module Indexing
         'originInfo_publisher_tesim' => :publisher_name,
         'originInfo_place_placeTerm_tesim' => :event_place, # do we want this?
         'publication_year_ssidv' => :pub_year_int,
+        'publication_year_ipsidv' => :pub_year_int, # integer field for range queries and numeric sorting
 
         # SW facets plus a friend facet
         'format_ssimdv' => :format,
