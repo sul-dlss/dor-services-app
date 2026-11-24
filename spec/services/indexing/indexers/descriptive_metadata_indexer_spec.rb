@@ -410,6 +410,7 @@ RSpec.describe Indexing::Indexers::DescriptiveMetadataIndexer do
         'subject_place_ssimdv' => ['Europe'],
         'genre_ssimdv' => ['Photographs'],
         'publication_year_ssidv' => 1911,
+        'publication_year_ipsidv' => 1911,
         'author_display_ss' => 'George, Henry, 1839-1897',
         'author_text_nostem_im' => 'George, Henry, 1839-1897',
         'contributor_text_nostem_im' => ['George, Henry, 1839-1897', 'George, Henry, 1862-1916', 'George, Bush',
