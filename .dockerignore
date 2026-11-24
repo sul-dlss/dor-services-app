@@ -1,11 +1,46 @@
-.git
-.dockerignore
-log
-tmp
-coverage
-solr_conf
-# Required for puma to have a place to put the pid file
-!tmp/pids/.keep
-cache-files.txt
-cache
-results
+# Ignore git directory.
+/.git/
+/.gitignore
+
+# Ignore bundler config.
+/.bundle
+
+# Ignore all environment files.
+/.env*
+
+# Ignore all default key files.
+/config/master.key
+/config/credentials/*.key
+/config/settings/*.local.yml
+/config/settings.local.yml
+/config/certs
+
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# Ignore local caches, report output, and druid lists.
+/cache
+/results
+/solr_conf
+/*.csv
+/*.txt
+/*.json
+
+# Ignore CI service files.
+/.circleci
+/.github
+
+# Ignore development files
+/.claude
+/compose.yaml
+
+# Ignore tests and test output
+/spec
+/coverage
+
+# Ignore Docker-related files
+/.dockerignore
+/Dockerfile*
