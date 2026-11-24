@@ -858,5 +858,21 @@ RSpec.describe VersionService do
           .with(data: { version: }, druid:, event_type: 'version_discard')
       end
     end
+
+    context 'when the version has a workflow context' do
+      let!(:workflow_step) { create(:workflow_step, druid:, version:) }
+
+      before do
+        VersionContext.create!(druid:, version:, values: { 'runOCR' => true, 'userVersions' => 'new' })
+        VersionContext.create!(druid:, version: 1, values: { 'runOCR' => true })
+      end
+
+      it 'deletes the discarded version context and keeps its workflow steps' do
+        discard
+        expect(VersionContext.find_by(druid:, version:)).to be_nil
+        expect(VersionContext.find_by(druid:, version: 1)).to be_present
+        expect(WorkflowStep.exists?(workflow_step.id)).to be true
+      end
+    end
   end
 end

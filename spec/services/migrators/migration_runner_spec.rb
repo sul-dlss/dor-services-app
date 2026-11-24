@@ -255,7 +255,7 @@ RSpec.describe Migrators::MigrationRunner do
 
           expect(version_service).to have_received(:close)
             .with(description: nil, user_name: nil,
-                  start_accession: true, user_version_mode: :update_if_existing,
+                  start_accession: true, user_version_mode: nil,
                   accession_args: { lane_id: 'low', context: {} })
           expect(Publish::MetadataTransferService).not_to have_received(:publish)
         end
@@ -297,7 +297,7 @@ RSpec.describe Migrators::MigrationRunner do
 
           expect(version_service).to have_received(:close)
             .with(description: nil, user_name: nil,
-                  start_accession: true, user_version_mode: :update_if_existing,
+                  start_accession: true, user_version_mode: nil,
                   accession_args: { lane_id: 'low', context: { 'skipReleaseWF' => true } })
         end
       end
