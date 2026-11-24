@@ -982,7 +982,9 @@ paths:
             example: "some_sunetid"
         - name: user_versions
           in: query
-          description: Create, update, or do nothing with user versions on close
+          description: >-
+            Create, update, or do nothing with user versions on close. If omitted, the userVersions value of the
+            version's workflow context is used (e.g., set when starting an assembly workflow), otherwise update_if_existing.
           schema:
             type: string
             enum:

@@ -8,6 +8,8 @@ class VersionService
   class CocinaObjectNotFoundError < VersioningError; end
 
   DEFAULT_USER_VERSION_MODE = :update_if_existing
+  # The key of the version's workflow context that holds a user version mode (e.g., 'new') for closing the version.
+  USER_VERSIONS_CONTEXT_KEY = 'userVersions'
 
   def self.open?(...)
     new(...).open?
@@ -23,7 +25,7 @@ class VersionService
   end
 
   def self.close(druid:, version:, description: nil, user_name: nil, start_accession: true, # rubocop:disable Metrics/ParameterLists
-                 user_version_mode: DEFAULT_USER_VERSION_MODE, accession_args: {})
+                 user_version_mode: nil, accession_args: {})
     new(druid:, version:).close(description:, user_name:, start_accession:, user_version_mode:,
                                 accession_args: accession_args)
   end
@@ -127,24 +129,20 @@ class VersionService
   # @param [String] :description describes the version change
   # @param [String] :user_name add username to the events datastream
   # @param [Boolean] :start_accession set to true if you want accessioning to start (default), false otherwise
-  # @param [Symbol] :user_version_mode :none (do nothing), :new, :update, or :update_if_existing (default) with
-  # user_versions on close
+  # @param [Symbol] :user_version_mode :none (do nothing), :new, :update, or :update_if_existing with
+  # user_versions on close. If nil, the mode in the version's workflow context (see USER_VERSIONS_CONTEXT_KEY) is used,
+  # e.g., set when starting an assembly workflow whose last robot closes the version; otherwise :update_if_existing.
   # @param [Hash] :accession_args additional arguments to pass to the accession workflow (e.g., lane_id)
   # @raise [VersionService::VersioningError] if the object hasn't been opened for versioning, or if accessionWF has
   #   already been instantiated or the current version is missing a description
   # @raise [ArgumentError] if user_versions is not one of none, new, update
-  def close(description:, user_name:, start_accession: true, user_version_mode: DEFAULT_USER_VERSION_MODE, # rubocop:disable Metrics/AbcSize
+  def close(description:, user_name:, start_accession: true, user_version_mode: nil, # rubocop:disable Metrics/AbcSize
             accession_args: {})
-    user_version_mode_options = %i[none new update update_if_existing]
-
-    unless user_version_mode_options.include?(user_version_mode)
-      raise ArgumentError,
-            "user_version_mode must be one of #{user_version_mode_options.join(', ')}"
-    end
-
+    user_version_mode = resolve_user_version_mode(user_version_mode)
     ensure_closeable!
 
     repository_object.close_version!(description:)
+    remove_context_user_version_mode
 
     EventFactory.create(druid:, event_type: 'version_close',
                         data: { who: user_name, version: version.to_s,
@@ -305,6 +303,33 @@ class VersionService
       move_user_version(repository_object, publish) unless no_user_versions?(repository_object)
     end
     # :none falls through and does nothing
+  end
+
+  # @raise [ArgumentError] if the mode is not one of none, new, update, update_if_existing
+  def resolve_user_version_mode(user_version_mode)
+    (user_version_mode || context_user_version_mode || DEFAULT_USER_VERSION_MODE).tap do |mode|
+      user_version_mode_options = %i[none new update update_if_existing]
+      next if user_version_mode_options.include?(mode)
+
+      raise ArgumentError, "user_version_mode must be one of #{user_version_mode_options.join(', ')}"
+    end
+  end
+
+  def version_context
+    @version_context ||= VersionContext.find_by(druid:, version:)
+  end
+
+  def context_user_version_mode
+    version_context&.values&.dig(USER_VERSIONS_CONTEXT_KEY)&.to_sym
+  end
+
+  # So that the mode doesn't carry over to a later version, e.g., when accessionWF passes this version's context on
+  # to the version it opens for OCR. Updated rather than destroyed, since destroying the context destroys its
+  # workflow steps.
+  def remove_context_user_version_mode
+    return unless version_context&.values&.key?(USER_VERSIONS_CONTEXT_KEY)
+
+    version_context.update!(values: version_context.values.except(USER_VERSIONS_CONTEXT_KEY))
   end
 
   def no_user_versions?(repository_object)

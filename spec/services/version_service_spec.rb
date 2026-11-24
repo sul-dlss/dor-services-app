@@ -310,6 +310,42 @@ RSpec.describe VersionService do
         end
       end
 
+      context 'when the user version mode is not provided and the version context sets one' do
+        let(:user_version_mode) { nil }
+        let!(:version_context) do
+          create(:version_context, druid:, version: 2, values: { 'userVersions' => 'new', 'runOCR' => true })
+        end
+
+        it 'uses the mode from the version context and removes it from the context' do
+          close
+          expect(repository_object.reload.last_closed_version.user_versions.count).to eq 1
+          expect(version_context.reload.values).to eq('runOCR' => true)
+        end
+      end
+
+      context 'when the user version mode is provided and the version context sets one' do
+        let!(:version_context) do
+          create(:version_context, druid:, version: 2, values: { 'userVersions' => 'new' })
+        end
+
+        it 'uses the provided mode and removes the mode from the context' do
+          close
+          expect(repository_object.reload.last_closed_version.user_versions.count).to eq 0
+          expect(version_context.reload.values).to eq({})
+        end
+      end
+
+      context 'when the user version mode is not provided and the version context does not set one' do
+        let(:user_version_mode) { nil }
+
+        before { create(:version_context, druid:, version: 2, values: { 'runOCR' => true }) }
+
+        it 'uses the default mode, so does not create a first user version' do
+          close
+          expect(repository_object.reload.last_closed_version.user_versions.count).to eq 0
+        end
+      end
+
       context 'when user_version is none' do
         it 'does not create a user version' do
           close
