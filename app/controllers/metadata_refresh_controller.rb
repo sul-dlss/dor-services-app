@@ -17,8 +17,7 @@ class MetadataRefreshController < ApplicationController
     # Why not just skip the refresh above and let the job auto handle it?
     # Because (1) auto-refresh is behind a feature flag and it might be false (and this is a user requested refresh)
     # and (2) we want to catch a failure in the refresh above immediately and return a 422 error
-    UpdateObjectService.update(cocina_object: @cocina_object.new(description: result.value!.description_props),
-                               auto_refresh_description: false)
+    update_description(result.value!.description_props)
   rescue Catalog::Errors::RecordNotFoundError => e
     json_api_error(status: :bad_request, title: 'Not found in catalog', message: e.message)
   rescue Catalog::Errors::BaseError => e
@@ -26,5 +25,12 @@ class MetadataRefreshController < ApplicationController
     json_api_error(status: :internal_server_error, message: e.message)
   rescue Cocina::Models::ValidationError => e
     json_api_error(status: :unprocessable_content, title: 'Cocina validation error', message: e.message)
+  end
+
+  private
+
+  def update_description(description_props)
+    UpdateObjectService.update(cocina_object: @cocina_object.new(description: description_props),
+                               auto_refresh_description: false, who: params[:user_name])
   end
 end
