@@ -553,6 +553,12 @@ paths:
           required: true
           schema:
             $ref: "https://raw.githubusercontent.com/sul-dlss/cocina-models/refs/tags/v0.113.0/schema.json#/$defs/Druid"
+        - name: user_name
+          in: query
+          description: The sunetid of the person requesting the refresh
+          required: false
+          schema:
+            type: string
   "/v1/objects/{object_id}/release_tags":
     get:
       tags:

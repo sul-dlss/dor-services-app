@@ -79,7 +79,17 @@ RSpec.describe 'Refresh metadata' do
            headers: { 'Authorization' => "Bearer #{jwt}" }
       expect(response).to be_successful
       expect(UpdateObjectService).to have_received(:update).with(cocina_object: updated_cocina_object,
-                                                                 auto_refresh_description: false)
+                                                                 auto_refresh_description: false, who: nil)
+    end
+  end
+
+  context 'with a user name' do
+    it 'records who requested the refresh' do
+      post '/v1/objects/druid:mk420bs7601/refresh_metadata?user_name=jcoyne',
+           headers: { 'Authorization' => "Bearer #{jwt}" }
+      expect(response).to be_successful
+      expect(UpdateObjectService).to have_received(:update).with(cocina_object: updated_cocina_object,
+                                                                 auto_refresh_description: false, who: 'jcoyne')
     end
   end
 
