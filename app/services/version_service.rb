@@ -241,7 +241,6 @@ class VersionService
   def discard
     ensure_discardable!
     repository_object.discard_open_version!
-    remove_version_context
     EventFactory.create(druid: druid, event_type: 'version_discard', data: { version: version })
   end
 
@@ -331,13 +330,6 @@ class VersionService
     return unless version_context&.values&.key?(USER_VERSIONS_CONTEXT_KEY)
 
     version_context.update!(values: version_context.values.except(USER_VERSIONS_CONTEXT_KEY))
-  end
-
-  # A discarded version's number is reused by the next version opened, which would otherwise inherit its workflow
-  # context (e.g., runOCR or userVersions). Deleted without callbacks, so the discarded version's workflow steps are
-  # kept as before.
-  def remove_version_context
-    VersionContext.where(druid:, version:).delete_all
   end
 
   def no_user_versions?(repository_object)
