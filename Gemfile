@@ -82,7 +82,10 @@ end
 group :development do
   gem 'graphiql-rails' # GraphQL IDE
   gem 'propshaft' # for GraphiQL
-  gem 'puma' # app server for dev
+end
+
+group :development, :docker do
+  gem 'puma' # app server for dev and the Docker image
 end
 
 group :deployment do
